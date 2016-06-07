@@ -1,0 +1,34 @@
+*.o
+*.dll
+out/
+*.pp
+*.interfaces
+*.executables
+*.dlls
+*.libraries*
+*.asm
+*.nfo
+*.obj
+*.d
+*~
+lib
+package
+
+# Top-level generic files
+tags
+TAGS
+!.gitignore
+!.mailmap
+
+# stgit generated dirs
+patches-*
+
+# quilt's files
+*.patch
+patches
+series
+
+# cscope files
+cscope.*
+ncscope.*
+

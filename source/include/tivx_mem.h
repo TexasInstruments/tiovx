@@ -1,0 +1,131 @@
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+
+#ifndef _TIVX_MEM_H_
+#define _TIVX_MEM_H_
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!
+ * \file
+ * \brief Interface to Memory allocation and deallocation APIs
+ */
+
+/*!
+ * \brief Enum that list all possible memory regions from which allocations are
+ *        possible
+ *
+ * \ingroup group_tivx_mem
+ */
+typedef enum _tivx_mem_type_e
+{
+    /*! \brief External memory.
+     *  Typically large in size and can be used by kernels.
+     *  as well as applications.
+     */
+    TIVX_MEM_EXTERNAL,
+    /*! \brief Internal memory at L3 level.
+     *  Typically visiable to all CPUs, limited in size.
+     *  Typically used by kernels and in very rare cases by applications.
+     */
+    TIVX_MEM_INTERNAL_L3,
+    /*! \brief Internal memory at L2 level.
+     *  Typically local to CPU, very limited in size.
+     *  Typically used by kernels.
+     *  NOT to be used by applications.
+     */
+    TIVX_MEM_INTERNAL_L2
+
+} tivx_mem_type_e;
+
+/*!
+ * \brief Structure describing a shared memory pointer
+ *
+ * \ingroup group_tivx_mem
+ */
+typedef struct _tivx_shared_mem_ptr_t {
+
+    /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_type_e */
+    vx_enum mem_type;
+
+    /*! \brief Value of pointer as seen in shared memory
+     *         All CPUs will have method to convert from shared memory pointer
+     *         to CPU local memory pointer
+     */
+    void *shared_ptr;
+
+    /*! \brief Value of pointer as seen as by host CPU
+     *         Host CPU will have method to convert to/from shared memory
+     *         pointer
+     */
+    void *host_ptr;
+
+ } tivx_shared_mem_ptr_t;
+
+
+/*!
+ * \brief Alloc buffer from shared memory
+ *
+ * \param [in] mem_type Memory type to which this allocation belongs, see \ref tivx_mem_type_e
+ * \param [out] mem_ptr Allocated memory pointer
+ * \param [in] size Size of memory to allocate in bytes
+ *
+ * \ingroup group_tivx_mem
+ */
+vx_status tivxMemBufferAlloc(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_type);
+
+/*!
+ * \brief Free buffer from shared memory
+ *
+ * \param [out] mem_ptr Allocated memory pointer
+ * \param [in] size Size of memory allocated in bytes
+ *
+ * \ingroup group_tivx_mem
+ */
+vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size);
+
+/*!
+ * \brief Map a allocated buffer address
+ *
+ *        This is to ensure the memory pointed by the buffer is
+ *        accesible to the caller and brought to a coherent state wrt caller.
+ *
+ * \param [in] host_ptr Buffer memory to map
+ * \param [in] size Size of memory to map in units of bytes
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] maptype Mapping type as defined by \ref vx_accessor_e
+ *
+ * \ingroup group_tivx_mem
+ */
+void tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
+
+/*!
+ * \brief UnMap a buffer address
+ *
+ *        This is to ensure the memory pointed by the buffer pointer is
+ *        made coherent with other possible readers of this buffer
+ *
+ * \param [in] host_ptr Buffer memory to unmap
+ * \param [in] size Size of memory to unmap in units of bytes
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] maptype Mapping type as defined by \ref vx_accessor_e
+ *
+ * \ingroup group_tivx_mem
+ */
+void tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
