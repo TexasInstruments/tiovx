@@ -46,6 +46,7 @@
 #include <tivx_obj_desc.h>
 #include <tivx_mem.h>
 
+#include <vx_graph.h>
 #include <vx_node.h>
 #include <vx_remap.h>
 #include <vx_scalar.h>
@@ -60,14 +61,26 @@ extern "C" {
  * \brief The top level TI OpenVX implementation header.
  */
 
-/*! A parameter checker for size and alignment.
+/*! \brief A parameter checker for size and alignment.
  * \ingroup group_vx_utils
  */
 #define VX_CHECK_PARAM(ptr, size, type, align) (size == sizeof(type) && ((vx_size)ptr & align) == 0)
 
 
+/*! \brief Macro to align a 'value' to 'align' units
+ * \ingroup group_vx_utils
+ */
+#define TIVX_ALIGN(value, align)      ((((value)+(align-1))/(align))*(align))
 
+/*! \brief Macro to floor a 'value' to 'align' units
+ * \ingroup group_vx_utils
+ */
+#define TIVX_FLOOR(value, align)      (((value)/(align))*(align))
 
+/*! \brief Macro to specify default alignment to use for stride in Y-direction
+ * \ingroup group_vx_utils
+ */
+#define TIVX_DEFAULT_STRIDE_Y_ALIGN   (32U)
 
 #ifdef __cplusplus
 }
@@ -102,6 +115,11 @@ extern "C" {
 
 /*!
  * \defgroup group_vx_context Object: Context APIs
+ * \ingroup group_vx_framework
+ */
+
+/*!
+ * \defgroup group_vx_graph Object: Graph APIs
  * \ingroup group_vx_framework
  */
 

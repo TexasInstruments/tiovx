@@ -27,6 +27,9 @@ extern "C" {
  */
 typedef enum _tivx_obj_desc_type_e {
 
+    /*! \brief Object desciptor that information related to image object */
+    TIVX_OBJ_DESC_IMAGE,
+
     /*! \brief Object desciptor that information related to scalar object */
     TIVX_OBJ_DESC_SCALAR,
 

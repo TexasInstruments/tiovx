@@ -157,6 +157,13 @@ vx_status ownReferenceLock(vx_reference ref);
  */
 vx_status ownReferenceUnlock(vx_reference ref);
 
+/*! \brief Increments the ref count.
+ * \param [in] ref The reference.
+ * \param [in] reftype see \ref vx_reftype_e
+ * \ingroup group_vx_reference
+ */
+vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
+
 #ifdef __cplusplus
 }
 #endif

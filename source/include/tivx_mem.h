@@ -123,6 +123,30 @@ void tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum m
  */
 void tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype);
 
+/*!
+ * \brief Convert Host pointer to shared pointer
+ *
+ * \param [in] host_ptr Host memory pointer
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ *
+ * \return Converted shared memory pointer
+ *
+ * \ingroup group_tivx_mem
+ */
+void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type);
+
+/*!
+ * \brief Convert Shared memory pointer to host pointer
+ *
+ * \param [in] shared_ptr Shared memory pointer
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ *
+ * \return Converted shared memory pointer
+ *
+ * \ingroup group_tivx_mem
+ */
+void* tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type);
+
 
 #ifdef __cplusplus
 }

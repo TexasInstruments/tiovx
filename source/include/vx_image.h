@@ -64,6 +64,51 @@ extern "C" {
 #define TIVX_IMAGE_MAX_SUBIMAGES     (16u)
 
 /*!
+ * \brief Max possible mapping via vxMapImagePatch supported
+ *
+ * \ingroup group_vx_image
+ */
+#define TIVX_IMAGE_MAX_MAPS     (16u)
+
+/*!
+ * \brief Method by which image is created
+ *
+ * \ingroup group_vx_image
+ */
+typedef enum _tivx_image_create_type_e
+{
+    /*! \brief Create using vxCreateImage() */
+    TIVX_IMAGE_NORMAL,
+    /*! \brief Create using vxCreateUniformImage() */
+    TIVX_IMAGE_UNIFORM,
+    /*! \brief Create using vxCreateVirtualImage() */
+    TIVX_IMAGE_VIRTUAL,
+    /*! \brief Create using vxCreateImageFromHandle() */
+    TIVX_IMAGE_FROM_HANDLE,
+    /*! \brief Create using vxCreateImageFromROI() */
+    TIVX_IMAGE_FROM_ROI,
+    /*! \brief Create using vxCreateImageFromChannel() */
+    TIVX_IMAGE_FROM_CHANNEL
+
+} tivx_image_create_type_e;
+
+
+/*!
+ * \brief Information about a image mapping
+ *
+ * \ingroup group_vx_image
+ */
+typedef struct _tivx_image_map_info_t
+{
+    /*! \brief Address mapped via vxMapImagePatch() */
+    uint8_t *map_addr;
+    /*! \brief Size of memory region mapped via vxMapImagePatch() */
+    vx_size  map_size;
+    /*! \brief Type of access being done by user, see \ref vx_accessor_e */
+    vx_enum usage;
+} tivx_image_map_info_t;
+
+/*!
  * \brief Image object descriptor as placed in shared memory
  *
  * \ingroup group_vx_image
@@ -79,7 +124,7 @@ typedef struct _tivx_obj_desc_image
     /*! \brief Data format of image, see \ref vx_df_image */
     uint32_t format;
     /*! \brief Number of data planes in image */
-    uint32_t num_planes;
+    uint32_t planes;
     /*! \brief Color space of the image, see \ref vx_color_space_e */
     uint32_t color_space;
     /*! \brief Color range of the image channel, see \ref vx_channel_range_e */
@@ -97,15 +142,14 @@ typedef struct _tivx_obj_desc_image
      * bit0..31 - U32, S32.
      */
     uint32_t uniform_image_pixel_value;
-    /*! \brief bitmask made using TIVX_IMAGE_VIRTUAL,
-     *    TIVX_IMAGE_UNIFORM, TIVX_IMAGE_FROM_HANDLE */
-    uint32_t flags;
+    /*! \brief method by which image was created, see \ref tivx_image_create_type_e */
+    uint32_t create_type;
     /*! \brief image plane buffer addresses */
     tivx_shared_mem_ptr_t mem_ptr[TIVX_IMAGE_MAX_PLANES];
-    /*! \brief offset from mem_ptr to reach valid first pixel */
-    uint32_t mem_offset[TIVX_IMAGE_MAX_PLANES];
     /*! \brief image plane addressing parameters */
     vx_imagepatch_addressing_t imagepatch_addr[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief valid region of image to use for processing */
+    vx_rectangle_t valid_roi;
 } tivx_obj_desc_image_t;
 
 /*!
@@ -121,11 +165,14 @@ typedef struct _vx_image
     tivx_obj_desc_image_t *obj_desc;
     /*! \brief A pointer to a parent image object. */
     vx_image       parent;
-    /*! \brief The array of ROIs from this image */
+    /*! \brief The array of images derived form this image */
     vx_image       subimages[TIVX_IMAGE_MAX_SUBIMAGES];
-    /*! \brief valid region of image to use for processing */
-    vx_rectangle_t valid_roi;
-
+    /*! \brief Mapping done via vxMapImagePatch() */
+    tivx_image_map_info_t maps[TIVX_IMAGE_MAX_MAPS];
+    /*! \brief offset from mem_ptr to reach valid first pixel, in case image is created from ROI */
+    uint32_t mem_offset[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief channel_plane index of parent in case image is created from channel */
+    uint32_t channel_plane;
 } vx_image_t;
 
 #ifdef __cplusplus
