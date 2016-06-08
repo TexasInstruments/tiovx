@@ -164,6 +164,13 @@ vx_status ownReferenceUnlock(vx_reference ref);
  */
 vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
 
+/*! \brief Print reference information
+ * \param [in] ref The reference.
+ * \ingroup group_vx_reference
+ */
+void ownPrintReference(vx_reference ref);
+
+
 #ifdef __cplusplus
 }
 #endif

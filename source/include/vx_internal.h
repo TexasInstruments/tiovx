@@ -43,6 +43,8 @@
 #include <vx_reference.h>
 #include <vx_context.h>
 
+#include <vx_debug.h>
+
 #include <tivx_obj_desc.h>
 #include <tivx_mem.h>
 
@@ -82,6 +84,13 @@ extern "C" {
  */
 #define TIVX_DEFAULT_STRIDE_Y_ALIGN   (32U)
 
+/*! \brief Macro to find size of array
+ * \ingroup group_vx_utils
+ */
+#ifndef dimof
+#define dimof(x) (sizeof(x)/sizeof(x[0]))
+#endif
+
 #ifdef __cplusplus
 }
 #endif
@@ -110,59 +119,79 @@ extern "C" {
  */
 
 /*!
- * \defgroup group_vx_framework OpenVX Implementation
+ * \defgroup group_vx_framework OpenVX Implementation Modules
  */
 
 /*!
- * \defgroup group_vx_context Object: Context APIs
+ * \defgroup group_vx_framework_object Framework Objects
  * \ingroup group_vx_framework
  */
 
 /*!
- * \defgroup group_vx_graph Object: Graph APIs
+ * \defgroup group_vx_framework_data_object Data Objects
  * \ingroup group_vx_framework
  */
 
 /*!
- * \defgroup group_vx_node Object: Node APIs
- * \ingroup group_vx_framework
+ * \defgroup group_vx_context Context APIs
+ * \ingroup group_vx_framework_object
  */
 
 /*!
- * \defgroup group_vx_reference Object: Reference APIs
- * \ingroup group_vx_framework
+ * \defgroup group_vx_graph Graph APIs
+ * \ingroup group_vx_framework_object
  */
 
 /*!
- * \defgroup group_vx_image Object: Image APIs
- * \ingroup group_vx_framework
+ * \defgroup group_vx_node Node APIs
+ * \ingroup group_vx_framework_object
  */
 
 /*!
- * \defgroup group_vx_scalar Object: Scalar APIs
- * \ingroup group_vx_framework
+ * \defgroup group_vx_reference Reference APIs
+ * \ingroup group_vx_framework_object
  */
 
 /*!
- * \defgroup group_vx_remap Object: Remap APIs
+ * \defgroup group_vx_image Image APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_scalar Scalar APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_remap Remap APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_framework_utils Utility and Debug APIs
  * \ingroup group_vx_framework
  */
 
 /*!
  * \defgroup group_vx_utils Utility: Common Utility APIs
- * \ingroup group_vx_framework
+ * \ingroup group_vx_framework_utils
  */
 
 /*!
- * \defgroup group_vx_platform Platform Specific APIs
+ * \defgroup group_vx_debug Debug APIs
+ * \ingroup group_vx_framework_utils
  */
 
 /*!
- * \defgroup group_tivx_mem Platform: Memory APIs
+ * \defgroup group_vx_platform Platform Modules
+ */
+
+/*!
+ * \defgroup group_tivx_mem Memory APIs
  * \ingroup group_vx_platform
  */
 
 /*!
- * \defgroup group_tivx_obj_desc Platform: Object Descriptor APIs
+ * \defgroup group_tivx_obj_desc Object Descriptor APIs
  * \ingroup group_vx_platform
  */

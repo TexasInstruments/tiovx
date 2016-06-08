@@ -1,0 +1,139 @@
+/*
+ * Copyright (c) 2012-2016 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ */
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+#include <vx_internal.h>
+
+#include <stdarg.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+
+
+static vx_uint32 vx_zone_mask = 0;
+
+#undef  ZONE_BIT
+#define ZONE_BIT(zone)  (1 << zone)
+
+void vx_set_debug_zone(vx_enum zone)
+{
+    if (0 <= zone && zone < VX_ZONE_MAX) {
+        vx_zone_mask |= ZONE_BIT(zone);
+        vx_print(zone, "Enabled\n");
+    }
+}
+
+void vx_clr_debug_zone(vx_enum zone)
+{
+    if (0 <= zone && zone < VX_ZONE_MAX) {
+        vx_print(zone, "Disabled\n");
+        vx_zone_mask &= ~(ZONE_BIT(zone));
+    }
+}
+
+vx_bool vx_get_debug_zone(vx_enum zone)
+{
+    vx_bool zone_enabled;
+
+    if (0 <= zone && zone < VX_ZONE_MAX)
+    {
+        zone_enabled = ((vx_zone_mask & zone)?vx_true_e:vx_false_e);
+    }
+    else
+    {
+        zone_enabled = vx_false_e;
+    }
+    return zone_enabled;
+}
+
+#define _STR2(x) {#x, x}
+
+struct vx_string_and_enum_e {
+    vx_char name[20];
+    vx_enum value;
+};
+
+struct vx_string_and_enum_e enumnames[] = {
+    _STR2(VX_ZONE_ERROR),
+    _STR2(VX_ZONE_WARNING),
+    _STR2(VX_ZONE_API),
+    _STR2(VX_ZONE_INFO),
+    _STR2(VX_ZONE_PERF),
+    _STR2(VX_ZONE_CONTEXT),
+    _STR2(VX_ZONE_OSAL),
+    _STR2(VX_ZONE_REFERENCE),
+    _STR2(VX_ZONE_ARRAY),
+    _STR2(VX_ZONE_IMAGE),
+    _STR2(VX_ZONE_SCALAR),
+    _STR2(VX_ZONE_KERNEL),
+    _STR2(VX_ZONE_GRAPH),
+    _STR2(VX_ZONE_NODE),
+    _STR2(VX_ZONE_PARAMETER),
+    _STR2(VX_ZONE_DELAY),
+    _STR2(VX_ZONE_TARGET),
+    _STR2(VX_ZONE_LOG),
+    {"UNKNOWN", -1}, // if the zone is not found, this will be returned.
+};
+
+vx_char *find_zone_name(vx_enum zone)
+{
+    vx_uint32 i;
+    for (i = 0; i < dimof(enumnames); i++)
+    {
+        if (enumnames[i].value == zone)
+        {
+            break;
+        }
+    }
+    return enumnames[i].name;
+}
+
+
+void vx_print(vx_enum zone, char *format, ...)
+{
+    if (vx_zone_mask & ZONE_BIT(zone))
+    {
+        char string[1024];
+        va_list ap;
+        snprintf(string, sizeof(string), "%20s:%s", find_zone_name(zone), format);
+        va_start(ap, format);
+        printf(string, ap);
+        va_end(ap);
+    }
+}
+
+
+
+

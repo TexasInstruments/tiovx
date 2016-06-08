@@ -138,6 +138,65 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, void* user_ptr)
     return status;
 } /* own_host_mem_to_scalar() */
 
+void ownPrintScalar(vx_scalar scalar)
+{
+    ownPrintReference(&scalar->base);
+    switch (scalar->obj_desc->data_type)
+    {
+        case VX_TYPE_CHAR:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %c\n", scalar, scalar->obj_desc->data.chr);
+            break;
+        case VX_TYPE_INT8:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %d\n", scalar, scalar->obj_desc->data.s08);
+            break;
+        case VX_TYPE_UINT8:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %u\n", scalar, scalar->obj_desc->data.u08);
+            break;
+        case VX_TYPE_INT16:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %hd\n", scalar, scalar->obj_desc->data.s16);
+            break;
+        case VX_TYPE_UINT16:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %hu\n", scalar, scalar->obj_desc->data.u16);
+            break;
+        case VX_TYPE_INT32:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %d\n", scalar, scalar->obj_desc->data.s32);
+            break;
+        case VX_TYPE_UINT32:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %u\n", scalar, scalar->obj_desc->data.u32);
+            break;
+        case VX_TYPE_INT64:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %ld\n", scalar, scalar->obj_desc->data.s64);
+            break;
+        case VX_TYPE_UINT64:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %lu\n", scalar, scalar->obj_desc->data.u64);
+            break;
+        case VX_TYPE_FLOAT32:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %lf\n", scalar, scalar->obj_desc->data.f32);
+            break;
+        case VX_TYPE_FLOAT64:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %lf\n", scalar, scalar->obj_desc->data.f64);
+            break;
+        case VX_TYPE_DF_IMAGE:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %08x\n", scalar, scalar->obj_desc->data.fcc);
+            break;
+        case VX_TYPE_ENUM:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %d\n", scalar, scalar->obj_desc->data.enm);
+            break;
+        case VX_TYPE_SIZE:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %zu\n", scalar, scalar->obj_desc->data.size);
+            break;
+        case VX_TYPE_BOOL:
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, (scalar->obj_desc->data.boolean == vx_true_e?"TRUE":"FALSE"));
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "Case %08x is not covered!\n", scalar->obj_desc->data_type);
+            break;
+    }
+
+    return;
+} /* vxPrintScalar() */
+
+
 VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum data_type, const void* ptr)
 {
     vx_scalar scalar = NULL;

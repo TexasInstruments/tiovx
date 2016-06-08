@@ -514,6 +514,47 @@ static vx_status ownCopyAndMapCheckParams(
     return status;
 }
 
+void ownPrintImageAddressing(const vx_imagepatch_addressing_t *addr)
+{
+    if (addr)
+    {
+        VX_PRINT(VX_ZONE_IMAGE, "dim={%u,%u} stride={%d,%d} scale={%u,%u} step={%u,%u}\n",
+                addr->dim_x, addr->dim_y,
+                addr->stride_x, addr->stride_y,
+                addr->scale_x, addr->scale_y,
+                addr->step_x, addr->step_y);
+    }
+}
+
+void ownPrintImage(vx_image image)
+{
+    vx_uint32 p = 0;
+    vx_char df_image[5];
+    strncpy(df_image, (char *)&image->obj_desc->format, 4);
+    df_image[4] = '\0';
+    ownPrintReference(&image->base);
+    VX_PRINT(VX_ZONE_IMAGE,
+            "vx_image:%s %ux%u (%s), planes:%d\n",
+            df_image,
+            image->obj_desc->width,
+            image->obj_desc->height,
+            (image->obj_desc->create_type==TIVX_IMAGE_UNIFORM?"CONSTANT":"MUTABLE"),
+            image->obj_desc->planes
+        );
+    VX_PRINT(VX_ZONE_IMAGE,"\n");
+    for (p = 0; p < image->obj_desc->planes; p++)
+    {
+        VX_PRINT(VX_ZONE_IMAGE,"Plane %d: host_ptr:%p, shared_ptr:%p, mem_size:%d B\n",
+            p,
+            image->obj_desc->mem_ptr[p].host_ptr,
+            image->obj_desc->mem_ptr[p].shared_ptr,
+            image->obj_desc->mem_size[p]);
+        ownPrintImageAddressing(&image->obj_desc->imagepatch_addr[p]);
+        VX_PRINT(VX_ZONE_IMAGE,"\n");
+    }
+}
+
+
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImage(vx_context context, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
     vx_image image;
@@ -831,6 +872,154 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
 
     return image;
 }
+
+VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_uint32 width, vx_uint32 height, vx_df_image format, const vx_pixel_value_t *value)
+{
+    vx_image image = 0;
+    vx_status status;
+
+    if (value == NULL)
+    {
+        image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+    }
+    else
+    {
+        image = vxCreateImage(context, width, height, format);
+        if (vxGetStatus((vx_reference)image) == VX_SUCCESS)
+        {
+            vx_uint32 x, y, p;
+            vx_size planes = 0;
+            vx_rectangle_t rect = {0, 0, width, height};
+            vx_map_id map_id;
+            vx_imagepatch_addressing_t addr;
+            void *base;
+
+            vxQueryImage(image, VX_IMAGE_PLANES, &planes, sizeof(planes));
+
+            for (p = 0; p < planes; p++)
+            {
+                status = vxMapImagePatch(image, &rect, p, &map_id, &addr, &base, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
+                if(status==VX_SUCCESS)
+                {
+                    for (y = 0; y < addr.dim_y; y+=addr.step_y)
+                    {
+                        for (x = 0; x < addr.dim_x; x+=addr.step_x)
+                        {
+                            if (format == VX_DF_IMAGE_U8)
+                            {
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = value->U8;
+                            }
+                            else if (format == VX_DF_IMAGE_U16)
+                            {
+                                vx_uint16 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = value->U16;
+                            }
+                            else if (format == VX_DF_IMAGE_U32)
+                            {
+                                vx_uint32 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = value->U32;
+                            }
+                            else if (format == VX_DF_IMAGE_S16)
+                            {
+                                vx_int16 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = value->S16;
+                            }
+                            else if (format == VX_DF_IMAGE_S32)
+                            {
+                                vx_int32 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = value->S32;
+                            }
+                            else if ((format == VX_DF_IMAGE_RGB)  ||
+                                     (format == VX_DF_IMAGE_RGBX))
+                            {
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                ptr[0] = value->RGBX[0];
+                                ptr[1] = value->RGBX[1];
+                                ptr[2] = value->RGBX[2];
+                                if (format == VX_DF_IMAGE_RGBX)
+                                    ptr[3] = value->RGBX[3];
+                            }
+                            else if ((format == VX_DF_IMAGE_YUV4) ||
+                                     (format == VX_DF_IMAGE_IYUV))
+                            {
+                                vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = pixel[p];
+                            }
+                            else if ((p == 0) &&
+                                     ((format == VX_DF_IMAGE_NV12) ||
+                                      (format == VX_DF_IMAGE_NV21)))
+                            {
+                                vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                *ptr = pixel[0];
+                            }
+                            else if ((p == 1) && (format == VX_DF_IMAGE_NV12))
+                            {
+                                vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                ptr[0] = pixel[1];
+                                ptr[1] = pixel[2];
+                            }
+                            else if ((p == 1) && (format == VX_DF_IMAGE_NV21))
+                            {
+                                vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                ptr[0] = pixel[2];
+                                ptr[1] = pixel[1];
+                            }
+                            else if (format == VX_DF_IMAGE_UYVY)
+                            {
+                                vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                if (x % 2 == 0)
+                                {
+                                    ptr[0] = pixel[1];
+                                    ptr[1] = pixel[0];
+                                }
+                                else
+                                {
+                                    ptr[0] = pixel[2];
+                                    ptr[1] = pixel[0];
+                                }
+                            }
+                            else if (format == VX_DF_IMAGE_YUYV)
+                            {
+                                vx_uint8 *pixel = (vx_uint8 *)&value->YUV;
+                                vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, x, y, &addr);
+                                if (x % 2 == 0)
+                                {
+                                    ptr[0] = pixel[0];
+                                    ptr[1] = pixel[1];
+                                }
+                                else
+                                {
+                                    ptr[0] = pixel[0];
+                                    ptr[1] = pixel[2];
+                                }
+                            }
+                        }
+                    }
+                    vxUnmapImagePatch(image, map_id);
+                }
+                else
+                {
+                    vxReleaseImage(&image);
+                    image = (vx_image)ownGetErrorObject(context, VX_FAILURE);
+                    break;
+                }
+            }
+            if (vxGetStatus((vx_reference)image) == VX_SUCCESS)
+            {
+                /* lock the image from being modified again! */
+                image->obj_desc->create_type = TIVX_IMAGE_UNIFORM;
+            }
+        }
+    }
+    return image;
+}
+
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
 {

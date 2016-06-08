@@ -141,7 +141,7 @@ void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type);
  * \param [in] shared_ptr Shared memory pointer
  * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
  *
- * \return Converted shared memory pointer
+ * \return Converted host memory pointer
  *
  * \ingroup group_tivx_mem
  */
