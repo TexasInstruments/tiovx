@@ -91,12 +91,12 @@ typedef struct _tivx_obj_desc_remap
 typedef struct _vx_remap
 {
     /*! \brief reference object */
-    vx_reference_t base;
+    tivx_reference_t base;
 
     /*! \brief object descriptor */
     tivx_obj_desc_remap_t *obj_desc;
 
-} vx_remap_t;
+} tivx_remap_t;
 
 #ifdef __cplusplus
 }

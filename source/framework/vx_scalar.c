@@ -37,7 +37,7 @@
 
 #include <vx_internal.h>
 
-static void ownDestructScalar(vx_reference ref)
+static vx_status ownDestructScalar(vx_reference ref)
 {
     vx_scalar scalar = (vx_scalar)ref;
 
@@ -48,6 +48,7 @@ static void ownDestructScalar(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&scalar->obj_desc);
         }
     }
+    return VX_SUCCESS;
 }
 
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
@@ -203,7 +204,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
 
     if (ownIsValidContext(context) == vx_true_e)
     {
-        if (!VX_TYPE_IS_SCALAR(data_type))
+        if (!TIVX_TYPE_IS_SCALAR(data_type))
         {
             vxAddLogEntry(&context->base, VX_ERROR_INVALID_TYPE, "Invalid type to scalar\n");
             scalar = (vx_scalar)ownGetErrorObject(context, VX_ERROR_INVALID_TYPE);
@@ -215,6 +216,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
             {
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = ownDestructScalar;
+                scalar->base.release_callback = (tivx_reference_release_callback_f)vxReleaseScalar;
 
                 scalar->obj_desc = (tivx_obj_desc_scalar_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_SCALAR);
                 if(scalar->obj_desc==NULL)
@@ -243,7 +245,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseScalar(vx_scalar *s)
 VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attribute, void* ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
-    vx_scalar_t* pscalar = (vx_scalar_t*)scalar;
+    vx_scalar pscalar = (vx_scalar)scalar;
 
     if (ownIsValidSpecificReference(&pscalar->base,VX_TYPE_SCALAR) == vx_false_e)
     {

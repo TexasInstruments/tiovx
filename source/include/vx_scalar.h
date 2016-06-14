@@ -48,11 +48,6 @@ extern "C" {
  * \brief Implementation of Scalar object
  */
 
-/*! \brief Used to determine if a type is a scalar.
- * \ingroup group_vx_scalar
- */
-#define VX_TYPE_IS_SCALAR(type) (VX_TYPE_INVALID < (type) && (type) < VX_TYPE_SCALAR_MAX)
-
 /*!
  * \brief Scalar object descriptor as placed in shared memory
  *
@@ -116,12 +111,12 @@ typedef struct _tivx_obj_desc_scalar
 typedef struct _vx_scalar
 {
     /*! \brief reference object */
-    vx_reference_t base;
+    tivx_reference_t base;
 
     /*! \brief object descriptor */
     tivx_obj_desc_scalar_t *obj_desc;
 
-} vx_scalar_t;
+} tivx_scalar_t;
 
 
 /*!

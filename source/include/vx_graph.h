@@ -55,10 +55,10 @@ extern "C" {
 typedef struct _vx_graph {
 
     /*! \brief The base reference object */
-    vx_reference_t      base;
+    tivx_reference_t      base;
 
 
-} vx_graph_t;
+} tivx_graph_t;
 
 
 

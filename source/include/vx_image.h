@@ -160,7 +160,7 @@ typedef struct _tivx_obj_desc_image
 typedef struct _vx_image
 {
     /*! \brief reference object */
-    vx_reference_t base;
+    tivx_reference_t base;
     /*! \brief object descriptor */
     tivx_obj_desc_image_t *obj_desc;
     /*! \brief A pointer to a parent image object. */
@@ -173,7 +173,7 @@ typedef struct _vx_image
     uint32_t mem_offset[TIVX_IMAGE_MAX_PLANES];
     /*! \brief channel_plane index of parent in case image is created from channel */
     uint32_t channel_plane;
-} vx_image_t;
+} tivx_image_t;
 
 
 

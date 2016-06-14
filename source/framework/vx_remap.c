@@ -37,7 +37,7 @@
 
 #include <vx_internal.h>
 
-static void ownDestructRemap(vx_reference ref)
+static vx_status ownDestructRemap(vx_reference ref)
 {
     vx_remap remap = (vx_remap)ref;
 
@@ -53,6 +53,7 @@ static void ownDestructRemap(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&remap->obj_desc);
         }
     }
+    return VX_SUCCESS;
 }
 
 static tivx_remap_point_t *ownGetRemapPoint(tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
@@ -115,6 +116,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 /* assign refernce type specific callback's */
                 remap->base.destructor_callback = ownDestructRemap;
                 remap->base.mem_alloc_callback = ownAllocRemapBuffer;
+                remap->base.release_callback = (tivx_reference_release_callback_f)vxReleaseRemap;
 
                 remap->obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_REMAP);
                 if(remap->obj_desc==NULL)

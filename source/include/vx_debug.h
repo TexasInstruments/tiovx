@@ -45,7 +45,7 @@
 /*! \brief These are the bit flags for debugging.
  * \ingroup group_vx_debug
  */
-enum vx_debug_zone_e {
+enum tivx_debug_zone_e {
     VX_ZONE_ERROR       = 0,    /*!< Used for most errors */
     VX_ZONE_WARNING     = 1,    /*!< Used to warning developers of possible issues */
     VX_ZONE_API         = 2,    /*!< Used to trace API calls and return values */
@@ -72,58 +72,43 @@ enum vx_debug_zone_e {
     VX_ZONE_MAX         = 32
 };
 
-#define VX_PRINT(zone, message, ...) do { vx_print(zone, "[%s:%u] "message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (0)
+#define VX_PRINT(zone, message, ...) do { tivx_print(zone, "[%s:%u] "message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (0)
 
 /*! \def VX_PRINT
  * \brief The OpenVX Debugging Facility.
  * \ingroup group_vx_debug
  */
 
-/*! \brief A debugging macro for entering kernels.
- * \ingroup group_vx_debug
- */
-#define VX_KERNEL_ENTRY(params, num) { \
-    vx_uint32 p; \
-    VX_PRINT(VX_ZONE_API, "Entered Kernel! Parameters:\n"); \
-    for (p = 0; p < num; p++) { \
-        VX_PRINT(VX_ZONE_API, "\tparameter[%u]="VX_FMT_REF"\n", p, params[p]); \
-    }\
-}
-
-/*! \brief A debugging macro for leaving kernels
- * \ingroup group_vx_debug
- */
-#define VX_KERNEL_RETURN(status) VX_PRINT(VX_ZONE_API, "returning %d\n", status);
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*! \brief Internal Printing Function.
- * \param [in] zone The debug zone from \ref vx_debug_zone_e.
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
  * \param [in] format The format string to print.
  * \param [in] ... The variable list of arguments.
  * \ingroup group_vx_debug
  */
-void vx_print(vx_enum zone, char *format, ...);
+void tivx_print(vx_enum zone, char *format, ...);
 
 /*! \brief Sets a zone bit in the debug mask
- * \param [in] zone The debug zone from \ref vx_debug_zone_e.
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
  * \ingroup group_vx_debug
  */
-void vx_set_debug_zone(vx_enum zone);
+void tivx_set_debug_zone(vx_enum zone);
 
 /*! \brief Clears the zone bit in the mask.
- * \param [in] zone The debug zone from \ref vx_debug_zone_e.
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
  * \ingroup group_vx_debug
  */
-void vx_clr_debug_zone(vx_enum zone);
+void tivx_clr_debug_zone(vx_enum zone);
 
 /*! \brief Returns true or false if the zone bit is set or cleared.
- * \param [in] zone The debug zone from \ref vx_debug_zone_e.
+ * \param [in] zone The debug zone from \ref tivx_debug_zone_e.
  * \ingroup group_vx_debug
  */
-vx_bool vx_get_debug_zone(vx_enum zone);
+vx_bool tivx_get_debug_zone(vx_enum zone);
 
 #ifdef __cplusplus
 }

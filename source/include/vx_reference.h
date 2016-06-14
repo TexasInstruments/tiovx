@@ -51,31 +51,38 @@ extern "C" {
 
 
 
+
+
 /*! \brief An internal enum for notating which sort of reference type we need.
  * \ingroup group_vx_reference
  */
-typedef enum _vx_reftype_e {
+typedef enum _tivx_reftype_e {
     VX_INTERNAL = 1,
     VX_EXTERNAL = 2,
     VX_BOTH = 3,
-} vx_reftype_e;
+} tivx_reftype_e;
 
-/*! \brief Used to destroy an object in a generic way.
+/*! \brief Callback type used to register different
+ *    callbacks from object dervied from references
  * \ingroup group_vx_reference
  */
-typedef void (*vx_destructor_f)(vx_reference ref);
+typedef vx_status (*tivx_reference_callback_f)(vx_reference ref);
 
-/*! \brief Used to allocate memory for an object in a generic way.
+/*! \brief Callback type used to register release
+ *    callbacks from object dervied from references
  * \ingroup group_vx_reference
  */
-typedef vx_status (*vx_mem_alloc_f)(vx_reference ref);
+typedef vx_status (*tivx_reference_release_callback_f)(vx_reference *ref);
 
 /*! \brief The most basic type in the OpenVX system. Any type that inherits
- *  from vx_reference_t must have a vx_reference_t as its first memeber
+ *  from tivx_reference_t must have a vx_reference_t as its first memeber
  *  to allow casting to this type.
  * \ingroup group_vx_reference
  */
 typedef struct _vx_reference {
+
+    /*! \brief Magic code which confirms this is a reference */
+    uint32_t magic;
 
     /*! \brief Set to an enum value in \ref vx_type_e. */
     vx_enum type;
@@ -92,6 +99,9 @@ typedef struct _vx_reference {
      */
     vx_reference scope;
 
+    /*! \brief Reference name */
+    char name[VX_MAX_REFERENCE_NAME];
+
     /*! \brief The count of the number of users with this reference. When
      * greater than 0, this can not be freed. When zero, the value can be
      * considered inaccessible.
@@ -105,21 +115,28 @@ typedef struct _vx_reference {
 
     /*! \brief Object specific function that is called to allcoate object memory
      */
-    vx_mem_alloc_f mem_alloc_callback;
+    tivx_reference_callback_f mem_alloc_callback;
 
     /*! \brief Object specific function that is called to destroy an object
      * when refernce count reaches zero
      */
-    vx_destructor_f destructor_callback;
+    tivx_reference_callback_f destructor_callback;
 
-} vx_reference_t;
+    /*! \brief Object specific function that is called to release an object
+     */
+    tivx_reference_release_callback_f release_callback;
+
+    /*! \brief Lock to take for the reference */
+    tivx_mutex lock;
+
+} tivx_reference_t;
 
 /**
  * \brief Create a reference object
  *
  * \param [in] context The context to which this reference will belong
  * \param [in] type    The \ref vx_type_e type desired.
- * \param [in] reftype The \ref vx_reftype_e reference type desired.
+ * \param [in] reftype The \ref tivx_reftype_e reference type desired.
  * \param [in] scope   The scope to which this reference belongs.
  *
  * \ingroup group_vx_reference
@@ -129,14 +146,14 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 /*! \brief Used to destroy a reference.
  * \param [in] ref The reference to release.
  * \param [in] type The \ref vx_type_e to check against.
- * \param [in] reftype The \ref vx_reftype_e reference type
+ * \param [in] reftype The \ref tivx_reftype_e reference type
  * \param [in] destructor The function to call after the total count has reached zero
  * \ingroup group_vx_reference
  */
 vx_status ownReleaseReferenceInt(vx_reference *ref,
                         vx_enum type,
                         vx_enum reftype,
-                        vx_destructor_f destructor);
+                        tivx_reference_callback_f destructor);
 
 /*! \brief Used to validate everything but vx_context, vx_image
  * \param [in] ref The reference to validate.
@@ -159,7 +176,7 @@ vx_status ownReferenceUnlock(vx_reference ref);
 
 /*! \brief Increments the ref count.
  * \param [in] ref The reference.
- * \param [in] reftype see \ref vx_reftype_e
+ * \param [in] reftype see \ref tivx_reftype_e
  * \ingroup group_vx_reference
  */
 vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
@@ -170,6 +187,32 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
  */
 void ownPrintReference(vx_reference ref);
 
+/*! \brief This returns true if the type is within the definition of types in OpenVX.
+ * \note VX_TYPE_INVALID is not valid for determining a type.
+ * \param [in] type The \ref vx_type_e value.
+ * \ingroup group_vx_reference
+ */
+vx_bool ownIsValidType(vx_enum type);
+
+/*! \brief Returns the total reference count of the object.
+ * \param [in] ref The reference to print.
+ * \ingroup group_vx_reference
+ */
+vx_uint32 ownTotalReferenceCount(vx_reference ref);
+
+/*! \brief Alloc memory for a reference of specified type
+ * \param [in] reftype The reference type. See \ref tivx_reftype_e
+ * \return ref The reference.
+ * \ingroup group_vx_reference
+ */
+vx_reference ownReferenceAlloc(vx_enum reftype);
+
+/*! \brief Free memory for a reference
+ * \param [in] ref The reference.
+ * \return VX_SUCCESS on success
+ * \ingroup group_vx_reference
+ */
+vx_status ownReferenceFree(vx_reference ref);
 
 #ifdef __cplusplus
 }

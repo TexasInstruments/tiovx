@@ -42,41 +42,10 @@
 
 
 
-static vx_uint32 vx_zone_mask = 0;
+static vx_uint32 tivx_zone_mask = 0;
 
 #undef  ZONE_BIT
 #define ZONE_BIT(zone)  (1 << zone)
-
-void vx_set_debug_zone(vx_enum zone)
-{
-    if (0 <= zone && zone < VX_ZONE_MAX) {
-        vx_zone_mask |= ZONE_BIT(zone);
-        vx_print(zone, "Enabled\n");
-    }
-}
-
-void vx_clr_debug_zone(vx_enum zone)
-{
-    if (0 <= zone && zone < VX_ZONE_MAX) {
-        vx_print(zone, "Disabled\n");
-        vx_zone_mask &= ~(ZONE_BIT(zone));
-    }
-}
-
-vx_bool vx_get_debug_zone(vx_enum zone)
-{
-    vx_bool zone_enabled;
-
-    if (0 <= zone && zone < VX_ZONE_MAX)
-    {
-        zone_enabled = ((vx_zone_mask & zone)?vx_true_e:vx_false_e);
-    }
-    else
-    {
-        zone_enabled = vx_false_e;
-    }
-    return zone_enabled;
-}
 
 #define _STR2(x) {#x, x}
 
@@ -85,7 +54,7 @@ struct vx_string_and_enum_e {
     vx_enum value;
 };
 
-struct vx_string_and_enum_e enumnames[] = {
+static struct vx_string_and_enum_e enumnames[] = {
     _STR2(VX_ZONE_ERROR),
     _STR2(VX_ZONE_WARNING),
     _STR2(VX_ZONE_API),
@@ -107,7 +76,7 @@ struct vx_string_and_enum_e enumnames[] = {
     {"UNKNOWN", -1}, // if the zone is not found, this will be returned.
 };
 
-vx_char *find_zone_name(vx_enum zone)
+static vx_char *find_zone_name(vx_enum zone)
 {
     vx_uint32 i;
     for (i = 0; i < dimof(enumnames); i++)
@@ -120,10 +89,40 @@ vx_char *find_zone_name(vx_enum zone)
     return enumnames[i].name;
 }
 
-
-void vx_print(vx_enum zone, char *format, ...)
+void tivx_set_debug_zone(vx_enum zone)
 {
-    if (vx_zone_mask & ZONE_BIT(zone))
+    if (0 <= zone && zone < VX_ZONE_MAX) {
+        tivx_zone_mask |= ZONE_BIT(zone);
+        tivx_print(zone, "Enabled\n");
+    }
+}
+
+void tivx_clr_debug_zone(vx_enum zone)
+{
+    if (0 <= zone && zone < VX_ZONE_MAX) {
+        tivx_print(zone, "Disabled\n");
+        tivx_zone_mask &= ~(ZONE_BIT(zone));
+    }
+}
+
+vx_bool tivx_get_debug_zone(vx_enum zone)
+{
+    vx_bool zone_enabled;
+
+    if (0 <= zone && zone < VX_ZONE_MAX)
+    {
+        zone_enabled = ((tivx_zone_mask & zone)?vx_true_e:vx_false_e);
+    }
+    else
+    {
+        zone_enabled = vx_false_e;
+    }
+    return zone_enabled;
+}
+
+void tivx_print(vx_enum zone, char *format, ...)
+{
+    if (tivx_zone_mask & ZONE_BIT(zone))
     {
         char string[1024];
         va_list ap;

@@ -162,7 +162,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     ownIncrementReference(&parent->base, VX_INTERNAL);
 }
 
-static void ownDestructImage(vx_reference ref)
+static vx_status ownDestructImage(vx_reference ref)
 {
     vx_image image = (vx_image)ref;
     uint16_t plane_idx;
@@ -186,6 +186,7 @@ static void ownDestructImage(vx_reference ref)
             tivxObjDescFree((tivx_obj_desc_t**)&image->obj_desc);
         }
     }
+    return VX_SUCCESS;
 }
 
 static vx_status ownAllocImageBuffer(vx_reference ref)
@@ -395,7 +396,7 @@ static vx_status ownIsFreeSubimageAvailable(vx_image image)
     return status;
 }
 
-static vx_image_t *ownCreateImageInt(vx_context_t *context,
+static vx_image ownCreateImageInt(vx_context context,
                                      vx_uint32 width,
                                      vx_uint32 height,
                                      vx_df_image color,
@@ -415,6 +416,7 @@ static vx_image_t *ownCreateImageInt(vx_context_t *context,
                     /* assign refernce type specific callback's */
                     image->base.destructor_callback = ownDestructImage;
                     image->base.mem_alloc_callback = ownAllocImageBuffer;
+                    image->base.release_callback = (tivx_reference_release_callback_f)vxReleaseImage;
 
                     image->obj_desc = (tivx_obj_desc_image_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_IMAGE);
 
@@ -436,13 +438,13 @@ static vx_image_t *ownCreateImageInt(vx_context_t *context,
             else
             {
                 vxAddLogEntry((vx_reference)image, VX_ERROR_INVALID_DIMENSION, "Requested Image Dimensions was invalid!\n");
-                image = (vx_image_t *)ownGetErrorObject(context, VX_ERROR_INVALID_DIMENSION);
+                image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_DIMENSION);
             }
         }
         else
         {
             vxAddLogEntry((vx_reference)context, VX_ERROR_INVALID_FORMAT, "Requested Image Format was invalid!\n");
-            image = (vx_image_t *)ownGetErrorObject(context, VX_ERROR_INVALID_FORMAT);
+            image = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_FORMAT);
         }
     }
 
@@ -626,7 +628,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
 
 VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_enum channel)
 {
-    vx_image_t* subimage = NULL;
+    vx_image subimage = NULL;
     vx_status status = VX_SUCCESS;
     uint32_t width, height;
     vx_enum format;

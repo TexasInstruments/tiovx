@@ -55,10 +55,10 @@ extern "C" {
 typedef struct _vx_context {
 
     /*! \brief The base reference object */
-    vx_reference_t      base;
+    tivx_reference_t      base;
 
 
-} vx_context_t;
+} tivx_context_t;
 
 /**
  * \brief Check if 'context' is valid
@@ -78,8 +78,29 @@ vx_bool ownIsValidContext(vx_context context);
  * \param [in] context The overall context.
  * \param [in] status The status code to find.
  * \return Returns a matching error object.
+ * \ingroup group_vx_context
  */
 vx_reference ownGetErrorObject(vx_context context, vx_status status);
+
+
+/*! \brief Add reference to a context
+ * \param [in] context The overall context.
+ * \param [in] ref The reference to add.
+ * \return vx_true_e on success
+ * \return vx_false_e on failure
+ * \ingroup group_vx_context
+ */
+vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref);
+
+
+/*! \brief Remove reference from a context
+ * \param [in] context The overall context.
+ * \param [in] ref The reference to remove.
+ * \return vx_true_e on success
+ * \return vx_false_e on failure
+ * \ingroup group_vx_context
+ */
+vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref);
 
 #ifdef __cplusplus
 }
