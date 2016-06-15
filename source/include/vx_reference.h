@@ -181,6 +181,19 @@ vx_status ownReferenceUnlock(vx_reference ref);
  */
 vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype);
 
+/*! \brief Decrements the ref count.
+ * \param [in] ref The reference.
+ * \param [in] reftype see \ref tivx_reftype_e
+ * \ingroup group_vx_reference
+ */
+vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype);
+
+/*! \brief Returns the total reference count of the object.
+ * \param [in] ref The reference to print.
+ * \ingroup group_vx_reference
+ */
+vx_uint32 ownTotalReferenceCount(vx_reference ref);
+
 /*! \brief Print reference information
  * \param [in] ref The reference.
  * \ingroup group_vx_reference
@@ -194,11 +207,6 @@ void ownPrintReference(vx_reference ref);
  */
 vx_bool ownIsValidType(vx_enum type);
 
-/*! \brief Returns the total reference count of the object.
- * \param [in] ref The reference to print.
- * \ingroup group_vx_reference
- */
-vx_uint32 ownTotalReferenceCount(vx_reference ref);
 
 /*! \brief Alloc memory for a reference of specified type
  * \param [in] reftype The reference type. See \ref tivx_reftype_e
@@ -213,6 +221,19 @@ vx_reference ownReferenceAlloc(vx_enum reftype);
  * \ingroup group_vx_reference
  */
 vx_status ownReferenceFree(vx_reference ref);
+
+/**
+ * \brief Init a reference object
+ *
+ * \param [in] ref     The reference
+ * \param [in] context The context to which this reference will belong
+ * \param [in] type    The \ref vx_type_e type desired.
+ * \param [in] scope   The scope to which this reference belongs.
+ *
+ * \ingroup group_vx_reference
+ */
+vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope);
+
 
 #ifdef __cplusplus
 }

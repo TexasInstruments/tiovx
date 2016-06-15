@@ -46,17 +46,6 @@
 #include <tivx_mem.h>
 #include <tivx_obj_desc.h>
 
-#include <vx_debug.h>
-
-#include <vx_reference.h>
-#include <vx_context.h>
-
-#include <vx_graph.h>
-#include <vx_node.h>
-#include <vx_remap.h>
-#include <vx_scalar.h>
-#include <vx_image.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -65,37 +54,6 @@ extern "C" {
  * \file
  * \brief The top level TI OpenVX implementation header.
  */
-
-/*! \brief Used to determine if a type is a scalar.
- * \ingroup group_vx_utils
- */
-#define TIVX_TYPE_IS_SCALAR(type) (VX_TYPE_INVALID < (type) && (type) < VX_TYPE_SCALAR_MAX)
-
-/*! \brief Used to determine if a type is a struct.
- * \ingroup group_vx_utils
- */
-#define TIVX_TYPE_IS_STRUCT(type) ((type) >= VX_TYPE_RECTANGLE && (type) < VX_TYPE_KHRONOS_STRUCT_MAX)
-
-/*! \brief Used to determine if a type is an object.
- * \ingroup group_vx_utils
- */
-#define TIVX_TYPE_IS_OBJECT(type) ((type) >= VX_TYPE_REFERENCE && (type) < VX_TYPE_KHRONOS_OBJECT_END)
-
-/*! \brief A parameter checker for size and alignment.
- * \ingroup group_vx_utils
- */
-#define VX_CHECK_PARAM(ptr, size, type, align) (size == sizeof(type) && ((vx_size)ptr & align) == 0)
-
-/*! \brief A magic value to look for and set in references.
- * \ingroup group_vx_utils
- */
-#define TIVX_MAGIC            (0xFACEC0DE)
-
-
-/*! \brief A magic value to look for and set in references. Used to indicate a free'ed reference
- * \ingroup group_vx_utils
- */
-#define TIVX_BAD_MAGIC        (42)
 
 /*! \brief Macro to align a 'value' to 'align' units
  * \ingroup group_vx_utils
@@ -112,7 +70,43 @@ extern "C" {
  */
 #define TIVX_DEFAULT_STRIDE_Y_ALIGN   (32U)
 
+/*! \brief Used to determine if a type is a scalar.
+ * \ingroup group_vx_utils
+ */
+#define TIVX_TYPE_IS_SCALAR(type) (VX_TYPE_INVALID < (type) && (type) < VX_TYPE_SCALAR_MAX)
 
+/*! \brief Used to determine if a type is a struct.
+ * \ingroup group_vx_utils
+ */
+#define TIVX_TYPE_IS_STRUCT(type) ((type) >= VX_TYPE_RECTANGLE && (type) < VX_TYPE_KHRONOS_STRUCT_MAX)
+
+/*! \brief Used to determine if a type is an object.
+ * \ingroup group_vx_utils
+ */
+#define TIVX_TYPE_IS_OBJECT(type) ((type) >= VX_TYPE_REFERENCE && (type) < VX_TYPE_KHRONOS_OBJECT_END)
+
+/*! \brief A magic value to look for and set in references.
+ * \ingroup group_vx_utils
+ */
+#define TIVX_MAGIC            (0xFACEC0DE)
+
+
+/*! \brief A magic value to look for and set in references. Used to indicate a free'ed reference
+ * \ingroup group_vx_utils
+ */
+#define TIVX_BAD_MAGIC        (42)
+
+/*!
+ * \brief Max possible name of a target
+ *
+ * \ingroup group_vx_utils
+ */
+#define TIVX_MAX_TARGET_NAME    (16u)
+
+/*! \brief A parameter checker for size and alignment.
+ * \ingroup group_vx_utils
+ */
+#define VX_CHECK_PARAM(ptr, size, type, align) (size == sizeof(type) && ((vx_size)ptr & align) == 0)
 
 /*! \brief Macro to find size of array
  * \ingroup group_vx_utils
@@ -120,6 +114,18 @@ extern "C" {
 #ifndef dimof
 #define dimof(x) (sizeof(x)/sizeof(x[0]))
 #endif
+
+#include <vx_debug.h>
+
+#include <vx_reference.h>
+#include <vx_context.h>
+#include <vx_error.h>
+
+#include <vx_graph.h>
+#include <vx_node.h>
+#include <vx_remap.h>
+#include <vx_scalar.h>
+#include <vx_image.h>
 
 #ifdef __cplusplus
 }
@@ -209,6 +215,11 @@ extern "C" {
 
 /*!
  * \defgroup group_vx_debug Debug APIs
+ * \ingroup group_vx_framework_utils
+ */
+
+/*!
+ * \defgroup group_vx_error Error APIs
  * \ingroup group_vx_framework_utils
  */
 

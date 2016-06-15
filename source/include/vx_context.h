@@ -48,6 +48,36 @@ extern "C" {
  * \brief Implementation of Context object
  */
 
+/*!
+ * \brief Max possible references in a context
+ *
+ * \ingroup group_vx_context
+ */
+#define TIVX_CONTEXT_MAX_REFERENCES     (64u)
+
+
+/*!
+ * \brief Max possible user structs in a context
+ *
+ * \ingroup group_vx_context
+ */
+#define TIVX_CONTEXT_MAX_USER_STRUCTS   (16u)
+
+/*! \brief The largest convolution matrix the specification requires support for is 15x15.
+ * \ingroup group_vx_context
+ */
+#define TIVX_CONTEXT_MAX_CONVOLUTION_DIM (15)
+
+/*! \brief The largest optical flow pyr LK window.
+ * \ingroup group_vx_context
+ */
+#define TIVX_CONTEXT_OPTICALFLOWPYRLK_MAX_DIM (9)
+
+/*! \brief The largest nonlinear filter matrix the specification requires support for is 9x9.
+* \ingroup group_vx_context
+*/
+#define TIVX_CONTEXT_MAX_NONLINEAR_DIM (9)
+
 
 /*! \brief The top level context data for the entire OpenVX instance
  * \ingroup group_vx_context
@@ -56,6 +86,40 @@ typedef struct _vx_context {
 
     /*! \brief The base reference object */
     tivx_reference_t      base;
+
+    /*! \brief References associated with a context */
+    vx_reference        reftable[TIVX_CONTEXT_MAX_REFERENCES];
+    /*! \brief The number of references in the table. */
+    vx_uint32           num_references;
+    /*! \brief The combined number of unique kernels in the system */
+    vx_uint32           num_unique_kernels;
+    /*! \brief The number of kernel libraries loaded */
+    vx_uint32           num_modules;
+    /*! \brief The log enable toggle. */
+    vx_bool             log_enabled;
+    /*! \brief If true the log callback is reentrant and doesn't need to be locked. */
+    vx_bool             log_reentrant;
+    /*! \brief The performance counter enable toggle. */
+    vx_bool             perf_enabled;
+    /*! \brief The immediate mode border */
+    vx_border_t         imm_border;
+    /*! \brief The unsupported border mode policy for immediate mode functions */
+    vx_enum             imm_border_policy;
+    /*! \brief The next available dynamic user kernel ID */
+    vx_uint32           next_dynamic_user_kernel_id;
+    /*! \brief The next available dynamic user library ID */
+    vx_uint32           next_dynamic_user_library_id;
+    /*! \brief The immediate mode enumeration */
+    vx_enum             imm_target_enum;
+    /*! \brief The immediate mode target string */
+    vx_char             imm_target_string[TIVX_MAX_TARGET_NAME];
+    /*! \brief The list of user defined structs. */
+    struct {
+        /*! \brief Type constant */
+        vx_enum type;
+        /*! \brief Size in bytes */
+        vx_size size;
+    } user_structs[TIVX_CONTEXT_MAX_USER_STRUCTS];
 
 
 } tivx_context_t;
@@ -71,16 +135,6 @@ typedef struct _vx_context {
  * \ingroup group_vx_context
  */
 vx_bool ownIsValidContext(vx_context context);
-
-
-/*! \brief Matches the status code against all known error objects in the
- * context.
- * \param [in] context The overall context.
- * \param [in] status The status code to find.
- * \return Returns a matching error object.
- * \ingroup group_vx_context
- */
-vx_reference ownGetErrorObject(vx_context context, vx_status status);
 
 
 /*! \brief Add reference to a context

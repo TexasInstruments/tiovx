@@ -37,7 +37,35 @@
 
 #include <vx_internal.h>
 
-static vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope)
+static vx_bool ownIsValidReference(vx_reference ref)
+{
+    vx_bool ret = vx_false_e;
+    if (ref != NULL)
+    {
+        if ( (ref->magic == TIVX_MAGIC) &&
+             (ownIsValidType(ref->type) == vx_true_e) &&
+             (( (ref->type != VX_TYPE_CONTEXT) && (ownIsValidContext(ref->context) == vx_true_e) ) ||
+              ( (ref->type == VX_TYPE_CONTEXT) && (ref->context == NULL) )) )
+        {
+            ret = vx_true_e;
+        }
+        else if (ref->magic == TIVX_BAD_MAGIC)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Reference has already been released and garbage collected!\n");
+        }
+        else if (ref->type != VX_TYPE_CONTEXT)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Not a valid reference!\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Reference was NULL\n");
+    }
+    return ret;
+}
+
+vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope)
 {
     vx_status status = VX_ERROR_INVALID_REFERENCE;
 
@@ -58,7 +86,7 @@ static vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum 
 }
 
 
-static vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
+vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
 {
     vx_uint32 result = UINT32_MAX;
     if (ref)
@@ -92,34 +120,6 @@ static vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
     return result;
 }
 
-
-static vx_bool ownIsValidReference(vx_reference ref)
-{
-    vx_bool ret = vx_false_e;
-    if (ref != NULL)
-    {
-        if ( (ref->magic == TIVX_MAGIC) &&
-             (ownIsValidType(ref->type) == vx_true_e) &&
-             (( (ref->type != VX_TYPE_CONTEXT) && (ownIsValidContext(ref->context) == vx_true_e) ) ||
-              ( (ref->type == VX_TYPE_CONTEXT) && (ref->context == NULL) )) )
-        {
-            ret = vx_true_e;
-        }
-        else if (ref->magic == TIVX_BAD_MAGIC)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Reference has already been released and garbage collected!\n");
-        }
-        else if (ref->type != VX_TYPE_CONTEXT)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Not a valid reference!\n");
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "Reference was NULL\n");
-    }
-    return ret;
-}
 
 vx_uint32 ownTotalReferenceCount(vx_reference ref)
 {
@@ -404,4 +404,74 @@ VX_API_ENTRY vx_status VX_API_CALL vxRetainReference(vx_reference ref)
     }
 
     return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
+{
+    vx_status status = VX_FAILURE;
+
+    if (ref == NULL)
+    {
+        /*! \internal probably ran out of handles or memory */
+        status = VX_ERROR_NO_RESOURCES;
+    }
+    else if (ownIsValidReference(ref) == vx_true_e)
+    {
+        if (ref->type == VX_TYPE_ERROR)
+        {
+            tivx_error_t *error = (tivx_error_t *)ref;
+            status = error->status;
+        }
+        else
+        {
+            status = VX_SUCCESS;
+        }
+    }
+    else if (ownIsValidContext((vx_context)ref) == vx_true_e)
+    {
+        status = VX_SUCCESS;
+    }
+
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, const void* data, vx_size data_size)
+{
+    vx_status status = VX_SUCCESS;
+
+    /* reference param should be a valid OpenVX reference*/
+    if (ownIsValidContext((vx_context)reference) == vx_false_e && ownIsValidReference(reference) == vx_false_e)
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        switch (hint)
+        {
+            /*! \todo add hints to the sample implementation */
+
+            default:
+                status = VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
+    }
+
+    return status;
+}
+
+VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
+{
+    vx_context context = NULL;
+    if (ownIsValidReference(reference) == vx_true_e)
+    {
+        context = reference->context;
+    }
+    else if (ownIsValidContext((vx_context)reference) == vx_true_e)
+    {
+        context = (vx_context)reference;
+    }
+    else
+    {
+    }
+    return context;
 }
