@@ -36,11 +36,6 @@
 
 #include <vx_internal.h>
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-
-
 
 static vx_uint32 tivx_zone_mask = 0;
 

@@ -95,10 +95,12 @@ typedef struct _vx_context {
     vx_uint32           num_unique_kernels;
     /*! \brief The number of kernel libraries loaded */
     vx_uint32           num_modules;
+    /*! \brief Callback to call for logging messages from framework */
+    vx_log_callback_f   log_callback;
     /*! \brief The log enable toggle. */
     vx_bool             log_enabled;
-    /*! \brief If true the log callback is reentrant and doesn't need to be locked. */
-    vx_bool             log_reentrant;
+    /*! \brief Lock to use for locking log print's */
+    tivx_mutex          log_lock;
     /*! \brief The performance counter enable toggle. */
     vx_bool             perf_enabled;
     /*! \brief The immediate mode border */

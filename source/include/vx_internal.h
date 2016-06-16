@@ -40,7 +40,9 @@
 
 #include <VX/vx.h>
 
+#include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <tivx_mutex.h>
 #include <tivx_mem.h>
@@ -122,10 +124,13 @@ extern "C" {
 #include <vx_error.h>
 
 #include <vx_graph.h>
+#include <vx_kernel.h>
 #include <vx_node.h>
+#include <vx_parameter.h>
 #include <vx_remap.h>
 #include <vx_scalar.h>
 #include <vx_image.h>
+#include <vx_delay.h>
 
 #ifdef __cplusplus
 }
@@ -184,6 +189,16 @@ extern "C" {
  */
 
 /*!
+ * \defgroup group_vx_kernel Kernel APIs
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
+ * \defgroup group_vx_parameter Parameter APIs
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
  * \defgroup group_vx_reference Reference APIs
  * \ingroup group_vx_framework_object
  */
@@ -200,6 +215,11 @@ extern "C" {
 
 /*!
  * \defgroup group_vx_remap Remap APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_delay Delay APIs
  * \ingroup group_vx_framework_data_object
  */
 

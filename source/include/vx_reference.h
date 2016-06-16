@@ -129,6 +129,11 @@ typedef struct _vx_reference {
     /*! \brief Lock to take for the reference */
     tivx_mutex lock;
 
+    /* \brief This indicates if the object belongs to a delay */
+    struct _vx_delay *delay;
+    /* \brief This indicates the original delay slot index when the object belongs to a delay */
+    vx_int32 delay_slot_index;
+
 } tivx_reference_t;
 
 /**
@@ -234,6 +239,23 @@ vx_status ownReferenceFree(vx_reference ref);
  */
 vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, vx_reference scope);
 
+
+/**
+ * \brief Check if reference is valid
+ *
+ * \param [in] ref     The reference
+ *
+ * \ingroup group_vx_reference
+ */
+vx_bool ownIsValidReference(vx_reference ref);
+
+/*! \brief Used to initialize any vx_reference as a delay element
+ * \param [in] ref The pointer to the reference object.
+ * \param [in] d The delay to which the object belongs
+ * \param [in] the index in the delay
+ * \ingroup group_int_reference
+ */
+void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index);
 
 #ifdef __cplusplus
 }

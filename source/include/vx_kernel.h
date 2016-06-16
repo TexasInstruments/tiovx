@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_NODE_H_
-#define _VX_NODE_H_
+#ifndef _VX_KERNEL_H_
+#define _VX_KERNEL_H_
 
 
 #ifdef __cplusplus
@@ -45,52 +45,53 @@ extern "C" {
 
 /*!
  * \file
- * \brief Implementation of Node object
+ * \brief Implementation of Kernel object
  */
 
 
-/*! \brief The internal representation of a node.
- * \ingroup group_vx_node
+/*! \brief Max parameters in a kernel
+ * \ingroup group_vx_kernel
  */
-typedef struct _vx_node {
-    /*! \brief The internal reference object. */
-    tivx_reference_t      base;
-    /*! \brief The pointer to the kernel structure */
-    vx_kernel           kernel;
-    /*! \brief The list of references which are the values to pass to the kernels */
-    vx_reference        parameters[TIVX_KERNEL_MAX_PARAMS];
-} tivx_node_t;
+#define TIVX_KERNEL_MAX_PARAMS      (8u)
 
-/**
- * \brief Set the target for node based on immediate mode target
- *        set in context
- *
- * \param [in] node The reference to the node
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- *
- * \ingroup group_vx_node
+/*! \brief The internal representation of the attributes associated with a run-time parameter.
+ * \ingroup group_vx_kernel
  */
-vx_status ownSetNodeImmTarget(vx_node node);
+typedef struct _tivx_signature_t {
+    /*! \brief The array of directions */
+    vx_enum        directions[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief The array of types */
+    vx_enum        types[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief The array of states */
+    vx_enum        states[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief The number of items in both \ref vx_signature_t::directions and \ref vx_signature_t::types. */
+    vx_uint32      num_parameters;
+} tivx_signature_t;
 
-/**
- * \brief Set the attribute VX_NODE_VALID_RECT_RESET in node
- *
- * \param [in] node The reference to the node
- * \param [in] is_reset The value to set for the attribute
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- *
- * \ingroup group_vx_node
- */
-vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset);
 
-/*! \brief Node parameter setter, no check.
- * \ingroup group_vx_node
+/*!
+ * \brief Kernel object internal state
+ *
+ * \ingroup group_vx_kernel
  */
-void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+typedef struct _vx_kernel
+{
+    /*! \brief reference object */
+    tivx_reference_t base;
+
+    /*! \brief name of kernel */
+    vx_char        name[VX_MAX_KERNEL_NAME];
+    /*! \brief enum associated with this kernel */
+    vx_enum        enumeration;
+    /*! \brief parameter signature of this kernel */
+    tivx_signature_t signature;
+
+} tivx_kernel_t;
+
+
+
+
+
 
 #ifdef __cplusplus
 }

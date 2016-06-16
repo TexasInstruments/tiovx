@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_NODE_H_
-#define _VX_NODE_H_
+#ifndef _VX_PARAMETER_H_
+#define _VX_PARAMETER_H_
 
 
 #ifdef __cplusplus
@@ -45,52 +45,53 @@ extern "C" {
 
 /*!
  * \file
- * \brief Implementation of Node object
+ * \brief Implementation of Parameter object
  */
 
 
-/*! \brief The internal representation of a node.
- * \ingroup group_vx_node
- */
-typedef struct _vx_node {
-    /*! \brief The internal reference object. */
-    tivx_reference_t      base;
-    /*! \brief The pointer to the kernel structure */
-    vx_kernel           kernel;
-    /*! \brief The list of references which are the values to pass to the kernels */
-    vx_reference        parameters[TIVX_KERNEL_MAX_PARAMS];
-} tivx_node_t;
 
-/**
- * \brief Set the target for node based on immediate mode target
- *        set in context
+/*!
+ * \brief Parameter object internal state
  *
- * \param [in] node The reference to the node
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- *
- * \ingroup group_vx_node
+ * \ingroup group_vx_parameter
  */
-vx_status ownSetNodeImmTarget(vx_node node);
+typedef struct _vx_parameter
+{
+    /*! \brief reference object */
+    tivx_reference_t base;
 
-/**
- * \brief Set the attribute VX_NODE_VALID_RECT_RESET in node
- *
- * \param [in] node The reference to the node
- * \param [in] is_reset The value to set for the attribute
- *
- * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_SUCCESS No errors.
- *
- * \ingroup group_vx_node
- */
-vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset);
+    /*! \brief Index at which this parameter is tracked in both the node references and kernel signatures */
+    vx_uint32      index;
+    /*! \brief Pointer to the node which this parameter is associated with */
+    vx_node        node;
+    /*! \brief Pointer to the kernel which this parameter is associated with, if retreived from
+     * \ref vxGetKernelParameterByIndex.
+     */
+    vx_kernel      kernel;
 
-/*! \brief Node parameter setter, no check.
- * \ingroup group_vx_node
+} tivx_parameter_t;
+
+
+/*! \brief This returns true if the direction is a valid enum
+ * \param [in] dir The \ref vx_direction_e enum.
+ * \ingroup group_vx_parameter
  */
-void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+vx_bool ownIsValidDirection(vx_enum dir);
+
+/*! \brief This returns true if the supplied type matches the expected type with
+ * some fuzzy rules.
+ * \ingroup group_vx_parameter
+ */
+vx_bool ownIsValidTypeMatch(vx_enum expected, vx_enum supplied);
+
+/*! \brief This returns true if the supplied state is a valid enum.
+ * \ingroup group_vx_parameter
+ */
+vx_bool ownIsValidState(vx_enum state);
+
+
+
+
 
 #ifdef __cplusplus
 }

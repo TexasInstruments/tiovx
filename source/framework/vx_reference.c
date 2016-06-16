@@ -37,7 +37,7 @@
 
 #include <vx_internal.h>
 
-static vx_bool ownIsValidReference(vx_reference ref)
+vx_bool ownIsValidReference(vx_reference ref)
 {
     vx_bool ret = vx_false_e;
     if (ref != NULL)
@@ -79,6 +79,9 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->external_count = 0;
         ref->mem_alloc_callback = NULL;
         ref->destructor_callback = NULL;
+        ref->delay = NULL;
+        ref->delay_slot_index = 0;
+
         status = tivxMutexCreate(&ref->lock);
     }
 
@@ -311,6 +314,12 @@ vx_status ownReferenceUnlock(vx_reference ref)
 
     return status;
 }
+
+void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 slot_index) {
+    ref->delay=d;
+    ref->delay_slot_index=slot_index;
+}
+
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size)
 {

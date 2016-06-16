@@ -144,36 +144,47 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
         {
             context = &single_context_obj;
 
-            if (context)
+            memset(context, 0, sizeof(tivx_context_t));
+
+            context->imm_border.mode = VX_BORDER_UNDEFINED;
+            context->imm_border_policy = VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED;
+            context->next_dynamic_user_kernel_id = 0;
+            context->next_dynamic_user_library_id = 1;
+            context->perf_enabled = vx_false_e;
+            context->imm_target_enum = VX_TARGET_ANY;
+            memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
+            context->num_references = 0;
+            for(idx=0; idx<dimof(context->reftable); idx++)
             {
-                memset(context, 0, sizeof(tivx_context_t));
+                context->reftable[idx] = NULL;
+            }
+            for(idx=0; idx<dimof(context->user_structs); idx++)
+            {
+                context->user_structs[idx].type = VX_TYPE_INVALID;
+            }
+            context->num_unique_kernels = 0;
+            context->num_modules = 0;
+            context->log_enabled = vx_false_e;
 
-                context->imm_border.mode = VX_BORDER_UNDEFINED;
-                context->imm_border_policy = VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED;
-                context->next_dynamic_user_kernel_id = 0;
-                context->next_dynamic_user_library_id = 1;
-                context->perf_enabled = vx_false_e;
-                context->imm_target_enum = VX_TARGET_ANY;
-                memset(context->imm_target_string, 0, sizeof(context->imm_target_string));
-                context->num_references = 0;
-                for(idx=0; idx<dimof(context->reftable); idx++)
+            status = tivxMutexCreate(&context->log_lock);
+            if(status==VX_SUCCESS)
+            {
+                status = ownInitReference(&context->base, NULL, VX_TYPE_CONTEXT, NULL);
+                if(status==VX_SUCCESS)
                 {
-                    context->reftable[idx] = NULL;
+                    ownIncrementReference(&context->base, VX_EXTERNAL);
+                    ownCreateConstErrors(context);
+                    single_context = context;
                 }
-                for(idx=0; idx<dimof(context->user_structs); idx++)
+                else
                 {
-                    context->user_structs[idx].type = VX_TYPE_INVALID;
+                    tivxMutexDelete(&context->log_lock);
                 }
-                context->num_unique_kernels = 0;
-                context->num_modules = 0;
-                context->log_reentrant = vx_true_e;
-                context->log_enabled = vx_false_e;
-
-                ownInitReference(&context->base, NULL, VX_TYPE_CONTEXT, NULL);
-                ownIncrementReference(&context->base, VX_EXTERNAL);
-                ownCreateConstErrors(context);
-
-                single_context = context;
+            }
+            if(status!=VX_SUCCESS)
+            {
+                /* some error context cannot be created */
+                context = NULL;
             }
         }
         else
