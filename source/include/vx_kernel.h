@@ -54,6 +54,9 @@ extern "C" {
  */
 #define TIVX_KERNEL_MAX_PARAMS      (8u)
 
+/*! \brief Maximum targets a kernel can run on */
+#define TIVX_MAX_TARGETS_PER_KERNEL     (8u)
+
 /*! \brief The internal representation of the attributes associated with a run-time parameter.
  * \ingroup group_vx_kernel
  */
@@ -85,11 +88,20 @@ typedef struct _vx_kernel
     vx_enum        enumeration;
     /*! \brief parameter signature of this kernel */
     tivx_signature_t signature;
+    /*! \brief The parameters validator */
+    vx_kernel_validate_f    validate;
+    /*! \brief The initialization function */
+    vx_kernel_initialize_f initialize;
+    /*! \brief The deinitialization function */
+    vx_kernel_deinitialize_f deinitialize;
+    /*! \brief The pointer to the function to execute the kernel */
+    vx_kernel_f             function;
+    /*! \brief number of supported targets */
+    vx_uint32               num_targets;
+    /*! \brief target names, index 0 is the default or preferred target for this kernel */
+    char                    target_name[TIVX_MAX_TARGETS_PER_KERNEL][TIVX_MAX_TARGET_NAME];
 
 } tivx_kernel_t;
-
-
-
 
 
 

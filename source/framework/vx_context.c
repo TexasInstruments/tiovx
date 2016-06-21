@@ -39,6 +39,8 @@
 
 static const vx_char implementation[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
 
+static const vx_char default_module[] = "openvx-core";
+
 static const vx_char extensions[] = " ";
 
 static vx_context single_context = NULL;
@@ -126,6 +128,167 @@ static vx_bool ownIsValidBorderMode(vx_enum mode)
     return ret;
 }
 
+vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t idx;
+
+    if( ownIsValidContext(context) == vx_false_e
+       ||
+        ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_false_e
+     )
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            if(context->kerneltable[idx] && context->num_unique_kernels < dimof(context->kerneltable))
+            {
+                /* found free entry */
+                context->kerneltable[idx] = kernel;
+                context->num_unique_kernels++;
+                ownIncrementReference(&kernel->base, VX_INTERNAL);
+                break;
+            }
+        }
+        if(idx>=dimof(context->kerneltable))
+        {
+            /* free ntry not found */
+            status = VX_ERROR_NO_RESOURCES;
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return status;
+}
+
+vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t idx;
+
+    if( ownIsValidContext(context) == vx_false_e
+       ||
+        ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_false_e
+     )
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            if(context->kerneltable[idx]==kernel && context->num_unique_kernels>0)
+            {
+                /* found free entry */
+                context->kerneltable[idx] = NULL;
+                context->num_unique_kernels--;
+                ownDecrementReference(&kernel->base, VX_INTERNAL);
+                break;
+            }
+        }
+        if(idx>=dimof(context->kerneltable))
+        {
+            /* kernel not found */
+            status = VX_ERROR_INVALID_REFERENCE;
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return status;
+}
+
+vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx_char string[VX_MAX_KERNEL_NAME], vx_bool *is_found)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t idx;
+    vx_kernel kernel;
+
+    if( ownIsValidContext(context) == vx_false_e || is_found == NULL)
+    {
+        status = VX_FAILURE;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        *is_found = vx_false_e;
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            kernel = context->kerneltable[idx];
+            if( ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+                &&
+                ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0
+                    ||
+                    kernel->enumeration == enumeration
+
+                )
+                )
+            {
+                /* found match */
+                *is_found = vx_true_e;
+                break;
+            }
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return status;
+}
+
+
+/*
+ * \brief Fill 'kernel_info' with valid unique kernels info from this context
+ *
+ *        If more than 'max_kernels' found, the return with error
+ */
+static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_t *kernel_info, uint32_t max_kernels)
+{
+    vx_status status = VX_SUCCESS;
+    vx_kernel kernel;
+    uint32_t num_kernel_info = 0, idx;
+
+    if( ownIsValidContext(context) == vx_false_e)
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            kernel = context->kerneltable[idx];
+
+            if(ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
+            {
+                kernel_info[num_kernel_info].enumeration = kernel->enumeration;
+                strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME);
+                num_kernel_info++;
+            }
+            if(num_kernel_info >= max_kernels)
+            {
+                status = VX_ERROR_NO_RESOURCES;
+                break;
+            }
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return status;
+}
+
 VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
 {
     vx_context context = NULL;
@@ -162,8 +325,11 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
             {
                 context->user_structs[idx].type = VX_TYPE_INVALID;
             }
+            for(idx=0; idx<dimof(context->kerneltable); idx++)
+            {
+                context->kerneltable[idx] = NULL;
+            }
             context->num_unique_kernels = 0;
-            context->num_modules = 0;
             context->log_enabled = vx_false_e;
 
             status = tivxMutexCreate(&context->log_lock);
@@ -186,6 +352,14 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                 /* some error context cannot be created */
                 context = NULL;
             }
+
+            /* this loads default module kernels
+             * Any additional modules should be loaded by the user using
+             * vxLoadKernels()
+             * Error's are not checked here,
+             * User can check kernels that are added using vxQueryContext()
+             */
+            vxLoadKernels(context, default_module);
         }
         else
         {
@@ -310,7 +484,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case VX_CONTEXT_MODULES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = context->num_modules;
+                    *(vx_uint32 *)ptr = ownGetModuleCount();
                 }
                 else
                 {
@@ -421,7 +595,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 if ((size == (context->num_unique_kernels * sizeof(vx_kernel_info_t))) &&
                     (ptr != NULL))
                 {
-                    /* TODO */
+                    status = ownContextGetUniqueKernels( context, (vx_kernel_info_t*)ptr, context->num_unique_kernels);
                 }
                 else
                 {
@@ -540,6 +714,8 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     if ((ownIsValidContext(context) == vx_true_e) &&
         (size != 0))
     {
+        ownReferenceLock(&context->base);
+
         for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
         {
             if (context->user_structs[i].type == VX_TYPE_INVALID)
@@ -550,6 +726,8 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
                 break;
             }
         }
+
+        ownReferenceUnlock(&context->base);
     }
     return type;
 }
@@ -559,12 +737,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == vx_true_e) && pKernelEnumId)
     {
+        ownReferenceLock(&context->base);
+
         status = VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
         {
             *pKernelEnumId = VX_KERNEL_BASE(VX_ID_USER,0) + context->next_dynamic_user_kernel_id++;
             status = VX_SUCCESS;
         }
+
+        ownReferenceUnlock(&context->base);
     }
     return status;
 }
@@ -574,12 +756,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == vx_true_e) && pLibraryId)
     {
+        ownReferenceLock(&context->base);
+
         status = VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_library_id <= VX_LIBRARY(VX_LIBRARY_MASK))
         {
             *pLibraryId = context->next_dynamic_user_library_id++;
             status = VX_SUCCESS;
         }
+
+        ownReferenceUnlock(&context->base);
     }
     return status;
 }
@@ -589,6 +775,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidContext(context) == vx_true_e)
     {
+        ownReferenceLock(&context->base);
+
         switch (target_enum)
         {
             case VX_TARGET_ANY:
@@ -615,7 +803,84 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
+
+        ownReferenceUnlock(&context->base);
     }
     return status;
 }
 
+VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const vx_char string[VX_MAX_KERNEL_NAME])
+{
+    vx_kernel kernel = NULL;
+    uint32_t idx;
+
+    if( ownIsValidContext(context) == vx_false_e )
+    {
+        kernel = NULL;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            kernel = context->kerneltable[idx];
+            if( ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+                &&
+                ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
+                )
+            {
+                /* found match */
+                ownIncrementReference(&kernel->base, VX_EXTERNAL);
+                break;
+            }
+        }
+        if(idx>=dimof(context->kerneltable))
+        {
+            /* not found */
+            kernel = NULL;
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return kernel;
+}
+
+VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum kernelenum)
+{
+    vx_kernel kernel = NULL;
+    uint32_t idx;
+
+    if( ownIsValidContext(context) == vx_false_e )
+    {
+        kernel = NULL;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            kernel = context->kerneltable[idx];
+            if( ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+                &&
+                ( kernel->enumeration == kernelenum )
+                )
+            {
+                /* found match */
+                ownIncrementReference(&kernel->base, VX_EXTERNAL);
+                break;
+            }
+        }
+        if(idx>=dimof(context->kerneltable))
+        {
+            /* not found */
+            kernel = NULL;
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return kernel;
+}

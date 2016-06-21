@@ -40,6 +40,8 @@
 
 #include <VX/vx.h>
 
+#include <TI/vx_ext_ti.h>
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -131,6 +133,7 @@ extern "C" {
 #include <vx_scalar.h>
 #include <vx_image.h>
 #include <vx_delay.h>
+#include <vx_module.h>
 
 #ifdef __cplusplus
 }
@@ -157,6 +160,10 @@ extern "C" {
  *
  * \htmlinclude ti_disclaim.htm
  *
+ */
+
+/*!
+ * \defgroup group_vx_ext_ti OpenVX Extention Modules
  */
 
 /*!
@@ -200,6 +207,11 @@ extern "C" {
 
 /*!
  * \defgroup group_vx_reference Reference APIs
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
+ * \defgroup group_vx_module Module APIs
  * \ingroup group_vx_framework_object
  */
 

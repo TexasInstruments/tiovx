@@ -57,6 +57,13 @@ extern "C" {
 
 
 /*!
+ * \brief Max possible unique kernels in a context
+ *
+ * \ingroup group_vx_context
+ */
+#define TIVX_MAX_KERNELS_IN_CONTEXT     (128u)
+
+/*!
  * \brief Max possible user structs in a context
  *
  * \ingroup group_vx_context
@@ -93,8 +100,6 @@ typedef struct _vx_context {
     vx_uint32           num_references;
     /*! \brief The combined number of unique kernels in the system */
     vx_uint32           num_unique_kernels;
-    /*! \brief The number of kernel libraries loaded */
-    vx_uint32           num_modules;
     /*! \brief Callback to call for logging messages from framework */
     vx_log_callback_f   log_callback;
     /*! \brief The log enable toggle. */
@@ -122,7 +127,8 @@ typedef struct _vx_context {
         /*! \brief Size in bytes */
         vx_size size;
     } user_structs[TIVX_CONTEXT_MAX_USER_STRUCTS];
-
+    /*! Information about all kernels suported in this context */
+    vx_kernel kerneltable[TIVX_MAX_KERNELS_IN_CONTEXT];
 
 } tivx_context_t;
 
@@ -157,6 +163,29 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref);
  * \ingroup group_vx_context
  */
 vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref);
+
+/*
+ * \brief Add's unique kernel to context
+ *
+ *        Increment internal reference count of the kernel
+ * \ingroup group_vx_context
+ */
+vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel);
+
+/*
+ * \brief Remove unique kernel from context
+ *
+ *        Decrement internal reference count of the kernel
+ * \ingroup group_vx_context
+ */
+vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel);
+
+/*
+ * \brief Check if kernel exists inside the context
+ *
+ * \ingroup group_vx_context
+ */
+vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx_char string[VX_MAX_KERNEL_NAME], vx_bool *is_found);
 
 #ifdef __cplusplus
 }
