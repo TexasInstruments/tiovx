@@ -61,7 +61,7 @@ $(_MODULE)_OBJS := $(ASSEMBLY:%.asm=$(ODIR)/%.obj) $(CPPSOURCES:%.cpp=$(ODIR)/%.
 # Redefine the local static libs and shared libs with REAL paths and pre/post-fixes
 $(_MODULE)_STATIC_LIBS := $(foreach lib,$(STATIC_LIBS),$(TDIR)/$(LIB_PRE)$(lib).$(LIB_EXT))
 $(_MODULE)_SHARED_LIBS := $(foreach lib,$(SHARED_LIBS),$(TDIR)/$(LIB_PRE)$(lib).$(LIB_EXT))
-$(_MODULE)_COPT := --abi=eabi
+$(_MODULE)_COPT := --abi=eabi --gcc
 $(_MODULE)_IDIRS += $(CGT6X_ROOT)/include
 $(_MODULE)_LDIRS += $(CGT6X_ROOT)/lib
 

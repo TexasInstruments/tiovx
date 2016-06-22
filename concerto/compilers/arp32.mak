@@ -64,7 +64,7 @@ GENHEADERS := $(call PATH_CONV,$(GENHEADERS))
 # Redefine the local static libs and shared libs with REAL paths and pre/post-fixes
 $(_MODULE)_STATIC_LIBS := $(foreach lib,$(STATIC_LIBS),$(TDIR)/$(LIB_PRE)$(lib).$(LIB_EXT))
 $(_MODULE)_SHARED_LIBS := $(foreach lib,$(SHARED_LIBS),$(TDIR)/$(LIB_PRE)$(lib).$(LIB_EXT))
-$(_MODULE)_COPT := 
+$(_MODULE)_COPT := --gcc
 $(_MODULE)_IDIRS += $(ARP32CGT_ROOT)/include
 $(_MODULE)_LDIRS += $(ARP32CGT_ROOT)/lib
 
