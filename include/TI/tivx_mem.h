@@ -11,6 +11,8 @@
 #ifndef _TIVX_MEM_H_
 #define _TIVX_MEM_H_
 
+#include <VX/vx.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

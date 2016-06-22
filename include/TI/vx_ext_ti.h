@@ -11,6 +11,8 @@
 #ifndef _VX_EXT_TI_H_
 #define _VX_EXT_TI_H_
 
+#include <VX/vx.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif

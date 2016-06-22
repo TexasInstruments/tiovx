@@ -49,41 +49,6 @@ extern "C" {
  */
 
 /*!
- * \brief Remap point in remap table
- *
- * \ingroup group_vx_remap
- */
-typedef struct _tivx_remap_point {
-
-    vx_float32 src_x;
-    vx_float32 src_y;
-
-} tivx_remap_point_t;
-
-/*!
- * \brief Remap object descriptor as placed in shared memory
- *
- * \ingroup group_vx_remap
- */
-typedef struct _tivx_obj_desc_remap
-{
-    /*! \brief base object descriptor */
-    tivx_obj_desc_t base;
-    /*! \brief The source width */
-    uint32_t src_width;
-    /*! \brief The source height */
-    uint32_t src_height;
-    /*! \brief The destination width */
-    uint32_t dst_width;
-    /*! \brief The destination height */
-    uint32_t dst_height;
-    /*! \brief size of buffer pointed to by mem_ptr */
-    uint32_t mem_size;
-    /*! \brief buffer address */
-    tivx_shared_mem_ptr_t mem_ptr;
-} tivx_obj_desc_remap_t;
-
-/*!
  * \brief Remap object internal state
  *
  * \ingroup group_vx_remap

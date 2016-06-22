@@ -48,60 +48,7 @@ extern "C" {
  * \brief Implementation of Scalar object
  */
 
-/*!
- * \brief Scalar object descriptor as placed in shared memory
- *
- * \ingroup group_vx_scalar
- */
-typedef struct _tivx_obj_desc_scalar
-{
-    /*! \brief base object descriptor */
-    tivx_obj_desc_t base;
 
-    /*! \brief The value contained in the reference for a scalar type */
-    uint32_t  data_type;
-
-    /*! \brief Reserved field to make below union on 64b aligned boundary */
-    uint32_t rsv;
-
-    union {
-        /*! \brief A character */
-        vx_char   chr;
-        /*! \brief Signed 8 bit */
-        vx_int8   s08;
-        /*! \brief Unsigned 8 bit */
-        vx_uint8  u08;
-        /*! \brief Signed 16 bit */
-        vx_int16  s16;
-        /*! \brief Unsigned 16 bit */
-        vx_uint16 u16;
-        /*! \brief Signed 32 bit */
-        vx_int32  s32;
-        /*! \brief Unsigned 32 bit */
-        vx_uint32 u32;
-        /*! \brief Signed 64 bit */
-        vx_int64  s64;
-        /*! \brief Unsigned 64 bit */
-        vx_int64  u64;
-#if defined(EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT)
-        /*! \brief 16 bit float */
-        vx_float16 f16;
-#endif
-        /*! \brief 32 bit float */
-        vx_float32 f32;
-        /*! \brief 64 bit float */
-        vx_float64 f64;
-        /*! \brief 32 bit image format code */
-        vx_df_image  fcc;
-        /*! \brief Signed 32 bit*/
-        vx_enum    enm;
-        /*! \brief Architecture depth unsigned value */
-        vx_size    size;
-        /*! \brief Boolean Values */
-        vx_bool    boolean;
-    } data;
-
-} tivx_obj_desc_scalar_t;
 
 /*!
  * \brief Scalar object internal state

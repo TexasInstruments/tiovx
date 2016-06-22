@@ -1,0 +1,259 @@
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+
+#ifndef _TIVX_OBJ_DESC_H_
+#define _TIVX_OBJ_DESC_H_
+
+#include <TI/tivx_mem.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!
+ * \file
+ * \brief Interface to object descriptor
+ */
+
+/*!
+ * \brief Max possible planes of data in an image
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_IMAGE_MAX_PLANES   (3u)
+
+/*!
+ * \brief Enum that list all possible object descriptor type's
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef enum _tivx_obj_desc_type_e {
+
+    /*! \brief Object desciptor that has information related to image object */
+    TIVX_OBJ_DESC_IMAGE,
+
+    /*! \brief Object desciptor that has information related to scalar object */
+    TIVX_OBJ_DESC_SCALAR,
+
+    /*! \brief Object desciptor that has information related to remap object */
+    TIVX_OBJ_DESC_REMAP,
+
+    /*! \brief Value of a invalid object descriptor */
+    TIVX_OBJ_DESC_INVALID = 0xFFFFu
+
+} tivx_obj_desc_type_e;
+
+/*!
+ * \brief Method by which image is created
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef enum _tivx_image_create_type_e
+{
+    /*! \brief Create using vxCreateImage() */
+    TIVX_IMAGE_NORMAL,
+    /*! \brief Create using vxCreateUniformImage() */
+    TIVX_IMAGE_UNIFORM,
+    /*! \brief Create using vxCreateVirtualImage() */
+    TIVX_IMAGE_VIRTUAL,
+    /*! \brief Create using vxCreateImageFromHandle() */
+    TIVX_IMAGE_FROM_HANDLE,
+    /*! \brief Create using vxCreateImageFromROI() */
+    TIVX_IMAGE_FROM_ROI,
+    /*! \brief Create using vxCreateImageFromChannel() */
+    TIVX_IMAGE_FROM_CHANNEL
+
+} tivx_image_create_type_e;
+
+/*!
+ * \brief Remap point in remap table
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_remap_point {
+
+    vx_float32 src_x;
+    vx_float32 src_y;
+
+} tivx_remap_point_t;
+
+/*!
+ * \brief Object descriptor
+ *
+ *        Must be first element of any objects descriptors
+ *        placed in shared memory
+ *
+ *        Make sure this structure is multiple of 64b
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_t {
+
+    /*! \brief ID of object in shared memory */
+    uint16_t obj_desc_id;
+
+    /*! \brief Type of object descritor, see \ref tivx_obj_desc_type_e */
+    uint16_t type;
+
+    /*! \brief reserved field to make this structure a multiple of 64b */
+    uint16_t rsv[2];
+
+} tivx_obj_desc_t;
+
+/*!
+ * \brief Image object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_image
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief Width of image in pixels */
+    uint32_t width;
+    /*! \brief Height of image in lines */
+    uint32_t height;
+    /*! \brief Data format of image, see \ref vx_df_image */
+    uint32_t format;
+    /*! \brief Number of data planes in image */
+    uint32_t planes;
+    /*! \brief Color space of the image, see \ref vx_color_space_e */
+    uint32_t color_space;
+    /*! \brief Color range of the image channel, see \ref vx_channel_range_e */
+    uint32_t color_range;
+    /*! \brief image plane buffer size */
+    uint32_t mem_size[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief the value to use to fill for a uniform image.
+     *
+     * bit 0.. 7 - Component 0 - R or Y or U8.
+     * bit 8..15 - Component 1 - G or U.
+     * bit16..23 - Component 2 - B or V.
+     * bit24..31 - Component 3 - X.
+     *
+     * bit0..15 - U16, S16.
+     * bit0..31 - U32, S32.
+     */
+    uint32_t uniform_image_pixel_value;
+    /*! \brief method by which image was created, see \ref tivx_image_create_type_e */
+    uint32_t create_type;
+    /*! \brief image plane buffer addresses */
+    tivx_shared_mem_ptr_t mem_ptr[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief image plane addressing parameters */
+    vx_imagepatch_addressing_t imagepatch_addr[TIVX_IMAGE_MAX_PLANES];
+    /*! \brief valid region of image to use for processing */
+    vx_rectangle_t valid_roi;
+} tivx_obj_desc_image_t;
+
+
+/*!
+ * \brief Remap object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_remap
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+    uint32_t src_width;
+    /*! \brief The source height */
+    uint32_t src_height;
+    /*! \brief The destination width */
+    uint32_t dst_width;
+    /*! \brief The destination height */
+    uint32_t dst_height;
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t mem_size;
+    /*! \brief buffer address */
+    tivx_shared_mem_ptr_t mem_ptr;
+} tivx_obj_desc_remap_t;
+
+/*!
+ * \brief Scalar object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_scalar
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief The value contained in the reference for a scalar type */
+    uint32_t  data_type;
+
+    /*! \brief Reserved field to make below union on 64b aligned boundary */
+    uint32_t rsv;
+
+    union {
+        /*! \brief A character */
+        vx_char   chr;
+        /*! \brief Signed 8 bit */
+        vx_int8   s08;
+        /*! \brief Unsigned 8 bit */
+        vx_uint8  u08;
+        /*! \brief Signed 16 bit */
+        vx_int16  s16;
+        /*! \brief Unsigned 16 bit */
+        vx_uint16 u16;
+        /*! \brief Signed 32 bit */
+        vx_int32  s32;
+        /*! \brief Unsigned 32 bit */
+        vx_uint32 u32;
+        /*! \brief Signed 64 bit */
+        vx_int64  s64;
+        /*! \brief Unsigned 64 bit */
+        vx_int64  u64;
+#if defined(EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT)
+        /*! \brief 16 bit float */
+        vx_float16 f16;
+#endif
+        /*! \brief 32 bit float */
+        vx_float32 f32;
+        /*! \brief 64 bit float */
+        vx_float64 f64;
+        /*! \brief 32 bit image format code */
+        vx_df_image  fcc;
+        /*! \brief Signed 32 bit*/
+        vx_enum    enm;
+        /*! \brief Architecture depth unsigned value */
+        vx_size    size;
+        /*! \brief Boolean Values */
+        vx_bool    boolean;
+    } data;
+
+} tivx_obj_desc_scalar_t;
+
+/*!
+ * \brief Allocate a Object descriptor
+ *
+ * \param type [in] Type of object descriptor to allcoate, see \ref tivx_obj_desc_type_e
+ *
+ * \return Pointer \ref tivx_obj_desc_t on success
+ * \return NULL, if object descriptor could not be allocated
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type);
+
+/*!
+ * \brief Free a previously allocated object descriptor
+ *
+ * \param [in] obj_desc Object descriptor to free
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc);
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

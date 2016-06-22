@@ -38,17 +38,16 @@
 #ifndef _VX_INTERNAL_H_
 #define _VX_INTERNAL_H_
 
-#include <VX/vx.h>
-
-#include <TI/vx_ext_ti.h>
-
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <VX/vx.h>
+#include <TI/vx_ext_ti.h>
+#include <TI/tivx_mem.h>
+#include <TI/tivx_obj_desc.h>
+#include <TI/tivx_target_kernel.h>
 #include <tivx_mutex.h>
-#include <tivx_mem.h>
-#include <tivx_obj_desc.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -163,11 +162,31 @@ extern "C" {
  */
 
 /*!
- * \defgroup group_vx_ext_ti OpenVX Extention Modules
+ * \defgroup group_tivx_api TI Interface Modules
  */
 
 /*!
- * \defgroup group_vx_framework OpenVX Implementation Modules
+ * \defgroup group_vx_ext_ti TI OpenVX Extention APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_mem Memory APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc Object Descriptor APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_target_kernel Target Kernel APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_vx_framework TI OpenVX Implementation Modules
  */
 
 /*!
@@ -256,17 +275,7 @@ extern "C" {
  */
 
 /*!
- * \defgroup group_vx_platform Platform Modules
- */
-
-/*!
- * \defgroup group_tivx_mem Memory APIs
- * \ingroup group_vx_platform
- */
-
-/*!
- * \defgroup group_tivx_obj_desc Object Descriptor APIs
- * \ingroup group_vx_platform
+ * \defgroup group_vx_platform TI Platform Modules
  */
 
 /*!

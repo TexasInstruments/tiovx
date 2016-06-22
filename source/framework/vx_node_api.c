@@ -32,9 +32,9 @@
  * \author Erik Rainey <erik.rainey@gmail.com>
  */
 
-#include <VX/vx.h>
-#include <VX/vx_helper.h>
 #include <vx_internal.h>
+#include <VX/vx_helper.h>
+
 
 VX_API_ENTRY vx_node VX_API_CALL vxColorConvertNode(vx_graph graph, vx_image input, vx_image output)
 {
