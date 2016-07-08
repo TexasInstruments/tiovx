@@ -49,11 +49,6 @@ extern "C" {
  */
 
 
-/*! \brief Max parameters in a kernel
- * \ingroup group_vx_kernel
- */
-#define TIVX_KERNEL_MAX_PARAMS      (8u)
-
 /*! \brief Maximum targets a kernel can run on */
 #define TIVX_MAX_TARGETS_PER_KERNEL     (8u)
 
@@ -103,6 +98,25 @@ typedef struct _vx_kernel
 
 } tivx_kernel_t;
 
+
+/*!
+ * \brief Get default target ID associated with this kernel
+ *
+ * \return TIVX_TARGET_ID_INVALID if no target or invalid target associated with this kernel
+ *
+ * \ingroup group_vx_kernel
+ */
+tivx_target_id_e ownKernelGetDefaultTarget(vx_kernel kernel);
+
+/*!
+ * \brief Match user provided target with supported targets
+ *        and return target ID on which to run this kernel
+ *
+ * \return TIVX_TARGET_ID_INVALID if valid target match not found
+ *
+ * \ingroup group_vx_kernel
+ */
+tivx_target_id_e ownKernelGetTarget(vx_kernel kernel, const char *target_string);
 
 
 #ifdef __cplusplus

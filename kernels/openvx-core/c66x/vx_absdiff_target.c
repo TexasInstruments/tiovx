@@ -7,6 +7,7 @@
  *******************************************************************************
  */
 
+#include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
 
 static tivx_target_kernel vx_absdiff_target_kernel;
@@ -56,7 +57,7 @@ vx_status tivxAddTargetKernelAbsDiff()
 
     if(kernel!=NULL)
     {
-        status = tivxAddTargetKernelTarget(kernel, "DSP");
+        status = tivxAddTargetKernelTarget(kernel, TIVX_TARGET_DSP);
         if(status != VX_SUCCESS)
         {
             /* target does not match actual target's on this CPU */

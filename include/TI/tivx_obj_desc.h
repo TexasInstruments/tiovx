@@ -29,6 +29,32 @@ extern "C" {
  */
 #define TIVX_IMAGE_MAX_PLANES   (3u)
 
+/*! \brief Max parameters in a kernel
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_KERNEL_MAX_PARAMS      (8u)
+
+/*! \brief Max nodes taking output form a given node
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_KERNEL_MAX_OUT_NODES      (8u)
+
+/*! \brief Max nodes feeding input to a given node
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_KERNEL_MAX_IN_NODES      (8u)
+
+/*! \brief Flag to indicate if node is replicated
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_FLAG_IS_REPLICATED       (0x00000001u)
+
+/*! \brief Flag to indicate if node is executed
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_FLAG_IS_EXECUTED         (0x00000002u)
+
+
 /*!
  * \brief Enum that list all possible object descriptor type's
  *
@@ -44,6 +70,9 @@ typedef enum _tivx_obj_desc_type_e {
 
     /*! \brief Object desciptor that has information related to remap object */
     TIVX_OBJ_DESC_REMAP,
+
+    /*! \brief Object desciptor that has information related to node object */
+    TIVX_OBJ_DESC_NODE,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
@@ -106,6 +135,89 @@ typedef struct _tivx_obj_desc_t {
     uint16_t rsv[2];
 
 } tivx_obj_desc_t;
+
+/*!
+ * \brief Node object descriptor
+ *
+ *        Fields with name target_* are only accessed by target CPU
+ *        Fields with name host_* are only accessed by host CPU
+ *        Other fields are accessed by both target and host
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_node
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief node flags see TIVX_NODE_FLAG_xxx
+     */
+    uint32_t flags;
+
+    /*! \brief ID of kernel to execute on target */
+    uint32_t kernel_id;
+
+    /*! \brief ID of target to execute on. Set by host */
+    uint32_t target_id;
+
+    /*! \brief command to send when node completes execution
+     *
+     *         This is set by host in following conditions
+     *         - when user callback is attached and host wants intimation
+     *           of node execution complete in order to call user callback
+     *         - when this is a leaf node and host needs intimation of node
+     *           execution complete in order to check for graph execution
+     *           complete
+     */
+    uint32_t node_complete_cmd_obj_desc_id;
+
+    /*! \brief Handle to OpenVX Node reference, valid only on host side
+     */
+    uint32_t host_node_ref;
+
+    /*! \brief Handle to kernel allocated by target during node create phase */
+    uint32_t target_kernel_handle;
+
+    /*! \brief Size of Handle created by target */
+    uint32_t target_kernel_handle_size;
+
+    /*! \brief Index in target kernel table
+     *
+     *         Used for fast indexing to kernel functions during graph execute
+     *         phase.
+     *
+     *         This is filled by target side during node create phase
+     */
+    uint32_t target_kernel_index;
+
+    /*! \brief node execution status */
+    uint32_t exe_status;
+
+    /*! \brief node execution time in units of usecs */
+    uint32_t exe_time_usecs;
+
+    /*! \brief number of parameters associated with this node */
+    uint32_t num_params;
+
+    /*! \brief Number of nodes that are connected to output of this node */
+    uint32_t num_out_nodes;
+
+    /*! \brief Number of nodes that are connected to output of this node */
+    uint32_t num_in_nodes;
+
+    /*! \brief border mode */
+    vx_border_t border_mode;
+
+    /*! \brief parameter object descriptors */
+    uint16_t data_id[TIVX_KERNEL_MAX_PARAMS];
+
+    /*! \brief parameter object descriptors */
+    uint16_t out_node_id[TIVX_KERNEL_MAX_OUT_NODES];
+
+    /*! \brief parameter object descriptors */
+    uint16_t in_node_id[TIVX_KERNEL_MAX_IN_NODES];
+
+} tivx_obj_desc_node_t;
 
 /*!
  * \brief Image object descriptor as placed in shared memory

@@ -1,0 +1,778 @@
+/*
+ * Copyright (c) 2012-2016 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ */
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+
+#include <vx_internal.h>
+
+
+
+static vx_status ownDestructNode(vx_reference ref)
+{
+    vx_node node = (vx_node)ref;
+    uint32_t p;
+
+    if(node->base.type == VX_TYPE_NODE)
+    {
+        if(node->kernel!=NULL)
+        {
+            ownNodeKernelDeinit(node);
+
+            /* remove, don't delete, all references from the node itself */
+            for (p = 0; p < node->kernel->signature.num_parameters; p++)
+            {
+                vx_reference ref = node->parameters[p];
+                if (ref)
+                {
+                    /* Remove the potential delay association */
+                    if (ref->delay!=NULL) {
+                        vx_bool res = ownRemoveAssociationToDelay(ref, node, p);
+                        if (res == vx_false_e)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Internal error removing delay association\n");
+                        }
+                    }
+                    ownReleaseReferenceInt(&ref, ref->type, VX_INTERNAL, NULL);
+                    node->parameters[p] = NULL;
+                }
+            }
+
+            ownReleaseReferenceInt((vx_reference *)&node->kernel, VX_TYPE_KERNEL, VX_INTERNAL, NULL);
+        }
+        if(node->obj_desc!=NULL)
+        {
+            tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc);
+        }
+    }
+    return VX_SUCCESS;
+}
+
+static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
+{
+    tivx_obj_desc_node_t *obj_desc = node->obj_desc;
+    vx_status status = VX_SUCCESS;
+    uint32_t idx;
+
+    /* set default flags */
+    obj_desc->flags = 0;
+
+    obj_desc->kernel_id = kernel->enumeration;
+
+    obj_desc->node_complete_cmd_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+
+    obj_desc->host_node_ref = (uint32_t)node;
+
+    obj_desc->border_mode.mode = VX_BORDER_UNDEFINED;
+    memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
+
+    obj_desc->target_kernel_handle = 0;
+    obj_desc->target_kernel_handle_size = 0;
+    obj_desc->target_kernel_index = 0;
+    obj_desc->exe_status = 0;
+    obj_desc->exe_time_usecs = 0;
+    obj_desc->num_params = kernel->signature.num_parameters;
+
+    for(idx=0; idx<kernel->signature.num_parameters; idx++)
+    {
+        obj_desc->data_id[idx] = TIVX_OBJ_DESC_INVALID;
+    }
+
+    obj_desc->num_out_nodes = 0;
+    obj_desc->num_in_nodes = 0;
+
+    node->obj_desc->target_id = (uint32_t)ownKernelGetDefaultTarget(kernel);
+    if(node->obj_desc->target_id == (uint32_t)TIVX_TARGET_ID_INVALID)
+    {
+        /* invalid target or no target, associated with kernel,
+         */
+        status = VX_ERROR_INVALID_VALUE;
+    }
+
+    return status;
+}
+
+static vx_status ownRemoveNodeInt(vx_node *n)
+{
+    vx_node node = (n?*n:0);
+    vx_status status =  VX_ERROR_INVALID_REFERENCE;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
+    {
+        if (node->graph)
+        {
+            vx_status remove_status;
+
+            ownReferenceLock(&node->graph->base);
+
+            remove_status = ownGraphRemoveNode(node->graph, node);
+
+            ownReferenceUnlock(&node->graph->base);
+
+            /* If this node is within a graph, release internal reference to graph */
+            if(remove_status == VX_SUCCESS) {
+                ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
+                status = VX_SUCCESS;
+            }
+        }
+    }
+    return status;
+}
+
+vx_status ownNodeKernelInit(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(node->kernel->initialize)
+    {
+        /* user has given deinitialize function so call it */
+        status = node->kernel->initialize(node, node->parameters, node->kernel->signature.num_parameters);
+    }
+    else
+    {
+        uint16_t obj_desc_id[1];
+
+        obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+        status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
+    }
+
+    return status;
+}
+
+vx_status ownNodeKernelDeinit(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(node->kernel->deinitialize)
+    {
+        /* user has given deinitialize function so call it */
+        status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
+    }
+    else
+    {
+        uint16_t obj_desc_id[1];
+
+        obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+        status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
+    }
+
+    return status;
+}
+
+vx_status ownResetNodePerf(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        node->perf.tmp = 0;
+        node->perf.beg = 0;
+        node->perf.end = 0;
+        node->perf.sum = 0;
+        node->perf.avg = 0;
+        node->perf.min = 0xFFFFFFFFFFFFFFFFUL;
+        node->perf.num = 0;
+        node->perf.max = 0;
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+
+vx_status ownUpdateNodePerf(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        node->perf.tmp = node->obj_desc->exe_time_usecs*1000; /* convert to nano secs */
+        node->perf.sum += node->perf.tmp;
+        node->perf.num++;
+        if(node->perf.tmp < node->perf.min)
+            node->perf.min = node->perf.tmp;
+        if(node->perf.tmp > node->perf.max)
+            node->perf.min = node->perf.max;
+        node->perf.avg = node->perf.sum/node->perf.num;
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+
+vx_status ownSetNodeImmTarget(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        vx_context context = node->base.context;
+
+        status = vxSetNodeTarget(node,
+                    context->imm_target_enum,
+                    context->imm_target_string
+                );
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+
+vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset)
+{
+   vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        node->valid_rect_reset = is_reset;
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel kernel)
+{
+    vx_node node = NULL;
+
+    if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    {
+        if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
+        {
+            int32_t n;
+            uint32_t idx;
+            vx_status status;
+
+            ownReferenceLock(&graph->base);
+
+            n = ownGraphGetFreeNodeIndex(graph);
+            if(n>=0)
+            {
+                node = (vx_node)ownCreateReference(graph->base.context, VX_TYPE_NODE, VX_EXTERNAL, &graph->base);
+                if (vxGetStatus((vx_reference)node) == VX_SUCCESS && node->base.type == VX_TYPE_NODE)
+                {
+                    /* set kernel, params, graph to NULL */
+                    node->kernel = NULL;
+                    node->graph = NULL;
+
+                    ownResetNodePerf(node);
+
+                    for(idx=0; idx<kernel->signature.num_parameters; idx++)
+                    {
+                        node->parameters[idx] = NULL;
+                        node->replicated_flags[idx] = vx_false_e;
+                    }
+                    node->valid_rect_reset = vx_false_e;
+
+                    /* assign refernce type specific callback's */
+                    node->base.destructor_callback = ownDestructNode;
+                    node->base.mem_alloc_callback = NULL;
+                    node->base.release_callback = (tivx_reference_release_callback_f)vxReleaseNode;
+
+                    node->obj_desc = (tivx_obj_desc_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_NODE);
+
+                    if(node->obj_desc == NULL)
+                    {
+                        vxReleaseNode(&node);
+
+                        vxAddLogEntry(&graph->base, VX_ERROR_NO_RESOURCES, "Could not allocate node object descriptor\n");
+                        node = (vx_node)ownGetErrorObject(graph->base.context, VX_ERROR_NO_RESOURCES);
+                    }
+                    else
+                    {
+                        status = ownInitNodeObjDesc(node, kernel);
+
+                        if(status!=VX_SUCCESS)
+                        {
+                            vxReleaseNode(&node);
+
+                            /* no valid target associated with this node, return error */
+                            vxAddLogEntry(&graph->base, status, "No target associated with kernel\n");
+                            node = (vx_node)ownGetErrorObject(graph->base.context, status);
+                        }
+                        else
+                        {
+                            /* all condition successful for node creation, now set kernel, graph references */
+                            node->kernel = kernel;
+                            node->graph = graph;
+
+                            /* show that there are potentially multiple nodes using this kernel. */
+                            ownIncrementReference(&kernel->base, VX_INTERNAL);
+
+                            ownGraphAddNode(graph, node, n);
+                        }
+                    }
+                }
+            }
+            ownReferenceUnlock(&graph->base);
+        }
+        else
+        {
+            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_REFERENCE, "Kernel %p was invalid!\n", kernel);
+            node = (vx_node)ownGetErrorObject(graph->base.context, VX_ERROR_INVALID_REFERENCE);
+        }
+    }
+    else
+    {
+        vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_REFERENCE, "Graph %p is invalid!\n", graph);
+    }
+
+    return node;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseNode(vx_node *n)
+{
+    return ownReleaseReferenceInt((vx_reference *)n, VX_TYPE_NODE, VX_EXTERNAL, NULL);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, void *ptr, vx_size size)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        switch (attribute)
+        {
+            case VX_NODE_PERFORMANCE:
+                if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3))
+                {
+                    memcpy(ptr, &node->perf, size);
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_STATUS:
+                if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3))
+                {
+                    *(vx_status *)ptr = node->obj_desc->exe_status;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_LOCAL_DATA_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    *(vx_size *)ptr = 0;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_LOCAL_DATA_PTR:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    *(vx_uint32 *)ptr = (vx_uint32)NULL;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_BORDER:
+                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))
+                {
+                    memcpy((vx_border_t *)ptr, &node->obj_desc->border_mode, sizeof(vx_border_t));
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_PARAMETERS:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    vx_uint32 numParams = node->kernel->signature.num_parameters;
+
+                    memcpy((vx_uint32*)ptr, &numParams, sizeof(numParams));
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_IS_REPLICATED:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3))
+                {
+                    uint32_t is_replicated_flag = node->obj_desc->flags & TIVX_NODE_FLAG_IS_REPLICATED;
+
+                    vx_bool is_replicated;
+
+                    if (is_replicated_flag)
+                    {
+                        is_replicated = vx_true_e;
+                    }
+                    else
+                    {
+                        is_replicated = vx_false_e;
+                    }
+                    memcpy((vx_bool*)ptr, &is_replicated, sizeof(is_replicated));
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_REPLICATE_FLAGS:
+            {
+                vx_size sz = sizeof(vx_bool)*node->kernel->signature.num_parameters;
+                if (size == sz && ((vx_size)ptr & 0x3) == 0)
+                {
+                    vx_uint32 i = 0;
+                    vx_uint32 numParams = node->kernel->signature.num_parameters;
+                    for (i = 0; i < numParams; i++)
+                    {
+                        ((vx_bool*)ptr)[i] = node->replicated_flags[i];
+                    }
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+            }
+                break;
+            case VX_NODE_VALID_RECT_RESET:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3))
+                {
+                    vx_bool valid_rect_reset = node->valid_rect_reset;
+
+                    memcpy((vx_bool*)ptr, &valid_rect_reset, sizeof(valid_rect_reset));
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            default:
+                status = VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attribute, const void *ptr, vx_size size)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        if (node->graph->verified == vx_true_e)
+        {
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        else
+        {
+            switch (attribute)
+            {
+                case VX_NODE_LOCAL_DATA_SIZE:
+                    /* NOT SUPPORTED */
+                    break;
+                case VX_NODE_LOCAL_DATA_PTR:
+                    /* NOT SUPPORTED */
+                    break;
+                case VX_NODE_BORDER:
+                    if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))
+                    {
+                        memcpy(&node->obj_desc->border_mode, (vx_border_t *)ptr, sizeof(vx_border_t));
+                    }
+                    else
+                    {
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                    }
+                    break;
+                default:
+                    status = VX_ERROR_NOT_SUPPORTED;
+                    break;
+            }
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
+{
+    vx_node node = (vx_node)(n?*n:0);
+    vx_status status =  VX_ERROR_INVALID_REFERENCE;
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
+    {
+        status = ownRemoveNodeInt(n);
+        if(status == VX_SUCCESS) {
+            status = ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_EXTERNAL, NULL);
+            if(status == VX_SUCCESS) {
+                *n = NULL;
+            }
+        }
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxAssignNodeCallback(vx_node node, vx_nodecomplete_f callback)
+{
+    vx_status status = VX_ERROR_INVALID_REFERENCE;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        if ((callback) && (node->completion_callback))
+        {
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        else
+        {
+            node->completion_callback = callback;
+            status = VX_SUCCESS;
+        }
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_nodecomplete_f VX_API_CALL vxRetrieveNodeCallback(vx_node node)
+{
+    vx_nodecomplete_f cb = NULL;
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        cb = node->completion_callback;
+    }
+    return cb;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first_node, vx_bool replicate[], vx_uint32 number_of_parameters)
+{
+    vx_uint32 n;
+    vx_uint32 p;
+    vx_uint32 numParams = 0;
+    vx_size   num_of_replicas = 0;
+    vx_status status = VX_SUCCESS;
+
+    if(status == VX_SUCCESS)
+    {
+        if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) != vx_true_e)
+        {
+            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_REFERENCE, "Graph %p is invalid!\n", graph);
+            status = VX_ERROR_INVALID_REFERENCE;
+        }
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        if (ownIsValidSpecificReference(&first_node->base, VX_TYPE_NODE) != vx_true_e)
+        {
+            vxAddLogEntry((vx_reference)first_node, VX_ERROR_INVALID_REFERENCE, "Node %p is invalid!\n", first_node);
+            status = VX_ERROR_INVALID_REFERENCE;
+        }
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        if (first_node->graph != graph)
+            status = VX_FAILURE;
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        if (replicate == NULL)
+            status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        /* validate replicated params */
+        status = vxQueryNode(first_node, VX_NODE_PARAMETERS, &numParams, sizeof(numParams));
+        if (VX_SUCCESS == status)
+        {
+            if (numParams != number_of_parameters)
+                status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        for (p = 0; p < number_of_parameters; p++)
+        {
+            vx_parameter param = 0;
+            vx_reference ref = 0;
+            vx_enum type = 0;
+            vx_enum state = 0;
+            vx_enum dir = 0;
+
+            param = vxGetParameterByIndex(first_node, p);
+
+            vxQueryParameter(param, VX_PARAMETER_TYPE, &type, sizeof(vx_enum));
+            vxQueryParameter(param, VX_PARAMETER_REF, &ref, sizeof(vx_reference));
+            vxQueryParameter(param, VX_PARAMETER_STATE, &state, sizeof(vx_enum));
+            vxQueryParameter(param, VX_PARAMETER_DIRECTION, &dir, sizeof(vx_enum));
+
+            if (replicate[p] == vx_false_e && (dir == VX_OUTPUT || dir == VX_BIDIRECTIONAL))
+            {
+                status = VX_FAILURE;
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                if (replicate[p] == vx_true_e)
+                {
+                    if (ownIsValidSpecificReference(ref, type) == vx_true_e)
+                    {
+                        vx_size items = 0;
+                        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                        {
+                            vx_pyramid pyramid = (vx_pyramid)ref->scope;
+                            vxQueryPyramid(pyramid, VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
+                        }
+                        else if (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                        {
+                            vx_object_array object_array = (vx_object_array)ref->scope;
+                            vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
+                        }
+                        else
+                        {
+                            status = VX_FAILURE;
+                        }
+                        if(status == VX_SUCCESS)
+                        {
+                            if (num_of_replicas == 0)
+                                num_of_replicas = items;
+
+                            if (num_of_replicas != 0 && items != num_of_replicas)
+                                status = VX_FAILURE;
+                        }
+                    }
+                    else
+                    {
+                        status = VX_FAILURE;
+                    }
+                }
+            }
+            if(status == VX_SUCCESS)
+            {
+                vxReleaseReference(&ref);
+                vxReleaseParameter(&param);
+            }
+            if(status != VX_SUCCESS)
+                break;
+        }
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        /* set replicate flag for node */
+        first_node->obj_desc->flags |= TIVX_NODE_FLAG_IS_REPLICATED;
+
+        for (n = 0; n < number_of_parameters; n++)
+        {
+            first_node->replicated_flags[n] = replicate[n];
+        }
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_enum, const char* target_string)
+{
+    vx_status status = VX_ERROR_INVALID_REFERENCE;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        /* In TI implementation, vxSetNodeTarget() cannot be called after a graph is verified
+         *
+         * This is because during verify kernel on target side is initailized
+         * If this API call changes the target then we need to delete the
+         * kernel from previous target and create again in new target during
+         * graph verify.
+         * This is possible but complex to do, a simpler condition is
+         * to not allow this API after graph verify is called.
+         */
+        if (node->graph->verified == vx_true_e)
+        {
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        else
+        {
+            switch (target_enum)
+            {
+                case VX_TARGET_ANY:
+                    /* nothing to do, use the default target set during node create */
+                    status = VX_SUCCESS;
+                    break;
+
+                case VX_TARGET_STRING:
+                    {
+                        tivx_target_id_e target_id;
+
+                        target_id = ownKernelGetTarget(node->kernel, target_string);
+
+                        if(target_id == TIVX_TARGET_ID_INVALID)
+                        {
+                            /* use default and return error */
+                            status = VX_ERROR_NOT_SUPPORTED;
+                        }
+                        else
+                        {
+                            node->obj_desc->target_id = (uint32_t)target_id;
+                            status = VX_SUCCESS;
+                        }
+                    }
+                    break;
+
+                default:
+                    status = VX_ERROR_NOT_SUPPORTED;
+                    break;
+            }
+        }
+    }
+    return status;
+}
+
+

@@ -164,7 +164,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref);
  */
 vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref);
 
-/*
+/*!
  * \brief Add's unique kernel to context
  *
  *        Increment internal reference count of the kernel
@@ -172,7 +172,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref);
  */
 vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel);
 
-/*
+/*!
  * \brief Remove unique kernel from context
  *
  *        Decrement internal reference count of the kernel
@@ -180,12 +180,28 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel);
  */
 vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel);
 
-/*
+/*!
  * \brief Check if kernel exists inside the context
  *
  * \ingroup group_vx_context
  */
 vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx_char string[VX_MAX_KERNEL_NAME], vx_bool *is_found);
+
+
+/*!
+ * \brief Send a command to specified target with object descriptor ID's as parameters
+ *
+ *        This API waits until ACK for the command is received
+ *
+ * \param context      [in] context to use when sending the command
+ * \param target_id    [in] ID of Target to whom the command is being sent
+ * \param cmd          [in] command to send
+ * \param num_obj_desc [in] number of object descriptors to send
+ * \param obj_desc_id  [in] List of object descriptor to send
+ *
+ * \ingroup group_vx_context
+ */
+vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, uint16_t *obj_desc_id);
 
 #ifdef __cplusplus
 }

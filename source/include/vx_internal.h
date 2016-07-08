@@ -43,7 +43,7 @@
 #include <stdlib.h>
 
 #include <VX/vx.h>
-#include <TI/vx_ext_ti.h>
+#include <TI/tivx.h>
 #include <TI/tivx_mem.h>
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>
@@ -124,6 +124,7 @@ extern "C" {
 #include <vx_context.h>
 #include <vx_error.h>
 
+#include <vx_target.h>
 #include <vx_graph.h>
 #include <vx_kernel.h>
 #include <vx_node.h>
@@ -166,7 +167,7 @@ extern "C" {
  */
 
 /*!
- * \defgroup group_vx_ext_ti TI OpenVX Extention APIs
+ * \defgroup group_tivx_ext TI Extention APIs
  * \ingroup group_tivx_api
  */
 
@@ -230,6 +231,11 @@ extern "C" {
  */
 
 /*!
+ * \defgroup group_tivx_target Target APIs
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
  * \defgroup group_vx_module Module APIs
  * \ingroup group_vx_framework_object
  */
@@ -282,3 +288,4 @@ extern "C" {
  * \defgroup group_tivx_mutex Mutex APIs
  * \ingroup group_vx_platform
  */
+

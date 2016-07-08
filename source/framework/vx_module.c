@@ -46,7 +46,7 @@ uint32_t ownGetModuleCount()
     return count;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxRegisterModule(char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish)
+VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish)
 {
     uint32_t idx;
     vx_status status = VX_FAILURE;
@@ -82,7 +82,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterModule(char *name, vx_publish_kerne
     return status;
 }
 
-VX_API_ENTRY vx_status vxUnRegisterModule(char *name)
+VX_API_ENTRY vx_status tivxUnRegisterModule(char *name)
 {
     vx_status status = VX_FAILURE;
     uint32_t idx;

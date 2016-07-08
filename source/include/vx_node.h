@@ -54,11 +54,23 @@ extern "C" {
  */
 typedef struct _vx_node {
     /*! \brief The internal reference object. */
-    tivx_reference_t      base;
+    tivx_reference_t    base;
+    /*! \brief The pointer to parent graph */
+    vx_graph            graph;
     /*! \brief The pointer to the kernel structure */
     vx_kernel           kernel;
     /*! \brief The list of references which are the values to pass to the kernels */
     vx_reference        parameters[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief Node Object descriptor */
+    tivx_obj_desc_node_t  *obj_desc;
+    /*! \brief Node performance */
+    vx_perf_t perf;
+    /*! \brief parameter replicated flags */
+    vx_bool replicated_flags[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief reset valid rectangle */
+    vx_bool valid_rect_reset;
+    /*! \brief Node completeion callback */
+    vx_nodecomplete_f completion_callback;
 } tivx_node_t;
 
 /**
@@ -87,10 +99,25 @@ vx_status ownSetNodeImmTarget(vx_node node);
  */
 vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset);
 
-/*! \brief Node parameter setter, no check.
+/*! \brief Init user kernel or target kernel associated with this node
  * \ingroup group_vx_node
  */
-void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+vx_status ownNodeKernelInit(vx_node node);
+
+/*! \brief DeInit user kernel or target kernel associated with this node
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeKernelDeinit(vx_node node);
+
+/*! \brief Reset node performance statistics
+ * \ingroup group_vx_node
+ */
+vx_status ownResetNodePerf(vx_node node);
+
+/*! \brief Called by graph each time after node execution
+ * \ingroup group_vx_node
+ */
+vx_status ownUpdateNodePerf(vx_node node);
 
 #ifdef __cplusplus
 }

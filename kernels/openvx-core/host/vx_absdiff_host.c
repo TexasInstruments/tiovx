@@ -8,7 +8,7 @@
  */
 
 
-#include <TI/vx_ext_ti.h>
+#include <TI/tivx.h>
 
 static vx_kernel vx_absdiff_kernel = NULL;
 
@@ -79,7 +79,7 @@ vx_status tivxAddKernelAbsDiff(vx_context context)
         if ( status == VX_SUCCESS)
         {
             /* add supported target's */
-            vxAddKernelTarget(kernel, "DSP");
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP);
         }
 
         if ( status == VX_SUCCESS)

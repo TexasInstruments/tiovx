@@ -284,8 +284,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 }
             }
 
-            /* actual change of the node parameter */
-            ownNodeSetParameter(node, index, value);
+            if(status == VX_SUCCESS)
+            {
+                if (node->parameters[index]) {
+                    ownReleaseReferenceInt(&node->parameters[index], node->parameters[index]->type, VX_INTERNAL, NULL);
+                }
+
+                ownIncrementReference(value, VX_INTERNAL);
+                node->parameters[index] = value;
+            }
 
             /* Note that we don't need to do anything special for parameters to child graphs. */
         }

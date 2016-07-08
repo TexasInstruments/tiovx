@@ -39,7 +39,7 @@
 
 static const vx_char implementation[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
 
-static const vx_char default_module[] = "openvx-core";
+static const vx_char default_module[] = TIVX_MODULE_NAME;
 
 static const vx_char extensions[] = " ";
 

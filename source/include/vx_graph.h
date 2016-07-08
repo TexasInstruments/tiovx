@@ -57,10 +57,50 @@ typedef struct _vx_graph {
     /*! \brief The base reference object */
     tivx_reference_t      base;
 
+    /*! \brief Flag to maintain state of graph verification */
+    vx_bool verified;
+
 
 } tivx_graph_t;
 
 
+
+/*! \brief Get next free node entry in graph
+ *
+ * \param graph [in] graph object
+ *
+ * \return 0 or more value, index of node in graph
+ * \return -1, all nodes in graph are used and free node not found
+ *
+ * \ingroup group_vx_graph
+ */
+int32_t ownGraphGetFreeNodeIndex(vx_graph graph);
+
+/*! \brief Add's a node to a graph
+ *
+ *         'index' should be the one that is returned via
+ *         ownGraphGetFreeNodeIndex()
+ *
+ * \param graph [in] graph object
+ * \param node  [in] the node to add
+ * \param index [in] the index in graph at which to add the node
+ *
+ * \return VX_SUCCESS, on sucess
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
+
+/*! \brief Remove a node from a graph
+ *
+ * \param graph [in] graph object
+ * \param node  [in] the node to remove
+ *
+ * \return VX_SUCCESS, on sucess
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
 
 #ifdef __cplusplus
 }

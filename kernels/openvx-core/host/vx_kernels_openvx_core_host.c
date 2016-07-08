@@ -8,9 +8,9 @@
  */
 
 
-#include <TI/vx_ext_ti.h>
+#include <TI/tivx.h>
 
-#define TIVX_MODULE_NAME    "openvx-core"
+
 
 vx_status tivxAddKernelAbsDiff(vx_context context);
 vx_status tivxRemoveKernelAbsDiff(vx_context context);
@@ -42,10 +42,10 @@ static vx_status tivxUnPublishKernels(vx_context context)
 
 void tivxRegisterOpenVXCoreKernels()
 {
-    vxRegisterModule(TIVX_MODULE_NAME, tivxPublishKernels, tivxUnPublishKernels);
+    tivxRegisterModule(TIVX_MODULE_NAME, tivxPublishKernels, tivxUnPublishKernels);
 }
 
 void tivxUnRegisterOpenVXCoreKernels()
 {
-    vxUnRegisterModule(TIVX_MODULE_NAME);
+    tivxUnRegisterModule(TIVX_MODULE_NAME);
 }
