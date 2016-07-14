@@ -132,19 +132,11 @@ static vx_status ownRemoveNodeInt(vx_node *n)
     {
         if (node->graph)
         {
-            vx_status remove_status;
-
             ownReferenceLock(&node->graph->base);
 
-            remove_status = ownGraphRemoveNode(node->graph, node);
+            status = ownGraphRemoveNode(node->graph, node);
 
             ownReferenceUnlock(&node->graph->base);
-
-            /* If this node is within a graph, release internal reference to graph */
-            if(remove_status == VX_SUCCESS) {
-                ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
-                status = VX_SUCCESS;
-            }
         }
     }
     return status;
@@ -188,6 +180,15 @@ vx_status ownNodeKernelDeinit(vx_node node)
 
         status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
     }
+
+    return status;
+}
+
+vx_status ownNodeKernelSchedule(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    status = ownContextSendObjDesc(node->base.context, node->obj_desc->target_id, node->obj_desc->base.obj_desc_id);
 
     return status;
 }

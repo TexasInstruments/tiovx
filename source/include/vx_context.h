@@ -203,6 +203,19 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
  */
 vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, uint16_t *obj_desc_id);
 
+/*!
+ * \brief Send a object descriptor to specified target with object descriptor ID's as parameters
+ *
+ *        This API DOES NOT WAIT until ACK is received
+ *
+ * \param context      [in] context to use when sending the command
+ * \param target_id    [in] ID of Target to whom the command is being sent
+ * \param obj_desc_id  [in] object descriptor to send
+ *
+ * \ingroup group_vx_context
+ */
+vx_status ownContextSendObjDesc(vx_context context, uint32_t target_id, uint16_t obj_desc_id);
+
 #ifdef __cplusplus
 }
 #endif

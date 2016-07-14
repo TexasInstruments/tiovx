@@ -44,6 +44,7 @@ extern "C" {
  */
 #define TIVX_KERNEL_MAX_IN_NODES      (8u)
 
+
 /*! \brief Flag to indicate if node is replicated
  * \ingroup group_tivx_obj_desc
  */

@@ -66,7 +66,6 @@ typedef struct _vx_delay
  * \param [in] value The delay slot object reference.
  * \param [in] n The node reference.
  * \param [in] i The index of the parameter.
- * \param [in] d The direction of the parameter.
  *
  * \ingroup group_vx_delay
  */

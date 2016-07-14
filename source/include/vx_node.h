@@ -104,6 +104,18 @@ vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset);
  */
 vx_status ownNodeKernelInit(vx_node node);
 
+
+/*! \brief Schedule user kernel or target kernel associated with this node
+ *         for execution
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeKernelSchedule(vx_node node);
+
+/*! \brief Wait for completion event
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeKernelWaitEvent(vx_node node);
+
 /*! \brief DeInit user kernel or target kernel associated with this node
  * \ingroup group_vx_node
  */

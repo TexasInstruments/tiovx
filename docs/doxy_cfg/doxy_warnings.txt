@@ -35,13 +35,8 @@ operable program or batch file.
 or \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:824: Warning: unable to resolve reference to `VX_MAX_KERNEL_NAME' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1181: Warning: unable to resolve reference to `vxCreateMatrixFromPattern' for \ref command
-D:/ked/dev/openVX/code/tiovx/source/include/vx_delay.h:65: Warning: argument 'd' of command @param is not found in the argument list of ownAddAssociationToDelay(vx_reference value, vx_node n, vx_uint32 i)
 D:/ked/dev/openVX/code/tiovx/source/include/vx_parameter.h:68: Warning: unable to resolve reference to `vxGetKernelParameterByIndex' for \ref command
 D:/ked/dev/openVX/code/tiovx/source/include/vx_parameter.h:68: Warning: unable to resolve reference to `vxGetKernelParameterByIndex' for \ref command
-D:/ked/dev/openVX/code/tiovx/source/include/vx_kernel.h:65: Warning: unable to resolve reference to `vx_signature_t::directions' for \ref command
-D:/ked/dev/openVX/code/tiovx/source/include/vx_kernel.h:65: Warning: unable to resolve reference to `vx_signature_t::types' for \ref command
-D:/ked/dev/openVX/code/tiovx/source/include/vx_kernel.h:65: Warning: unable to resolve reference to `vx_signature_t::directions' for \ref command
-D:/ked/dev/openVX/code/tiovx/source/include/vx_kernel.h:65: Warning: unable to resolve reference to `vx_signature_t::types' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1376: Warning: unable to resolve reference to `vxMapImagePatch' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1422: Warning: unable to resolve reference to `vx_kernel_e' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1422: Warning: unable to resolve reference to `vx_kernel_e' for \ref command

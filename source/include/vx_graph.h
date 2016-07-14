@@ -49,6 +49,31 @@ extern "C" {
  */
 
 
+/*! \brief Max possible nodes in graph
+ * \ingroup group_vx_graph
+ */
+#define TIVX_GRAPH_MAX_NODES               (32u)
+
+/*! \brief Max possible head nodes in graph
+ * \ingroup group_vx_graph
+ */
+#define TIVX_GRAPH_MAX_HEAD_NODES          (8u)
+
+/*! \brief Max possible leaf nodes in graph
+ * \ingroup group_vx_graph
+ */
+#define TIVX_GRAPH_MAX_LEAF_NODES          (8u)
+
+/*! \brief Max possible parameters in graph
+ * \ingroup group_vx_graph
+ */
+#define TIVX_GRAPH_MAX_PARAMS              (8u)
+
+/*! \brief Max possible delays in graph
+ * \ingroup group_vx_graph
+ */
+#define TIVX_GRAPH_MAX_DELAYS              (8u)
+
 /*! \brief The top level data for graph object
  * \ingroup group_vx_graph
  */
@@ -60,6 +85,42 @@ typedef struct _vx_graph {
     /*! \brief Flag to maintain state of graph verification */
     vx_bool verified;
 
+    /*! \brief Nodes in a graph */
+    vx_node nodes[TIVX_GRAPH_MAX_NODES];
+
+    /* \brief Number of nodes in a graph */
+    uint32_t num_nodes;
+
+    /*! \brief Head Nodes in a graph */
+    vx_node head_nodes[TIVX_GRAPH_MAX_HEAD_NODES];
+
+    /* \brief Number of head nodes in a graph */
+    uint32_t num_head_nodes;
+
+    /*! \brief Leaf Nodes in a graph */
+    vx_node leaf_nodes[TIVX_GRAPH_MAX_HEAD_NODES];
+
+    /* \brief Number of leaf nodes in a graph */
+    uint32_t num_leaf_nodes;
+
+    /*! \brief The list of graph parameters. */
+    struct {
+        /*! \brief The reference to the node which has the parameter */
+        vx_node node;
+        /*! \brief The index to the parameter on the node. */
+        uint32_t  index;
+    } parameters[TIVX_GRAPH_MAX_PARAMS];
+    /*! \brief The number of graph parameters. */
+    uint32_t      num_params;
+
+    /*! \brief The state of the graph (vx_graph_state_e) */
+    vx_enum        state;
+
+    /*! \brief The performance logging variable. */
+    vx_perf_t      perf;
+
+    /*! \brief The array of all delays in this graph */
+    vx_delay       delays[TIVX_GRAPH_MAX_DELAYS];
 
 } tivx_graph_t;
 

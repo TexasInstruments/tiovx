@@ -62,7 +62,7 @@ typedef struct _tivx_signature_t {
     vx_enum        types[TIVX_KERNEL_MAX_PARAMS];
     /*! \brief The array of states */
     vx_enum        states[TIVX_KERNEL_MAX_PARAMS];
-    /*! \brief The number of items in both \ref vx_signature_t::directions and \ref vx_signature_t::types. */
+    /*! \brief The number of items in both \ref tivx_signature_t::directions and \ref tivx_signature_t::types. */
     vx_uint32      num_parameters;
 } tivx_signature_t;
 
