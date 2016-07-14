@@ -61,6 +61,32 @@ typedef struct
     vx_enum data_type;
 } format_arg;
 
+static void own_init_scalar_value(vx_enum type, scalar_val* val, vx_bool variant)
+{
+    switch (type)
+    {
+    case VX_TYPE_CHAR:     val->chr = variant == vx_true_e ? 1 : 2; break;
+    case VX_TYPE_INT8:     val->s08 = variant == vx_true_e ? 2 : 3; break;
+    case VX_TYPE_UINT8:    val->u08 = variant == vx_true_e ? 3 : 4; break;
+    case VX_TYPE_INT16:    val->s16 = variant == vx_true_e ? 4 : 5; break;
+    case VX_TYPE_UINT16:   val->u16 = variant == vx_true_e ? 5 : 6; break;
+    case VX_TYPE_INT32:    val->s32 = variant == vx_true_e ? 6 : 7; break;
+    case VX_TYPE_UINT32:   val->u32 = variant == vx_true_e ? 7 : 8; break;
+    case VX_TYPE_INT64:    val->s64 = variant == vx_true_e ? 8 : 9; break;
+    case VX_TYPE_UINT64:   val->u64 = variant == vx_true_e ? 9 : 10; break;
+    case VX_TYPE_FLOAT32:  val->f32 = variant == vx_true_e ? 1.5f : 9.9f; break;
+    case VX_TYPE_FLOAT64:  val->f64 = variant == vx_true_e ? 1.5 : 9.9; break;
+    case VX_TYPE_ENUM:     val->enm = variant == vx_true_e ? VX_BORDER_CONSTANT : VX_BORDER_REPLICATE; break;
+    case VX_TYPE_SIZE:     val->size = variant == vx_true_e ? 10 : 999; break;
+    case VX_TYPE_DF_IMAGE: val->fcc = variant == vx_true_e ? VX_DF_IMAGE_RGB : VX_DF_IMAGE_U8; break;
+    case VX_TYPE_BOOL:     val->boolean = variant == vx_true_e ? vx_true_e : vx_false_e; break;
+
+    default:
+        FAIL("Unsupported type: (%.4s)", &type);
+    }
+    return;
+}
+
 TEST_WITH_ARG(Scalar, testCreateScalar, format_arg,
     ARG_ENUM(VX_TYPE_CHAR),
     ARG_ENUM(VX_TYPE_INT8),
@@ -84,14 +110,7 @@ TEST_WITH_ARG(Scalar, testCreateScalar, format_arg,
     vx_enum    ref_type = arg_->data_type;
     scalar_val ref;
 
-    ref.data[0] = 0x01;
-    ref.data[1] = 0x23;
-    ref.data[2] = 0x45;
-    ref.data[3] = 0x67;
-    ref.data[4] = 0x89;
-    ref.data[5] = 0xab;
-    ref.data[6] = 0xcd;
-    ref.data[7] = 0xef;
+    own_init_scalar_value(ref_type, &ref, vx_true_e);
 
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, ref_type, &ref), VX_TYPE_SCALAR);
 
@@ -126,14 +145,7 @@ TEST_WITH_ARG(Scalar, testQueryScalar, format_arg,
     vx_enum    tst_type = 0;
     scalar_val ref;
 
-    ref.data[0] = 0x01;
-    ref.data[1] = 0x23;
-    ref.data[2] = 0x45;
-    ref.data[3] = 0x67;
-    ref.data[4] = 0x89;
-    ref.data[5] = 0xab;
-    ref.data[6] = 0xcd;
-    ref.data[7] = 0xef;
+    own_init_scalar_value(ref_type, &ref, vx_true_e);
 
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, ref_type, &ref), VX_TYPE_SCALAR);
 
@@ -172,23 +184,8 @@ TEST_WITH_ARG(Scalar, testCopyScalar, format_arg,
     scalar_val val2;
     scalar_val tst;
 
-    val1.data[0] = 0x01;
-    val1.data[1] = 0x23;
-    val1.data[2] = 0x45;
-    val1.data[3] = 0x67;
-    val1.data[4] = 0x89;
-    val1.data[5] = 0xab;
-    val1.data[6] = 0xcd;
-    val1.data[7] = 0xef;
-
-    val2.data[0] = 0xef;
-    val2.data[1] = 0xcd;
-    val2.data[2] = 0xab;
-    val2.data[3] = 0x89;
-    val2.data[4] = 0x67;
-    val2.data[5] = 0x45;
-    val2.data[6] = 0x23;
-    val2.data[7] = 0x01;
+    own_init_scalar_value(type, &val1, vx_true_e);
+    own_init_scalar_value(type, &val2, vx_false_e);
 
     ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, type, &val1), VX_TYPE_SCALAR);
 

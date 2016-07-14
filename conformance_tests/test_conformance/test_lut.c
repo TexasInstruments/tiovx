@@ -78,7 +78,7 @@ static vx_lut lut_create(vx_context context, void* data, vx_enum data_type)
     ASSERT_VX_OBJECT_(return 0, lut, VX_TYPE_LUT);
 
     vx_map_id map_id;
-    VX_CALL_(return 0, vxMapLUT(lut, &map_id, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+    VX_CALL_(return 0, vxMapLUT(lut, &map_id, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     ASSERT_(return 0, ptr);
     memcpy(ptr, data, size);
     VX_CALL_(return 0, vxUnmapLUT(lut, map_id));
@@ -498,7 +498,7 @@ TEST_WITH_ARG(LUT, test_vxCopyLUT, data_type_arg,
     /* Check */
     vx_map_id map_id;
     void* lut_data = NULL;
-    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for (i = 0; i < size; i++)
     {
         ASSERT(((vx_uint8*)lut_data)[i] == ((vx_uint8*)random_data)[i]);
@@ -530,7 +530,7 @@ TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
     /* Read and write mode, read */
     vx_map_id map_id;
     void* lut_data = NULL;
-    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
     /* Check */
     for (i = 0; i < size; i++)
     {
@@ -543,7 +543,7 @@ TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
     VX_CALL(vxUnmapLUT(lut, map_id));
     /* Check */
     lut_data = NULL;
-    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for (i = 0; i < size; i++)
     {
         ASSERT(((vx_uint8*)lut_data)[i] == ((vx_uint8*)random_data)[i]);
@@ -551,12 +551,12 @@ TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
     VX_CALL(vxUnmapLUT(lut, map_id));
 
     /* Write only mode */
-    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
     ASSERT_NO_FAILURE(lut_data_fill_identity(lut_data, data_type));
     VX_CALL(vxUnmapLUT(lut, map_id));
     /* Check */
     lut_data = NULL;
-    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+    VX_CALL(vxMapLUT(lut, &map_id, &lut_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for ( i = 0; i < size; i++)
     {
         ASSERT(((vx_uint8*)lut_data)[i] == ((vx_uint8*)identity_data)[i]);

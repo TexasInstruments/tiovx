@@ -725,11 +725,11 @@ TEST_WITH_ARG(LaplacianReconstruct, testGraphProcessing, Arg, LAPLACIAN_RECONSTR
     vx_image ref_dst = 0;
     vx_image tst_dst = 0;
     vx_pyramid ref_pyr = 0;
-    int undefined_border = 2; // 5x5 kernel border
 
     CT_Image input = NULL;
 
     vx_border_t border = arg_->border;
+    vx_border_t build_border = {VX_BORDER_REPLICATE};
 
     ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->width, arg_->height));
     ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
@@ -744,7 +744,6 @@ TEST_WITH_ARG(LaplacianReconstruct, testGraphProcessing, Arg, LAPLACIAN_RECONSTR
         {
             lowest_res_width  = (vx_uint32)ceilf(lowest_res_width * VX_SCALE_PYRAMID_HALF);
             lowest_res_height = (vx_uint32)ceilf(lowest_res_height * VX_SCALE_PYRAMID_HALF);
-            undefined_border = 2 * undefined_border;
         }
 
         ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
@@ -754,7 +753,7 @@ TEST_WITH_ARG(LaplacianReconstruct, testGraphProcessing, Arg, LAPLACIAN_RECONSTR
         ASSERT_VX_OBJECT(tst_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
 
-    own_laplacian_pyramid_reference(context, border, src, ref_pyr, ref_lowest_res);
+    own_laplacian_pyramid_reference(context, build_border, src, ref_pyr, ref_lowest_res);
     own_laplacian_reconstruct_reference(context, border, ref_pyr, ref_lowest_res, ref_dst);
     own_laplacian_reconstruct_openvx(context, border, ref_pyr, ref_lowest_res, tst_dst);
 
@@ -764,8 +763,6 @@ TEST_WITH_ARG(LaplacianReconstruct, testGraphProcessing, Arg, LAPLACIAN_RECONSTR
 
         ASSERT_NO_FAILURE(ct_ref_dst = ct_image_from_vx_image(ref_dst));
         ASSERT_NO_FAILURE(ct_tst_dst = ct_image_from_vx_image(tst_dst));
-        ASSERT_NO_FAILURE(ct_adjust_roi(ct_ref_dst, undefined_border, undefined_border, undefined_border, undefined_border));
-        ASSERT_NO_FAILURE(ct_adjust_roi(ct_tst_dst, undefined_border, undefined_border, undefined_border, undefined_border));
         EXPECT_CTIMAGE_NEAR(ct_ref_dst, ct_tst_dst, 1);
     }
 
@@ -792,11 +789,11 @@ TEST_WITH_ARG(LaplacianReconstruct, testImmediateProcessing, Arg, LAPLACIAN_RECO
     vx_image ref_dst = 0;
     vx_image tst_dst = 0;
     vx_pyramid ref_pyr = 0;
-    int undefined_border = 2; // 5x5 kernel border
 
     CT_Image input = NULL;
 
     vx_border_t border = arg_->border;
+    vx_border_t build_border = {VX_BORDER_REPLICATE};
 
     ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->width, arg_->height));
     ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
@@ -811,7 +808,6 @@ TEST_WITH_ARG(LaplacianReconstruct, testImmediateProcessing, Arg, LAPLACIAN_RECO
         {
             lowest_res_width  = (vx_uint32)ceilf(lowest_res_width * VX_SCALE_PYRAMID_HALF);
             lowest_res_height = (vx_uint32)ceilf(lowest_res_height * VX_SCALE_PYRAMID_HALF);
-            undefined_border = 2*undefined_border;
         }
 
         ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
@@ -821,7 +817,7 @@ TEST_WITH_ARG(LaplacianReconstruct, testImmediateProcessing, Arg, LAPLACIAN_RECO
         ASSERT_VX_OBJECT(tst_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
 
-    own_laplacian_pyramid_reference(context, border, src, ref_pyr, ref_lovest_res);
+    own_laplacian_pyramid_reference(context, build_border, src, ref_pyr, ref_lovest_res);
     own_laplacian_reconstruct_reference(context, border, ref_pyr, ref_lovest_res, ref_dst);
 
     VX_CALL(vxSetContextAttribute(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
@@ -833,8 +829,6 @@ TEST_WITH_ARG(LaplacianReconstruct, testImmediateProcessing, Arg, LAPLACIAN_RECO
 
         ASSERT_NO_FAILURE(ct_ref_dst = ct_image_from_vx_image(ref_dst));
         ASSERT_NO_FAILURE(ct_tst_dst = ct_image_from_vx_image(tst_dst));
-        ASSERT_NO_FAILURE(ct_adjust_roi(ct_ref_dst, undefined_border, undefined_border, undefined_border, undefined_border));
-        ASSERT_NO_FAILURE(ct_adjust_roi(ct_tst_dst, undefined_border, undefined_border, undefined_border, undefined_border));
         EXPECT_CTIMAGE_NEAR(ct_ref_dst, ct_tst_dst, 1);
     }
 

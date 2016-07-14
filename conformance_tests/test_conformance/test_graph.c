@@ -1395,7 +1395,7 @@ static void ref_replicate_op(vx_context context, vx_reference input1, vx_referen
                 vx_uint8* data = 0;
                 vx_map_id map_id;
                 ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
-                VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+                VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
                 for (i = 0; i < 256; i++)
                     data[i] = 255 - i;
                 VX_CALL(vxUnmapLUT(lut, map_id));
@@ -1451,7 +1451,7 @@ static void ref_replicate_op(vx_context context, vx_reference input1, vx_referen
                 vx_uint8* data = 0;
                 vx_map_id map_id;
                 ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
-                VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+                VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
                 for (i = 0; i < 256; i++)
                     data[i] = 255 - i - k;
                 VX_CALL(vxUnmapLUT(lut, map_id));
@@ -1539,7 +1539,7 @@ static void tst_replicate_op(vx_context context, vx_reference input1, vx_referen
             vx_bool replicate[] = { vx_true_e, vx_false_e, vx_true_e };
             vx_map_id map_id;
             ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
-            VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+            VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
             for (i = 0; i < 256; i++)
                 data[i] = 255 - i;
             VX_CALL(vxUnmapLUT(lut, map_id));
@@ -1604,7 +1604,7 @@ static void tst_replicate_op(vx_context context, vx_reference input1, vx_referen
             for (k = 0; k < levels; ++k)
             {
                 ASSERT_VX_OBJECT(lut = (vx_lut)vxGetObjectArrayItem(object_array, k), VX_TYPE_LUT);
-                VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+                VX_CALL(vxMapLUT(lut, &map_id, (void **)&data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
                 for (i = 0; i < 256; i++)
                     data[i] = 255 - i - k;
                 VX_CALL(vxUnmapLUT(lut, map_id));

@@ -519,10 +519,10 @@ TEST(SmokeTest, test_vxSetReferenceName)
 
     vx_image image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8);
     const char* image_name = "Image";
-    char actual_name[VX_MAX_REFERENCE_NAME];
+    char* actual_name = NULL;
 
     VX_CALL(vxSetReferenceName((vx_reference)image, image_name));
-    VX_CALL(vxQueryReference((vx_reference)image, VX_REF_ATTRIBUTE_NAME, actual_name, VX_MAX_REFERENCE_NAME));
+    VX_CALL(vxQueryReference((vx_reference)image, VX_REF_ATTRIBUTE_NAME, &actual_name, sizeof(actual_name)));
 
     ASSERT(0 == strcmp(image_name, actual_name));
 
@@ -539,6 +539,7 @@ TEST(SmokeTest, test_vxSetParameterByIndex)
     vx_node node = NULL;
     vx_uint32 width = 32, height = 32;
     vx_image image = NULL;
+    vx_image dy = NULL;
     vx_uint32 node_parameters = 0;
     vx_uint32 i;
 
@@ -546,6 +547,7 @@ TEST(SmokeTest, test_vxSetParameterByIndex)
     ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_id), VX_TYPE_KERNEL);
     ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dy = vxCreateImage(context, width, height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
 
     VX_CALL(vxQueryNode(node, VX_NODE_PARAMETERS, &node_parameters, sizeof(node_parameters)));
 
@@ -565,9 +567,9 @@ TEST(SmokeTest, test_vxSetParameterByIndex)
 
     // 2. check that vxSetParameterByIndex failed to set required params to NULL
     ASSERT(node_parameters == 3);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetParameterByIndex(node, 0, (vx_reference)NULL));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 1, (vx_reference)NULL));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 2, (vx_reference)NULL));
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetParameterByIndex(node, 0, (vx_reference)NULL)); // required parameter
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 1, (vx_reference)NULL)); // output images are optional
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 2, (vx_reference)dy)); // (but at least one should specified)
 
     // 3. check that vxVerifyGraph does not allow required params to be NULL
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUFFICIENT, vxVerifyGraph(graph));
@@ -575,6 +577,7 @@ TEST(SmokeTest, test_vxSetParameterByIndex)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseImage(&dy));
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph));

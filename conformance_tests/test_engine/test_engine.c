@@ -34,7 +34,7 @@
 
 #ifdef _MSC_VER
 #include <direct.h>
-#elif defined __linux__
+#elif defined __linux__ || defined __CYGWIN__
 #include <unistd.h>
 #endif
 

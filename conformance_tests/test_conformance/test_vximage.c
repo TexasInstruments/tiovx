@@ -1234,9 +1234,9 @@ TEST_WITH_ARG(Image, testUniformImage, format_arg,
     vx_pixel_value_t vals;
 
     vals.reserved[0] = 0x11;
-    vals.reserved[0] = 0x22;
-    vals.reserved[0] = 0x33;
-    vals.reserved[0] = 0x44;
+    vals.reserved[1] = 0x22;
+    vals.reserved[2] = 0x33;
+    vals.reserved[3] = 0x44;
 
     ASSERT_VX_OBJECT(image = vxCreateUniformImage(context, 640, 480, arg_->format, &vals), VX_TYPE_IMAGE);
     ASSERT_NO_FAILURE(ctimg = ct_image_from_vx_image(image));
@@ -1700,10 +1700,13 @@ TEST(Image, testQueryImage)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, VX_IMAGE_RANGE,  &range,  sizeof(range)));
     ASSERT_EQ_INT(VX_CHANNEL_RANGE_FULL, range);
-
+/* commented out untill spec clarifies VX_IMAGE_SIZE in more details:
+   - is that memory size actually allocated
+   - is that min number of bytes to store pixels
+   - is that number of bytes it would occupy in memory once allocated (with strides)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, VX_IMAGE_SIZE,  &image_size,  sizeof(image_size)));
     ASSERT_EQ_INT(0, image_size);
-
+*/
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, VX_IMAGE_MEMORY_TYPE,  &memory_type,  sizeof(memory_type)));
     ASSERT_EQ_INT(VX_MEMORY_TYPE_NONE, memory_type);
 

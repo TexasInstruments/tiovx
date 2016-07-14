@@ -238,7 +238,9 @@ TEST_WITH_ARG(Histogram, testOnRandom, format_arg,
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_BINS failed\n");
 
             VX_CALL(vxQueryDistribution(dist1, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
-            if (attr_window != reference_window(range, nbins))
+	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins, 
+	     * in other cases, its value shouldn't be checked */
+            if (((range % nbins) == 0) && (attr_window != reference_window(range, nbins)))
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");
 
             VX_CALL(vxQueryDistribution(dist1, VX_DISTRIBUTION_SIZE, &attr_size, sizeof(attr_size)));

@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -239,11 +239,11 @@ static uint8_t gaussian5x5_calculate_constant(CT_Image src, uint32_t x_, uint32_
     return (uint8_t)gaussian5x5_pyramid_get(values);
 }
 
-static vx_int32 gaussian_pyramid_get_pixel(CT_Image input, int x, int y, vx_border_t border)
+static vx_int32 gaussian_pyramid_get_pixel(CT_Image input, int x, int y, vx_border_t border, int level)
 {
     if (border.mode == VX_BORDER_UNDEFINED)
     {
-        if (x >= 2 && y >= 2 && x < (int)input->width - 2 && y < (int)input->height - 2)
+        if (x >= 2 + level && y >= 2 + level && x < (int)input->width - 2 - level && y < (int)input->height - 2 - level)
             return gaussian5x5_pyramid_calculate(input, x, y);
         else
             return -1;
@@ -259,7 +259,7 @@ static vx_int32 gaussian_pyramid_get_pixel(CT_Image input, int x, int y, vx_bord
     CT_FAIL_(return -1, "NOT IMPLEMENTED");
 }
 
-static void gaussian_pyramid_check_pixel(CT_Image input, CT_Image output, int x, int y, vx_border_t border)
+static void gaussian_pyramid_check_pixel(CT_Image input, CT_Image output, int x, int y, vx_border_t border, int level)
 {
     vx_uint8 res = *CT_IMAGE_DATA_PTR_8U(output, x, y);
 
@@ -272,7 +272,7 @@ static void gaussian_pyramid_check_pixel(CT_Image input, CT_Image output, int x,
         for (sx = 0; sx <= 1; sx++)
         {
             vx_int32 candidate = 0;
-            ASSERT_NO_FAILURE_(return, candidate = gaussian_pyramid_get_pixel(input, x_min + sx, y_min + sy, border));
+            ASSERT_NO_FAILURE_(return, candidate = gaussian_pyramid_get_pixel(input, x_min + sx, y_min + sy, border, level));
             if (candidate == -1 || abs(candidate - res) <= VX_GAUSSIAN_PYRAMID_TOLERANCE)
                 return;
         }
@@ -291,7 +291,7 @@ static void gaussian_pyramid_check_image(CT_Image input, CT_Image output, vx_bor
     {
         CT_FILL_IMAGE_8U(, output,
                 {
-                    ASSERT_NO_FAILURE(gaussian_pyramid_check_pixel(input, output, x, y, border));
+                    ASSERT_NO_FAILURE(gaussian_pyramid_check_pixel(input, output, x, y, border, (int)level));
                 });
     }
 }
@@ -383,7 +383,7 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
 
 
 
-static vx_uint8 gaussian_pyramid_reference_get_pixel(CT_Image prevLevel, int dst_width, int dst_height, int x, int y, vx_border_t border)
+static vx_uint8 gaussian_pyramid_reference_get_pixel(CT_Image prevLevel, int dst_width, int dst_height, int x, int y, vx_border_t border, int level)
 {
     vx_int32 candidate = -1;
     vx_float64 x_src = (((vx_float64)x + 0.5) * (vx_float64)prevLevel->width / (vx_float64)dst_width) - 0.5;
@@ -398,7 +398,7 @@ static vx_uint8 gaussian_pyramid_reference_get_pixel(CT_Image prevLevel, int dst
         x_int = prevLevel->width - 1;
     if (y_int >= (int)prevLevel->height)
         y_int = prevLevel->height - 1;
-    ASSERT_NO_FAILURE_(return 0, candidate = gaussian_pyramid_get_pixel(prevLevel, x_int, y_int, border));
+    ASSERT_NO_FAILURE_(return 0, candidate = gaussian_pyramid_get_pixel(prevLevel, x_int, y_int, border, level));
     if (candidate == -1)
         return 0;
     return CT_CAST_U8(candidate);
@@ -449,7 +449,7 @@ static CT_Image gaussian_pyramid_create_reference_image(CT_Image input, CT_Image
     {
         CT_FILL_IMAGE_8U(return 0, dst,
                 {
-                    uint8_t res = gaussian_pyramid_reference_get_pixel(prevLevel, dst_width, dst_height, x, y, border);
+                    uint8_t res = gaussian_pyramid_reference_get_pixel(prevLevel, dst_width, dst_height, x, y, border, (int)target_level);
                     *dst_data = res;
                 });
     }
