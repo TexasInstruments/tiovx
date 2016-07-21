@@ -48,6 +48,7 @@
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_mutex.h>
+#include <tivx_event.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -289,3 +290,7 @@ extern "C" {
  * \ingroup group_vx_platform
  */
 
+/*!
+ * \defgroup group_tivx_event Event APIs
+ * \ingroup group_vx_platform
+ */

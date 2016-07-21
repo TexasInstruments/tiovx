@@ -509,7 +509,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
         /* wait for completion events from all leaf nodes */
         for(i=0; i<graph->num_leaf_nodes; i++)
         {
-            ownNodeKernelWaitEvent(graph->leaf_nodes[i]);
+            ownNodeWaitCompletionEvent(graph->leaf_nodes[i]);
         }
 
         graph->state = VX_GRAPH_STATE_COMPLETED;

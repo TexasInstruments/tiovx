@@ -30,6 +30,8 @@ typedef enum _tivx_target_cmd_e {
     TIVX_CMD_NODE_CREATE  = 0x00000001u,
     /*! \brief Command to delete a node on target */
     TIVX_CMD_NODE_DELETE  = 0x00000002u,
+    /*! \brief Command to call a user callback, on node execution complete */
+    TIVX_CMD_NODE_USER_CALLBACK  = 0x00000003u,
 
 } tivx_target_cmd_e;
 

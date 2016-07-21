@@ -75,6 +75,14 @@ static vx_status ownDestructNode(vx_reference ref)
         {
             tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc);
         }
+        if(node->completion_event!=NULL)
+        {
+            tivxEventDelete(&node->completion_event);
+        }
+        if(node->obj_desc_cmd!=NULL)
+        {
+            tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd);
+        }
     }
     return VX_SUCCESS;
 }
@@ -142,24 +150,48 @@ static vx_status ownRemoveNodeInt(vx_node *n)
     return status;
 }
 
+vx_status ownNodeKernelValidate(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(node && node->kernel )
+    {
+        if(node->kernel->validate)
+        {
+            status = node->kernel->validate(node, node->parameters, node->kernel->signature.num_parameters, NULL);
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+
 vx_status ownNodeKernelInit(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if(node->kernel->initialize)
+    if(node->is_kernel_created == vx_false_e)
     {
-        /* user has given deinitialize function so call it */
-        status = node->kernel->initialize(node, node->parameters, node->kernel->signature.num_parameters);
+        if(node->kernel->initialize)
+        {
+            /* user has given deinitialize function so call it */
+            status = node->kernel->initialize(node, node->parameters, node->kernel->signature.num_parameters);
+        }
+        else
+        {
+            uint16_t obj_desc_id[1];
+
+            obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+            status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
+        }
+        if(status==VX_SUCCESS)
+        {
+            node->is_kernel_created = vx_true_e;
+        }
     }
-    else
-    {
-        uint16_t obj_desc_id[1];
-
-        obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
-
-        status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
-    }
-
     return status;
 }
 
@@ -167,20 +199,26 @@ vx_status ownNodeKernelDeinit(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if(node->kernel->deinitialize)
+    if(node->is_kernel_created == vx_true_e)
     {
-        /* user has given deinitialize function so call it */
-        status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
+        if(node->kernel->deinitialize)
+        {
+            /* user has given deinitialize function so call it */
+            status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
+        }
+        else
+        {
+            uint16_t obj_desc_id[1];
+
+            obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+            status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
+        }
+        if(status==VX_SUCCESS)
+        {
+            node->is_kernel_created = vx_false_e;
+        }
     }
-    else
-    {
-        uint16_t obj_desc_id[1];
-
-        obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
-
-        status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
-    }
-
     return status;
 }
 
@@ -272,6 +310,164 @@ vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset)
     return status;
 }
 
+uint32_t ownNodeGetNumParameters(vx_node node)
+{
+    /* references and structure fields values are checked outside this API,
+      so simply return the required parameter */
+    return node->kernel->signature.num_parameters;
+}
+
+vx_enum ownNodeGetParameterDir(vx_node node, uint32_t prm_index)
+{
+    /* references and structure fields values are checked outside this API,
+      so simply return the required parameter */
+    return node->kernel->signature.directions[prm_index];
+}
+
+vx_reference ownNodeGetParameterRef(vx_node node, uint32_t prm_index)
+{
+    /* references and structure fields values are checked outside this API,
+      so simply return the required parameter */
+    return node->parameters[prm_index];
+}
+
+vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
+{
+    vx_bool is_present = vx_false_e;
+    uint32_t num_out_nodes = node->obj_desc->num_out_nodes;
+    uint16_t out_node_id = out_node->obj_desc->base.obj_desc_id;
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+
+    /* check if out_node is already part of output node list associated with this node */
+    for(i=0; i<num_out_nodes; i++)
+    {
+        if(out_node_id == node->obj_desc->out_node_id[i])
+        {
+            is_present = vx_true_e;
+            break;
+        }
+    }
+    if(is_present == vx_false_e)
+    {
+        if(num_out_nodes < TIVX_MAX_OUT_NODES)
+        {
+            node->obj_desc->out_node_id[num_out_nodes] = out_node_id;
+            num_out_nodes++;
+            node->obj_desc->num_out_nodes = num_out_nodes;
+        }
+        else
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+
+    return status;
+}
+
+vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
+{
+    vx_bool is_present = vx_false_e;
+    uint32_t num_in_nodes = node->obj_desc->num_in_nodes;
+    uint16_t in_node_id = in_node->obj_desc->base.obj_desc_id;
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+
+    /* check if in_node is already part of input node list associated with this node */
+    for(i=0; i<num_in_nodes; i++)
+    {
+        if(in_node_id == node->obj_desc->in_node_id[i])
+        {
+            is_present = vx_true_e;
+            break;
+        }
+    }
+    if(is_present == vx_false_e)
+    {
+        if(num_in_nodes < TIVX_MAX_IN_NODES)
+        {
+            node->obj_desc->in_node_id[num_in_nodes] = in_node_id;
+            num_in_nodes++;
+            node->obj_desc->num_in_nodes = num_in_nodes;
+        }
+        else
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+
+    return status;
+}
+
+uint32_t ownNodeGetNumInNodes(vx_node node)
+{
+    /* references and structure fields values are checked outside this API,
+      so simply return the required parameter */
+    return node->obj_desc->num_in_nodes;
+}
+
+uint32_t ownNodeGetNumOutNodes(vx_node node)
+{
+    /* references and structure fields values are checked outside this API,
+      so simply return the required parameter */
+    return node->obj_desc->num_out_nodes;
+}
+
+vx_status ownNodeCreateCompletionEvent(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    status = tivxEventCreate(&node->completion_event);
+
+    return status;
+}
+
+vx_status ownNodeWaitCompletionEvent(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e && node->completion_event)
+    {
+        status = tivxEventWait(node->completion_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+
+    return status;
+}
+
+vx_status ownNodeCreateUserCallbackCommand(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(node->user_callback)
+    {
+        node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
+        if(node->obj_desc_cmd != NULL)
+        {
+            node->obj_desc->node_complete_cmd_obj_desc_id
+                = node->obj_desc_cmd->base.obj_desc_id;
+
+            node->obj_desc_cmd->cmd_id = TIVX_CMD_NODE_USER_CALLBACK;
+            node->obj_desc_cmd->flags = 0;
+            node->obj_desc_cmd->target_id = ownGetTargetId(TIVX_TARGET_HOST);
+
+            /* parameter is node object descriptor ID */
+            node->obj_desc_cmd->num_obj_desc = 1;
+            node->obj_desc_cmd->obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+        }
+        else
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+    return status;
+}
+
+
 VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel kernel)
 {
     vx_node node = NULL;
@@ -295,6 +491,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     /* set kernel, params, graph to NULL */
                     node->kernel = NULL;
                     node->graph = NULL;
+                    node->is_kernel_created = vx_false_e;
 
                     ownResetNodePerf(node);
 
@@ -567,13 +764,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxAssignNodeCallback(vx_node node, vx_nodecom
 
     if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
     {
-        if ((callback) && (node->completion_callback))
+        if ((callback) && (node->user_callback))
         {
             status = VX_ERROR_NOT_SUPPORTED;
         }
         else
         {
-            node->completion_callback = callback;
+            node->user_callback = callback;
             status = VX_SUCCESS;
         }
     }
@@ -585,7 +782,7 @@ VX_API_ENTRY vx_nodecomplete_f VX_API_CALL vxRetrieveNodeCallback(vx_node node)
     vx_nodecomplete_f cb = NULL;
     if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
     {
-        cb = node->completion_callback;
+        cb = node->user_callback;
     }
     return cb;
 }

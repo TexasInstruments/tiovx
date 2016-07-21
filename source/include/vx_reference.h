@@ -257,6 +257,11 @@ vx_bool ownIsValidReference(vx_reference ref);
  */
 void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index);
 
+/*! \brief Alloc memory associated with this reference, typically data reference
+ * \ingroup group_int_reference
+ */
+vx_status ownReferenceAllocMem(vx_reference ref);
+
 #ifdef __cplusplus
 }
 #endif

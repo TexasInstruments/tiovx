@@ -98,6 +98,15 @@ extern "C" {
  */
 #define TIVX_TARGET_IPU2        "IPU2"
 
+/*! \brief String to name a OpenVX Host
+ *
+ *         Host is not a unique target on its own.
+ *         At system config "HOST" will map to one
+ *         of available targets
+ *
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_TARGET_HOST        "HOST"
 
 /*!
  * \brief Associate a target with a kernel

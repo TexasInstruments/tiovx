@@ -320,6 +320,24 @@ void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 slot_index)
     ref->delay_slot_index=slot_index;
 }
 
+vx_status ownReferenceAllocMem(vx_reference ref)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (ownIsValidReference(ref) == vx_true_e)
+    {
+        if(ref->mem_alloc_callback)
+        {
+            status = ref->mem_alloc_callback(ref);
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size)
 {
@@ -484,3 +502,5 @@ VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
     }
     return context;
 }
+
+

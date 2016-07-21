@@ -37,23 +37,37 @@ extern "C" {
 /*! \brief Max nodes taking output form a given node
  * \ingroup group_tivx_obj_desc
  */
-#define TIVX_KERNEL_MAX_OUT_NODES      (8u)
+#define TIVX_MAX_OUT_NODES      (8u)
 
 /*! \brief Max nodes feeding input to a given node
  * \ingroup group_tivx_obj_desc
  */
-#define TIVX_KERNEL_MAX_IN_NODES      (8u)
+#define TIVX_MAX_IN_NODES      (8u)
 
+/*! \brief Max object descriptors than be parameters in a command object
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_CMD_MAX_OBJ_DESCS        (16u)
 
 /*! \brief Flag to indicate if node is replicated
  * \ingroup group_tivx_obj_desc
  */
-#define TIVX_NODE_FLAG_IS_REPLICATED       (0x00000001u)
+#define TIVX_NODE_FLAG_IS_REPLICATED     (0x00000001u)
 
 /*! \brief Flag to indicate if node is executed
  * \ingroup group_tivx_obj_desc
  */
-#define TIVX_NODE_FLAG_IS_EXECUTED         (0x00000002u)
+#define TIVX_NODE_FLAG_IS_EXECUTED       (0x00000002u)
+
+/*! \brief Flag to indicate if command receiver needs to ACK this command
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_CMD_FLAG_SEND_ACK           (0x00000001u)
+
+/*! \brief Flag to indicate if this is a command or ACK for a command
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_CMD_FLAG_IS_ACK             (0x00000002u)
 
 
 /*!
@@ -74,6 +88,9 @@ typedef enum _tivx_obj_desc_type_e {
 
     /*! \brief Object desciptor that has information related to node object */
     TIVX_OBJ_DESC_NODE,
+
+    /*! \brief Object desciptor that has information related to command object */
+    TIVX_OBJ_DESC_CMD,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
@@ -213,12 +230,41 @@ typedef struct _tivx_obj_desc_node
     uint16_t data_id[TIVX_KERNEL_MAX_PARAMS];
 
     /*! \brief parameter object descriptors */
-    uint16_t out_node_id[TIVX_KERNEL_MAX_OUT_NODES];
+    uint16_t out_node_id[TIVX_MAX_OUT_NODES];
 
     /*! \brief parameter object descriptors */
-    uint16_t in_node_id[TIVX_KERNEL_MAX_IN_NODES];
+    uint16_t in_node_id[TIVX_MAX_IN_NODES];
 
 } tivx_obj_desc_node_t;
+
+/*!
+ * \brief Command object descriptor
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_cmd
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief command to execute */
+    uint32_t cmd_id;
+
+    /*! \brief flags associated with this command, see
+     *         TIVX_CMD_FLAG_xxx
+     */
+    uint32_t flags;
+
+    /*! target for which this command is directed */
+    uint32_t target_id;
+
+    /*! \brief Number of object descriptor parameters with this command */
+    uint32_t num_obj_desc;
+
+    /*! \brief object descriptor ID's of parameters */
+    uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
+
+} tivx_obj_desc_cmd_t;
 
 /*!
  * \brief Image object descriptor as placed in shared memory
