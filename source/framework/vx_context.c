@@ -49,6 +49,104 @@ static tivx_mutex context_lock = NULL;
 
 static tivx_context_t single_context_obj;
 
+static vx_bool ownIsValidBorderMode(vx_enum mode)
+{
+    vx_bool ret = vx_true_e;
+    switch (mode)
+    {
+        case VX_BORDER_UNDEFINED:
+        case VX_BORDER_CONSTANT:
+        case VX_BORDER_REPLICATE:
+            break;
+        default:
+            ret = vx_false_e;
+            break;
+    }
+    return ret;
+}
+
+/*
+ * \brief Fill 'kernel_info' with valid unique kernels info from this context
+ *
+ *        If more than 'max_kernels' found, the return with error
+ */
+static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_t *kernel_info, uint32_t max_kernels)
+{
+    vx_status status = VX_SUCCESS;
+    vx_kernel kernel;
+    uint32_t num_kernel_info = 0, idx;
+
+    if( ownIsValidContext(context) == vx_false_e)
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        ownReferenceLock(&context->base);
+
+        for(idx=0; idx<dimof(context->kerneltable); idx++)
+        {
+            kernel = context->kerneltable[idx];
+
+            if(ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
+            {
+                kernel_info[num_kernel_info].enumeration = kernel->enumeration;
+                strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME);
+                num_kernel_info++;
+            }
+            if(num_kernel_info >= max_kernels)
+            {
+                status = VX_ERROR_NO_RESOURCES;
+                break;
+            }
+        }
+
+        ownReferenceUnlock(&context->base);
+    }
+
+    return status;
+}
+
+static vx_status ownContextCreateCmdObj(vx_context context)
+{
+    vx_status status = VX_SUCCESS;
+
+    context->obj_desc_cmd = NULL;
+    context->cmd_ack_event = NULL;
+
+    context->obj_desc_cmd = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
+    if(context->obj_desc_cmd != NULL)
+    {
+        status = tivxEventCreate(&context->cmd_ack_event);
+    }
+    else
+    {
+        status = VX_ERROR_NO_RESOURCES;
+    }
+
+    return status;
+}
+
+static vx_status ownContextDeleteCmdObj(vx_context context)
+{
+    vx_status status = VX_SUCCESS, status1, status2;
+
+    if(context->obj_desc_cmd != NULL)
+    {
+        status1 = tivxObjDescFree((tivx_obj_desc_t**)&context->obj_desc_cmd);
+    }
+    if(context->cmd_ack_event)
+    {
+        status2 = tivxEventDelete(&context->cmd_ack_event);
+    }
+    if(status1 != VX_SUCCESS || status2 != VX_SUCCESS )
+    {
+        status = VX_FAILURE;
+    }
+
+    return status;
+}
+
 vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
 {
     uint32_t ref_idx;
@@ -108,22 +206,6 @@ vx_bool ownIsValidContext(vx_context context)
         (context->base.context == NULL))
     {
         ret = vx_true_e; /* this is the top level context */
-    }
-    return ret;
-}
-
-static vx_bool ownIsValidBorderMode(vx_enum mode)
-{
-    vx_bool ret = vx_true_e;
-    switch (mode)
-    {
-        case VX_BORDER_UNDEFINED:
-        case VX_BORDER_CONSTANT:
-        case VX_BORDER_REPLICATE:
-            break;
-        default:
-            ret = vx_false_e;
-            break;
     }
     return ret;
 }
@@ -246,44 +328,39 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     return status;
 }
 
-
-/*
- * \brief Fill 'kernel_info' with valid unique kernels info from this context
- *
- *        If more than 'max_kernels' found, the return with error
- */
-static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_t *kernel_info, uint32_t max_kernels)
+vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, uint16_t *obj_desc_id)
 {
     vx_status status = VX_SUCCESS;
-    vx_kernel kernel;
-    uint32_t num_kernel_info = 0, idx;
+    uint32_t i;
 
-    if( ownIsValidContext(context) == vx_false_e)
-    {
-        status = VX_ERROR_INVALID_REFERENCE;
-    }
-    else
+    if( ownIsValidContext(context) == vx_true_e && num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS)
     {
         ownReferenceLock(&context->base);
 
-        for(idx=0; idx<dimof(context->kerneltable); idx++)
-        {
-            kernel = context->kerneltable[idx];
+        context->obj_desc_cmd->cmd_id = cmd;
+        context->obj_desc_cmd->dst_target_id = target_id;
+        context->obj_desc_cmd->src_target_id = tivxGetTargetId(TIVX_TARGET_HOST);
+        context->obj_desc_cmd->num_obj_desc = num_obj_desc;
+        context->obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
+        context->obj_desc_cmd->ack_event_handle = (uint32_t)context->cmd_ack_event;
 
-            if(ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
-            {
-                kernel_info[num_kernel_info].enumeration = kernel->enumeration;
-                strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME);
-                num_kernel_info++;
-            }
-            if(num_kernel_info >= max_kernels)
-            {
-                status = VX_ERROR_NO_RESOURCES;
-                break;
-            }
+        for(i=0; i<num_obj_desc; i++)
+        {
+            context->obj_desc_cmd->obj_desc_id[i] = obj_desc_id[i];
+        }
+
+        status = tivxObjDescSend(target_id, context->obj_desc_cmd->base.obj_desc_id);
+
+        if(status == VX_SUCCESS)
+        {
+            status = tivxEventWait(context->cmd_ack_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
         }
 
         ownReferenceUnlock(&context->base);
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
 
     return status;
@@ -338,11 +415,15 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                 status = ownInitReference(&context->base, NULL, VX_TYPE_CONTEXT, NULL);
                 if(status==VX_SUCCESS)
                 {
-                    ownIncrementReference(&context->base, VX_EXTERNAL);
-                    ownCreateConstErrors(context);
-                    single_context = context;
+                    status = ownContextCreateCmdObj(context);
+                    if(status == VX_SUCCESS)
+                    {
+                        ownIncrementReference(&context->base, VX_EXTERNAL);
+                        ownCreateConstErrors(context);
+                        single_context = context;
+                    }
                 }
-                else
+                if(status!=VX_SUCCESS)
                 {
                     tivxMutexDelete(&context->log_lock);
                 }
@@ -353,13 +434,16 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                 context = NULL;
             }
 
-            /* this loads default module kernels
-             * Any additional modules should be loaded by the user using
-             * vxLoadKernels()
-             * Error's are not checked here,
-             * User can check kernels that are added using vxQueryContext()
-             */
-            vxLoadKernels(context, default_module);
+            if(status == VX_SUCCESS)
+            {
+                /* this loads default module kernels
+                 * Any additional modules should be loaded by the user using
+                 * vxLoadKernels()
+                 * Error's are not checked here,
+                 * User can check kernels that are added using vxQueryContext()
+                 */
+                vxLoadKernels(context, default_module);
+            }
         }
         else
         {
@@ -429,6 +513,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 if(context->reftable[r])
                     VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
             }
+
+            ownContextDeleteCmdObj(context);
 
             /*! \internal wipe away the context memory first */
             /* Normally destroy sem is part of release reference, but can't for context */
@@ -884,3 +970,4 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
 
     return kernel;
 }
+

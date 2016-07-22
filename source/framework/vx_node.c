@@ -226,7 +226,7 @@ vx_status ownNodeKernelSchedule(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    status = ownContextSendObjDesc(node->base.context, node->obj_desc->target_id, node->obj_desc->base.obj_desc_id);
+    status = tivxObjDescSend(node->obj_desc->target_id, node->obj_desc->base.obj_desc_id);
 
     return status;
 }
@@ -452,8 +452,17 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node)
                 = node->obj_desc_cmd->base.obj_desc_id;
 
             node->obj_desc_cmd->cmd_id = TIVX_CMD_NODE_USER_CALLBACK;
+
+            /* No ACK needed */
             node->obj_desc_cmd->flags = 0;
-            node->obj_desc_cmd->target_id = ownGetTargetId(TIVX_TARGET_HOST);
+
+            /* this command is sent by the target node to HOST hence dst_target_id is HOST */
+            node->obj_desc_cmd->dst_target_id = tivxGetTargetId(TIVX_TARGET_HOST);
+
+            /* source is node target which is not known at this moment, however
+             * since ACK is not required for this command, this can be set to INVALID
+             */
+            node->obj_desc_cmd->src_target_id = TIVX_TARGET_ID_INVALID;
 
             /* parameter is node object descriptor ID */
             node->obj_desc_cmd->num_obj_desc = 1;

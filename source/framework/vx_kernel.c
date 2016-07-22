@@ -330,10 +330,10 @@ tivx_target_id_e ownKernelMatchTarget(vx_kernel kernel, const char *target_strin
 
         for(idx = 0; idx < kernel->num_targets; idx++)
         {
-            if(ownTargetMatch(kernel->target_name[idx], target_string) == vx_true_e)
+            if(tivxTargetMatch(kernel->target_name[idx], target_string) == vx_true_e)
             {
                 /* found a compatible target for this kernel */
-                target_id = ownGetTargetId(target_string);
+                target_id = tivxGetTargetId(target_string);
                 break;
             }
         }
@@ -356,7 +356,7 @@ tivx_target_id_e ownKernelGetDefaultTarget(vx_kernel kernel)
             /* valid target associated with kernel,
                take 0th index as default for this node
              */
-            target_id = ownGetTargetId(kernel->target_name[0]);
+            target_id = tivxGetTargetId(kernel->target_name[0]);
         }
     }
     return target_id;

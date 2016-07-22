@@ -84,7 +84,7 @@ typedef enum _tivx_target_id_e {
  *
  * \ingroup group_tivx_target
  */
-tivx_target_id_e ownGetTargetId(const char *target_name);
+tivx_target_id_e tivxGetTargetId(const char *target_name);
 
 /*!
  * \brief Match a user specified target_string with kernel suported target name
@@ -96,7 +96,7 @@ tivx_target_id_e ownGetTargetId(const char *target_name);
  *
  * \ingroup group_tivx_target
  */
-vx_bool ownTargetMatch(const char *kernel_target_name, const char *target_string);
+vx_bool tivxTargetMatch(const char *kernel_target_name, const char *target_string);
 
 #ifdef __cplusplus
 }
