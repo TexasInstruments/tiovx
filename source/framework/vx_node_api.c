@@ -33,8 +33,52 @@
  */
 
 #include <vx_internal.h>
-#include <VX/vx_helper.h>
 
+/* Note: with the current sample implementation structure, we have no other choice than
+returning 0 in case of errors not due to vxCreateGenericNode, because vxGetErrorObject
+is internal to another library and is not exported. This is not an issue since vxGetStatus
+correctly manages a ref == 0 */
+static vx_node vxCreateNodeByStructure(vx_graph graph,
+                                vx_enum kernelenum,
+                                vx_reference params[],
+                                vx_uint32 num)
+{
+    vx_status status = VX_SUCCESS;
+    vx_node node = 0;
+    vx_context context = vxGetContext((vx_reference)graph);
+    vx_kernel kernel = vxGetKernelByEnum(context, kernelenum);
+    if (kernel)
+    {
+        node = vxCreateGenericNode(graph, kernel);
+        if (vxGetStatus((vx_reference)node) == VX_SUCCESS)
+        {
+            vx_uint32 p = 0;
+            for (p = 0; p < num; p++)
+            {
+                status = vxSetParameterByIndex(node, p, params[p]);
+                if (status != VX_SUCCESS)
+                {
+                    vxAddLogEntry((vx_reference)graph, status, "Kernel %d Parameter %u is invalid.\n", kernelenum, p);
+                    vxReleaseNode(&node);
+                    node = 0;
+                    break;
+                }
+            }
+        }
+        else
+        {
+            vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum %d\n", kernelenum);
+            status = VX_ERROR_NO_MEMORY;
+        }
+        vxReleaseKernel(&kernel);
+    }
+    else
+    {
+        vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "failed to retrieve kernel enum %d\n", kernelenum);
+        status = VX_ERROR_NOT_SUPPORTED;
+    }
+    return node;
+}
 
 VX_API_ENTRY vx_node VX_API_CALL vxColorConvertNode(vx_graph graph, vx_image input, vx_image output)
 {

@@ -49,7 +49,7 @@ typedef struct _tivx_event_t *tivx_event;
 /*!
  * \brief Create a event
  *
- * \param event [out] Pointer to muter object
+ * \param event [out] Pointer to event object
  *
  * \return VX_SUCCESS on success
  *

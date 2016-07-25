@@ -49,7 +49,10 @@
 #include <TI/tivx_target_kernel.h>
 #include <tivx_mutex.h>
 #include <tivx_event.h>
+#include <tivx_task.h>
+#include <tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
+#include <tivx_target.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -121,13 +124,9 @@ extern "C" {
 #endif
 
 #include <vx_debug.h>
-
 #include <vx_reference.h>
 #include <vx_context.h>
 #include <vx_error.h>
-
-#include <tivx_target.h>
-
 #include <vx_graph.h>
 #include <vx_kernel.h>
 #include <vx_node.h>
@@ -299,5 +298,15 @@ extern "C" {
 
 /*!
  * \defgroup group_tivx_event Event APIs
+ * \ingroup group_vx_platform
+ */
+
+/*!
+ * \defgroup group_tivx_task Task APIs
+ * \ingroup group_vx_platform
+ */
+
+/*!
+ * \defgroup group_tivx_queue Queue APIs
  * \ingroup group_vx_platform
  */

@@ -31,7 +31,7 @@ typedef struct _tivx_mutex_t *tivx_mutex;
 /*!
  * \brief Create a mutex
  *
- * \param mutex [out] Pointer to muter object
+ * \param mutex [out] Pointer to mutex object
  *
  * \return VX_SUCCESS on success
  *

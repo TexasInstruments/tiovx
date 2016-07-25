@@ -34,7 +34,6 @@
 
 #include <VX/vx.h>
 #include <VX/vxu.h>
-#include <VX/vx_helper.h>
 #include <vx_internal.h>
 
 static vx_status setNodeTarget(vx_node node)
