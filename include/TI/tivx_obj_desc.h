@@ -76,6 +76,9 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to command object */
     TIVX_OBJ_DESC_CMD,
 
+    /*! \brief Object desciptor that has information related to matrix object */
+    TIVX_OBJ_DESC_MATRIX,
+
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
 
@@ -288,6 +291,32 @@ typedef struct _tivx_obj_desc_remap
     /*! \brief buffer address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_remap_t;
+
+/*!
+ * \brief matrix object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_matrix
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+
+    /*! \brief number of rows */
+    uint32_t rows;
+    /*! \brief number of columns */
+    uint32_t columns;
+    /*! \brief Pattern of the matrix */
+    vx_enum pattern;
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t mem_size;
+
+    /*! \brief From \ref vx_type_e */
+    vx_enum data_type;
+    /*! \brief matrix memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
+} tivx_obj_desc_matrix_t;
 
 /*!
  * \brief Scalar object descriptor as placed in shared memory
