@@ -136,6 +136,9 @@ extern "C" {
 #include <vx_image.h>
 #include <vx_matrix.h>
 #include <vx_lut.h>
+#include <vx_convolution.h>
+#include <vx_distribution.h>
+#include <vx_threshold.h>
 #include <vx_delay.h>
 #include <vx_module.h>
 

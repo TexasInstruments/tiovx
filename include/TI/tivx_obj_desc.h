@@ -79,8 +79,20 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to matrix object */
     TIVX_OBJ_DESC_MATRIX,
 
-    /*! \brief Object desciptor that has information related to matrix object */
+    /*! \brief Object desciptor that has information related to Lut object */
     TIVX_OBJ_DESC_LUT,
+
+    /*! \brief Object desciptor that has information related to
+        Convolution object */
+    TIVX_OBJ_DESC_CONVOLUTION,
+
+    /*! \brief Object desciptor that has information related to
+        Distribution object */
+    TIVX_OBJ_DESC_DISTRIBUTION,
+
+    /*! \brief Object desciptor that has information related to
+        threshold object */
+    TIVX_OBJ_DESC_THRESHOLD,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
@@ -340,12 +352,89 @@ typedef struct _tivx_obj_desc_lut
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
-    /*! \brief access type while mapping the buffer */
-    uint32_t map_access_type;
-
     /*! \brief matrix memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_lut_t;
+
+/*!
+ * \brief convolution object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_convolution
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+
+    /*! \brief number of rows */
+    uint32_t rows;
+    /*! \brief number of columns */
+    uint32_t columns;
+    /*! \brief scale factor */
+    uint32_t scale;
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t mem_size;
+
+    /*! \brief matrix memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
+} tivx_obj_desc_convolution_t;
+
+/*!
+ * \brief threshold object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_threshold
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+
+    /*! \brief type of threshold */
+    vx_enum type;
+
+    /*! \brief threshold value*/
+    int32_t value;
+    /*! \brief upper limit */
+    int32_t upper;
+    /*! \brief lower limit*/
+    int32_t lower;
+
+    /*! \brief threshold true value*/
+    int32_t true_value;
+    /*! \brief threshold false value*/
+    int32_t false_value;
+
+    /*! \brief data type of the threshold */
+    vx_enum data_type;
+} tivx_obj_desc_threshold_t;
+
+/*!
+ * \brief distribution object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_distribution
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+
+    /*! \brief number of rows */
+    uint32_t num_bins;
+    /*! \brief number of columns */
+    uint32_t offset;
+    /*! \brief scale factor */
+    uint32_t range;
+    /*! \brief number of windows */
+    uint32_t num_win;
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t mem_size;
+
+    /*! \brief matrix memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
+} tivx_obj_desc_distribution_t;
 
 /*!
  * \brief Scalar object descriptor as placed in shared memory

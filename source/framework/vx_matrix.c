@@ -210,6 +210,10 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
 
     if (VX_SUCCESS == status)
     {
+        tivxMemBufferMap(matrix->obj_desc->mem_ptr.host_ptr,
+            matrix->obj_desc->mem_size, matrix->obj_desc->mem_ptr.mem_type,
+            VX_WRITE_ONLY);
+
         pTempDataPtr = (vx_uint8 *)matrix->obj_desc->mem_ptr.host_ptr;
         if (VX_PATTERN_BOX == pattern)
         {
@@ -259,6 +263,10 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 }
             }
         }
+
+        tivxMemBufferUnmap(matrix->obj_desc->mem_ptr.host_ptr,
+            matrix->obj_desc->mem_size, matrix->obj_desc->mem_ptr.mem_type,
+            VX_WRITE_ONLY);
     }
 
     return (matrix);

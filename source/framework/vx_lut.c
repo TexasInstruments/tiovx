@@ -37,8 +37,6 @@
 
 #include <vx_internal.h>
 
-#define VX_LUT_MAP_ID               (0xA)
-
 static vx_status ownDestructLut(vx_reference ref);
 static vx_status ownAllocLutBuffer(vx_reference ref);
 
@@ -248,15 +246,24 @@ vx_status VX_API_CALL vxMapLUT(
 {
     vx_status status = VX_SUCCESS;
 
-    /* TODO: Need to properly set map_id and return it */
-    tivxMemBufferMap(lut->obj_desc->mem_ptr.host_ptr,
-        lut->obj_desc->mem_size, lut->obj_desc->mem_ptr.mem_type, usage);
-
-    if (NULL != ptr)
+    if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
+        &&
+        lut->obj_desc != NULL
+        )
     {
-        *ptr = lut->obj_desc->mem_ptr.host_ptr;
-        *map_id = VX_LUT_MAP_ID;
-        lut->obj_desc->map_access_type = usage;
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        if (NULL != ptr)
+        {
+            /* TODO: Need to properly set map_id and return it */
+            tivxMemBufferMap(lut->obj_desc->mem_ptr.host_ptr,
+                lut->obj_desc->mem_size, lut->obj_desc->mem_ptr.mem_type,
+                VX_READ_AND_WRITE);
+
+            *ptr = lut->obj_desc->mem_ptr.host_ptr;
+        }
     }
 
     return (status);
@@ -266,15 +273,18 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
 {
     vx_status status = VX_SUCCESS;
 
-    if (map_id == VX_LUT_MAP_ID)
+    if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
+        &&
+        lut->obj_desc != NULL
+        )
     {
-        tivxMemBufferUnmap(lut->obj_desc->mem_ptr.host_ptr,
-            lut->obj_desc->mem_size, lut->obj_desc->mem_ptr.mem_type,
-            lut->obj_desc->map_access_type);
+        status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        tivxMemBufferUnmap(lut->obj_desc->mem_ptr.host_ptr,
+            lut->obj_desc->mem_size, lut->obj_desc->mem_ptr.mem_type,
+            VX_READ_AND_WRITE);
     }
 
     return (status);
