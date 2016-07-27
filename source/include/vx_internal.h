@@ -135,6 +135,7 @@ extern "C" {
 #include <vx_scalar.h>
 #include <vx_image.h>
 #include <vx_matrix.h>
+#include <vx_lut.h>
 #include <vx_delay.h>
 #include <vx_module.h>
 

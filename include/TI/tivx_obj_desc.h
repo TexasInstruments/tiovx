@@ -79,6 +79,9 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to matrix object */
     TIVX_OBJ_DESC_MATRIX,
 
+    /*! \brief Object desciptor that has information related to matrix object */
+    TIVX_OBJ_DESC_LUT,
+
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
 
@@ -317,6 +320,32 @@ typedef struct _tivx_obj_desc_matrix
     /*! \brief matrix memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_matrix_t;
+
+/*!
+ * \brief lut object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_lut
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief The item type of the array. */
+    vx_enum item_type;
+    /*! \brief size of each item */
+    vx_size item_size;
+    /*! \brief number of items */
+    vx_size num_items;
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t mem_size;
+
+    /*! \brief access type while mapping the buffer */
+    uint32_t map_access_type;
+
+    /*! \brief matrix memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
+} tivx_obj_desc_lut_t;
 
 /*!
  * \brief Scalar object descriptor as placed in shared memory
