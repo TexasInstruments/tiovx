@@ -134,6 +134,8 @@ typedef struct _vx_reference {
     /* \brief This indicates the original delay slot index when the object belongs to a delay */
     vx_int32 delay_slot_index;
 
+    /*! \brief This indicates if the object is virtual or not */
+    vx_bool is_virtual;
 } tivx_reference_t;
 
 /**
@@ -261,6 +263,10 @@ void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index);
  * \ingroup group_int_reference
  */
 vx_status ownReferenceAllocMem(vx_reference ref);
+
+/*! \brief Get the size of the Type enum
+ */
+vx_size ownSizeOfEnumType(vx_enum item_type);
 
 #ifdef __cplusplus
 }

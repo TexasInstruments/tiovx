@@ -37,6 +37,72 @@
 
 #include <vx_internal.h>
 
+typedef struct _vx_enum_type_size {
+    vx_enum item_type;
+    vx_size item_size;
+} vx_enum_type_size_t;
+
+static vx_enum_type_size_t enum_type_sizes[] = {
+    {VX_TYPE_INVALID,   0},
+    {VX_TYPE_CHAR,      sizeof(vx_char)},
+    {VX_TYPE_INT8,      sizeof(vx_int8)},
+    {VX_TYPE_INT16,     sizeof(vx_int16)},
+    {VX_TYPE_INT32,     sizeof(vx_int32)},
+    {VX_TYPE_INT64,     sizeof(vx_int64)},
+    {VX_TYPE_UINT8,     sizeof(vx_uint8)},
+    {VX_TYPE_UINT16,    sizeof(vx_uint16)},
+    {VX_TYPE_UINT32,    sizeof(vx_uint32)},
+    {VX_TYPE_UINT64,    sizeof(vx_uint64)},
+    {VX_TYPE_FLOAT32,   sizeof(vx_float32)},
+    {VX_TYPE_FLOAT64,   sizeof(vx_float64)},
+    {VX_TYPE_ENUM,      sizeof(vx_enum)},
+    {VX_TYPE_BOOL,      sizeof(vx_bool)},
+    {VX_TYPE_SIZE,      sizeof(vx_size)},
+    {VX_TYPE_DF_IMAGE,    sizeof(vx_df_image)},
+    {VX_TYPE_RECTANGLE,     sizeof(vx_rectangle_t)},
+    {VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
+    {VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
+    {VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
+    /*{VX_TYPE_ERROR,     sizeof(vx_error_t)},
+    {VX_TYPE_META_FORMAT,sizeof(vx_meta_format_t)},
+    {VX_TYPE_REFERENCE, sizeof(vx_reference_t)},
+    {VX_TYPE_CONTEXT,   sizeof(vx_context_t)},
+    {VX_TYPE_GRAPH,     sizeof(vx_graph_t)},
+    {VX_TYPE_NODE,      sizeof(vx_node_t)},
+    {VX_TYPE_TARGET,    sizeof(vx_target_t)},
+    {VX_TYPE_PARAMETER, sizeof(vx_parameter_t)},
+    {VX_TYPE_KERNEL,    sizeof(vx_kernel_t)},
+    {VX_TYPE_ARRAY,     sizeof(vx_array_t)},
+    {VX_TYPE_CONVOLUTION, sizeof(vx_convolution_t)},
+    {VX_TYPE_DELAY,     sizeof(vx_delay_t)},
+    {VX_TYPE_DISTRIBUTION, sizeof(vx_distribution_t)},
+    {VX_TYPE_IMAGE,     sizeof(vx_image_t)},
+    {VX_TYPE_LUT,       sizeof(vx_lut_t)},
+    {VX_TYPE_MATRIX,    sizeof(vx_matrix_t)},
+    {VX_TYPE_PYRAMID,   sizeof(vx_pyramid_t)},
+    {VX_TYPE_REMAP,     sizeof(vx_remap_t)},
+    {VX_TYPE_SCALAR,    sizeof(vx_scalar_t)},
+    {VX_TYPE_THRESHOLD, sizeof(vx_threshold_t)},*/
+#ifdef OPENVX_KHR_XML
+    {VX_TYPE_IMPORT,    sizeof(vx_import_t)},
+#endif
+};
+
+vx_size ownSizeOfEnumType(vx_enum item_type)
+{
+    vx_uint32 i = 0;
+    vx_size size = 0ul;
+
+    for (i = 0; i < dimof(enum_type_sizes); i++) {
+        if (item_type == enum_type_sizes[i].item_type) {
+            size = enum_type_sizes[i].item_size;
+            break;
+        }
+    }
+
+    return (size);
+}
+
 vx_bool ownIsValidReference(vx_reference ref)
 {
     vx_bool ret = vx_false_e;
@@ -81,6 +147,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->destructor_callback = NULL;
         ref->delay = NULL;
         ref->delay_slot_index = 0;
+        ref->is_virtual = vx_false_e;
 
         status = tivxMutexCreate(&ref->lock);
     }
