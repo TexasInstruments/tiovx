@@ -94,6 +94,10 @@ typedef enum _tivx_obj_desc_type_e {
         threshold object */
     TIVX_OBJ_DESC_THRESHOLD,
 
+    /*! \brief Object desciptor that has information related to
+        Array object */
+    TIVX_OBJ_DESC_ARRAY,
+
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
 
@@ -343,7 +347,7 @@ typedef struct _tivx_obj_desc_lut
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
 
-    /*! \brief The item type of the array. */
+    /*! \brief The item type of the lut. */
     vx_enum item_type;
     /*! \brief size of each item */
     vx_size item_size;
@@ -435,6 +439,32 @@ typedef struct _tivx_obj_desc_distribution
     /*! \brief matrix memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_distribution_t;
+
+/*!
+ * \brief array object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_array
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+
+    /*! \brief The item type of the lut. */
+    vx_enum item_type;
+    /*! \brief Size of the array item */
+    uint32_t item_size;
+    /*! \brief number of valid items in array */
+    uint32_t num_items;
+    /*! \brief Max size of the array */
+    uint32_t capacity;
+
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t mem_size;
+    /*! \brief matrix memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
+} tivx_obj_desc_array_t;
 
 /*!
  * \brief Scalar object descriptor as placed in shared memory
