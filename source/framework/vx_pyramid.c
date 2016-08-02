@@ -1,0 +1,395 @@
+/*
+ * Copyright (c) 2012-2016 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ */
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+
+#include <vx_internal.h>
+#include <math.h>
+
+static vx_status ownDestructPyramid(vx_reference ref);
+static vx_status ownAllocPyramidBuffer(vx_reference ref);
+static vx_status ownInitPyramid(vx_pyramid prmd);
+
+VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
+{
+    return (ownReleaseReferenceInt(
+        (vx_reference*)prmd, VX_TYPE_PYRAMID, VX_EXTERNAL, NULL));
+}
+
+vx_pyramid VX_API_CALL vxCreatePyramid(
+    vx_context context, vx_size levels, vx_float32 scale, vx_uint32 width,
+    vx_uint32 height, vx_df_image format)
+{
+    vx_status status = VX_SUCCESS;
+    vx_pyramid prmd = NULL;
+
+    if(ownIsValidContext(context) == vx_true_e)
+    {
+        if ((width == 0) || (height == 0) || (levels == 0))
+        {
+            status = VX_FAILURE;
+        }
+        if ((scale != VX_SCALE_PYRAMID_HALF) &&
+            (scale != VX_SCALE_PYRAMID_ORB))
+        {
+            status = VX_FAILURE;
+        }
+        if (levels > TIVX_MAX_PYRAMID_OBJECT)
+        {
+            status = VX_FAILURE;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
+                VX_EXTERNAL, &context->base);
+
+            if ((vxGetStatus((vx_reference)prmd) == VX_SUCCESS) &&
+                (prmd->base.type == VX_TYPE_PYRAMID))
+            {
+                /* assign refernce type specific callback's */
+                prmd->base.destructor_callback = ownDestructPyramid;
+                prmd->base.mem_alloc_callback = ownAllocPyramidBuffer;
+                prmd->base.release_callback =
+                    (tivx_reference_release_callback_f)vxReleasePyramid;
+
+                prmd->obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
+                    TIVX_OBJ_DESC_PYRAMID);
+                if(prmd->obj_desc==NULL)
+                {
+                    vxReleasePyramid(&prmd);
+
+                    vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                        "Could not allocate prmd object descriptor\n");
+                    prmd = (vx_pyramid)ownGetErrorObject(
+                        context, VX_ERROR_NO_RESOURCES);
+                }
+                else
+                {
+                    prmd->obj_desc->num_levels = levels;
+                    prmd->obj_desc->width = width;
+                    prmd->obj_desc->height = height;
+                    prmd->obj_desc->scale = scale;
+                    prmd->obj_desc->format = format;
+                }
+            }
+        }
+    }
+
+    return (prmd);
+}
+
+vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
+{
+    vx_image img = NULL;
+
+    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) ==
+            vx_true_e) && (prmd->obj_desc != NULL) &&
+        (index < prmd->obj_desc->num_levels) &&
+        (prmd->base.is_virtual == vx_false_e))
+    {
+        img = prmd->img[index];
+
+        /* Should increment the reference count,
+           To release this image, app should explicitely call ReleaseImage */
+        ownIncrementReference(&img->base, VX_EXTERNAL);
+    }
+    else
+    {
+        img = (vx_image)ownGetErrorObject(prmd->base.context,
+            VX_ERROR_INVALID_PARAMETERS);
+    }
+
+    return (img);
+}
+
+vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
+    vx_graph graph, vx_size levels, vx_float32 scale, vx_uint32 width,
+    vx_uint32 height, vx_df_image format)
+{
+    vx_pyramid prmd = NULL;
+    vx_context context;
+
+    /* levels can not be 0 even in virtual prmd */
+    if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
+            vx_true_e) &&
+        (levels > 0) && (levels < TIVX_MAX_PYRAMID_OBJECT))
+    {
+        context = graph->base.context;
+
+        /* frame size and format can be unspecified in virtual prmd */
+
+        prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
+            VX_EXTERNAL, &context->base);
+
+        if ((vxGetStatus((vx_reference)prmd) == VX_SUCCESS) &&
+            (prmd->base.type == VX_TYPE_PYRAMID))
+        {
+            /* assign refernce type specific callback's */
+            prmd->base.destructor_callback = ownDestructPyramid;
+            prmd->base.mem_alloc_callback = ownAllocPyramidBuffer;
+            prmd->base.release_callback =
+                (tivx_reference_release_callback_f)vxReleasePyramid;
+
+            prmd->obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
+                TIVX_OBJ_DESC_PYRAMID);
+            if(prmd->obj_desc==NULL)
+            {
+                vxReleasePyramid(&prmd);
+
+                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                    "Could not allocate prmd object descriptor\n");
+                prmd = (vx_pyramid)ownGetErrorObject(
+                    context, VX_ERROR_NO_RESOURCES);
+            }
+            else
+            {
+                prmd->obj_desc->num_levels = levels;
+                prmd->obj_desc->width = width;
+                prmd->obj_desc->height = height;
+                prmd->obj_desc->scale = scale;
+                prmd->obj_desc->format = format;
+
+                prmd->base.is_virtual = vx_true_e;
+                prmd->base.scope = (vx_reference)graph;
+            }
+        }
+
+    }
+
+    return (prmd);
+}
+
+vx_bool ownInitVirtualPyramid(
+    vx_pyramid prmd, vx_uint32 width, vx_uint32 height, vx_df_image format)
+{
+    vx_bool status = vx_false_e;
+
+    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_true_e)
+        &&
+        (prmd->obj_desc != NULL))
+    {
+        if ((width > 0) &&
+            (height > 0) &&
+            (prmd->base.is_virtual == vx_true_e))
+        {
+            prmd->obj_desc->width = width;
+            prmd->obj_desc->height = height;
+            prmd->obj_desc->format = format;
+
+            status = vx_true_e;
+        }
+    }
+
+    return (status);
+}
+
+vx_status VX_API_CALL vxQueryPyramid(
+    vx_pyramid prmd, vx_enum attribute, void *ptr, vx_size size)
+{
+    vx_status status = VX_SUCCESS;
+
+    if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_false_e)
+            || (prmd->obj_desc == NULL))
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        switch (attribute)
+        {
+            case VX_PYRAMID_LEVELS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    *(vx_size *)ptr = prmd->obj_desc->num_levels;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_PYRAMID_SCALE:
+                if (VX_CHECK_PARAM(ptr, size, vx_float32, 0x3))
+                {
+                    *(vx_float32 *)ptr = prmd->obj_desc->scale;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_PYRAMID_WIDTH:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    *(vx_uint32 *)ptr = prmd->obj_desc->width;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_PYRAMID_HEIGHT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    *(vx_uint32 *)ptr = prmd->obj_desc->height;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_PYRAMID_FORMAT:
+                if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3))
+                {
+                    *(vx_df_image *)ptr = prmd->obj_desc->format;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            default:
+                status = VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
+    }
+
+    return status;
+}
+
+static vx_status ownAllocPyramidBuffer(vx_reference ref)
+{
+    vx_status status = VX_SUCCESS;
+    vx_pyramid prmd = (vx_pyramid)ref;
+
+    if(prmd->base.type == VX_TYPE_PYRAMID)
+    {
+        if(prmd->obj_desc != NULL)
+        {
+            status = ownInitPyramid(prmd);
+        }
+        else
+        {
+            status = VX_ERROR_INVALID_VALUE;
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
+
+static vx_status ownDestructPyramid(vx_reference ref)
+{
+    vx_pyramid prmd = (vx_pyramid)ref;
+
+    if(prmd->base.type == VX_TYPE_PYRAMID)
+    {
+        if(prmd->obj_desc!=NULL)
+        {
+            tivxObjDescFree((tivx_obj_desc_t**)&prmd->obj_desc);
+        }
+    }
+    return VX_SUCCESS;
+}
+
+static vx_status ownInitPyramid(vx_pyramid prmd)
+{
+    vx_status status = VX_SUCCESS;
+    vx_image img;
+    vx_uint32 i, w, h, j;
+    vx_float32 t1, scale;
+
+    w = prmd->obj_desc->width;
+    h = prmd->obj_desc->height;
+    t1 = scale = prmd->obj_desc->scale;
+
+    for (i = 0; i < prmd->obj_desc->num_levels; i++)
+    {
+        img = vxCreateImage(prmd->base.context, w, h,
+            prmd->obj_desc->format);
+
+        if (img != NULL)
+        {
+            prmd->img[i] = img;
+            prmd->obj_desc->obj_desc_id[i] =
+                img->obj_desc->base.obj_desc_id;
+
+            /* increment the internal counter on the image, not the
+               external one */
+            ownIncrementReference((vx_reference)img, VX_INTERNAL);
+
+            /* remember that the scope of the image is the prmd */
+            img->base.scope = (vx_reference)prmd;
+
+            if (VX_SCALE_PYRAMID_ORB == scale)
+            {
+                w = (vx_uint32)ceilf((vx_float32)w * t1);
+                h = (vx_uint32)ceilf((vx_float32)h * t1);
+                t1 = t1 * scale;
+            }
+            else
+            {
+                w = (vx_uint32)ceilf((vx_float32)w * t1);
+                h = (vx_uint32)ceilf((vx_float32)h * t1);
+                t1 = t1 * scale;
+            }
+        }
+        else
+        {
+            status = VX_FAILURE;
+            vxAddLogEntry(&prmd->base.context->base, VX_ERROR_NO_RESOURCES,
+               "Could not allocate threshold object descriptor\n");
+            break;
+        }
+    }
+
+    if (VX_SUCCESS != status)
+    {
+        for (j = 0; j < i; j ++)
+        {
+            if (NULL != prmd->img[j]->base.destructor_callback)
+            {
+                prmd->img[j]->base.destructor_callback(
+                    (vx_reference)prmd->img[j]);
+            }
+        }
+    }
+
+    return (status);
+}
+
