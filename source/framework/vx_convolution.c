@@ -106,9 +106,7 @@ vx_status VX_API_CALL vxQueryConvolution(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION) == vx_false_e
-        &&
-        cnvl->obj_desc != NULL
-        )
+        || (cnvl->obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -172,9 +170,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION) == vx_false_e
-        &&
-        cnvl->obj_desc != NULL
-        )
+        || (cnvl->obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -219,7 +215,7 @@ vx_status VX_API_CALL vxCopyConvolution(
     vx_uint32 size;
 
     if ((ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION) ==
-            vx_false_e) && (cnvl->obj_desc != NULL))
+            vx_false_e) || (cnvl->obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }

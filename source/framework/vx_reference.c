@@ -62,30 +62,7 @@ static vx_enum_type_size_t enum_type_sizes[] = {
     {VX_TYPE_RECTANGLE,     sizeof(vx_rectangle_t)},
     {VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
     {VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
-    {VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
-    /*{VX_TYPE_ERROR,     sizeof(vx_error_t)},
-    {VX_TYPE_META_FORMAT,sizeof(vx_meta_format_t)},
-    {VX_TYPE_REFERENCE, sizeof(vx_reference_t)},
-    {VX_TYPE_CONTEXT,   sizeof(vx_context_t)},
-    {VX_TYPE_GRAPH,     sizeof(vx_graph_t)},
-    {VX_TYPE_NODE,      sizeof(vx_node_t)},
-    {VX_TYPE_TARGET,    sizeof(vx_target_t)},
-    {VX_TYPE_PARAMETER, sizeof(vx_parameter_t)},
-    {VX_TYPE_KERNEL,    sizeof(vx_kernel_t)},
-    {VX_TYPE_ARRAY,     sizeof(vx_array_t)},
-    {VX_TYPE_CONVOLUTION, sizeof(vx_convolution_t)},
-    {VX_TYPE_DELAY,     sizeof(vx_delay_t)},
-    {VX_TYPE_DISTRIBUTION, sizeof(vx_distribution_t)},
-    {VX_TYPE_IMAGE,     sizeof(vx_image_t)},
-    {VX_TYPE_LUT,       sizeof(vx_lut_t)},
-    {VX_TYPE_MATRIX,    sizeof(vx_matrix_t)},
-    {VX_TYPE_PYRAMID,   sizeof(vx_pyramid_t)},
-    {VX_TYPE_REMAP,     sizeof(vx_remap_t)},
-    {VX_TYPE_SCALAR,    sizeof(vx_scalar_t)},
-    {VX_TYPE_THRESHOLD, sizeof(vx_threshold_t)},*/
-#ifdef OPENVX_KHR_XML
-    {VX_TYPE_IMPORT,    sizeof(vx_import_t)},
-#endif
+    {VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)}
 };
 
 vx_size ownSizeOfEnumType(vx_enum item_type)

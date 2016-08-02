@@ -48,7 +48,27 @@ extern "C" {
  * \brief Implementation of Array object
  */
 
+/*!
+ * \brief Max possible mapping via vxMapArray supported
+ *
+ * \ingroup group_vx_array
+ */
+#define TIVX_ARRAY_MAX_MAPS     (16u)
 
+/*!
+ * \brief Information about a array mapping
+ *
+ * \ingroup group_vx_array
+ */
+typedef struct _tivx_array_map_info_t
+{
+    /*! \brief Address mapped via vxMapArray() */
+    uint8_t *map_addr;
+    /*! \brief Size of memory region mapped via vxMapArray() */
+    vx_size  map_size;
+    /*! \brief Type of access being done by user, see \ref vx_accessor_e */
+    vx_enum usage;
+} tivx_array_map_info_t;
 
 /*!
  * \brief Array object internal state
@@ -63,6 +83,8 @@ typedef struct _vx_array
     /*! \brief object descriptor */
     tivx_obj_desc_array_t *obj_desc;
 
+    /*! \brief Mapping done via vxMapArray() */
+    tivx_array_map_info_t maps[TIVX_ARRAY_MAX_MAPS];
 } tivx_array_t;
 
 
