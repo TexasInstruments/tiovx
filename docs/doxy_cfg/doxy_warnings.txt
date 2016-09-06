@@ -8,13 +8,32 @@ D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:782: Warning: unable to resol
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:807: Warning: unable to resolve reference to `vxNonLinearFilterNode' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:824: Warning: unable to resolve reference to `VX_MAX_KERNEL_NAME' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1181: Warning: unable to resolve reference to `vxCreateMatrixFromPattern' for \ref command
-D:/ked/dev/openVX/code/tiovx/source/include/vx_reference.h:252: Warning: argument 'the' of command @param is not found in the argument list of ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index)
-D:/ked/dev/openVX/code/tiovx/source/include/vx_reference.h:252: Warning: The following parameters of ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index) are not documented:
+D:/ked/dev/openVX/code/tiovx/source/include/vx_array.h:91: Warning: argument 'array' of command @param is not found in the argument list of ownPrintArray(vx_array arr)
+D:/ked/dev/openVX/code/tiovx/source/include/vx_array.h:91: Warning: The following parameters of ownPrintArray(vx_array arr) are not documented:
+  parameter 'arr'
+D:/ked/dev/openVX/code/tiovx/source/include/vx_array.h:100: Warning: argument 'array' of command @param is not found in the argument list of ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
+D:/ked/dev/openVX/code/tiovx/source/include/vx_array.h:100: Warning: The following parameters of ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity) are not documented:
+  parameter 'arr'
+D:/ked/dev/openVX/code/tiovx/source/include/vx_convolution.h:69: Warning: argument 'convolution' of command @param is not found in the argument list of ownPrintConvolution(vx_convolution cvl)
+D:/ked/dev/openVX/code/tiovx/source/include/vx_convolution.h:69: Warning: The following parameters of ownPrintConvolution(vx_convolution cvl) are not documented:
+  parameter 'cvl'
+D:/ked/dev/openVX/code/tiovx/source/include/vx_distribution.h:69: Warning: argument 'distribution' of command @param is not found in the argument list of ownPrintDistribution(vx_distribution cvl)
+D:/ked/dev/openVX/code/tiovx/source/include/vx_distribution.h:69: Warning: The following parameters of ownPrintDistribution(vx_distribution cvl) are not documented:
+  parameter 'cvl'
+D:/ked/dev/openVX/code/tiovx/source/include/vx_pyramid.h:71: Warning: argument 'pyramid' of command @param is not found in the argument list of ownPrintPyramid(vx_pyramid prmd)
+D:/ked/dev/openVX/code/tiovx/source/include/vx_pyramid.h:71: Warning: The following parameters of ownPrintPyramid(vx_pyramid prmd) are not documented:
+  parameter 'prmd'
+D:/ked/dev/openVX/code/tiovx/source/include/vx_reference.h:254: Warning: argument 'the' of command @param is not found in the argument list of ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index)
+D:/ked/dev/openVX/code/tiovx/source/include/vx_reference.h:254: Warning: The following parameters of ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index) are not documented:
   parameter 'index'
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1518: Warning: unable to resolve reference to `vxLoadKernels' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1526: Warning: unable to resolve reference to `vxUnloadKernels' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:577: Warning: unable to resolve reference to `vxHint' for \ref command
-D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1181: Warning: unable to resolve reference to `vxCreateMatrixFromPattern' for \ref command
+D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1181: Warning: unable to resolve reference to `vxCreateMatrixFromPattern' 'latex' is not recognized as an internal or external command,
+operable program or batch file.
+'dvips' is not recognized as an internal or external command,
+operable program or batch file.
+for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:515: Warning: unable to resolve reference to `vx_vendor_id_e' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1518: Warning: unable to resolve reference to `vxLoadKernels' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1526: Warning: unable to resolve reference to `vxUnloadKernels' for \ref command
@@ -28,11 +47,7 @@ D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:765: Warning: unable to resol
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:782: Warning: unable to resolve reference to `vxCreateConvolution' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:786: Warning: unable to resolve reference to `VX_KERNEL_OPTICAL_FLOW_PYR_LK' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:795: Warning: unable to resolve reference to `vxQueryContext' for \ref command
-D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:807: Warning: unable to resolve reference to `vxNonLinearFilterNode' f'latex' is not recognized as an internal or external command,
-operable program or batch file.
-'dvips' is not recognized as an internal or external command,
-operable program or batch file.
-or \ref command
+D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:807: Warning: unable to resolve reference to `vxNonLinearFilterNode' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:824: Warning: unable to resolve reference to `VX_MAX_KERNEL_NAME' for \ref command
 D:/ked/dev/openVX/code/tiovx/include/VX/vx_types.h:1181: Warning: unable to resolve reference to `vxCreateMatrixFromPattern' for \ref command
 D:/ked/dev/openVX/code/tiovx/source/include/vx_parameter.h:68: Warning: unable to resolve reference to `vxGetKernelParameterByIndex' for \ref command
