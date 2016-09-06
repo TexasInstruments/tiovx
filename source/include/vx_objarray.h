@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_ARRAY_H_
-#define _VX_ARRAY_H_
+#ifndef _VX_OBJARRAY_H_
+#define _VX_OBJARRAY_H_
 
 
 #ifdef __cplusplus
@@ -45,71 +45,37 @@ extern "C" {
 
 /*!
  * \file
- * \brief Implementation of Array object
+ * \brief Implementation of Object Array data object
  */
 
-/*!
- * \brief Max possible mapping via vxMapArray supported
- *
- * \ingroup group_vx_array
- */
-#define TIVX_ARRAY_MAX_MAPS     (16u)
+
 
 /*!
- * \brief Information about a array mapping
+ * \brief object array internal state
  *
- * \ingroup group_vx_array
+ * \ingroup group_vx_objarray
  */
-typedef struct _tivx_array_map_info_t
-{
-    /*! \brief Address mapped via vxMapArray() */
-    uint8_t *map_addr;
-    /*! \brief Size of memory region mapped via vxMapArray() */
-    vx_size  map_size;
-    /*! \brief Type of access being done by user, see \ref vx_accessor_e */
-    vx_enum usage;
-} tivx_array_map_info_t;
-
-/*!
- * \brief Array object internal state
- *
- * \ingroup group_vx_array
- */
-typedef struct _vx_array
+typedef struct _vx_object_array
 {
     /*! \brief reference object */
     tivx_reference_t base;
 
     /*! \brief object descriptor */
-    tivx_obj_desc_array_t *obj_desc;
+    tivx_obj_desc_objarray_t *obj_desc;
 
-    /*! \brief Mapping done via vxMapArray() */
-    tivx_array_map_info_t maps[TIVX_ARRAY_MAX_MAPS];
-} tivx_array_t;
+    /*! \brief array of references to the objects */
+    vx_reference ref[TIVX_MAX_OBJECT_ARRAY];
+} tivx_objarray_t;
 
-
-/*!
- * \brief Print array info
- *
- * \param array [in] array
- *
- * \ingroup group_vx_array
- */
-void ownPrintArray(vx_array arr);
 
 /*!
- * \brief Initializes type and size of the virtual array
+ * \brief Print object array info
  *
- * \param array         [in] array
- * \param item_type     [in] item type, can be user also
- * \param capacity      [in] size of the array
+ * \param objarr [in] objarr
  *
- * \return vx_true_e    if array is initialized
- *         vx_false_e   in case of error
- *
- * \ingroup group_vx_array
+ * \ingroup group_vx_objarray
  */
-vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity);
+void ownPrintObjArray(vx_object_array objarr);
 
 #ifdef __cplusplus
 }

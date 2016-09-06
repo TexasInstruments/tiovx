@@ -59,6 +59,11 @@ extern "C" {
  */
 #define TIVX_MAX_PYRAMID_OBJECT         (32)
 
+/*! \brief Maximum number of objects supported in object array
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_MAX_OBJECT_ARRAY           (32)
+
 /*!
  * \brief Enum that list all possible object descriptor type's
  *
@@ -106,6 +111,10 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to
         Pyramid object */
     TIVX_OBJ_DESC_PYRAMID,
+
+    /*! \brief Object desciptor that has information related to
+        Object Array object */
+    TIVX_OBJ_DESC_OBJARRAY,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
@@ -500,6 +509,26 @@ typedef struct _tivx_obj_desc_array
     /*! \brief matrix memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_array_t;
+
+/*!
+ * \brief object array object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_objarray
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief The source width */
+
+    /*! \brief The item type of the lut. */
+    vx_enum item_type;
+    /*! \brief number of valid items in array */
+    uint32_t num_items;
+
+    /*! \brief array of descriptor ids of the objects */
+    uint16_t obj_desc_id[TIVX_MAX_OBJECT_ARRAY];
+} tivx_obj_desc_objarray_t;
 
 /*!
  * \brief Scalar object descriptor as placed in shared memory

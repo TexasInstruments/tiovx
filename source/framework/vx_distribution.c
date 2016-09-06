@@ -102,8 +102,8 @@ vx_status VX_API_CALL vxQueryDistribution(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_false_e
-        &&
-        dist->obj_desc != NULL
+        ||
+        dist->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -191,7 +191,7 @@ vx_status VX_API_CALL vxCopyDistribution(
     vx_uint32 size;
 
     if ((ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) ==
-            vx_false_e) && (dist->obj_desc != NULL))
+            vx_false_e) || (dist->obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -257,8 +257,8 @@ vx_status VX_API_CALL vxMapDistribution(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_false_e
-        &&
-        dist->obj_desc != NULL
+        ||
+        dist->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -283,8 +283,8 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&dist->base, VX_TYPE_DISTRIBUTION) == vx_false_e
-        &&
-        dist->obj_desc != NULL
+        ||
+        dist->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;

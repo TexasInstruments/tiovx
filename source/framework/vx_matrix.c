@@ -278,8 +278,8 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e
-        &&
-        matrix->obj_desc != NULL
+        ||
+        matrix->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -363,8 +363,8 @@ vx_status VX_API_CALL vxCopyMatrix(
     vx_uint32 size;
 
     if (ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e
-        &&
-        matrix->obj_desc != NULL
+        ||
+        matrix->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;

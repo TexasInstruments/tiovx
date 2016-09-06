@@ -122,8 +122,8 @@ vx_status VX_API_CALL vxQueryLut(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
-        &&
-        lut->obj_desc != NULL
+        ||
+        lut->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -179,8 +179,8 @@ vx_status VX_API_CALL vxCopyLut(
     vx_uint32 size;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
-        &&
-        lut->obj_desc != NULL
+        ||
+        lut->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -247,8 +247,8 @@ vx_status VX_API_CALL vxMapLUT(
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
-        &&
-        lut->obj_desc != NULL
+        ||
+        lut->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -274,8 +274,8 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     vx_status status = VX_SUCCESS;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
-        &&
-        lut->obj_desc != NULL
+        ||
+        lut->obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
