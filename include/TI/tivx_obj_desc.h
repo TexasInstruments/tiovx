@@ -54,6 +54,11 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_EXECUTED       (0x00000002u)
 
+/*! \brief Maximum number of objects supported in pyramid
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_MAX_PYRAMID_OBJECT         (32)
+
 /*!
  * \brief Enum that list all possible object descriptor type's
  *
@@ -97,6 +102,10 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to
         Array object */
     TIVX_OBJ_DESC_ARRAY,
+
+    /*! \brief Object desciptor that has information related to
+        Pyramid object */
+    TIVX_OBJ_DESC_PYRAMID,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID = 0xFFFFu
@@ -359,6 +368,32 @@ typedef struct _tivx_obj_desc_lut
     /*! \brief matrix memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_lut_t;
+
+/*!
+ * \brief pyramid object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_pyramid
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief number of pyramid levels */
+    vx_size num_levels;
+    /*! \brief width of the level0 image */
+    vx_uint32 width;
+    /*! \brief height of the level0 image */
+    uint32_t height;
+    /*! \brief Scaling factor between levels of the pyramid. */
+    vx_float32 scale;
+
+    /*! \brief image format */
+    vx_df_image format;
+
+    /*! \brief array of object descriptor ids for the image object */
+    uint16_t obj_desc_id[TIVX_MAX_PYRAMID_OBJECT];
+} tivx_obj_desc_pyramid_t;
 
 /*!
  * \brief convolution object descriptor as placed in shared memory

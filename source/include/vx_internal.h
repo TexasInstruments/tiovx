@@ -139,6 +139,7 @@ extern "C" {
 #include <vx_convolution.h>
 #include <vx_distribution.h>
 #include <vx_threshold.h>
+#include <vx_pyramid.h>
 #include <vx_array.h>
 #include <vx_delay.h>
 #include <vx_module.h>
