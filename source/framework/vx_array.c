@@ -39,7 +39,7 @@
 
 static vx_status ownDestructArray(vx_reference ref);
 static vx_status ownAllocArrayBuffer(vx_reference ref);
-static initArrayObject(
+static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
 
 /* Function to get the size of user defined structure */
@@ -115,7 +115,7 @@ vx_array VX_API_CALL vxCreateArray(
                 }
                 else
                 {
-                    initArrayObject(arr, item_type, capacity, vx_false_e);
+                    ownInitArrayObject(arr, item_type, capacity, vx_false_e);
                 }
             }
         }
@@ -162,7 +162,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             }
             else
             {
-                initArrayObject(arr, item_type, capacity, vx_true_e);
+                ownInitArrayObject(arr, item_type, capacity, vx_true_e);
 
                 arr->base.scope = (vx_reference)graph;
             }
@@ -187,7 +187,7 @@ vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
             (VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
             (vx_true_e == arr->base.is_virtual))
         {
-            initArrayObject(arr, item_type, capacity, vx_true_e);
+            ownInitArrayObject(arr, item_type, capacity, vx_true_e);
 
             status = vx_true_e;
         }
@@ -624,7 +624,7 @@ static vx_status ownDestructArray(vx_reference ref)
 }
 
 
-static initArrayObject(
+static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual)
 {
     vx_uint32 i;
