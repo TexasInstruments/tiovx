@@ -35,6 +35,7 @@ IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(STW_PATH)/include
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
+IDIRS       += $(VSDK_PATH)
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
