@@ -42,13 +42,6 @@ extern "C" {
  */
 #define TIVX_TASK_PRIORITY_LOWEST       (16u)
 
-/*!
- * \brief Typedef for a task
- *
- * \ingroup group_tivx_task
- */
-typedef struct _tivx_task_t *tivx_task;
-
 
 /*! \brief Entry point of task
  *
@@ -56,7 +49,49 @@ typedef struct _tivx_task_t *tivx_task;
  *
  * \ingroup group_tivx_target
  */
-typedef void (VX_CALLBACK *tivx_task_main_f)(void *app_handle);
+typedef void (VX_CALLBACK *tivx_task_main_f)(void *app_var);
+
+
+/*!
+ * \brief Typedef for a task
+ *
+ * \ingroup group_tivx_task
+ */
+typedef struct _tivx_task_t
+{
+    /*! \brief Handle to the task created
+     */
+    void *tsk_handle;
+
+    /*! \brief Pointer to task stack, if NULL then task stack
+     *         is allcoated by OS and not supplied by user
+     */
+    uint32_t *stack_ptr;
+
+    /*! \brief Task stack size, if 0, OS allocates stack with default size
+     */
+    uint32_t stack_size;
+
+    /*! \brief If task runs on a SMP CPU then this value tells the affinity
+     *         of task to a given core,
+     *         Valid values are 0 .. max cores in the SMP CPU.
+     *         when TIVX_TASK_AFFINITY_ANY is used OS decides the task affinity.
+     */
+    uint32_t core_affinity;
+
+    /*! \brief task priority for task associated with this target
+     *         TIVX_TASK_PRI_HIGHEST is highest priority,
+     *         TIVX_TASK_PRI_LOWEST is lowest priority
+     */
+    uint32_t priority;
+
+    /*! \brief Entry point for task */
+    tivx_task_main_f task_func;
+
+    /*! \brief private app object */
+    void *app_var;
+} tivx_task;
+
 
 
 /*!
@@ -91,6 +126,8 @@ typedef struct _tivx_task_create_params
     /*! \brief Entry point for task */
     tivx_task_main_f task_main;
 
+    /*! \brief private app object */
+    void *app_var;
 } tivx_task_create_params_t;
 
 

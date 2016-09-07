@@ -19,6 +19,7 @@ CROSS_COMPILE := arm-none-eabi-
 DIRECTORIES :=
 #DIRECTORIES += conformance_tests/test_conformance
 #DIRECTORIES += conformance_tests/test_engine
+DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels/openvx-core
