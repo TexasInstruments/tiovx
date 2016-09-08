@@ -106,7 +106,7 @@ typedef struct _vx_kernel
  *
  * \ingroup group_vx_kernel
  */
-tivx_target_id_e ownKernelGetDefaultTarget(vx_kernel kernel);
+vx_enum ownKernelGetDefaultTarget(vx_kernel kernel);
 
 /*!
  * \brief Match user provided target with supported targets
@@ -116,7 +116,7 @@ tivx_target_id_e ownKernelGetDefaultTarget(vx_kernel kernel);
  *
  * \ingroup group_vx_kernel
  */
-tivx_target_id_e ownKernelGetTarget(vx_kernel kernel, const char *target_string);
+vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string);
 
 
 #ifdef __cplusplus

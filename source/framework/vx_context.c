@@ -339,7 +339,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
         context->obj_desc_cmd->cmd_id = cmd;
         context->obj_desc_cmd->dst_target_id = target_id;
-        context->obj_desc_cmd->src_target_id = tivxGetTargetId(TIVX_TARGET_HOST);
+        context->obj_desc_cmd->src_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
         context->obj_desc_cmd->num_obj_desc = num_obj_desc;
         context->obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
         context->obj_desc_cmd->ack_event_handle = (uint32_t)context->cmd_ack_event;

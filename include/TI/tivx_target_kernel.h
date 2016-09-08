@@ -28,22 +28,29 @@ extern "C" {
  */
 typedef struct _tivx_target_kernel *tivx_target_kernel;
 
+/*! \brief Handle to instance of kernel on a target
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 
 /*!
 * \brief The target kernel callback
 *
-*        'obj_desc' is of type 'node' for init, deinit and process callbacks
-*        'obj_desc' is of type 'command' for control callback
+*        For create_func, delete_func and process_func callbacks
+*        'obj_desc' points to array of data object descriptor parameters
 *
-*        'node' object descriptor further points to data object descriptors
-*        'command' object descriptor further pointer to parameters for this command
+*        For control_func,
+*        'obj_desc' points to array of objects descriptors where
+*             obj_desc[0] points to the node object descriptors
+*             obj_desc[1..num_params-1] points to target kernel defined parameters
 *
 * \param [in] kernel The kernel for which the callback is called
 * \param [in] obj_desc Object descriptor passed as input to this callback
 *
 * \ingroup group_tivx_target_kernel
 */
-typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel kernel, tivx_obj_desc_t *obj_desc);
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance kernel, uint32_t target_kernel_instance_handle, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /*! \brief Allows users to add native kernels implementation to specific targets
  *

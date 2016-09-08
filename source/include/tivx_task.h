@@ -20,6 +20,19 @@ extern "C" {
  * \brief Interface to Task APIs
  */
 
+/*!
+ * \brief Constant to define highest priority for a task
+ *
+ * \ingroup group_tivx_task
+ */
+#define TIVX_TASK_PRI_HIGHEST   (0u)
+
+/*!
+ * \brief Constant to define lowest priority for a task
+ *
+ * \ingroup group_tivx_task
+ */
+#define TIVX_TASK_PRI_LOWEST    (15u)
 
 /*!
  * \brief constant to indicate task affinity can be decided by OS on a SMP CPU
@@ -138,7 +151,7 @@ typedef struct _tivx_task_create_params
  *
  * \param params [out] Params to use for task creation
  *
- * \ingroup group_tivx_target
+ * \ingroup group_tivx_task
  */
 void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params);
 

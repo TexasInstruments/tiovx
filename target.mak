@@ -26,12 +26,6 @@ SYSIDIRS := $(OVX_INC)
 SYSLDIRS := $(HOST_ROOT)/out/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 SYSDEFS  :=
 
-BSP_PATH := D:/vision_sdk_02_10_00_00/ti_components/drivers/bsp_01_06_00_11
-STW_PATH := D:/vision_sdk_02_10_00_00/ti_components/drivers/starterware_01_06_00_15
-XDC_PATH := D:/vision_sdk_02_10_00_00/ti_components/os_tools/windows/xdctools_3_32_00_06_core
-BIOS_PATH := D:/vision_sdk_02_10_00_00/ti_components/os_tools/bios_6_46_00_23
-VSDK_PATH := D:/vision_sdk_02_10_00_00/vision_sdk
-
 ifeq ($(TARGET_PLATFORM),TDAX)
     SYSDEFS +=
     ifeq ($(TARGET_FAMILY),ARM)

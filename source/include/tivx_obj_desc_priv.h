@@ -76,7 +76,54 @@ typedef struct _tivx_obj_desc_cmd
     /*! \brief object descriptor ID's of parameters */
     uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
 
+    /*! \brief command execution status */
+    uint32_t cmd_status;
+
 } tivx_obj_desc_cmd_t;
+
+/*!
+ * \brief Object Descriptor Shared memory entry which can hold any of the
+ *         supported object descriptor types
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef union {
+
+    tivx_obj_desc_cmd_t cmd;
+    tivx_obj_desc_node_t node;
+    tivx_obj_desc_image_t image;
+    tivx_obj_desc_remap_t remap;
+    tivx_obj_desc_matrix_t matrix;
+    tivx_obj_desc_lut_t lut;
+    tivx_obj_desc_pyramid_t pyramid;
+    tivx_obj_desc_convolution_t convolution;
+    tivx_obj_desc_threshold_t threshold;
+    tivx_obj_desc_distribution_t distribution;
+    tivx_obj_desc_array_t array;
+    tivx_obj_desc_objarray_t objarray;
+    tivx_obj_desc_scalar_t scalar;
+
+} tivx_obj_desc_shm_entry_t;
+
+/*!
+ * \brief Data structure to hold info about object descriptor table
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct {
+
+    /*! \brief Object descriptor table base address */
+    tivx_obj_desc_shm_entry_t *table_base;
+
+    /*! \brief Object descriptor table, number of entries */
+    uint32_t num_entries;
+
+    /*! \brief Index of last allocated entry, this can be used to optimize
+     *  free entry search start index during object descriptor alloc
+     */
+    uint32_t last_alloc_index;
+
+} tivx_obj_desc_table_info_t;
 
 /*!
  * \brief Allocate a Object descriptor
@@ -114,6 +161,31 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc);
  * \ingroup group_tivx_obj_desc_priv
  */
 vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id);
+
+/*!
+ * \brief Get obj descriptor corresponding to the object descriptor ID
+ *
+ *        If obj_desc_id is invalid or out of bounds NULL is returned.
+ *
+ * \param [in] obj_desc_id Object descriptor ID
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+tivx_obj_desc_t *tivxObjDescGet(uint16_t obj_desc_id);
+
+/*!
+ * \brief Checks if object desc pointer is valid and it is of required type
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e type);
+
+/*!
+ * \brief Init object descriptor module
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+void tivxObjDescInit();
 
 #ifdef __cplusplus
 }

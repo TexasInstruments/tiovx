@@ -195,6 +195,18 @@ vx_status ownNodeCreateCompletionEvent(vx_node node);
  */
 vx_status ownNodeCreateUserCallbackCommand(vx_node node);
 
+/*! \brief Call user specified callback
+ *
+ * \ingroup group_vx_node
+ */
+vx_action ownNodeExecuteUserCallback(vx_node node);
+
+/*! \brief Send node completion event
+ *
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeSendCompletionEvent(vx_node node);
+
 #ifdef __cplusplus
 }
 #endif

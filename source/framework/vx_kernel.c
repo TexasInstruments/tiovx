@@ -320,9 +320,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
     return status;
 }
 
-tivx_target_id_e ownKernelMatchTarget(vx_kernel kernel, const char *target_string)
+vx_enum ownKernelMatchTarget(vx_kernel kernel, const char *target_string)
 {
-    tivx_target_id_e target_id = TIVX_TARGET_ID_INVALID;
+    vx_enum target_id = TIVX_TARGET_ID_INVALID;
 
     if (kernel && ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
     {
@@ -330,10 +330,10 @@ tivx_target_id_e ownKernelMatchTarget(vx_kernel kernel, const char *target_strin
 
         for(idx = 0; idx < kernel->num_targets; idx++)
         {
-            if(tivxTargetMatch(kernel->target_name[idx], target_string) == vx_true_e)
+            if(tivxPlatformTargetMatch(kernel->target_name[idx], target_string) == vx_true_e)
             {
                 /* found a compatible target for this kernel */
-                target_id = tivxGetTargetId(target_string);
+                target_id = tivxPlatformGetTargetId(target_string);
                 break;
             }
         }
@@ -341,9 +341,9 @@ tivx_target_id_e ownKernelMatchTarget(vx_kernel kernel, const char *target_strin
     return target_id;
 }
 
-tivx_target_id_e ownKernelGetDefaultTarget(vx_kernel kernel)
+vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
 {
-    tivx_target_id_e target_id = TIVX_TARGET_ID_INVALID;
+    vx_enum target_id = TIVX_TARGET_ID_INVALID;
 
     if (kernel && ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
     {
@@ -356,7 +356,7 @@ tivx_target_id_e ownKernelGetDefaultTarget(vx_kernel kernel)
             /* valid target associated with kernel,
                take 0th index as default for this node
              */
-            target_id = tivxGetTargetId(kernel->target_name[0]);
+            target_id = tivxPlatformGetTargetId(kernel->target_name[0]);
         }
     }
     return target_id;

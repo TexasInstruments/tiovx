@@ -54,6 +54,11 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_EXECUTED       (0x00000002u)
 
+/*! \brief Flag to indicate if user callback is requested after node complete
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_FLAG_IS_USER_CALLBACK  (0x00000004u)
+
 /*! \brief Maximum number of objects supported in pyramid
  * \ingroup group_tivx_obj_desc
  */
@@ -216,12 +221,6 @@ typedef struct _tivx_obj_desc_node
     /*! \brief Handle to OpenVX Node reference, valid only on host side
      */
     uint32_t host_node_ref;
-
-    /*! \brief Handle to kernel allocated by target during node create phase */
-    uint32_t target_kernel_handle;
-
-    /*! \brief Size of Handle created by target */
-    uint32_t target_kernel_handle_size;
 
     /*! \brief Index in target kernel table
      *

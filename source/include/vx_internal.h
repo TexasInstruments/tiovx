@@ -47,11 +47,13 @@
 #include <TI/tivx_mem.h>
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>
+#include <tivx_platform.h>
 #include <tivx_mutex.h>
 #include <tivx_event.h>
 #include <tivx_task.h>
 #include <tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
+#include <tivx_target_kernel_priv.h>
 #include <tivx_target.h>
 
 #ifdef __cplusplus
@@ -122,6 +124,34 @@ extern "C" {
 #ifndef dimof
 #define dimof(x) (sizeof(x)/sizeof(x[0]))
 #endif
+
+/*! \brief Macro to check if flag is set, flag MUST be of bit type
+ * \ingroup group_vx_utils
+ */
+static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val)
+{
+    return (vx_bool)((flag_var & flag_val) == flag_val);
+}
+
+/*! \brief Macro to set flag value, flag MUST be of bit type
+ * \ingroup group_vx_utils
+ */
+static inline void tivxFlagBitSet(uint32_t *flag_var, uint32_t flag_val)
+{
+    *flag_var |= flag_val;
+}
+
+/*! \brief Macro to clear flag value, flag MUST be of bit type
+ * \ingroup group_vx_utils
+ */
+static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
+{
+    uint32_t value = *flag_var;
+
+    value |= (value & ~flag_val);
+
+    *flag_var = value;
+}
 
 #include <vx_debug.h>
 #include <vx_reference.h>
@@ -246,6 +276,11 @@ extern "C" {
  */
 
 /*!
+ * \defgroup group_tivx_target_kernel_priv Target Kernel APIs
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
  * \defgroup group_tivx_obj_desc_priv Object Descriptor APIs
  * \ingroup group_vx_framework_object
  */
@@ -276,6 +311,46 @@ extern "C" {
  */
 
 /*!
+ * \defgroup group_vx_objarray Object Array APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_array Array APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_convolution Convolution APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_distribution Distribution APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_lut LUT APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_matrix Matrix APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_pyramid Pyramid APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_threshold Threshold APIs
+ * \ingroup group_vx_framework_data_object
+ */
+
+/*!
  * \defgroup group_vx_framework_utils Utility and Debug Modules
  * \ingroup group_vx_framework
  */
@@ -300,6 +375,16 @@ extern "C" {
  */
 
 /*!
+ * \defgroup group_tivx_queue Queue APIs
+ * \ingroup group_vx_platform
+ */
+
+/*!
+ * \defgroup group_tivx_platform Platform APIs
+ * \ingroup group_vx_platform
+ */
+
+/*!
  * \defgroup group_tivx_mutex Mutex APIs
  * \ingroup group_vx_platform
  */
@@ -314,7 +399,3 @@ extern "C" {
  * \ingroup group_vx_platform
  */
 
-/*!
- * \defgroup group_tivx_queue Queue APIs
- * \ingroup group_vx_platform
- */

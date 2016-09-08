@@ -28,7 +28,7 @@
 
 
 include $(PRELUDE)
-TARGET      := vx_platform
+TARGET      := vx_platform_vision_sdk_bios
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/source/include

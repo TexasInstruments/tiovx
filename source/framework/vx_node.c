@@ -105,8 +105,6 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
     obj_desc->border_mode.mode = VX_BORDER_UNDEFINED;
     memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
 
-    obj_desc->target_kernel_handle = 0;
-    obj_desc->target_kernel_handle_size = 0;
     obj_desc->target_kernel_index = 0;
     obj_desc->exe_status = 0;
     obj_desc->exe_time_usecs = 0;
@@ -422,6 +420,22 @@ vx_status ownNodeCreateCompletionEvent(vx_node node)
     return status;
 }
 
+vx_status ownNodeSendCompletionEvent(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e && node->completion_event)
+    {
+        status = tivxEventPost(node->completion_event);
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return status;
+}
+
 vx_status ownNodeWaitCompletionEvent(vx_node node)
 {
     vx_status status = VX_SUCCESS;
@@ -457,7 +471,7 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node)
             node->obj_desc_cmd->flags = 0;
 
             /* this command is sent by the target node to HOST hence dst_target_id is HOST */
-            node->obj_desc_cmd->dst_target_id = tivxGetTargetId(TIVX_TARGET_HOST);
+            node->obj_desc_cmd->dst_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
 
             /* source is node target which is not known at this moment, however
              * since ACK is not required for this command, this can be set to INVALID
@@ -476,6 +490,21 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node)
     return status;
 }
 
+vx_action ownNodeExecuteUserCallback(vx_node node)
+{
+    vx_nodecomplete_f callback;
+    vx_action action = VX_ACTION_CONTINUE;
+
+    callback = vxRetrieveNodeCallback(node);
+
+    if(callback)
+    {
+        /* action is ignored */
+        action = callback(node);
+    }
+
+    return action;
+}
 
 VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel kernel)
 {
@@ -780,6 +809,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxAssignNodeCallback(vx_node node, vx_nodecom
         else
         {
             node->user_callback = callback;
+
+            if(callback)
+            {
+                tivxFlagBitSet(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
+            }
+            else
+            {
+                tivxFlagBitClear(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
+            }
             status = VX_SUCCESS;
         }
     }
@@ -956,7 +994,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
 
                 case VX_TARGET_STRING:
                     {
-                        tivx_target_id_e target_id;
+                        vx_enum target_id;
 
                         target_id = ownKernelGetTarget(node->kernel, target_string);
 
