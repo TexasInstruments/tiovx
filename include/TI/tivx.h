@@ -28,11 +28,6 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME    "openvx-core"
 
-/*! \brief Name for DSP target class
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_DSP         "DSP"
-
 /*! \brief Name for DSP target class, instance 1
  * \ingroup group_tivx_ext
  */
@@ -42,11 +37,6 @@ extern "C" {
  * \ingroup group_tivx_ext
  */
 #define TIVX_TARGET_DSP2        "DSP-2"
-
-/*! \brief Name for EVE target class
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_EVE         "EVE"
 
 /*! \brief Name for EVE target class, instance 1
  * \ingroup group_tivx_ext
@@ -68,20 +58,10 @@ extern "C" {
  */
 #define TIVX_TARGET_EVE4        "EVE-4"
 
-/*! \brief Name for A15 target class
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_A15         "A15"
-
 /*! \brief Name for A15 target class, core 0
  * \ingroup group_tivx_ext
  */
 #define TIVX_TARGET_A15_0       "A15-0"
-
-/*! \brief Name for IPU1 target class
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_IPU1        "IPU1"
 
 /*! \brief Name for IPU1 target class, core 0
  * \ingroup group_tivx_ext
@@ -111,10 +91,18 @@ extern "C" {
 /*!
  * \brief Associate a target with a kernel
  *
- *        Call multiple time for each support target or target class
+ *        Call multiple times for each supported target
  *
- *        Valid targets, duplicate targets not check by this APIs
- *        Valid targets checked during graph verify
+ *        If given target is not valid on current platform then
+ *        error VX_ERROR_NOT_SUPPORTED is returned.
+ *
+ *        Typically VX_ERROR_NOT_SUPPORTED error should be ignored for this API,
+ *        since this code is typically kept same across platforms
+ *
+ *        During graph verify however if user asks to run the kernel
+ *        on a target not supported by this platform it results in a
+ *        error and graph cannot execute.
+ *
  *
  * \ingroup group_tivx_ext
  */

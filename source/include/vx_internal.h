@@ -53,8 +53,9 @@
 #include <tivx_task.h>
 #include <tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
-#include <tivx_target_kernel_priv.h>
 #include <tivx_target.h>
+#include <tivx_target_kernel_priv.h>
+#include <tivx_target_kernel_instance.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -277,6 +278,11 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 
 /*!
  * \defgroup group_tivx_target_kernel_priv Target Kernel APIs
+ * \ingroup group_vx_framework_object
+ */
+
+/*!
+ * \defgroup group_tivx_target_kernel_instance Target Kernel Instance APIs
  * \ingroup group_vx_framework_object
  */
 

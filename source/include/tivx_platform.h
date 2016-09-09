@@ -45,7 +45,7 @@ typedef enum {
 } tivx_platform_lock_type_e;
 
 /*!
- * \brief Convert a target name or target class to a specific target ID
+ * \brief Convert a target name to a specific target ID
  *
  * \param target_name [in] Target name
  *

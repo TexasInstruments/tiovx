@@ -213,7 +213,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     uint16_t i;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
 
-    target_kernel_instance = tivxTargetKernelInstanceAlloc(node_obj_desc->kernel_id);
+    target_kernel_instance = tivxTargetKernelInstanceAlloc(node_obj_desc->kernel_id, node_obj_desc->target_id);
     if(target_kernel_instance == NULL)
     {
         status = VX_ERROR_NO_RESOURCES;

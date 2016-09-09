@@ -10,9 +10,6 @@
 #include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
 
-static tivx_target_kernel vx_absdiff_target_kernel;
-
-
 vx_status tivxAbsDiff(tivx_target_kernel_instance kernel, uint32_t target_kernel_instance_handle, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params)
 {
     vx_status status = VX_SUCCESS;
@@ -42,45 +39,24 @@ vx_status tivxAbsDiffControl(tivx_target_kernel_instance kernel, uint32_t target
 }
 
 
-vx_status tivxAddTargetKernelAbsDiff()
+void tivxAddTargetKernelAbsDiff()
 {
-    vx_status status;
-    tivx_target_kernel kernel;
+    tivxAddTargetKernel(
+                VX_KERNEL_ABSDIFF,
+                TIVX_TARGET_DSP1,
+                tivxAbsDiff,
+                tivxAbsDiffCreate,
+                tivxAbsDiffDelete,
+                tivxAbsDiffControl
+        );
 
-    kernel = tivxAddTargetKernel(
-                            VX_KERNEL_ABSDIFF,
-                            tivxAbsDiff,
-                            tivxAbsDiffCreate,
-                            tivxAbsDiffDelete,
-                            tivxAbsDiffControl
-                          );
-
-    if(kernel!=NULL)
-    {
-        status = tivxAddTargetKernelTarget(kernel, TIVX_TARGET_DSP);
-        if(status != VX_SUCCESS)
-        {
-            /* target does not match actual target's on this CPU */
-            tivxRemoveTargetKernel(&kernel);
-            kernel = NULL;
-        }
-    }
-    else
-    {
-        status = VX_FAILURE;
-    }
-
-    vx_absdiff_target_kernel = kernel;
-
-    return status;
+    tivxAddTargetKernel(
+                VX_KERNEL_ABSDIFF,
+                TIVX_TARGET_DSP2,
+                tivxAbsDiff,
+                tivxAbsDiffCreate,
+                tivxAbsDiffDelete,
+                tivxAbsDiffControl
+        );
 }
 
-vx_status tivxRemoveTargetKernelAbsDiff()
-{
-    vx_status status;
-    tivx_target_kernel kernel = vx_absdiff_target_kernel;
-
-    status = tivxRemoveTargetKernel(&kernel);
-
-    return status;
-}

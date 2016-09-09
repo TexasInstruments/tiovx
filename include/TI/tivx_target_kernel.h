@@ -68,29 +68,34 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance
  *
  */
 VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
-                             vx_enum enumeration,
+                             vx_enum kernel_id,
+                             char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
                              tivx_target_kernel_f control_func);
 
 /*!
- * \brief Associate a target with a kernel
+ * \brief Associate a kernel function context or handle with a target kernel instance
  *
- *        Call multiple time for each support target or target class
- *
- *        Valid targets, duplicate targets are checked by this API
+ *        Typically set by the kernel function during create phase
  *
  * \ingroup group_tivx_target_kernel
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxAddTargetKernelTarget(tivx_target_kernel kernel, char *target_name);
+VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
+            tivx_target_kernel_instance target_kernel_instance,
+            void *kernel_context, uint32_t kernel_context_size);
 
 /*!
- * \brief Remove kernel for kernel list
+ * \brief Get a kernel function context or handle with a target kernel instance
+ *
+ *        Typically used by the kernel function during run, control, delete phase
  *
  * \ingroup group_tivx_target_kernel
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(tivx_target_kernel *kernel);
+VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
+            tivx_target_kernel_instance target_kernel_instance,
+            void **kernel_context, uint32_t *kernel_context_size);
 
 #ifdef __cplusplus
 }
