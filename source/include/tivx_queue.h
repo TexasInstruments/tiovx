@@ -43,7 +43,39 @@ extern "C" {
  *
  * \ingroup group_tivx_queue
  */
-typedef struct _tivx_queue_t *tivx_queue;
+typedef struct _tivx_queue_t {
+
+  uint32_t cur_rd;
+  /**< Current read index */
+
+  uint32_t cur_wr;
+  /**< Current write index  */
+
+  uint32_t count;
+  /**< Count of element in queue  */
+
+  uint32_t max_ele;
+  /**< Max elements that be present in the queue  */
+
+  uint32_t *queue;
+  /**< Address of data area of the queue elements */
+
+  tivx_mutex mutex_rd;
+  /**< Read semaphore */
+
+  tivx_mutex mutex_wr;
+  /**< Write semaphore  */
+
+  uint32_t flags;
+  /**< Controls how APIs behave internally, i.e blocking wait or non-blocking */
+
+  volatile vx_bool blockedOnGet;
+  /**< Flag indicating queue is blocked on get operation */
+
+  volatile vx_bool blockedOnPut;
+  /**< Flag indicating queue is blocked on put operation */
+
+} tivx_queue;
 
 /*!
  * \brief Create a queue
@@ -83,7 +115,7 @@ vx_status tivxQueueDelete(tivx_queue *queue);
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueuePut(tivx_queue queue, uint32_t data, uint32_t timeout);
+vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout);
 
 /*!
  * \brief Extract a element from the queue
@@ -98,12 +130,7 @@ vx_status tivxQueuePut(tivx_queue queue, uint32_t data, uint32_t timeout);
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueueGet(tivx_queue queue, uint32_t *data, uint32_t timeout);
-
-
-
-
-
+vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout);
 
 #ifdef __cplusplus
 }

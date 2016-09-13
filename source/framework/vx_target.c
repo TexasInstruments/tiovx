@@ -56,7 +56,7 @@ static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc
 
     *obj_desc_id = TIVX_OBJ_DESC_INVALID;
 
-    status = tivxQueueGet(target->job_queue_handle,
+    status = tivxQueueGet(&target->job_queue_handle,
                 &value, timeout);
 
     if(status == VX_SUCCESS)
@@ -549,7 +549,7 @@ vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)
 
     if(target!=NULL)
     {
-        status = tivxQueuePut(target->job_queue_handle,
+        status = tivxQueuePut(&target->job_queue_handle,
                 obj_desc_id, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
 
