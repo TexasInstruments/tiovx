@@ -91,6 +91,21 @@ vx_status tivxTargetKernelControl(tivx_target_kernel_instance target_kernel_inst
  */
 tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, vx_enum target_id);
 
+/*!
+ * \brief Init target kernel module
+ *
+ * \ingroup group_tivx_target_kernel_priv
+ */
+vx_status tivxTargetKernelInit();
+
+/*!
+ * \brief DeInit target kernel module
+ *
+ * \ingroup group_tivx_target_kernel_priv
+ */
+void tivxTargetKernelDeInit();
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -27,7 +27,7 @@ vx_status tivxTargetKernelInit()
     return status;
 }
 
-void tivxTargetKernelInstanceDeInit()
+void tivxTargetKernelDeInit()
 {
     tivxMutexDelete(&g_target_kernel_lock);
 }
