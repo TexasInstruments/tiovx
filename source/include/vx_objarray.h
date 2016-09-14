@@ -68,14 +68,7 @@ typedef struct _vx_object_array
 } tivx_objarray_t;
 
 
-/*!
- * \brief Print object array info
- *
- * \param objarr [in] objarr
- *
- * \ingroup group_vx_objarray
- */
-void ownPrintObjArray(vx_object_array objarr);
+
 
 #ifdef __cplusplus
 }

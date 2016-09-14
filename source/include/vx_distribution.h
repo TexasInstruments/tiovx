@@ -66,14 +66,7 @@ typedef struct _vx_distribution
 } tivx_distribution_t;
 
 
-/*!
- * \brief Print distribution info
- *
- * \param distribution [in] distribution
- *
- * \ingroup group_vx_distribution
- */
-void ownPrintDistribution(vx_distribution cvl);
+
 
 #ifdef __cplusplus
 }

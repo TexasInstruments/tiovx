@@ -88,28 +88,6 @@ typedef struct _vx_array
 } tivx_array_t;
 
 
-/*!
- * \brief Print array info
- *
- * \param array [in] array
- *
- * \ingroup group_vx_array
- */
-void ownPrintArray(vx_array arr);
-
-/*!
- * \brief Initializes type and size of the virtual array
- *
- * \param array         [in] array
- * \param item_type     [in] item type, can be user also
- * \param capacity      [in] size of the array
- *
- * \return vx_true_e    if array is initialized
- *         vx_false_e   in case of error
- *
- * \ingroup group_vx_array
- */
-vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity);
 
 #ifdef __cplusplus
 }

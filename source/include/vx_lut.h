@@ -66,14 +66,7 @@ typedef struct _vx_lut
 } tivx_lut_t;
 
 
-/*!
- * \brief Print lut info
- *
- * \param lut [in] lut
- *
- * \ingroup group_vx_lut
- */
-void ownPrintLut(vx_lut lut);
+
 
 #ifdef __cplusplus
 }

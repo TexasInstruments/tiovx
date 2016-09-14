@@ -66,14 +66,7 @@ typedef struct _vx_convolution
 } tivx_convolution_t;
 
 
-/*!
- * \brief Print convolution info
- *
- * \param convolution [in] convolution
- *
- * \ingroup group_vx_convolution
- */
-void ownPrintConvolution(vx_convolution cvl);
+
 
 #ifdef __cplusplus
 }

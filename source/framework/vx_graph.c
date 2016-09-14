@@ -218,7 +218,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
     vx_status status = VX_SUCCESS;
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
     {
-        /*! \todo there are no settable attributes in this implementation yet... */
         status = VX_ERROR_NOT_SUPPORTED;
     }
     else

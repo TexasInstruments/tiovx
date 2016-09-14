@@ -66,14 +66,7 @@ typedef struct _vx_threshold
 } tivx_threshold_t;
 
 
-/*!
- * \brief Print Threshold info
- *
- * \param thr [in] thr
- *
- * \ingroup group_vx_threshold
- */
-void ownPrintThreshold(vx_threshold thr);
+
 
 #ifdef __cplusplus
 }

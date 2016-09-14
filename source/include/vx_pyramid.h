@@ -68,14 +68,7 @@ typedef struct _vx_pyramid
 } tivx_pyramid_t;
 
 
-/*!
- * \brief Print pyramid info
- *
- * \param pyramid [in] pyramid
- *
- * \ingroup group_vx_pyramid
- */
-void ownPrintPyramid(vx_pyramid prmd);
+
 
 #ifdef __cplusplus
 }

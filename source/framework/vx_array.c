@@ -74,6 +74,30 @@ static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type)
     return res;
 }
 
+/* TODO: implement virtual array object */
+vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
+{
+    vx_bool status = vx_false_e;
+
+    if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
+        &&
+        (arr->obj_desc != NULL))
+    {
+        if ((ownIsValidArrayItemType(arr->base.context, item_type) ==
+                vx_true_e) &&
+            (capacity > 0) &&
+            (VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
+            (vx_true_e == arr->base.is_virtual))
+        {
+            ownInitArrayObject(arr, item_type, capacity, vx_true_e);
+
+            status = vx_true_e;
+        }
+    }
+
+    return (status);
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseArray(vx_array *arr)
 {
     return (ownReleaseReferenceInt(
@@ -171,29 +195,6 @@ vx_array VX_API_CALL vxCreateVirtualArray(
     }
 
     return (arr);
-}
-
-vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
-{
-    vx_bool status = vx_false_e;
-
-    if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
-        &&
-        (arr->obj_desc != NULL))
-    {
-        if ((ownIsValidArrayItemType(arr->base.context, item_type) ==
-                vx_true_e) &&
-            (capacity > 0) &&
-            (VX_TYPE_INVALID != item_type) &&  /* It should not be invalid now */
-            (vx_true_e == arr->base.is_virtual))
-        {
-            ownInitArrayObject(arr, item_type, capacity, vx_true_e);
-
-            status = vx_true_e;
-        }
-    }
-
-    return (status);
 }
 
 vx_status VX_API_CALL vxQueryArray(

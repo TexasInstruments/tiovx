@@ -66,14 +66,7 @@ typedef struct _vx_matrix
 } tivx_matrix_t;
 
 
-/*!
- * \brief Print matrix info
- *
- * \param matrix [in] matrix
- *
- * \ingroup group_vx_matrix
- */
-void ownPrintMatrix(vx_matrix matrix);
+
 
 #ifdef __cplusplus
 }
