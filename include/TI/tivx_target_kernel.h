@@ -22,6 +22,13 @@ extern "C" {
 
 #include <TI/tivx_obj_desc.h>
 
+/*!
+ * \brief Max target kernel that will be active on a CPU
+ *       at the same time
+ * \ingroup group_tivx_target_kernel
+ */
+#define TIVX_TARGET_KERNEL_MAX     (16u)
+
 /*! \brief Handle to kernel on a target
  *
  * \ingroup group_tivx_target_kernel
@@ -50,7 +57,7 @@ typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 *
 * \ingroup group_tivx_target_kernel
 */
-typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance kernel, uint32_t target_kernel_instance_handle, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /*! \brief Allows users to add native kernels implementation to specific targets
  *
