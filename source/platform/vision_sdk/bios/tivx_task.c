@@ -38,7 +38,7 @@
 
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
-#include <osal/bsp_osalCfg.h>
+
 
 
 void tivxTaskDefHandle(UInt32 arg0, UInt32 arg1)

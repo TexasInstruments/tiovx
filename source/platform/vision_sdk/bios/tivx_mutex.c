@@ -39,7 +39,7 @@
 
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
-#include <osal/bsp_osalCfg.h>
+
 
 vx_status tivxMutexCreate(tivx_mutex *mutex)
 {

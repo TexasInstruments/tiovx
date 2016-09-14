@@ -39,8 +39,6 @@
 
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
-#include <osal/bsp_osalCfg.h>
-#include <ti/sysbios/hal/Cache.h>
 
 #include <src/utils_common/include/utils_mem_if.h>
 
@@ -154,11 +152,11 @@ void tivxMemBufferMap(
 {
     if ((NULL != host_ptr) && (0 != size))
     {
-        Cache_inv(
+        BspOsal_cacheInv(
             host_ptr,
             size,
-            Cache_Type_ALLD,
-            TRUE);
+            BSP_OSAL_CT_ALLD,
+            BSP_OSAL_WAIT_FOREVER);
     }
 }
 
@@ -167,11 +165,11 @@ void tivxMemBufferUnmap(
 {
     if ((NULL != host_ptr) && (0 != size))
     {
-        Cache_wb(
+        BspOsal_cacheWb(
             host_ptr,
             size,
-            Cache_Type_ALLD,
-            TRUE);
+            BSP_OSAL_CT_ALLD,
+            BSP_OSAL_WAIT_FOREVER);
     }
 }
 
