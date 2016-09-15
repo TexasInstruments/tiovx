@@ -64,7 +64,7 @@ typedef struct _vx_object_array
     tivx_obj_desc_objarray_t *obj_desc;
 
     /*! \brief array of references to the objects */
-    vx_reference ref[TIVX_MAX_OBJECT_ARRAY];
+    vx_reference ref[TIVX_OBJECT_ARRAY_MAX_OBJECT];
 } tivx_objarray_t;
 
 

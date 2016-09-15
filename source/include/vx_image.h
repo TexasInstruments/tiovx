@@ -53,14 +53,14 @@ extern "C" {
 /*!
  * \brief Max possible sub images from a image
  *
- * \ingroup group_vx_image
+ * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_SUBIMAGES     (16u)
 
 /*!
  * \brief Max possible mapping via vxMapImagePatch supported
  *
- * \ingroup group_vx_image
+ * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_MAPS     (16u)
 

@@ -9,7 +9,7 @@
 
 #include <vx_internal.h>
 
-static tivx_module_t modules[TIVX_MAX_MODULES];
+static tivx_module_t g_module_table[TIVX_MODULE_MAX];
 
 static void ownCheckAndInitModule()
 {
@@ -18,10 +18,10 @@ static void ownCheckAndInitModule()
 
     if(!is_init)
     {
-        for(idx=0; idx<dimof(modules); idx++)
+        for(idx=0; idx<dimof(g_module_table); idx++)
         {
-            modules[idx].publish = NULL;
-            modules[idx].unpublish = NULL;
+            g_module_table[idx].publish = NULL;
+            g_module_table[idx].unpublish = NULL;
         }
         is_init = vx_true_e;
     }
@@ -33,11 +33,11 @@ uint32_t ownGetModuleCount()
 
     ownCheckAndInitModule();
 
-    for(idx=0; idx<dimof(modules); idx++)
+    for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( modules[idx].publish != NULL
+        if( g_module_table[idx].publish != NULL
             &&
-            modules[idx].unpublish != NULL
+            g_module_table[idx].unpublish != NULL
           )
         {
             count++;
@@ -55,21 +55,21 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_ker
 
     if(publish != NULL && unpublish != NULL)
     {
-        for(idx=0; idx<dimof(modules); idx++)
+        for(idx=0; idx<dimof(g_module_table); idx++)
         {
-            if(modules[idx].publish == NULL
+            if(g_module_table[idx].publish == NULL
                 &&
-                modules[idx].unpublish == NULL
+                g_module_table[idx].unpublish == NULL
               )
             {
-                strncpy(modules[idx].name, name, TIVX_MAX_MODULE_NAME);
-                modules[idx].publish = publish;
-                modules[idx].unpublish = unpublish;
+                strncpy(g_module_table[idx].name, name, TIVX_MODULE_MAX_NAME);
+                g_module_table[idx].publish = publish;
+                g_module_table[idx].unpublish = unpublish;
                 status = VX_SUCCESS;
                 break;
             }
         }
-        if(idx>=dimof(modules))
+        if(idx>=dimof(g_module_table))
         {
             status = VX_ERROR_NO_RESOURCES;
         }
@@ -89,17 +89,17 @@ VX_API_ENTRY vx_status tivxUnRegisterModule(char *name)
 
     ownCheckAndInitModule();
 
-    for(idx=0; idx<dimof(modules); idx++)
+    for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( modules[idx].publish != NULL
+        if( g_module_table[idx].publish != NULL
             &&
-            modules[idx].unpublish != NULL
+            g_module_table[idx].unpublish != NULL
             &&
-            (strncmp(modules[idx].name, name, TIVX_MAX_MODULE_NAME) == 0)
+            (strncmp(g_module_table[idx].name, name, TIVX_MODULE_MAX_NAME) == 0)
           )
         {
-            modules[idx].publish = NULL;
-            modules[idx].unpublish = NULL;
+            g_module_table[idx].publish = NULL;
+            g_module_table[idx].unpublish = NULL;
             status = VX_SUCCESS;
             break;
         }
@@ -114,19 +114,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
     vx_status status = VX_FAILURE;
 
     ownCheckAndInitModule();
-    for(idx=0; idx<dimof(modules); idx++)
+    for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( modules[idx].publish != NULL
+        if( g_module_table[idx].publish != NULL
             &&
-            modules[idx].unpublish != NULL
+            g_module_table[idx].unpublish != NULL
             &&
-            (strncmp(modules[idx].name, module, TIVX_MAX_MODULE_NAME) == 0)
+            (strncmp(g_module_table[idx].name, module, TIVX_MODULE_MAX_NAME) == 0)
           )
         {
-            status = modules[idx].publish(context);
+            status = g_module_table[idx].publish(context);
         }
     }
-    if(idx>=dimof(modules))
+    if(idx>=dimof(g_module_table))
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
@@ -140,19 +140,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
     vx_status status = VX_FAILURE;
 
     ownCheckAndInitModule();
-    for(idx=0; idx<dimof(modules); idx++)
+    for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( modules[idx].publish != NULL
+        if( g_module_table[idx].publish != NULL
             &&
-            modules[idx].unpublish != NULL
+            g_module_table[idx].unpublish != NULL
             &&
-            (strncmp(modules[idx].name, module, TIVX_MAX_MODULE_NAME) == 0)
+            (strncmp(g_module_table[idx].name, module, TIVX_MODULE_MAX_NAME) == 0)
           )
         {
-            status = modules[idx].unpublish(context);
+            status = g_module_table[idx].unpublish(context);
         }
     }
-    if(idx>=dimof(modules))
+    if(idx>=dimof(g_module_table))
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }

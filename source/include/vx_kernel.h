@@ -94,7 +94,7 @@ typedef struct _vx_kernel
     /*! \brief number of supported targets */
     vx_uint32               num_targets;
     /*! \brief target names, index 0 is the default or preferred target for this kernel */
-    char                    target_name[TIVX_MAX_TARGETS_PER_KERNEL][TIVX_MAX_TARGET_NAME];
+    char                    target_name[TIVX_MAX_TARGETS_PER_KERNEL][TIVX_TARGET_MAX_NAME];
 
 } tivx_kernel_t;
 

@@ -23,7 +23,7 @@ extern "C" {
  */
 
 /*! \brief Max object descriptors than be parameters in a command object
- * \ingroup group_tivx_obj_desc_priv
+ * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_CMD_MAX_OBJ_DESCS        (16u)
 

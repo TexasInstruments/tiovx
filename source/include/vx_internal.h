@@ -107,13 +107,6 @@ extern "C" {
  */
 #define TIVX_BAD_MAGIC        (42)
 
-/*!
- * \brief Max possible name of a target
- *
- * \ingroup group_vx_utils
- */
-#define TIVX_MAX_TARGET_NAME    (16u)
-
 /*! \brief A parameter checker for size and alignment.
  * \ingroup group_vx_utils
  */
@@ -354,6 +347,56 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 /*!
  * \defgroup group_vx_threshold Threshold APIs
  * \ingroup group_vx_framework_data_object
+ */
+
+/*!
+ * \defgroup group_vx_framework_config Framework Configuration Parameters
+ * \ingroup group_vx_framework
+ */
+
+/*!
+ * \defgroup group_vx_context_cfg Context Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_graph_cfg Graph Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_target_cfg Target Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_target_kernel_cfg Target Kernel Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_target_kernel_instance_cfg Target Kernel Instance Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_module_cfg Module Configuration Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc_cfg Object Descriptor Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_image_cfg Data Object: Image Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_array_cfg Data Object: Array Configuration
+ * \ingroup group_vx_framework_config
  */
 
 /*!

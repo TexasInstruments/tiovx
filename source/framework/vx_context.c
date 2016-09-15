@@ -37,17 +37,17 @@
 
 #include <vx_internal.h>
 
-static const vx_char implementation[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
+static const vx_char g_context_implmentation_name[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
 
-static const vx_char default_module[] = TIVX_MODULE_NAME;
+static const vx_char g_context_default_load_module[] = TIVX_MODULE_NAME;
 
-static const vx_char extensions[] = " ";
+static const vx_char g_context_extensions[] = " ";
 
-static vx_context single_context = NULL;
+static vx_context g_context_handle = NULL;
 
-static tivx_mutex context_lock = NULL;
+static tivx_mutex g_context_lock = NULL;
 
-static tivx_context_t single_context_obj;
+static tivx_context_t g_context_obj;
 
 static vx_bool ownIsValidBorderMode(vx_enum mode)
 {
@@ -372,17 +372,17 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
     vx_status status = VX_SUCCESS;
     uint32_t idx;
 
-    if (context_lock == NULL)
+    if (g_context_lock == NULL)
     {
-        status = tivxMutexCreate(&context_lock);
+        status = tivxMutexCreate(&g_context_lock);
     }
 
     if(status==VX_SUCCESS)
     {
-        tivxMutexLock(context_lock);
-        if (single_context == NULL)
+        tivxMutexLock(g_context_lock);
+        if (g_context_handle == NULL)
         {
-            context = &single_context_obj;
+            context = &g_context_obj;
 
             memset(context, 0, sizeof(tivx_context_t));
 
@@ -420,7 +420,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                     {
                         ownIncrementReference(&context->base, VX_EXTERNAL);
                         ownCreateConstErrors(context);
-                        single_context = context;
+                        g_context_handle = context;
                     }
                 }
                 if(status!=VX_SUCCESS)
@@ -442,15 +442,15 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                  * Error's are not checked here,
                  * User can check kernels that are added using vxQueryContext()
                  */
-                vxLoadKernels(context, default_module);
+                vxLoadKernels(context, g_context_default_load_module);
             }
         }
         else
         {
-            context = single_context;
+            context = g_context_handle;
             ownIncrementReference(&context->base, VX_EXTERNAL);
         }
-        tivxMutexUnlock(context_lock);
+        tivxMutexUnlock(g_context_lock);
     }
     return context;
 }
@@ -465,7 +465,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         *c = 0;
     }
-    tivxMutexLock(context_lock);
+    tivxMutexLock(g_context_lock);
     if (ownIsValidContext(context) == vx_true_e)
     {
         if (ownDecrementReference(&context->base, VX_EXTERNAL) == 0)
@@ -521,7 +521,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             tivxMutexDelete(&context->base.lock);
             memset(context, 0, sizeof(tivx_context_t));
 
-            single_context = NULL;
+            g_context_handle = NULL;
         }
         else
         {
@@ -532,7 +532,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
-    tivxMutexUnlock(context_lock);
+    tivxMutexUnlock(g_context_lock);
     return status;
 }
 
@@ -590,7 +590,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case VX_CONTEXT_IMPLEMENTATION:
                 if (size <= VX_MAX_IMPLEMENTATION_NAME && ptr)
                 {
-                    strncpy(ptr, implementation, VX_MAX_IMPLEMENTATION_NAME);
+                    strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
                 }
                 else
                 {
@@ -600,7 +600,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case VX_CONTEXT_EXTENSIONS_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = sizeof(extensions);
+                    *(vx_size *)ptr = sizeof(g_context_extensions);
                 }
                 else
                 {
@@ -608,9 +608,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_EXTENSIONS:
-                if (size <= sizeof(extensions) && ptr)
+                if (size <= sizeof(g_context_extensions) && ptr)
                 {
-                    strncpy(ptr, extensions, sizeof(extensions));
+                    strncpy(ptr, g_context_extensions, sizeof(g_context_extensions));
                 }
                 else
                 {
@@ -640,7 +640,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
             case VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = TIVX_CONTEXT_OPTICALFLOWPYRLK_MAX_DIM;
+                    *(vx_size *)ptr = TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM;
                 }
                 else
                 {

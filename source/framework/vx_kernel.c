@@ -304,7 +304,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
         {
             strncpy(kernel->target_name[kernel->num_targets],
                     target_name,
-                    TIVX_MAX_TARGET_NAME
+                    TIVX_TARGET_MAX_NAME
                 );
             kernel->num_targets++;
         }

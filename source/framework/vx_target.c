@@ -9,7 +9,7 @@
 
 #include <vx_internal.h>
 
-static tivx_target_t g_targets[TIVX_TARGET_MAX_TARGETS_IN_CPU];
+static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
 
 static tivx_target tivxTargetAllocHandle(vx_enum target_id)
 {
@@ -18,7 +18,7 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
 
     if(target_inst < TIVX_TARGET_MAX_TARGETS_IN_CPU)
     {
-        tmp_target = &g_targets[target_inst];
+        tmp_target = &g_target_table[target_inst];
 
         if(tmp_target->target_id == target_id)
         {
@@ -74,7 +74,7 @@ static tivx_target tivxTargetGetHandle(vx_enum target_id)
 
     if(target_inst < TIVX_TARGET_MAX_TARGETS_IN_CPU)
     {
-        tmp_target = &g_targets[target_inst];
+        tmp_target = &g_target_table[target_inst];
 
         if(tmp_target->target_id == target_id)
         {
@@ -573,8 +573,8 @@ void tivxTargetInit()
 {
     uint16_t i;
 
-    for(i=0; i<dimof(g_targets); i++)
+    for(i=0; i<dimof(g_target_table); i++)
     {
-        g_targets[i].target_id = TIVX_TARGET_ID_INVALID;
+        g_target_table[i].target_id = TIVX_TARGET_ID_INVALID;
     }
 }

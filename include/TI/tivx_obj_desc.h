@@ -25,24 +25,34 @@ extern "C" {
 /*!
  * \brief Max possible planes of data in an image
  *
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_IMAGE_MAX_PLANES   (3u)
 
 /*! \brief Max parameters in a kernel
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_KERNEL_MAX_PARAMS      (8u)
 
 /*! \brief Max nodes taking output form a given node
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_MAX_OUT_NODES      (8u)
+#define TIVX_NODE_MAX_OUT_NODES      (8u)
 
 /*! \brief Max nodes feeding input to a given node
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_MAX_IN_NODES      (8u)
+#define TIVX_NODE_MAX_IN_NODES      (8u)
+
+/*! \brief Maximum number of objects supported in pyramid
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_PYRAMID_MAX_OBJECT         (32)
+
+/*! \brief Maximum number of objects supported in object array
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_OBJECT_ARRAY_MAX_OBJECT           (32)
 
 /*! \brief Flag to indicate if node is replicated
  * \ingroup group_tivx_obj_desc
@@ -59,15 +69,7 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_USER_CALLBACK  (0x00000004u)
 
-/*! \brief Maximum number of objects supported in pyramid
- * \ingroup group_tivx_obj_desc
- */
-#define TIVX_MAX_PYRAMID_OBJECT         (32)
 
-/*! \brief Maximum number of objects supported in object array
- * \ingroup group_tivx_obj_desc
- */
-#define TIVX_MAX_OBJECT_ARRAY           (32)
 
 /*!
  * \brief Enum that list all possible object descriptor type's
@@ -253,10 +255,10 @@ typedef struct _tivx_obj_desc_node
     uint16_t data_id[TIVX_KERNEL_MAX_PARAMS];
 
     /*! \brief parameter object descriptors */
-    uint16_t out_node_id[TIVX_MAX_OUT_NODES];
+    uint16_t out_node_id[TIVX_NODE_MAX_OUT_NODES];
 
     /*! \brief parameter object descriptors */
-    uint16_t in_node_id[TIVX_MAX_IN_NODES];
+    uint16_t in_node_id[TIVX_NODE_MAX_IN_NODES];
 
 } tivx_obj_desc_node_t;
 
@@ -400,7 +402,7 @@ typedef struct _tivx_obj_desc_pyramid
     vx_df_image format;
 
     /*! \brief array of object descriptor ids for the image object */
-    uint16_t obj_desc_id[TIVX_MAX_PYRAMID_OBJECT];
+    uint16_t obj_desc_id[TIVX_PYRAMID_MAX_OBJECT];
 } tivx_obj_desc_pyramid_t;
 
 /*!
@@ -526,7 +528,7 @@ typedef struct _tivx_obj_desc_objarray
     uint32_t num_items;
 
     /*! \brief array of descriptor ids of the objects */
-    uint16_t obj_desc_id[TIVX_MAX_OBJECT_ARRAY];
+    uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_OBJECT];
 } tivx_obj_desc_objarray_t;
 
 /*!

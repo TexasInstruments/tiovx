@@ -22,13 +22,6 @@ extern "C" {
 
 #include <TI/tivx_obj_desc.h>
 
-/*!
- * \brief Max target kernel that will be active on a CPU
- *       at the same time
- * \ingroup group_tivx_target_kernel
- */
-#define TIVX_TARGET_KERNEL_MAX     (16u)
-
 /*! \brief Handle to kernel on a target
  *
  * \ingroup group_tivx_target_kernel

@@ -42,7 +42,7 @@ typedef struct _vx_enum_type_size {
     vx_size item_size;
 } vx_enum_type_size_t;
 
-static vx_enum_type_size_t enum_type_sizes[] = {
+static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {VX_TYPE_INVALID,   0},
     {VX_TYPE_CHAR,      sizeof(vx_char)},
     {VX_TYPE_INT8,      sizeof(vx_int8)},
@@ -70,9 +70,9 @@ vx_size ownSizeOfEnumType(vx_enum item_type)
     vx_uint32 i = 0;
     vx_size size = 0ul;
 
-    for (i = 0; i < dimof(enum_type_sizes); i++) {
-        if (item_type == enum_type_sizes[i].item_type) {
-            size = enum_type_sizes[i].item_size;
+    for (i = 0; i < dimof(g_reference_enum_type_sizes); i++) {
+        if (item_type == g_reference_enum_type_sizes[i].item_type) {
+            size = g_reference_enum_type_sizes[i].item_size;
             break;
         }
     }

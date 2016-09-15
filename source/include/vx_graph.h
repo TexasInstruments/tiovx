@@ -50,27 +50,27 @@ extern "C" {
 
 
 /*! \brief Max possible nodes in graph
- * \ingroup group_vx_graph
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_NODES               (32u)
 
 /*! \brief Max possible head nodes in graph
- * \ingroup group_vx_graph
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_HEAD_NODES          (8u)
 
 /*! \brief Max possible leaf nodes in graph
- * \ingroup group_vx_graph
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_LEAF_NODES          (8u)
 
 /*! \brief Max possible parameters in graph
- * \ingroup group_vx_graph
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_PARAMS              (8u)
 
 /*! \brief Max possible delays in graph
- * \ingroup group_vx_graph
+ * \ingroup group_vx_graph_cfg
  */
 #define TIVX_GRAPH_MAX_DELAYS              (8u)
 

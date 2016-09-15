@@ -22,14 +22,14 @@ extern "C" {
  */
 
 /*! \brief Maximum possible modules in system \
- * \ingroup group_vx_module
+ * \ingroup group_vx_module_cfg
  */
-#define TIVX_MAX_MODULES        (10u)
+#define TIVX_MODULE_MAX        (8u)
 
 /*! \brief Maximum possible name of a module in system
- * \ingroup group_vx_module
+ * \ingroup group_vx_module_cfg
  */
-#define TIVX_MAX_MODULE_NAME    (256u)
+#define TIVX_MODULE_MAX_NAME    (256u)
 
 /*!
  * \brief Module object internal state
@@ -39,7 +39,7 @@ extern "C" {
 typedef struct _vx_module
 {
     /*! \brief names of modules */
-    vx_char        name[TIVX_MAX_MODULE_NAME];
+    vx_char        name[TIVX_MODULE_MAX_NAME];
 
     /*! \brief callback to publish nodes in a module */
     vx_publish_kernels_f publish;

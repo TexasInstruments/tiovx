@@ -66,7 +66,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
         {
             status = VX_FAILURE;
         }
-        if (levels > TIVX_MAX_PYRAMID_OBJECT)
+        if (levels > TIVX_PYRAMID_MAX_OBJECT)
         {
             status = VX_FAILURE;
         }
@@ -145,7 +145,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     /* levels can not be 0 even in virtual prmd */
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
             vx_true_e) &&
-        (levels > 0) && (levels < TIVX_MAX_PYRAMID_OBJECT))
+        (levels > 0) && (levels < TIVX_PYRAMID_MAX_OBJECT))
     {
         context = graph->base.context;
 

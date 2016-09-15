@@ -51,7 +51,7 @@ extern "C" {
 /*!
  * \brief Max possible references in a context
  *
- * \ingroup group_vx_context
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_REFERENCES     (64u)
 
@@ -59,32 +59,31 @@ extern "C" {
 /*!
  * \brief Max possible unique kernels in a context
  *
- * \ingroup group_vx_context
+ * \ingroup group_vx_context_cfg
  */
-#define TIVX_MAX_KERNELS_IN_CONTEXT     (128u)
+#define TIVX_CONTEXT_MAX_KERNELS     (128u)
 
 /*!
  * \brief Max possible user structs in a context
  *
- * \ingroup group_vx_context
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_USER_STRUCTS   (16u)
 
 /*! \brief The largest convolution matrix the specification requires support for is 15x15.
- * \ingroup group_vx_context
+ * \ingroup group_vx_context_cfg
  */
 #define TIVX_CONTEXT_MAX_CONVOLUTION_DIM (15)
 
 /*! \brief The largest optical flow pyr LK window.
- * \ingroup group_vx_context
+ * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_OPTICALFLOWPYRLK_MAX_DIM (9)
+#define TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM (9)
 
 /*! \brief The largest nonlinear filter matrix the specification requires support for is 9x9.
-* \ingroup group_vx_context
+* \ingroup group_vx_context_cfg
 */
 #define TIVX_CONTEXT_MAX_NONLINEAR_DIM (9)
-
 
 /*! \brief The top level context data for the entire OpenVX instance
  * \ingroup group_vx_context
@@ -119,7 +118,7 @@ typedef struct _vx_context {
     /*! \brief The immediate mode enumeration */
     vx_enum             imm_target_enum;
     /*! \brief The immediate mode target string */
-    vx_char             imm_target_string[TIVX_MAX_TARGET_NAME];
+    vx_char             imm_target_string[TIVX_TARGET_MAX_NAME];
     /*! \brief The list of user defined structs. */
     struct {
         /*! \brief Type constant */
@@ -128,7 +127,7 @@ typedef struct _vx_context {
         vx_size size;
     } user_structs[TIVX_CONTEXT_MAX_USER_STRUCTS];
     /*! Information about all kernels suported in this context */
-    vx_kernel kerneltable[TIVX_MAX_KERNELS_IN_CONTEXT];
+    vx_kernel kerneltable[TIVX_CONTEXT_MAX_KERNELS];
 
     /*! Command object that is used to send control messages to different target */
     tivx_obj_desc_cmd_t *obj_desc_cmd;

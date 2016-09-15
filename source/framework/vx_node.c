@@ -348,7 +348,7 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
     }
     if(is_present == vx_false_e)
     {
-        if(num_out_nodes < TIVX_MAX_OUT_NODES)
+        if(num_out_nodes < TIVX_NODE_MAX_OUT_NODES)
         {
             node->obj_desc->out_node_id[num_out_nodes] = out_node_id;
             num_out_nodes++;
@@ -382,7 +382,7 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
     }
     if(is_present == vx_false_e)
     {
-        if(num_in_nodes < TIVX_MAX_IN_NODES)
+        if(num_in_nodes < TIVX_NODE_MAX_IN_NODES)
         {
             node->obj_desc->in_node_id[num_in_nodes] = in_node_id;
             num_in_nodes++;

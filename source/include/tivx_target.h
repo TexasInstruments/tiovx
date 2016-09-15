@@ -21,6 +21,25 @@ extern "C" {
  * \brief Implementation of Target Object APIs
  */
 
+/*!
+ * \brief Max possible name of a target
+ *
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_TARGET_MAX_NAME            (16u)
+
+/*!
+ * \brief Max number of Target that can exist on a CPU
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
+
+/*!
+ * \brief Max depth of queue associated with target
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (32u)
+
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
  */
@@ -62,18 +81,6 @@ extern "C" {
  * \ingroup group_tivx_target
  */
 #define TIVX_CPU_ID_INVALID         (0xFFFFFFFFu)
-
-/*!
- * \brief Max number of Target that can exist on a CPU
- * \ingroup group_tivx_target
- */
-#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
-
-/*!
- * \brief Max depth of queue associated with target
- * \ingroup group_tivx_target
- */
-#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (32u)
 
 /*! \brief Command ID for commands that can be send to a target
  * \ingroup group_tivx_target
