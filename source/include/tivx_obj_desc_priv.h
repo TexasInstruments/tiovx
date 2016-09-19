@@ -37,6 +37,15 @@ extern "C" {
  */
 #define TIVX_CMD_FLAG_IS_ACK             (0x00000002u)
 
+/*! \brief Shift for storing Object Descriptor id in 32bit variable
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_ID_SHIFT           (12u)
+/*! \brief Mask for storing Object Descriptor id in 32bit variable
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_ID_MASK            (0x0FFFF000u)
+
 
 /*!
  * \brief Command object descriptor

@@ -20,6 +20,12 @@ extern "C" {
  * \brief Vision SDK Platform APIs
  */
 
+
+/*! \brief Maximum number of targets and thus targetid supported
+ */
+#define TIVX_MAX_TARGETS            (12u)
+
+
 /*! \brief CPU ID for supported CPUs
  *
  *         CPU ID is defined in platform module since
@@ -27,6 +33,11 @@ extern "C" {
  *
  *         Current CPU IDs are defined assuming TDA2x/3x/2Ex
  *         family of SoCs
+ *
+ *         Caution: This enum is used as index into the array
+ *         #gPlatformCpuIdMap, so change in this enum will require
+ *         change in this array as well.
+ *
  *
  * \ingroup group_tivx_platform
  */
@@ -64,6 +75,9 @@ typedef enum _tivx_cpu_id_e {
 
     /*! \brief CPU ID for A15-0 */
     TIVX_CPU_ID_A15_1 = 10,
+
+    /*! \brief Invalid CPU ID */
+    TIVX_INVALID_CPU_ID = 0xFF
 
 } tivx_cpu_id_e;
 
@@ -103,6 +117,27 @@ typedef enum _tivx_target_id_e {
     TIVX_TARGET_ID_A15_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A15_0, 0),
 
 } tivx_target_id_e;
+
+
+/*! \brief Mapping of Target names with Target Ids
+ *   Used to initialize internal structure
+ *
+ * \ingroup group_tivx_target
+ */
+#define TIVX_TARGET_INFO                                                       \
+{                                                                              \
+    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_DSP1},                                   \
+    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_DSP2},                                   \
+    {TIVX_TARGET_EVE1, TIVX_TARGET_ID_EVE1},                                   \
+    {TIVX_TARGET_EVE2, TIVX_TARGET_ID_EVE2},                                   \
+    {TIVX_TARGET_EVE3, TIVX_TARGET_ID_EVE3},                                   \
+    {TIVX_TARGET_EVE4, TIVX_TARGET_ID_EVE4},                                   \
+    {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_IPU1_0},                               \
+    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_IPU1_1},                               \
+    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_IPU2_0},                                 \
+    {TIVX_TARGET_A15_0, TIVX_TARGET_ID_A15_0},                                 \
+    {TIVX_TARGET_HOST, TIVX_TARGET_ID_IPU1_0}                                  \
+}
 
 #ifdef __cplusplus
 }

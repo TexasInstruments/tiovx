@@ -119,3 +119,12 @@ vx_status tivxTaskDelete(tivx_task *task)
     return (status);
 }
 
+void tivxTaskWaitMsecs(uint32_t msec)
+{
+    BspOsal_sleep(msec);
+}
+
+uint32_t tivxTaskGetTimeInUsecs()
+{
+    return BspOsal_getCurTimeInUsec();
+}

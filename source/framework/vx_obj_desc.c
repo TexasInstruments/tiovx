@@ -14,19 +14,26 @@
 static tivx_obj_desc_table_info_t g_obj_desc_table;
 
 
-static inline uint32_t tivxIpcPayloadMake(vx_enum dst_target_id, uint16_t obj_desc_id)
+static inline uint32_t tivxIpcPayloadMake(
+    vx_enum dst_target_id, uint16_t obj_desc_id)
 {
-    return ( (((uint32_t)(dst_target_id & TIVX_TARGET_ID_MASK))<<16u) | obj_desc_id );
+
+    /* Keep the desc id in the upper 16bits and target id in lower 8bits */
+    return (uint32_t)((((uint32_t)obj_desc_id & TIVX_OBJ_DESC_ID_MASK)<<
+                            TIVX_OBJ_DESC_ID_SHIFT) |
+        (((uint32_t)dst_target_id & TIVX_TARGET_ID_MASK) <<
+            TIVX_TARGET_ID_SHIFT));
 }
 
 static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
 {
-    return (uint16_t)(payload & 0xFFFFu);
+    return (uint16_t)((payload & TIVX_OBJ_DESC_ID_MASK) >>
+        TIVX_OBJ_DESC_ID_SHIFT);
 }
 
 static inline vx_enum tivxIpcPayloadGetTargetId(uint32_t payload)
 {
-    return (payload >> 16u) & TIVX_TARGET_ID_MASK;
+    return (payload & TIVX_TARGET_ID_MASK);
 }
 
 static void tivxObjDescIpcHandler(uint32_t payload)
