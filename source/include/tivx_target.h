@@ -45,20 +45,30 @@ extern "C" {
  */
 #define TIVX_TARGET_INST_MASK (0xFu)
 
+/*! \brief Target ID bit mask
+ * \ingroup group_tivx_target
+ */
+#define TIVX_TARGET_INST_SHIFT (0x0u)
+
 /*! \brief CPU ID bit mask
  * \ingroup group_tivx_target
  */
 #define TIVX_CPU_ID_MASK    (0xFu)
+
+/*! \brief CPU ID bit shift
+ * \ingroup group_tivx_target
+ */
+#define TIVX_CPU_ID_SHIFT   (0x4)
 
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
  */
 #define TIVX_TARGET_ID_MASK     (0xFFu)
 
-/*! \brief CPU ID bit shift
+/*! \brief Target ID bit shift
  * \ingroup group_tivx_target
  */
-#define TIVX_CPU_ID_SHIFT   (0x4)
+#define TIVX_TARGET_ID_SHIFT    (0x0u)
 
 /*! \brief Make target based on CPU ID
  *
@@ -67,10 +77,24 @@ extern "C" {
  *
  * \ingroup group_tivx_target
  */
-#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)((((cpu)&TIVX_CPU_ID_MASK) << TIVX_CPU_ID_SHIFT) |((target_inst)&TIVX_TARGET_INST_MASK)))
+#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)((((cpu)&TIVX_CPU_ID_MASK) << TIVX_CPU_ID_SHIFT) |(((target_inst)&TIVX_TARGET_INST_MASK) << TIVX_TARGET_INST_SHIFT)))
 
+/*! \brief Get CPU Id from given target
+ *
+ *         CPU Id is stored in upper nibble of the lower 8bits of the target
+ *
+ * \ingroup group_tivx_target
+ */
 #define TIVX_GET_CPU_ID(target)                ((vx_enum)(((target)>>TIVX_CPU_ID_SHIFT)&TIVX_CPU_ID_MASK))
-#define TIVX_GET_TARGET_INST(target)           ((uint16_t)((target)&TIVX_TARGET_INST_MASK))
+
+/*! \brief Get the target instances from target
+ *
+ *         Target Id is stored in lower nibble of 8bit target
+ *
+ * \ingroup group_tivx_target
+ */
+#define TIVX_GET_TARGET_INST(target)           ((uint16_t)(((target)>>TIVX_TARGET_INST_SHIFT)) & TIVX_TARGET_INST_MASK)
+
 
 /*! \brief Const to denote invalid ID's
  * \ingroup group_tivx_target

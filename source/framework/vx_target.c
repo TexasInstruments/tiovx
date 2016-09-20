@@ -180,7 +180,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
     {
         target_kernel_instance = tivxTargetKernelInstanceGet(node_obj_desc->target_kernel_index, node_obj_desc->kernel_id);
 
-        cur_time = tivxPlatformGetTimeInUsecs();
+        cur_time = tivxTaskGetTimeInUsecs();
 
         if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
         {
@@ -197,7 +197,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
             node_obj_desc->exe_status = tivxTargetKernelExecute(target_kernel_instance, params, node_obj_desc->num_params);
         }
 
-        node_obj_desc->exe_time_usecs = tivxPlatformGetTimeInUsecs() - cur_time;
+        node_obj_desc->exe_time_usecs = tivxTaskGetTimeInUsecs() - cur_time;
 
         tivxFlagBitSet(&node_obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
 
@@ -532,7 +532,7 @@ vx_status tivxTargetDelete(vx_enum target_id)
     /* wait until target exit is done */
     while(target->targetExitDone==vx_false_e)
     {
-        tivxPlatformWaitMsecs(1);
+        tivxTaskWaitMsecs(1);
     }
     tivxTaskDelete(&target->task_handle);
 

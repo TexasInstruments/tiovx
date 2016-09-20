@@ -69,20 +69,6 @@ vx_bool tivxPlatformTargetMatch(const char *kernel_target_name, const char *targ
 
 
 /*!
- * \brief Get current time in units of micro-secs
- *
- * \ingroup group_tivx_platform
- */
-uint32_t tivxPlatformGetTimeInUsecs();
-
-/*!
- * \brief Wait for user specified number of milli-secs
- *
- * \ingroup group_tivx_platform
- */
-void tivxPlatformWaitMsecs();
-
-/*!
  * \brief Return shared memory info which holds the object descriptors
  *
  *        This is platform APIs since method of specifying shared memory,
@@ -135,7 +121,14 @@ vx_enum tivxPlatformGetSelfCpuId();
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformInit();
+vx_status tivxPlatformInit();
+
+/*!
+ * \brief DeInit Platform module
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformDeInit();
 
 #ifdef __cplusplus
 }
