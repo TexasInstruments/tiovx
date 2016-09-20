@@ -75,9 +75,9 @@ static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type)
 }
 
 /* TODO: implement virtual array object */
-vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
+vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 {
-    vx_bool status = vx_false_e;
+    vx_status status = VX_FAILURE;
 
     if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
         &&
@@ -91,7 +91,7 @@ vx_bool ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
         {
             ownInitArrayObject(arr, item_type, capacity, vx_true_e);
 
-            status = vx_true_e;
+            status = VX_SUCCESS;
         }
     }
 

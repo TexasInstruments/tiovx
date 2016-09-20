@@ -192,10 +192,10 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     return (prmd);
 }
 
-vx_bool ownInitVirtualPyramid(
+vx_status ownInitVirtualPyramid(
     vx_pyramid prmd, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
-    vx_bool status = vx_false_e;
+    vx_status status = VX_FAILURE;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_true_e)
         &&
@@ -209,7 +209,7 @@ vx_bool ownInitVirtualPyramid(
             prmd->obj_desc->height = height;
             prmd->obj_desc->format = format;
 
-            status = vx_true_e;
+            status = VX_SUCCESS;
         }
     }
 

@@ -68,7 +68,20 @@ typedef struct _vx_pyramid
 } tivx_pyramid_t;
 
 
-
+/*!
+ * \brief function to initialize virtual pyramid's parameters
+ *
+ * \param pmd       [in] virtual pyramid reference
+ * \param width     [in] base width of image pyramid
+ * \param height    [in] base height of image pyramid
+ * \param format    [in] image format
+ *
+ * \return VX_SUCCESS on success
+ *
+ * \ingroup group_tivx_array
+ */
+vx_status ownInitVirtualPyramid(
+    vx_pyramid prmd, vx_uint32 width, vx_uint32 height, vx_df_image format);
 
 #ifdef __cplusplus
 }

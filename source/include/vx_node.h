@@ -111,7 +111,7 @@ vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset);
 /*! \brief Validate user kernel or target kernel associated with this node
  * \ingroup group_vx_node
  */
-vx_status ownNodeKernelValidate(vx_node node);
+vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[]);
 
 /*! \brief Init user kernel or target kernel associated with this node
  * \ingroup group_vx_node

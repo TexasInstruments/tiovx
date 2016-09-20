@@ -148,21 +148,33 @@ static vx_status ownRemoveNodeInt(vx_node *n)
     return status;
 }
 
-vx_status ownNodeKernelValidate(vx_node node)
+vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
 {
     vx_status status = VX_SUCCESS;
+    uint32_t i;
+    uint32_t num_params;
 
-    if(node && node->kernel )
+    if(node && node->kernel)
     {
         if(node->kernel->validate)
         {
-            status = node->kernel->validate(node, node->parameters, node->kernel->signature.num_parameters, NULL);
+            /* the type of the parameter is known by the system, so let the
+               system set it by default. */
+            num_params = node->kernel->signature.num_parameters;
+            for (i = 0; i < num_params; i ++)
+            {
+                meta[i]->type = node->kernel->signature.types[i];
+            }
+
+            status = node->kernel->validate(node, node->parameters,
+                num_params, meta);
         }
     }
     else
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
+
     return status;
 }
 
