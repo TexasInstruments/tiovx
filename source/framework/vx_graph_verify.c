@@ -13,7 +13,78 @@
 
 #include <vx_internal.h>
 
-static vx_status ownGraphNodeKernelValidate(vx_graph graph)
+static vx_status ownGraphInitVirtualNode(
+    vx_graph graph, vx_node node, vx_meta_format meta[])
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t i, num_params;
+    vx_reference ref;
+    vx_meta_format mf;
+    vx_pyramid pmd;
+    vx_size levels;
+
+    num_params = node->kernel->signature.num_parameters;
+    for (i = 0; i < num_params; i ++)
+    {
+        ref = node->parameters[i];
+        mf = meta[i];
+
+        if ((node->kernel->signature.directions[i] == VX_OUTPUT) &&
+            (vx_true_e == ref->is_virtual))
+        {
+            if ((ref->scope->type == VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
+            {
+                status = VX_ERROR_INVALID_SCOPE;
+                break;
+            }
+
+            switch (mf->type)
+            {
+                case VX_TYPE_SCALAR:
+                    /* TODO: need to add */
+                    break;
+                case VX_TYPE_IMAGE:
+                    /* TODO: need to add */
+                    break;
+                case VX_TYPE_ARRAY:
+                    status = ownInitVirtualArray(
+                        (vx_array)ref, mf->arr.item_type, mf->arr.capacity);
+                    break;
+                case VX_TYPE_PYRAMID:
+                    pmd = (vx_pyramid)ref;
+
+                    status = vxQueryPyramid(
+                        pmd, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
+
+                    if (VX_SUCCESS == status)
+                    {
+                        /* Levels must be same even in this case */
+                        if ((levels != mf->pmd.levels) ||
+                            (0 == mf->pmd.width) || (0 == mf->pmd.height))
+                        {
+                            status = VX_ERROR_INVALID_VALUE;
+                        }
+                        else
+                        {
+                            status = ownInitVirtualPyramid(pmd, mf->pmd.width,
+                                mf->pmd.height, mf->pmd.format);
+                        }
+                    }
+                    break;
+            }
+
+            if (status != VX_SUCCESS)
+            {
+                break;
+            }
+        }
+    }
+
+    return (status);
+}
+
+static vx_status ownGraphNodeKernelValidate(
+    vx_graph graph, vx_meta_format meta[])
 {
     vx_node node;
     vx_status status = VX_SUCCESS;
@@ -23,8 +94,14 @@ static vx_status ownGraphNodeKernelValidate(vx_graph graph)
     {
         node = graph->nodes[i];
 
-        status = ownNodeKernelValidate(node);
-        if(status != VX_SUCCESS )
+        status = ownNodeKernelValidate(node, meta);
+        if(status != VX_SUCCESS)
+        {
+            break;
+        }
+
+        status = ownGraphInitVirtualNode(graph, node, meta);
+        if(status != VX_SUCCESS)
         {
             break;
         }
@@ -231,9 +308,23 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
 
 VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 {
+    uint32_t i;
     vx_status status = VX_SUCCESS;
+    vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS];
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
+    for (i = 0; i < TIVX_KERNEL_MAX_PARAMS; i ++)
+    {
+        meta[i] = vxCreateMetaFormat(graph->base.context);
+
+        /* This should not fail at all */
+        if (NULL == meta[i])
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+
+    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH) &&
+        (VX_SUCCESS == status))
     {
         ownReferenceLock(&graph->base);
 
@@ -243,7 +334,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
              * If validation fails then return with error
              * No resources are allcoated in this step
              */
-            status = ownGraphNodeKernelValidate(graph);
+            status = ownGraphNodeKernelValidate(graph, meta);
 
             if(status == VX_SUCCESS)
             {
@@ -320,6 +411,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     else
     {
         status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    for (i = 0; i < TIVX_KERNEL_MAX_PARAMS; i ++)
+    {
+        if (NULL != meta[i])
+        {
+            vxReleaseMetaFormat(&meta[i]);
+        }
     }
 
     return status;

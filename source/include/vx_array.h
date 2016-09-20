@@ -89,6 +89,20 @@ typedef struct _vx_array
 
 
 
+/*!
+ * \brief function to initialize virtual array parameters
+ *
+ * \param arr       [in] virtual array reference
+ * \param item_type [in] type of array items
+ * \param capacity  [in] array size
+ *
+ * \return VX_SUCCESS on success
+ *
+ * \ingroup group_tivx_array
+ */
+vx_status ownInitVirtualArray(
+    vx_array arr, vx_enum item_type, vx_size capacity);
+
 #ifdef __cplusplus
 }
 #endif
