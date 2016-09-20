@@ -869,6 +869,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
         if (vxGetStatus((vx_reference)image) == VX_SUCCESS && image->base.type == VX_TYPE_IMAGE)
         {
             image->base.scope = (vx_reference)graph;
+            image->base.is_virtual = vx_true_e;
         }
     }
 
@@ -1667,4 +1668,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
     }
 
     return status;
+}
+
+vx_status ownInitVirtualImage(
+    vx_image img, vx_uint32 width, vx_uint32 height, vx_df_image format)
+{
+    vx_status status = VX_FAILURE;
+
+    if ((ownIsValidSpecificReference(&img->base, VX_TYPE_IMAGE) == vx_true_e)
+        &&
+        (img->obj_desc != NULL))
+    {
+        if ((width > 0) &&
+            (height > 0) &&
+            (img->base.is_virtual == vx_true_e))
+        {
+            ownInitImage(img, width, height, format);
+            status = VX_SUCCESS;
+        }
+    }
+
+    return (status);
 }

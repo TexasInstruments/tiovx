@@ -22,6 +22,7 @@ static vx_status ownGraphInitVirtualNode(
     vx_meta_format mf;
     vx_pyramid pmd;
     vx_size levels;
+    vx_enum type;
 
     num_params = node->kernel->signature.num_parameters;
     for (i = 0; i < num_params; i ++)
@@ -41,10 +42,27 @@ static vx_status ownGraphInitVirtualNode(
             switch (mf->type)
             {
                 case VX_TYPE_SCALAR:
-                    /* TODO: need to add */
+                    status = vxQueryScalar((vx_scalar)ref, VX_SCALAR_TYPE,
+                        &type, sizeof(type));
+                    /* For scalar, just check if type is correct or not */
+                    if (VX_SUCCESS == status)
+                    {
+                        if (type != mf->sc.type)
+                        {
+                            status = VX_ERROR_INVALID_TYPE;
+                        }
+                    }
                     break;
                 case VX_TYPE_IMAGE:
-                    /* TODO: need to add */
+                    if ((0 == mf->img.width) || (0 == mf->img.height))
+                    {
+                        status = VX_ERROR_INVALID_VALUE;
+                    }
+                    else
+                    {
+                        status = ownInitVirtualImage((vx_image)ref,
+                            mf->img.width, mf->img.height, mf->img.format);
+                    }
                     break;
                 case VX_TYPE_ARRAY:
                     status = ownInitVirtualArray(

@@ -124,6 +124,21 @@ void ownPrintImageAddressing(const vx_imagepatch_addressing_t *addr);
  */
 void ownPrintImage(vx_image image);
 
+/*!
+ * \brief function to initialize virtual image's parameters
+ *
+ * \param pmd       [in] virtual image reference
+ * \param width     [in] image width
+ * \param height    [in] image height
+ * \param format    [in] image format
+ *
+ * \return VX_SUCCESS on success
+ *
+ * \ingroup group_tivx_array
+ */
+vx_status ownInitVirtualImage(
+    vx_image img, vx_uint32 width, vx_uint32 height, vx_df_image format);
+
 #ifdef __cplusplus
 }
 #endif
