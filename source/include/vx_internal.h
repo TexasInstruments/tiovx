@@ -168,6 +168,7 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 #include <vx_array.h>
 #include <vx_delay.h>
 #include <vx_module.h>
+#include <vx_meta_format.h>
 
 #ifdef __cplusplus
 }
