@@ -35,23 +35,21 @@
  */
 
 #include <vx_internal.h>
+#include <tivx_platform_vision_sdk.h>
 
 #include <xdc/std.h>
-
 #include <include/link_api/system_if.h>
 #include <include/link_api/system_procId.h>
 #include <src/links_common/system/system_priv_openvx.h>
-#include "tivx_platform_vision_sdk.h"
-#include "tivx_platform_priv.h"
 
 /*! \brief An array of vision sdk CPU Ids. This is used for mapping
  *   tivx_cpu_id_e to vision sdk cpu id. This mapping is required for
  *   sending notify event using vision sdk API.
  *   vx_enum tivx_cpu_id_e is used as index into this array to get
  *   vision sdk cpu id.
- * \ingroup group_tivx_platform
+ * \ingroup group_tivx_ipc
  */
-static uint32_t gPlatformCpuIdMap[] = {
+static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
     SYSTEM_PROC_DSP1,
     SYSTEM_PROC_DSP2,
     SYSTEM_PROC_EVE1,
@@ -65,46 +63,66 @@ static uint32_t gPlatformCpuIdMap[] = {
 };
 
 /*! \brief Pointer to the IPC notify event handler.
- *         It can be registered using #tivxPlatformRegisterIpcHandler API
- * \ingroup group_tivx_platform
+ *         It can be registered using #tivxIpcRegisterHandler API
+ * \ingroup group_tivx_ipc
  */
-static System_openVxNotifyHandler g_ipc_notify = NULL;
+static tivx_ipc_handler_f g_ipc_handler = NULL;
 
 
 /*! \brief Global IPC handler
- * \ingroup group_tivx_platform
+ * \ingroup group_tivx_ipc
  */
-void tivxPlatformIpcHandler(uint32_t payload)
+static void tivxIpcHandler(uint32_t payload)
 {
-    if (NULL != g_ipc_notify)
+    if (NULL != g_ipc_handler)
     {
-        g_ipc_notify(payload);
+        g_ipc_handler(payload);
     }
 }
 
-void tivxPlatformRegisterIpcHandler(System_openVxNotifyHandler notifyCb)
+void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 {
-    g_ipc_notify = notifyCb;
+    g_ipc_handler = notifyCb;
 }
 
-vx_status tivxPlatformSendIpcMsg(
+vx_status tivxIpcSendMsg(
     vx_enum cpu_id, uint32_t payload)
 {
-    return System_openVxSendNotify(
-        gPlatformCpuIdMap[cpu_id],
-        payload);
+    /* convert OpenVX CPU ID to VSDK CPU ID */
+    uint32_t vsdk_cpu_id;
+    vx_status status;
+
+    if( cpu_id < TIVX_CPU_ID_MAX)
+    {
+        vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
+
+        status = System_openVxSendNotify(
+            vsdk_cpu_id,
+            payload);
+
+        if( status != VX_SUCCESS)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return status;
 }
 
-vx_enum tivxPlatformGetSelfCpuId()
+vx_enum tivxIpcGetSelfCpuId()
 {
     vx_enum cpu_id = TIVX_INVALID_CPU_ID;
     uint32_t i, vsdk_cpu_id;
 
     vsdk_cpu_id =  System_getSelfProcId();
 
-    for (i = 0; i < dimof(gPlatformCpuIdMap); i ++)
+    for (i = 0; i < dimof(g_ipc_cpu_id_map); i ++)
     {
-        if (vsdk_cpu_id == gPlatformCpuIdMap[i])
+        if (vsdk_cpu_id == g_ipc_cpu_id_map[i])
         {
             cpu_id = (vx_enum)i;
             break;
@@ -112,4 +130,16 @@ vx_enum tivxPlatformGetSelfCpuId()
     }
 
     return (cpu_id);
+}
+
+void tivxIpcInit()
+{
+    /* Register IPC Handler */
+    System_registerOpenVxNotifyCb(tivxIpcHandler);
+}
+
+void tivxIpcDeInit()
+{
+    /* Un-Register IPC Handler */
+    System_registerOpenVxNotifyCb(NULL);
 }

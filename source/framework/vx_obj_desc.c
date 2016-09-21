@@ -55,7 +55,7 @@ void tivxObjDescInit()
 
     g_obj_desc_table.last_alloc_index = 0;
 
-    tivxPlatformRegisterIpcHandler(tivxObjDescIpcHandler);
+    tivxIpcRegisterHandler(tivxObjDescIpcHandler);
 }
 
 tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type)
@@ -146,7 +146,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
     cpu_id = tivxTargetGetCpuId(dst_target_id);
 
-    if(cpu_id == tivxPlatformGetSelfCpuId())
+    if(cpu_id == tivxIpcGetSelfCpuId())
     {
         /* target is on same CPU queue obj_desc using target APIs */
         status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
@@ -156,7 +156,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
         ipc_payload = tivxIpcPayloadMake(dst_target_id, obj_desc_id);
 
         /* target is on remote CPU, send using IPC */
-        status = tivxPlatformSendIpcMsg(cpu_id, ipc_payload);
+        status = tivxIpcSendMsg(cpu_id, ipc_payload);
     }
 
     return status;

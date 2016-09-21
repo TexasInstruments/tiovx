@@ -255,9 +255,20 @@ vx_status tivxTargetDelete(vx_enum target_id);
 /*!
  * \brief Init global state of target module
  *
+ *        Also inits target kernel, target kernel instance
+ *
  * \ingroup group_tivx_target
  */
 void tivxTargetInit();
+
+/*!
+ * \brief De-Init global state of target module
+ *
+ *        Also de-inits target kernel, target kernel instance
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetDeInit();
 
 #ifdef __cplusplus
 }

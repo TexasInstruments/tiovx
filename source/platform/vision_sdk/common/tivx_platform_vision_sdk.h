@@ -22,8 +22,9 @@ extern "C" {
 
 
 /*! \brief Maximum number of targets and thus targetid supported
+ *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
  */
-#define TIVX_MAX_TARGETS            (12u)
+#define TIVX_PLATFORM_MAX_TARGETS            (12u)
 
 
 /*! \brief CPU ID for supported CPUs
@@ -35,7 +36,7 @@ extern "C" {
  *         family of SoCs
  *
  *         Caution: This enum is used as index into the array
- *         #gPlatformCpuIdMap, so change in this enum will require
+ *         #g_ipc_cpu_id_map, so change in this enum will require
  *         change in this array as well.
  *
  *
@@ -75,6 +76,9 @@ typedef enum _tivx_cpu_id_e {
 
     /*! \brief CPU ID for A15-0 */
     TIVX_CPU_ID_A15_1 = 10,
+
+    /*! \brief Max value of CPU ID  */
+    TIVX_CPU_ID_MAX = 11,
 
     /*! \brief Invalid CPU ID */
     TIVX_INVALID_CPU_ID = 0xFF

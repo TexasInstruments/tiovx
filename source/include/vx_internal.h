@@ -48,6 +48,7 @@
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_platform.h>
+#include <tivx_ipc.h>
 #include <tivx_mutex.h>
 #include <tivx_event.h>
 #include <tivx_task.h>
@@ -426,6 +427,11 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 
 /*!
  * \defgroup group_tivx_queue Queue APIs
+ * \ingroup group_vx_platform
+ */
+
+/*!
+ * \defgroup group_tivx_ipc Inter-Processor Communication (IPC) APIs
  * \ingroup group_vx_platform
  */
 

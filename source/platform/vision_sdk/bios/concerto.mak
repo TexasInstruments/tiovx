@@ -32,6 +32,7 @@ TARGET      := vx_platform_vision_sdk_bios
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
 IDIRS       += $(STW_PATH)/include
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
@@ -46,11 +47,11 @@ ifeq ($(HOST_COMPILER),GCC)
 endif
 
 ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
+SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
+SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),A15)

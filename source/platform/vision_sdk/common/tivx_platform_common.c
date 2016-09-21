@@ -38,8 +38,7 @@
 
 #include <xdc/std.h>
 #include <src/links_common/system/system_priv_openvx.h>
-#include "tivx_platform_vision_sdk.h"
-#include "tivx_platform_priv.h"
+#include <tivx_platform_vision_sdk.h>
 
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
@@ -55,7 +54,7 @@ typedef struct tivx_platform_info
          *   file tivx_platform_vision_sdk.h
          */
         vx_enum target_id;
-    } target_info[TIVX_MAX_TARGETS];
+    } target_info[TIVX_PLATFORM_MAX_TARGETS];
 
     /*! \brief Platform locks to protect access to the descriptor id
      *   TODO: Replace this with the H/W spin lock
@@ -77,8 +76,6 @@ vx_status tivxPlatformInit()
     vx_status status;
     uint32_t i = 0;
 
-    /* Register IPC Handler */
-    System_registerOpenVxNotifyCb(tivxPlatformIpcHandler);
 
     for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
     {
@@ -91,6 +88,8 @@ vx_status tivxPlatformInit()
         }
     }
 
+    tivxIpcInit();
+
     return (status);
 }
 
@@ -98,6 +97,8 @@ vx_status tivxPlatformInit()
 void tivxPlatformDeInit()
 {
     uint32_t i;
+
+    tivxIpcDeInit();
 
     for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
     {
@@ -132,7 +133,7 @@ vx_enum tivxPlatformGetTargetId(const char *target_name)
 
     if (NULL != target_name)
     {
-        for (i = 0; i < TIVX_MAX_TARGETS; i ++)
+        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
         {
             if (0 == strncmp(g_tivx_platform_info.target_info[i].target_name,
                     target_name,
@@ -158,7 +159,7 @@ vx_bool tivxPlatformTargetMatch(
         if (0 == strncmp(kernel_target_name, target_string,
             TIVX_TARGET_MAX_NAME))
         {
-            for (i = 0; i < TIVX_MAX_TARGETS; i ++)
+            for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
             {
                 if (0 == strncmp(
                         g_tivx_platform_info.target_info[i].target_name,
@@ -174,5 +175,7 @@ vx_bool tivxPlatformTargetMatch(
 
     return (status);
 }
+
+
 
 

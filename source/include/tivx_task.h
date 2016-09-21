@@ -179,13 +179,6 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params);
 vx_status tivxTaskDelete(tivx_task *task);
 
 /*!
- * \brief Get the time in micro seconds
- *
- * \ingroup group_tivx_task
- */
-uint32_t tivxTaskGetTimeInUsecs();
-
-/*!
  * \brief waits/sleeps for given milliseconds
  *
  * \param msec [in] amount of milliseconds to sleep

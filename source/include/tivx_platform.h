@@ -23,13 +23,6 @@ extern "C" {
  */
 
 /*!
- * \brief Callback definition of handler for IPC message's
- *
- * \ingroup group_tivx_platform
- */
-typedef void (*tivx_platform_ipc_handler_f)(uint32_t payload);
-
-/*!
  * \brief Types of system level locks
  *
  * \ingroup group_tivx_platform
@@ -96,25 +89,11 @@ void tivxPlatformSystemLock(vx_enum lock_id);
 void tivxPlatformSystemUnlock(vx_enum lock_id);
 
 /*!
- * \brief Send payload to cpu_id via IPC
+ * \brief Get the time in micro seconds
  *
  * \ingroup group_tivx_platform
  */
-vx_status tivxPlatformSendIpcMsg(vx_enum cpu_id, uint32_t payload);
-
-/*!
- * \brief Register callback to call when IPC message is received
- *
- * \ingroup group_tivx_platform
- */
-void tivxPlatformRegisterIpcHandler(tivx_platform_ipc_handler_f ipc_handler_func);
-
-/*!
- * \brief Return CPU ID of the CPU on which this API is called
- *
- * \ingroup group_tivx_platform
- */
-vx_enum tivxPlatformGetSelfCpuId();
+uint32_t tivxPlatformGetTimeInUsecs();
 
 /*!
  * \brief Init Platform module

@@ -180,7 +180,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
     {
         target_kernel_instance = tivxTargetKernelInstanceGet(node_obj_desc->target_kernel_index, node_obj_desc->kernel_id);
 
-        cur_time = tivxTaskGetTimeInUsecs();
+        cur_time = tivxPlatformGetTimeInUsecs();
 
         if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
         {
@@ -197,7 +197,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
             node_obj_desc->exe_status = tivxTargetKernelExecute(target_kernel_instance, params, node_obj_desc->num_params);
         }
 
-        node_obj_desc->exe_time_usecs = tivxTaskGetTimeInUsecs() - cur_time;
+        node_obj_desc->exe_time_usecs = tivxPlatformGetTimeInUsecs() - cur_time;
 
         tivxFlagBitSet(&node_obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
 
@@ -577,4 +577,14 @@ void tivxTargetInit()
     {
         g_target_table[i].target_id = TIVX_TARGET_ID_INVALID;
     }
+
+    tivxTargetKernelInit();
+    tivxTargetKernelInstanceInit();
+}
+
+void tivxTargetDeInit()
+{
+    tivxTargetKernelInstanceDeInit();
+    tivxTargetKernelInit();
+
 }

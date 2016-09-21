@@ -42,11 +42,11 @@ ifeq ($(HOST_COMPILER),GCC)
 endif
 
 ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
+SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
+SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),A15)
