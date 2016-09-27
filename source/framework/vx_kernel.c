@@ -361,3 +361,34 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
     }
     return target_id;
 }
+
+vx_enum ownKernelGetTarget(vx_kernel kernel, const char *target_string)
+{
+    uint32_t i;
+    vx_enum target_id = TIVX_TARGET_ID_INVALID;
+
+    if ((NULL != kernel) &&
+          (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) ==
+                vx_true_e) &&
+          (NULL != target_string))
+    {
+        if(kernel->num_targets==0)
+        {
+            target_id = TIVX_TARGET_ID_INVALID;
+        }
+        else
+        {
+            for (i = 0; i < kernel->num_targets; i ++)
+            {
+                if (0 == strncmp(kernel->target_name[i], target_string,
+                        TIVX_TARGET_MAX_NAME))
+                {
+                    target_id = tivxPlatformGetTargetId(target_string);
+                    break;
+                }
+            }
+        }
+    }
+
+    return target_id;
+}

@@ -43,26 +43,49 @@ typedef struct _vx_enum_type_size {
 } vx_enum_type_size_t;
 
 static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
-    {VX_TYPE_INVALID,   0},
-    {VX_TYPE_CHAR,      sizeof(vx_char)},
-    {VX_TYPE_INT8,      sizeof(vx_int8)},
-    {VX_TYPE_INT16,     sizeof(vx_int16)},
-    {VX_TYPE_INT32,     sizeof(vx_int32)},
-    {VX_TYPE_INT64,     sizeof(vx_int64)},
-    {VX_TYPE_UINT8,     sizeof(vx_uint8)},
-    {VX_TYPE_UINT16,    sizeof(vx_uint16)},
-    {VX_TYPE_UINT32,    sizeof(vx_uint32)},
-    {VX_TYPE_UINT64,    sizeof(vx_uint64)},
-    {VX_TYPE_FLOAT32,   sizeof(vx_float32)},
-    {VX_TYPE_FLOAT64,   sizeof(vx_float64)},
-    {VX_TYPE_ENUM,      sizeof(vx_enum)},
-    {VX_TYPE_BOOL,      sizeof(vx_bool)},
-    {VX_TYPE_SIZE,      sizeof(vx_size)},
-    {VX_TYPE_DF_IMAGE,    sizeof(vx_df_image)},
+    {VX_TYPE_INVALID,       0},
+    /* Scalar Types */
+    {VX_TYPE_CHAR,          sizeof(vx_char)},
+    {VX_TYPE_INT8,          sizeof(vx_int8)},
+    {VX_TYPE_INT16,         sizeof(vx_int16)},
+    {VX_TYPE_INT32,         sizeof(vx_int32)},
+    {VX_TYPE_INT64,         sizeof(vx_int64)},
+    {VX_TYPE_UINT8,         sizeof(vx_uint8)},
+    {VX_TYPE_UINT16,        sizeof(vx_uint16)},
+    {VX_TYPE_UINT32,        sizeof(vx_uint32)},
+    {VX_TYPE_UINT64,        sizeof(vx_uint64)},
+    {VX_TYPE_FLOAT32,       sizeof(vx_float32)},
+    {VX_TYPE_FLOAT64,       sizeof(vx_float64)},
+    {VX_TYPE_ENUM,          sizeof(vx_enum)},
+    {VX_TYPE_BOOL,          sizeof(vx_bool)},
+    {VX_TYPE_SIZE,          sizeof(vx_size)},
+    {VX_TYPE_DF_IMAGE,      sizeof(vx_df_image)},
+    /* Structures */
     {VX_TYPE_RECTANGLE,     sizeof(vx_rectangle_t)},
     {VX_TYPE_COORDINATES2D, sizeof(vx_coordinates2d_t)},
     {VX_TYPE_COORDINATES3D, sizeof(vx_coordinates3d_t)},
-    {VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)}
+    {VX_TYPE_KEYPOINT,      sizeof(vx_keypoint_t)},
+    /* Pseudo Objects */
+    {VX_TYPE_META_FORMAT,   sizeof(tivx_meta_format_t)},
+    /* Framework Objects */
+    {VX_TYPE_REFERENCE,     sizeof(tivx_reference_t)},
+    {VX_TYPE_CONTEXT,       sizeof(tivx_context_t)},
+    {VX_TYPE_GRAPH,         sizeof(tivx_graph_t)},
+    {VX_TYPE_NODE,          sizeof(tivx_node_t)},
+    {VX_TYPE_PARAMETER,     sizeof(tivx_parameter_t)},
+    {VX_TYPE_KERNEL,        sizeof(tivx_kernel_t)},
+    /* data objects */
+    {VX_TYPE_ARRAY,         sizeof(tivx_array_t)},
+    {VX_TYPE_CONVOLUTION,   sizeof(tivx_convolution_t)},
+    {VX_TYPE_DELAY,         sizeof(tivx_delay_t)},
+    {VX_TYPE_DISTRIBUTION,  sizeof(tivx_distribution_t)},
+    {VX_TYPE_IMAGE,         sizeof(tivx_image_t)},
+    {VX_TYPE_LUT,           sizeof(tivx_lut_t)},
+    {VX_TYPE_MATRIX,        sizeof(tivx_matrix_t)},
+    {VX_TYPE_PYRAMID,       sizeof(tivx_pyramid_t)},
+    {VX_TYPE_REMAP,         sizeof(tivx_remap_t)},
+    {VX_TYPE_SCALAR,        sizeof(tivx_scalar_t)},
+    {VX_TYPE_THRESHOLD,     sizeof(tivx_threshold_t)},
 };
 
 vx_size ownSizeOfEnumType(vx_enum item_type)

@@ -268,6 +268,16 @@ vx_status ownReferenceAllocMem(vx_reference ref);
  */
 vx_size ownSizeOfEnumType(vx_enum item_type);
 
+/*! \brief Function to initialize reference objects
+ *         Initializes all types of objects
+ *         Initializes internal state variables
+ */
+vx_status ownReferenceInit(void);
+
+/*! \brief Function to De-initialize reference objects
+ */
+vx_status ownReferenceDeInit(void);
+
 #ifdef __cplusplus
 }
 #endif
