@@ -109,6 +109,13 @@ vx_status tivxPlatformInit();
  */
 void tivxPlatformDeInit();
 
+/*!
+ * \brief Print given string
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformPrintf(const char *format);
+
 #ifdef __cplusplus
 }
 #endif

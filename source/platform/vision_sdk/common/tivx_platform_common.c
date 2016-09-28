@@ -176,6 +176,9 @@ vx_bool tivxPlatformTargetMatch(
     return (status);
 }
 
-
+void tivxPlatformPrintf(const char *format)
+{
+    BspOsal_printf(format);
+}
 
 

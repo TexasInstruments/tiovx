@@ -119,11 +119,16 @@ void tivx_print(vx_enum zone, char *format, ...)
 {
     if (g_debug_zonemask & ZONE_BIT(zone))
     {
+        uint32_t size;
         char string[1024];
         va_list ap;
-        snprintf(string, sizeof(string), "%20s:%s", find_zone_name(zone), format);
+
         va_start(ap, format);
-        printf(string, ap);
+
+        snprintf(string, sizeof(string), "%20s:", find_zone_name(zone));
+        size = strlen(string);
+        vsnprintf(&string[size], sizeof(string)-size, format, ap);
+        tivxPlatformPrintf(string);
         va_end(ap);
     }
 }
