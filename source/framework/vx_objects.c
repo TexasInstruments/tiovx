@@ -52,7 +52,7 @@ static uint8_t *ownAllocObject(
     uint32_t size);
 
 
-vx_status ownReferenceInit(void)
+vx_status tivxObjectInit(void)
 {
     vx_status status;
 
@@ -97,7 +97,7 @@ vx_status ownReferenceInit(void)
     return (status);
 }
 
-vx_status ownReferenceDeInit(void)
+vx_status tivxObjectDeInit(void)
 {
     vx_status status;
 
@@ -144,7 +144,7 @@ vx_status ownReferenceDeInit(void)
 
 
 
-vx_reference ownReferenceAlloc(vx_enum type)
+vx_reference tivxObjectAlloc(vx_enum type)
 {
     vx_status status;
     vx_reference ref = NULL;
@@ -248,7 +248,7 @@ vx_reference ownReferenceAlloc(vx_enum type)
     return (ref);
 }
 
-vx_status ownReferenceFree(vx_reference ref)
+vx_status tivxObjectFree(vx_reference ref)
 {
     vx_status status = VX_FAILURE;
 

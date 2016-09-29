@@ -52,117 +52,122 @@ extern "C" {
 /*!
  * \brief Max number meta format objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_META_FORMAT_MAX_OBJECTS        (5u)
+#define TIVX_META_FORMAT_MAX_OBJECTS        (32u)
 
 /*!
  * \brief Max number context objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_CONTEXT_MAX_OBJECTS                    (5u)
+#define TIVX_CONTEXT_MAX_OBJECTS                    (1u)
 
 /*!
  * \brief Max number graph objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_GRAPH_MAX_OBJECTS                      (5u)
+#define TIVX_GRAPH_MAX_OBJECTS                      (8u)
 
 /*!
  * \brief Max number node objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_NODE_MAX_OBJECTS                       (5u)
+#define TIVX_NODE_MAX_OBJECTS                       (32u)
 
 /*!
  * \brief Max number kernel objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_KERNEL_MAX_OBJECTS                       (5u)
+#define TIVX_KERNEL_MAX_OBJECTS                       (32u)
 
 /*!
  * \brief Max number array objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_ARRAY_MAX_OBJECTS                      (5u)
+#define TIVX_ARRAY_MAX_OBJECTS                      (16u)
 
 /*!
  * \brief Max number convolution objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_CONVOLUTION_MAX_OBJECTS                (5u)
+#define TIVX_CONVOLUTION_MAX_OBJECTS                (8u)
 
 /*!
  * \brief Max number delay objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_DELAY_MAX_OBJECTS                      (5u)
+#define TIVX_DELAY_MAX_OBJECTS                      (8u)
 
 /*!
  * \brief Max number distribution objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_DISTRIBUTION_MAX_OBJECTS               (5u)
+#define TIVX_DISTRIBUTION_MAX_OBJECTS               (8u)
 
 /*!
  * \brief Max number image objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS                      (5u)
+#define TIVX_IMAGE_MAX_OBJECTS                      (32u)
 
 /*!
  * \brief Max number lut objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_LUT_MAX_OBJECTS                        (5u)
+#define TIVX_LUT_MAX_OBJECTS                        (8u)
 
 /*!
  * \brief Max number matrix objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_MATRIX_MAX_OBJECTS                     (5u)
+#define TIVX_MATRIX_MAX_OBJECTS                     (8u)
 
 /*!
  * \brief Max number pyramid objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECTS                    (5u)
+#define TIVX_PYRAMID_MAX_OBJECTS                    (8u)
 
 /*!
  * \brief Max number remap objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_REMAP_MAX_OBJECTS                      (5u)
+#define TIVX_REMAP_MAX_OBJECTS                      (8u)
 
 /*!
  * \brief Max number scalar objects supported
  *
- * \ingroup group_tivx_obj
+ * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_SCALAR_MAX_OBJECTS                     (5u)
+#define TIVX_SCALAR_MAX_OBJECTS                     (32u)
 
 /*!
  * \brief Max number threshold objects supported
  *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_THRESHOLD_MAX_OBJECTS                  (8u)
+
+
+
+/*!
+ * \brief Structure to hold all framework objects
+ *
  * \ingroup group_tivx_obj
  */
-#define TIVX_THRESHOLD_MAX_OBJECTS                  (5u)
-
-
-
 typedef struct _tivx_object_t
 {
     tivx_meta_format_t      meta_format[TIVX_META_FORMAT_MAX_OBJECTS];
@@ -246,6 +251,30 @@ typedef struct _tivx_object_t
     /**< Flag indicating if threshold object is in use or not */
 
 } tivx_object_t;
+
+/*! \brief Alloc memory for a reference of specified type
+ * \param [in] reftype The reference type. See \ref tivx_reftype_e
+ * \return ref The reference.
+ * \ingroup group_tivx_obj
+ */
+vx_reference tivxObjectAlloc(vx_enum reftype);
+
+/*! \brief Free memory for a reference
+ * \param [in] ref The reference.
+ * \return VX_SUCCESS on success
+ * \ingroup group_tivx_obj
+ */
+vx_status tivxObjectFree(vx_reference ref);
+
+/*! \brief Initialize object module
+ * \ingroup group_tivx_obj
+ */
+vx_status tivxObjectInit(void);
+
+/*! \brief De-Initialize object module
+ * \ingroup group_tivx_obj
+ */
+vx_status tivxObjectDeInit(void);
 
 #ifdef __cplusplus
 }

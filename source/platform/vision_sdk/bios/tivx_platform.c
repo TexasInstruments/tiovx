@@ -44,7 +44,6 @@ uint32_t tivxPlatformGetTimeInUsecs()
     return BspOsal_getCurTimeInUsec();
 }
 
-
 void tivxPlatformPrintf(const char *format)
 {
     BspOsal_printf(format);

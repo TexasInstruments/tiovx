@@ -253,7 +253,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                 tivxMutexDelete(&ref->lock);
                 ref->magic = TIVX_BAD_MAGIC; /* make sure no existing copies of refs can use ref again */
 
-                ownReferenceFree(ref);
+                tivxObjectFree(ref);
             }
         }
         *pref = NULL;
@@ -265,7 +265,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 
 vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftype, vx_reference scope)
 {
-    vx_reference ref = (vx_reference)ownReferenceAlloc(type);
+    vx_reference ref = (vx_reference)tivxObjectAlloc(type);
     vx_status status = VX_SUCCESS;
 
     if (ref)
@@ -282,7 +282,7 @@ vx_reference ownCreateReference(vx_context context, vx_enum type, vx_enum reftyp
 
         if(status!=VX_SUCCESS)
         {
-            ownReferenceFree(ref);
+            tivxObjectFree(ref);
             vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES, "Failed to add to resources table\n");
             ref = (vx_reference)ownGetErrorObject(context, VX_ERROR_NO_RESOURCES);
         }

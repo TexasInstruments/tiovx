@@ -214,21 +214,6 @@ void ownPrintReference(vx_reference ref);
  */
 vx_bool ownIsValidType(vx_enum type);
 
-
-/*! \brief Alloc memory for a reference of specified type
- * \param [in] reftype The reference type. See \ref tivx_reftype_e
- * \return ref The reference.
- * \ingroup group_vx_reference
- */
-vx_reference ownReferenceAlloc(vx_enum reftype);
-
-/*! \brief Free memory for a reference
- * \param [in] ref The reference.
- * \return VX_SUCCESS on success
- * \ingroup group_vx_reference
- */
-vx_status ownReferenceFree(vx_reference ref);
-
 /**
  * \brief Init a reference object
  *

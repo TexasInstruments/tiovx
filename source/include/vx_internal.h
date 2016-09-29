@@ -58,6 +58,7 @@
 #include <tivx_target_kernel_priv.h>
 #include <tivx_target_kernel_instance.h>
 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -170,6 +171,8 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 #include <vx_delay.h>
 #include <vx_module.h>
 #include <vx_meta_format.h>
+
+#include <tivx_objects.h>
 
 #ifdef __cplusplus
 }
@@ -287,6 +290,12 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
  */
 
 /*!
+ * \defgroup group_tivx_obj Object APIs
+ * \ingroup group_vx_framework_object
+ */
+
+
+/*!
  * \defgroup group_vx_module Module APIs
  * \ingroup group_vx_framework_object
  */
@@ -400,6 +409,12 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
  * \defgroup group_vx_array_cfg Data Object: Array Configuration
  * \ingroup group_vx_framework_config
  */
+
+/*!
+ * \defgroup group_tivx_obj_cfg Object Configuration
+ * \ingroup group_vx_framework_config
+ */
+
 
 /*!
  * \defgroup group_vx_framework_utils Utility and Debug Modules

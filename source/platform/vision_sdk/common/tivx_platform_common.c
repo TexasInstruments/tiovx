@@ -35,9 +35,6 @@
  */
 
 #include <vx_internal.h>
-
-#include <xdc/std.h>
-#include <src/links_common/system/system_priv_openvx.h>
 #include <tivx_platform_vision_sdk.h>
 
 /*! \brief Structure for keeping track of platform information
@@ -175,5 +172,4 @@ vx_bool tivxPlatformTargetMatch(
 
     return (status);
 }
-
 
