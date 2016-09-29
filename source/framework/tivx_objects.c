@@ -38,8 +38,8 @@
 #include <vx_internal.h>
 #include <tivx_objects.h>
 
-static tivx_object_t gTivxObjects;
-static tivx_mutex gTivxObjectsMutex;
+static tivx_object_t g_tivx_objects;
+static tivx_mutex g_tivx_objects_lock;
 
 
 static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele);
@@ -56,41 +56,41 @@ vx_status ownReferenceInit(void)
 {
     vx_status status;
 
-    status = tivxMutexCreate(&gTivxObjectsMutex);
+    status = tivxMutexCreate(&g_tivx_objects_lock);
 
     if (VX_SUCCESS == status)
     {
-        ownInitUseFlag(gTivxObjects.isMfUse,
+        ownInitUseFlag(g_tivx_objects.isMfUse,
             TIVX_META_FORMAT_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isContextUse,
+        ownInitUseFlag(g_tivx_objects.isContextUse,
             TIVX_CONTEXT_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isGraphUse,
+        ownInitUseFlag(g_tivx_objects.isGraphUse,
             TIVX_GRAPH_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isNodeUse,
+        ownInitUseFlag(g_tivx_objects.isNodeUse,
             TIVX_NODE_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isKernelUse,
+        ownInitUseFlag(g_tivx_objects.isKernelUse,
             TIVX_KERNEL_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isArrayUse,
+        ownInitUseFlag(g_tivx_objects.isArrayUse,
             TIVX_ARRAY_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isConvolutionUse,
+        ownInitUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isDelayUse,
+        ownInitUseFlag(g_tivx_objects.isDelayUse,
             TIVX_DELAY_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isDistributionUse,
+        ownInitUseFlag(g_tivx_objects.isDistributionUse,
             TIVX_DISTRIBUTION_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isImageUse,
+        ownInitUseFlag(g_tivx_objects.isImageUse,
             TIVX_IMAGE_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isLutUse,
+        ownInitUseFlag(g_tivx_objects.isLutUse,
             TIVX_LUT_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isMatrixUse,
+        ownInitUseFlag(g_tivx_objects.isMatrixUse,
             TIVX_MATRIX_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isPyramidUse,
+        ownInitUseFlag(g_tivx_objects.isPyramidUse,
             TIVX_PYRAMID_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isRemapUse,
+        ownInitUseFlag(g_tivx_objects.isRemapUse,
             TIVX_REMAP_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isScalarUse,
+        ownInitUseFlag(g_tivx_objects.isScalarUse,
             TIVX_SCALAR_MAX_OBJECTS);
-        ownInitUseFlag(gTivxObjects.isThresholdUse,
+        ownInitUseFlag(g_tivx_objects.isThresholdUse,
             TIVX_THRESHOLD_MAX_OBJECTS);
     }
 
@@ -101,41 +101,41 @@ vx_status ownReferenceDeInit(void)
 {
     vx_status status;
 
-    status = tivxMutexDelete(&gTivxObjectsMutex);
+    status = tivxMutexDelete(&g_tivx_objects_lock);
 
     if (VX_SUCCESS == status)
     {
-        status = ownCheckUseFlag(gTivxObjects.isMfUse,
+        status = ownCheckUseFlag(g_tivx_objects.isMfUse,
             TIVX_META_FORMAT_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isContextUse,
+        status = ownCheckUseFlag(g_tivx_objects.isContextUse,
             TIVX_CONTEXT_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isGraphUse,
+        status = ownCheckUseFlag(g_tivx_objects.isGraphUse,
             TIVX_GRAPH_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isNodeUse,
+        status = ownCheckUseFlag(g_tivx_objects.isNodeUse,
             TIVX_NODE_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isKernelUse,
+        status = ownCheckUseFlag(g_tivx_objects.isKernelUse,
             TIVX_KERNEL_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isArrayUse,
+        status = ownCheckUseFlag(g_tivx_objects.isArrayUse,
             TIVX_ARRAY_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isConvolutionUse,
+        status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isDelayUse,
+        status = ownCheckUseFlag(g_tivx_objects.isDelayUse,
             TIVX_DELAY_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isDistributionUse,
+        status = ownCheckUseFlag(g_tivx_objects.isDistributionUse,
             TIVX_DISTRIBUTION_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isImageUse,
+        status = ownCheckUseFlag(g_tivx_objects.isImageUse,
             TIVX_IMAGE_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isLutUse,
+        status = ownCheckUseFlag(g_tivx_objects.isLutUse,
             TIVX_LUT_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isMatrixUse,
+        status = ownCheckUseFlag(g_tivx_objects.isMatrixUse,
             TIVX_MATRIX_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isPyramidUse,
+        status = ownCheckUseFlag(g_tivx_objects.isPyramidUse,
             TIVX_PYRAMID_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isRemapUse,
+        status = ownCheckUseFlag(g_tivx_objects.isRemapUse,
             TIVX_REMAP_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isScalarUse,
+        status = ownCheckUseFlag(g_tivx_objects.isScalarUse,
             TIVX_SCALAR_MAX_OBJECTS);
-        status = ownCheckUseFlag(gTivxObjects.isThresholdUse,
+        status = ownCheckUseFlag(g_tivx_objects.isThresholdUse,
             TIVX_THRESHOLD_MAX_OBJECTS);
     }
 
@@ -149,7 +149,7 @@ vx_reference ownReferenceAlloc(vx_enum type)
     vx_status status;
     vx_reference ref = NULL;
 
-    status = tivxMutexLock(gTivxObjectsMutex);
+    status = tivxMutexLock(g_tivx_objects_lock);
 
     if (VX_SUCCESS == status)
     {
@@ -157,84 +157,84 @@ vx_reference ownReferenceAlloc(vx_enum type)
         {
             case VX_TYPE_META_FORMAT:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.meta_format, gTivxObjects.isMfUse,
+                    (uint8_t *)g_tivx_objects.meta_format, g_tivx_objects.isMfUse,
                     TIVX_META_FORMAT_MAX_OBJECTS, sizeof(tivx_meta_format_t));
                 break;
             case VX_TYPE_CONTEXT:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.context, gTivxObjects.isContextUse,
+                    (uint8_t *)g_tivx_objects.context, g_tivx_objects.isContextUse,
                     TIVX_CONTEXT_MAX_OBJECTS, sizeof(tivx_context_t));
                 break;
             case VX_TYPE_GRAPH:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.graph, gTivxObjects.isGraphUse,
+                    (uint8_t *)g_tivx_objects.graph, g_tivx_objects.isGraphUse,
                     TIVX_GRAPH_MAX_OBJECTS, sizeof(tivx_graph_t));
                 break;
             case VX_TYPE_NODE:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.node, gTivxObjects.isNodeUse,
+                    (uint8_t *)g_tivx_objects.node, g_tivx_objects.isNodeUse,
                     TIVX_NODE_MAX_OBJECTS, sizeof(tivx_node_t));
                 break;
             case VX_TYPE_KERNEL:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.kernel, gTivxObjects.isKernelUse,
+                    (uint8_t *)g_tivx_objects.kernel, g_tivx_objects.isKernelUse,
                     TIVX_KERNEL_MAX_OBJECTS, sizeof(tivx_kernel_t));
                 break;
             case VX_TYPE_ARRAY:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.array, gTivxObjects.isArrayUse,
+                    (uint8_t *)g_tivx_objects.array, g_tivx_objects.isArrayUse,
                     TIVX_ARRAY_MAX_OBJECTS, sizeof(tivx_array_t));
                 break;
             case VX_TYPE_CONVOLUTION:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.convolution,
-                    gTivxObjects.isConvolutionUse,
+                    (uint8_t *)g_tivx_objects.convolution,
+                    g_tivx_objects.isConvolutionUse,
                     TIVX_CONVOLUTION_MAX_OBJECTS, sizeof(tivx_convolution_t));
                 break;
             case VX_TYPE_DELAY:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.delay, gTivxObjects.isDelayUse,
+                    (uint8_t *)g_tivx_objects.delay, g_tivx_objects.isDelayUse,
                     TIVX_DELAY_MAX_OBJECTS, sizeof(tivx_delay_t));
                 break;
             case VX_TYPE_DISTRIBUTION:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.distribution,
-                    gTivxObjects.isDistributionUse,
+                    (uint8_t *)g_tivx_objects.distribution,
+                    g_tivx_objects.isDistributionUse,
                     TIVX_DISTRIBUTION_MAX_OBJECTS, sizeof(tivx_distribution_t));
                 break;
             case VX_TYPE_IMAGE:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.image, gTivxObjects.isImageUse,
+                    (uint8_t *)g_tivx_objects.image, g_tivx_objects.isImageUse,
                     TIVX_IMAGE_MAX_OBJECTS, sizeof(tivx_image_t));
                 break;
             case VX_TYPE_LUT:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.lut, gTivxObjects.isLutUse,
+                    (uint8_t *)g_tivx_objects.lut, g_tivx_objects.isLutUse,
                     TIVX_LUT_MAX_OBJECTS, sizeof(tivx_lut_t));
                 break;
             case VX_TYPE_MATRIX:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.matrix, gTivxObjects.isMatrixUse,
+                    (uint8_t *)g_tivx_objects.matrix, g_tivx_objects.isMatrixUse,
                     TIVX_MATRIX_MAX_OBJECTS, sizeof(tivx_matrix_t));
                 break;
             case VX_TYPE_PYRAMID:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.pyramid, gTivxObjects.isPyramidUse,
+                    (uint8_t *)g_tivx_objects.pyramid, g_tivx_objects.isPyramidUse,
                     TIVX_PYRAMID_MAX_OBJECTS, sizeof(tivx_pyramid_t));
                 break;
             case VX_TYPE_REMAP:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.remap, gTivxObjects.isRemapUse,
+                    (uint8_t *)g_tivx_objects.remap, g_tivx_objects.isRemapUse,
                     TIVX_REMAP_MAX_OBJECTS, sizeof(tivx_remap_t));
                 break;
             case VX_TYPE_SCALAR:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.scalar, gTivxObjects.isScalarUse,
+                    (uint8_t *)g_tivx_objects.scalar, g_tivx_objects.isScalarUse,
                     TIVX_SCALAR_MAX_OBJECTS, sizeof(tivx_scalar_t));
                 break;
             case VX_TYPE_THRESHOLD:
                 ref = (vx_reference)ownAllocObject(
-                    (uint8_t *)gTivxObjects.threshold, gTivxObjects.isThresholdUse,
+                    (uint8_t *)g_tivx_objects.threshold, g_tivx_objects.isThresholdUse,
                     TIVX_THRESHOLD_MAX_OBJECTS, sizeof(tivx_threshold_t));
                 break;
             default:
@@ -242,7 +242,7 @@ vx_reference ownReferenceAlloc(vx_enum type)
                 break;
         }
 
-        tivxMutexUnlock(gTivxObjectsMutex);
+        tivxMutexUnlock(g_tivx_objects_lock);
     }
 
     return (ref);
@@ -254,7 +254,7 @@ vx_status ownReferenceFree(vx_reference ref)
 
     if (NULL != ref)
     {
-        status = tivxMutexLock(gTivxObjectsMutex);
+        status = tivxMutexLock(g_tivx_objects_lock);
 
         if (VX_SUCCESS == status)
         {
@@ -262,94 +262,94 @@ vx_status ownReferenceFree(vx_reference ref)
             {
                 case VX_TYPE_META_FORMAT:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.meta_format,
-                        gTivxObjects.isMfUse,
+                        (uint8_t *)g_tivx_objects.meta_format,
+                        g_tivx_objects.isMfUse,
                         TIVX_META_FORMAT_MAX_OBJECTS,
                         sizeof(tivx_meta_format_t));
                     break;
                 case VX_TYPE_CONTEXT:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.context,
-                        gTivxObjects.isContextUse,
+                        (uint8_t *)g_tivx_objects.context,
+                        g_tivx_objects.isContextUse,
                         TIVX_CONTEXT_MAX_OBJECTS, sizeof(tivx_context_t));
                     break;
                 case VX_TYPE_GRAPH:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.graph, gTivxObjects.isGraphUse,
+                        (uint8_t *)g_tivx_objects.graph, g_tivx_objects.isGraphUse,
                         TIVX_GRAPH_MAX_OBJECTS, sizeof(tivx_graph_t));
                     break;
                 case VX_TYPE_NODE:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.node, gTivxObjects.isNodeUse,
+                        (uint8_t *)g_tivx_objects.node, g_tivx_objects.isNodeUse,
                         TIVX_NODE_MAX_OBJECTS, sizeof(tivx_node_t));
                     break;
                 case VX_TYPE_KERNEL:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.kernel,
-                        gTivxObjects.isKernelUse,
+                        (uint8_t *)g_tivx_objects.kernel,
+                        g_tivx_objects.isKernelUse,
                         TIVX_KERNEL_MAX_OBJECTS, sizeof(tivx_kernel_t));
                     break;
                 case VX_TYPE_ARRAY:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.array, gTivxObjects.isArrayUse,
+                        (uint8_t *)g_tivx_objects.array, g_tivx_objects.isArrayUse,
                         TIVX_ARRAY_MAX_OBJECTS, sizeof(tivx_array_t));
                     break;
                 case VX_TYPE_CONVOLUTION:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.convolution,
-                        gTivxObjects.isConvolutionUse,
+                        (uint8_t *)g_tivx_objects.convolution,
+                        g_tivx_objects.isConvolutionUse,
                         TIVX_CONVOLUTION_MAX_OBJECTS,
                         sizeof(tivx_convolution_t));
                     break;
                 case VX_TYPE_DELAY:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.delay, gTivxObjects.isDelayUse,
+                        (uint8_t *)g_tivx_objects.delay, g_tivx_objects.isDelayUse,
                         TIVX_DELAY_MAX_OBJECTS, sizeof(tivx_delay_t));
                     break;
                 case VX_TYPE_DISTRIBUTION:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.distribution,
-                        gTivxObjects.isDistributionUse,
+                        (uint8_t *)g_tivx_objects.distribution,
+                        g_tivx_objects.isDistributionUse,
                         TIVX_DISTRIBUTION_MAX_OBJECTS,
                         sizeof(tivx_distribution_t));
                     break;
                 case VX_TYPE_IMAGE:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.image, gTivxObjects.isImageUse,
+                        (uint8_t *)g_tivx_objects.image, g_tivx_objects.isImageUse,
                         TIVX_IMAGE_MAX_OBJECTS, sizeof(tivx_image_t));
                     break;
                 case VX_TYPE_LUT:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.lut, gTivxObjects.isLutUse,
+                        (uint8_t *)g_tivx_objects.lut, g_tivx_objects.isLutUse,
                         TIVX_LUT_MAX_OBJECTS, sizeof(tivx_lut_t));
                     break;
                 case VX_TYPE_MATRIX:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.matrix,
-                        gTivxObjects.isMatrixUse,
+                        (uint8_t *)g_tivx_objects.matrix,
+                        g_tivx_objects.isMatrixUse,
                         TIVX_MATRIX_MAX_OBJECTS, sizeof(tivx_matrix_t));
                     break;
                 case VX_TYPE_PYRAMID:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.pyramid,
-                        gTivxObjects.isPyramidUse,
+                        (uint8_t *)g_tivx_objects.pyramid,
+                        g_tivx_objects.isPyramidUse,
                         TIVX_PYRAMID_MAX_OBJECTS, sizeof(tivx_pyramid_t));
                     break;
                 case VX_TYPE_REMAP:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.remap, gTivxObjects.isRemapUse,
+                        (uint8_t *)g_tivx_objects.remap, g_tivx_objects.isRemapUse,
                         TIVX_REMAP_MAX_OBJECTS, sizeof(tivx_remap_t));
                     break;
                 case VX_TYPE_SCALAR:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.scalar,
-                        gTivxObjects.isScalarUse,
+                        (uint8_t *)g_tivx_objects.scalar,
+                        g_tivx_objects.isScalarUse,
                         TIVX_SCALAR_MAX_OBJECTS, sizeof(tivx_scalar_t));
                     break;
                 case VX_TYPE_THRESHOLD:
                     status = ownFreeObject((uint8_t *)ref,
-                        (uint8_t *)gTivxObjects.threshold,
-                        gTivxObjects.isThresholdUse,
+                        (uint8_t *)g_tivx_objects.threshold,
+                        g_tivx_objects.isThresholdUse,
                         TIVX_THRESHOLD_MAX_OBJECTS, sizeof(tivx_threshold_t));
                     break;
                 default:
@@ -357,7 +357,7 @@ vx_status ownReferenceFree(vx_reference ref)
                     break;
             }
 
-            tivxMutexUnlock(gTivxObjectsMutex);
+            tivxMutexUnlock(g_tivx_objects_lock);
         }
     }
 
