@@ -68,6 +68,11 @@ static tivx_platform_info_t g_tivx_platform_info =
     TIVX_TARGET_INFO
 };
 
+tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
+    [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
+#pragma DATA_SECTION(gTivxObjDescShmEntry, ".bss:extMemNonCache:tiovxObjDescShm");
+#pragma DATA_ALIGN(gTivxObjDescShmEntry, 32);
+
 vx_status tivxPlatformInit()
 {
     vx_status status;
@@ -114,7 +119,7 @@ void tivxPlatformSystemLock(vx_enum lock_id)
     }
 }
 
-void tivxPlatformSystemUnLock(vx_enum lock_id)
+void tivxPlatformSystemUnlock(vx_enum lock_id)
 {
     if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
     {
@@ -173,3 +178,14 @@ vx_bool tivxPlatformTargetMatch(
     return (status);
 }
 
+void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
+{
+    if (NULL != table_info)
+    {
+        table_info->table_base = gTivxObjDescShmEntry;
+        table_info->num_entries = TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST;
+
+        /* Change this according available entries*/
+        table_info->last_alloc_index = 0U;
+    }
+}

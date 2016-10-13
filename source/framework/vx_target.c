@@ -585,6 +585,6 @@ void tivxTargetInit()
 void tivxTargetDeInit()
 {
     tivxTargetKernelInstanceDeInit();
-    tivxTargetKernelInit();
+    tivxTargetKernelDeInit();
 
 }

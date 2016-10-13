@@ -27,6 +27,9 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_TARGETS            (12u)
 
 
+#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (100U)
+
+
 /*! \brief CPU ID for supported CPUs
  *
  *         CPU ID is defined in platform module since

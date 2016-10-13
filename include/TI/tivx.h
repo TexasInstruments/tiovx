@@ -89,6 +89,20 @@ extern "C" {
 #define TIVX_TARGET_HOST        "HOST"
 
 /*!
+ * \brief Function to initialize host
+ *
+ * \ingroup group_tivx_host
+ */
+void tivxInit(void);
+
+/*!
+ * \brief Function to de-initialize host
+ *
+ * \ingroup group_tivx_host
+ */
+void tivxDeInit(void);
+
+/*!
  * \brief Associate a target with a kernel
  *
  *        Call multiple times for each supported target

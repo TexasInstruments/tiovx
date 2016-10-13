@@ -55,6 +55,7 @@
 #include <tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
 #include <tivx_target.h>
+#include <tivx_host.h>
 #include <tivx_target_kernel_priv.h>
 #include <tivx_target_kernel_instance.h>
 
