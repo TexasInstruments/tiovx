@@ -51,3 +51,31 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     return (vx_true_e);
 }
 
+VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
+                              vx_reference exemplar,
+                              vx_size count)
+{
+    return NULL;
+}
+
+VX_API_ENTRY vx_reference VX_API_CALL vxGetReferenceFromDelay(
+    vx_delay delay, vx_int32 index)
+{
+    return NULL;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
+    vx_enum attribute, void *ptr, vx_size size)
+{
+    return VX_FAILURE;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseDelay(vx_delay *d)
+{
+    return VX_FAILURE;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
+{
+    return VX_FAILURE;
+}

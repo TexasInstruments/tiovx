@@ -92,6 +92,8 @@ vx_status tivxObjectInit(void)
             TIVX_SCALAR_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isThresholdUse,
             TIVX_THRESHOLD_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isErrorUse,
+            TIVX_THRESHOLD_MAX_OBJECTS);
     }
 
     return (status);
@@ -137,6 +139,8 @@ vx_status tivxObjectDeInit(void)
             TIVX_SCALAR_MAX_OBJECTS);
         status = ownCheckUseFlag(g_tivx_objects.isThresholdUse,
             TIVX_THRESHOLD_MAX_OBJECTS);
+        status = ownCheckUseFlag(g_tivx_objects.isErrorUse,
+            TIVX_ERROR_MAX_OBJECTS);
     }
 
     return (status);
@@ -236,6 +240,11 @@ vx_reference tivxObjectAlloc(vx_enum type)
                 ref = (vx_reference)ownAllocObject(
                     (uint8_t *)g_tivx_objects.threshold, g_tivx_objects.isThresholdUse,
                     TIVX_THRESHOLD_MAX_OBJECTS, sizeof(tivx_threshold_t));
+                break;
+            case VX_TYPE_ERROR:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.error, g_tivx_objects.isErrorUse,
+                    TIVX_ERROR_MAX_OBJECTS, sizeof(tivx_error_t));
                 break;
             default:
                 ref = NULL;

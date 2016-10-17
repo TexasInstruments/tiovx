@@ -161,6 +161,12 @@ extern "C" {
  */
 #define TIVX_THRESHOLD_MAX_OBJECTS                  (8u)
 
+/*!
+ * \brief Max number error objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_ERROR_MAX_OBJECTS                      (30u)
 
 
 /*!
@@ -248,6 +254,11 @@ typedef struct _tivx_object_t
     tivx_threshold_t        threshold[TIVX_THRESHOLD_MAX_OBJECTS];
     /**< Threshold Objects */
     vx_bool                 isThresholdUse[TIVX_THRESHOLD_MAX_OBJECTS];
+    /**< Flag indicating if threshold object is in use or not */
+
+    tivx_error_t            error[TIVX_ERROR_MAX_OBJECTS];
+    /**< Threshold Objects */
+    vx_bool                 isErrorUse[TIVX_ERROR_MAX_OBJECTS];
     /**< Flag indicating if threshold object is in use or not */
 
 } tivx_object_t;

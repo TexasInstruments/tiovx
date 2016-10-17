@@ -376,7 +376,7 @@ vx_status ownReferenceUnlock(vx_reference ref)
 
     if(ref)
     {
-        status = tivxMutexLock(ref->lock);
+        status = tivxMutexUnlock(ref->lock);
     }
 
     return status;

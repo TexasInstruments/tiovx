@@ -10,10 +10,10 @@
 
 #include <TI/tivx.h>
 
-static vx_kernel vx_absdiff_kernel = NULL;
+static vx_kernel vx_lut_kernel = NULL;
 
 
-static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[])
@@ -23,7 +23,7 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelAbsDiffInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelLutInitialize(vx_node node,
     const vx_reference *parameters, vx_uint32 num)
 {
     vx_status status = VX_SUCCESS;
@@ -31,7 +31,7 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffInitialize(vx_node node,
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelAbsDiffDeInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelLutDeInitialize(vx_node node,
     const vx_reference *parameters, vx_uint32 num)
 {
     vx_status status = VX_SUCCESS;
@@ -39,7 +39,8 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffDeInitialize(vx_node node,
     return status;
 }
 
-vx_status tivxAddKernelAbsDiff(vx_context context)
+
+vx_status tivxAddKernelLut(vx_context context)
 {
     vx_kernel kernel;
     vx_status status;
@@ -47,13 +48,13 @@ vx_status tivxAddKernelAbsDiff(vx_context context)
 
     kernel = vxAddUserKernel(
                             context,
-                            "org.khronos.openvx.absdiff",
-                            VX_KERNEL_ABSDIFF,
+                            "org.khronos.openvx.table_lookup",
+                            VX_KERNEL_TABLE_LOOKUP,
                             NULL,
                             3,
-                            tivxAddKernelAbsDiffValidate,
-                            tivxAddKernelAbsDiffInitialize,
-                            tivxAddKernelAbsDiffDeInitialize);
+                            tivxAddKernelLutValidate,
+                            tivxAddKernelLutInitialize,
+                            tivxAddKernelLutDeInitialize);
 
     status = vxGetStatus((vx_reference)kernel);
 
@@ -76,7 +77,7 @@ vx_status tivxAddKernelAbsDiff(vx_context context)
             status = vxAddParameterToKernel(kernel,
                 index,
                 VX_INPUT,
-                VX_TYPE_IMAGE,
+                VX_TYPE_LUT,
                 VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
@@ -94,8 +95,7 @@ vx_status tivxAddKernelAbsDiff(vx_context context)
         if ( status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
         }
 
         if ( status == VX_SUCCESS)
@@ -113,22 +113,22 @@ vx_status tivxAddKernelAbsDiff(vx_context context)
         kernel = NULL;
     }
 
-    vx_absdiff_kernel = kernel;
+    vx_lut_kernel = kernel;
 
     return status;
 }
 
-vx_status tivxRemoveKernelAbsDiff(vx_context context)
+vx_status tivxRemoveKernelLut(vx_context context)
 {
     vx_status status;
-    vx_kernel kernel = vx_absdiff_kernel;
+    vx_kernel kernel = vx_lut_kernel;
 
     status = vxRemoveKernel(kernel);
     if(status==VX_SUCCESS)
     {
         status = vxReleaseKernel(&kernel);
     }
-    vx_absdiff_kernel = NULL;
+    vx_lut_kernel = NULL;
 
     return status;
 }

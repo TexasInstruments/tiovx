@@ -41,7 +41,7 @@ static vx_status ownDestructLut(vx_reference ref);
 static vx_status ownAllocLutBuffer(vx_reference ref);
 
 
-VX_API_ENTRY vx_status VX_API_CALL vxReleaseLut(vx_lut *lut)
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseLUT(vx_lut *lut)
 {
     return (ownReleaseReferenceInt(
         (vx_reference*)lut, VX_TYPE_LUT, VX_EXTERNAL, NULL));
@@ -86,13 +86,13 @@ vx_lut VX_API_CALL vxCreateLUT(
                 lut->base.destructor_callback = ownDestructLut;
                 lut->base.mem_alloc_callback = ownAllocLutBuffer;
                 lut->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseLut;
+                    (tivx_reference_release_callback_f)vxReleaseLUT;
 
                 lut->obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_LUT);
                 if(lut->obj_desc==NULL)
                 {
-                    vxReleaseLut(&lut);
+                    vxReleaseLUT(&lut);
 
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate lut object descriptor\n");
@@ -116,7 +116,7 @@ vx_lut VX_API_CALL vxCreateLUT(
     return (lut);
 }
 
-vx_status VX_API_CALL vxQueryLut(
+vx_status VX_API_CALL vxQueryLUT(
     vx_lut lut, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
@@ -172,7 +172,7 @@ vx_status VX_API_CALL vxQueryLut(
     return status;
 }
 
-vx_status VX_API_CALL vxCopyLut(
+vx_status VX_API_CALL vxCopyLUT(
     vx_lut lut, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = VX_SUCCESS;
@@ -255,7 +255,8 @@ vx_status VX_API_CALL vxMapLUT(
     }
     else
     {
-        if (NULL != ptr)
+        status = ownAllocLutBuffer(&lut->base);
+        if ((NULL != ptr) && (VX_SUCCESS == status))
         {
             /* TODO: Need to properly set map_id and return it */
             tivxMemBufferMap(lut->obj_desc->mem_ptr.host_ptr,

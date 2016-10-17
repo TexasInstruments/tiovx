@@ -228,7 +228,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
-            if(context->kerneltable[idx] && context->num_unique_kernels < dimof(context->kerneltable))
+            if ((NULL == context->kerneltable[idx]) && (context->num_unique_kernels < dimof(context->kerneltable)))
             {
                 /* found free entry */
                 context->kerneltable[idx] = kernel;

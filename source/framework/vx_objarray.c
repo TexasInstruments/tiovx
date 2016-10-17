@@ -68,7 +68,7 @@ static vx_bool ownIsValidObject(vx_enum type)
 }
 
 
-VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjArray(vx_object_array *objarr)
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *objarr)
 {
     return (ownReleaseReferenceInt(
         (vx_reference*)objarr, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, NULL));
@@ -95,13 +95,13 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.destructor_callback = ownDestructObjArray;
                 objarr->base.mem_alloc_callback = NULL;
                 objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseObjArray;
+                    (tivx_reference_release_callback_f)vxReleaseObjectArray;
 
                 objarr->obj_desc = (tivx_obj_desc_objarray_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_OBJARRAY);
                 if(objarr->obj_desc==NULL)
                 {
-                    vxReleaseObjArray(&objarr);
+                    vxReleaseObjectArray(&objarr);
 
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
@@ -147,13 +147,13 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 objarr->base.destructor_callback = ownDestructObjArray;
                 objarr->base.mem_alloc_callback = NULL;
                 objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseObjArray;
+                    (tivx_reference_release_callback_f)vxReleaseObjectArray;
 
                 objarr->obj_desc = (tivx_obj_desc_objarray_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_OBJARRAY);
                 if(objarr->obj_desc==NULL)
                 {
-                    vxReleaseObjArray(&objarr);
+                    vxReleaseObjectArray(&objarr);
 
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");

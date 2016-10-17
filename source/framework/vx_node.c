@@ -186,7 +186,7 @@ vx_status ownNodeKernelInit(vx_node node)
     {
         if(node->kernel->initialize)
         {
-            /* user has given deinitialize function so call it */
+            /* user has given initialize function so call it */
             status = node->kernel->initialize(node, node->parameters, node->kernel->signature.num_parameters);
         }
         else
@@ -551,6 +551,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                         node->replicated_flags[idx] = vx_false_e;
                     }
                     node->valid_rect_reset = vx_false_e;
+                    node->completion_event = NULL;
+                    node->obj_desc_cmd = NULL;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = ownDestructNode;

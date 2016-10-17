@@ -58,8 +58,10 @@ static vx_bool ownIsSupportedFourcc(vx_df_image code)
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_VIRT:
             is_supported_fourcc = vx_true_e;
+            break;
         default:
             is_supported_fourcc = vx_false_e;
+            break;
     }
 
     return is_supported_fourcc;
@@ -1500,6 +1502,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 image->maps[map_idx].map_addr = map_addr;
                 image->maps[map_idx].map_size = map_size;
                 image->maps[map_idx].usage = usage;
+                break;
             }
         }
         if(map_idx<TIVX_IMAGE_MAX_MAPS)

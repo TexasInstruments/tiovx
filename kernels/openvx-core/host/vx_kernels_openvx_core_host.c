@@ -24,6 +24,10 @@ static vx_status tivxPublishKernels(vx_context context)
     {
         status  = tivxAddKernelAbsDiff(context);
     }
+    if(status == VX_SUCCESS)
+    {
+        status  = tivxAddKernelLut(context);
+    }
 
     return status;
 }
@@ -35,6 +39,10 @@ static vx_status tivxUnPublishKernels(vx_context context)
     if(status == VX_SUCCESS)
     {
         status  = tivxRemoveKernelAbsDiff(context);
+    }
+    if(status == VX_SUCCESS)
+    {
+        status  = tivxRemoveKernelLut(context);
     }
 
     return status;
