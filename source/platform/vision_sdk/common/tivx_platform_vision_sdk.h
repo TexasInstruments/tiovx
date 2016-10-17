@@ -23,10 +23,14 @@ extern "C" {
 
 /*! \brief Maximum number of targets and thus targetid supported
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
+ * \ingroup group_tivx_platform
  */
 #define TIVX_PLATFORM_MAX_TARGETS            (12u)
 
 
+/*! \brief Maximum number obj descriptors that are present in shared memory
+ * \ingroup group_tivx_platform
+ */
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (100U)
 
 
@@ -89,7 +93,7 @@ typedef enum _tivx_cpu_id_e {
 } tivx_cpu_id_e;
 
 /*! \brief Target ID for supported targets
- * \ingroup group_tivx_target
+ * \ingroup group_tivx_platform
  */
 typedef enum _tivx_target_id_e {
 
@@ -129,7 +133,7 @@ typedef enum _tivx_target_id_e {
 /*! \brief Mapping of Target names with Target Ids
  *   Used to initialize internal structure
  *
- * \ingroup group_tivx_target
+ * \ingroup group_tivx_platform
  */
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \

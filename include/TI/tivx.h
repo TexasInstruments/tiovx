@@ -91,14 +91,14 @@ extern "C" {
 /*!
  * \brief Function to initialize host
  *
- * \ingroup group_tivx_host
+ * \ingroup group_tivx_ext
  */
 void tivxInit(void);
 
 /*!
  * \brief Function to de-initialize host
  *
- * \ingroup group_tivx_host
+ * \ingroup group_tivx_ext
  */
 void tivxDeInit(void);
 

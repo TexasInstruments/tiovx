@@ -295,6 +295,11 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
  * \ingroup group_vx_framework_object
  */
 
+/*!
+ * \defgroup group_tivx_host Host APIs
+ * \ingroup group_vx_framework_object
+ */
+
 
 /*!
  * \defgroup group_vx_module Module APIs

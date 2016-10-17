@@ -257,7 +257,7 @@ typedef struct _tivx_object_t
     /**< Flag indicating if threshold object is in use or not */
 
     tivx_error_t            error[TIVX_ERROR_MAX_OBJECTS];
-    /**< Threshold Objects */
+    /**< Error Objects */
     vx_bool                 isErrorUse[TIVX_ERROR_MAX_OBJECTS];
     /**< Flag indicating if threshold object is in use or not */
 
