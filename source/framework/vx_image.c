@@ -704,6 +704,9 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
 
                 format = VX_DF_IMAGE_U8;
 
+                width = 0;
+                height = 0;
+
                 switch (image->obj_desc->format)
                 {
                     case VX_DF_IMAGE_YUV4:
