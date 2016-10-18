@@ -240,28 +240,19 @@ vx_bool ownIsValidReference(vx_reference ref);
  * \param [in] ref The pointer to the reference object.
  * \param [in] d The delay to which the object belongs
  * \param [in] the index in the delay
- * \ingroup group_int_reference
+ * \ingroup group_vx_reference
  */
 void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index);
 
 /*! \brief Alloc memory associated with this reference, typically data reference
- * \ingroup group_int_reference
+ * \ingroup group_vx_reference
  */
 vx_status ownReferenceAllocMem(vx_reference ref);
 
 /*! \brief Get the size of the Type enum
+ * \ingroup group_vx_reference
  */
 vx_size ownSizeOfEnumType(vx_enum item_type);
-
-/*! \brief Function to initialize reference objects
- *         Initializes all types of objects
- *         Initializes internal state variables
- */
-vx_status ownReferenceInit(void);
-
-/*! \brief Function to De-initialize reference objects
- */
-vx_status ownReferenceDeInit(void);
 
 #ifdef __cplusplus
 }
