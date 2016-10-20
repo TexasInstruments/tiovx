@@ -292,6 +292,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
                 ownIncrementReference(value, VX_INTERNAL);
                 node->parameters[index] = value;
+
+                /* Assign parameter descriptor id in the node */
+                node->obj_desc->data_id[index] =
+                    tivxReferenceGetObjDescId(value);
             }
 
             /* Note that we don't need to do anything special for parameters to child graphs. */

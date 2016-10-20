@@ -17,6 +17,9 @@ vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxAddKernelLut(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
 
+vx_status tivxAddKernelLut(vx_context context);
+vx_status tivxRemoveKernelLut(vx_context context);
+
 
 static vx_status tivxPublishKernels(vx_context context)
 {

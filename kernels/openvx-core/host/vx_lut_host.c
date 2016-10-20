@@ -9,9 +9,9 @@
 
 
 #include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
 
 static vx_kernel vx_lut_kernel = NULL;
-
 
 static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -22,23 +22,6 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
 
     return status;
 }
-
-static vx_status VX_CALLBACK tivxAddKernelLutInitialize(vx_node node,
-    const vx_reference *parameters, vx_uint32 num)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
-static vx_status VX_CALLBACK tivxAddKernelLutDeInitialize(vx_node node,
-    const vx_reference *parameters, vx_uint32 num)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 
 vx_status tivxAddKernelLut(vx_context context)
 {
@@ -53,8 +36,8 @@ vx_status tivxAddKernelLut(vx_context context)
                             NULL,
                             3,
                             tivxAddKernelLutValidate,
-                            tivxAddKernelLutInitialize,
-                            tivxAddKernelLutDeInitialize);
+                            NULL,
+                            NULL);
 
     status = vxGetStatus((vx_reference)kernel);
 
@@ -95,7 +78,7 @@ vx_status tivxAddKernelLut(vx_context context)
         if ( status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
         }
 
         if ( status == VX_SUCCESS)
@@ -123,11 +106,9 @@ vx_status tivxRemoveKernelLut(vx_context context)
     vx_status status;
     vx_kernel kernel = vx_lut_kernel;
 
+    /* Kernel is released as part of Remove Kernel */
     status = vxRemoveKernel(kernel);
-    if(status==VX_SUCCESS)
-    {
-        status = vxReleaseKernel(&kernel);
-    }
+
     vx_lut_kernel = NULL;
 
     return status;

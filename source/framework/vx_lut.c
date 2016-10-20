@@ -66,7 +66,7 @@ vx_lut VX_API_CALL vxCreateLUT(
         {
             if (count <= 65536)
             {
-                dim = sizeof(vx_uint8);
+                dim = sizeof(vx_uint16);
             }
         }
         else

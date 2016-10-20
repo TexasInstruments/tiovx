@@ -58,6 +58,8 @@ typedef struct _vx_delay
     /*! \brief reference object */
     tivx_reference_t base;
 
+    /*! \brief object descriptor */
+    tivx_obj_desc_t *obj_desc;
 
 } tivx_delay_t;
 

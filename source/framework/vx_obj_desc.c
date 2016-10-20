@@ -19,10 +19,11 @@ static inline uint32_t tivxIpcPayloadMake(
 {
 
     /* Keep the desc id in the upper 16bits and target id in lower 8bits */
-    return (uint32_t)((((uint32_t)obj_desc_id & TIVX_OBJ_DESC_ID_MASK)<<
-                            TIVX_OBJ_DESC_ID_SHIFT) |
+    return (uint32_t)((((uint32_t)obj_desc_id << TIVX_OBJ_DESC_ID_SHIFT)&
+                            TIVX_OBJ_DESC_ID_MASK) |
         (((uint32_t)dst_target_id & TIVX_TARGET_ID_MASK) <<
-            TIVX_TARGET_ID_SHIFT));
+            TIVX_TARGET_ID_SHIFT) |
+        (3u << 28U));
 }
 
 static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
@@ -51,11 +52,14 @@ static void tivxObjDescIpcHandler(uint32_t payload)
 
 void tivxObjDescInit()
 {
+#if defined (M4)
     tivx_obj_desc_t *tmp_obj_desc = NULL;
     uint32_t i;
+#endif
 
     tivxPlatformGetObjDescTableInfo(&g_obj_desc_table);
 
+#if defined (M4)
     /* Initializing all desc to be available */
     for(i=0; i<g_obj_desc_table.num_entries; i++)
     {
@@ -64,6 +68,7 @@ void tivxObjDescInit()
     }
 
     g_obj_desc_table.last_alloc_index = 0;
+#endif
 
     tivxIpcRegisterHandler(tivxObjDescIpcHandler);
 }
@@ -170,4 +175,54 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
     }
 
     return status;
+}
+
+uint16_t tivxReferenceGetObjDescId(vx_reference ref)
+{
+    uint16_t obj_desc_id = TIVX_OBJ_DESC_INVALID;
+
+    if (NULL != ref)
+    {
+        switch (ref->type)
+        {
+            case VX_TYPE_ARRAY:
+                obj_desc_id = ((vx_array)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_CONVOLUTION:
+                obj_desc_id = ((vx_convolution)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_DELAY:
+                obj_desc_id = ((vx_delay)ref)->obj_desc->obj_desc_id;
+                break;
+            case VX_TYPE_DISTRIBUTION:
+                obj_desc_id = ((vx_distribution)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_IMAGE:
+                obj_desc_id = ((vx_image)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_LUT:
+                obj_desc_id = ((vx_lut)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_MATRIX:
+                obj_desc_id = ((vx_matrix)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_PYRAMID:
+                obj_desc_id = ((vx_pyramid)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_REMAP:
+                obj_desc_id = ((vx_remap)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_SCALAR:
+                obj_desc_id = ((vx_scalar)ref)->obj_desc->base.obj_desc_id;
+                break;
+            case VX_TYPE_THRESHOLD:
+                obj_desc_id = ((vx_threshold)ref)->obj_desc->base.obj_desc_id;
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    return (obj_desc_id);
 }

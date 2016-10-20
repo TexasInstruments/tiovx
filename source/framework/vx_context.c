@@ -307,7 +307,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if( ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+            if(kernel && ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
                 &&
                 ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0
                     ||
@@ -470,6 +470,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         if (ownDecrementReference(&context->base, VX_EXTERNAL) == 0)
         {
+            /* Unload kernels */
+            vxUnloadKernels(context, g_context_default_load_module);
+
             /* Deregister any log callbacks if there is any registered */
             vxRegisterLogCallback(context, NULL, vx_false_e);
 

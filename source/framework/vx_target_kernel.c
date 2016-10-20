@@ -20,6 +20,7 @@ vx_status tivxTargetKernelInit()
     for(i=0; i<dimof(g_target_kernel_table); i++)
     {
         g_target_kernel_table[i].kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
+        g_target_kernel_table[i].target_id = TIVX_TARGET_KERNEL_ID_INVALID;
     }
 
     status = tivxMutexCreate(&g_target_kernel_lock);
@@ -77,6 +78,42 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
     }
 
     return (knl);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
+    tivx_target_kernel target_kernel)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+
+    if (NULL != target_kernel)
+    {
+        status = tivxMutexLock(g_target_kernel_lock);
+        if (VX_SUCCESS == status)
+        {
+            for(i=0; i<dimof(g_target_kernel_table); i++)
+            {
+                if (target_kernel ==
+                    &g_target_kernel_table[i])
+                {
+                    g_target_kernel_table[i].kernel_id =
+                        TIVX_TARGET_KERNEL_ID_INVALID;
+                    g_target_kernel_table[i].target_id =
+                        TIVX_TARGET_KERNEL_ID_INVALID;
+                    g_target_kernel_table[i].process_func = NULL;
+                    g_target_kernel_table[i].create_func = NULL;
+                    g_target_kernel_table[i].delete_func = NULL;
+                    g_target_kernel_table[i].control_func = NULL;
+
+                    break;
+                }
+            }
+            
+            tivxMutexUnlock(g_target_kernel_lock);
+        }
+    }
+
+    return (status);
 }
 
 tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, vx_enum target_id)

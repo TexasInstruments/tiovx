@@ -150,6 +150,33 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_ker
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
 
+/*!
+ * \brief Function to register core OpenVx Kernels on the Host
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterOpenVXCoreKernels(void);
+
+/*!
+ * \brief Function to un-register core OpenVx Kernels on the Host
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterOpenVXCoreKernels(void);
+
+/*!
+ * \brief Function to register OpenVx Kernels on the Target
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterOpenVXCoreTargetKernels(void);
+
+/*!
+ * \brief Function to register OpenVx Kernels on the Target
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterOpenVXCoreTargetKernels(void);
 
 #ifdef __cplusplus
 }

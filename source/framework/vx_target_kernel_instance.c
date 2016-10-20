@@ -66,6 +66,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vx_
                     tmp_kernel_instance->kernel = kernel;
 
                     kernel_instance = tmp_kernel_instance;
+                    break;
                 }
             }
             tivxMutexUnlock(g_target_kernel_instance_lock);

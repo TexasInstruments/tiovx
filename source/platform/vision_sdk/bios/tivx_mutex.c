@@ -67,10 +67,12 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 vx_status tivxMutexDelete(tivx_mutex *mutex)
 {
     vx_status status = VX_FAILURE;
+    BspOsal_SemHandle handle;
 
     if ((NULL != mutex) && (*mutex != NULL))
     {
-        BspOsal_semDelete((BspOsal_SemHandle)*mutex);
+        handle = (tivx_mutex)*mutex;
+        BspOsal_semDelete(&handle);
         *mutex = NULL;
         status = VX_SUCCESS;
     }

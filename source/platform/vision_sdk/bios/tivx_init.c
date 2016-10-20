@@ -10,10 +10,6 @@
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
 
-void tivxTargetConfig(void)
-{
-}
-
 void tivxInit(void)
 {
     /* Initialize platform */
@@ -23,10 +19,13 @@ void tivxInit(void)
     tivxTargetInit();
 
     /* Initialize Host */
-    if (TIVX_CPU_ID_IPU1_0 == tivxIpcGetSelfCpuId())
-    {
-        tivxHostInit();
-    }
+#if defined (M4)
+    tivxHostInit();
+    tivxRegisterOpenVXCoreKernels();
+#else
+    tivxRegisterOpenVXCoreTargetKernels();
+#endif
+    tivxObjDescInit();
 
     tivxTargetConfig();
 }
@@ -34,10 +33,12 @@ void tivxInit(void)
 void tivxDeInit(void)
 {
     /* DeInitialize Host */
-    if (TIVX_CPU_ID_IPU1_0 == tivxIpcGetSelfCpuId())
-    {
-        tivxHostDeInit();
-    }
+#if defined(M4)
+    tivxHostDeInit();
+    tivxUnRegisterOpenVXCoreKernels();
+#else
+    tivxUnRegisterOpenVXCoreTargetKernels();
+#endif
 
     /* DeInitialize Target */
     tivxTargetDeInit();

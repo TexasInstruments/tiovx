@@ -8,16 +8,8 @@
  */
 
 #include <vx_internal.h>
+#include <tivx_platform_vision_sdk.h>
 
-void tivxRegisterOpenVXCoreKernels();
-void tivxUnRegisterOpenVXCoreKernels();
-
-void tivxHostInit(void)
+void tivxTargetConfig(void)
 {
-    tivxObjectInit();
-}
-
-void tivxHostDeInit(void)
-{
-    tivxObjectDeInit();
 }

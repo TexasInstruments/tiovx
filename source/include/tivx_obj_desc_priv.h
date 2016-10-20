@@ -196,6 +196,13 @@ vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e t
  */
 void tivxObjDescInit();
 
+/*!
+ * \brief Function to get the descriptor object from the given reference
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+uint16_t tivxReferenceGetObjDescId(vx_reference ref);
+
 #ifdef __cplusplus
 }
 #endif

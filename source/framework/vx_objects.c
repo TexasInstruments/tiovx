@@ -93,7 +93,7 @@ vx_status tivxObjectInit(void)
         ownInitUseFlag(g_tivx_objects.isThresholdUse,
             TIVX_THRESHOLD_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isErrorUse,
-            TIVX_THRESHOLD_MAX_OBJECTS);
+            TIVX_ERROR_MAX_OBJECTS);
     }
 
     return (status);

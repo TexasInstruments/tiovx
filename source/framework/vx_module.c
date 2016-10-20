@@ -110,7 +110,7 @@ VX_API_ENTRY vx_status tivxUnRegisterModule(char *name)
 
 VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_char *module)
 {
-    uint32_t idx;
+    uint32_t idx, kernels_loaded = 0;
     vx_status status = VX_FAILURE;
 
     ownCheckAndInitModule();
@@ -124,9 +124,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
           )
         {
             status = g_module_table[idx].publish(context);
+
+            if (VX_SUCCESS == status)
+            {
+                kernels_loaded ++;
+            }
         }
     }
-    if(idx>=dimof(g_module_table))
+    if((idx>=dimof(g_module_table)) && (0 == kernels_loaded))
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }

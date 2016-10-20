@@ -23,22 +23,6 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelAbsDiffInitialize(vx_node node,
-    const vx_reference *parameters, vx_uint32 num)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
-static vx_status VX_CALLBACK tivxAddKernelAbsDiffDeInitialize(vx_node node,
-    const vx_reference *parameters, vx_uint32 num)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 vx_status tivxAddKernelAbsDiff(vx_context context)
 {
     vx_kernel kernel;
@@ -52,8 +36,8 @@ vx_status tivxAddKernelAbsDiff(vx_context context)
                             NULL,
                             3,
                             tivxAddKernelAbsDiffValidate,
-                            tivxAddKernelAbsDiffInitialize,
-                            tivxAddKernelAbsDiffDeInitialize);
+                            NULL,
+                            NULL);
 
     status = vxGetStatus((vx_reference)kernel);
 
@@ -124,10 +108,6 @@ vx_status tivxRemoveKernelAbsDiff(vx_context context)
     vx_kernel kernel = vx_absdiff_kernel;
 
     status = vxRemoveKernel(kernel);
-    if(status==VX_SUCCESS)
-    {
-        status = vxReleaseKernel(&kernel);
-    }
     vx_absdiff_kernel = NULL;
 
     return status;

@@ -184,12 +184,6 @@ vx_status ownNodeKernelInit(vx_node node)
 
     if(node->is_kernel_created == vx_false_e)
     {
-        if(node->kernel->initialize)
-        {
-            /* user has given initialize function so call it */
-            status = node->kernel->initialize(node, node->parameters, node->kernel->signature.num_parameters);
-        }
-        else
         {
             uint16_t obj_desc_id[1];
 
@@ -197,6 +191,14 @@ vx_status ownNodeKernelInit(vx_node node)
 
             status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
         }
+
+        if ((VX_SUCCESS == status) && (NULL != node->kernel->initialize))
+        {
+            /* user has given initialize function so call it */
+            status = node->kernel->initialize(node, node->parameters,
+                node->kernel->signature.num_parameters);
+        }
+
         if(status==VX_SUCCESS)
         {
             node->is_kernel_created = vx_true_e;
@@ -469,7 +471,7 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if(node->user_callback)
+    if(NULL != node)
     {
         node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
         if(node->obj_desc_cmd != NULL)
@@ -553,6 +555,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->valid_rect_reset = vx_false_e;
                     node->completion_event = NULL;
                     node->obj_desc_cmd = NULL;
+                    node->user_callback = NULL;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = ownDestructNode;

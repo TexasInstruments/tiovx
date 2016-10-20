@@ -171,7 +171,7 @@ typedef struct _tivx_target_create_params
     /*! \brief Pointer to task stack, if NULL then task stack
      *         is allcoated by OS and not supplied by user
      */
-    uint32_t *task_stack_ptr;
+    uint8_t *task_stack_ptr;
 
     /*! \brief Task stack size, if 0, OS allocates stack with default size
      */
@@ -269,6 +269,16 @@ void tivxTargetInit();
  * \ingroup group_tivx_target
  */
 void tivxTargetDeInit();
+
+/*!
+ * \brief Function to set the target configuration
+ *
+ *        It creates target and adds it to the list of targets supported
+ *        on each core.
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetConfig();
 
 #ifdef __cplusplus
 }

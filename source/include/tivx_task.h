@@ -79,7 +79,7 @@ typedef struct _tivx_task_t
     /*! \brief Pointer to task stack, if NULL then task stack
      *         is allcoated by OS and not supplied by user
      */
-    uint32_t *stack_ptr;
+    uint8_t *stack_ptr;
 
     /*! \brief Task stack size, if 0, OS allocates stack with default size
      */
@@ -117,7 +117,7 @@ typedef struct _tivx_task_create_params
     /*! \brief Pointer to task stack, if NULL then task stack
      *         is allcoated by OS and not supplied by user
      */
-    uint32_t *stack_ptr;
+    uint8_t *stack_ptr;
 
     /*! \brief Task stack size, if 0, OS allocates stack with default size
      */

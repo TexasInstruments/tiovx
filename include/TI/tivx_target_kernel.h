@@ -75,6 +75,15 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_f delete_func,
                              tivx_target_kernel_f control_func);
 
+/*! \brief Allows users to remove native kernels implementation
+ *         to specific targets
+ *
+ * \ingroup group_tivx_target_kernel
+ *
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
+    tivx_target_kernel target_kernel);
+
 /*!
  * \brief Associate a kernel function context or handle with a target kernel instance
  *
