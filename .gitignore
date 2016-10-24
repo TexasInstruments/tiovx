@@ -32,3 +32,7 @@ series
 cscope.*
 ncscope.*
 
+# python generated file
+*.egg-info
+__pycache__
+
