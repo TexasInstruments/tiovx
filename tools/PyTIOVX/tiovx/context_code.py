@@ -27,6 +27,8 @@ class ContextCode (ReferenceCode) :
             return RemapCode(ref)
         if ref.type == Type.THRESHOLD :
             return ThresholdCode(ref)
+        if ref.type == Type.PYRAMID :
+            return PyramidCode(ref)
         if ref.type == Type.OBJECTARRAY :
             return ObjectArrayCode(ref)
         return None

@@ -5,9 +5,10 @@
 
 from . import *
 
-class ImageCode (ReferenceCode) :
+class PyramidCode :
     def __init__(self, ref) :
-        ReferenceCode.__init__(self, ref)
+        self.ref = ref
 
     def declare_var(self, code_gen) :
-        code_gen.write_line('vx_image %s;' % self.ref.name)
+       code_gen.write_line('vx_pyramid %s;' % self.ref.name)
+       code_gen.write_newline()

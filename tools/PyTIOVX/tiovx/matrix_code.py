@@ -10,4 +10,5 @@ class MatrixCode (ReferenceCode) :
         ReferenceCode.__init__(self, ref)
 
     def declare_var(self, code_gen) :
-       code_gen.write_line('vx_matrix %s;' % self.ref.name)
+        code_gen.write_line('vx_matrix %s;' % self.ref.name)
+

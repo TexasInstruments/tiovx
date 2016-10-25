@@ -5,9 +5,9 @@
 
 from . import *
 
-class ImageCode (ReferenceCode) :
+class ObjectArrayCode (ReferenceCode) :
     def __init__(self, ref) :
         ReferenceCode.__init__(self, ref)
 
     def declare_var(self, code_gen) :
-        code_gen.write_line('vx_image %s;' % self.ref.name)
+       code_gen.write_line('vx_objectarray %s;' % self.ref.name)
