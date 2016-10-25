@@ -16,5 +16,11 @@ from .export_image import *
 from .code_generate import *
 from .usecase_code import *
 from .lut import *
+from .convolution import *
+from .distribution import *
+from .matrix import *
+from .thrshold import *
+from .remap import *
+from .objectarray import *
 
 
