@@ -3,19 +3,21 @@
 * ALL RIGHTS RESERVED
 '''
 
+'''
+This is test case to test error detection
+'''
+
 from tiovx import *
 
-context = Context("uc_sample_03")
+context = Context("uc_sample_04")
 graph = Graph()
 
 in1 = Image(640, 480, DfImage.NV12)
-in2 = Image(640, 480, DfImage.NV12)
-out = Image(640, 480, DfImage.NV12)
+in2 = Lut(Type.INT16, 256)
+out = Image(640, 480, DfImage.NV21)
 
 graph.add ( NodeAbsDiff(in1, in2, out) )
 
 context.add ( graph )
 
-usecase = UsecaseCode(context)
-
-usecase.generate_code()
+ExportImage(context).export()

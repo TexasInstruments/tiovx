@@ -13,10 +13,18 @@ class Node (Reference) :
         self.target = Target.DEFAULT
         for arg in args :
             self.ref.append(arg)
+        self.num_in = 0
+        self.num_out = 0
+
+    def checkParams(self, *param_type_args) :
+        assert (len(param_type_args) == (self.num_in + self.num_out)), 'Expected %d arguments but %d provided' % (len(param_type_args), (self.num_in + self.num_out))
+        for i in range(0, len(param_type_args)) :
+            assert (self.ref[i].type == param_type_args[i]), 'Parameter %d: Expected %s but %s is provided' % (i, param_type_args[i], self.ref[i].type)
     
-    def setNumInOut(self, num_in, num_out) :
+    def setParams(self, num_in, num_out, *param_type_args) :
         self.num_in = num_in
         self.num_out = num_out
+        self.checkParams(*param_type_args)
 
     def setTarget(self, target):
         self.target = target
@@ -32,6 +40,12 @@ class Node (Reference) :
 class NodeAbsDiff (Node) :
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.absdiff", image_in1, image_in2, image_out3)
-        self.setNumInOut(2, 1)
+        self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
 
+    def checkParams(self, *param_type_args) :
+        Node.checkParams(self, *param_type_args)
+        # additional error conditions over the basic ones
+        assert ( self.ref[0].df_image == self.ref[1].df_image ), "Inputs MUST have same image data format"
+        assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
+        

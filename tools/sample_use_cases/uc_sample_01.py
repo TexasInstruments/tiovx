@@ -1,3 +1,8 @@
+'''
+* Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+* ALL RIGHTS RESERVED
+'''
+
 from tiovx import *
 
 context = Context("uc_sample_01")
