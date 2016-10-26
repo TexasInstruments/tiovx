@@ -8,9 +8,9 @@ from tiovx import *
 context = Context("uc_sample_03")
 graph = Graph()
 
-in1 = Image(640, 480, DfImage.NV12)
-in2 = Image(640, 480, DfImage.NV12)
-out = Image(640, 480, DfImage.NV12)
+in1 = Image(640, 480, DfImage.S16)
+in2 = Image(640, 480, DfImage.S16)
+out = Image(640, 480, DfImage.S16)
 
 graph.add ( NodeAbsDiff(in1, in2, out) )
 

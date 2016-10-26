@@ -5,6 +5,7 @@
 
 from .enums import *
 from .reference import *
+from .scalar import *
 from .image import *
 from .node import *
 from .graph import *
@@ -31,7 +32,6 @@ from .pyramid import *
 from .pyramid_code import *
 from .objectarray import *
 from .objectarray_code import *
-from .scalar import *
 from .scalar_code import *
 
 

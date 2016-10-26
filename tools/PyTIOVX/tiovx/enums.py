@@ -90,4 +90,22 @@ class Target(Enum) :
     IPU2_1  = 13
     DEFAULT = DSP1
 
+class Policy(Enum) :
+    WRAP      = 1
+    SATURATE  = 2
 
+class Interpolation(Enum) :
+    NEAREST   = 1
+    BILINEAR  = 2
+    AREA      = 3
+
+class NonlinearFilter(Enum) :
+    MEDIAN   = 1
+    MIN      = 2
+    MAX      = 3
+
+class Pattern(Enum) :
+    BOX      = 1
+    CROSS    = 2
+    DISK     = 3
+    OTHER    = 4
