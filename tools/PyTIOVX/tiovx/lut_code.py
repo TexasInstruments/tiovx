@@ -11,3 +11,13 @@ class LutCode (ReferenceCode) :
 
     def declare_var(self, code_gen) :
        code_gen.write_line('vx_lut %s;' % self.ref.name)
+
+    def call_create(self, code_gen) :
+        code_gen.write_if_status();
+        code_gen.write_open_brace();
+        code_gen.write_line("usecase->%s = vxCreateLut(context, %s, %d);" % (self.ref.name, Type.get_vx_name(ref.data_type), ref.count));
+        code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
+        code_gen.write_open_brace()
+        code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
+        code_gen.write_close_brace()
+        code_gen.write_close_brace()

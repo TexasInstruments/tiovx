@@ -58,15 +58,13 @@ class NodeAbsDiff (Node) :
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 or self.ref[0].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
 
-    def get_vx_kernel_enum(self) :
-        return "VX_KERNEL_VX_KERNEL_ABSDIFF"
-
 #TODO BIDI
 class NodeAccumulateImage (Node) :
     def __init__(self, image_in1, image_inout2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.accumulate", image_in1, image_inout2, image_inout2)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_ACCUMULATE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -80,6 +78,7 @@ class NodeAccumulateSquareImage (Node) :
         Node.__init__(self, "org.khronos.openvx.accumulate_square", image_in1, shift_in2, image_inout3, image_inout3)
         self.setParams(3, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_ACCUMULATE_SQUARE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -93,6 +92,7 @@ class NodeAccumulateWeightedImage (Node) :
         Node.__init__(self, "org.khronos.openvx.accumulate_weighted", image_in1, alpha_in2, image_inout3, image_inout3)
         self.setParams(3, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_ACCUMULATE_WEIGHTED");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -106,6 +106,7 @@ class NodeAdd (Node) :
         Node.__init__(self, "org.khronos.openvx.add", image_in1, image_in2, scalar, image_out4)
         self.setParams(3, 1, Type.IMAGE, Type.IMAGE, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_ADD");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -121,6 +122,7 @@ class NodeSubtract (Node) :
         Node.__init__(self, "org.khronos.openvx.subtract", image_in1, image_in2, scalar, image_out3)
         self.setParams(3, 1, Type.IMAGE, Type.IMAGE, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_SUBTRACT");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -135,6 +137,7 @@ class NodeAnd (Node) :
         Node.__init__(self, "org.khronos.openvx.and", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_AND");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -148,6 +151,7 @@ class NodeXor (Node) :
         Node.__init__(self, "org.khronos.openvx.xor", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_XOR");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -161,6 +165,7 @@ class NodeOr (Node) :
         Node.__init__(self, "org.khronos.openvx.or", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_OR");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -174,6 +179,7 @@ class NodeNot (Node) :
         Node.__init__(self, "org.khronos.openvx.not", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_NOT");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -186,6 +192,7 @@ class NodeBox3x3 (Node) :
         Node.__init__(self, "org.khronos.openvx.box_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_BOX_3x3");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -200,6 +207,7 @@ class NodeCannyEdgeDetector (Node) :
         Node.__init__(self, "org.khronos.openvx.canny_edge_detector", image_in1, hyst_in2, scalar3, scalar4, image_out5)
         self.setParams(4, 1, Type.IMAGE, Type.THRESHOLD, Type.SCALAR, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_CANNY_EDGE_DETECTOR");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -213,6 +221,7 @@ class NodeChannelCombine (Node) :
         Node.__init__(self, "org.khronos.openvx.channel_combine", image_in1, image_in2, image_in3, image_in4, image_out5)
         self.setParams(4, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_CHANNEL_COMBINE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -228,6 +237,7 @@ class NodeChannelExtract (Node) :
         Node.__init__(self, "org.khronos.openvx.channel_extract", image_in1, scalar, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_CHANNEL_EXTRACT");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -239,6 +249,7 @@ class NodeColorConvert (Node) :
         Node.__init__(self, "org.khronos.openvx.color_convert", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_COLOR_CONVERT");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -251,6 +262,7 @@ class NodeConvertDepth (Node) :
         Node.__init__(self, "org.khronos.openvx.convertdepth", image_in1, scalar3, shift4, image_out2)
         self.setParams(3, 1, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_CONVERTDEPTH");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -261,6 +273,7 @@ class NodeConvolve (Node) :
         Node.__init__(self, "org.khronos.openvx.custom_convolution", image_in1, conv2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.CONVOLUTION, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_CUSTOM_CONVOLUTION");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -273,6 +286,7 @@ class NodeDilate3x3 (Node) :
         Node.__init__(self, "org.khronos.openvx.dilate_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_DILATE_3x3");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -285,6 +299,7 @@ class NodeEqualizeHist (Node) :
         Node.__init__(self, "org.khronos.openvx.equalize_histogram", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_EQUALIZE_HISTOGRAM");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -297,6 +312,7 @@ class NodeErode3x3 (Node) :
         Node.__init__(self, "org.khronos.openvx.erode_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_ERODE_3x3");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -311,6 +327,7 @@ class NodeFastCorners (Node) :
         Node.__init__(self, "org.khronos.openvx.fast_corners", image_in1, strengh_thresh2, scalar3, arr_out4, corners5)
         self.setParams(3, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_FAST_CORNERS");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -323,6 +340,7 @@ class NodeGaussian3x3 (Node) :
         Node.__init__(self, "org.khronos.openvx.gaussian_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_GAUSSIAN_3x3");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -336,6 +354,7 @@ class NodeNonLinearFilter (Node) :
         Node.__init__(self, "org.khronos.openvx.non_linear_filter", scalar1, image_in2, matrix_in3, image_out4)
         self.setParams(3, 1, Type.SCALAR, Type.IMAGE, Type.MATRIX, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_NON_LINEAR_FILTER");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -351,6 +370,7 @@ class NodeHarrisCorners (Node) :
         Node.__init__(self, "org.khronos.openvx.harris_corners", image_in1, strengh_thresh2, dist3, sensitivity4, scalar5, scalar6, arr_out7, num_corners8)
         self.setParams(6, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR, )
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_HARRIS_CORNERS");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -365,6 +385,7 @@ class NodeHistogram (Node) :
         Node.__init__(self, "org.khronos.openvx.histogram", image_in1, dist2)
         self.setParams(1, 1, Type.IMAGE, Type.DISTRIBUTION)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_HISTOGRAM");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -376,6 +397,7 @@ class NodeGaussianPyramid (Node) :
         Node.__init__(self, "org.khronos.openvx.gaussian_pyramid", image_in1, pyr_out2)
         self.setParams(1, 1, Type.IMAGE, Type.PYRAMID)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_GAUSSIAN_PYRAMID");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -388,6 +410,7 @@ class NodeLaplacianPyramid (Node) :
         Node.__init__(self, "org.khronos.openvx.laplacian_pyramid", image_in1, pyr_out2, image_out3)
         self.setParams(1, 2, Type.IMAGE, Type.PYRAMID, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_LAPLACIAN_PYRAMID");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -401,6 +424,7 @@ class NodeLaplacianReconstruct (Node) :
         Node.__init__(self, "org.khronos.openvx.laplacian_reconstruct", pyr_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.PYRAMID, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_LAPLACIAN_RECONSTRUCT");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -414,6 +438,7 @@ class NodeIntegralImage (Node) :
         Node.__init__(self, "org.khronos.openvx.integral_image", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_INTEGRAL_IMAGE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -426,6 +451,7 @@ class NodeMagnitude (Node) :
         Node.__init__(self, "org.khronos.openvx.magnitude", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_MAGNITUDE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -439,6 +465,7 @@ class NodeMeanStdDev (Node) :
         Node.__init__(self, "org.khronos.openvx.mean_stddev", image_in1, mean2, stddev3)
         self.setParams(1, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_MEAN_STDDEV");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -452,6 +479,7 @@ class NodeMedian3x3 (Node) :
         Node.__init__(self, "org.khronos.openvx.median_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_MEDIAN_3x3");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -465,6 +493,7 @@ class NodeMinMaxLoc (Node) :
         Node.__init__(self, "org.khronos.openvx.minmaxloc", image_in1, min2, max3, array_out4, array_out5, minCnt6, maxCnt7)
         self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_MINMAXLOC");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -479,6 +508,7 @@ class NodeOpticalFlowPyrLK (Node) :
         Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10, array_in5)
         self.setParams(9, 1, Type.PYRAMID, Type.PYRAMID, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_OPTICAL_FLOW_PYR_LK");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -492,6 +522,7 @@ class NodePhase (Node) :
         Node.__init__(self, "org.khronos.openvx.phase", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_PHASE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -507,6 +538,7 @@ class NodeMultiply (Node) :
         Node.__init__(self, "org.khronos.openvx.multiply", image_in1, image_in2, scale3, scalar4, scalar5, image_out6)
         self.setParams(5, 1, Type.IMAGE, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_MULTIPLY");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -522,6 +554,7 @@ class NodeRemap (Node) :
         Node.__init__(self, "org.khronos.openvx.remap", image_in1, table_in2, scalar3, image_out4)
         self.setParams(3, 1, Type.IMAGE, Type.REMAP, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_REMAP");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -536,6 +569,7 @@ class NodeScaleImage (Node) :
         Node.__init__(self, "org.khronos.openvx.scale_image", image_in1, scalar, image_out2)
         self.setParams(2, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_SCALE_IMAGE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -550,6 +584,7 @@ class NodeHalfScaleGaussian (Node) :
         Node.__init__(self, "org.khronos.openvx.halfscale_gaussian", image_in1, scalar, image_out2)
         self.setParams(2, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_HALFSCALE_GAUSSIAN");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -562,6 +597,7 @@ class NodeSobel3x3 (Node) :
         Node.__init__(self, "org.khronos.openvx.sobel_3x3", image_in1, image_out2, image_out3)
         self.setParams(1, 2, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_SOBEL_3x3");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -575,6 +611,7 @@ class NodeTableLookup (Node) :
         Node.__init__(self, "org.khronos.openvx.table_lookup", image_in1, lut_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.LUT, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_TABLE_LOOKUP");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -587,6 +624,7 @@ class NodeThreshold (Node) :
         Node.__init__(self, "org.khronos.openvx.threshold", image_in1, thresh_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.THRESHOLD, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_THRESHOLD");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -599,6 +637,7 @@ class NodeWarpAffine (Node) :
         Node.__init__(self, "org.khronos.openvx.warp_affine", image_in1, matrix_in2, scalar, image_out4)
         self.setParams(3, 1, Type.IMAGE, Type.MATRIX, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_WARP_AFFINE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -613,6 +652,7 @@ class NodeWarpPerspective (Node) :
         Node.__init__(self, "org.khronos.openvx.warp_perspective", image_in1, matrix_in2, scalar, image_out4)
         self.setParams(3, 1, Type.IMAGE, Type.MATRIX, Type.SCALAR, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_WARP_PERSPECTIVE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)

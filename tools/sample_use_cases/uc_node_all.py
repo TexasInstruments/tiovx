@@ -86,3 +86,4 @@ graph.add ( node_and )
 context.add ( graph )
 
 ExportImage(context).export()
+ExportCode(context).export()

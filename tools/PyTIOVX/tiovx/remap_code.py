@@ -11,3 +11,14 @@ class RemapCode (ReferenceCode) :
 
     def declare_var(self, code_gen) :
        code_gen.write_line('vx_remap %s;' % self.ref.name)
+
+    def call_create(self, code_gen) :
+        code_gen.write_if_status();
+        code_gen.write_open_brace();
+        code_gen.write_line("usecase->%s = vxCreateRemap(context, %d, %d, %d, %d);" % (self.ref.name, ref.src_width, ref.src_height, ref.dst_width, ref.dst_height));
+        code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
+        code_gen.write_open_brace()
+        code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
+        code_gen.write_close_brace()
+        code_gen.write_close_brace()
+
