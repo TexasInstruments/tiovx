@@ -11,6 +11,18 @@ vx_status uc_sample_03_create(uc_sample_03 usecase)
     
     if (status == VX_SUCCESS)
     {
+        usecase->context = vxCreateContext();
+        if (usecase->context == NULL)
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = uc_sample_03_data_create(usecase);
+    }
+    if (status == VX_SUCCESS)
+    {
         status = uc_sample_03_graph_0_create(usecase);
     }
     
@@ -48,6 +60,68 @@ vx_status uc_sample_03_delete(uc_sample_03 usecase)
     if (status == VX_SUCCESS)
     {
         status = uc_sample_03_graph_0_delete(usecase);
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = uc_sample_03_data_delete(usecase);
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = vxReleaseContext(&usecase->context);
+    }
+    
+    return status;
+}
+
+vx_status uc_sample_03_data_create(uc_sample_03 usecase)
+{
+    vx_status status = VX_SUCCESS;
+    
+    vx_context context = usecase->context;
+    
+    if (status == VX_SUCCESS)
+    {
+        usecase->image_1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        if (usecase->image_1 == NULL)
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+    if (status == VX_SUCCESS)
+    {
+        usecase->image_2 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        if (usecase->image_2 == NULL)
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+    if (status == VX_SUCCESS)
+    {
+        usecase->image_3 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_S16);
+        if (usecase->image_3 == NULL)
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+    
+    return status;
+}
+
+vx_status uc_sample_03_data_delete(uc_sample_03 usecase)
+{
+    vx_status status = VX_SUCCESS;
+    
+    if (status == VX_SUCCESS)
+    {
+        status = vxReleaseReference((vx_reference*)&usecase->image_1);
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = vxReleaseReference((vx_reference*)&usecase->image_2);
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = vxReleaseReference((vx_reference*)&usecase->image_3);
     }
     
     return status;

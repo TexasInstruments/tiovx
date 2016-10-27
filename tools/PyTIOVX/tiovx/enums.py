@@ -65,7 +65,7 @@ class DfImage(Enum) :
     S32  = 14
 
     def get_vx_name(df_format) :
-        return VX_DF_IMAGE_ + df_format.name
+        return "VX_DF_IMAGE_" + df_format.name
 
 class Channel(Enum) :
     C0 = 1

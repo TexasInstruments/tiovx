@@ -25,6 +25,9 @@ typedef struct _uc_sample_03_t
     
 } uc_sample_03_t;
 
+vx_status uc_sample_03_data_create(uc_sample_03 usecase);
+vx_status uc_sample_03_data_delete(uc_sample_03 usecase);
+
 vx_status uc_sample_03_graph_0_create(uc_sample_03 usecase);
 vx_status uc_sample_03_graph_0_delete(uc_sample_03 usecase);
 vx_status uc_sample_03_graph_0_verify(uc_sample_03 usecase);
