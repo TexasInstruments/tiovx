@@ -80,6 +80,14 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
     return node;
 }
 
+vx_node tivxCreateNodeByStructure(vx_graph graph,
+                                vx_enum kernelenum,
+                                vx_reference params[],
+                                vx_uint32 num)
+{
+    return vxCreateNodeByStructure(graph, kernelenum, params, num);
+}
+
 VX_API_ENTRY vx_node VX_API_CALL vxColorConvertNode(vx_graph graph, vx_image input, vx_image output)
 {
     vx_reference params[] = {

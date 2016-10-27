@@ -1,0 +1,36 @@
+digraph uc_sample_02 {
+
+  label = "uc_sample_02"
+  ColorScheme [shape=none, margin=0, label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        <TR><TD bgcolor="yellow">EVE1</TD></TR>        <TR><TD bgcolor="lightblue">MPU_0</TD></TR>        </TABLE>>];
+
+
+
+  /* DATA OBJECTS */
+  image_1 [color=GhostWhite, style=filled]
+  image_2 [color=GhostWhite, style=filled]
+  image_3 [color=GhostWhite, style=filled]
+  image_4 [color=GhostWhite, style=filled]
+  image_5 [color=GhostWhite, style=filled]
+
+
+  /* NODE OBJECTS */
+  node_6 [label="node_6 (org.khronos.openvx.absdiff)", color=palegreen, style=filled]
+  node_7 [label="node_7 (org.khronos.openvx.absdiff)", color=yellow, style=filled]
+  node_8 [label="node_8 (org.khronos.openvx.absdiff)", color=lightblue, style=filled]
+
+
+  /* NODE CONNECTIONS */
+  image_1 -> node_6 [taillabel=0, labeldistance=3]
+  image_2 -> node_6 [taillabel=1, labeldistance=3]
+  node_6 -> image_3 [headlabel=0, labeldistance=3]
+  image_1 -> node_7 [taillabel=0, labeldistance=3]
+  image_2 -> node_7 [taillabel=1, labeldistance=3]
+  node_7 -> image_4 [headlabel=0, labeldistance=3]
+  image_1 -> node_8 [taillabel=0, labeldistance=3]
+  image_2 -> node_8 [taillabel=1, labeldistance=3]
+  node_8 -> image_5 [headlabel=0, labeldistance=3]
+
+
+}

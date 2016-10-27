@@ -15,6 +15,7 @@ class Node (Reference) :
             self.ref.append(arg)
         self.num_in = 0
         self.num_out = 0
+        self.vx_kernel_enum = "VX_KERNEL_"
 
     def checkParams(self, *param_type_args) :
         assert (len(param_type_args) == (self.num_in + self.num_out)), 'Expected %d arguments but %d provided' % (len(param_type_args), (self.num_in + self.num_out))
@@ -37,11 +38,18 @@ class Node (Reference) :
             idx = idx + 1
         return print_str
 
+    def setKernelEnumName(self, kernel_enum_name) :
+        self.vx_kernel_enum = kernel_enum_name
+
+    def get_vx_kernel_enum(self) :
+        return self.vx_kernel_enum
+
 class NodeAbsDiff (Node) :
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.absdiff", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
+        self.setKernelEnumName("VX_KERNEL_ABSDIFF");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
@@ -49,6 +57,9 @@ class NodeAbsDiff (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Inputs MUST have same image data format"
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 or self.ref[0].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
+
+    def get_vx_kernel_enum(self) :
+        return "VX_KERNEL_VX_KERNEL_ABSDIFF"
 
 #TODO BIDI
 class NodeAccumulateImage (Node) :

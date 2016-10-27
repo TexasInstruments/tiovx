@@ -59,5 +59,10 @@ class CodeGenerate :
     def write_newline(self) :
         self.write_line('')
 
+    def write_define_status(self) :
+        self.write_line("vx_status status = VX_SUCCESS;")
+
+    def write_if_status(self) :
+        self.write_line("if (status == VX_SUCCESS)");            
 
         

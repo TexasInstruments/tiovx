@@ -178,6 +178,16 @@ void tivxRegisterOpenVXCoreTargetKernels(void);
  */
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
 
+
+/*!
+ * \brief Utility function to create a node given parameter references
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_node tivxCreateNodeByStructure(vx_graph graph,
+                                vx_enum kernelenum,
+                                vx_reference params[],
+                                vx_uint32 num);
 #ifdef __cplusplus
 }
 #endif

@@ -44,10 +44,13 @@ class Type(Enum):
     META_FORMAT  = 35
     OBJECT_ARRAY = 36
 
+    def get_vx_name(type) :
+        return "vx_" + type.name.lower()
+
 class DfImage(Enum) :
     INVALID = 0
     VIRT = 1
-    RGB  = 2  
+    RGB  = 2
     RGBX = 3
     NV12 = 4
     NV21 = 5
@@ -60,6 +63,9 @@ class DfImage(Enum) :
     S16  = 12
     U32  = 13
     S32  = 14
+
+    def get_vx_name(df_format) :
+        return VX_DF_IMAGE_ + df_format.name
 
 class Channel(Enum) :
     C0 = 1

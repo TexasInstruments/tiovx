@@ -14,7 +14,7 @@ DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels/openvx-core
-#DIRECTORIES += tools/sample_use_cases
+DIRECTORIES += tools/sample_use_cases
 
 TARGET_COMBOS :=
 

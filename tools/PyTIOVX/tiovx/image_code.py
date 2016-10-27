@@ -11,3 +11,9 @@ class ImageCode (ReferenceCode) :
 
     def declare_var(self, code_gen) :
         code_gen.write_line('vx_image %s;' % self.ref.name)
+
+    def call_create(self, code_gen) :
+        code_gen.write_if_status();
+        code_gen.write_open_brace();
+        code_gen.write_line("status = vxCreateImage(context, %d, %d, %s);" % (ref.width, ref.height, DfImage.get_vx_name(ref.df_format)));
+        code_gen.write_close_brace();

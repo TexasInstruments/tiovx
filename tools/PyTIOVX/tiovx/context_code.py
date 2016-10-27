@@ -9,10 +9,16 @@ class ContextCode (ReferenceCode) :
     def __init__(self, ref) :
         ReferenceCode.__init__(self, ref)
         self.data_code_list = []
+        self.graph_code_list = []
+        self.node_code_list = []
         for data in self.ref.data_list :
-            self.data_code_list.append( ContextCode.create(data) )
+            self.data_code_list.append( ContextCode.get_data_code_obj(data) )
+        for graph in self.ref.graph_list :
+            self.graph_code_list.append( GraphCode(graph) )
+        for node in self.ref.node_list :
+            self.node_code_list.append( NodeCode(node) )
 
-    def create(ref) :
+    def get_data_code_obj(ref) :
         if ref.type == Type.IMAGE :
             return ImageCode(ref)
         if ref.type == Type.LUT :
@@ -29,13 +35,23 @@ class ContextCode (ReferenceCode) :
             return ThresholdCode(ref)
         if ref.type == Type.PYRAMID :
             return PyramidCode(ref)
-        if ref.type == Type.OBJECTARRAY :
+        if ref.type == Type.OBJECT_ARRAY :
             return ObjectArrayCode(ref)
+        if ref.type == Type.GRAPH :
+            return GraphCode(ref)
+        if ref.type == Type.NODE :
+            return NodeCode(ref)
         return None
 
     def declare_var(self, code_gen) :
-        code_gen.write_line('vx_context %s;' % self.ref.name)
+        code_gen.write_line('vx_context context;')
+        code_gen.write_newline()
+        for graph_code in self.graph_code_list :
+             graph_code.declare_var(code_gen)
         code_gen.write_newline()
         for data_code in self.data_code_list :
              data_code.declare_var(code_gen)
+        code_gen.write_newline()
+        for node_code in self.node_code_list :
+             node_code.declare_var(code_gen)
         code_gen.write_newline()

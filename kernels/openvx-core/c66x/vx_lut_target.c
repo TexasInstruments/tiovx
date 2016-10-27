@@ -31,9 +31,9 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     }
     else
     {
-        src = (tivx_obj_desc_image_t *)tivxObjDescGet(obj_desc[0U]->obj_desc_id);
-        lut = (tivx_obj_desc_lut_t *)tivxObjDescGet(obj_desc[1U]->obj_desc_id);
-        dst = (tivx_obj_desc_image_t *)tivxObjDescGet(obj_desc[2U]->obj_desc_id);
+        src = (tivx_obj_desc_image_t *)obj_desc[0U];
+        lut = (tivx_obj_desc_lut_t *)obj_desc[1U];
+        dst = (tivx_obj_desc_image_t *)obj_desc[2U];
 
         tivxMemBufferMap(src->mem_ptr[0].host_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_WRITE_ONLY);
