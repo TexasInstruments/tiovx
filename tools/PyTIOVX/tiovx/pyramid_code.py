@@ -16,7 +16,8 @@ class PyramidCode :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreatePyramid(context, %d, %d, %d, %d, %s);" % (self.ref.name, ref.levels, ref.scale, ref.width, ref.height, DfImage.get_vx_name(ref.format)));
+        code_gen.write_line("usecase->%s = vxCreatePyramid(context, %d, %d, %d, %d, %s);"
+            % (self.ref.name, self.ref.num_levels, self.ref.scale, self.ref.width, self.ref.height, DfImage.get_vx_name(self.ref.format)));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");

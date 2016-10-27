@@ -37,6 +37,8 @@ class ContextCode (ReferenceCode) :
             return PyramidCode(ref)
         if ref.type == Type.OBJECT_ARRAY :
             return ObjectArrayCode(ref)
+        if ref.type == Type.SCALAR :
+            return ScalarCode(ref)
         if ref.type == Type.GRAPH :
             return GraphCode(ref)
         if ref.type == Type.NODE :

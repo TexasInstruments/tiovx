@@ -15,7 +15,7 @@ class ConvolutionCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreateConvolution(context, %d, %d);" % (self.ref.name, ref.columns, ref.rows));
+        code_gen.write_line("usecase->%s = vxCreateConvolution(context, %d, %d);" % (self.ref.name, self.ref.columns, self.ref.rows));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace();
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");

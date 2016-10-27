@@ -22,11 +22,14 @@ from .matrix_code import *
 from .threshold_code import *
 from .remap_code import *
 from .pyramid_code import *
+from .objectarray_code import *
+from .scalar_code import *
+from .array_code import *
+from .lut_code import *
 from .context_code import *
 from .code_generate import *
 from .usecase_code import *
 from .lut import *
-from .lut_code import *
 from .convolution import *
 from .distribution import *
 from .matrix import *
@@ -37,9 +40,8 @@ from .objectarray import *
 from .export import *
 from .export_image import *
 from .export_code import *
-from .objectarray_code import *
-from .scalar_code import *
+
 from .array import *
-from .array_code import *
+
 
 
