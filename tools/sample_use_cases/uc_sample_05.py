@@ -9,7 +9,7 @@ This is test case to test error detection
 
 from tiovx import *
 
-context = Context("uc_node_test")
+context = Context("uc_sample_05")
 graph = Graph()
 
 img_in = Image(640, 480, DfImage.U8)
