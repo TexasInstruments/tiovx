@@ -1,0 +1,26 @@
+digraph uc_sample_03 {
+
+  label = "uc_sample_03"
+  ColorScheme [shape=none, margin=0, label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        </TABLE>>];
+
+
+
+  /* DATA OBJECTS */
+  image_1 [color=GhostWhite, style=filled]
+  image_2 [color=GhostWhite, style=filled]
+  image_3 [color=GhostWhite, style=filled]
+
+
+  /* NODE OBJECTS */
+  node_4 [label="node_4 (org.khronos.openvx.absdiff)", color=palegreen, style=filled]
+
+
+  /* NODE CONNECTIONS */
+  image_1 -> node_4 [taillabel=0, labeldistance=3]
+  image_2 -> node_4 [taillabel=1, labeldistance=3]
+  node_4 -> image_3 [headlabel=0, labeldistance=3]
+
+
+}

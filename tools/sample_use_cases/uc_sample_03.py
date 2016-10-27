@@ -16,6 +16,5 @@ graph.add ( NodeAbsDiff(in1, in2, out) )
 
 context.add ( graph )
 
-usecase = UsecaseCode(context)
-
-usecase.generate_code()
+ExportImage(context).export()
+ExportCode(context).export()

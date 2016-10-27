@@ -5,16 +5,14 @@
 
 from . import *
 import subprocess
-    
-class ExportImage :
-    def __init__(self, context, filename_prefix="default") :
-        self.filename_prefix = filename_prefix
-        if(self.filename_prefix=="default") :
-            self.filename_prefix = context.name
+
+class ExportImage (Export) :
+    def __init__(self, context) :
+        Export.__init__(self, context)
+        self.filename_prefix = context.name
         self.filename = context.name + "_img.txt"
         self.filenameJpg = context.name + ".jpg"
         self.file = None
-        self.context = context
 
     def getDataColor(self, ref) :
         return "GhostWhite"
@@ -60,7 +58,7 @@ class ExportImage :
         self.file.write('  ColorScheme [shape=none, margin=0, label=<\n')
         self.file.write('        <TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">\n')
         for target in self.context.target_list :
-            self.outputTarget(target)    
+            self.outputTarget(target)
         self.file.write('        </TABLE>>];\n')
         self.file.write('\n')
         self.file.write('\n')
