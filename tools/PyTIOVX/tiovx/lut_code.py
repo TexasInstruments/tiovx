@@ -15,7 +15,7 @@ class LutCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreateLut(context, %s, %d);" % (self.ref.name, Type.get_vx_name(self.ref.data_type), self.ref.count));
+        code_gen.write_line("usecase->%s = vxCreateLUT(context, %s, %d);" % (self.ref.name, Type.get_vx_enum_name(self.ref.data_type), self.ref.count));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");

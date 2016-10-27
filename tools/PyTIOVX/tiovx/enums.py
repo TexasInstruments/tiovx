@@ -44,6 +44,9 @@ class Type(Enum):
     META_FORMAT  = 35
     OBJECT_ARRAY = 36
 
+    def get_vx_enum_name(type) :
+        return "VX_TYPE_" + type.name
+
     def get_vx_name(type) :
         return "vx_" + type.name.lower()
 

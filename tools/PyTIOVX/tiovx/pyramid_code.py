@@ -11,7 +11,6 @@ class PyramidCode :
 
     def declare_var(self, code_gen) :
        code_gen.write_line('vx_pyramid %s;' % self.ref.name)
-       code_gen.write_newline()
 
     def call_create(self, code_gen) :
         code_gen.write_if_status();

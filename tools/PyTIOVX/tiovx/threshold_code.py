@@ -15,7 +15,7 @@ class ThresholdCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreateThreshold(context, %s, %s);" % (self.ref.name, self.ref.thr_type, self.ref.data_type));
+        code_gen.write_line("usecase->%s = vxCreateThreshold(context, %s, %s);" % (self.ref.name, self.ref.thr_type, Type.get_vx_enum_name(self.ref.data_type)));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
