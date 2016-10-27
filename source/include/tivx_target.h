@@ -22,13 +22,6 @@ extern "C" {
  */
 
 /*!
- * \brief Max possible name of a target
- *
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_TARGET_MAX_NAME            (16u)
-
-/*!
  * \brief Max number of Target that can exist on a CPU
  * \ingroup group_tivx_target_cfg
  */

@@ -31,6 +31,7 @@ include $(PRELUDE)
 TARGET      := vx_target_kernels_openvx_core
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
+IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
 
 ifeq ($(TARGET_CPU),C66)
 SKIPBUILD=0

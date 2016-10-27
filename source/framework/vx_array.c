@@ -587,7 +587,12 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
                 if(arr->obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
-                    status = VX_ERROR_NO_MEMORY ;
+                    status = VX_ERROR_NO_MEMORY;
+                }
+                else
+                {
+                    arr->obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
+                        arr->obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
                 }
             }
         }

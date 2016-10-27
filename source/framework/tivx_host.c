@@ -15,9 +15,12 @@ void tivxUnRegisterOpenVXCoreKernels();
 void tivxHostInit(void)
 {
     tivxObjectInit();
+    tivxObjDescInit();
+    tivxRegisterOpenVXCoreKernels();
 }
 
 void tivxHostDeInit(void)
 {
     tivxObjectDeInit();
+    tivxUnRegisterOpenVXCoreKernels();
 }

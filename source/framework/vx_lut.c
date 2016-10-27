@@ -312,6 +312,13 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;
                 }
+                else
+                {
+                    lut->obj_desc->mem_ptr.shared_ptr =
+                        tivxMemHost2SharedPtr(
+                            lut->obj_desc->mem_ptr.host_ptr,
+                            TIVX_MEM_EXTERNAL);
+                }
             }
         }
         else

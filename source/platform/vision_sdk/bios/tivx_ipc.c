@@ -69,6 +69,11 @@ static uint32_t g_ipc_cpu_id_map[TIVX_CPU_ID_MAX] = {
 static tivx_ipc_handler_f g_ipc_handler = NULL;
 
 
+static inline uint32_t tivxIpcAddOvxType(uint32_t payload)
+{
+    return (payload & 0x8FFFFFFFu) | (3u << 28u);
+}
+
 /*! \brief Global IPC handler
  * \ingroup group_tivx_ipc
  */
@@ -96,6 +101,8 @@ vx_status tivxIpcSendMsg(
     {
         vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
 
+        payload = tivxIpcAddOvxType(payload);
+
         status = System_openVxSendNotify(
             vsdk_cpu_id,
             payload);
@@ -113,7 +120,7 @@ vx_status tivxIpcSendMsg(
     return status;
 }
 
-vx_enum tivxIpcGetSelfCpuId()
+vx_enum tivxGetSelfCpuId()
 {
     vx_enum cpu_id = TIVX_INVALID_CPU_ID;
     uint32_t i, vsdk_cpu_id;

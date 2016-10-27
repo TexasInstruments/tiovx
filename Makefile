@@ -8,8 +8,8 @@ BUILD_PLATFORM :=
 
 
 DIRECTORIES :=
-#DIRECTORIES += conformance_tests/test_conformance
-#DIRECTORIES += conformance_tests/test_engine
+DIRECTORIES += conformance_tests/test_conformance
+DIRECTORIES += conformance_tests/test_engine
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu

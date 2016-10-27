@@ -184,19 +184,19 @@ vx_status ownNodeKernelInit(vx_node node)
 
     if(node->is_kernel_created == vx_false_e)
     {
+        if (node->kernel->function)
+        {
+            /* user has given initialize function so call it */
+            status = node->kernel->function(node, node->parameters,
+                node->kernel->signature.num_parameters);
+        }
+        else
         {
             uint16_t obj_desc_id[1];
 
             obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
 
             status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
-        }
-
-        if ((VX_SUCCESS == status) && (NULL != node->kernel->initialize))
-        {
-            /* user has given initialize function so call it */
-            status = node->kernel->initialize(node, node->parameters,
-                node->kernel->signature.num_parameters);
         }
 
         if(status==VX_SUCCESS)

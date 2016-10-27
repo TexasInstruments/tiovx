@@ -185,3 +185,13 @@ void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type)
     return (shared_ptr);
 }
 
+void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type)
+{
+    return (shared_ptr);
+}
+
+void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type)
+{
+    return (target_ptr);
+}
+

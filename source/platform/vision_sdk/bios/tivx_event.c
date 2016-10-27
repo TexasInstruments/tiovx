@@ -67,10 +67,12 @@ vx_status tivxEventCreate(tivx_event *event)
 vx_status tivxEventDelete(tivx_event *event)
 {
     vx_status status = VX_FAILURE;
+    BspOsal_SemHandle handle;
 
     if ((NULL != event) && (*event != NULL))
     {
-        BspOsal_semDelete((BspOsal_SemHandle)*event);
+        handle = (tivx_mutex)*event;
+        BspOsal_semDelete(&handle);
         *event = NULL;
         status = VX_SUCCESS;
     }

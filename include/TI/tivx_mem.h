@@ -71,7 +71,13 @@ typedef struct _tivx_shared_mem_ptr_t {
      */
     void *host_ptr;
 
- } tivx_shared_mem_ptr_t;
+    /*! \brief Value of pointer as seen as by target CPU
+     *         Target CPU will have method to convert to/from shared memory
+     *         pointer
+     */
+    void *target_ptr;
+
+} tivx_shared_mem_ptr_t;
 
 
 /*!
@@ -149,6 +155,29 @@ void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type);
  */
 void* tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type);
 
+/*!
+ * \brief Convert shared pointer to target pointer
+ *
+ * \param [in] shared_ptr Host memory pointer
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ *
+ * \return Converted shared memory pointer
+ *
+ * \ingroup group_tivx_mem
+ */
+void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type);
+
+/*!
+ * \brief Convert target memory pointer to shared pointer
+ *
+ * \param [in] shared_ptr Shared memory pointer
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ *
+ * \return Converted host memory pointer
+ *
+ * \ingroup group_tivx_mem
+ */
+void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type);
 
 #ifdef __cplusplus
 }

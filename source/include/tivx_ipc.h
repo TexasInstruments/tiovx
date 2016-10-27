@@ -42,13 +42,6 @@ vx_status tivxIpcSendMsg(vx_enum cpu_id, uint32_t payload);
 void tivxIpcRegisterHandler(tivx_ipc_handler_f ipc_handler_func);
 
 /*!
- * \brief Return CPU ID of the CPU on which this API is called
- *
- * \ingroup group_tivx_ipc
- */
-vx_enum tivxIpcGetSelfCpuId();
-
-/*!
  * \brief Init IPC module
  *
  * \ingroup group_tivx_ipc

@@ -7,8 +7,8 @@
  *******************************************************************************
  */
 
-
 #include <TI/tivx.h>
+#include <tivx_openvx_core_kernels.h>
 #include <TI/tivx_target_kernel.h>
 
 static vx_kernel vx_lut_kernel = NULL;

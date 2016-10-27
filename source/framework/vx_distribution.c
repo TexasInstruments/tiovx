@@ -320,6 +320,13 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;
                 }
+                else
+                {
+                    dist->obj_desc->mem_ptr.shared_ptr =
+                        tivxMemHost2SharedPtr(
+                            dist->obj_desc->mem_ptr.host_ptr,
+                            TIVX_MEM_EXTERNAL);
+                }
             }
         }
         else

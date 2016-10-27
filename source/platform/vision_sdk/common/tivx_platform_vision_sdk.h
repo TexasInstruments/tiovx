@@ -34,64 +34,6 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (100U)
 
 
-/*! \brief CPU ID for supported CPUs
- *
- *         CPU ID is defined in platform module since
- *         depending on platform the CPUs could be different
- *
- *         Current CPU IDs are defined assuming TDA2x/3x/2Ex
- *         family of SoCs
- *
- *         Caution: This enum is used as index into the array
- *         #g_ipc_cpu_id_map, so change in this enum will require
- *         change in this array as well.
- *
- *
- * \ingroup group_tivx_platform
- */
-typedef enum _tivx_cpu_id_e {
-
-    /*! \brief CPU ID for DSP1 */
-    TIVX_CPU_ID_DSP1 = 0,
-
-    /*! \brief CPU ID for DSP2 */
-    TIVX_CPU_ID_DSP2 = 1,
-
-    /*! \brief CPU ID for EVE1 */
-    TIVX_CPU_ID_EVE1 = 2,
-
-    /*! \brief CPU ID for EVE2 */
-    TIVX_CPU_ID_EVE2 = 3,
-
-    /*! \brief CPU ID for EVE3 */
-    TIVX_CPU_ID_EVE3 = 4,
-
-    /*! \brief CPU ID for EVE4 */
-    TIVX_CPU_ID_EVE4 = 5,
-
-    /*! \brief CPU ID for IPU1-0 */
-    TIVX_CPU_ID_IPU1_0 = 6,
-
-    /*! \brief CPU ID for IPU1-1 */
-    TIVX_CPU_ID_IPU1_1 = 7,
-
-    /*! \brief CPU ID for IPU2 */
-    TIVX_CPU_ID_IPU2_0 = 8,
-
-    /*! \brief CPU ID for A15-0 */
-    TIVX_CPU_ID_A15_0 = 9,
-
-    /*! \brief CPU ID for A15-0 */
-    TIVX_CPU_ID_A15_1 = 10,
-
-    /*! \brief Max value of CPU ID  */
-    TIVX_CPU_ID_MAX = 11,
-
-    /*! \brief Invalid CPU ID */
-    TIVX_INVALID_CPU_ID = 0xFF
-
-} tivx_cpu_id_e;
-
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform
  */

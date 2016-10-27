@@ -218,6 +218,14 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                             status = VX_ERROR_NO_MEMORY ;
                             break;
                         }
+                        else
+                        {
+                            image->obj_desc->mem_ptr[plane_idx].shared_ptr =
+                                tivxMemHost2SharedPtr(
+                                    image->obj_desc->mem_ptr[plane_idx].
+                                    host_ptr,
+                                    TIVX_MEM_EXTERNAL);
+                        }
                     }
                 }
             }

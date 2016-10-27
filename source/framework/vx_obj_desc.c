@@ -22,8 +22,7 @@ static inline uint32_t tivxIpcPayloadMake(
     return (uint32_t)((((uint32_t)obj_desc_id << TIVX_OBJ_DESC_ID_SHIFT)&
                             TIVX_OBJ_DESC_ID_MASK) |
         (((uint32_t)dst_target_id & TIVX_TARGET_ID_MASK) <<
-            TIVX_TARGET_ID_SHIFT) |
-        (3u << 28U));
+            TIVX_TARGET_ID_SHIFT));
 }
 
 static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload)
@@ -161,7 +160,7 @@ vx_status tivxObjDescSend(uint32_t dst_target_id, uint16_t obj_desc_id)
 
     cpu_id = tivxTargetGetCpuId(dst_target_id);
 
-    if(cpu_id == tivxIpcGetSelfCpuId())
+    if(cpu_id == tivxGetSelfCpuId())
     {
         /* target is on same CPU queue obj_desc using target APIs */
         status = tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
