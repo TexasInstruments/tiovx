@@ -37,5 +37,9 @@ from .objectarray import *
 from .export import *
 from .export_image import *
 from .export_code import *
+from .objectarray_code import *
+from .scalar_code import *
+from .array import *
+from .array_code import *
 
 

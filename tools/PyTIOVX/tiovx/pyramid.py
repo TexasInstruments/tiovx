@@ -11,6 +11,8 @@ class Pyramid (Reference) :
         self.num_levels = levels;
         self.width = width;
         self.height = height;
+        # scale = 0 means VX_SCALE_PYRAMID_HALF
+        # scale = 0 means VX_SCALE_PYRAMID_ORB
         self.scale = scale;
         self.format = df_format;
 

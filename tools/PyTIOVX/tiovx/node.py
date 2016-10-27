@@ -205,7 +205,7 @@ class NodeCannyEdgeDetector (Node) :
         Node.checkParams(self, *param_type_args)
         # additional error conditions over the basic ones
         assert ( self.ref[0].df_image == self.ref[4].df_image ), "Input and Output MUST have same image data format"
-        assert ( self.ref[1].df_image == DfImage.U8 ), "Image data format must be U8"
+        assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO how to handle optional parameters?
 class NodeChannelCombine (Node) :

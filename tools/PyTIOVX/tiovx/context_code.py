@@ -41,6 +41,8 @@ class ContextCode (ReferenceCode) :
             return GraphCode(ref)
         if ref.type == Type.NODE :
             return NodeCode(ref)
+        if ref.type == Type.ARRAY :
+            return ArrayCode(ref)
         return None
 
     def declare_var(self, code_gen) :

@@ -7,7 +7,7 @@ from . import *
 
 class Remap (Reference) :
     def __init__(self, src_width, src_height, dst_width, dst_height, name="default") :
-        Reference.__init__(self, Type.REMAN, name)
+        Reference.__init__(self, Type.REMAP, name)
         self.src_width = src_width
         self.src_height = src_height
         self.dst_width = dst_width

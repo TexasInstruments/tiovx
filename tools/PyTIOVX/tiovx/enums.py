@@ -115,3 +115,17 @@ class Pattern(Enum) :
     CROSS    = 2
     DISK     = 3
     OTHER    = 4
+
+class InterpolationType(Enum) :
+    NEAREST_NEIGHBOR    = 1
+    BILINEAR            = 2
+    AREA                = 3
+
+class NonLinearFilter(Enum) :
+    Median              = 1
+    Min                 = 2
+    Max                 = 3
+
+class Bool(Enum) :
+    FALSE           = 0
+    TRUE            = 1
