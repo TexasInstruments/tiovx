@@ -3,7 +3,7 @@ digraph uc_sample_05 {
   label = "uc_sample_05"
   ColorScheme [shape=none, margin=0, label=<
         <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        </TABLE>>];
+        <TR><TD bgcolor="yellow">EVE1</TD></TR>        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        <TR><TD bgcolor="gold">EVE2</TD></TR>        <TR><TD bgcolor="orange">EVE3</TD></TR>        <TR><TD bgcolor="lightblue">MPU_0</TD></TR>        <TR><TD bgcolor="darkturquoise">DSP2</TD></TR>        <TR><TD bgcolor="goldenrod4">EVE4</TD></TR>        <TR><TD bgcolor="lightblue">MPU_1</TD></TR>        <TR><TD bgcolor="grey">IPU1_0</TD></TR>        <TR><TD bgcolor="LightSalmon">IPU1_1</TD></TR>        <TR><TD bgcolor="MediumOrchid">IPU2_0</TD></TR>        </TABLE>>];
 
 
 
@@ -40,19 +40,19 @@ digraph uc_sample_05 {
 
 
   /* NODE OBJECTS */
-  node_3 [label="node_3 (org.khronos.openvx.accumulate)", color=palegreen, style=filled]
+  node_3 [label="node_3 (org.khronos.openvx.accumulate)", color=yellow, style=filled]
   node_6 [label="node_6 (org.khronos.openvx.accumulate_weighted)", color=palegreen, style=filled]
-  node_9 [label="node_9 (org.khronos.openvx.custom_convolution)", color=palegreen, style=filled]
+  node_9 [label="node_9 (org.khronos.openvx.custom_convolution)", color=gold, style=filled]
   node_16 [label="node_16 (org.khronos.openvx.minmaxloc)", color=palegreen, style=filled]
-  node_18 [label="node_18 (org.khronos.openvx.gaussian_pyramid)", color=palegreen, style=filled]
-  node_20 [label="node_20 (org.khronos.openvx.phase)", color=palegreen, style=filled]
-  node_27 [label="node_27 (org.khronos.openvx.remap)", color=palegreen, style=filled]
-  node_32 [label="node_32 (org.khronos.openvx.canny_edge_detector)", color=palegreen, style=filled]
-  node_36 [label="node_36 (org.khronos.openvx.non_linear_filter)", color=palegreen, style=filled]
-  node_38 [label="node_38 (org.khronos.openvx.channel_combine)", color=palegreen, style=filled]
-  node_40 [label="node_40 (org.khronos.openvx.histogram)", color=palegreen, style=filled]
-  node_43 [label="node_43 (org.khronos.openvx.table_lookup)", color=palegreen, style=filled]
-  node_45 [label="node_45 (org.khronos.openvx.and)", color=palegreen, style=filled]
+  node_18 [label="node_18 (org.khronos.openvx.gaussian_pyramid)", color=orange, style=filled]
+  node_20 [label="node_20 (org.khronos.openvx.phase)", color=lightblue, style=filled]
+  node_27 [label="node_27 (org.khronos.openvx.remap)", color=darkturquoise, style=filled]
+  node_32 [label="node_32 (org.khronos.openvx.canny_edge_detector)", color=orange, style=filled]
+  node_36 [label="node_36 (org.khronos.openvx.non_linear_filter)", color=goldenrod4, style=filled]
+  node_38 [label="node_38 (org.khronos.openvx.channel_combine)", color=lightblue, style=filled]
+  node_40 [label="node_40 (org.khronos.openvx.histogram)", color=grey, style=filled]
+  node_43 [label="node_43 (org.khronos.openvx.table_lookup)", color=LightSalmon, style=filled]
+  node_45 [label="node_45 (org.khronos.openvx.and)", color=MediumOrchid, style=filled]
 
 
   /* NODE CONNECTIONS */
