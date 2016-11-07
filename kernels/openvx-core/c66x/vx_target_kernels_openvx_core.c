@@ -12,19 +12,34 @@
 
 void tivxAddTargetKernelAbsDiff();
 void tivxAddTargetKernelLut();
+void tivxAddTargetKernelBitwise();
+void tivxAddTargetKernelAdd();
+void tivxAddTargetKernelSub();
+void tivxAddTargetKernelThreshold();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
-
+void tivxRemoveTargetKernelBitwise();
+void tivxRemoveTargetKernelAdd();
+void tivxRemoveTargetKernelSub();
+void tivxRemoveTargetKernelThreshold();
 
 void tivxRegisterOpenVXCoreTargetKernels()
 {
     tivxAddTargetKernelAbsDiff();
     tivxAddTargetKernelLut();
+    tivxAddTargetKernelBitwise();
+    tivxAddTargetKernelAdd();
+    tivxAddTargetKernelSub();
+    tivxAddTargetKernelThreshold();
 }
 
 void tivxUnRegisterOpenVXCoreTargetKernels()
 {
     tivxRemoveTargetKernelAbsDiff();
     tivxRemoveTargetKernelLut();
+    tivxRemoveTargetKernelBitwise();
+    tivxRemoveTargetKernelAdd();
+    tivxRemoveTargetKernelSub();
+    tivxRemoveTargetKernelThreshold();
 }

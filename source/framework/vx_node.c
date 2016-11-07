@@ -1013,17 +1013,30 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
                     {
                         vx_enum target_id;
 
-                        target_id = ownKernelGetTarget(node->kernel, target_string);
-
-                        if(target_id == TIVX_TARGET_ID_INVALID)
+                        if ((0 == strncmp(target_string, "any",
+                                TIVX_TARGET_MAX_NAME)) ||
+                            (0 == strncmp(target_string, "aNy",
+                                TIVX_TARGET_MAX_NAME)) ||
+                            (0 == strncmp(target_string, "ANY",
+                                TIVX_TARGET_MAX_NAME)))
                         {
-                            /* use default and return error */
-                            status = VX_ERROR_NOT_SUPPORTED;
+                            status = VX_SUCCESS;
                         }
                         else
                         {
-                            node->obj_desc->target_id = (uint32_t)target_id;
-                            status = VX_SUCCESS;
+                            target_id = ownKernelGetTarget(node->kernel,
+                                target_string);
+
+                            if(target_id == TIVX_TARGET_ID_INVALID)
+                            {
+                                /* use default and return error */
+                                status = VX_ERROR_NOT_SUPPORTED;
+                            }
+                            else
+                            {
+                                node->obj_desc->target_id = (uint32_t)target_id;
+                                status = VX_SUCCESS;
+                            }
                         }
                     }
                     break;

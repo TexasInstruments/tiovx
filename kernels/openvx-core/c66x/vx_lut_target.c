@@ -9,10 +9,10 @@
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_kernel_lut.h>
 #include <TI/tivx_target_kernel.h>
 
 static tivx_target_kernel vx_lut_target_kernel = NULL;
-
 
 static vx_status VX_CALLBACK tivxKernelLutProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -24,6 +24,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     tivx_obj_desc_lut_t *lut;
     uint8_t *s8, *d8, *l8;
     int16_t *s16, *d16, *l16;
+    uint32_t temp;
 
     if ((num_params != 3U) || (NULL == obj_desc[0]) || (NULL == obj_desc[1])
         || (NULL == obj_desc[2]))
@@ -32,9 +33,9 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     }
     else
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[0U];
-        lut = (tivx_obj_desc_lut_t *)obj_desc[1U];
-        dst = (tivx_obj_desc_image_t *)obj_desc[2U];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_IN_IMG_IDX];
+        lut = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_LUT_IN_LUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_OUT_IMG_IDX];
 
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
@@ -56,17 +57,16 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
             d8 = (uint8_t *)dst->mem_ptr[0].target_ptr;
             l8 = (uint8_t *)lut->mem_ptr.target_ptr;
 
-            printf("tivxKernelLutProcess Src 0x%x size %d\n", s8, src->mem_size[0]);
-            printf("tivxKernelLutProcess dst 0x%x size %d\n", d8, dst->mem_size[0]);
-
             for (y = 0; (y < src->height) && (status == VX_SUCCESS); y++)
             {
                 for (x = 0; x < src->width; x++)
                 {
-                    if ((*s8) < lut->num_items)
+                    temp = ((uint32_t)(*s8) & 0xff);
+                    if (temp < lut->num_items)
                     {
                         *d8 = l8[(*s8)];
                     }
+
                     s8 ++;
                     d8 ++;
                 }
@@ -78,17 +78,16 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
             d16 = (int16_t *)dst->mem_ptr[0].target_ptr;
             l16 = (int16_t *)lut->mem_ptr.target_ptr;
 
-            printf("tivxKernelLutProcess Src 0x%x size %d\n", s16, src->mem_size[0]);
-            printf("tivxKernelLutProcess dst 0x%x size %d\n", d16, dst->mem_size[0]);
-
             for (y = 0; (y < src->height) && (status == VX_SUCCESS); y++)
             {
                 for (x = 0; x < src->width; x++)
                 {
-                    if (((unsigned short)(*s16)) < lut->num_items)
+                    temp = ((uint32_t)(*s16) & 0xFFFF);
+                    if (temp < lut->num_items)
                     {
                         *d16 = l16[32768 + (*s16)];
                     }
+
                     s16 ++;
                     d16 ++;
                 }
@@ -101,6 +100,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         tivxMemBufferUnmap(lut->mem_ptr.target_ptr, lut->mem_size,
             lut->mem_ptr.mem_type, VX_WRITE_ONLY);
     }
+
     return (VX_SUCCESS);
 }
 
@@ -137,12 +137,12 @@ void tivxAddTargetKernelLut()
         if (self_cpu == TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
-                sizeof(TIVX_TARGET_MAX_NAME));
+                TIVX_TARGET_MAX_NAME);
         }
         else
         {
             strncpy(target_name, TIVX_TARGET_DSP2,
-                sizeof(TIVX_TARGET_MAX_NAME));
+                TIVX_TARGET_MAX_NAME);
         }
 
         vx_lut_target_kernel = tivxAddTargetKernel(

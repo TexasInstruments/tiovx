@@ -878,7 +878,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
     if (ownIsValidSpecificReference(gref, VX_TYPE_GRAPH) == vx_true_e)
     {
         /* for now virtual image is same as normal image */
-        image = vxCreateImage(gref->context, width, height, format);
+        image = (vx_image)ownCreateImageInt(graph->base.context,
+            width, height, format, TIVX_IMAGE_NORMAL);
         if (vxGetStatus((vx_reference)image) == VX_SUCCESS && image->base.type == VX_TYPE_IMAGE)
         {
             image->base.scope = (vx_reference)graph;

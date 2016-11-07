@@ -208,7 +208,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     return status;
 }
 
-vx_status VX_API_CALL vxCopyConvolution(
+vx_status VX_API_CALL vxCopyConvolutionCoefficients(
     vx_convolution cnvl, void *user_ptr, vx_enum usage, vx_enum user_mem_type)
 {
     vx_status status = VX_SUCCESS;

@@ -329,6 +329,19 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case VX_MATRIX_ORIGIN:
+                if (VX_CHECK_PARAM(ptr, size, vx_coordinates2d_t, 0x3))
+                {
+                    vx_coordinates2d_t *rect = (vx_coordinates2d_t *)ptr;
+
+                    rect->x = matrix->obj_desc->columns / 2;
+                    rect->y = matrix->obj_desc->rows / 2;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             case VX_MATRIX_PATTERN:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
@@ -340,7 +353,6 @@ vx_status VX_API_CALL vxQueryMatrix(
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            /* case VX_MATRIX_ORIGIN ?? */
             default:
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;

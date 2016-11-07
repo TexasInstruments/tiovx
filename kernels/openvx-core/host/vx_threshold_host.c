@@ -9,12 +9,12 @@
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
-#include <tivx_kernel_lut.h>
+#include <tivx_kernel_threshold.h>
 #include <TI/tivx_target_kernel.h>
 
-static vx_kernel vx_lut_kernel = NULL;
+static vx_kernel vx_threshold_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[])
@@ -24,7 +24,7 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
     return status;
 }
 
-vx_status tivxAddKernelLut(vx_context context)
+vx_status tivxAddKernelThreshold(vx_context context)
 {
     vx_kernel kernel;
     vx_status status;
@@ -32,11 +32,11 @@ vx_status tivxAddKernelLut(vx_context context)
 
     kernel = vxAddUserKernel(
                             context,
-                            "org.khronos.openvx.table_lookup",
-                            VX_KERNEL_TABLE_LOOKUP,
+                            "org.khronos.openvx.threshold",
+                            VX_KERNEL_THRESHOLD,
                             NULL,
                             3,
-                            tivxAddKernelLutValidate,
+                            tivxAddKernelThresholdValidate,
                             NULL,
                             NULL);
 
@@ -61,7 +61,7 @@ vx_status tivxAddKernelLut(vx_context context)
             status = vxAddParameterToKernel(kernel,
                 index,
                 VX_INPUT,
-                VX_TYPE_LUT,
+                VX_TYPE_THRESHOLD,
                 VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
@@ -97,20 +97,20 @@ vx_status tivxAddKernelLut(vx_context context)
         kernel = NULL;
     }
 
-    vx_lut_kernel = kernel;
+    vx_threshold_kernel = kernel;
 
     return status;
 }
 
-vx_status tivxRemoveKernelLut(vx_context context)
+vx_status tivxRemoveKernelThreshold(vx_context context)
 {
     vx_status status;
-    vx_kernel kernel = vx_lut_kernel;
+    vx_kernel kernel = vx_threshold_kernel;
 
     /* Kernel is released as part of Remove Kernel */
     status = vxRemoveKernel(kernel);
 
-    vx_lut_kernel = NULL;
+    vx_threshold_kernel = NULL;
 
     return status;
 }

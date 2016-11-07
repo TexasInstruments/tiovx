@@ -53,12 +53,12 @@ void tivxAddTargetKernelAbsDiff()
         if (self_cpu == TIVX_CPU_ID_DSP1)
         {
             strncpy(target_name, TIVX_TARGET_DSP1,
-                sizeof(TIVX_TARGET_MAX_NAME));
+                TIVX_TARGET_MAX_NAME);
         }
         else
         {
             strncpy(target_name, TIVX_TARGET_DSP2,
-                sizeof(TIVX_TARGET_MAX_NAME));
+                TIVX_TARGET_MAX_NAME);
         }
 
         vx_absdiff_target_kernel = tivxAddTargetKernel(

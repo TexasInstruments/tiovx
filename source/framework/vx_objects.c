@@ -269,6 +269,13 @@ vx_status tivxObjectFree(vx_reference ref)
         {
             switch(ref->type)
             {
+                case VX_TYPE_ERROR:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.error,
+                        g_tivx_objects.isErrorUse,
+                        TIVX_ERROR_MAX_OBJECTS,
+                        sizeof(tivx_error_t));
+                    break;
                 case VX_TYPE_META_FORMAT:
                     status = ownFreeObject((uint8_t *)ref,
                         (uint8_t *)g_tivx_objects.meta_format,

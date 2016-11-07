@@ -21,6 +21,8 @@ void tivxInit(void)
     /* Initialize Host */
 #if !defined (M4)
     tivxRegisterOpenVXCoreTargetKernels();
+#else
+    tivxHostInit();
 #endif
     tivxObjDescInit();
 
@@ -32,6 +34,8 @@ void tivxDeInit(void)
     /* DeInitialize Host */
 #if !defined(M4)
     tivxUnRegisterOpenVXCoreTargetKernels();
+#else
+    tivxHostDeInit();
 #endif
 
     /* DeInitialize Target */
