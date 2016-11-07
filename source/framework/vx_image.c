@@ -72,8 +72,9 @@ static vx_bool ownIsValidImage(vx_image image)
     vx_bool is_valid;
 
     if ((ownIsValidSpecificReference(&image->base, VX_TYPE_IMAGE) == vx_true_e) &&
-        image->obj_desc != NULL &&
-        (ownIsSupportedFourcc(image->obj_desc->format) == vx_true_e)
+        image->base.obj_desc != NULL &&
+        (ownIsSupportedFourcc(((tivx_obj_desc_image_t*)image->base.obj_desc)->
+            format) == vx_true_e)
        )
     {
         is_valid = vx_true_e;
@@ -166,26 +167,28 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
 
 static vx_status ownDestructImage(vx_reference ref)
 {
-    vx_image image = (vx_image)ref;
+    tivx_obj_desc_image_t *obj_desc = NULL;
     uint16_t plane_idx;
 
-    if(image->base.type == VX_TYPE_IMAGE)
+    if(ref->type == VX_TYPE_IMAGE)
     {
-        if(image->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+
+        if(obj_desc!=NULL)
         {
-            if ( image->obj_desc->create_type == TIVX_IMAGE_NORMAL
-                || image->obj_desc->create_type == TIVX_IMAGE_UNIFORM
+            if ( obj_desc->create_type == TIVX_IMAGE_NORMAL
+                || obj_desc->create_type == TIVX_IMAGE_UNIFORM
              )
             {
-                for(plane_idx=0; plane_idx<image->obj_desc->planes; plane_idx++)
+                for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
                 {
-                    if(image->obj_desc->mem_ptr[plane_idx].host_ptr!=NULL)
+                    if(obj_desc->mem_ptr[plane_idx].host_ptr!=NULL)
                     {
-                        tivxMemBufferFree(&image->obj_desc->mem_ptr[plane_idx], image->obj_desc->mem_size[plane_idx]);
+                        tivxMemBufferFree(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx]);
                     }
                 }
             }
-            tivxObjDescFree((tivx_obj_desc_t**)&image->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return VX_SUCCESS;
@@ -193,26 +196,28 @@ static vx_status ownDestructImage(vx_reference ref)
 
 static vx_status ownAllocImageBuffer(vx_reference ref)
 {
-    vx_image image = (vx_image)ref;
+    tivx_obj_desc_image_t *obj_desc = NULL;
     vx_status status = VX_SUCCESS;
     uint16_t plane_idx;
 
-    if(image->base.type == VX_TYPE_IMAGE)
+    if(ref->type == VX_TYPE_IMAGE)
     {
-        if(image->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_image_t *)ref->obj_desc;
+
+        if(obj_desc != NULL)
         {
-            if( image->obj_desc->create_type == TIVX_IMAGE_NORMAL
-            || image->obj_desc->create_type == TIVX_IMAGE_UNIFORM
+            if( obj_desc->create_type == TIVX_IMAGE_NORMAL
+            || obj_desc->create_type == TIVX_IMAGE_UNIFORM
              )
             {
-                for(plane_idx=0; plane_idx<image->obj_desc->planes; plane_idx++)
+                for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
                 {
                     /* memory is not allocated, so allocate it */
-                    if(image->obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
+                    if(obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
                     {
-                        tivxMemBufferAlloc(&image->obj_desc->mem_ptr[plane_idx], image->obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL);
+                        tivxMemBufferAlloc(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL);
 
-                        if(image->obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
+                        if(obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
                         {
                             /* could not allocate memory */
                             status = VX_ERROR_NO_MEMORY ;
@@ -220,9 +225,9 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                         }
                         else
                         {
-                            image->obj_desc->mem_ptr[plane_idx].shared_ptr =
+                            obj_desc->mem_ptr[plane_idx].shared_ptr =
                                 tivxMemHost2SharedPtr(
-                                    image->obj_desc->mem_ptr[plane_idx].
+                                    obj_desc->mem_ptr[plane_idx].
                                     host_ptr,
                                     TIVX_MEM_EXTERNAL);
                         }
@@ -258,10 +263,13 @@ static void ownInitPlane(vx_image image,
 {
     vx_imagepatch_addressing_t *imagepatch_addr;
     uint32_t mem_size;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (image)
     {
-        imagepatch_addr = &image->obj_desc->imagepatch_addr[index];
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+        imagepatch_addr = &obj_desc->imagepatch_addr[index];
 
         imagepatch_addr->dim_x = width;
         imagepatch_addr->dim_y = height;
@@ -277,11 +285,11 @@ static void ownInitPlane(vx_image image,
 
         mem_size = imagepatch_addr->stride_y*imagepatch_addr->dim_y/step_y;
 
-        image->obj_desc->mem_size[index] = mem_size;
+        obj_desc->mem_size[index] = mem_size;
 
-        image->obj_desc->mem_ptr[index].mem_type = TIVX_MEM_EXTERNAL;
-        image->obj_desc->mem_ptr[index].host_ptr = NULL;
-        image->obj_desc->mem_ptr[index].shared_ptr = NULL;
+        obj_desc->mem_ptr[index].mem_type = TIVX_MEM_EXTERNAL;
+        obj_desc->mem_ptr[index].host_ptr = NULL;
+        obj_desc->mem_ptr[index].shared_ptr = NULL;
 
         image->mem_offset[index] = 0;
     }
@@ -291,7 +299,9 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
 {
     vx_uint32 size_of_ch;
     vx_uint16 subimage_idx, map_idx;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
+    obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
     size_of_ch = (vx_uint32)ownSizeOfChannel(format);
 
     image->parent = NULL;
@@ -307,17 +317,17 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     }
     image->channel_plane = 0;
 
-    image->obj_desc->uniform_image_pixel_value = 0;
-    image->obj_desc->width = width;
-    image->obj_desc->height = height;
-    image->obj_desc->format = format;
-    image->obj_desc->color_range = VX_CHANNEL_RANGE_FULL;
+    obj_desc->uniform_image_pixel_value = 0;
+    obj_desc->width = width;
+    obj_desc->height = height;
+    obj_desc->format = format;
+    obj_desc->color_range = VX_CHANNEL_RANGE_FULL;
 
 
-    image->obj_desc->valid_roi.start_x = 0;
-    image->obj_desc->valid_roi.start_y = 0;
-    image->obj_desc->valid_roi.end_x = width;
-    image->obj_desc->valid_roi.end_y = height;
+    obj_desc->valid_roi.start_x = 0;
+    obj_desc->valid_roi.start_y = 0;
+    obj_desc->valid_roi.end_x = width;
+    obj_desc->valid_roi.end_y = height;
 
     switch (format)
     {
@@ -326,10 +336,10 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S16:
         case VX_DF_IMAGE_S32:
-            image->obj_desc->color_space = VX_COLOR_SPACE_NONE;
+            obj_desc->color_space = VX_COLOR_SPACE_NONE;
             break;
         default:
-            image->obj_desc->color_space = VX_COLOR_SPACE_DEFAULT;
+            obj_desc->color_space = VX_COLOR_SPACE_DEFAULT;
             break;
     }
 
@@ -339,42 +349,42 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             break;
         case VX_DF_IMAGE_NV12:
         case VX_DF_IMAGE_NV21:
-            image->obj_desc->planes = 2;
-            ownInitPlane(image, 0, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 1, 1);
-            ownInitPlane(image, 1, size_of_ch, 2, image->obj_desc->width, image->obj_desc->height, 2, 2);
+            obj_desc->planes = 2;
+            ownInitPlane(image, 0, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1);
+            ownInitPlane(image, 1, size_of_ch, 2, obj_desc->width, obj_desc->height, 2, 2);
             break;
         case VX_DF_IMAGE_RGB:
-            image->obj_desc->planes = 1;
-            ownInitPlane(image, 0, size_of_ch, 3, image->obj_desc->width, image->obj_desc->height, 1, 1);
+            obj_desc->planes = 1;
+            ownInitPlane(image, 0, size_of_ch, 3, obj_desc->width, obj_desc->height, 1, 1);
             break;
         case VX_DF_IMAGE_RGBX:
-            image->obj_desc->planes = 1;
-            ownInitPlane(image, 0, size_of_ch, 4, image->obj_desc->width, image->obj_desc->height, 1, 1);
+            obj_desc->planes = 1;
+            ownInitPlane(image, 0, size_of_ch, 4, obj_desc->width, obj_desc->height, 1, 1);
             break;
         case VX_DF_IMAGE_UYVY:
         case VX_DF_IMAGE_YUYV:
-            image->obj_desc->planes = 1;
-            ownInitPlane(image, 0, size_of_ch, 2, image->obj_desc->width, image->obj_desc->height, 1, 1);
+            obj_desc->planes = 1;
+            ownInitPlane(image, 0, size_of_ch, 2, obj_desc->width, obj_desc->height, 1, 1);
             break;
         case VX_DF_IMAGE_YUV4:
-            image->obj_desc->planes = 3;
-            ownInitPlane(image, 0, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 1, 1);
-            ownInitPlane(image, 1, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 1, 1);
-            ownInitPlane(image, 2, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 1, 1);
+            obj_desc->planes = 3;
+            ownInitPlane(image, 0, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1);
+            ownInitPlane(image, 1, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1);
+            ownInitPlane(image, 2, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1);
             break;
         case VX_DF_IMAGE_IYUV:
-            image->obj_desc->planes = 3;
-            ownInitPlane(image, 0, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 1, 1);
-            ownInitPlane(image, 1, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 2, 2);
-            ownInitPlane(image, 2, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 2, 2);
+            obj_desc->planes = 3;
+            ownInitPlane(image, 0, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1);
+            ownInitPlane(image, 1, size_of_ch, 1, obj_desc->width, obj_desc->height, 2, 2);
+            ownInitPlane(image, 2, size_of_ch, 1, obj_desc->width, obj_desc->height, 2, 2);
             break;
         case VX_DF_IMAGE_U8:
         case VX_DF_IMAGE_U16:
         case VX_DF_IMAGE_S16:
         case VX_DF_IMAGE_U32:
         case VX_DF_IMAGE_S32:
-            image->obj_desc->planes = 1;
-            ownInitPlane(image, 0, size_of_ch, 1, image->obj_desc->width, image->obj_desc->height, 1, 1);
+            obj_desc->planes = 1;
+            ownInitPlane(image, 0, size_of_ch, 1, obj_desc->width, obj_desc->height, 1, 1);
             break;
         default:
             /*! should not get here unless there's a bug in the
@@ -413,6 +423,7 @@ static vx_image ownCreateImageInt(vx_context context,
                                      tivx_image_create_type_e create_type)
 {
     vx_image image = NULL;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (ownIsValidContext(context) == vx_true_e)
     {
@@ -428,9 +439,9 @@ static vx_image ownCreateImageInt(vx_context context,
                     image->base.mem_alloc_callback = ownAllocImageBuffer;
                     image->base.release_callback = (tivx_reference_release_callback_f)vxReleaseImage;
 
-                    image->obj_desc = (tivx_obj_desc_image_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_IMAGE);
+                    obj_desc = (tivx_obj_desc_image_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_IMAGE);
 
-                    if(image->obj_desc == NULL)
+                    if(obj_desc == NULL)
                     {
                         vxReleaseImage(&image);
 
@@ -439,8 +450,9 @@ static vx_image ownCreateImageInt(vx_context context,
                     }
                     else
                     {
-                        image->obj_desc->create_type = create_type;
+                        obj_desc->create_type = create_type;
 
+                        image->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                         ownInitImage(image, width, height, color);
                     }
                 }
@@ -472,6 +484,7 @@ static vx_status ownCopyAndMapCheckParams(
     vx_uint32 start_y = rect ? rect->start_y : 0u;
     vx_uint32 end_x = rect ? rect->end_x : 0u;
     vx_uint32 end_y = rect ? rect->end_y : 0u;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     /* bad parameters */
     if ( rect == NULL )
@@ -488,9 +501,10 @@ static vx_status ownCopyAndMapCheckParams(
         }
     }
 
+    obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
     if(status == VX_SUCCESS)
     {
-        if(image->obj_desc->create_type == TIVX_IMAGE_VIRTUAL)
+        if(obj_desc->create_type == TIVX_IMAGE_VIRTUAL)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -499,7 +513,7 @@ static vx_status ownCopyAndMapCheckParams(
     if(status == VX_SUCCESS)
     {
         /* more bad parameters */
-        if ( (plane_index >= image->obj_desc->planes) ||
+        if ( (plane_index >= obj_desc->planes) ||
              (start_x >= end_x) ||
              (start_y >= end_y)
             )
@@ -516,7 +530,7 @@ static vx_status ownCopyAndMapCheckParams(
 
     if(status==VX_SUCCESS)
     {
-        if ( (image->obj_desc->create_type == TIVX_IMAGE_UNIFORM) && (usage == VX_WRITE_ONLY || usage == VX_READ_AND_WRITE) )
+        if ( (obj_desc->create_type == TIVX_IMAGE_UNIFORM) && (usage == VX_WRITE_ONLY || usage == VX_READ_AND_WRITE) )
         {
             status = VX_ERROR_NOT_SUPPORTED;
             vxAddLogEntry(&image->base, status, "Can't write to constant data, only read!\n");
@@ -542,26 +556,30 @@ void ownPrintImage(vx_image image)
 {
     vx_uint32 p = 0;
     vx_char df_image[5];
-    strncpy(df_image, (char *)&image->obj_desc->format, 4);
+    tivx_obj_desc_image_t *obj_desc = NULL;
+
+    obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+    strncpy(df_image, (char *)&obj_desc->format, 4);
     df_image[4] = '\0';
     ownPrintReference(&image->base);
     VX_PRINT(VX_ZONE_IMAGE,
             "vx_image:%s %ux%u (%s), planes:%d\n",
             df_image,
-            image->obj_desc->width,
-            image->obj_desc->height,
-            (image->obj_desc->create_type==TIVX_IMAGE_UNIFORM?"CONSTANT":"MUTABLE"),
-            image->obj_desc->planes
+            obj_desc->width,
+            obj_desc->height,
+            (obj_desc->create_type==TIVX_IMAGE_UNIFORM?"CONSTANT":"MUTABLE"),
+            obj_desc->planes
         );
     VX_PRINT(VX_ZONE_IMAGE,"\n");
-    for (p = 0; p < image->obj_desc->planes; p++)
+    for (p = 0; p < obj_desc->planes; p++)
     {
         VX_PRINT(VX_ZONE_IMAGE,"Plane %d: host_ptr:%p, shared_ptr:%p, mem_size:%d B\n",
             p,
-            image->obj_desc->mem_ptr[p].host_ptr,
-            image->obj_desc->mem_ptr[p].shared_ptr,
-            image->obj_desc->mem_size[p]);
-        ownPrintImageAddressing(&image->obj_desc->imagepatch_addr[p]);
+            obj_desc->mem_ptr[p].host_ptr,
+            obj_desc->mem_ptr[p].shared_ptr,
+            obj_desc->mem_size[p]);
+        ownPrintImageAddressing(&obj_desc->imagepatch_addr[p]);
         VX_PRINT(VX_ZONE_IMAGE,"\n");
     }
 }
@@ -589,6 +607,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
     vx_image image = 0;
     vx_imagepatch_addressing_t *imagepatch_addr;
     tivx_shared_mem_ptr_t *mem_ptr;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if ((addrs[0].dim_x == 0) || (addrs[0].dim_y == 0) ||
         (ownIsSupportedFourcc(color) == vx_false_e) || (color == VX_DF_IMAGE_VIRT))
@@ -603,8 +622,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
         {
             vx_uint32 plane_idx = 0;
 
+            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
             /* now assign the plane pointers, assume linearity */
-            for (plane_idx = 0; plane_idx < image->obj_desc->planes; plane_idx++)
+            for (plane_idx = 0; plane_idx < obj_desc->planes; plane_idx++)
             {
                 /* ensure row-major memory layout */
                 if (addrs[plane_idx].stride_x <= 0 || addrs[plane_idx].stride_y < (vx_int32)(addrs[plane_idx].stride_x * addrs[plane_idx].dim_x))
@@ -614,13 +635,13 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                     break;
                 }
 
-                imagepatch_addr = &image->obj_desc->imagepatch_addr[plane_idx];
-                mem_ptr = &image->obj_desc->mem_ptr[plane_idx];
+                imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx];
+                mem_ptr = &obj_desc->mem_ptr[plane_idx];
 
                 imagepatch_addr->stride_x = addrs[plane_idx].stride_x;
                 imagepatch_addr->stride_y = addrs[plane_idx].stride_y;
 
-                image->obj_desc->mem_size[plane_idx] = imagepatch_addr->stride_y*imagepatch_addr->dim_y/imagepatch_addr->step_y;
+                obj_desc->mem_size[plane_idx] = imagepatch_addr->stride_y*imagepatch_addr->dim_y/imagepatch_addr->step_y;
 
                 mem_ptr->mem_type =  TIVX_MEM_EXTERNAL;
                 mem_ptr->host_ptr = ptrs[plane_idx];
@@ -644,15 +665,17 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
     vx_enum format;
     uint16_t channel_plane;
     vx_context context;
+    tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
 
     if (ownIsValidImage(image) == vx_true_e)
     {
         context = vxGetContext((vx_reference)image);
 
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         /* perhaps the parent hasn't been allocated yet? */
         if(ownAllocImageBuffer((vx_reference)image)==VX_SUCCESS)
         {
-            format = image->obj_desc->format;
+            format = obj_desc->format;
 
             /* check for valid parameters */
             switch (channel)
@@ -707,15 +730,15 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                 /* plane index */
                 channel_plane = (VX_CHANNEL_Y == channel) ? 0 : ((VX_CHANNEL_U == channel) ? 1 : 2);
 
-                imagepatch_addr = &image->obj_desc->imagepatch_addr[channel_plane];
-                mem_ptr = &image->obj_desc->mem_ptr[channel_plane];
+                imagepatch_addr = &obj_desc->imagepatch_addr[channel_plane];
+                mem_ptr = &obj_desc->mem_ptr[channel_plane];
 
                 format = VX_DF_IMAGE_U8;
 
                 width = 0;
                 height = 0;
 
-                switch (image->obj_desc->format)
+                switch (obj_desc->format)
                 {
                     case VX_DF_IMAGE_YUV4:
                     {
@@ -761,8 +784,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                 {
                     ownLinkParentSubimage(image, subimage);
 
-                    subimage->obj_desc->imagepatch_addr[0].stride_x = imagepatch_addr->stride_x;
-                    subimage->obj_desc->imagepatch_addr[0].stride_y = imagepatch_addr->stride_y;
+                    si_obj_desc = (tivx_obj_desc_image_t *)subimage->base.obj_desc;
+
+                    si_obj_desc->imagepatch_addr[0].stride_x = imagepatch_addr->stride_x;
+                    si_obj_desc->imagepatch_addr[0].stride_y = imagepatch_addr->stride_y;
                     if(format==VX_DF_IMAGE_NV12
                         ||
                        format==VX_DF_IMAGE_NV21
@@ -771,13 +796,13 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         /* if UV plane in YUV420SP format, then stride_x should stride_x/2 */
                         if(channel_plane==1)
                         {
-                            subimage->obj_desc->imagepatch_addr[0].stride_x
+                            si_obj_desc->imagepatch_addr[0].stride_x
                                 = imagepatch_addr->stride_x/2;
                         }
                     }
                     subimage->channel_plane = channel_plane;
-                    subimage->obj_desc->mem_ptr[0] = *mem_ptr;
-                    subimage->obj_desc->mem_size[0] = image->obj_desc->mem_size[channel_plane];
+                    si_obj_desc->mem_ptr[0] = *mem_ptr;
+                    si_obj_desc->mem_size[0] = obj_desc->mem_size[channel_plane];
                 }
             }
         }
@@ -798,15 +823,19 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
     tivx_shared_mem_ptr_t *subimage_mem_ptr;
     tivx_shared_mem_ptr_t *image_mem_ptr;
     uint32_t mem_size;
+    tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
 
     if (ownIsValidImage(image) == vx_true_e)
     {
         context = vxGetContext((vx_reference)image);
+
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
         if (!rect ||
             rect->start_x > rect->end_x ||
             rect->start_y > rect->end_y ||
-            rect->end_x > image->obj_desc->width ||
-            rect->end_y > image->obj_desc->height)
+            rect->end_x > obj_desc->width ||
+            rect->end_y > obj_desc->height)
         {
             subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
         }
@@ -815,7 +844,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
             /* perhaps the parent hasn't been allocated yet? */
             if(ownAllocImageBuffer((vx_reference)image)==VX_SUCCESS)
             {
-                format = image->obj_desc->format;
+                format = obj_desc->format;
                 width  = rect->end_x - rect->end_x;
                 height = rect->end_y - rect->end_y;
 
@@ -836,12 +865,14 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                     {
                         ownLinkParentSubimage(image, subimage);
 
-                        for(plane_idx=0; plane_idx<subimage->obj_desc->planes; plane_idx++)
+                        si_obj_desc = (tivx_obj_desc_image_t *)subimage->base.obj_desc;
+
+                        for(plane_idx=0; plane_idx<si_obj_desc->planes; plane_idx++)
                         {
-                            subimage_imagepatch_addr = &subimage->obj_desc->imagepatch_addr[plane_idx];
-                            image_imagepatch_addr = &image->obj_desc->imagepatch_addr[plane_idx];
-                            subimage_mem_ptr = &subimage->obj_desc->mem_ptr[plane_idx];
-                            image_mem_ptr = &image->obj_desc->mem_ptr[plane_idx];
+                            subimage_imagepatch_addr = &si_obj_desc->imagepatch_addr[plane_idx];
+                            image_imagepatch_addr = &obj_desc->imagepatch_addr[plane_idx];
+                            subimage_mem_ptr = &si_obj_desc->mem_ptr[plane_idx];
+                            image_mem_ptr = &obj_desc->mem_ptr[plane_idx];
 
                             *subimage_imagepatch_addr = *image_imagepatch_addr;
                             *subimage_mem_ptr = *image_mem_ptr;
@@ -851,7 +882,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 
                             mem_size = subimage_imagepatch_addr->stride_y*subimage_imagepatch_addr->dim_y/subimage_imagepatch_addr->step_y;
 
-                            subimage->obj_desc->mem_size[plane_idx] = mem_size;
+                            si_obj_desc->mem_size[plane_idx] = mem_size;
 
                             subimage->mem_offset[plane_idx] =
                                 ownComputePatchOffset(rect->start_x, rect->start_y, subimage_imagepatch_addr);
@@ -1030,7 +1061,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
             if (vxGetStatus((vx_reference)image) == VX_SUCCESS)
             {
                 /* lock the image from being modified again! */
-                image->obj_desc->create_type = TIVX_IMAGE_UNIFORM;
+                ((tivx_obj_desc_image_t *)image->base.obj_desc)->create_type =
+                    TIVX_IMAGE_UNIFORM;
             }
         }
     }
@@ -1097,30 +1129,35 @@ VX_API_ENTRY void* VX_API_CALL vxFormatImagePatchAddress2d(void *ptr, vx_uint32 
 VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rectangle_t *rect)
 {
     vx_status status = VX_ERROR_INVALID_REFERENCE;
+    tivx_obj_desc_image_t *obj_desc = NULL;
+
     if (ownIsValidImage(image) == vx_true_e)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+
         if (rect)
         {
-            if ((image->obj_desc->valid_roi.start_x <= image->obj_desc->valid_roi.end_x) && (image->obj_desc->valid_roi.start_y <= image->obj_desc->valid_roi.end_y))
+            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+            if ((obj_desc->valid_roi.start_x <= obj_desc->valid_roi.end_x) && (obj_desc->valid_roi.start_y <= obj_desc->valid_roi.end_y))
             {
-                rect->start_x = image->obj_desc->valid_roi.start_x;
-                rect->start_y = image->obj_desc->valid_roi.start_y;
-                rect->end_x = image->obj_desc->valid_roi.end_x;
-                rect->end_y = image->obj_desc->valid_roi.end_y;
+                rect->start_x = obj_desc->valid_roi.start_x;
+                rect->start_y = obj_desc->valid_roi.start_y;
+                rect->end_x = obj_desc->valid_roi.end_x;
+                rect->end_y = obj_desc->valid_roi.end_y;
             }
             else
             {
                 /* correct the valid ROI since its invalid */
-                image->obj_desc->valid_roi.start_x = 0;
-                image->obj_desc->valid_roi.start_y = 0;
-                image->obj_desc->valid_roi.end_x   = image->obj_desc->width;
-                image->obj_desc->valid_roi.end_y   = image->obj_desc->height;
+                obj_desc->valid_roi.start_x = 0;
+                obj_desc->valid_roi.start_y = 0;
+                obj_desc->valid_roi.end_x   = obj_desc->width;
+                obj_desc->valid_roi.end_y   = obj_desc->height;
 
                 rect->start_x = 0;
                 rect->start_y = 0;
-                rect->end_x = image->obj_desc->width;
-                rect->end_y = image->obj_desc->height;
+                rect->end_x = obj_desc->width;
+                rect->end_y = obj_desc->height;
             }
             status = VX_SUCCESS;
         }
@@ -1131,18 +1168,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rect
 VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, const vx_rectangle_t* rect)
 {
     vx_status status = VX_ERROR_INVALID_REFERENCE;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if (ownIsValidImage(image) == vx_true_e)
     {
         if (rect)
         {
+            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
             if ((rect->start_x <= rect->end_x) && (rect->start_y <= rect->end_y) &&
-                (rect->end_x <= image->obj_desc->width) && (rect->end_y <= image->obj_desc->height))
+                (rect->end_x <= obj_desc->width) && (rect->end_y <= obj_desc->height))
             {
-                image->obj_desc->valid_roi.start_x = rect->start_x;
-                image->obj_desc->valid_roi.start_y = rect->start_y;
-                image->obj_desc->valid_roi.end_x   = rect->end_x;
-                image->obj_desc->valid_roi.end_y   = rect->end_y;
+                obj_desc->valid_roi.start_x = rect->start_x;
+                obj_desc->valid_roi.start_y = rect->start_y;
+                obj_desc->valid_roi.end_x   = rect->end_x;
+                obj_desc->valid_roi.end_y   = rect->end_y;
                 status = VX_SUCCESS;
             }
             else
@@ -1152,10 +1192,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
         }
         else
         {
-            image->obj_desc->valid_roi.start_x = 0;
-            image->obj_desc->valid_roi.start_y = 0;
-            image->obj_desc->valid_roi.end_x   = image->obj_desc->width;
-            image->obj_desc->valid_roi.end_y   = image->obj_desc->height;
+            obj_desc->valid_roi.start_x = 0;
+            obj_desc->valid_roi.start_y = 0;
+            obj_desc->valid_roi.end_x   = obj_desc->width;
+            obj_desc->valid_roi.end_y   = obj_desc->height;
             status = VX_SUCCESS;
         }
     }
@@ -1170,20 +1210,22 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
     vx_size size = 0ul, num_pixels;
     vx_uint32 start_x = 0u, start_y = 0u, end_x = 0u, end_y = 0u;
     vx_imagepatch_addressing_t *imagepatch_addr;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if ((ownIsValidImage(image) == vx_true_e) && (rect))
     {
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         if ((rect->start_x <= rect->end_x) && (rect->start_y <= rect->end_y) &&
-            (rect->end_x <= image->obj_desc->width) && (rect->end_y <= image->obj_desc->height))
+            (rect->end_x <= obj_desc->width) && (rect->end_y <= obj_desc->height))
         {
             start_x = rect->start_x;
             start_y = rect->start_y;
             end_x = rect->end_x;
             end_y = rect->end_y;
 
-            if (plane_index < image->obj_desc->planes)
+            if (plane_index < obj_desc->planes)
             {
-                imagepatch_addr = &image->obj_desc->imagepatch_addr[plane_index];
+                imagepatch_addr = &obj_desc->imagepatch_addr[plane_index];
 
                 num_pixels  =
                             ((end_x-start_x)/imagepatch_addr->step_x)
@@ -1209,14 +1251,17 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
 VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_image_t *obj_desc = NULL;
+
     if (ownIsValidImage(image) == vx_true_e)
     {
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         switch (attribute)
         {
             case VX_IMAGE_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3))
                 {
-                    *(vx_df_image *)ptr = image->obj_desc->format;
+                    *(vx_df_image *)ptr = obj_desc->format;
                 }
                 else
                 {
@@ -1226,7 +1271,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case VX_IMAGE_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = image->obj_desc->width;
+                    *(vx_uint32 *)ptr = obj_desc->width;
                 }
                 else
                 {
@@ -1236,7 +1281,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case VX_IMAGE_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = image->obj_desc->height;
+                    *(vx_uint32 *)ptr = obj_desc->height;
                 }
                 else
                 {
@@ -1246,7 +1291,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case VX_IMAGE_PLANES:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = image->obj_desc->planes;
+                    *(vx_size *)ptr = obj_desc->planes;
                 }
                 else
                 {
@@ -1256,7 +1301,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case VX_IMAGE_SPACE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = image->obj_desc->color_space;
+                    *(vx_enum *)ptr = obj_desc->color_space;
                 }
                 else
                 {
@@ -1266,7 +1311,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
             case VX_IMAGE_RANGE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = image->obj_desc->color_range;
+                    *(vx_enum *)ptr = obj_desc->color_range;
                 }
                 else
                 {
@@ -1278,9 +1323,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 {
                     vx_size size = 0ul;
                     vx_uint32 p;
-                    for (p = 0; p < image->obj_desc->planes; p++)
+                    for (p = 0; p < obj_desc->planes; p++)
                     {
-                        size += image->obj_desc->mem_size[p];
+                        size += obj_desc->mem_size[p];
                     }
                     *(vx_size *)ptr = size;
                 }
@@ -1322,7 +1367,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
             case VX_IMAGE_SPACE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    image->obj_desc->color_space = *(vx_enum *)ptr;
+                    ((tivx_obj_desc_image_t *)image->base.obj_desc)->
+                        color_space = *(vx_enum *)ptr;
                 }
                 else
                 {
@@ -1358,6 +1404,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
     vx_uint32 start_y = rect ? rect->start_y : 0u;
     vx_uint32 end_x = rect ? rect->end_x : 0u;
     vx_uint32 end_y = rect ? rect->end_y : 0u;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if(status == VX_SUCCESS)
     {
@@ -1376,8 +1423,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
     {
         vx_uint32 x;
         vx_uint32 y;
-        vx_imagepatch_addressing_t *image_addr = &image->obj_desc->imagepatch_addr[plane_index];
-        vx_uint8* pImagePtr = (vx_uint8*)image->obj_desc->mem_ptr[plane_index].host_ptr;
+        vx_imagepatch_addressing_t *image_addr = NULL;
+        vx_uint8* pImagePtr = NULL;
         vx_uint8* pUserPtr = user_ptr;
 
         vx_uint8 *pImageLine;
@@ -1387,13 +1434,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         vx_uint8 *pUserElem;
         uint32_t len, map_size;
 
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+        image_addr = &obj_desc->imagepatch_addr[plane_index];
+        pImagePtr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
+
         pImageLine = pImagePtr + start_y*image_addr->stride_y/image_addr->step_y + start_x*image_addr->stride_x/image_addr->step_x;
         pUserLine = pUserPtr + start_y*user_addr->stride_y/image_addr->step_y + start_x*user_addr->stride_x/image_addr->step_x;
 
         map_addr = pImageLine;
         map_size = (end_y - start_y)*image_addr->stride_y/image_addr->step_y;
 
-        tivxMemBufferMap(map_addr, map_size, image->obj_desc->mem_ptr[plane_index].mem_type, usage);
+        tivxMemBufferMap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
 
         /* copy the patch from the image */
         if (user_addr->stride_x == image_addr->stride_x)
@@ -1468,7 +1520,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
             }
         }
 
-        tivxMemBufferUnmap(map_addr, map_size, image->obj_desc->mem_ptr[plane_index].mem_type, usage);
+        tivxMemBufferUnmap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
     }
 
     return status;
@@ -1486,6 +1538,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
     vx_uint32 flags)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     if(status == VX_SUCCESS)
     {
@@ -1502,10 +1555,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 
     if(status == VX_SUCCESS)
     {
-        vx_imagepatch_addressing_t *image_addr = &image->obj_desc->imagepatch_addr[plane_index];
-        vx_uint8* map_addr = (vx_uint8*)image->obj_desc->mem_ptr[plane_index].host_ptr;
-        uint32_t map_size = image->obj_desc->mem_size[plane_index];
+        vx_imagepatch_addressing_t *image_addr = NULL;
+        vx_uint8* map_addr = NULL;
+        uint32_t map_size = 0;
         uint32_t map_idx;
+
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+        image_addr = &obj_desc->imagepatch_addr[plane_index];
+        map_addr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
+        map_size = obj_desc->mem_size[plane_index];
 
         for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
         {
@@ -1523,7 +1582,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
             *user_addr = *image_addr;
             *user_ptr = map_addr;
 
-            tivxMemBufferMap(map_addr, map_size, image->obj_desc->mem_ptr[plane_index].mem_type, usage);
+            tivxMemBufferMap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
         }
         else
         {
@@ -1537,6 +1596,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id map_id)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_image_t *obj_desc = NULL;
 
     /* bad references */
     if (ownIsValidImage(image) == vx_false_e)
@@ -1559,10 +1619,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             image->maps[map_id].map_size!=0
             )
         {
+            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
             tivxMemBufferUnmap(
                 image->maps[map_id].map_addr,
                 image->maps[map_id].map_size,
-                image->obj_desc->mem_ptr[0].mem_type, /* assume all planes have same mem_type */
+                obj_desc->mem_ptr[0].mem_type, /* assume all planes have same mem_type */
                 image->maps[map_id].usage);
         }
         else
@@ -1582,10 +1644,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
     vx_uint32 i;
     vx_uint32 p;
     vx_image subimage;
+    tivx_obj_desc_image_t *obj_desc = NULL, *si_obj_desc = NULL;
 
     if (ownIsValidImage(image) == vx_true_e)
     {
-        image_planes = image->obj_desc->planes;
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+
+        image_planes = obj_desc->planes;
 
         if(num_planes != image_planes)
         {
@@ -1622,7 +1687,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                 /* return previous image handles */
                 for (p = 0; p < image_planes; p++)
                 {
-                    prev_ptrs[p] = image->obj_desc->mem_ptr[p].host_ptr;
+                    prev_ptrs[p] = obj_desc->mem_ptr[p].host_ptr;
                 }
             }
 
@@ -1633,27 +1698,30 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
 
                 if (subimage != NULL)
                 {
+                    si_obj_desc = (tivx_obj_desc_image_t *)subimage->base.
+                        obj_desc;
+
                     if (new_ptrs == NULL)
-                        status = vxSwapImageHandle(subimage, NULL, NULL, subimage->obj_desc->planes);
+                        status = vxSwapImageHandle(subimage, NULL, NULL, si_obj_desc->planes);
                     else
                     {
                         vx_uint8* ptrs[4];
 
-                        if(subimage->obj_desc->create_type==TIVX_IMAGE_FROM_ROI)
+                        if(si_obj_desc->create_type==TIVX_IMAGE_FROM_ROI)
                         {
-                            for (p = 0; p < subimage->obj_desc->planes; p++)
+                            for (p = 0; p < si_obj_desc->planes; p++)
                             {
                                 ptrs[p] = (vx_uint8*)new_ptrs[p] + subimage->mem_offset[p];
                             }
 
-                            status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, subimage->obj_desc->planes);
+                            status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, si_obj_desc->planes);
                         }
                         else
-                        if(subimage->obj_desc->create_type==TIVX_IMAGE_FROM_CHANNEL)
+                        if(si_obj_desc->create_type==TIVX_IMAGE_FROM_CHANNEL)
                         {
                             ptrs[0] = new_ptrs[subimage->channel_plane];
 
-                            status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, subimage->obj_desc->planes);
+                            status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, si_obj_desc->planes);
                         }
                     }
                 }
@@ -1664,14 +1732,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
             {
                 if (new_ptrs == NULL)
                 {
-                    image->obj_desc->mem_ptr[p].host_ptr = NULL;
-                    image->obj_desc->mem_ptr[p].shared_ptr = NULL;
+                    obj_desc->mem_ptr[p].host_ptr = NULL;
+                    obj_desc->mem_ptr[p].shared_ptr = NULL;
                 }
                 else
                 {
                     /* set new pointers for subimage */
-                    image->obj_desc->mem_ptr[p].host_ptr = new_ptrs[p];
-                    image->obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr(new_ptrs[p], image->obj_desc->mem_ptr[p].mem_type);
+                    obj_desc->mem_ptr[p].host_ptr = new_ptrs[p];
+                    obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr(new_ptrs[p], obj_desc->mem_ptr[p].mem_type);
 
                 }
             }
@@ -1692,7 +1760,7 @@ vx_status ownInitVirtualImage(
 
     if ((ownIsValidSpecificReference(&img->base, VX_TYPE_IMAGE) == vx_true_e)
         &&
-        (img->obj_desc != NULL))
+        (img->base.obj_desc != NULL))
     {
         if ((width > 0) &&
             (height > 0) &&

@@ -60,9 +60,6 @@ typedef struct _vx_lut
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_lut_t *obj_desc;
-
 } tivx_lut_t;
 
 

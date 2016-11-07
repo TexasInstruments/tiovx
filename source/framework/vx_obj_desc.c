@@ -182,46 +182,8 @@ uint16_t tivxReferenceGetObjDescId(vx_reference ref)
 
     if (NULL != ref)
     {
-        switch (ref->type)
-        {
-            case VX_TYPE_ARRAY:
-                obj_desc_id = ((vx_array)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_CONVOLUTION:
-                obj_desc_id = ((vx_convolution)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_DELAY:
-                obj_desc_id = ((vx_delay)ref)->obj_desc->obj_desc_id;
-                break;
-            case VX_TYPE_DISTRIBUTION:
-                obj_desc_id = ((vx_distribution)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_IMAGE:
-                obj_desc_id = ((vx_image)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_LUT:
-                obj_desc_id = ((vx_lut)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_MATRIX:
-                obj_desc_id = ((vx_matrix)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_PYRAMID:
-                obj_desc_id = ((vx_pyramid)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_REMAP:
-                obj_desc_id = ((vx_remap)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_SCALAR:
-                obj_desc_id = ((vx_scalar)ref)->obj_desc->base.obj_desc_id;
-                break;
-            case VX_TYPE_THRESHOLD:
-                obj_desc_id = ((vx_threshold)ref)->obj_desc->base.obj_desc_id;
-                break;
-            default:
-                break;
-        }
+        obj_desc_id = ref->obj_desc->obj_desc_id;
     }
-
 
     return (obj_desc_id);
 }

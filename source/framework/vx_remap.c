@@ -39,18 +39,20 @@
 
 static vx_status ownDestructRemap(vx_reference ref)
 {
-    vx_remap remap = (vx_remap)ref;
+    tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if(remap->base.type == VX_TYPE_REMAP)
+    if(ref->type == VX_TYPE_REMAP)
     {
-        if(remap->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_remap_t *)ref->obj_desc;
+
+        if(obj_desc!=NULL)
         {
-            if(remap->obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=NULL)
             {
-                tivxMemBufferFree(&remap->obj_desc->mem_ptr, remap->obj_desc->mem_size);
+                tivxMemBufferFree(&obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&remap->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return VX_SUCCESS;
@@ -66,28 +68,31 @@ static tivx_remap_point_t *ownGetRemapPoint(tivx_obj_desc_remap_t *obj_desc, vx_
 
 static vx_status ownAllocRemapBuffer(vx_reference ref)
 {
-    vx_remap remap = (vx_remap)ref;
+    tivx_obj_desc_remap_t *obj_desc = NULL;
     vx_status status = VX_SUCCESS;
 
-    if(remap->base.type == VX_TYPE_REMAP)
+    if(ref->type == VX_TYPE_REMAP)
     {
-        if(remap->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_remap_t *)ref->obj_desc;
+
+        if(obj_desc!=NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(remap->obj_desc->mem_ptr.host_ptr==NULL)
+            if(obj_desc->mem_ptr.host_ptr==NULL)
             {
-                tivxMemBufferAlloc(&remap->obj_desc->mem_ptr, remap->obj_desc->mem_size, TIVX_MEM_EXTERNAL);
+                tivxMemBufferAlloc(&obj_desc->mem_ptr, obj_desc->mem_size,
+                    TIVX_MEM_EXTERNAL);
 
-                if(remap->obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;
                 }
                 else
                 {
-                    remap->obj_desc->mem_ptr.shared_ptr =
+                    obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
-                            remap->obj_desc->mem_ptr.host_ptr,
+                            obj_desc->mem_ptr.host_ptr,
                             TIVX_MEM_EXTERNAL);
                 }
             }
@@ -112,6 +117,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                               vx_uint32 dst_height)
 {
     vx_remap remap = NULL;
+    tivx_obj_desc_remap_t *obj_desc = NULL;
 
     if(ownIsValidContext(context)==vx_true_e)
     {
@@ -125,8 +131,8 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 remap->base.mem_alloc_callback = ownAllocRemapBuffer;
                 remap->base.release_callback = (tivx_reference_release_callback_f)vxReleaseRemap;
 
-                remap->obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_REMAP);
-                if(remap->obj_desc==NULL)
+                obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_REMAP);
+                if(obj_desc==NULL)
                 {
                     vxReleaseRemap(&remap);
 
@@ -135,14 +141,15 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 }
                 else
                 {
-                    remap->obj_desc->src_width = src_width;
-                    remap->obj_desc->src_height = src_height;
-                    remap->obj_desc->dst_width = dst_width;
-                    remap->obj_desc->dst_height = dst_height;
-                    remap->obj_desc->mem_size = dst_width*dst_height*sizeof(tivx_remap_point_t);
-                    remap->obj_desc->mem_ptr.host_ptr = NULL;
-                    remap->obj_desc->mem_ptr.shared_ptr = NULL;
-                    remap->obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->src_width = src_width;
+                    obj_desc->src_height = src_height;
+                    obj_desc->dst_width = dst_width;
+                    obj_desc->dst_height = dst_height;
+                    obj_desc->mem_size = dst_width*dst_height*sizeof(tivx_remap_point_t);
+                    obj_desc->mem_ptr.host_ptr = NULL;
+                    obj_desc->mem_ptr.shared_ptr = NULL;
+                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    remap->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
@@ -164,22 +171,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseRemap(vx_remap *r)
 VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_remap_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_false_e
         &&
-        remap->obj_desc != NULL
+        remap->base.obj_desc != NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
         switch (attribute)
         {
             case VX_REMAP_SOURCE_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = remap->obj_desc->src_width;
+                    *(vx_uint32 *)ptr = obj_desc->src_width;
                 }
                 else
                 {
@@ -189,7 +198,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
             case VX_REMAP_SOURCE_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = remap->obj_desc->src_height;
+                    *(vx_uint32 *)ptr = obj_desc->src_height;
                 }
                 else
                 {
@@ -199,7 +208,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
             case VX_REMAP_DESTINATION_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = remap->obj_desc->dst_width;
+                    *(vx_uint32 *)ptr = obj_desc->dst_width;
                 }
                 else
                 {
@@ -209,7 +218,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
             case VX_REMAP_DESTINATION_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = remap->obj_desc->dst_height;
+                    *(vx_uint32 *)ptr = obj_desc->dst_height;
                 }
                 else
                 {
@@ -229,31 +238,34 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
                                  vx_float32 src_x, vx_float32 src_y)
 {
     vx_status status = VX_FAILURE;
+    tivx_obj_desc_remap_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_true_e)
          &&
-        remap->obj_desc != NULL
+        remap->base.obj_desc != NULL
          )
     {
         ownAllocRemapBuffer(&remap->base);
 
-        if(remap->obj_desc->mem_ptr.host_ptr != NULL)
+        obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
+
+        if(obj_desc->mem_ptr.host_ptr != NULL)
         {
-            if ((dst_x < remap->obj_desc->dst_width) &&
-                (dst_y < remap->obj_desc->dst_height))
+            if ((dst_x < obj_desc->dst_width) &&
+                (dst_y < obj_desc->dst_height))
             {
                 tivx_remap_point_t *remap_point;
 
-                remap_point = ownGetRemapPoint(remap->obj_desc, dst_x, dst_y);
+                remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
                 tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
-                    remap->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
                 remap_point->src_x = src_x;
                 remap_point->src_y = src_y;
 
                 tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
-                    remap->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
                 status = VX_SUCCESS;
             }
@@ -278,29 +290,32 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
                                  vx_float32 *src_x, vx_float32 *src_y)
 {
     vx_status status = VX_FAILURE;
+    tivx_obj_desc_remap_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_true_e)
          &&
-        remap->obj_desc != NULL
+        remap->base.obj_desc != NULL
          )
     {
-        if(remap->obj_desc->mem_ptr.host_ptr != NULL)
+        obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
+
+        if(obj_desc->mem_ptr.host_ptr != NULL)
         {
-            if ((dst_x < remap->obj_desc->dst_width) &&
-                (dst_y < remap->obj_desc->dst_height))
+            if ((dst_x < obj_desc->dst_width) &&
+                (dst_y < obj_desc->dst_height))
             {
                 tivx_remap_point_t *remap_point;
 
-                remap_point = ownGetRemapPoint(remap->obj_desc, dst_x, dst_y);
+                remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
                 tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
-                    remap->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                    obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
                 *src_x = remap_point->src_x;
                 *src_y = remap_point->src_y;
 
                 tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
-                    remap->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                    obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
                 status = VX_SUCCESS;
             }

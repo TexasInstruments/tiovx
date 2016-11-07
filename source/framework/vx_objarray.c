@@ -298,7 +298,7 @@ static vx_status ownInitObjArrayWithImage(
             {
                 objarr->ref[i] = (vx_reference)img;
                 objarr->obj_desc->obj_desc_id[i] =
-                    img->obj_desc->base.obj_desc_id;
+                    objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
             {
@@ -346,8 +346,8 @@ static vx_status ownInitObjArrayWithArray(
             if (NULL != arr)
             {
                 objarr->ref[i] = (vx_reference)arr;
-                objarr->obj_desc->obj_desc_id[i] =
-                    arr->obj_desc->base.obj_desc_id;
+                objarr->obj_desc->obj_desc_id[i] = ((vx_reference)arr)->
+                    obj_desc->obj_desc_id;
             }
             else
             {
@@ -395,7 +395,7 @@ static vx_status ownInitObjArrayWithScalar(
             {
                 objarr->ref[i] = (vx_reference)sc;
                 objarr->obj_desc->obj_desc_id[i] =
-                    sc->obj_desc->base.obj_desc_id;
+                    objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
             {
@@ -444,7 +444,7 @@ static vx_status ownInitObjArrayWithDistribution(
             {
                 objarr->ref[i] = (vx_reference)dist;
                 objarr->obj_desc->obj_desc_id[i] =
-                    dist->obj_desc->base.obj_desc_id;
+                    objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
             {
@@ -493,7 +493,7 @@ static vx_status ownInitObjArrayWithThreshold(
             {
                 objarr->ref[i] = (vx_reference)thr;
                 objarr->obj_desc->obj_desc_id[i] =
-                    thr->obj_desc->base.obj_desc_id;
+                    objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
             {

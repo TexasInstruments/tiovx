@@ -60,9 +60,6 @@ typedef struct _vx_threshold
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_threshold_t *obj_desc;
-
 } tivx_threshold_t;
 
 

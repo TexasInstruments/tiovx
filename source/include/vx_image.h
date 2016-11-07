@@ -90,8 +90,6 @@ typedef struct _vx_image
 {
     /*! \brief reference object */
     tivx_reference_t base;
-    /*! \brief object descriptor */
-    tivx_obj_desc_image_t *obj_desc;
     /*! \brief A pointer to a parent image object. */
     vx_image       parent;
     /*! \brief The array of images derived form this image */

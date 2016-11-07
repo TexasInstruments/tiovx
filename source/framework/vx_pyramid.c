@@ -54,6 +54,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
 {
     vx_status status = VX_SUCCESS;
     vx_pyramid prmd = NULL;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
     {
@@ -85,9 +86,9 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 prmd->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleasePyramid;
 
-                prmd->obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_PYRAMID);
-                if(prmd->obj_desc==NULL)
+                if(obj_desc==NULL)
                 {
                     vxReleasePyramid(&prmd);
 
@@ -98,11 +99,12 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 }
                 else
                 {
-                    prmd->obj_desc->num_levels = levels;
-                    prmd->obj_desc->width = width;
-                    prmd->obj_desc->height = height;
-                    prmd->obj_desc->scale = scale;
-                    prmd->obj_desc->format = format;
+                    obj_desc->num_levels = levels;
+                    obj_desc->width = width;
+                    obj_desc->height = height;
+                    obj_desc->scale = scale;
+                    obj_desc->format = format;
+                    prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
@@ -116,8 +118,9 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     vx_image img = NULL;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) ==
-            vx_true_e) && (prmd->obj_desc != NULL) &&
-        (index < prmd->obj_desc->num_levels) &&
+            vx_true_e) && (prmd->base.obj_desc != NULL) &&
+        (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
+            num_levels) &&
         (prmd->base.is_virtual == vx_false_e))
     {
         img = prmd->img[index];
@@ -141,6 +144,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 {
     vx_pyramid prmd = NULL;
     vx_context context;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     /* levels can not be 0 even in virtual prmd */
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
@@ -163,9 +167,9 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             prmd->base.release_callback =
                 (tivx_reference_release_callback_f)vxReleasePyramid;
 
-            prmd->obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
+            obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
                 TIVX_OBJ_DESC_PYRAMID);
-            if(prmd->obj_desc==NULL)
+            if(obj_desc==NULL)
             {
                 vxReleasePyramid(&prmd);
 
@@ -176,14 +180,16 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             }
             else
             {
-                prmd->obj_desc->num_levels = levels;
-                prmd->obj_desc->width = width;
-                prmd->obj_desc->height = height;
-                prmd->obj_desc->scale = scale;
-                prmd->obj_desc->format = format;
+                obj_desc->num_levels = levels;
+                obj_desc->width = width;
+                obj_desc->height = height;
+                obj_desc->scale = scale;
+                obj_desc->format = format;
 
                 prmd->base.is_virtual = vx_true_e;
                 prmd->base.scope = (vx_reference)graph;
+
+                prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
             }
         }
 
@@ -196,18 +202,21 @@ vx_status ownInitVirtualPyramid(
     vx_pyramid prmd, vx_uint32 width, vx_uint32 height, vx_df_image format)
 {
     vx_status status = VX_FAILURE;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_true_e)
         &&
-        (prmd->obj_desc != NULL))
+        (prmd->base.obj_desc != NULL))
     {
+        obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
+
         if ((width > 0) &&
             (height > 0) &&
             (prmd->base.is_virtual == vx_true_e))
         {
-            prmd->obj_desc->width = width;
-            prmd->obj_desc->height = height;
-            prmd->obj_desc->format = format;
+            obj_desc->width = width;
+            obj_desc->height = height;
+            obj_desc->format = format;
 
             status = VX_SUCCESS;
         }
@@ -220,20 +229,22 @@ vx_status VX_API_CALL vxQueryPyramid(
     vx_pyramid prmd, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) == vx_false_e)
-            || (prmd->obj_desc == NULL))
+            || (prmd->base.obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
         switch (attribute)
         {
             case VX_PYRAMID_LEVELS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = prmd->obj_desc->num_levels;
+                    *(vx_size *)ptr = obj_desc->num_levels;
                 }
                 else
                 {
@@ -243,7 +254,7 @@ vx_status VX_API_CALL vxQueryPyramid(
             case VX_PYRAMID_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_float32, 0x3))
                 {
-                    *(vx_float32 *)ptr = prmd->obj_desc->scale;
+                    *(vx_float32 *)ptr = obj_desc->scale;
                 }
                 else
                 {
@@ -253,7 +264,7 @@ vx_status VX_API_CALL vxQueryPyramid(
             case VX_PYRAMID_WIDTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = prmd->obj_desc->width;
+                    *(vx_uint32 *)ptr = obj_desc->width;
                 }
                 else
                 {
@@ -263,7 +274,7 @@ vx_status VX_API_CALL vxQueryPyramid(
             case VX_PYRAMID_HEIGHT:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = prmd->obj_desc->height;
+                    *(vx_uint32 *)ptr = obj_desc->height;
                 }
                 else
                 {
@@ -273,7 +284,7 @@ vx_status VX_API_CALL vxQueryPyramid(
             case VX_PYRAMID_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3))
                 {
-                    *(vx_df_image *)ptr = prmd->obj_desc->format;
+                    *(vx_df_image *)ptr = obj_desc->format;
                 }
                 else
                 {
@@ -296,7 +307,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
 
     if(prmd->base.type == VX_TYPE_PYRAMID)
     {
-        if(prmd->obj_desc != NULL)
+        if(prmd->base.obj_desc != NULL)
         {
             status = ownInitPyramid(prmd);
         }
@@ -319,9 +330,9 @@ static vx_status ownDestructPyramid(vx_reference ref)
 
     if(prmd->base.type == VX_TYPE_PYRAMID)
     {
-        if(prmd->obj_desc!=NULL)
+        if(prmd->base.obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&prmd->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&prmd->base.obj_desc);
         }
     }
     return VX_SUCCESS;
@@ -333,21 +344,24 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
     vx_image img;
     vx_uint32 i, w, h, j;
     vx_float32 t1, scale;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
-    w = prmd->obj_desc->width;
-    h = prmd->obj_desc->height;
-    t1 = scale = prmd->obj_desc->scale;
+    obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
 
-    for (i = 0; i < prmd->obj_desc->num_levels; i++)
+    w = obj_desc->width;
+    h = obj_desc->height;
+    t1 = scale = obj_desc->scale;
+
+    for (i = 0; i < obj_desc->num_levels; i++)
     {
         img = vxCreateImage(prmd->base.context, w, h,
-            prmd->obj_desc->format);
+            obj_desc->format);
 
         if (img != NULL)
         {
             prmd->img[i] = img;
-            prmd->obj_desc->obj_desc_id[i] =
-                img->obj_desc->base.obj_desc_id;
+            obj_desc->obj_desc_id[i] =
+                img->base.obj_desc->obj_desc_id;
 
             /* increment the internal counter on the image, not the
                external one */

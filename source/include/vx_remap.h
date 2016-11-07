@@ -58,9 +58,6 @@ typedef struct _vx_remap
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_remap_t *obj_desc;
-
 } tivx_remap_t;
 
 #ifdef __cplusplus

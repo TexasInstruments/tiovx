@@ -136,6 +136,9 @@ typedef struct _vx_reference {
 
     /*! \brief This indicates if the object is virtual or not */
     vx_bool is_virtual;
+
+    /*! \brief object descriptor */
+    tivx_obj_desc_t *obj_desc;
 } tivx_reference_t;
 
 /**

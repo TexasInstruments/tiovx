@@ -45,6 +45,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
 {
     vx_matrix matrix = NULL;
     vx_size dim = 0ul;
+    tivx_obj_desc_matrix_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
     {
@@ -77,9 +78,9 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                 matrix->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseMatrix;
 
-                matrix->obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_MATRIX);
-                if(matrix->obj_desc==NULL)
+                if(obj_desc==NULL)
                 {
                     vxReleaseMatrix(&matrix);
 
@@ -90,14 +91,15 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                 }
                 else
                 {
-                    matrix->obj_desc->data_type = data_type;
-                    matrix->obj_desc->columns = columns;
-                    matrix->obj_desc->rows = rows;
-                    matrix->obj_desc->pattern = VX_PATTERN_OTHER;
-                    matrix->obj_desc->mem_size = columns*rows*dim;
-                    matrix->obj_desc->mem_ptr.host_ptr = NULL;
-                    matrix->obj_desc->mem_ptr.shared_ptr = NULL;
-                    matrix->obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->data_type = data_type;
+                    obj_desc->columns = columns;
+                    obj_desc->rows = rows;
+                    obj_desc->pattern = VX_PATTERN_OTHER;
+                    obj_desc->mem_size = columns*rows*dim;
+                    obj_desc->mem_ptr.host_ptr = NULL;
+                    obj_desc->mem_ptr.shared_ptr = NULL;
+                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
@@ -113,6 +115,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     vx_matrix matrix = NULL;
     vx_size dim = 0ul, i, j;
     vx_uint8 *pTempDataPtr;
+    tivx_obj_desc_matrix_t *obj_desc = NULL;
 
     /* Check for errors */
     if(ownIsValidContext(context) != vx_true_e)
@@ -153,9 +156,9 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             matrix->base.release_callback =
                 (tivx_reference_release_callback_f)vxReleaseMatrix;
 
-            matrix->obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
+            obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
                 TIVX_OBJ_DESC_MATRIX);
-            if(matrix->obj_desc==NULL)
+            if(obj_desc==NULL)
             {
                 vxReleaseMatrix(&matrix);
 
@@ -169,12 +172,13 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             else
             {
                 /* Initialize descriptor object */
-                matrix->obj_desc->data_type = VX_TYPE_UINT8;
-                matrix->obj_desc->columns = columns;
-                matrix->obj_desc->rows = rows;
-                matrix->obj_desc->pattern = pattern;
-                matrix->obj_desc->mem_size = columns*rows*dim;
-                matrix->obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                obj_desc->data_type = VX_TYPE_UINT8;
+                obj_desc->columns = columns;
+                obj_desc->rows = rows;
+                obj_desc->pattern = pattern;
+                obj_desc->mem_size = columns*rows*dim;
+                obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
                 /* Allocate memory for matrix since matrix need to be
                    filled up with a pattern  */
@@ -195,9 +199,9 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 }
                 else
                 {
-                    matrix->obj_desc->mem_ptr.shared_ptr =
+                    obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
-                            matrix->obj_desc->mem_ptr.host_ptr,
+                            obj_desc->mem_ptr.host_ptr,
                             TIVX_MEM_EXTERNAL);
                 }
             }
@@ -210,11 +214,11 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
 
     if (VX_SUCCESS == status)
     {
-        tivxMemBufferMap(matrix->obj_desc->mem_ptr.host_ptr,
-            matrix->obj_desc->mem_size, matrix->obj_desc->mem_ptr.mem_type,
+        tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
+            obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
             VX_WRITE_ONLY);
 
-        pTempDataPtr = (vx_uint8 *)matrix->obj_desc->mem_ptr.host_ptr;
+        pTempDataPtr = (vx_uint8 *)obj_desc->mem_ptr.host_ptr;
         if (VX_PATTERN_BOX == pattern)
         {
             for (i = 0U; i < rows; i ++)
@@ -237,14 +241,14 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 }
             }
             /* Set data values in the centre row and column to 255  */
-            pTempDataPtr = matrix->obj_desc->mem_ptr.host_ptr;
+            pTempDataPtr = obj_desc->mem_ptr.host_ptr;
             pTempDataPtr = pTempDataPtr + ((rows/2) + 1)*columns;
             for (i = 0U; i < columns; i ++)
             {
                 *pTempDataPtr = 255;
                 pTempDataPtr ++;
             }
-            pTempDataPtr = matrix->obj_desc->mem_ptr.host_ptr;
+            pTempDataPtr = obj_desc->mem_ptr.host_ptr;
             pTempDataPtr = pTempDataPtr + ((rows/2) + 1);
             for (i = 0U; i < rows; i ++)
             {
@@ -264,8 +268,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             }
         }
 
-        tivxMemBufferUnmap(matrix->obj_desc->mem_ptr.host_ptr,
-            matrix->obj_desc->mem_size, matrix->obj_desc->mem_ptr.mem_type,
+        tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr,
+            obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
             VX_WRITE_ONLY);
     }
 
@@ -276,22 +280,24 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_matrix matrix, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_matrix_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e
         ||
-        matrix->obj_desc == NULL
+        matrix->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_matrix_t *)matrix->base.obj_desc;
         switch (attribute)
         {
             case VX_MATRIX_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = matrix->obj_desc->data_type;
+                    *(vx_enum *)ptr = obj_desc->data_type;
                 }
                 else
                 {
@@ -301,7 +307,7 @@ vx_status VX_API_CALL vxQueryMatrix(
             case VX_MATRIX_COLUMNS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = matrix->obj_desc->columns;
+                    *(vx_size *)ptr = obj_desc->columns;
                 }
                 else
                 {
@@ -311,7 +317,7 @@ vx_status VX_API_CALL vxQueryMatrix(
             case VX_MATRIX_ROWS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = matrix->obj_desc->rows;
+                    *(vx_size *)ptr = obj_desc->rows;
                 }
                 else
                 {
@@ -322,7 +328,7 @@ vx_status VX_API_CALL vxQueryMatrix(
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
                     *(vx_size *)ptr =
-                        matrix->obj_desc->mem_size;
+                        obj_desc->mem_size;
                 }
                 else
                 {
@@ -334,8 +340,8 @@ vx_status VX_API_CALL vxQueryMatrix(
                 {
                     vx_coordinates2d_t *rect = (vx_coordinates2d_t *)ptr;
 
-                    rect->x = matrix->obj_desc->columns / 2;
-                    rect->y = matrix->obj_desc->rows / 2;
+                    rect->x = obj_desc->columns / 2;
+                    rect->y = obj_desc->rows / 2;
                 }
                 else
                 {
@@ -373,16 +379,18 @@ vx_status VX_API_CALL vxCopyMatrix(
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 size;
+    tivx_obj_desc_matrix_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e
         ||
-        matrix->obj_desc == NULL
+        matrix->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_matrix_t *)matrix->base.obj_desc;
         if (VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -390,7 +398,7 @@ vx_status VX_API_CALL vxCopyMatrix(
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            (NULL == matrix->obj_desc->mem_ptr.host_ptr))
+            (NULL == obj_desc->mem_ptr.host_ptr))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -403,18 +411,18 @@ vx_status VX_API_CALL vxCopyMatrix(
 
     if (VX_SUCCESS == status)
     {
-        size = matrix->obj_desc->mem_size;
+        size = obj_desc->mem_size;
 
         /* Copy from matrix object to user memory */
         if (VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(matrix->obj_desc->mem_ptr.host_ptr, size,
-                matrix->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
-            memcpy(user_ptr, matrix->obj_desc->mem_ptr.host_ptr, size);
+            memcpy(user_ptr, obj_desc->mem_ptr.host_ptr, size);
 
-            tivxMemBufferUnmap(matrix->obj_desc->mem_ptr.host_ptr, size,
-                matrix->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
         }
         else /* Copy from user memory to matrix object */
         {
@@ -422,13 +430,13 @@ vx_status VX_API_CALL vxCopyMatrix(
 
             if (VX_SUCCESS == status)
             {
-                tivxMemBufferMap(matrix->obj_desc->mem_ptr.host_ptr, size,
-                    matrix->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-                memcpy(matrix->obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                memcpy(obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
-                tivxMemBufferUnmap(matrix->obj_desc->mem_ptr.host_ptr, size,
-                    matrix->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
             }
         }
     }
@@ -439,20 +447,21 @@ vx_status VX_API_CALL vxCopyMatrix(
 static vx_status ownAllocMatrixBuffer(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
-    vx_matrix matrix = (vx_matrix)ref;
+    tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if(matrix->base.type == VX_TYPE_MATRIX)
+    if(ref->type == VX_TYPE_MATRIX)
     {
-        if(matrix->obj_desc != NULL)
+        obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
+        if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(matrix->obj_desc->mem_ptr.host_ptr == NULL)
+            if(obj_desc->mem_ptr.host_ptr == NULL)
             {
                 tivxMemBufferAlloc(
-                    &matrix->obj_desc->mem_ptr, matrix->obj_desc->mem_size,
+                    &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(matrix->obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;
@@ -474,19 +483,20 @@ static vx_status ownAllocMatrixBuffer(vx_reference ref)
 
 static vx_status ownDestructMatrix(vx_reference ref)
 {
-    vx_matrix matrix = (vx_matrix)ref;
+    tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if(matrix->base.type == VX_TYPE_MATRIX)
+    if(ref->type == VX_TYPE_MATRIX)
     {
-        if(matrix->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
+        if(obj_desc!=NULL)
         {
-            if(matrix->obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=NULL)
             {
                 tivxMemBufferFree(
-                    &matrix->obj_desc->mem_ptr, matrix->obj_desc->mem_size);
+                    &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&matrix->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return VX_SUCCESS;

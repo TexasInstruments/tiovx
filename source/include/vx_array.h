@@ -80,9 +80,6 @@ typedef struct _vx_array
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_array_t *obj_desc;
-
     /*! \brief Mapping done via vxMapArray() */
     tivx_array_map_info_t maps[TIVX_ARRAY_MAX_MAPS];
 } tivx_array_t;

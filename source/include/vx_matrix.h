@@ -60,9 +60,6 @@ typedef struct _vx_matrix
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_matrix_t *obj_desc;
-
 } tivx_matrix_t;
 
 

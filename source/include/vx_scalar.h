@@ -60,9 +60,6 @@ typedef struct _vx_scalar
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_scalar_t *obj_desc;
-
 } tivx_scalar_t;
 
 

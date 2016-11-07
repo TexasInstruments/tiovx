@@ -60,9 +60,6 @@ typedef struct _vx_distribution
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_distribution_t *obj_desc;
-
 } tivx_distribution_t;
 
 

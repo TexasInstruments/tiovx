@@ -60,9 +60,6 @@ typedef struct _vx_convolution
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_convolution_t *obj_desc;
-
 } tivx_convolution_t;
 
 

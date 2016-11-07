@@ -74,14 +74,13 @@ static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type)
     return res;
 }
 
-/* TODO: implement virtual array object */
 vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 {
     vx_status status = VX_FAILURE;
 
     if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
         &&
-        (arr->obj_desc != NULL))
+        (arr->base.obj_desc != NULL))
     {
         if ((ownIsValidArrayItemType(arr->base.context, item_type) ==
                 vx_true_e) &&
@@ -126,9 +125,9 @@ vx_array VX_API_CALL vxCreateArray(
                 arr->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseArray;
 
-                arr->obj_desc = (tivx_obj_desc_array_t*)tivxObjDescAlloc(
+                arr->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_ARRAY);
-                if(arr->obj_desc==NULL)
+                if(arr->base.obj_desc==NULL)
                 {
                     vxReleaseArray(&arr);
 
@@ -173,9 +172,9 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             arr->base.release_callback =
                 (tivx_reference_release_callback_f)vxReleaseArray;
 
-            arr->obj_desc = (tivx_obj_desc_array_t*)tivxObjDescAlloc(
+            arr->base.obj_desc = (tivx_obj_desc_t*)tivxObjDescAlloc(
                 TIVX_OBJ_DESC_ARRAY);
-            if(arr->obj_desc==NULL)
+            if(arr->base.obj_desc==NULL)
             {
                 vxReleaseArray(&arr);
 
@@ -201,20 +200,22 @@ vx_status VX_API_CALL vxQueryArray(
     vx_array arr, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_false_e)
-            || (arr->obj_desc == NULL))
+            || (arr->base.obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
         switch (attribute)
         {
             case VX_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = arr->obj_desc->item_type;
+                    *(vx_enum *)ptr = obj_desc->item_type;
                 }
                 else
                 {
@@ -224,7 +225,7 @@ vx_status VX_API_CALL vxQueryArray(
             case VX_ARRAY_NUMITEMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = arr->obj_desc->num_items;
+                    *(vx_size *)ptr = obj_desc->num_items;
                 }
                 else
                 {
@@ -234,7 +235,7 @@ vx_status VX_API_CALL vxQueryArray(
             case VX_ARRAY_CAPACITY:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = arr->obj_desc->capacity;
+                    *(vx_size *)ptr = obj_desc->capacity;
                 }
                 else
                 {
@@ -244,7 +245,7 @@ vx_status VX_API_CALL vxQueryArray(
             case VX_ARRAY_ITEMSIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = arr->obj_desc->item_size;
+                    *(vx_size *)ptr = obj_desc->item_size;
                 }
                 else
                 {
@@ -267,27 +268,29 @@ vx_status VX_API_CALL vxAddArrayItems(
     vx_size offset, i;
     vx_uint8 *temp_ptr;
     vx_uint8 *user_ptr = (vx_uint8 *)ptr;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_false_e
-        ||
-        arr->obj_desc == NULL
-        ||
-        arr->obj_desc->mem_ptr.host_ptr == NULL)
+    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
+    {
+        obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
+    }
+
+    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
 
-        if ((arr->obj_desc->capacity == 0) ||
+        if ((obj_desc->capacity == 0) ||
             (NULL == ptr))
         {
             /* Array is still not allocated */
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((arr->obj_desc->capacity <= (arr->obj_desc->num_items + count)) ||
-            (stride < arr->obj_desc->item_size) ||
+        if ((obj_desc->capacity <= (obj_desc->num_items + count)) ||
+            (stride < obj_desc->item_size) ||
             (stride == 0))
         {
             /* Array is full */
@@ -298,26 +301,26 @@ vx_status VX_API_CALL vxAddArrayItems(
     if (status == VX_SUCCESS)
     {
         /* Get the offset to the free memory */
-        offset = arr->obj_desc->num_items * arr->obj_desc->item_size;
-        temp_ptr = (vx_uint8 *)arr->obj_desc->mem_ptr.host_ptr + offset;
+        offset = obj_desc->num_items * obj_desc->item_size;
+        temp_ptr = (vx_uint8 *)obj_desc->mem_ptr.host_ptr + offset;
 
         tivxMemBufferMap(
-            arr->obj_desc->mem_ptr.host_ptr, arr->obj_desc->mem_size,
-            arr->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+            obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
+            obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
         for (i = 0; i < count; i ++)
         {
-            memcpy(temp_ptr, user_ptr, arr->obj_desc->item_size);
+            memcpy(temp_ptr, user_ptr, obj_desc->item_size);
 
-            temp_ptr += arr->obj_desc->item_size;
+            temp_ptr += obj_desc->item_size;
             user_ptr += stride;
         }
 
         tivxMemBufferUnmap(
-            arr->obj_desc->mem_ptr.host_ptr, arr->obj_desc->mem_size,
-            arr->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+            obj_desc->mem_ptr.host_ptr, obj_desc->mem_size,
+            obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-        arr->obj_desc->num_items += count;
+        obj_desc->num_items += count;
     }
 
     return (status);
@@ -326,25 +329,26 @@ vx_status VX_API_CALL vxAddArrayItems(
 vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_false_e
-        ||
-        arr->obj_desc == NULL
-        ||
-        arr->obj_desc->mem_ptr.host_ptr == NULL
-        )
+    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
+    {
+        obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
+    }
+
+    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        if (arr->obj_desc->capacity == 0)
+        if (obj_desc->capacity == 0)
         {
             /* Array is still not allocated */
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if (new_num_items > arr->obj_desc->num_items)
+        if (new_num_items > obj_desc->num_items)
         {
             /* Array is full */
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -353,7 +357,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
 
     if (status == VX_SUCCESS)
     {
-        arr->obj_desc->num_items = new_num_items;
+        obj_desc->num_items = new_num_items;
     }
 
     return (status);
@@ -367,12 +371,14 @@ vx_status VX_API_CALL vxCopyArrayRange(
     vx_size i, inst;
     vx_uint8 *temp_ptr, *start_offset;
     vx_uint8 *user_ptr = (vx_uint8 *)ptr;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_false_e
-        ||
-        arr->obj_desc == NULL
-        ||
-        arr->obj_desc->mem_ptr.host_ptr == NULL)
+    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
+    {
+        obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
+    }
+
+    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -383,13 +389,13 @@ vx_status VX_API_CALL vxCopyArrayRange(
             /* Array is still not allocated */
             status = VX_ERROR_INVALID_PARAMETERS;
         }
-        if (arr->obj_desc->capacity == 0)
+        if (obj_desc->capacity == 0)
         {
             /* Array is still not allocated */
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((stride < arr->obj_desc->item_size) ||
+        if ((stride < obj_desc->item_size) ||
             (stride == 0))
         {
             /* Array is full */
@@ -398,7 +404,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
 
         /* Not of condition */
         if (!((range_end > range_start) &&
-              (range_end <= arr->obj_desc->num_items)))
+              (range_end <= obj_desc->num_items)))
         {
             /* Invalid range */
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -419,47 +425,47 @@ vx_status VX_API_CALL vxCopyArrayRange(
     if (status == VX_SUCCESS)
     {
         /* Get the offset to the free memory */
-        start_offset = (vx_uint8 *)arr->obj_desc->mem_ptr.host_ptr +
-            (range_start * arr->obj_desc->item_size);
+        start_offset = (vx_uint8 *)obj_desc->mem_ptr.host_ptr +
+            (range_start * obj_desc->item_size);
         inst = range_end - range_start;
 
         /* Copy from arr object to user memory */
         if (VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(start_offset, inst*arr->obj_desc->item_size,
-                arr->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferMap(start_offset, inst*obj_desc->item_size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
             {
-                memcpy(user_ptr, temp_ptr, arr->obj_desc->item_size);
+                memcpy(user_ptr, temp_ptr, obj_desc->item_size);
 
-                temp_ptr += arr->obj_desc->item_size;
+                temp_ptr += obj_desc->item_size;
                 user_ptr += stride;
             }
 
-            tivxMemBufferUnmap(start_offset, inst*arr->obj_desc->item_size,
-                arr->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferUnmap(start_offset, inst*obj_desc->item_size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
         }
         else /* Copy from user memory to arr object */
         {
-            tivxMemBufferMap(start_offset, inst*arr->obj_desc->item_size,
-                arr->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+            tivxMemBufferMap(start_offset, inst*obj_desc->item_size,
+                obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
             temp_ptr = start_offset;
             for (i = 0; i < inst; i ++)
             {
-                memcpy(temp_ptr, user_ptr, arr->obj_desc->item_size);
+                memcpy(temp_ptr, user_ptr, obj_desc->item_size);
 
-                temp_ptr += arr->obj_desc->item_size;
+                temp_ptr += obj_desc->item_size;
                 user_ptr += stride;
             }
 
-            tivxMemBufferUnmap(start_offset, inst*arr->obj_desc->item_size,
-                arr->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(start_offset, inst*obj_desc->item_size,
+                obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
         }
 
-        arr->obj_desc->num_items += inst;
+        obj_desc->num_items += inst;
     }
 
     return (status);
@@ -473,10 +479,14 @@ vx_status VX_API_CALL vxMapArrayRange(
     vx_status status = VX_SUCCESS;
     vx_uint32 i, inst;
     vx_uint8 *start_offset;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_LUT) == vx_false_e
-        ||
-        arr->obj_desc == NULL)
+    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
+    {
+        obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
+    }
+
+    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -490,7 +500,7 @@ vx_status VX_API_CALL vxMapArrayRange(
 
         /* Not of condition */
         if (!((range_end > range_start) &&
-              (range_end <= arr->obj_desc->num_items)))
+              (range_end <= obj_desc->num_items)))
         {
             /* Invalid range */
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -508,18 +518,18 @@ vx_status VX_API_CALL vxMapArrayRange(
     if ((VX_SUCCESS == status) && (i < TIVX_ARRAY_MAX_MAPS))
     {
         /* Get the offset to the free memory */
-        start_offset = (vx_uint8 *)arr->obj_desc->mem_ptr.host_ptr +
-            (range_start * arr->obj_desc->item_size);
+        start_offset = (vx_uint8 *)obj_desc->mem_ptr.host_ptr +
+            (range_start * obj_desc->item_size);
         inst = range_end - range_start;
 
         if ((NULL != ptr) && (NULL != map_id))
         {
             arr->maps[i].map_addr = start_offset;
-            arr->maps[i].map_size = inst*arr->obj_desc->item_size;
+            arr->maps[i].map_size = inst*obj_desc->item_size;
             arr->maps[i].usage = usage;
 
             tivxMemBufferMap(start_offset, arr->maps[i].map_size,
-                arr->obj_desc->mem_ptr.mem_type, usage);
+                obj_desc->mem_ptr.mem_type, usage);
 
             *ptr = (vx_uint8 *)start_offset;
 
@@ -533,10 +543,14 @@ vx_status VX_API_CALL vxMapArrayRange(
 vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_LUT) == vx_false_e
-        ||
-        arr->obj_desc == NULL)
+    if (ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_true_e)
+    {
+        obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
+    }
+
+    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -558,7 +572,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
     if (VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(arr->maps[map_id].map_addr,
-            arr->maps[map_id].map_size, arr->obj_desc->mem_ptr.mem_type,
+            arr->maps[map_id].map_size, obj_desc->mem_ptr.mem_type,
             arr->maps[map_id].usage);
 
         arr->maps[map_id].map_addr = NULL;
@@ -571,28 +585,30 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
 static vx_status ownAllocArrayBuffer(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
-    vx_array arr = (vx_array)ref;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if(arr->base.type == VX_TYPE_ARRAY)
+    if(ref->type == VX_TYPE_ARRAY)
     {
-        if(arr->obj_desc != NULL)
+        obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
+
+        if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(arr->obj_desc->mem_ptr.host_ptr == NULL)
+            if(obj_desc->mem_ptr.host_ptr == NULL)
             {
                 tivxMemBufferAlloc(
-                    &arr->obj_desc->mem_ptr, arr->obj_desc->mem_size,
+                    &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(arr->obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY;
                 }
                 else
                 {
-                    arr->obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
-                        arr->obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
+                    obj_desc->mem_ptr.shared_ptr = tivxMemHost2SharedPtr(
+                        obj_desc->mem_ptr.host_ptr, TIVX_MEM_EXTERNAL);
                 }
             }
         }
@@ -611,19 +627,20 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
 
 static vx_status ownDestructArray(vx_reference ref)
 {
-    vx_array arr = (vx_array)ref;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    if(arr->base.type == VX_TYPE_ARRAY)
+    if(ref->type == VX_TYPE_ARRAY)
     {
-        if(arr->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
+        if(obj_desc != NULL)
         {
-            if(arr->obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=NULL)
             {
                 tivxMemBufferFree(
-                    &arr->obj_desc->mem_ptr, arr->obj_desc->mem_size);
+                    &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&arr->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return VX_SUCCESS;
@@ -634,18 +651,21 @@ static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual)
 {
     vx_uint32 i;
+    tivx_obj_desc_array_t *obj_desc = NULL;
 
-    arr->obj_desc->item_type = item_type;
-    arr->obj_desc->item_size =
+    obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
+
+    obj_desc->item_type = item_type;
+    obj_desc->item_size =
         ownGetArrayItemSize(arr->base.context, item_type);
-    arr->obj_desc->num_items = 0;
-    arr->obj_desc->capacity = capacity;
+    obj_desc->num_items = 0;
+    obj_desc->capacity = capacity;
 
-    arr->obj_desc->mem_size =
-        arr->obj_desc->item_size * capacity;
-    arr->obj_desc->mem_ptr.host_ptr = NULL;
-    arr->obj_desc->mem_ptr.shared_ptr = NULL;
-    arr->obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+    obj_desc->mem_size =
+        obj_desc->item_size * capacity;
+    obj_desc->mem_ptr.host_ptr = NULL;
+    obj_desc->mem_ptr.shared_ptr = NULL;
+    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
 
     arr->base.is_virtual = is_virtual;
 

@@ -60,9 +60,6 @@ typedef struct _vx_pyramid
     /*! \brief reference object */
     tivx_reference_t base;
 
-    /*! \brief object descriptor */
-    tivx_obj_desc_pyramid_t *obj_desc;
-
     /*! \brief array of image objects */
     vx_image img[TIVX_PYRAMID_MAX_OBJECT];
 } tivx_pyramid_t;

@@ -46,6 +46,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
     vx_context context, vx_size columns, vx_size rows)
 {
     vx_convolution cnvl = NULL;
+    tivx_obj_desc_convolution_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
     {
@@ -66,9 +67,9 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                 cnvl->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseConvolution;
 
-                cnvl->obj_desc = (tivx_obj_desc_convolution_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_convolution_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_CONVOLUTION);
-                if(cnvl->obj_desc==NULL)
+                if(obj_desc==NULL)
                 {
                     vxReleaseConvolution(&cnvl);
 
@@ -79,13 +80,14 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                 }
                 else
                 {
-                    cnvl->obj_desc->columns = columns;
-                    cnvl->obj_desc->rows = rows;
-                    cnvl->obj_desc->scale = 1;
-                    cnvl->obj_desc->mem_size = columns*rows*sizeof(vx_int16);
-                    cnvl->obj_desc->mem_ptr.host_ptr = NULL;
-                    cnvl->obj_desc->mem_ptr.shared_ptr = NULL;
-                    cnvl->obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->columns = columns;
+                    obj_desc->rows = rows;
+                    obj_desc->scale = 1;
+                    obj_desc->mem_size = columns*rows*sizeof(vx_int16);
+                    obj_desc->mem_ptr.host_ptr = NULL;
+                    obj_desc->mem_ptr.shared_ptr = NULL;
+                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    cnvl->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
@@ -104,9 +106,14 @@ vx_status VX_API_CALL vxQueryConvolution(
     vx_convolution cnvl, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION) == vx_false_e
-        || (cnvl->obj_desc == NULL))
+    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION))
+    {
+        obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
+    }
+
+    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -117,7 +124,7 @@ vx_status VX_API_CALL vxQueryConvolution(
             case VX_CONVOLUTION_SCALE:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = cnvl->obj_desc->scale;
+                    *(vx_uint32 *)ptr = obj_desc->scale;
                 }
                 else
                 {
@@ -127,7 +134,7 @@ vx_status VX_API_CALL vxQueryConvolution(
             case VX_CONVOLUTION_COLUMNS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = cnvl->obj_desc->columns;
+                    *(vx_size *)ptr = obj_desc->columns;
                 }
                 else
                 {
@@ -137,7 +144,7 @@ vx_status VX_API_CALL vxQueryConvolution(
             case VX_CONVOLUTION_ROWS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = cnvl->obj_desc->rows;
+                    *(vx_size *)ptr = obj_desc->rows;
                 }
                 else
                 {
@@ -148,7 +155,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
                     *(vx_size *)ptr =
-                        cnvl->obj_desc->mem_size;
+                        obj_desc->mem_size;
                 }
                 else
                 {
@@ -168,9 +175,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
     vx_convolution cnvl, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION) == vx_false_e
-        || (cnvl->obj_desc == NULL))
+    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION))
+    {
+        obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
+    }
+
+    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -184,7 +196,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
                     vx_uint32 scale = *(vx_uint32 *)ptr;
                     if (vxIsPowerOfTwo(scale) == vx_true_e)
                     {
-                        cnvl->obj_desc->scale = scale;
+                        obj_desc->scale = scale;
                     }
                     else
                     {
@@ -213,9 +225,14 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 size;
+    tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION) ==
-            vx_false_e) || (cnvl->obj_desc == NULL))
+    if (ownIsValidSpecificReference(&cnvl->base, VX_TYPE_CONVOLUTION))
+    {
+        obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
+    }
+
+    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -228,7 +245,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            (NULL == cnvl->obj_desc->mem_ptr.host_ptr))
+            (NULL == obj_desc->mem_ptr.host_ptr))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -241,18 +258,18 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 
     if (VX_SUCCESS == status)
     {
-        size = cnvl->obj_desc->mem_size;
+        size = obj_desc->mem_size;
 
         /* Copy from cnvl object to user memory */
         if (VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(cnvl->obj_desc->mem_ptr.host_ptr, size,
-                cnvl->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
-            memcpy(user_ptr, cnvl->obj_desc->mem_ptr.host_ptr, size);
+            memcpy(user_ptr, obj_desc->mem_ptr.host_ptr, size);
 
-            tivxMemBufferUnmap(cnvl->obj_desc->mem_ptr.host_ptr, size,
-                cnvl->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
         }
         else /* Copy from user memory to cnvl object */
         {
@@ -260,13 +277,13 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 
             if (VX_SUCCESS == status)
             {
-                tivxMemBufferMap(cnvl->obj_desc->mem_ptr.host_ptr, size,
-                    cnvl->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-                memcpy(cnvl->obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                memcpy(obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
-                tivxMemBufferUnmap(cnvl->obj_desc->mem_ptr.host_ptr, size,
-                    cnvl->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
             }
         }
     }
@@ -278,29 +295,31 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
 static vx_status ownAllocConvolutionBuffer(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
-    vx_convolution cnvl = (vx_convolution)ref;
+    tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if(cnvl->base.type == VX_TYPE_CONVOLUTION)
+    if(ref->type == VX_TYPE_CONVOLUTION)
     {
-        if(cnvl->obj_desc != NULL)
+        obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
+
+        if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(cnvl->obj_desc->mem_ptr.host_ptr == NULL)
+            if(obj_desc->mem_ptr.host_ptr == NULL)
             {
                 tivxMemBufferAlloc(
-                    &cnvl->obj_desc->mem_ptr, cnvl->obj_desc->mem_size,
+                    &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(cnvl->obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;
                 }
                 else
                 {
-                    cnvl->obj_desc->mem_ptr.shared_ptr =
+                    obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
-                            cnvl->obj_desc->mem_ptr.host_ptr,
+                            obj_desc->mem_ptr.host_ptr,
                             TIVX_MEM_EXTERNAL);
                 }
             }
@@ -320,19 +339,21 @@ static vx_status ownAllocConvolutionBuffer(vx_reference ref)
 
 static vx_status ownDestructConvolution(vx_reference ref)
 {
-    vx_convolution cnvl = (vx_convolution)ref;
+    tivx_obj_desc_convolution_t *obj_desc = NULL;
 
-    if(cnvl->base.type == VX_TYPE_CONVOLUTION)
+    if(ref->type == VX_TYPE_CONVOLUTION)
     {
-        if(cnvl->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_convolution_t *)ref->obj_desc;
+
+        if(obj_desc!=NULL)
         {
-            if(cnvl->obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=NULL)
             {
                 tivxMemBufferFree(
-                    &cnvl->obj_desc->mem_ptr, cnvl->obj_desc->mem_size);
+                    &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&cnvl->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return VX_SUCCESS;

@@ -148,6 +148,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->delay = NULL;
         ref->delay_slot_index = 0;
         ref->is_virtual = vx_false_e;
+        ref->obj_desc = NULL;
 
         status = tivxMutexCreate(&ref->lock);
     }

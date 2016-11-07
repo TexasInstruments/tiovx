@@ -51,6 +51,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
     vx_context context, vx_enum thr_type, vx_enum data_type)
 {
     vx_threshold thr = NULL;
+    tivx_obj_desc_threshold_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
     {
@@ -71,9 +72,9 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 thr->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseThreshold;
 
-                thr->obj_desc = (tivx_obj_desc_threshold_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_threshold_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_THRESHOLD);
-                if(thr->obj_desc==NULL)
+                if(obj_desc==NULL)
                 {
                     vxReleaseThreshold(&thr);
 
@@ -84,8 +85,9 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 }
                 else
                 {
-                    thr->obj_desc->type = thr_type;
-                    thr->obj_desc->data_type = data_type;
+                    obj_desc->type = thr_type;
+                    obj_desc->data_type = data_type;
+                    thr->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
@@ -98,22 +100,24 @@ vx_status VX_API_CALL vxQueryThreshold(
     vx_threshold thr, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_threshold_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e
         ||
-        thr->obj_desc == NULL
+        thr->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_threshold_t *)thr->base.obj_desc;
         switch (attribute)
         {
             case VX_THRESHOLD_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = thr->obj_desc->type;
+                    *(vx_enum *)ptr = obj_desc->type;
                 }
                 else
                 {
@@ -123,9 +127,9 @@ vx_status VX_API_CALL vxQueryThreshold(
             case VX_THRESHOLD_THRESHOLD_VALUE:
                 /* Value is used only for Binary thr */
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3) &&
-                    (thr->obj_desc->type == VX_THRESHOLD_TYPE_BINARY))
+                    (obj_desc->type == VX_THRESHOLD_TYPE_BINARY))
                 {
-                    *(vx_int32 *)ptr = thr->obj_desc->value;
+                    *(vx_int32 *)ptr = obj_desc->value;
                 }
                 else
                 {
@@ -134,9 +138,9 @@ vx_status VX_API_CALL vxQueryThreshold(
                 break;
             case VX_THRESHOLD_THRESHOLD_LOWER:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3) &&
-                   (thr->obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
+                   (obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
                 {
-                    *(vx_int32 *)ptr = thr->obj_desc->lower;
+                    *(vx_int32 *)ptr = obj_desc->lower;
                 }
                 else
                 {
@@ -145,9 +149,9 @@ vx_status VX_API_CALL vxQueryThreshold(
                 break;
             case VX_THRESHOLD_THRESHOLD_UPPER:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3) &&
-                   (thr->obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
+                   (obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
                 {
-                    *(vx_int32 *)ptr = thr->obj_desc->upper;
+                    *(vx_int32 *)ptr = obj_desc->upper;
                 }
                 else
                 {
@@ -157,7 +161,7 @@ vx_status VX_API_CALL vxQueryThreshold(
             case VX_THRESHOLD_TRUE_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3))
                 {
-                    *(vx_int32 *)ptr = thr->obj_desc->true_value;
+                    *(vx_int32 *)ptr = obj_desc->true_value;
                 }
                 else
                 {
@@ -167,7 +171,7 @@ vx_status VX_API_CALL vxQueryThreshold(
             case VX_THRESHOLD_FALSE_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3))
                 {
-                    *(vx_int32 *)ptr = thr->obj_desc->false_value;
+                    *(vx_int32 *)ptr = obj_desc->false_value;
                 }
                 else
                 {
@@ -177,7 +181,7 @@ vx_status VX_API_CALL vxQueryThreshold(
             case VX_THRESHOLD_DATA_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = thr->obj_desc->data_type;
+                    *(vx_enum *)ptr = obj_desc->data_type;
                 }
                 else
                 {
@@ -194,23 +198,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
     vx_threshold thr, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_threshold_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e
         ||
-        thr->obj_desc == NULL
+        thr->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_threshold_t *)thr->base.obj_desc;
         switch (attribute)
         {
             case VX_THRESHOLD_THRESHOLD_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3) &&
-                    (thr->obj_desc->type == VX_THRESHOLD_TYPE_BINARY))
+                    (obj_desc->type == VX_THRESHOLD_TYPE_BINARY))
                 {
-                    thr->obj_desc->value = *(vx_int32 *)ptr;
+                    obj_desc->value = *(vx_int32 *)ptr;
                 }
                 else
                 {
@@ -219,9 +225,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 break;
             case VX_THRESHOLD_THRESHOLD_LOWER:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3) &&
-                    (thr->obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
+                    (obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
                 {
-                    thr->obj_desc->lower = *(vx_int32 *)ptr;
+                    obj_desc->lower = *(vx_int32 *)ptr;
                 }
                 else
                 {
@@ -230,9 +236,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                 break;
             case VX_THRESHOLD_THRESHOLD_UPPER:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3) &&
-                    (thr->obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
+                    (obj_desc->type == VX_THRESHOLD_TYPE_RANGE))
                 {
-                    thr->obj_desc->upper = *(vx_int32 *)ptr;
+                    obj_desc->upper = *(vx_int32 *)ptr;
                 }
                 else
                 {
@@ -242,7 +248,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
             case VX_THRESHOLD_TRUE_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3))
                 {
-                    thr->obj_desc->true_value = *(vx_int32 *)ptr;
+                    obj_desc->true_value = *(vx_int32 *)ptr;
                 }
                 else
                 {
@@ -252,7 +258,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
             case VX_THRESHOLD_FALSE_VALUE:
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3))
                 {
-                    thr->obj_desc->false_value = *(vx_int32 *)ptr;
+                    obj_desc->false_value = *(vx_int32 *)ptr;
                 }
                 else
                 {
@@ -266,7 +272,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
                     if ((VX_THRESHOLD_TYPE_BINARY == type) ||
                         (VX_THRESHOLD_TYPE_RANGE == type))
                     {
-                        thr->obj_desc->type = type;
+                        obj_desc->type = type;
                     }
                     else
                     {
@@ -294,13 +300,11 @@ static vx_status ownAllocThresholdBuffer(vx_reference ref)
 
 static vx_status ownDestructThreshold(vx_reference ref)
 {
-    vx_threshold thr = (vx_threshold)ref;
-
-    if(thr->base.type == VX_TYPE_THRESHOLD)
+    if(ref->type == VX_TYPE_THRESHOLD)
     {
-        if(thr->obj_desc!=NULL)
+        if(ref->obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&thr->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&ref->obj_desc);
         }
     }
     return VX_SUCCESS;

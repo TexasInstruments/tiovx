@@ -52,6 +52,7 @@ vx_lut VX_API_CALL vxCreateLUT(
 {
     vx_lut lut = NULL;
     vx_size dim = 0;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
     {
@@ -88,9 +89,9 @@ vx_lut VX_API_CALL vxCreateLUT(
                 lut->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseLUT;
 
-                lut->obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
+                obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_LUT);
-                if(lut->obj_desc==NULL)
+                if(obj_desc==NULL)
                 {
                     vxReleaseLUT(&lut);
 
@@ -101,13 +102,14 @@ vx_lut VX_API_CALL vxCreateLUT(
                 }
                 else
                 {
-                    lut->obj_desc->item_type = data_type;
-                    lut->obj_desc->item_size = dim;
-                    lut->obj_desc->num_items = count;
-                    lut->obj_desc->mem_size = dim * count;
-                    lut->obj_desc->mem_ptr.host_ptr = NULL;
-                    lut->obj_desc->mem_ptr.shared_ptr = NULL;
-                    lut->obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->item_type = data_type;
+                    obj_desc->item_size = dim;
+                    obj_desc->num_items = count;
+                    obj_desc->mem_size = dim * count;
+                    obj_desc->mem_ptr.host_ptr = NULL;
+                    obj_desc->mem_ptr.shared_ptr = NULL;
+                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    lut->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
@@ -120,22 +122,24 @@ vx_status VX_API_CALL vxQueryLUT(
     vx_lut lut, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
         ||
-        lut->obj_desc == NULL
+        lut->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
         switch (attribute)
         {
             case VX_LUT_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = lut->obj_desc->item_type;
+                    *(vx_enum *)ptr = obj_desc->item_type;
                 }
                 else
                 {
@@ -145,7 +149,7 @@ vx_status VX_API_CALL vxQueryLUT(
             case VX_LUT_COUNT:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = lut->obj_desc->num_items;
+                    *(vx_size *)ptr = obj_desc->num_items;
                 }
                 else
                 {
@@ -155,7 +159,7 @@ vx_status VX_API_CALL vxQueryLUT(
             case VX_LUT_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = lut->obj_desc->mem_size;
+                    *(vx_size *)ptr = obj_desc->mem_size;
                 }
                 else
                 {
@@ -177,16 +181,18 @@ vx_status VX_API_CALL vxCopyLUT(
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 size;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
         ||
-        lut->obj_desc == NULL
+        lut->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
         if (VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -194,7 +200,7 @@ vx_status VX_API_CALL vxCopyLUT(
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            (NULL == lut->obj_desc->mem_ptr.host_ptr))
+            (NULL == obj_desc->mem_ptr.host_ptr))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -207,18 +213,18 @@ vx_status VX_API_CALL vxCopyLUT(
 
     if (VX_SUCCESS == status)
     {
-        size = lut->obj_desc->mem_size;
+        size = obj_desc->mem_size;
 
         /* Copy from lut object to user memory */
         if (VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(lut->obj_desc->mem_ptr.host_ptr, size,
-                lut->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
-            memcpy(user_ptr, lut->obj_desc->mem_ptr.host_ptr, size);
+            memcpy(user_ptr, obj_desc->mem_ptr.host_ptr, size);
 
-            tivxMemBufferUnmap(lut->obj_desc->mem_ptr.host_ptr, size,
-                lut->obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+            tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
         }
         else /* Copy from user memory to lut object */
         {
@@ -226,13 +232,13 @@ vx_status VX_API_CALL vxCopyLUT(
 
             if (VX_SUCCESS == status)
             {
-                tivxMemBufferMap(lut->obj_desc->mem_ptr.host_ptr, size,
-                    lut->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-                memcpy(lut->obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                memcpy(obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
-                tivxMemBufferUnmap(lut->obj_desc->mem_ptr.host_ptr, size,
-                    lut->obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
             }
         }
     }
@@ -245,10 +251,11 @@ vx_status VX_API_CALL vxMapLUT(
     vx_bitfield flags)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
         ||
-        lut->obj_desc == NULL
+        lut->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -258,12 +265,13 @@ vx_status VX_API_CALL vxMapLUT(
         status = ownAllocLutBuffer(&lut->base);
         if ((NULL != ptr) && (VX_SUCCESS == status))
         {
+            obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
             /* TODO: Need to properly set map_id and return it */
-            tivxMemBufferMap(lut->obj_desc->mem_ptr.host_ptr,
-                lut->obj_desc->mem_size, lut->obj_desc->mem_ptr.mem_type,
+            tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
+                obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
                 VX_READ_AND_WRITE);
 
-            *ptr = lut->obj_desc->mem_ptr.host_ptr;
+            *ptr = obj_desc->mem_ptr.host_ptr;
         }
     }
 
@@ -273,18 +281,20 @@ vx_status VX_API_CALL vxMapLUT(
 vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
     if (ownIsValidSpecificReference(&lut->base, VX_TYPE_LUT) == vx_false_e
         ||
-        lut->obj_desc == NULL
+        lut->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        tivxMemBufferUnmap(lut->obj_desc->mem_ptr.host_ptr,
-            lut->obj_desc->mem_size, lut->obj_desc->mem_ptr.mem_type,
+        obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
+        tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr,
+            obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
             VX_READ_AND_WRITE);
     }
 
@@ -294,29 +304,30 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
 static vx_status ownAllocLutBuffer(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
-    vx_lut lut = (vx_lut)ref;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if(lut->base.type == VX_TYPE_LUT)
+    if(ref->type == VX_TYPE_LUT)
     {
-        if(lut->obj_desc != NULL)
+        obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
+        if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(lut->obj_desc->mem_ptr.host_ptr == NULL)
+            if(obj_desc->mem_ptr.host_ptr == NULL)
             {
                 tivxMemBufferAlloc(
-                    &lut->obj_desc->mem_ptr, lut->obj_desc->mem_size,
+                    &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(lut->obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;
                 }
                 else
                 {
-                    lut->obj_desc->mem_ptr.shared_ptr =
+                    obj_desc->mem_ptr.shared_ptr =
                         tivxMemHost2SharedPtr(
-                            lut->obj_desc->mem_ptr.host_ptr,
+                            obj_desc->mem_ptr.host_ptr,
                             TIVX_MEM_EXTERNAL);
                 }
             }
@@ -336,19 +347,20 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
 
 static vx_status ownDestructLut(vx_reference ref)
 {
-    vx_lut lut = (vx_lut)ref;
+    tivx_obj_desc_lut_t *obj_desc = NULL;
 
-    if(lut->base.type == VX_TYPE_LUT)
+    if(ref->type == VX_TYPE_LUT)
     {
-        if(lut->obj_desc!=NULL)
+        obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
+        if(obj_desc!=NULL)
         {
-            if(lut->obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=NULL)
             {
                 tivxMemBufferFree(
-                    &lut->obj_desc->mem_ptr, lut->obj_desc->mem_size);
+                    &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
-            tivxObjDescFree((tivx_obj_desc_t**)&lut->obj_desc);
+            tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
         }
     }
     return VX_SUCCESS;
