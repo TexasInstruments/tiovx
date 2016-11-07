@@ -109,7 +109,7 @@ extern "C" {
  *         change in this array as well.
  *
  *
- * \ingroup group_tivx_platform
+ * \ingroup group_tivx_ext
  */
 typedef enum _tivx_cpu_id_e {
 
@@ -220,7 +220,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
 /*!
  * \brief Return CPU ID of the CPU on which this API is called
  *
- * \ingroup group_tivx_ipc
+ * \ingroup group_tivx_ext
  */
 vx_enum tivxGetSelfCpuId();
 
