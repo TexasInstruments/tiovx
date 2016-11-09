@@ -346,6 +346,7 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
     switch (format)
     {
         case VX_DF_IMAGE_VIRT:
+            obj_desc->planes = 0;
             break;
         case VX_DF_IMAGE_NV12:
         case VX_DF_IMAGE_NV21:
