@@ -96,7 +96,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_CONVOLUTION_MAX_OBJECTS                (8u)
+#define TIVX_CONVOLUTION_MAX_OBJECTS                (16u)
 
 /*!
  * \brief Max number delay objects supported
@@ -110,7 +110,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_DISTRIBUTION_MAX_OBJECTS               (8u)
+#define TIVX_DISTRIBUTION_MAX_OBJECTS               (16u)
 
 /*!
  * \brief Max number image objects supported
@@ -124,28 +124,28 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_LUT_MAX_OBJECTS                        (8u)
+#define TIVX_LUT_MAX_OBJECTS                        (16u)
 
 /*!
  * \brief Max number matrix objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_MATRIX_MAX_OBJECTS                     (8u)
+#define TIVX_MATRIX_MAX_OBJECTS                     (16u)
 
 /*!
  * \brief Max number pyramid objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECTS                    (8u)
+#define TIVX_PYRAMID_MAX_OBJECTS                    (18u)
 
 /*!
  * \brief Max number remap objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_REMAP_MAX_OBJECTS                      (8u)
+#define TIVX_REMAP_MAX_OBJECTS                      (16u)
 
 /*!
  * \brief Max number scalar objects supported
@@ -159,7 +159,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_THRESHOLD_MAX_OBJECTS                  (8u)
+#define TIVX_THRESHOLD_MAX_OBJECTS                  (16u)
 
 /*!
  * \brief Max number error objects supported
@@ -167,6 +167,13 @@ extern "C" {
  * \ingroup group_tivx_obj_cfg
  */
 #define TIVX_ERROR_MAX_OBJECTS                      (30u)
+
+/*!
+ * \brief Max number object arrays supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (30u)
 
 
 /*!
@@ -259,8 +266,12 @@ typedef struct _tivx_object_t
     tivx_error_t            error[TIVX_ERROR_MAX_OBJECTS];
     /**< Error Objects */
     vx_bool                 isErrorUse[TIVX_ERROR_MAX_OBJECTS];
-    /**< Flag indicating if threshold object is in use or not */
+    /**< Flag indicating if error object is in use or not */
 
+    tivx_objarray_t         obj_array[TIVX_OBJ_ARRAY_MAX_OBJECTS];
+    /**< Object arrays*/
+    vx_bool                 isObjArrUse[TIVX_OBJ_ARRAY_MAX_OBJECTS];
+    /**< Flag indicating if object array is in use or not */
 } tivx_object_t;
 
 /*! \brief Alloc memory for a reference of specified type

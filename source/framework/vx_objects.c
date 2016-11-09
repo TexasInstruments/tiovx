@@ -94,6 +94,8 @@ vx_status tivxObjectInit(void)
             TIVX_THRESHOLD_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isErrorUse,
             TIVX_ERROR_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isObjArrUse,
+            TIVX_OBJ_ARRAY_MAX_OBJECTS);
     }
 
     return (status);
@@ -246,6 +248,11 @@ vx_reference tivxObjectAlloc(vx_enum type)
                     (uint8_t *)g_tivx_objects.error, g_tivx_objects.isErrorUse,
                     TIVX_ERROR_MAX_OBJECTS, sizeof(tivx_error_t));
                 break;
+            case VX_TYPE_OBJECT_ARRAY:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.obj_array, g_tivx_objects.isObjArrUse,
+                    TIVX_OBJ_ARRAY_MAX_OBJECTS, sizeof(tivx_objarray_t));
+                break;
             default:
                 ref = NULL;
                 break;
@@ -269,6 +276,13 @@ vx_status tivxObjectFree(vx_reference ref)
         {
             switch(ref->type)
             {
+                case VX_TYPE_OBJECT_ARRAY:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.obj_array,
+                        g_tivx_objects.isObjArrUse,
+                        TIVX_OBJ_ARRAY_MAX_OBJECTS,
+                        sizeof(tivx_objarray_t));
+                    break;
                 case VX_TYPE_ERROR:
                     status = ownFreeObject((uint8_t *)ref,
                         (uint8_t *)g_tivx_objects.error,
