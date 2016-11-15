@@ -99,6 +99,25 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
+void *tivxMemAlloc(vx_uint32 size)
+{
+    void *ptr = NULL;
+
+    ptr = Utils_memAlloc(
+        UTILS_HEAPID_DDR_CACHED_SR, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
+
+    return (ptr);
+}
+
+void tivxMemFree(void *ptr, vx_uint32 size)
+{
+    if ((NULL != ptr) && (0 != size))
+    {
+        Utils_memFree(
+            UTILS_HEAPID_DDR_CACHED_SR, ptr, size);
+    }
+}
+
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
     int32_t ret_val;

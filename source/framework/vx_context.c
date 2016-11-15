@@ -522,6 +522,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             /*! \internal wipe away the context memory first */
             /* Normally destroy sem is part of release reference, but can't for context */
             tivxMutexDelete(&context->base.lock);
+
+            tivxMutexDelete(&context->log_lock);
+
             memset(context, 0, sizeof(tivx_context_t));
 
             g_context_handle = NULL;
