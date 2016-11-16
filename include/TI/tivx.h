@@ -234,6 +234,14 @@ vx_node tivxCreateNodeByStructure(vx_graph graph,
                                 vx_enum kernelenum,
                                 vx_reference params[],
                                 vx_uint32 num);
+
+/*!
+ * \brief Utility function to check if the given reference is virtual or not
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_bool tivxIsReferenceVirtual(vx_reference ref);
+
 #ifdef __cplusplus
 }
 #endif

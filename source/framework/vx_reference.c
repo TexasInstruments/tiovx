@@ -571,4 +571,14 @@ VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
     return context;
 }
 
+vx_bool tivxIsReferenceVirtual(vx_reference ref)
+{
+    vx_bool ret = vx_false_e;
 
+    if (NULL != ref)
+    {
+        ret = ref->is_virtual;
+    }
+
+    return (ret);
+}
