@@ -182,11 +182,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
+    if (obj_desc == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
-    else
+
+    if (VX_SUCCESS == status)
+    {
+        status = ownAllocConvolutionBuffer(&cnvl->base);
+    }
+
+    if (VX_SUCCESS == status)
     {
         switch (attribute)
         {
@@ -232,7 +238,7 @@ vx_status VX_API_CALL vxCopyConvolutionCoefficients(
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
+    if (obj_desc == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
