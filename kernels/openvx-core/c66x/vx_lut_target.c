@@ -16,7 +16,7 @@ static tivx_target_kernel vx_lut_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelLutProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
     uint32_t x, y;
@@ -106,21 +106,21 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
 
 static vx_status VX_CALLBACK tivxKernelLutCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelLutDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelLutControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
@@ -151,7 +151,8 @@ void tivxAddTargetKernelLut()
             tivxKernelLutProcess,
             tivxKernelLutCreate,
             tivxKernelLutDelete,
-            tivxKernelLutControl);
+            tivxKernelLutControl,
+            NULL);
     }
 }
 

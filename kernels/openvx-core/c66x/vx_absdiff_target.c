@@ -13,20 +13,13 @@
 #include <tivx_kernel_absdiff.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
+#include <tivx_kernel_utils.h>
 
 static tivx_target_kernel vx_absdiff_target_kernel = NULL;
 
-static inline vx_uint32 absdiffComputePatchOffset(
-    vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
-{
-    return (addr->stride_y * (y / addr->step_y)) +
-           (addr->stride_x * (x / addr->step_x));
-}
-
-
 vx_status tivxAbsDiff(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
@@ -111,14 +104,14 @@ vx_status tivxAbsDiff(
         rect = src0_desc->valid_roi;
 
         src0_addr = (uint8_t *)((uint32_t)src0_desc->mem_ptr[0U].target_ptr +
-            absdiffComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &src0_desc->imagepatch_addr[0U]));
         src1_addr = (uint8_t *)((uint32_t)src1_desc->mem_ptr[0U].target_ptr +
-            absdiffComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &src1_desc->imagepatch_addr[0U]));
         /* TODO: Do we require to move pointer even for destination image */
         dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
-            absdiffComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 
         if (VXLIB_UINT8 == vlib_dst.data_type)
@@ -148,21 +141,21 @@ vx_status tivxAbsDiff(
     return (status);
 }
 
-vx_status tivxAbsDiffCreate(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params)
+vx_status tivxAbsDiffCreate(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 
     return status;
 }
 
-vx_status tivxAbsDiffDelete(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params)
+vx_status tivxAbsDiffDelete(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 
     return status;
 }
 
-vx_status tivxAbsDiffControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params)
+vx_status tivxAbsDiffControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 
@@ -196,7 +189,8 @@ void tivxAddTargetKernelAbsDiff()
                     tivxAbsDiff,
                     tivxAbsDiffCreate,
                     tivxAbsDiffDelete,
-                    tivxAbsDiffControl);
+                    tivxAbsDiffControl,
+                    NULL);
     }
 }
 

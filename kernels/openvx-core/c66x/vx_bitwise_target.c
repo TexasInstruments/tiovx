@@ -13,42 +13,71 @@
 #include <tivx_kernel_bitwise.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
+#include <tivx_kernel_utils.h>
 
-static tivx_target_kernel vx_bitwise_not_target_kernel = NULL;
-static tivx_target_kernel vx_bitwise_and_target_kernel = NULL;
-static tivx_target_kernel vx_bitwise_or_target_kernel = NULL;
-static tivx_target_kernel vx_bitwise_xor_target_kernel = NULL;
-
-typedef VXLIB_STATUS tivxBitwise_fxn(
+typedef VXLIB_STATUS (*VxLib_Bitwise_Fxn)(
     const uint8_t *src0, const VXLIB_bufParams2D_t *src0_prms,
     const uint8_t *src1, const VXLIB_bufParams2D_t *src1_prms,
     uint8_t *dst, const VXLIB_bufParams2D_t *dst_prms);
 
-static inline vx_uint32 bitwiseComputePatchOffset(
-    vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
+typedef struct
 {
-    return (addr->stride_y * (y / addr->step_y)) +
-           (addr->stride_x * (x / addr->step_x));
-}
+    /*! \brief ID of the kernel */
+    vx_enum                 kernel_id;
 
-static vx_status tivxKernelBitwiseProcess(
+    /*! \brief Pointer to the kernel Registered */
+    tivx_target_kernel      target_kernel;
+
+    /*! \brief Pointer to filter function */
+    VxLib_Bitwise_Fxn       vxlib_process;
+} tivxBitwiseKernelInfo;
+
+tivxBitwiseKernelInfo gTivxBitwiseKernelInfo[] =
+{
+    {
+        VX_KERNEL_OR,
+        NULL,
+        VXLIB_or_i8u_i8u_o8u
+    },
+    {
+        VX_KERNEL_XOR,
+        NULL,
+        VXLIB_xor_i8u_i8u_o8u
+    },
+    {
+        VX_KERNEL_AND,
+        NULL,
+        VXLIB_and_i8u_i8u_o8u
+    },
+    {
+        VX_KERNEL_NOT,
+        NULL,
+        NULL
+    }
+};
+
+vx_status tivxKernelBitwiseProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
-    tivxBitwise_fxn bitwise_fxn)
+    void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
     vx_rectangle_t rect;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
     VXLIB_bufParams2D_t vlib_src0, vlib_src1, vlib_dst;
+    tivxBitwiseKernelInfo *kern_info;
 
-    if ((num_params != 3U) || (NULL == obj_desc[0U]) || (NULL == obj_desc[1U]) ||
-        (NULL == obj_desc[2U]))
+    if ((num_params != 3U) || (NULL == obj_desc[0U]) ||
+        (NULL == obj_desc[1U]) || (NULL == obj_desc[2U]) ||
+        (NULL == kernel) || (NULL == priv_arg))
     {
         status = VX_FAILURE;
     }
     else
     {
+        kern_info = (tivxBitwiseKernelInfo *)priv_arg;
+
         /* Get the Src and Dst descriptors */
         src0_desc = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_BITWISE_IN0_IMG_IDX];
@@ -98,19 +127,20 @@ static vx_status tivxKernelBitwiseProcess(
         rect = src0_desc->valid_roi;
 
         src0_addr = (uint8_t *)((uint32_t)src0_desc->mem_ptr[0U].target_ptr +
-            bitwiseComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &src0_desc->imagepatch_addr[0U]));
         src1_addr = (uint8_t *)((uint32_t)src1_desc->mem_ptr[0U].target_ptr +
-            bitwiseComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &src1_desc->imagepatch_addr[0U]));
         /* TODO: Do we require to move pointer even for destination image */
         dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
-            bitwiseComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 
-        if (bitwise_fxn)
+        if (NULL != kern_info->vxlib_process)
         {
-            status = bitwise_fxn(src0_addr, &vlib_src0, src1_addr, &vlib_src1,
+            status = kern_info->vxlib_process(
+                src0_addr, &vlib_src0, src1_addr, &vlib_src1,
                 dst_addr, &vlib_dst);
 
             if (VXLIB_SUCCESS == status)
@@ -129,109 +159,103 @@ static vx_status tivxKernelBitwiseProcess(
     return (status);
 }
 
-static vx_status tivxKernelBitwiseNotProcess(
+vx_status tivxKernelBitwiseNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params,
+    void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint32 width, height, x, y;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     vx_rectangle_t rect;
+    VXLIB_bufParams2D_t vlib_src, vlib_dst;
     uint8_t *src_addr, *dst_addr;
 
-    if ((num_params != 2U) || (NULL == obj_desc[0U]) || (NULL == obj_desc[1U]))
+    if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
+        (NULL == obj_desc[1U]) || (NULL == kernel) ||
+        (NULL == priv_arg))
     {
         status = VX_FAILURE;
     }
     else
     {
+        /* Get the Src and Dst descriptors */
         src_desc = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX];
 
+        /* Get the target pointer from the shared pointer for all
+           three buffers */
         src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
         dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
 
-        tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr, src_desc->mem_size[0],
-            src_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-
-        rect = src_desc->valid_roi;
-
-        src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0].target_ptr +
-            bitwiseComputePatchOffset(rect.start_x, rect.start_y,
-            &src_desc->imagepatch_addr[0]));
-        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0].target_ptr +
-            bitwiseComputePatchOffset(rect.start_x, rect.start_y,
-            &dst_desc->imagepatch_addr[0]));
-
-        height = src_desc->imagepatch_addr[0].dim_y;
-        width = src_desc->imagepatch_addr[0].dim_x;
-
-        for (y = 0; y < height; y++)
-        {
-            for (x = 0; x < width; x++)
-            {
-                vx_uint8 *src = vxFormatImagePatchAddress2d(
-                    src_addr, x, y, &src_desc->imagepatch_addr[0]);
-                vx_uint8 *dst = vxFormatImagePatchAddress2d(
-                    dst_addr, x, y, &dst_desc->imagepatch_addr[0]);
-
-                *dst = ~*src;
-            }
-        }
-
-        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
+        /* Map all three buffers, which invalidates the cache */
+        tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
+            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+            VX_WRITE_ONLY);
+        tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
+
+        /* Initialize vxLib Parameters with the input/output frame parameters */
+        vlib_src.dim_x = src_desc->imagepatch_addr[0U].dim_x;
+        vlib_src.dim_y = src_desc->imagepatch_addr[0U].dim_y;
+        vlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
+        vlib_src.data_type = VXLIB_UINT8;
+
+        vlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
+        vlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
+        vlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
+        vlib_dst.data_type = VXLIB_UINT8;
+
+        /* Get the correct offset of the images from teh valid roi parameter,
+           Assuming valid Roi is same for src0 and src1 images */
+        rect = src_desc->valid_roi;
+
+        src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x, rect.start_y,
+            &src_desc->imagepatch_addr[0U]));
+        /* TODO: Do we require to move pointer even for destination image */
+        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x, rect.start_y,
+            &dst_desc->imagepatch_addr[0]));
+
+        status = VXLIB_not_i8u_o8u(src_addr, &vlib_src, dst_addr, &vlib_dst);
+
+        if (VXLIB_SUCCESS == status)
+        {
+            tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
+                dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+                VX_WRITE_ONLY);
+        }
+        else
+        {
+            status = VX_FAILURE;
+        }
     }
 
     return (status);
 }
 
-static vx_status tivxKernelBitwiseAndProcess(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
-{
-    return tivxKernelBitwiseProcess(kernel, obj_desc, num_params,
-        VXLIB_and_i8u_i8u_o8u);
-}
-
-static vx_status tivxKernelBitwiseOrProcess(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
-{
-    return tivxKernelBitwiseProcess(kernel, obj_desc, num_params,
-        VXLIB_or_i8u_i8u_o8u);
-}
-
-static vx_status tivxKernelBitwiseXorProcess(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
-{
-    return tivxKernelBitwiseProcess(kernel, obj_desc, num_params,
-        VXLIB_xor_i8u_i8u_o8u);
-}
-
 static vx_status VX_CALLBACK tivxKernelBitwiseCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelBitwiseDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelBitwiseControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
@@ -241,6 +265,7 @@ void tivxAddTargetKernelBitwise()
     vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
+    vx_uint32 i;
 
     self_cpu = tivxGetSelfCpuId();
 
@@ -257,61 +282,36 @@ void tivxAddTargetKernelBitwise()
                 TIVX_TARGET_MAX_NAME);
         }
 
-        if (VX_SUCCESS == status)
+        for (i = 0; i < sizeof(gTivxBitwiseKernelInfo)/
+                sizeof(tivxBitwiseKernelInfo); i ++)
         {
-            vx_bitwise_not_target_kernel = tivxAddTargetKernel(
-                VX_KERNEL_NOT,
-                target_name,
-                tivxKernelBitwiseNotProcess,
-                tivxKernelBitwiseCreate,
-                tivxKernelBitwiseDelete,
-                tivxKernelBitwiseControl);
-            if (NULL == vx_bitwise_not_target_kernel)
+            if (VX_KERNEL_NOT == gTivxBitwiseKernelInfo[i].kernel_id)
             {
-                status = VX_FAILURE;
+                gTivxBitwiseKernelInfo[i].target_kernel = tivxAddTargetKernel(
+                    gTivxBitwiseKernelInfo[i].kernel_id,
+                    target_name,
+                    tivxKernelBitwiseNotProcess,
+                    tivxKernelBitwiseCreate,
+                    tivxKernelBitwiseDelete,
+                    tivxKernelBitwiseControl,
+                    &gTivxBitwiseKernelInfo[i]);
             }
-        }
+            else
+            {
+                gTivxBitwiseKernelInfo[i].target_kernel = tivxAddTargetKernel(
+                    gTivxBitwiseKernelInfo[i].kernel_id,
+                    target_name,
+                    tivxKernelBitwiseProcess,
+                    tivxKernelBitwiseCreate,
+                    tivxKernelBitwiseDelete,
+                    tivxKernelBitwiseControl,
+                    &gTivxBitwiseKernelInfo[i]);
+            }
 
-        if (VX_SUCCESS == status)
-        {
-            vx_bitwise_and_target_kernel = tivxAddTargetKernel(
-                VX_KERNEL_AND,
-                target_name,
-                tivxKernelBitwiseAndProcess,
-                tivxKernelBitwiseCreate,
-                tivxKernelBitwiseDelete,
-                tivxKernelBitwiseControl);
-            if (NULL == vx_bitwise_and_target_kernel)
+            if (NULL == gTivxBitwiseKernelInfo[i].target_kernel)
             {
                 status = VX_FAILURE;
-            }
-        }
-        if (VX_SUCCESS == status)
-        {
-            vx_bitwise_or_target_kernel = tivxAddTargetKernel(
-                VX_KERNEL_OR,
-                target_name,
-                tivxKernelBitwiseOrProcess,
-                tivxKernelBitwiseCreate,
-                tivxKernelBitwiseDelete,
-                tivxKernelBitwiseControl);
-            if (NULL == vx_bitwise_or_target_kernel)
-            {
-                status = VX_FAILURE;
-            }
-        }
-        if (VX_SUCCESS == status)
-        {
-            vx_bitwise_xor_target_kernel = tivxAddTargetKernel(
-                VX_KERNEL_XOR,
-                target_name,
-                tivxKernelBitwiseXorProcess,
-                tivxKernelBitwiseCreate,
-                tivxKernelBitwiseDelete,
-                tivxKernelBitwiseControl);
-            if (NULL == vx_bitwise_xor_target_kernel)
-            {
-                status = VX_FAILURE;
+                break;
             }
         }
     }
@@ -320,24 +320,20 @@ void tivxAddTargetKernelBitwise()
 
 void tivxRemoveTargetKernelBitwise()
 {
-    if (NULL != vx_bitwise_not_target_kernel)
+    vx_status status;
+    vx_uint32 i;
+
+    for (i = 0; i < sizeof(gTivxBitwiseKernelInfo)/
+            sizeof(tivxBitwiseKernelInfo); i ++)
     {
-        tivxRemoveTargetKernel(vx_bitwise_not_target_kernel);
-        vx_bitwise_not_target_kernel = NULL;
-    }
-    if (NULL != vx_bitwise_and_target_kernel)
-    {
-        tivxRemoveTargetKernel(vx_bitwise_and_target_kernel);
-        vx_bitwise_and_target_kernel = NULL;
-    }
-    if (NULL != vx_bitwise_or_target_kernel)
-    {
-        tivxRemoveTargetKernel(vx_bitwise_or_target_kernel);
-        vx_bitwise_or_target_kernel = NULL;
-    }
-    if (NULL != vx_bitwise_xor_target_kernel)
-    {
-        tivxRemoveTargetKernel(vx_bitwise_xor_target_kernel);
-        vx_bitwise_xor_target_kernel = NULL;
+        if (gTivxBitwiseKernelInfo[i].target_kernel)
+        {
+            status = tivxRemoveTargetKernel(gTivxBitwiseKernelInfo[i].target_kernel);
+
+            if (VX_SUCCESS == status)
+            {
+                gTivxBitwiseKernelInfo[i].target_kernel = NULL;
+            }
+        }
     }
 }

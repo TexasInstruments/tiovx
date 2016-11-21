@@ -48,26 +48,26 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX],
             VX_IMAGE_FORMAT, &fmt[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX],
-            sizeof(fmt[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX]));
+            sizeof(vx_df_image));
         status |= vxQueryImage(img[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX],
             VX_IMAGE_WIDTH, &w[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX],
-            sizeof(w[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX]));
+            sizeof(vx_uint32));
         status |= vxQueryImage(img[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX],
             VX_IMAGE_HEIGHT, &h[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX],
-            sizeof(h[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX]));
+            sizeof(vx_uint32));
     }
     if (VX_SUCCESS == status)
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX],
             VX_IMAGE_FORMAT, &fmt[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX],
-            sizeof(fmt[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX]));
+            sizeof(vx_df_image));
         status |= vxQueryImage(img[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX],
             VX_IMAGE_WIDTH, &w[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX],
-            sizeof(w[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX]));
+            sizeof(vx_uint32));
         status |= vxQueryImage(img[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX],
             VX_IMAGE_HEIGHT, &h[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX],
-            sizeof(h[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX]));
+            sizeof(vx_uint32));
     }
     if ((VX_SUCCESS == status) &&
         (vx_false_e == tivxIsReferenceVirtual(
@@ -76,13 +76,13 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX],
             VX_IMAGE_FORMAT, &fmt[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX],
-            sizeof(fmt[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX]));
+            sizeof(vx_df_image));
         status |= vxQueryImage(img[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX],
             VX_IMAGE_WIDTH, &w[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX],
-            sizeof(w[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX]));
+            sizeof(vx_uint32));
         status |= vxQueryImage(img[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX],
             VX_IMAGE_HEIGHT, &h[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX],
-            sizeof(h[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX]));
+            sizeof(vx_uint32));
     }
 
     if (VX_SUCCESS == status)
@@ -151,7 +151,7 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
                 sizeof(out_fmt));
             vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
                 sizeof(out_w));
-            vxSetMetaFormatAttribute(metas[1], VX_IMAGE_HEIGHT, &out_h,
+            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,
                 sizeof(out_h));
         }
     }

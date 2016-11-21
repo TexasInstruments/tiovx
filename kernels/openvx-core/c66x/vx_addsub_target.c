@@ -11,26 +11,9 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_addsub.h>
 #include <TI/tivx_target_kernel.h>
+#include <tivx_kernel_utils.h>
 
 static tivx_target_kernel vx_add_target_kernel = NULL, vx_sub_target_kernel = NULL;
-
-static vx_uint32 addSubComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t* addr)
-{
-    return (addr->stride_y * y / addr->step_y) +
-           (addr->stride_x * x / addr->step_x);
-}
-
-static void* addSubFormatImagePatchAddress2d(void *ptr, vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
-{
-    vx_uint8 *new_ptr = NULL;
-    if (ptr && x < addr->dim_x && y < addr->dim_y)
-    {
-        vx_uint32 offset = addSubComputePatchOffset(x, y, addr);
-        new_ptr = (vx_uint8 *)ptr;
-        new_ptr = &new_ptr[offset];
-    }
-    return new_ptr;
-}
 
 typedef vx_int32 (arithmeticOp)(vx_int32, vx_int32);
 
@@ -92,13 +75,13 @@ static vx_status tivxKernelAddSub(
         {
             for (j = 0; j < w; j ++)
             {
-                src0_addr = addSubFormatImagePatchAddress2d(
+                src0_addr = ownFormatImagePatchAddress2d(
                     src0_desc->mem_ptr[0].target_ptr,
                     j, i, &src0_desc->imagepatch_addr[0]);
-                src1_addr = addSubFormatImagePatchAddress2d(
+                src1_addr = ownFormatImagePatchAddress2d(
                     src1_desc->mem_ptr[0].target_ptr,
                     j, i, &src1_desc->imagepatch_addr[0]);
-                dst_addr = addSubFormatImagePatchAddress2d(
+                dst_addr = ownFormatImagePatchAddress2d(
                     dst_desc->mem_ptr[0].target_ptr,
                     j, i, &dst_desc->imagepatch_addr[0]);
 
@@ -187,28 +170,28 @@ static vx_status tivxKernelAddSub(
 
 static vx_status VX_CALLBACK tivxKernelAddCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelAddDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelAddControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelAddProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     vx_status status;
 
@@ -244,7 +227,8 @@ void tivxAddTargetKernelAdd()
             tivxKernelAddProcess,
             tivxKernelAddCreate,
             tivxKernelAddDelete,
-            tivxKernelAddControl);
+            tivxKernelAddControl,
+            NULL);
     }
 }
 
@@ -256,28 +240,28 @@ void tivxRemoveTargetKernelAdd()
 
 static vx_status VX_CALLBACK tivxKernelSubCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelSubDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelSubControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelSubProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     vx_status status;
 
@@ -313,7 +297,8 @@ void tivxAddTargetKernelSub()
             tivxKernelSubProcess,
             tivxKernelSubCreate,
             tivxKernelSubDelete,
-            tivxKernelSubControl);
+            tivxKernelSubControl,
+            NULL);
     }
 }
 

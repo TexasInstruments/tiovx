@@ -16,7 +16,7 @@ static tivx_target_kernel vx_threshold_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
     uint32_t i, j, w, h;
@@ -95,21 +95,21 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
 
 static vx_status VX_CALLBACK tivxKernelThresholdCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelThresholdDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
 static vx_status VX_CALLBACK tivxKernelThresholdControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params)
+    uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
@@ -140,7 +140,8 @@ void tivxAddTargetKernelThreshold()
             tivxKernelThresholdProcess,
             tivxKernelThresholdCreate,
             tivxKernelThresholdDelete,
-            tivxKernelThresholdControl);
+            tivxKernelThresholdControl,
+            NULL);
     }
 }
 
