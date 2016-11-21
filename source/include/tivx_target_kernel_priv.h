@@ -52,6 +52,7 @@ typedef struct _tivx_target_kernel {
     tivx_target_kernel_f delete_func;
     tivx_target_kernel_f control_func;
 
+    void *caller_priv_arg;
 } tivx_target_kernel_t;
 
 /*!

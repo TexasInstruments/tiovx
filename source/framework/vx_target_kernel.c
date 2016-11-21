@@ -40,7 +40,8 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func)
+                             tivx_target_kernel_f control_func,
+                             void *priv_arg)
 {
     uint32_t i;
     tivx_target_kernel knl = NULL;
@@ -66,6 +67,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                     g_target_kernel_table[i].create_func = create_func;
                     g_target_kernel_table[i].delete_func = delete_func;
                     g_target_kernel_table[i].control_func = control_func;
+                    g_target_kernel_table[i].caller_priv_arg = priv_arg;
 
                     knl = &g_target_kernel_table[i];
 
@@ -157,7 +159,8 @@ vx_status tivxTargetKernelCreate(
         if ((NULL != knl) && (NULL != knl->create_func))
         {
             status = knl->create_func(
-                target_kernel_instance, obj_desc, num_params);
+                target_kernel_instance, obj_desc, num_params, 
+                knl->caller_priv_arg);
         }
         else
         {
@@ -183,7 +186,8 @@ vx_status tivxTargetKernelDelete(
         if ((NULL != knl) && (NULL != knl->delete_func))
         {
             status = knl->delete_func(
-                target_kernel_instance, obj_desc, num_params);
+                target_kernel_instance, obj_desc, num_params,
+                knl->caller_priv_arg);
         }
         else
         {
@@ -209,7 +213,8 @@ vx_status tivxTargetKernelExecute(
         if ((NULL != knl) && (NULL != knl->process_func))
         {
             status = knl->process_func(
-                target_kernel_instance, obj_desc, num_params);
+                target_kernel_instance, obj_desc, num_params,
+                knl->caller_priv_arg);
         }
         else
         {
@@ -235,7 +240,8 @@ vx_status tivxTargetKernelControl(
         if ((NULL != knl) && (NULL != knl->control_func))
         {
             status = knl->control_func(
-                target_kernel_instance, obj_desc, num_params);
+                target_kernel_instance, obj_desc, num_params,
+                knl->caller_priv_arg);
         }
         else
         {

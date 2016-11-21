@@ -50,7 +50,7 @@ typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 *
 * \ingroup group_tivx_target_kernel
 */
-typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
 
 /*! \brief Allows users to add native kernels implementation to specific targets
  *
@@ -73,7 +73,8 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func);
+                             tivx_target_kernel_f control_func,
+                             void *priv_arg);
 
 /*! \brief Allows users to remove native kernels implementation
  *         to specific targets
