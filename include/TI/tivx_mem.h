@@ -179,6 +179,27 @@ void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type);
  */
 void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type);
 
+/*!
+ * \brief Allocates memory of given size
+ *
+ * \param [in] size     size of the memory to be allocated
+ *
+ * \return Pointer to the allocated memory
+ *
+ * \ingroup group_tivx_mem
+ */
+void *tivxMemAlloc(vx_uint32 size);
+
+/*!
+ * \brief Frees already allocated memory
+ *
+ * \param [in] ptr  Pointer to the memory
+ * \param [in] size size of the memory to be freed
+ *
+ * \ingroup group_tivx_mem
+ */
+void tivxMemFree(void *ptr, vx_uint32 size);
+
 #ifdef __cplusplus
 }
 #endif

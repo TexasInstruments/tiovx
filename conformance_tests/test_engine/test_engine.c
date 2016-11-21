@@ -222,7 +222,7 @@ int CT_HasFailure()
 void CT_RegisterForGarbageCollection(void *object, CT_ObjectDestructor collector, CT_GCType type)
 {
     struct CT_GlobalContextBlackBox* bb = CT()->internal_;
-    struct CT_GC_Node* node = (struct CT_GC_Node*)malloc(sizeof(struct CT_GC_Node));
+    struct CT_GC_Node* node = (struct CT_GC_Node*)ct_alloc_mem(sizeof(struct CT_GC_Node));
 
     if (!node)
     {
@@ -252,7 +252,7 @@ void CT_CollectGarbage(int type)
         if(type == CT_GC_ALL || (CT_GCType)type == killme->type_)
         {
             killme->destructor_(&killme->object_);
-            free(killme);
+            ct_free_mem(killme);
             prev->next_ = node;
         }
         else
@@ -489,7 +489,7 @@ static int run_test(struct CT_TestCaseEntry* testcase, struct CT_TestEntry* test
 
             if (g_context.internal_->num_test_errors_)
             {
-                struct CT_FailedTestEntry* f = (struct CT_FailedTestEntry*)(malloc(sizeof(*f)));
+                struct CT_FailedTestEntry* f = (struct CT_FailedTestEntry*)(ct_alloc_mem(sizeof(*f)));
                 f->testcase_ = testcase;
                 f->test_ = test;
                 f->param_idx_ = param_idx;

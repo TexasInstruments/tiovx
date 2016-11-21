@@ -377,7 +377,7 @@ TEST_WITH_ARG(LUT, testGraphProcessing, Arg,
     vx_size size;
 
     size = lut_size(data_type);
-    lut_data = malloc(size);
+    lut_data = ct_alloc_mem(size);
     ASSERT(lut_data != 0);
 
     ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height, data_type));
@@ -417,7 +417,7 @@ TEST_WITH_ARG(LUT, testGraphProcessing, Arg,
     ASSERT(dst_image == 0);
     ASSERT(src_image == 0);
 
-    free(lut_data);
+    ct_free_mem(lut_data);
 }
 
 TEST_WITH_ARG(LUT, testImmediateProcessing, Arg,
@@ -434,7 +434,7 @@ TEST_WITH_ARG(LUT, testImmediateProcessing, Arg,
     vx_size size;
 
     size = lut_size(data_type);
-    lut_data = malloc(size);
+    lut_data = ct_alloc_mem(size);
     ASSERT(lut_data != 0);
 
     ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height, data_type));
@@ -461,7 +461,7 @@ TEST_WITH_ARG(LUT, testImmediateProcessing, Arg,
     ASSERT(dst_image == 0);
     ASSERT(src_image == 0);
 
-    free(lut_data);
+    ct_free_mem(lut_data);
 }
 
 typedef struct {
@@ -479,12 +479,12 @@ TEST_WITH_ARG(LUT, test_vxCopyLUT, data_type_arg,
     vx_size size = lut_size(data_type);
     vx_size i;
 
-    void* identity_data = malloc(size);
+    void* identity_data = ct_alloc_mem(size);
     ASSERT(identity_data != 0);
     ASSERT_NO_FAILURE(lut_data_fill_identity(identity_data, data_type));
     ASSERT_VX_OBJECT(lut = lut_create(context, identity_data, data_type), VX_TYPE_LUT);
     /* read only mode */
-    void* user_data = malloc(size);
+    void* user_data = ct_alloc_mem(size);
     VX_CALL(vxCopyLUT(lut, user_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     /* Check */
     for (i = 0; i < size; i++)
@@ -492,7 +492,7 @@ TEST_WITH_ARG(LUT, test_vxCopyLUT, data_type_arg,
         ASSERT(((vx_uint8*)user_data)[i] == ((vx_uint8*)identity_data)[i]);
     }
     /* write only mode */
-    void* random_data = malloc(size);
+    void* random_data = ct_alloc_mem(size);
     ASSERT_NO_FAILURE(lut_data_fill_random(random_data, data_type));
     VX_CALL(vxCopyLUT(lut, random_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
     /* Check */
@@ -508,9 +508,9 @@ TEST_WITH_ARG(LUT, test_vxCopyLUT, data_type_arg,
     VX_CALL(vxReleaseLUT(&lut));
     ASSERT(lut == 0);
 
-    free(identity_data);
-    free(user_data);
-    free(random_data);
+    ct_free_mem(identity_data);
+    ct_free_mem(user_data);
+    ct_free_mem(random_data);
 }
 
 TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
@@ -521,7 +521,7 @@ TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
     vx_enum data_type = arg_->type;
     vx_lut lut;
     vx_size size = lut_size(data_type);
-    void* identity_data = malloc(size);
+    void* identity_data = ct_alloc_mem(size);
     vx_size i;
 
     ASSERT(identity_data != 0);
@@ -537,7 +537,7 @@ TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
         ASSERT(((vx_uint8*)lut_data)[i] == ((vx_uint8*)identity_data)[i]);
     }
     /* Read and write mode, write */
-    void* random_data = malloc(size);
+    void* random_data = ct_alloc_mem(size);
     ASSERT_NO_FAILURE(lut_data_fill_random(random_data, data_type));
     memcpy(lut_data, random_data, size);
     VX_CALL(vxUnmapLUT(lut, map_id));
@@ -566,8 +566,8 @@ TEST_WITH_ARG(LUT, test_vxMapLUTWrite, data_type_arg,
     VX_CALL(vxReleaseLUT(&lut));
     ASSERT(lut == 0);
 
-    free(identity_data);
-    free(random_data);
+    ct_free_mem(identity_data);
+    ct_free_mem(random_data);
 }
 
 TESTCASE_TESTS(LUT,

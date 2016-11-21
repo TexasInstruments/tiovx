@@ -703,9 +703,9 @@ static void own_allocate_image_ptrs(
 
         if (plane_size != 0)
         {
-            ptrs[p] = malloc(plane_size);
+            ptrs[p] = ct_alloc_mem(plane_size);
             /* init memory */
-            memset(ptrs[p], val->reserved[p], plane_size);
+            ct_memset(ptrs[p], val->reserved[p], plane_size);
         }
     }
 
@@ -985,7 +985,7 @@ TEST_WITH_ARG(Image, testSwapImageHandle, SwapImageHandle_Arg, SWAP_IMAGE_HANDLE
 
                 EXPECT_EQ_PTR(mem2_ptrs[n], ptr);
 
-                free(ptr);
+                ct_free_mem(ptr);
                 prev_ptrs[n] = NULL;
                 mem2_ptrs[n] = NULL;
 
@@ -995,8 +995,8 @@ TEST_WITH_ARG(Image, testSwapImageHandle, SwapImageHandle_Arg, SWAP_IMAGE_HANDLE
             }
         }
 
-        VX_CALL(vxReleaseImage(&roi1));
         VX_CALL(vxReleaseImage(&roi2));
+        VX_CALL(vxReleaseImage(&roi1));
         ASSERT(roi1 == 0);
         ASSERT(roi2 == 0);
     }
@@ -1069,7 +1069,7 @@ TEST_WITH_ARG(Image, testSwapImageHandle, SwapImageHandle_Arg, SWAP_IMAGE_HANDLE
 
                 EXPECT_EQ_PTR(mem2_ptrs[n], ptr);
 
-                free(ptr);
+                ct_free_mem(ptr);
                 prev_ptrs[n] = NULL;
                 mem2_ptrs[n] = NULL;
 
@@ -1084,7 +1084,7 @@ TEST_WITH_ARG(Image, testSwapImageHandle, SwapImageHandle_Arg, SWAP_IMAGE_HANDLE
     {
         if (mem1_ptrs[n] != NULL)
         {
-            free(mem1_ptrs[n]);
+            ct_free_mem(mem1_ptrs[n]);
             mem1_ptrs[n] = NULL;
         }
     }
@@ -1166,7 +1166,6 @@ TEST_WITH_ARG(Image, testFormatImagePatchAddress1d, FormatImagePatchAddress1d_Ar
     void* ptrs2[VX_PLANE_MAX] = { 0, 0, 0, 0 };
 
     ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height, arg_->format));
-
     image1 = ct_image_to_vx_image(src, context);
     ASSERT_VX_OBJECT(image1, VX_TYPE_IMAGE);
 
@@ -1335,7 +1334,7 @@ TEST_WITH_ARG(Image, testUniformImage, format_arg,
 
 static void mem_free(void**ptr)
 {
-    free(*ptr);
+    ct_free_mem(*ptr);
     *ptr = 0;
 }
 
@@ -1358,7 +1357,7 @@ TEST(Image, testComputeImagePatchSize)
     memsz = vxComputeImagePatchSize(image, &rect, 0);
     ASSERT(memsz >= 640*480);
 
-    ASSERT(buffer = malloc(memsz));
+    ASSERT(buffer = ct_alloc_mem(memsz));
     CT_RegisterForGarbageCollection(buffer, mem_free, CT_GC_OBJECT);
     buffer0 = buffer;
 
@@ -1395,8 +1394,8 @@ TEST(Image, testComputeImagePatchSize)
 TEST(Image, testAccessCopyWrite)
 {
     vx_context context = context_->vx_context_;
-    vx_uint8 *localPatchDense = malloc(PATCH_SIZE_X*PATCH_SIZE_Y*sizeof(vx_uint8));
-    vx_uint8 *localPatchSparse = malloc(PATCH_SIZE_X*PATCH_SIZE_Y*3*3*sizeof(vx_uint8));
+    vx_uint8 *localPatchDense = ct_alloc_mem(PATCH_SIZE_X*PATCH_SIZE_Y*sizeof(vx_uint8));
+    vx_uint8 *localPatchSparse = ct_alloc_mem(PATCH_SIZE_X*PATCH_SIZE_Y*3*3*sizeof(vx_uint8));
     vx_image image;
     int x, y;
     vx_map_id map_id;
@@ -1504,15 +1503,15 @@ TEST(Image, testAccessCopyWrite)
     VX_CALL( vxReleaseImage(&image) );
     ASSERT( image == 0);
 
-    free(localPatchDense);
-    free(localPatchSparse);
+    ct_free_mem(localPatchDense);
+    ct_free_mem(localPatchSparse);
 } /* testAccessCopyWrite() */
 
 TEST(Image, testAccessCopyRead)
 {
     vx_context context = context_->vx_context_;
-    vx_uint8 *localPatchDense = malloc(PATCH_SIZE_X*PATCH_SIZE_Y*sizeof(vx_uint8));
-    vx_uint8 *localPatchSparse = malloc(PATCH_SIZE_X*PATCH_SIZE_Y*3*3*sizeof(vx_uint8));
+    vx_uint8 *localPatchDense = ct_alloc_mem(PATCH_SIZE_X*PATCH_SIZE_Y*sizeof(vx_uint8));
+    vx_uint8 *localPatchSparse = ct_alloc_mem(PATCH_SIZE_X*PATCH_SIZE_Y*3*3*sizeof(vx_uint8));
     vx_image image;
     int x, y;
     vx_map_id map_id;
@@ -1603,8 +1602,8 @@ TEST(Image, testAccessCopyRead)
     VX_CALL( vxReleaseImage(&image) );
     ASSERT( image == 0);
 
-    free(localPatchDense);
-    free(localPatchSparse);
+    ct_free_mem(localPatchDense);
+    ct_free_mem(localPatchSparse);
 } /* testAccessCopyRead() */
 
 TEST(Image, testAccessCopyWriteUniformImage)
@@ -1630,7 +1629,7 @@ TEST(Image, testAccessCopyWriteUniformImage)
     vx_uint32 roi_width = 128;
     vx_uint32 roi_height = 128;
     vx_rectangle_t roi_rect = {0, 0, roi_width, roi_height};
-    vx_uint8 *external_data = (vx_uint8 *)malloc(roi_width * roi_height * sizeof(vx_uint8));
+    vx_uint8 *external_data = (vx_uint8 *)ct_alloc_mem(roi_width * roi_height * sizeof(vx_uint8));
     status = vxMapImagePatch(image, &roi_rect, 0, &map_id, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
     status = vxUnmapImagePatch(image, map_id);
@@ -1666,7 +1665,7 @@ TEST(Image, testAccessCopyWriteUniformImage)
     ASSERT(image == 0);
     ASSERT(roi_image == 0);
 
-    free(external_data);
+    ct_free_mem(external_data);
 } /* testAccessCopyWriteUniformImage() */
 
 TEST(Image, testQueryImage)
@@ -2381,7 +2380,7 @@ TEST_WITH_ARG(vxCopyImagePatch, testReadUniformImage, ReadUniformImage_Arg, PARA
 
         sz = vxComputeImagePatchSize(image, &rect, (vx_uint32)plane);
 
-        ptr = malloc(sz);
+        ptr = ct_alloc_mem(sz);
         ASSERT(NULL != ptr);
 
         addr.dim_x    = arg_->width  / own_plane_subsampling_x(arg_->format, plane);
@@ -2395,7 +2394,7 @@ TEST_WITH_ARG(vxCopyImagePatch, testReadUniformImage, ReadUniformImage_Arg, PARA
         /* check if equal to reference data */
         own_check_image_patch_uniform(&ref_val, ptr, &addr, plane, arg_->format);
 
-        free(ptr);
+        ct_free_mem(ptr);
     } /* for num_planes */
 
     VX_CALL(vxReleaseImage(&image));
@@ -2456,7 +2455,7 @@ TEST_WITH_ARG(vxCopyImagePatch, testReadRandomImage, ReadRandomImage_Arg, PARAME
 
         sz = vxComputeImagePatchSize(image, &rect, plane);
 
-        ptr = malloc(sz);
+        ptr = ct_alloc_mem(sz);
         ASSERT(NULL != ptr);
 
         tst_addr.dim_x    = arg_->width  / own_plane_subsampling_x(arg_->format, plane);
@@ -2469,7 +2468,7 @@ TEST_WITH_ARG(vxCopyImagePatch, testReadRandomImage, ReadRandomImage_Arg, PARAME
         /* check if image patch plane equal to reference data */
         own_check_image_patch_plane_user_layout(ref, &tst_addr, ptr, plane, arg_->format);
 
-        free(ptr);
+        ct_free_mem(ptr);
     } /* for num_planes */
 
     VX_CALL(vxReleaseImage(&image));
@@ -2539,7 +2538,7 @@ TEST_WITH_ARG(vxCopyImagePatch, testWriteRandomImage, WriteRandomImage_Arg, PARA
 
         sz = vxComputeImagePatchSize(image, &rect, plane);
 
-        ptr = malloc(sz);
+        ptr = ct_alloc_mem(sz);
         ASSERT(NULL != ptr);
 
         tst_addr.dim_x    = arg_->width  / own_plane_subsampling_x(arg_->format, plane);
@@ -2552,7 +2551,7 @@ TEST_WITH_ARG(vxCopyImagePatch, testWriteRandomImage, WriteRandomImage_Arg, PARA
         /* check if image patch plane equal to reference data */
         own_check_image_patch_plane_user_layout(ref, &tst_addr, ptr, plane, arg_->format);
 
-        free(ptr);
+        ct_free_mem(ptr);
     } /* for num_planes */
 
     VX_CALL(vxReleaseImage(&image));
@@ -3633,7 +3632,7 @@ TEST_WITH_ARG(vxCreateImageFromChannel, testChannelFromRandomImage, CreateImageF
 
         sz = vxComputeImagePatchSize(tst, &rect, 0);
 
-        ptr = malloc(sz);
+        ptr = ct_alloc_mem(sz);
 
         /* fill image patch with some values */
         for (i = 0; i < addr.dim_y; i++)
@@ -3664,7 +3663,7 @@ TEST_WITH_ARG(vxCreateImageFromChannel, testChannelFromRandomImage, CreateImageF
             }
         }
 
-        free(ptr);
+        ct_free_mem(ptr);
     }
 
     {
@@ -3686,7 +3685,7 @@ TEST_WITH_ARG(vxCreateImageFromChannel, testChannelFromRandomImage, CreateImageF
 
         sz = vxComputeImagePatchSize(src, &rect, p);
 
-        ptr = malloc(sz);
+        ptr = ct_alloc_mem(sz);
 
         /* fill image patch with some values */
         for (i = 0; i < addr.dim_y; i++)
@@ -3717,7 +3716,7 @@ TEST_WITH_ARG(vxCreateImageFromChannel, testChannelFromRandomImage, CreateImageF
             }
         }
 
-        free(ptr);
+        ct_free_mem(ptr);
     }
 
     VX_CALL(vxReleaseImage(&ref));

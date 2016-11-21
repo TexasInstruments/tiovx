@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -67,7 +67,7 @@ TEST_WITH_ARG(Matrix, test_vxCopyMatrix, data_type_arg,
     vx_enum data_type = arg_->type;
     uint64_t* seed = &CT()->seed_;
     vx_size max_size = rows*cols*sizeof(vx_float32);
-    vx_uint8* data = malloc(max_size);
+    vx_uint8* data = ct_alloc_mem(max_size);
     vx_size i;
     for (i = 0; i < max_size; i++)
     {
@@ -78,7 +78,7 @@ TEST_WITH_ARG(Matrix, test_vxCopyMatrix, data_type_arg,
 
     VX_CALL(vxCopyMatrix(matrix, data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-    void* actual_data = malloc(max_size);
+    void* actual_data = ct_alloc_mem(max_size);
     VX_CALL(vxCopyMatrix(matrix, actual_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
     {
@@ -110,8 +110,8 @@ TEST_WITH_ARG(Matrix, test_vxCopyMatrix, data_type_arg,
 
     ASSERT(matrix == 0);
 
-    free(actual_data);
-    free(data);
+    ct_free_mem(actual_data);
+    ct_free_mem(data);
 }
 
 TEST_WITH_ARG(Matrix, test_vxQueryMatrix, data_type_arg,

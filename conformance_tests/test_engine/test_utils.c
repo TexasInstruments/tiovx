@@ -28,6 +28,7 @@
 
 #include <math.h>
 #include "test.h"
+#include <TI/tivx_mem.h>
 
 // As for OpenVX 1.0 both of following defines result in udefined behavior:
 // #define OPENVX_PLANE_COPYING_VARIANT1
@@ -702,14 +703,14 @@ static void ct_teardown_vx_context(void/*CT_VXContext*/ **context_)
         ASSERT(context->vx_context_ == 0);
     }
 
-    free(context);
+    ct_free_mem(context);
 }
 
 void* ct_setup_vx_context()
 {
-    CT_VXContext* context = (CT_VXContext*)malloc(sizeof(CT_VXContext));
+    CT_VXContext* context = (CT_VXContext*)ct_alloc_mem(sizeof(CT_VXContext));
     context->vx_context_ = ct_create_vx_context();
-    ASSERT_VX_OBJECT_({free(context); return 0;}, context->vx_context_, VX_TYPE_CONTEXT);
+    ASSERT_VX_OBJECT_({ct_free_mem(context); return 0;}, context->vx_context_, VX_TYPE_CONTEXT);
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryContext(context->vx_context_, VX_CONTEXT_REFERENCES,
         &context->vx_context_base_references_, sizeof(context->vx_context_base_references_)));
@@ -947,9 +948,9 @@ vx_enum ct_read_array(vx_array src, void** dst, vx_size* _capacity_bytes,
     if( _capacity_bytes == 0 || arrsize_bytes >= *_capacity_bytes )
     {
         if(*dst)
-            free(*dst);
+            ct_free_mem(*dst);
 
-        *dst = malloc(arrsize_bytes);
+        *dst = ct_alloc_mem(arrsize_bytes);
 
         if (_capacity_bytes)
             *_capacity_bytes = arrsize_bytes;
@@ -1003,4 +1004,49 @@ void ct_destroy_vx_context(void **pContext)
 {
     vxReleaseContext((vx_context *)pContext);
     *pContext = NULL;
+}
+
+#define CT_MEM_ALLOC_ALIGN      (255U)
+#define CT_MEM_HEADER_SIZE      (32U)
+
+void *ct_alloc_mem(size_t size)
+{
+    void *ptr = NULL;
+
+    if (0 != size)
+    {
+        size = (size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
+            ~(CT_MEM_ALLOC_ALIGN);
+        ptr = tivxMemAlloc(size);
+
+        if (NULL != ptr)
+        {
+            /* First word stores the size of the memory allocated */
+            *(uint32_t*)ptr = size;
+            ptr = (void *)((uint32_t)ptr + CT_MEM_HEADER_SIZE);
+        }
+    }
+
+    return (ptr);
+}
+
+void ct_free_mem(void *ptr)
+{
+    uint32_t size;
+
+    if (NULL != ptr)
+    {
+        ptr = (void *)((uint32_t)ptr - CT_MEM_HEADER_SIZE);
+        size = *(uint32_t*)ptr;
+        tivxMemFree(ptr, size);
+    }
+}
+
+void ct_memset(void *ptr, vx_uint8 c, size_t size)
+{
+    if (NULL != ptr)
+    {
+        memset(ptr, c, size);
+        tivxMemBufferUnmap(ptr, size, TIVX_MEM_EXTERNAL, VX_WRITE_ONLY);
+    }
 }

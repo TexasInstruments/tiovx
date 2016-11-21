@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -82,7 +82,7 @@ GrfmtBmpReader;
 static void releaseBmpReader(struct GrfmtReader* reader)
 {
     if(reader)
-        free(reader);
+        ct_free_mem(reader);
 }
 
 #define GET_DWORD(p) ((p) += 4, ((p)[-4] | ((p)[-3]<<8) | ((p)[-2]<<16) | ((p)[-1]<<24)))
@@ -429,7 +429,7 @@ static struct GrfmtReader* readBmpHeader(const uchar* data, int datasize, int* _
     if( result == 0 || (bpp == 15 || bpp == 16) || (rle_code != BMP_RGB && rle_code != BMP_BITFIELDS) )
         return 0;
 
-    reader = (GrfmtBmpReader*)malloc(sizeof(*reader));
+    reader = (GrfmtBmpReader*)ct_alloc_mem(sizeof(*reader));
     if( !reader )
         return 0;
     memset(reader, 0, sizeof(*reader));
@@ -482,7 +482,7 @@ static int writeBMP( const char* filename, const uchar* img, int step, int width
     if(!f)
         return -1;
 
-    buf = p = (uchar*)malloc(fileSize);
+    buf = p = (uchar*)ct_alloc_mem(fileSize);
     p[0] = 'B';
     p[1] = 'M';
     p += 2;
@@ -527,7 +527,7 @@ static int writeBMP( const char* filename, const uchar* img, int step, int width
 
     fwrite(buf, 1, fileSize, f);
     fclose(f);
-    free(buf);
+    ct_free_mem(buf);
     return 0;
 }
 

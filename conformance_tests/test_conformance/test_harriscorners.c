@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -123,7 +123,7 @@ static void harris_corner_read_truth_data(const char *file_path, TruthData *trut
     ASSERT(sz);
     fseek(f, 0, SEEK_SET);
 
-    ASSERT(buf = malloc(sz + 1));
+    ASSERT(buf = ct_alloc_mem(sz + 1));
     ASSERT(sz == fread(buf, 1, sz, f));
 
     fclose(f);
@@ -136,7 +136,7 @@ static void harris_corner_read_truth_data(const char *file_path, TruthData *trut
     ASSERT(truth_data->num_corners);
     ptr+= ln_size + 1;
 
-    ASSERT(truth_data->pts = (vx_keypoint_t *)malloc(truth_data->num_corners * sizeof(vx_keypoint_t)));
+    ASSERT(truth_data->pts = (vx_keypoint_t *)ct_alloc_mem(truth_data->num_corners * sizeof(vx_keypoint_t)));
     pt = truth_data->pts;
     for (;pts_count < truth_data->num_corners; ptr += ln_size + 1, pt++, pts_count++)
     {
@@ -146,7 +146,7 @@ static void harris_corner_read_truth_data(const char *file_path, TruthData *trut
         sscanf(temp, "%d %d %f", &pt->x, &pt->y, &pt->strength);
         pt->strength *= strengthScale;
     }
-    free(buf);
+    ct_free_mem(buf);
 
     ASSERT(pts_count == truth_data->num_corners);
     truth_data->strength_thresh = truth_data->pts[truth_data->num_corners - 1].strength - FLT_EPSILON;
@@ -337,7 +337,7 @@ TEST_WITH_ARG(HarrisCorners, testGraphProcessing, Arg,
     ASSERT(node == 0);
     ASSERT(graph == 0);
 
-    free(truth_data.pts); truth_data.pts = 0;
+    ct_free_mem(truth_data.pts); truth_data.pts = 0;
     VX_CALL(vxReleaseArray(&corners));
     VX_CALL(vxReleaseScalar(&num_corners_scalar));
     VX_CALL(vxReleaseScalar(&sensitivity_scalar));
@@ -401,7 +401,7 @@ TEST_WITH_ARG(HarrisCorners, testImmediateProcessing, Arg,
 
     CT_ASSERT_NO_FAILURE_(, harris_corner_check(corners, &truth_data));
 
-    free(truth_data.pts); truth_data.pts = 0;
+    ct_free_mem(truth_data.pts); truth_data.pts = 0;
     VX_CALL(vxReleaseArray(&corners));
     VX_CALL(vxReleaseScalar(&num_corners_scalar));
     VX_CALL(vxReleaseScalar(&sensitivity_scalar));

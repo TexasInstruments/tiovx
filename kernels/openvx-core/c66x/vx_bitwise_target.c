@@ -262,7 +262,6 @@ static vx_status VX_CALLBACK tivxKernelBitwiseControl(
 
 void tivxAddTargetKernelBitwise()
 {
-    vx_status status = VX_SUCCESS;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
     vx_uint32 i;
@@ -310,7 +309,6 @@ void tivxAddTargetKernelBitwise()
 
             if (NULL == gTivxBitwiseKernelInfo[i].target_kernel)
             {
-                status = VX_FAILURE;
                 break;
             }
         }

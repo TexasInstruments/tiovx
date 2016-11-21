@@ -91,7 +91,7 @@ void* own_alloc_init_data_items(vx_enum item_type, vx_size num_items)
         break;
     }
 
-    p = malloc(num_items * item_size);
+    p = ct_alloc_mem(num_items * item_size);
     if (NULL == p)
         return p;
 
@@ -204,7 +204,7 @@ void* own_alloc_init_data_items(vx_enum item_type, vx_size num_items)
             }
             else
             {
-                free(p);
+                ct_free_mem(p);
                 p = NULL;
             }
             break;
@@ -471,7 +471,7 @@ TEST_WITH_ARG(Array, test_vxCreateArray, Array_Arg, PARAMETERS)
     }
 
     if (NULL != array_items)
-        free(array_items);
+        ct_free_mem(array_items);
 
     VX_CALL(vxReleaseArray(&array));
     ASSERT(array == 0);

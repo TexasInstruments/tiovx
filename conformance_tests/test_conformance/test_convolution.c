@@ -63,7 +63,7 @@ TEST(Convolution, test_vxCopyConvolution)
 
     VX_CALL(vxCopyConvolutionCoefficients(conv, gx, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-    vx_int16 *data = (vx_int16 *)malloc(rows*cols*sizeof(vx_int16));
+    vx_int16 *data = (vx_int16 *)ct_alloc_mem(rows*cols*sizeof(vx_int16));
     VX_CALL(vxCopyConvolutionCoefficients(conv, data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
     for (i = 0; i < rows; i++)
@@ -78,7 +78,7 @@ TEST(Convolution, test_vxCopyConvolution)
 
     ASSERT(conv == 0);
 
-    free(data);
+    ct_free_mem(data);
 }
 
 TEST(Convolution, test_vxQueryConvolution)

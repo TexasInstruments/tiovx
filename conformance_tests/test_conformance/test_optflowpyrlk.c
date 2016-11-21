@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -147,7 +147,7 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     sz = ftell(f);
     fseek(f, 0, SEEK_SET);
 
-    ASSERT_(return 0, buf = malloc(sz + 1));
+    ASSERT_(return 0, buf = ct_alloc_mem(sz + 1));
     ASSERT_(return 0, sz == fread(buf, 1, sz, f));
     fclose(f); f = NULL;
     ((char*)buf)[sz] = 0;
@@ -156,8 +156,8 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     buf = ...
 #endif
 
-    ASSERT_(return 0, *p_old_points = malloc(sizeof(vx_keypoint_t) * MAX_POINTS));
-    ASSERT_(return 0, *p_new_points = malloc(sizeof(vx_keypoint_t) * MAX_POINTS));
+    ASSERT_(return 0, *p_old_points = ct_alloc_mem(sizeof(vx_keypoint_t) * MAX_POINTS));
+    ASSERT_(return 0, *p_new_points = ct_alloc_mem(sizeof(vx_keypoint_t) * MAX_POINTS));
 
     {
         int num = 0;
@@ -197,7 +197,7 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
                 break;
         }
 
-        free(buf);
+        ct_free_mem(buf);
 
         return num;
     }
@@ -359,9 +359,9 @@ TEST_WITH_ARG(OptFlowPyrLK, testGraphProcessing, Arg,
 
     ASSERT_NO_FAILURE(own_keypoints_check(num_points, old_points, new_points_ref, new_points));
 
-    free(new_points);
-    free(new_points_ref);
-    free(old_points);
+    ct_free_mem(new_points);
+    ct_free_mem(new_points_ref);
+    ct_free_mem(old_points);
 
     VX_CALL(vxReleaseNode(&node));
     if(src_pyr_node[0])
@@ -455,9 +455,9 @@ TEST_WITH_ARG(OptFlowPyrLK, testImmediateProcessing, Arg,
 
     ASSERT_NO_FAILURE(own_keypoints_check(num_points, old_points, new_points_ref, new_points));
 
-    free(new_points);
-    free(new_points_ref);
-    free(old_points);
+    ct_free_mem(new_points);
+    ct_free_mem(new_points_ref);
+    ct_free_mem(old_points);
     VX_CALL(vxReleaseScalar(&eps));
     VX_CALL(vxReleaseScalar(&num_iter));
     VX_CALL(vxReleaseScalar(&use_estimations));

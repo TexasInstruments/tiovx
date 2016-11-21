@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -169,13 +169,13 @@ static void ct_release_image(CT_Image* img)
     {
         if (ct_image_removeref(*img) == 0)
         {
-            free((*img)->data_begin_);
+            ct_free_mem((*img)->data_begin_);
         }
         (*img)->data.u32 = 0;
         (*img)->data_begin_ = 0;
         (*img)->refcount_ = 0;
     }
-    free(*img);
+    ct_free_mem(*img);
     *img = 0;
 }
 
@@ -185,7 +185,7 @@ static CT_Image ct_allocate_image_hdr_impl(uint32_t width, uint32_t height, uint
 
     CT_ASSERT_(return 0, step >= width);
 
-    image = (CT_Image)malloc(sizeof(*image));
+    image = (CT_Image)ct_alloc_mem(sizeof(*image));
     CT_ASSERT_(return 0, image); // out of memory
 
     image->data.u32    = 0;
@@ -207,7 +207,7 @@ static CT_Image ct_allocate_image_hdr_impl(uint32_t width, uint32_t height, uint
         uint8_t* bytes;
         size_t memory_size = ct_image_data_size(width, height, format) + sizeof(uint32_t) * 2;
 
-        bytes = (uint8_t*)malloc(memory_size);
+        bytes = (uint8_t*)ct_alloc_mem(memory_size);
         CT_ASSERT_(return 0, bytes); // out of memory
         memset(bytes, 153, memory_size); // fill with some "magic" value
         image->data_begin_ = bytes;
@@ -361,7 +361,7 @@ CT_Image ct_read_image(const char* fileName, int dcn)
     sz = ftell(f);
     if( sz > 0 )
     {
-        buf = (char*)malloc(sz);
+        buf = (char*)ct_alloc_mem(sz);
         fseek(f, 0, SEEK_SET);
         if( fread(buf, 1, sz, f) == sz )
         {
@@ -369,7 +369,7 @@ CT_Image ct_read_image(const char* fileName, int dcn)
         }
     }
 
-    free(buf);
+    ct_free_mem(buf);
     fclose(f);
 
     if(!image)
