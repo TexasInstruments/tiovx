@@ -10,50 +10,56 @@
 
 #include <TI/tivx.h>
 
+typedef vx_status (*tivxHostKernel_Fxn) (vx_context context);
 
+typedef struct {
+    tivxHostKernel_Fxn    add_kernel;
+    tivxHostKernel_Fxn    remove_kernel;
+} Tivx_Host_Kernel_List;
 
 vx_status tivxAddKernelAbsDiff(vx_context context);
-vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxAddKernelLut(vx_context context);
-vx_status tivxRemoveKernelLut(vx_context context);
 vx_status tivxAddKernelBitwise(vx_context context);
-vx_status tivxRemoveKernelBitwise(vx_context context);
 vx_status tivxAddKernelAdd(vx_context context);
-vx_status tivxRemoveKernelAdd(vx_context context);
 vx_status tivxAddKernelSub(vx_context context);
-vx_status tivxRemoveKernelSub(vx_context context);
 vx_status tivxAddKernelThreshold(vx_context context);
+vx_status tivxAddKernelErode3x3(vx_context context);
+
+vx_status tivxRemoveKernelAbsDiff(vx_context context);
+vx_status tivxRemoveKernelLut(vx_context context);
+vx_status tivxRemoveKernelBitwise(vx_context context);
+vx_status tivxRemoveKernelAdd(vx_context context);
+vx_status tivxRemoveKernelSub(vx_context context);
 vx_status tivxRemoveKernelThreshold(vx_context context);
+vx_status tivxRemoveKernelErode3x3(vx_context context);
 
-
+Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
+    {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
+    {tivxAddKernelLut, tivxRemoveKernelLut},
+    {tivxAddKernelBitwise, tivxRemoveKernelBitwise},
+    {tivxAddKernelAdd, tivxRemoveKernelAdd},
+    {tivxAddKernelSub, tivxRemoveKernelSub},
+    {tivxAddKernelThreshold, tivxRemoveKernelThreshold},
+    {tivxAddKernelErode3x3, tivxRemoveKernelErode3x3}
+};
 
 static vx_status tivxPublishKernels(vx_context context)
 {
     vx_status status = VX_SUCCESS;
+    vx_uint32 i;
 
-    if(status == VX_SUCCESS)
+    for (i = 0; i <
+        sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List); i ++)
     {
-        status  = tivxAddKernelAbsDiff(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxAddKernelLut(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxAddKernelBitwise(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxAddKernelAdd(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxAddKernelSub(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxAddKernelThreshold(context);
+        if (gTivx_host_kernel_list[i].add_kernel)
+        {
+            status = gTivx_host_kernel_list[i].add_kernel(context);
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            break;
+        }
     }
 
     return status;
@@ -62,30 +68,20 @@ static vx_status tivxPublishKernels(vx_context context)
 static vx_status tivxUnPublishKernels(vx_context context)
 {
     vx_status status = VX_SUCCESS;
+    vx_uint32 i;
 
-    if(status == VX_SUCCESS)
+    for (i = 0; i <
+        sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List); i ++)
     {
-        status  = tivxRemoveKernelAbsDiff(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxRemoveKernelLut(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxRemoveKernelBitwise(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxRemoveKernelAdd(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxRemoveKernelSub(context);
-    }
-    if(status == VX_SUCCESS)
-    {
-        status  = tivxRemoveKernelThreshold(context);
+        if (gTivx_host_kernel_list[i].remove_kernel)
+        {
+            status = gTivx_host_kernel_list[i].remove_kernel(context);
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            break;
+        }
     }
 
     return status;

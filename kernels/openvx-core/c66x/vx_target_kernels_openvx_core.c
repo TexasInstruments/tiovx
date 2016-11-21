@@ -10,12 +10,20 @@
 
 #include <TI/tivx_target_kernel.h>
 
+typedef void (*tivxTargetKernel_Fxn) ();
+
+typedef struct  {
+    tivxTargetKernel_Fxn    add_kernel;
+    tivxTargetKernel_Fxn    remove_kernel;
+} Tivx_Target_Kernel_List;
+
 void tivxAddTargetKernelAbsDiff();
 void tivxAddTargetKernelLut();
 void tivxAddTargetKernelBitwise();
 void tivxAddTargetKernelAdd();
 void tivxAddTargetKernelSub();
 void tivxAddTargetKernelThreshold();
+void tivxAddTargetKernelErode3x3();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -23,23 +31,43 @@ void tivxRemoveTargetKernelBitwise();
 void tivxRemoveTargetKernelAdd();
 void tivxRemoveTargetKernelSub();
 void tivxRemoveTargetKernelThreshold();
+void tivxRemoveTargetKernelErode3x3();
+
+
+Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
+    {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
+    {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
+    {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
+    {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
+    {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
+    {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
+    {tivxAddTargetKernelErode3x3, tivxRemoveTargetKernelErode3x3}
+};
 
 void tivxRegisterOpenVXCoreTargetKernels()
 {
-    tivxAddTargetKernelAbsDiff();
-    tivxAddTargetKernelLut();
-    tivxAddTargetKernelBitwise();
-    tivxAddTargetKernelAdd();
-    tivxAddTargetKernelSub();
-    tivxAddTargetKernelThreshold();
+    vx_uint32 i;
+
+    for (i = 0; i <
+        sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List); i ++)
+    {
+        if (gTivx_target_kernel_list[i].add_kernel)
+        {
+            gTivx_target_kernel_list[i].add_kernel();
+        }
+    }
 }
 
 void tivxUnRegisterOpenVXCoreTargetKernels()
 {
-    tivxRemoveTargetKernelAbsDiff();
-    tivxRemoveTargetKernelLut();
-    tivxRemoveTargetKernelBitwise();
-    tivxRemoveTargetKernelAdd();
-    tivxRemoveTargetKernelSub();
-    tivxRemoveTargetKernelThreshold();
+    vx_uint32 i;
+
+    for (i = 0; i <
+        sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List); i ++)
+    {
+        if (gTivx_target_kernel_list[i].remove_kernel)
+        {
+            gTivx_target_kernel_list[i].remove_kernel();
+        }
+    }
 }
