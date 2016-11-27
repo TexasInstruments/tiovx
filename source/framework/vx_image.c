@@ -113,8 +113,8 @@ static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_ima
 
 static vx_uint32 ownComputePatchOffset(vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t* addr)
 {
-    return (addr->stride_y * y / addr->step_y) +
-           (addr->stride_x * x / addr->step_x)
+    return (addr->stride_y * (y / addr->step_y)) +
+           (addr->stride_x * (x / addr->step_x))
         ;
 }
 
@@ -846,8 +846,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
             if(ownAllocImageBuffer((vx_reference)image)==VX_SUCCESS)
             {
                 format = obj_desc->format;
-                width  = rect->end_x - rect->end_x;
-                height = rect->end_y - rect->end_y;
+                width  = rect->end_x - rect->start_x;
+                height = rect->end_y - rect->start_y;
 
                 if(status==VX_SUCCESS)
                 {
@@ -875,7 +875,6 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                             subimage_mem_ptr = &si_obj_desc->mem_ptr[plane_idx];
                             image_mem_ptr = &obj_desc->mem_ptr[plane_idx];
 
-                            *subimage_imagepatch_addr = *image_imagepatch_addr;
                             *subimage_mem_ptr = *image_mem_ptr;
 
                             subimage_imagepatch_addr->stride_x = image_imagepatch_addr->stride_x;
@@ -1089,6 +1088,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
                 {
                     if (parent->subimages[subimage_idx] == this_image)
                     {
+                        ownDecrementReference(&parent->base, VX_INTERNAL);
                         parent->subimages[subimage_idx] = NULL;
                         break;
                     }
@@ -1230,7 +1230,7 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
 
                 num_pixels  =
                             ((end_x-start_x)/imagepatch_addr->step_x)
-                            +
+                            *
                             ((end_y-start_y)/imagepatch_addr->step_y)
                             ;
 
@@ -1409,7 +1409,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
     if(status == VX_SUCCESS)
     {
-        if(user_ptr == NULL || user_addr == NULL || usage != VX_READ_ONLY || usage != VX_WRITE_ONLY)
+        if((user_ptr == NULL) || (user_addr == NULL))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -1557,7 +1561,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
     if(status == VX_SUCCESS)
     {
         vx_imagepatch_addressing_t *image_addr = NULL;
-        vx_uint8* map_addr = NULL;
+        vx_uint8* map_addr = NULL, *end_addr = NULL;
         uint32_t map_size = 0;
         uint32_t map_idx;
 
@@ -1567,27 +1571,39 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
         map_addr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
         map_size = obj_desc->mem_size[plane_index];
 
-        for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
+        if (NULL != map_addr)
         {
-            if(image->maps[map_idx].map_addr==NULL)
+            for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
             {
-                image->maps[map_idx].map_addr = map_addr;
-                image->maps[map_idx].map_size = map_size;
-                image->maps[map_idx].usage = usage;
-                break;
+                if(image->maps[map_idx].map_addr==NULL)
+                {
+                    image->maps[map_idx].map_addr = map_addr;
+                    image->maps[map_idx].map_size = map_size;
+                    image->maps[map_idx].usage = usage;
+                    break;
+                }
             }
-        }
-        if(map_idx<TIVX_IMAGE_MAX_MAPS)
-        {
-            *map_id = map_idx;
-            *user_addr = *image_addr;
-            *user_ptr = map_addr;
+            if(map_idx<TIVX_IMAGE_MAX_MAPS)
+            {
+                *map_id = map_idx;
+                *user_addr = *image_addr;
+                *user_ptr = map_addr;
 
-            tivxMemBufferMap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
+                end_addr = map_addr + map_size;
+                map_addr = (vx_uint8*)TIVX_FLOOR((vx_uint32)map_addr, 128U);
+                end_addr = (vx_uint8*)TIVX_ALIGN((vx_uint32)end_addr, 128U);
+                map_size = end_addr - map_addr;
+                tivxMemBufferMap(map_addr, map_size,
+                    obj_desc->mem_ptr[plane_index].mem_type, usage);
+            }
+            else
+            {
+                status = VX_ERROR_NO_RESOURCES;
+            }
         }
         else
         {
-            status = VX_ERROR_NO_RESOURCES;
+            status = VX_ERROR_NO_MEMORY;
         }
     }
 
@@ -1620,12 +1636,22 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             image->maps[map_id].map_size!=0
             )
         {
+            vx_uint8* map_addr = NULL, *end_addr = NULL;
+            uint32_t map_size = 0;
+
             obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
+            map_addr = image->maps[map_id].map_addr;
+            map_size = image->maps[map_id].map_size;
+
+            end_addr = map_addr + map_size;
+            map_addr = (vx_uint8*)TIVX_FLOOR((vx_uint32)map_addr, 128);
+            end_addr = (vx_uint8*)TIVX_ALIGN((vx_uint32)end_addr, 128);
+            map_size = end_addr - map_addr;
+
             tivxMemBufferUnmap(
-                image->maps[map_id].map_addr,
-                image->maps[map_id].map_size,
-                obj_desc->mem_ptr[0].mem_type, /* assume all planes have same mem_type */
+                map_addr, map_size,
+                obj_desc->mem_ptr[0].mem_type,
                 image->maps[map_id].usage);
         }
         else
