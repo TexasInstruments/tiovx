@@ -109,7 +109,7 @@ vx_status VX_API_CALL vxQueryDistribution(
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
+    if (obj_desc == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }

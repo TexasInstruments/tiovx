@@ -50,16 +50,28 @@ static vx_status ownInitObjArrayWithDistribution(
     vx_context context, vx_object_array objarr, vx_distribution exemplar);
 static vx_status ownInitObjArrayWithThreshold(
     vx_context context, vx_object_array objarr, vx_threshold exemplar);
+static vx_status ownInitObjArrayWithPyramid(
+    vx_context context, vx_object_array objarr, vx_pyramid exemplar);
+static vx_status ownInitObjArrayWithMatrix(
+    vx_context context, vx_object_array objarr, vx_matrix exemplar);
+static vx_status ownInitObjArrayWithRemap(
+    vx_context context, vx_object_array objarr, vx_remap exemplar);
+static vx_status ownInitObjArrayWithLut(
+    vx_context context, vx_object_array objarr, vx_lut exemplar);
 
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = vx_false_e;
 
     if ((VX_TYPE_IMAGE == type) ||
-        (VX_TYPE_OBJECT_ARRAY == type) ||
+        (VX_TYPE_ARRAY == type) ||
         (VX_TYPE_SCALAR == type) ||
         (VX_TYPE_DISTRIBUTION == type) ||
-        (VX_TYPE_THRESHOLD == type))
+        (VX_TYPE_THRESHOLD == type) ||
+        (VX_TYPE_PYRAMID == type) ||
+        (VX_TYPE_MATRIX == type) ||
+        (VX_TYPE_REMAP == type)  ||
+        (VX_TYPE_LUT == type))
     {
         status = vx_true_e;
     }
@@ -188,10 +200,6 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         (objarr->base.is_virtual == vx_false_e))
     {
         ref = objarr->ref[index];
-
-        /* Should increment the reference count,
-           To release this image, app should explicitely call ReleaseImage */
-        ownIncrementReference(ref, VX_EXTERNAL);
     }
 
     return (ref);
@@ -249,6 +257,22 @@ static vx_status ownInitObjArrayFromObject(
 
     switch (exemplar->type)
     {
+        case VX_TYPE_LUT:
+            status = ownInitObjArrayWithLut(
+                context, objarr, (vx_lut)exemplar);
+            break;
+        case VX_TYPE_REMAP:
+            status = ownInitObjArrayWithRemap(
+                context, objarr, (vx_remap)exemplar);
+            break;
+        case VX_TYPE_MATRIX:
+            status = ownInitObjArrayWithMatrix(
+                context, objarr, (vx_matrix)exemplar);
+            break;
+        case VX_TYPE_PYRAMID:
+            status = ownInitObjArrayWithPyramid(
+                context, objarr, (vx_pyramid)exemplar);
+            break;
         case VX_TYPE_IMAGE:
             status = ownInitObjArrayWithImage(
                 context, objarr, (vx_image)exemplar);
@@ -274,6 +298,215 @@ static vx_status ownInitObjArrayFromObject(
     return (status);
 }
 
+static vx_status ownInitObjArrayWithLut(
+    vx_context context, vx_object_array objarr, vx_lut exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_enum data_type;
+    vx_size count;
+    vx_lut lut;
+    vx_uint32 i, j, num_items;
+
+    status |= vxQueryLUT(exemplar, VX_LUT_TYPE, &data_type,
+        sizeof(data_type));
+    status |= vxQueryLUT(exemplar, VX_LUT_COUNT, &count,
+        sizeof(count));
+
+    if (VX_SUCCESS == status)
+    {
+        num_items = objarr->obj_desc->num_items;
+        for (i = 0; i < num_items; i ++)
+        {
+            lut = vxCreateLUT(context, data_type, count);
+
+            if (vxGetStatus((vx_reference)lut) == VX_SUCCESS)
+            {
+                objarr->ref[i] = (vx_reference)lut;
+                objarr->obj_desc->obj_desc_id[i] =
+                    objarr->ref[i]->obj_desc->obj_desc_id;
+            }
+            else
+            {
+                status = VX_FAILURE;
+                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                   "Could not allocate image object descriptor\n");
+                break;
+           }
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            for (j = 0; j < i; j ++)
+            {
+                if (NULL != objarr->ref[j]->destructor_callback)
+                {
+                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                }
+            }
+        }
+    }
+
+    return (status);
+}
+
+static vx_status ownInitObjArrayWithRemap(
+    vx_context context, vx_object_array objarr, vx_remap exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 src_width, src_height, dst_width, dst_height, i, num_items, j;
+    vx_remap rem;
+
+    status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_WIDTH, &src_width,
+        sizeof(src_width));
+    status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_HEIGHT, &src_height,
+        sizeof(src_height));
+    status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_WIDTH, &dst_width,
+        sizeof(dst_width));
+    status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_HEIGHT, &dst_height,
+        sizeof(dst_height));
+
+    if (VX_SUCCESS == status)
+    {
+        num_items = objarr->obj_desc->num_items;
+        for (i = 0; i < num_items; i ++)
+        {
+            rem = vxCreateRemap(context, src_width, src_height, dst_width,
+                dst_height);
+
+            if (vxGetStatus((vx_reference)rem) == VX_SUCCESS)
+            {
+                objarr->ref[i] = (vx_reference)rem;
+                objarr->obj_desc->obj_desc_id[i] =
+                    objarr->ref[i]->obj_desc->obj_desc_id;
+            }
+            else
+            {
+                status = VX_FAILURE;
+                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                   "Could not allocate image object descriptor\n");
+                break;
+           }
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            for (j = 0; j < i; j ++)
+            {
+                if (NULL != objarr->ref[j]->destructor_callback)
+                {
+                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                }
+            }
+        }
+    }
+
+    return (status);
+}
+
+static vx_status ownInitObjArrayWithMatrix(
+    vx_context context, vx_object_array objarr, vx_matrix exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_size rows, columns;
+    vx_uint32 i, num_items, j;
+    vx_enum type;
+    vx_matrix mat;
+
+    status |= vxQueryMatrix(exemplar, VX_MATRIX_TYPE, &type, sizeof(type));
+    status |= vxQueryMatrix(exemplar, VX_MATRIX_ROWS, &rows, sizeof(rows));
+    status |= vxQueryMatrix(exemplar, VX_MATRIX_COLUMNS, &columns,
+        sizeof(columns));
+
+    if (VX_SUCCESS == status)
+    {
+        num_items = objarr->obj_desc->num_items;
+        for (i = 0; i < num_items; i ++)
+        {
+            mat = vxCreateMatrix(context, type, columns, rows);
+
+            if (vxGetStatus((vx_reference)mat) == VX_SUCCESS)
+            {
+                objarr->ref[i] = (vx_reference)mat;
+                objarr->obj_desc->obj_desc_id[i] =
+                    objarr->ref[i]->obj_desc->obj_desc_id;
+            }
+            else
+            {
+                status = VX_FAILURE;
+                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                   "Could not allocate image object descriptor\n");
+                break;
+           }
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            for (j = 0; j < i; j ++)
+            {
+                if (NULL != objarr->ref[j]->destructor_callback)
+                {
+                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                }
+            }
+        }
+    }
+
+    return (status);
+}
+
+static vx_status ownInitObjArrayWithPyramid(
+    vx_context context, vx_object_array objarr, vx_pyramid exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_size levels;
+    vx_float32 scale;
+    vx_uint32 width, height, i, num_items, j;
+    vx_df_image format;
+    vx_pyramid pmd;
+
+    status |= vxQueryPyramid(exemplar, VX_PYRAMID_LEVELS, &levels, sizeof(width));
+    status |= vxQueryPyramid(exemplar, VX_PYRAMID_SCALE, &scale, sizeof(width));
+    status |= vxQueryPyramid(exemplar, VX_PYRAMID_WIDTH, &width, sizeof(width));
+    status |= vxQueryPyramid(exemplar, VX_PYRAMID_HEIGHT, &height, sizeof(height));
+    status |= vxQueryPyramid(exemplar, VX_PYRAMID_FORMAT, &format, sizeof(format));
+
+    if (VX_SUCCESS == status)
+    {
+        num_items = objarr->obj_desc->num_items;
+        for (i = 0; i < num_items; i ++)
+        {
+            pmd = vxCreatePyramid(context, levels, scale, width, height,
+                format);
+
+            if (vxGetStatus((vx_reference)pmd) == VX_SUCCESS)
+            {
+                objarr->ref[i] = (vx_reference)pmd;
+                objarr->obj_desc->obj_desc_id[i] =
+                    objarr->ref[i]->obj_desc->obj_desc_id;
+            }
+            else
+            {
+                status = VX_FAILURE;
+                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                   "Could not allocate image object descriptor\n");
+                break;
+           }
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            for (j = 0; j < i; j ++)
+            {
+                if (NULL != objarr->ref[j]->destructor_callback)
+                {
+                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                }
+            }
+        }
+    }
+
+    return (status);
+}
 
 static vx_status ownInitObjArrayWithImage(
     vx_context context, vx_object_array objarr, vx_image exemplar)
@@ -294,7 +527,7 @@ static vx_status ownInitObjArrayWithImage(
         {
             img = vxCreateImage(context, width, height, format);
 
-            if (NULL != img)
+            if (vxGetStatus((vx_reference)img) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)img;
                 objarr->obj_desc->obj_desc_id[i] =
@@ -343,7 +576,7 @@ static vx_status ownInitObjArrayWithArray(
         {
             arr = vxCreateArray(context, type, capacity);
 
-            if (NULL != arr)
+            if (vxGetStatus((vx_reference)arr) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)arr;
                 objarr->obj_desc->obj_desc_id[i] = ((vx_reference)arr)->
@@ -381,7 +614,7 @@ static vx_status ownInitObjArrayWithScalar(
     vx_scalar sc;
     vx_uint32 num_items, i, j;
 
-    status |= vxQueryScalar(exemplar, VX_ARRAY_ITEMTYPE, &type, sizeof(type));
+    status |= vxQueryScalar(exemplar, VX_SCALAR_TYPE, &type, sizeof(type));
 
     if (VX_SUCCESS == status)
     {
@@ -391,7 +624,7 @@ static vx_status ownInitObjArrayWithScalar(
             /* TODO: How to get the internal data pointer */
             sc = vxCreateScalar(context, type, NULL);
 
-            if (NULL != sc)
+            if (vxGetStatus((vx_reference)sc) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)sc;
                 objarr->obj_desc->obj_desc_id[i] =
@@ -440,7 +673,7 @@ static vx_status ownInitObjArrayWithDistribution(
         {
             dist = vxCreateDistribution(context, num_bins, offset, range);
 
-            if (NULL != dist)
+            if (vxGetStatus((vx_reference)dist) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)dist;
                 objarr->obj_desc->obj_desc_id[i] =
@@ -479,8 +712,10 @@ static vx_status ownInitObjArrayWithThreshold(
     vx_threshold thr;
     vx_uint32 num_items, i, j;
 
-    status |= vxQueryThreshold(exemplar, VX_THRESHOLD_DATA_TYPE, &data_type, sizeof(data_type));
-    status |= vxQueryThreshold(exemplar, VX_DISTRIBUTION_RANGE, &thr_type, sizeof(thr_type));
+    status |= vxQueryThreshold(exemplar, VX_THRESHOLD_DATA_TYPE, &data_type,
+        sizeof(data_type));
+    status |= vxQueryThreshold(exemplar, VX_THRESHOLD_TYPE, &thr_type,
+        sizeof(thr_type));
 
     if (VX_SUCCESS == status)
     {
@@ -489,7 +724,7 @@ static vx_status ownInitObjArrayWithThreshold(
         {
             thr = vxCreateThreshold(context, thr_type, data_type);
 
-            if (NULL != thr)
+            if (vxGetStatus((vx_reference)thr) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)thr;
                 objarr->obj_desc->obj_desc_id[i] =

@@ -275,12 +275,13 @@ vx_status VX_API_CALL vxAddArrayItems(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
+    if (obj_desc == NULL)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
+        status = ownAllocArrayBuffer((vx_reference)arr);
 
         if ((obj_desc->capacity == 0) ||
             (NULL == ptr))
@@ -289,7 +290,7 @@ vx_status VX_API_CALL vxAddArrayItems(
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((obj_desc->capacity <= (obj_desc->num_items + count)) ||
+        if ((obj_desc->capacity < (obj_desc->num_items + count)) ||
             (stride < obj_desc->item_size) ||
             (stride == 0))
         {
@@ -506,6 +507,12 @@ vx_status VX_API_CALL vxMapArrayRange(
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
+        if (NULL == stride)
+        {
+            /* Invalid range */
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
         for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i ++)
         {
             if (arr->maps[i].map_addr == NULL)
@@ -532,6 +539,7 @@ vx_status VX_API_CALL vxMapArrayRange(
                 obj_desc->mem_ptr.mem_type, usage);
 
             *ptr = (vx_uint8 *)start_offset;
+            *stride = obj_desc->item_size;
 
             *map_id = i;
         }
@@ -565,7 +573,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
             (arr->maps[map_id].map_addr == NULL) ||
             (arr->maps[map_id].map_size == 0))
         {
-        status = VX_ERROR_INVALID_PARAMETERS;
+            status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
 
