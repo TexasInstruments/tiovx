@@ -20,7 +20,92 @@ static vx_status VX_CALLBACK tivxAddKernelLutValidate(vx_node node,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
+    vx_image img[2U];
+    vx_lut lut;
+    vx_uint32 w[2U], h[2U], i;
+    vx_df_image fmt[2U];
+    vx_enum lut_type;
 
+    for (i = 0U; i < TIVX_KERNEL_LUT_MAX_PARAMS; i ++)
+    {
+        /* Check for NULL */
+        if (NULL == parameters[i])
+        {
+            status = VX_ERROR_NO_MEMORY;
+            break;
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        img[0U] = (vx_image)parameters[TIVX_KERNEL_LUT_IN_IMG_IDX];
+        img[1U] = (vx_image)parameters[TIVX_KERNEL_LUT_OUT_IMG_IDX];
+
+        /* Get the image width/heigh and format */
+        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
+            sizeof(fmt[0U]));
+
+        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
+        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        lut = (vx_lut)parameters[TIVX_KERNEL_LUT_IN_LUT_IDX];
+        status = vxQueryLUT(lut, VX_LUT_TYPE, &lut_type, sizeof(lut_type));
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        /* Check for validity of data format */
+        if ((VX_DF_IMAGE_U8 != fmt[0U]) && (VX_DF_IMAGE_S16 != fmt[0U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        if (((VX_DF_IMAGE_U8 == fmt[0U]) && (VX_TYPE_UINT8 != lut_type)) ||
+            ((VX_DF_IMAGE_S16 == fmt[0U]) && (VX_TYPE_INT16 != lut_type)))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if ((VX_SUCCESS == status) &&
+        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    {
+        /* Get the image width/heigh and format */
+        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
+            sizeof(fmt[1U]));
+        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
+        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+
+        /* Check for frame sizes */
+        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        /* Check for format */
+        if (fmt[0U] != fmt[1U])
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        for (i = 0U; i < TIVX_KERNEL_LUT_MAX_PARAMS; i ++)
+        {
+            if (NULL != metas[i])
+            {
+                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt[0U],
+                    sizeof(fmt[0U]));
+                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
+                    sizeof(w[0U]));
+                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
+                    sizeof(h[0U]));
+            }
+        }
+    }
     return status;
 }
 
@@ -80,6 +165,7 @@ vx_status tivxAddKernelLut(vx_context context)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
 
         if ( status == VX_SUCCESS)

@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK tivxAddKernelBitwiseNotValidate(vx_node node,
                 sizeof(out_fmt));
             vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
                 sizeof(out_w));
-            vxSetMetaFormatAttribute(metas[1], VX_IMAGE_HEIGHT, &out_h,
+            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,
                 sizeof(out_h));
         }
     }

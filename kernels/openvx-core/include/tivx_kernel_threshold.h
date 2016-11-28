@@ -43,6 +43,13 @@ extern "C" {
  */
 #define TIVX_KERNEL_THRLD_IN_THR_IDX      (1U)
 
+/*!
+ * \brief Max Params supported by threshold kernel
+ *
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_KERNEL_THRLD_MAX_PARAMS        (3U)
+
 #ifdef __cplusplus
 }
 #endif

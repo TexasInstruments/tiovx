@@ -8,160 +8,221 @@
  */
 
 #include <TI/tivx.h>
+#include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_addsub.h>
 #include <TI/tivx_target_kernel.h>
+#include <ti/vxlib/vxlib.h>
 #include <tivx_kernel_utils.h>
 
 static tivx_target_kernel vx_add_target_kernel = NULL, vx_sub_target_kernel = NULL;
 
-typedef vx_int32 (arithmeticOp)(vx_int32, vx_int32);
-
-static vx_int32 vx_add_op(vx_int32 a, vx_int32 b)
-{
-    return (a + b);
-}
-
-static vx_int32 vx_sub_op(vx_int32 a, vx_int32 b)
-{
-    return (a - b);
-}
-
 static vx_status tivxKernelAddSub(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
-    arithmeticOp op)
+    vx_enum kern_type)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
     tivx_obj_desc_scalar_t *sc_desc;
-    uint32_t w, h, i, j;
-    vx_enum policy;
+    uint32_t i;
     void *src0_addr, *src1_addr, *dst_addr;
-    int32_t src0_val, src1_val, dst_val;
-    int32_t result;
+    vx_rectangle_t rect;
+    VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
+    uint16_t overflow_policy;
 
-    if ((num_params != 4U) || (NULL == obj_desc[0]) || (NULL == obj_desc[1]) ||
-        (NULL == obj_desc[2]) || (NULL == obj_desc[3]))
+    if (num_params != TIVX_KERNEL_ADDSUB_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        src0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN0_IMG_IDX];
-        src1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN1_IMG_IDX];
-        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_OUT_IMG_IDX];
-        sc_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN_SCALAR_IDX];
-
-        src0_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_type);
-        src1_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src1_desc->mem_ptr[0].shared_ptr, src1_desc->mem_ptr[0].mem_type);
-
-        dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
-
-        tivxMemBufferMap(src0_desc->mem_ptr[0].target_ptr, src0_desc->mem_size[0],
-            src0_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        tivxMemBufferMap(src1_desc->mem_ptr[0].target_ptr, src1_desc->mem_size[0],
-            src1_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-
-        w = src0_desc->imagepatch_addr[0].dim_x;
-        h = src0_desc->imagepatch_addr[0].dim_y;
-
-        policy = sc_desc->data.enm;
-
-        for (i = 0; i < h; i ++)
+        for (i = 0U; i < TIVX_KERNEL_ADDSUB_MAX_PARAMS; i ++)
         {
-            for (j = 0; j < w; j ++)
+            if (NULL == obj_desc[i])
             {
-                src0_addr = ownFormatImagePatchAddress2d(
-                    src0_desc->mem_ptr[0].target_ptr,
-                    j, i, &src0_desc->imagepatch_addr[0]);
-                src1_addr = ownFormatImagePatchAddress2d(
-                    src1_desc->mem_ptr[0].target_ptr,
-                    j, i, &src1_desc->imagepatch_addr[0]);
-                dst_addr = ownFormatImagePatchAddress2d(
-                    dst_desc->mem_ptr[0].target_ptr,
-                    j, i, &dst_desc->imagepatch_addr[0]);
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        src0_desc = (tivx_obj_desc_image_t *)
+            obj_desc[TIVX_KERNEL_ADDSUB_IN0_IMG_IDX];
+        src1_desc = (tivx_obj_desc_image_t *)
+            obj_desc[TIVX_KERNEL_ADDSUB_IN1_IMG_IDX];
+        dst_desc = (tivx_obj_desc_image_t *)
+            obj_desc[TIVX_KERNEL_ADDSUB_OUT_IMG_IDX];
+        sc_desc = (tivx_obj_desc_scalar_t *)
+            obj_desc[TIVX_KERNEL_ADDSUB_IN_SCALAR_IDX];
 
-                if (VX_DF_IMAGE_U8 == src0_desc->format)
+        src0_desc->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
+            src0_desc->mem_ptr[0U].shared_ptr, src0_desc->mem_ptr[0U].mem_type);
+        src1_desc->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
+            src1_desc->mem_ptr[0U].shared_ptr, src1_desc->mem_ptr[0U].mem_type);
+
+        dst_desc->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
+            dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_type);
+
+        tivxMemBufferMap(src0_desc->mem_ptr[0U].target_ptr, src0_desc->mem_size[0],
+            src0_desc->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(src1_desc->mem_ptr[0U].target_ptr, src1_desc->mem_size[0],
+            src1_desc->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
+
+        /* Get the correct offset of the images from teh valid roi parameter,
+           Assuming valid Roi is same for src0 and src1 images */
+        rect = src0_desc->valid_roi;
+
+        src0_addr = (uint8_t *)((uint32_t)src0_desc->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x, rect.start_y,
+            &src0_desc->imagepatch_addr[0U]));
+        src1_addr = (uint8_t *)((uint32_t)src1_desc->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x, rect.start_y,
+            &src1_desc->imagepatch_addr[0U]));
+
+        /* TODO: Do we require to move pointer even for destination image */
+        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x, rect.start_y,
+            &dst_desc->imagepatch_addr[0]));
+
+        vxlib_src0.dim_x = src0_desc->imagepatch_addr[0].dim_x;
+        vxlib_src0.dim_y = src0_desc->imagepatch_addr[0].dim_y;
+        vxlib_src0.stride_y = src0_desc->imagepatch_addr[0].stride_y;
+        if (VX_DF_IMAGE_U8 == src0_desc->format)
+        {
+            vxlib_src0.data_type = VXLIB_UINT8;
+        }
+        else
+        {
+            vxlib_src0.data_type = VXLIB_INT16;
+        }
+
+        vxlib_src1.dim_x = src1_desc->imagepatch_addr[0].dim_x;
+        vxlib_src1.dim_y = src1_desc->imagepatch_addr[0].dim_y;
+        vxlib_src1.stride_y = src1_desc->imagepatch_addr[0].stride_y;
+        if (VX_DF_IMAGE_U8 == src1_desc->format)
+        {
+            vxlib_src1.data_type = VXLIB_UINT8;
+        }
+        else
+        {
+            vxlib_src1.data_type = VXLIB_INT16;
+        }
+
+        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0].dim_x;
+        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y;
+        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0].stride_y;
+        if (VX_DF_IMAGE_U8 == dst_desc->format)
+        {
+            vxlib_dst.data_type = VXLIB_UINT8;
+        }
+        else
+        {
+            vxlib_dst.data_type = VXLIB_INT16;
+        }
+
+        if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+        {
+            overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+        }
+        else
+        {
+            overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+        }
+
+        if (VX_KERNEL_ADD == kern_type)
+        {
+            /* If output is in U8 format, both the input must be in
+               U8 format */
+            if (VXLIB_UINT8 == vxlib_dst.data_type)
+            {
+                status = VXLIB_add_i8u_i8u_o8u((uint8_t *)src0_addr,
+                    &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
+                    (uint8_t *)dst_addr, &vxlib_dst, overflow_policy);
+            }
+            /* Now if the both inputs are U8, output will be in S16 format */
+            else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
+                     (VXLIB_UINT8 == vxlib_src0.data_type))
+            {
+                status = VXLIB_add_i8u_i8u_o16s((uint8_t *)src0_addr,
+                    &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
+                    (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
+            }
+            /* If both the input are in S16 format, output will be in
+               S16 format */
+            else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
+                     (VXLIB_INT16 == vxlib_src0.data_type))
+            {
+                status = VXLIB_add_i16s_i16s_o16s((int16_t *)src0_addr,
+                    &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
+                    (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
+            }
+            else /* One input is in S16 format and other is in U8 format */
+            {
+
+                if (VXLIB_UINT8 == vxlib_src0.data_type)
                 {
-                    src0_val = *(vx_uint8 *)src0_addr;
+                    status = VXLIB_add_i8u_i16s_o16s((uint8_t *)src0_addr,
+                        &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
+                        (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
                 }
                 else
                 {
-                    src0_val = *(vx_int16 *)src0_addr;
+                    status = VXLIB_add_i8u_i16s_o16s((uint8_t *)src1_addr,
+                        &vxlib_src1, (int16_t *)src0_addr, &vxlib_src0,
+                        (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
                 }
-                if (VX_DF_IMAGE_U8 == src1_desc->format)
+            }
+        }
+        else /* Kernel Type is subtraction */
+        {
+            /* If output is in U8 format, both the input must be in
+               U8 format */
+            if (VXLIB_UINT8 == vxlib_dst.data_type)
+            {
+                status = VXLIB_subtract_i8u_i8u_o8u((uint8_t *)src0_addr,
+                    &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
+                    (uint8_t *)dst_addr, &vxlib_dst, overflow_policy);
+            }
+            /* Now if the both inputs are U8, output will be in S16 format */
+            else if ((VXLIB_UINT8 == vxlib_src1.data_type) &&
+                     (VXLIB_UINT8 == vxlib_src0.data_type))
+            {
+                status = VXLIB_subtract_i8u_i8u_o16s((uint8_t *)src0_addr,
+                    &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
+                    (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
+            }
+            /* If both the input are in S16 format, output will be in
+               S16 format */
+            else if ((VXLIB_INT16 == vxlib_src1.data_type) &&
+                     (VXLIB_INT16 == vxlib_src0.data_type))
+            {
+                status = VXLIB_subtract_i16s_i16s_o16s((int16_t *)src0_addr,
+                    &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
+                    (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
+            }
+            else /* One input is in S16 format and other is in U8 format */
+            {
+                if (VXLIB_UINT8 != vxlib_src0.data_type)
                 {
-                    src1_val = *(vx_uint8 *)src1_addr;
-                }
-                else
-                {
-                    src1_val = *(vx_int16 *)src1_addr;
-                }
-
-                result = op(src0_val, src1_val);
-
-                if (VX_CONVERT_POLICY_SATURATE == policy)
-                {
-                    if (VX_DF_IMAGE_U8 == dst_desc->format)
-                    {
-                        if (result > UINT8_MAX)
-                        {
-                            dst_val = UINT8_MAX;
-                        }
-                        else if (result < 0)
-                        {
-                            dst_val = 0;
-                        }
-                        else
-                        {
-                            dst_val = result;
-                        }
-                    }
-                    else
-                    {
-                        if (result > INT16_MAX)
-                        {
-                            dst_val = INT16_MAX;
-                        }
-                        else if (result < INT16_MIN)
-                        {
-                            dst_val = INT16_MIN;
-                        }
-                        else
-                        {
-                            dst_val = result;
-                        }
-                    }
+                    status = VXLIB_subtract_i8u_i16s_o16s((uint8_t *)src1_addr,
+                        &vxlib_src1, (int16_t *)src0_addr, &vxlib_src0,
+                        (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
+                        1);
                 }
                 else
                 {
-                    if (VX_DF_IMAGE_U8 == dst_desc->format)
-                    {
-                        dst_val = (uint8_t)result;
-                    }
-                    else
-                    {
-                        dst_val = (int16_t)result;
-                    }
-                }
-
-                if (VX_DF_IMAGE_U8 == dst_desc->format)
-                {
-                    *(uint8_t *)dst_addr = dst_val;
-                }
-                else
-                {
-                    *(int16_t *)dst_addr = dst_val;
+                    status = VXLIB_subtract_i8u_i16s_o16s((uint8_t *)src0_addr,
+                        &vxlib_src0, (int16_t *)src1_addr, &vxlib_src1,
+                        (int16_t *)dst_addr, &vxlib_dst, overflow_policy,
+                        0);
                 }
             }
         }
 
-        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(dst_desc->mem_ptr[0U].target_ptr,
+            dst_desc->mem_size[0], dst_desc->mem_ptr[0U].mem_type,
             VX_WRITE_ONLY);
     }
 
@@ -195,7 +256,7 @@ static vx_status VX_CALLBACK tivxKernelAddProcess(
 {
     vx_status status;
 
-    status = tivxKernelAddSub(kernel, obj_desc, num_params, vx_add_op);
+    status = tivxKernelAddSub(kernel, obj_desc, num_params, VX_KERNEL_ADD);
 
     return (status);
 }
@@ -265,7 +326,7 @@ static vx_status VX_CALLBACK tivxKernelSubProcess(
 {
     vx_status status;
 
-    status = tivxKernelAddSub(kernel, obj_desc, num_params, vx_sub_op);
+    status = tivxKernelAddSub(kernel, obj_desc, num_params, VX_KERNEL_SUBTRACT);
 
     return (status);
 }
