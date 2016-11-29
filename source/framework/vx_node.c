@@ -804,7 +804,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
     {
         status = ownRemoveNodeInt(n);
         if(status == VX_SUCCESS) {
-            status = ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_EXTERNAL, NULL);
+            /* Interpretation of spec is to release all external
+               references of Nodes when vxReleaseGraph() is called AND
+               all graph references count == 0 (garbage collection).
+               However, it may be possible that the user would have
+               already released its external reference so we need to
+               check. */
+            if(node->base.external_count) {
+                status = ownReleaseReferenceInt((vx_reference *)&node,
+                    VX_TYPE_NODE, VX_EXTERNAL, NULL);
+            }
             if(status == VX_SUCCESS) {
                 *n = NULL;
             }
