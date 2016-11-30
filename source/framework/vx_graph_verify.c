@@ -335,7 +335,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         meta[i] = vxCreateMetaFormat(graph->base.context);
 
         /* This should not fail at all */
-        if (NULL == meta[i])
+	if (vxGetStatus((vx_reference)meta[i]) != VX_SUCCESS)
         {
             status = VX_ERROR_NO_RESOURCES;
         }
