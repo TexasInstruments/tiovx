@@ -229,4 +229,6 @@ void ct_free_mem(void *ptr);
 
 void ct_memset(void *ptr, vx_uint8 c, size_t);
 
+char *ct_get_test_file_path();
+
 #endif // __VX_CT_TEST_UTILS_H__

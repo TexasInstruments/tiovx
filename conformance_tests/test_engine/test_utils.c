@@ -1005,3 +1005,7 @@ void ct_destroy_vx_context(void **pContext)
     *pContext = NULL;
 }
 
+char *ct_get_test_file_path()
+{
+    return "sd:";
+}
