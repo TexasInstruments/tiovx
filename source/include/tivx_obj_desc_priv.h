@@ -40,11 +40,12 @@ extern "C" {
 /*! \brief Shift for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv
  */
-#define TIVX_OBJ_DESC_ID_SHIFT           (12u)
+#define TIVX_OBJ_DESC_ID_SHIFT           (8u)
+
 /*! \brief Mask for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv
  */
-#define TIVX_OBJ_DESC_ID_MASK            (0x0FFFF000u)
+#define TIVX_OBJ_DESC_ID_MASK            (0x0000FFFFu)
 
 
 /*!
