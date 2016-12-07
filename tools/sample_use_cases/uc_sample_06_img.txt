@@ -1,0 +1,20 @@
+digraph uc_sample_06 {
+
+  label = "uc_sample_06"
+  ColorScheme [shape=none, margin=0, label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        </TABLE>>];
+
+
+
+  /* DATA OBJECTS */
+  scalar_0 [color=GhostWhite, style=filled]
+
+
+  /* NODE OBJECTS */
+
+
+  /* NODE CONNECTIONS */
+
+
+}

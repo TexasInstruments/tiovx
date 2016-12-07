@@ -15,7 +15,7 @@ class ImageCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreateImage(context, %d, %d, %s);" % (self.ref.name, self.ref.width, self.ref.height, DfImage.get_vx_name(self.ref.df_image)));
+        code_gen.write_line("usecase->%s = vxCreateImage(context, %d, %d, %s);" % (self.ref.name, self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.df_image)));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");

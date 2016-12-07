@@ -97,7 +97,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_uint8 value = 0;
         
         usecase->scalar_5 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_5 == NULL)
@@ -131,9 +131,9 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_uint8 value = 0;
         
-        usecase->scalar_10 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_10 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_10 == NULL)
         {
             status = VX_ERROR_NO_RESOURCES;
@@ -141,9 +141,9 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_uint8 value = 255;
         
-        usecase->scalar_11 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_11 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_11 == NULL)
         {
             status = VX_ERROR_NO_RESOURCES;
@@ -167,9 +167,9 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_uint32 value = 10;
         
-        usecase->scalar_14 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_14 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_14 == NULL)
         {
             status = VX_ERROR_NO_RESOURCES;
@@ -177,9 +177,9 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_uint32 value = 100;
         
-        usecase->scalar_15 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
+        usecase->scalar_15 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_15 == NULL)
         {
             status = VX_ERROR_NO_RESOURCES;
@@ -211,7 +211,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_enum value = VX_INTERPOLATION_BILINEAR;
         
         usecase->scalar_26 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_26 == NULL)
@@ -237,7 +237,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_int32 value = 100;
         
         usecase->scalar_30 = vxCreateScalar(context, VX_TYPE_INT32, &value);
         if (usecase->scalar_30 == NULL)
@@ -247,7 +247,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_enum value = VX_NORM_L1;
         
         usecase->scalar_31 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_31 == NULL)
@@ -265,7 +265,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     }
     if (status == VX_SUCCESS)
     {
-        vx_uint32 value = 0;
+        vx_enum value = VX_NONLINEAR_FILTER_MIN;
         
         usecase->scalar_35 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_35 == NULL)

@@ -15,7 +15,7 @@ class ScalarCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("vx_uint32 value = 0;")
+        code_gen.write_line("%s value = %s;" % (Type.get_vx_name(self.ref.data_type), self.ref.get_value_str()))
         code_gen.write_newline()
         code_gen.write_line("usecase->%s = vxCreateScalar(context, %s, &value);" % (self.ref.name, Type.get_vx_enum_name(self.ref.data_type)))
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));

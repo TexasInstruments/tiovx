@@ -67,8 +67,11 @@ class DfImage(Enum) :
     U32  = 13
     S32  = 14
 
-    def get_vx_name(df_format) :
+    def get_vx_enum_name(df_format) :
         return "VX_DF_IMAGE_" + df_format.name
+
+    def get_vx_name(df_format) :
+        return "vx_df_image_e"
 
 class Channel(Enum) :
     C0 = 1
@@ -82,6 +85,20 @@ class Channel(Enum) :
     Y  = 9
     U  = 10
     V  = 11
+
+    def get_vx_enum_name(type) :
+        if type == Channel.C0 :
+            return "VX_CHANNEL_0"
+        if type == Channel.C1 :
+            return "VX_CHANNEL_1"
+        if type == Channel.C2 :
+            return "VX_CHANNEL_2"
+        if type == Channel.C3 :
+            return "VX_CHANNEL_3"
+        return "VX_CHANNEL_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_channel_e"
 
 class Target(Enum) :
     INVALID = 1
@@ -103,15 +120,22 @@ class Policy(Enum) :
     WRAP      = 1
     SATURATE  = 2
 
-class Interpolation(Enum) :
-    NEAREST   = 1
-    BILINEAR  = 2
-    AREA      = 3
+    def get_vx_enum_name(type) :
+        return "VX_CONVERT_POLICY_" + type.name
 
-class NonlinearFilter(Enum) :
+    def get_vx_name(type) :
+        return "vx_convert_policy_e"
+
+class NonLinearFilter(Enum) :
     MEDIAN   = 1
     MIN      = 2
     MAX      = 3
+
+    def get_vx_enum_name(type) :
+        return "VX_NONLINEAR_FILTER_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_non_linear_filter_e"
 
 class Pattern(Enum) :
     BOX      = 1
@@ -119,16 +143,39 @@ class Pattern(Enum) :
     DISK     = 3
     OTHER    = 4
 
+    def get_vx_enum_name(type) :
+        return "VX_PATTERN_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_pattern_e"
+
 class InterpolationType(Enum) :
     NEAREST_NEIGHBOR    = 1
     BILINEAR            = 2
     AREA                = 3
 
-class NonLinearFilter(Enum) :
-    Median              = 1
-    Min                 = 2
-    Max                 = 3
+    def get_vx_enum_name(type) :
+        return "VX_INTERPOLATION_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_interpolation_type_e"
 
 class Bool(Enum) :
     FALSE           = 0
     TRUE            = 1
+
+    def get_vx_enum_name(type) :
+        return "vx_" + type.name.lower() + "_e"
+
+    def get_vx_name(type) :
+        return "vx_bool"
+
+class Norm(Enum):
+    L1 = 1
+    L2 = 2
+
+    def get_vx_enum_name(type) :
+        return "VX_NORM_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_norm_e"
