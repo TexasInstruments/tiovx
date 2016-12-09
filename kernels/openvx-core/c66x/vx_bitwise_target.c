@@ -87,7 +87,7 @@ vx_status tivxKernelBitwiseProcess(
             TIVX_KERNEL_BITWISE_OUT_IMG_IDX];
 
         /* Get the target pointer from the shared pointer for all
-           three buffers */
+           buffers */
         src0_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_type);
         src1_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
@@ -122,7 +122,7 @@ vx_status tivxKernelBitwiseProcess(
         vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
         vxlib_dst.data_type = VXLIB_UINT8;
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src0_desc->valid_roi;
 
@@ -143,17 +143,25 @@ vx_status tivxKernelBitwiseProcess(
                 src0_addr, &vxlib_src0, src1_addr, &vxlib_src1,
                 dst_addr, &vxlib_dst);
 
-            if (VXLIB_SUCCESS == status)
+            if (VXLIB_SUCCESS != status)
             {
-                tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-                    dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
-                    VX_WRITE_ONLY);
+                status = VX_FAILURE;
             }
         }
         else
         {
             status = VX_FAILURE;
         }
+
+        tivxMemBufferUnmap(src0_desc->mem_ptr[0].target_ptr,
+            src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(src1_desc->mem_ptr[0].target_ptr,
+            src1_desc->mem_size[0], src1_desc->mem_ptr[0].mem_type,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
+            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+            VX_WRITE_ONLY);
     }
 
     return (status);
@@ -167,7 +175,7 @@ vx_status tivxKernelBitwiseNotProcess(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     vx_rectangle_t rect;
-    VXLIB_bufParams2D_t vlib_src, vxlib_dst;
+    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
 
     if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
@@ -185,32 +193,32 @@ vx_status tivxKernelBitwiseNotProcess(
             TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX];
 
         /* Get the target pointer from the shared pointer for all
-           three buffers */
+           buffers */
         src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
         dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
 
-        /* Map all three buffers, which invalidates the cache */
+        /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
             src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);
+            VX_READ_ONLY);
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
-        vlib_src.dim_x = src_desc->imagepatch_addr[0U].dim_x;
-        vlib_src.dim_y = src_desc->imagepatch_addr[0U].dim_y;
-        vlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
-        vlib_src.data_type = VXLIB_UINT8;
+        vxlib_src.dim_x = src_desc->imagepatch_addr[0U].dim_x;
+        vxlib_src.dim_y = src_desc->imagepatch_addr[0U].dim_y;
+        vxlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
+        vxlib_src.data_type = VXLIB_UINT8;
 
         vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
         vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
         vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
         vxlib_dst.data_type = VXLIB_UINT8;
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src_desc->valid_roi;
 
@@ -222,7 +230,7 @@ vx_status tivxKernelBitwiseNotProcess(
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 
-        status = VXLIB_not_i8u_o8u(src_addr, &vlib_src, dst_addr, &vxlib_dst);
+        status = VXLIB_not_i8u_o8u(src_addr, &vxlib_src, dst_addr, &vxlib_dst);
 
         if (VXLIB_SUCCESS == status)
         {

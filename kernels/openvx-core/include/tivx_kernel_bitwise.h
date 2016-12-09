@@ -18,7 +18,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Interface file for lut kernel
+ * \brief Interface file for bitwise kernel
  */
 
 

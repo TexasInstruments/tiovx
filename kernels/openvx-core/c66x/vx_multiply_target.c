@@ -71,7 +71,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src0->valid_roi;
 
@@ -177,9 +177,13 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         }
         if (status != VXLIB_SUCCESS)
         {
-            printf("Incorrect Params\n");
+            status = VX_FAILURE;
         }
 
+        tivxMemBufferUnmap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
+            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
+            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
     }

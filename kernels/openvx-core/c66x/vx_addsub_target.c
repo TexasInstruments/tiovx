@@ -68,11 +68,11 @@ static vx_status tivxKernelAddSub(
         tivxMemBufferMap(src0_desc->mem_ptr[0U].target_ptr, src0_desc->mem_size[0],
             src0_desc->mem_ptr[0U].mem_type, VX_READ_ONLY);
         tivxMemBufferMap(src1_desc->mem_ptr[0U].target_ptr, src1_desc->mem_size[0],
-            src1_desc->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
+            src1_desc->mem_ptr[0U].mem_type, VX_READ_ONLY);
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr, dst_desc->mem_size[0],
             dst_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src0_desc->valid_roi;
 
@@ -222,7 +222,17 @@ static vx_status tivxKernelAddSub(
                 }
             }
         }
+        if (VXLIB_SUCCESS != status)
+        {
+            status = VX_FAILURE;
+        }
 
+        tivxMemBufferUnmap(src0_desc->mem_ptr[0U].target_ptr,
+            src0_desc->mem_size[0], src0_desc->mem_ptr[0U].mem_type,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(src1_desc->mem_ptr[0U].target_ptr,
+            src1_desc->mem_size[0], src1_desc->mem_ptr[0U].mem_type,
+            VX_READ_ONLY);
         tivxMemBufferUnmap(dst_desc->mem_ptr[0U].target_ptr,
             dst_desc->mem_size[0], dst_desc->mem_ptr[0U].mem_type,
             VX_WRITE_ONLY);

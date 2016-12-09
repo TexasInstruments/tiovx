@@ -43,7 +43,7 @@ vx_status tivxAbsDiff(
             TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX];
 
         /* Get the target pointer from the shared pointer for all
-           three buffers */
+           buffers */
         src0_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_type);
         src1_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
@@ -51,7 +51,7 @@ vx_status tivxAbsDiff(
         dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
 
-        /* Map all three buffers, which invalidates the cache */
+        /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src0_desc->mem_ptr[0].target_ptr,
             src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -99,7 +99,7 @@ vx_status tivxAbsDiff(
             vxlib_dst.data_type = VXLIB_INT16;
         }
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src0_desc->valid_roi;
 
@@ -125,17 +125,21 @@ vx_status tivxAbsDiff(
                 (int16_t *)src0_addr, &vxlib_src0, (int16_t *)src1_addr,
                 &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst);
         }
-
-        if (VXLIB_SUCCESS == status)
-        {
-            tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-                dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
-                VX_WRITE_ONLY);
-        }
-        else
+        if (VXLIB_SUCCESS != status)
         {
             status = VX_FAILURE;
         }
+
+        tivxMemBufferUnmap(src0_desc->mem_ptr[0].target_ptr,
+            src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(src1_desc->mem_ptr[0].target_ptr,
+            src1_desc->mem_size[0], src1_desc->mem_ptr[0].mem_type,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
+            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+            VX_WRITE_ONLY);
+
     }
 
     return (status);

@@ -118,7 +118,7 @@ vx_status tivxProcess3x3Filter(
 
     if (VX_SUCCESS == status)
     {
-        /* Map all three buffers, which invalidates the cache */
+        /* Map all buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
             src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -133,12 +133,12 @@ vx_status tivxProcess3x3Filter(
         vxlib_src.data_type = VXLIB_UINT8;
 
         /* All 3x3 filter reduces the output size */
-        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x - 2U;
+        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
         vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y - 2U;
         vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
         vxlib_dst.data_type = VXLIB_UINT8;
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src_desc->valid_roi;
 
@@ -157,17 +157,17 @@ vx_status tivxProcess3x3Filter(
             status = kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
                 &vxlib_dst);
         }
-
-        if (VXLIB_SUCCESS == status)
-        {
-            tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-                dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
-                VX_WRITE_ONLY);
-        }
-        else
+        if (VXLIB_SUCCESS != status)
         {
             status = VX_FAILURE;
         }
+
+        tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,
+            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
+            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+            VX_WRITE_ONLY);
     }
 
     return (status);

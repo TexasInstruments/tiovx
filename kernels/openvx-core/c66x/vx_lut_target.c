@@ -64,7 +64,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
 
@@ -105,7 +105,15 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
                 &vxlib_src, (int16_t *)dst_addr, &vxlib_dst,
                 lut->mem_ptr.target_ptr, lut->num_items, 32768U);
         }
+        if (VXLIB_SUCCESS != status)
+        {
+            status = VX_FAILURE;
+        }
 
+        tivxMemBufferUnmap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
+            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(lut->mem_ptr.target_ptr, lut->mem_size,
+            lut->mem_ptr.mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
     }

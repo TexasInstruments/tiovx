@@ -62,7 +62,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
 
@@ -96,7 +96,13 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
                 dst_addr, &vxlib_dst, thr->upper, thr->lower, thr->true_value,
                 thr->false_value);
         }
+        if (status != VXLIB_SUCCESS)
+        {
+            status = VX_FAILURE;
+        }
 
+        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
+            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
     }

@@ -66,7 +66,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same images */
         rect = src->valid_roi;
 
@@ -112,7 +112,15 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
                 (int16_t*)dst_addr, &vxlib_dst, conv->mem_ptr.target_ptr,
                 conv->columns, conv->rows, conv->scale);
         }
+        if (VXLIB_SUCCESS != status)
+        {
+            status = VX_FAILURE;
+        }
 
+        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
+            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(conv->mem_ptr.target_ptr, conv->mem_size,
+            conv->mem_ptr.mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
     }

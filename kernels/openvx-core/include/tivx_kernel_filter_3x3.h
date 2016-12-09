@@ -18,7 +18,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Interface file for Erode3x3 kernel
+ * \brief Interface file for filt3x3 kernel
  */
 
 
