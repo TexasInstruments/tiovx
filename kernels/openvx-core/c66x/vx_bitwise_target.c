@@ -65,7 +65,7 @@ vx_status tivxKernelBitwiseProcess(
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
     vx_rectangle_t rect;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
-    VXLIB_bufParams2D_t vlib_src0, vlib_src1, vlib_dst;
+    VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
     tivxBitwiseKernelInfo *kern_info;
 
     if ((num_params != 3U) || (NULL == obj_desc[0U]) ||
@@ -98,29 +98,29 @@ vx_status tivxKernelBitwiseProcess(
         /* Map all three buffers, which invalidates the cache */
         tivxMemBufferMap(src0_desc->mem_ptr[0].target_ptr,
             src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);
+            VX_READ_ONLY);
         tivxMemBufferMap(src1_desc->mem_ptr[0].target_ptr,
             src1_desc->mem_size[0], src1_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);
+            VX_READ_ONLY);
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
-        vlib_src0.dim_x = src0_desc->imagepatch_addr[0U].dim_x;
-        vlib_src0.dim_y = src0_desc->imagepatch_addr[0U].dim_y;
-        vlib_src0.stride_y = src0_desc->imagepatch_addr[0U].stride_y;
-        vlib_src0.data_type = VXLIB_UINT8;
+        vxlib_src0.dim_x = src0_desc->imagepatch_addr[0U].dim_x;
+        vxlib_src0.dim_y = src0_desc->imagepatch_addr[0U].dim_y;
+        vxlib_src0.stride_y = src0_desc->imagepatch_addr[0U].stride_y;
+        vxlib_src0.data_type = VXLIB_UINT8;
 
-        vlib_src1.dim_x = src1_desc->imagepatch_addr[0U].dim_x;
-        vlib_src1.dim_y = src1_desc->imagepatch_addr[0U].dim_y;
-        vlib_src1.stride_y = src1_desc->imagepatch_addr[0U].stride_y;
-        vlib_src1.data_type = VXLIB_UINT8;
+        vxlib_src1.dim_x = src1_desc->imagepatch_addr[0U].dim_x;
+        vxlib_src1.dim_y = src1_desc->imagepatch_addr[0U].dim_y;
+        vxlib_src1.stride_y = src1_desc->imagepatch_addr[0U].stride_y;
+        vxlib_src1.data_type = VXLIB_UINT8;
 
-        vlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
-        vlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
-        vlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
-        vlib_dst.data_type = VXLIB_UINT8;
+        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
+        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
+        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
+        vxlib_dst.data_type = VXLIB_UINT8;
 
         /* Get the correct offset of the images from teh valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
@@ -140,8 +140,8 @@ vx_status tivxKernelBitwiseProcess(
         if (NULL != kern_info->vxlib_process)
         {
             status = kern_info->vxlib_process(
-                src0_addr, &vlib_src0, src1_addr, &vlib_src1,
-                dst_addr, &vlib_dst);
+                src0_addr, &vxlib_src0, src1_addr, &vxlib_src1,
+                dst_addr, &vxlib_dst);
 
             if (VXLIB_SUCCESS == status)
             {
@@ -167,7 +167,7 @@ vx_status tivxKernelBitwiseNotProcess(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     vx_rectangle_t rect;
-    VXLIB_bufParams2D_t vlib_src, vlib_dst;
+    VXLIB_bufParams2D_t vlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
 
     if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
@@ -205,10 +205,10 @@ vx_status tivxKernelBitwiseNotProcess(
         vlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
         vlib_src.data_type = VXLIB_UINT8;
 
-        vlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
-        vlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
-        vlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
-        vlib_dst.data_type = VXLIB_UINT8;
+        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
+        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
+        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
+        vxlib_dst.data_type = VXLIB_UINT8;
 
         /* Get the correct offset of the images from teh valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
@@ -222,7 +222,7 @@ vx_status tivxKernelBitwiseNotProcess(
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 
-        status = VXLIB_not_i8u_o8u(src_addr, &vlib_src, dst_addr, &vlib_dst);
+        status = VXLIB_not_i8u_o8u(src_addr, &vlib_src, dst_addr, &vxlib_dst);
 
         if (VXLIB_SUCCESS == status)
         {
