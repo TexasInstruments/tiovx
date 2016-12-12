@@ -107,6 +107,18 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
             tivx_target_kernel_instance target_kernel_instance,
             void **kernel_context, uint32_t *kernel_context_size);
 
+/*!
+ * \brief Get the border mode for the target kernel instance
+ *
+ *        Used by the kernel implemention to get border mode
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
+    tivx_target_kernel_instance target_kernel_instance,
+    vx_border_t *border_mode);
+
+
 #ifdef __cplusplus
 }
 #endif
