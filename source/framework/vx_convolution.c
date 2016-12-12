@@ -113,11 +113,24 @@ vx_status VX_API_CALL vxQueryConvolution(
         obj_desc = (tivx_obj_desc_convolution_t *)cnvl->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
+    if (obj_desc == NULL)
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryConvolution: Invalid Object Descriptor! \n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
-    else
+
+    if (VX_SUCCESS == status)
+    {
+        status = ownAllocConvolutionBuffer(&cnvl->base);
+
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "vxQueryConvolution: Could not allocate memory! \n");
+        }
+    }
+
+    if (VX_SUCCESS == status)
     {
         switch (attribute)
         {
