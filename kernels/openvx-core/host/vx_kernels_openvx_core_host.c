@@ -25,6 +25,7 @@ vx_status tivxAddKernelSub(vx_context context);
 vx_status tivxAddKernelThreshold(vx_context context);
 vx_status tivxAddKernelErode3x3(vx_context context);
 vx_status tivxAddKernelMultiply(vx_context context);
+vx_status tivxAddKernelConvolve(vx_context context);
 
 vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
@@ -34,6 +35,7 @@ vx_status tivxRemoveKernelSub(vx_context context);
 vx_status tivxRemoveKernelThreshold(vx_context context);
 vx_status tivxRemoveKernelErode3x3(vx_context context);
 vx_status tivxRemoveKernelMultiply(vx_context context);
+vx_status tivxRemoveKernelConvolve(vx_context context);
 
 Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
@@ -44,6 +46,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelThreshold, tivxRemoveKernelThreshold},
     {tivxAddKernelErode3x3, tivxRemoveKernelErode3x3},
     {tivxAddKernelMultiply, tivxRemoveKernelMultiply},
+    {tivxAddKernelConvolve, tivxRemoveKernelConvolve},
 };
 
 static vx_status tivxPublishKernels(vx_context context)
