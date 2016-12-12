@@ -66,7 +66,7 @@ static vx_status tivxKernelAddSub(
             dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_type);
 
         tivxMemBufferMap(src0_desc->mem_ptr[0U].target_ptr, src0_desc->mem_size[0],
-            src0_desc->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
+            src0_desc->mem_ptr[0U].mem_type, VX_READ_ONLY);
         tivxMemBufferMap(src1_desc->mem_ptr[0U].target_ptr, src1_desc->mem_size[0],
             src1_desc->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 

@@ -67,7 +67,7 @@ vx_status tivxProcess3x3Filter(
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     vx_rectangle_t rect;
     uint8_t *src_addr, *dst_addr;
-    VXLIB_bufParams2D_t vlib_src, vlib_dst;
+    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     tivxFilter3x3KernelInfo *kern_info;
 
     if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
@@ -121,22 +121,22 @@ vx_status tivxProcess3x3Filter(
         /* Map all three buffers, which invalidates the cache */
         tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
             src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);
+            VX_READ_ONLY);
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
-        vlib_src.dim_x = src_desc->imagepatch_addr[0U].dim_x;
-        vlib_src.dim_y = src_desc->imagepatch_addr[0U].dim_y;
-        vlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
-        vlib_src.data_type = VXLIB_UINT8;
+        vxlib_src.dim_x = src_desc->imagepatch_addr[0U].dim_x;
+        vxlib_src.dim_y = src_desc->imagepatch_addr[0U].dim_y;
+        vxlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
+        vxlib_src.data_type = VXLIB_UINT8;
 
         /* All 3x3 filter reduces the output size */
-        vlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x - 2U;
-        vlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y - 2U;
-        vlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
-        vlib_dst.data_type = VXLIB_UINT8;
+        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x - 2U;
+        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y - 2U;
+        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
+        vxlib_dst.data_type = VXLIB_UINT8;
 
         /* Get the correct offset of the images from teh valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
@@ -154,8 +154,8 @@ vx_status tivxProcess3x3Filter(
 
         if (kern_info->filter_func)
         {
-            status = kern_info->filter_func(src_addr, &vlib_src, dst_addr,
-                &vlib_dst);
+            status = kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
+                &vxlib_dst);
         }
 
         if (VXLIB_SUCCESS == status)

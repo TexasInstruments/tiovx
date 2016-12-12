@@ -25,7 +25,7 @@ vx_status tivxAbsDiff(
     tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
     vx_rectangle_t rect;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
-    VXLIB_bufParams2D_t vlib_src0, vlib_src1, vlib_dst;
+    VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
 
     if ((num_params != 3U) || (NULL == obj_desc[0U]) || (NULL == obj_desc[1U]) ||
         (NULL == obj_desc[2U]))
@@ -54,49 +54,49 @@ vx_status tivxAbsDiff(
         /* Map all three buffers, which invalidates the cache */
         tivxMemBufferMap(src0_desc->mem_ptr[0].target_ptr,
             src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);
+            VX_READ_ONLY);
         tivxMemBufferMap(src1_desc->mem_ptr[0].target_ptr,
             src1_desc->mem_size[0], src1_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);
+            VX_READ_ONLY);
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
-        vlib_src0.dim_x = src0_desc->imagepatch_addr[0U].dim_x;
-        vlib_src0.dim_y = src0_desc->imagepatch_addr[0U].dim_y;
-        vlib_src0.stride_y = src0_desc->imagepatch_addr[0U].stride_y;
+        vxlib_src0.dim_x = src0_desc->imagepatch_addr[0U].dim_x;
+        vxlib_src0.dim_y = src0_desc->imagepatch_addr[0U].dim_y;
+        vxlib_src0.stride_y = src0_desc->imagepatch_addr[0U].stride_y;
         if (VX_DF_IMAGE_U8 == src0_desc->format)
         {
-            vlib_src0.data_type = VXLIB_UINT8;
+            vxlib_src0.data_type = VXLIB_UINT8;
         }
         else
         {
-            vlib_src0.data_type = VXLIB_INT16;
+            vxlib_src0.data_type = VXLIB_INT16;
         }
 
-        vlib_src1.dim_x = src1_desc->imagepatch_addr[0U].dim_x;
-        vlib_src1.dim_y = src1_desc->imagepatch_addr[0U].dim_y;
-        vlib_src1.stride_y = src1_desc->imagepatch_addr[0U].stride_y;
+        vxlib_src1.dim_x = src1_desc->imagepatch_addr[0U].dim_x;
+        vxlib_src1.dim_y = src1_desc->imagepatch_addr[0U].dim_y;
+        vxlib_src1.stride_y = src1_desc->imagepatch_addr[0U].stride_y;
         if (VX_DF_IMAGE_U8 == src1_desc->format)
         {
-            vlib_src1.data_type = VXLIB_UINT8;
+            vxlib_src1.data_type = VXLIB_UINT8;
         }
         else
         {
-            vlib_src1.data_type = VXLIB_INT16;
+            vxlib_src1.data_type = VXLIB_INT16;
         }
 
-        vlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
-        vlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
-        vlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
+        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
+        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
+        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
         if (VX_DF_IMAGE_U8 == dst_desc->format)
         {
-            vlib_dst.data_type = VXLIB_UINT8;
+            vxlib_dst.data_type = VXLIB_UINT8;
         }
         else
         {
-            vlib_dst.data_type = VXLIB_INT16;
+            vxlib_dst.data_type = VXLIB_INT16;
         }
 
         /* Get the correct offset of the images from teh valid roi parameter,
@@ -114,16 +114,16 @@ vx_status tivxAbsDiff(
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 
-        if (VXLIB_UINT8 == vlib_dst.data_type)
+        if (VXLIB_UINT8 == vxlib_dst.data_type)
         {
-            status = VXLIB_absDiff_i8u_i8u_o8u(src0_addr, &vlib_src0, src1_addr,
-                &vlib_src1, dst_addr, &vlib_dst);
+            status = VXLIB_absDiff_i8u_i8u_o8u(src0_addr, &vxlib_src0, src1_addr,
+                &vxlib_src1, dst_addr, &vxlib_dst);
         }
         else
         {
             status = VXLIB_absDiff_i16s_i16s_o16s(
-                (int16_t *)src0_addr, &vlib_src0, (int16_t *)src1_addr,
-                &vlib_src1, (int16_t *)dst_addr, &vlib_dst);
+                (int16_t *)src0_addr, &vxlib_src0, (int16_t *)src1_addr,
+                &vxlib_src1, (int16_t *)dst_addr, &vxlib_dst);
         }
 
         if (VXLIB_SUCCESS == status)
