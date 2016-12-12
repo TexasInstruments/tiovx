@@ -27,6 +27,7 @@ void tivxAddTargetKernelErode3x3();
 void tivxAddTargetKernelMultiply();
 void tivxAddTargetKernelConvolve();
 void tivxAddTargetKernelWarpAffine();
+void tivxAddTargetKernelWarpPerspective();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -38,6 +39,7 @@ void tivxRemoveTargetKernelErode3x3();
 void tivxRemoveTargetKernelMultiply();
 void tivxRemoveTargetKernelConvolve();
 void tivxRemoveTargetKernelWarpAffine();
+void tivxRemoveTargetKernelWarpPerspective();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
@@ -49,7 +51,8 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelErode3x3, tivxRemoveTargetKernelErode3x3},
     {tivxAddTargetKernelMultiply, tivxRemoveTargetKernelMultiply},
     {tivxAddTargetKernelConvolve, tivxRemoveTargetKernelConvolve},
-    {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine}
+    {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
+    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective},
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()
