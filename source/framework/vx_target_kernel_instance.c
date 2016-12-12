@@ -165,3 +165,15 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
     }
     return status;
 }
+
+VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
+    tivx_target_kernel_instance target_kernel_instance,
+    vx_border_t *border_mode)
+{
+    if ((NULL != target_kernel_instance) && (NULL != border_mode))
+    {
+        memcpy(border_mode, &target_kernel_instance->border_mode,
+            sizeof(vx_border_t));
+    }
+}
+

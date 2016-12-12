@@ -51,6 +51,9 @@ typedef struct _tivx_target_kernel_instance {
     /* Kernel function context size */
     uint32_t kernel_context_size;
 
+    /*! \brief border mode */
+    vx_border_t border_mode;
+
 } tivx_target_kernel_instance_t;
 
 /*!

@@ -235,6 +235,9 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                 params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
             }
 
+            /* copy border mode also in the target_kernel_instance */
+            target_kernel_instance->border_mode = node_obj_desc->border_mode;
+
             status = tivxTargetKernelCreate(target_kernel_instance, params, node_obj_desc->num_params);
         }
 
