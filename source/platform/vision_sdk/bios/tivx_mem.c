@@ -182,7 +182,8 @@ void tivxMemBufferMap(
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0 != size))
+    if ((NULL != host_ptr) && (0 != size) && 
+        ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
         BspOsal_cacheWb(
             host_ptr,
