@@ -27,6 +27,7 @@ vx_status tivxAddKernelErode3x3(vx_context context);
 vx_status tivxAddKernelMultiply(vx_context context);
 vx_status tivxAddKernelConvolve(vx_context context);
 vx_status tivxAddKernelWarpAffine(vx_context context);
+vx_status tivxAddKernelWarpPerspective(vx_context context);
 
 vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
@@ -38,6 +39,7 @@ vx_status tivxRemoveKernelErode3x3(vx_context context);
 vx_status tivxRemoveKernelMultiply(vx_context context);
 vx_status tivxRemoveKernelConvolve(vx_context context);
 vx_status tivxRemoveKernelWarpAffine(vx_context context);
+vx_status tivxRemoveKernelWarpPerspective(vx_context context);
 
 Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
@@ -50,6 +52,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelMultiply, tivxRemoveKernelMultiply},
     {tivxAddKernelConvolve, tivxRemoveKernelConvolve},
     {tivxAddKernelWarpAffine, tivxRemoveKernelWarpAffine},
+    {tivxAddKernelWarpPerspective, tivxRemoveKernelWarpPerspective},
 };
 
 static vx_status tivxPublishKernels(vx_context context)
