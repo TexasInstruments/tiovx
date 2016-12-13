@@ -63,7 +63,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
+        /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
 

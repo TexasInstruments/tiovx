@@ -130,7 +130,7 @@ vx_status tivxAddKernelConvolve(vx_context context)
 
     kernel = vxAddUserKernel(
                             context,
-                            "org.khronos.openvx.custom_convolve",
+                            "org.khronos.openvx.custom_convolution",
                             VX_KERNEL_CUSTOM_CONVOLUTION,
                             NULL,
                             3,

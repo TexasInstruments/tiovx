@@ -132,7 +132,8 @@ vx_status tivxProcess3x3Filter(
         vxlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
         vxlib_src.data_type = VXLIB_UINT8;
 
-        /* All 3x3 filter reduces the output size */
+        /* All 3x3 filter reduces the output size, therefore reduce output
+         * height, but leave output width the same (DSP optimization) */
         vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
         vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y - 2U;
         vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;

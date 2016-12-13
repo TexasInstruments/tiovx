@@ -85,9 +85,9 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
         vxlib_src.data_type = VXLIB_UINT8;
 
-        /* All filter reduces the output size */
-        vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x -
-            (conv->columns/2U) * 2U;
+        /* All filter reduces the output size, therefore reduce output
+         * height, but leave output width the same (DSP optimization) */
+        vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
         vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y -
             (conv->rows/2U) * 2U;
         vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
