@@ -118,25 +118,6 @@ VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
     tivx_target_kernel_instance target_kernel_instance,
     vx_border_t *border_mode);
 
-/*!
- * \brief Function to set the private kernel instance specific arguments
- *        in the instance object
- *
- * \ingroup group_tivx_target_kernel
- */
-VX_API_ENTRY void tivxSetTargetKernelInstanceCustomArgs(
-    tivx_target_kernel_instance target_kernel_instance,
-    void *priv_args);
-
-/*!
- * \brief Function to get the private kernel instance specific arguments
- *        in the instance object
- *
- * \ingroup group_tivx_target_kernel
- */
-VX_API_ENTRY void *tivxGetTargetKernelInstanceCustomArgs(
-    tivx_target_kernel_instance target_kernel_instance);
-
 #ifdef __cplusplus
 }
 #endif

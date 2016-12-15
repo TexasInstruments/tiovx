@@ -64,7 +64,6 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vx_
                     tmp_kernel_instance->kernel_context = NULL;
                     tmp_kernel_instance->kernel_context_size = 0;
                     tmp_kernel_instance->kernel = kernel;
-                    tmp_kernel_instance->priv_args = NULL;
 
                     kernel_instance = tmp_kernel_instance;
                     break;
@@ -178,26 +177,4 @@ VX_API_ENTRY void tivxGetTargetKernelInstanceBorderMode(
     }
 }
 
-VX_API_ENTRY void tivxSetTargetKernelInstanceCustomArgs(
-    tivx_target_kernel_instance target_kernel_instance,
-    void *priv_args)
-{
-    if (NULL != target_kernel_instance)
-    {
-        target_kernel_instance->priv_args = priv_args;
-    }
-}
-
-VX_API_ENTRY void *tivxGetTargetKernelInstanceCustomArgs(
-    tivx_target_kernel_instance target_kernel_instance)
-{
-    void *ret_val = NULL;
-
-    if (NULL != target_kernel_instance)
-    {
-        ret_val = target_kernel_instance->priv_args;
-    }
-
-    return (ret_val);
-}
 

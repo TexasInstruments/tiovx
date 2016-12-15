@@ -28,7 +28,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     uint32_t *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     vx_rectangle_t rect;
-    uint32_t *prev_row;
+    uint32_t *prev_row, size;
 
     if (num_params != TIVX_KERNEL_INTGIMG_MAX_PARAMS)
     {
@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
         vxlib_dst.data_type = VXLIB_UINT32;
 
-        prev_row = tivxGetTargetKernelInstanceCustomArgs(kernel);
+        tivxGetTargetKernelInstanceContext(kernel, (void **)&prev_row, &size);
 
         if (NULL != prev_row)
         {
@@ -150,7 +150,8 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
         {
             memset(temp_ptr, 0, dst->imagepatch_addr[0].dim_x *
                 sizeof(uint32_t));
-            tivxSetTargetKernelInstanceCustomArgs(kernel, temp_ptr);
+            tivxSetTargetKernelInstanceContext(kernel, temp_ptr,
+                dst->imagepatch_addr[0].dim_x * sizeof(uint32_t));
         }
     }
 
@@ -162,7 +163,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
+    uint32_t i, size;
     tivx_obj_desc_image_t *dst;
     void *temp_ptr;
 
@@ -187,7 +188,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
 
-        temp_ptr = tivxGetTargetKernelInstanceCustomArgs(kernel);
+        tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &size);
 
         if (NULL == temp_ptr)
         {

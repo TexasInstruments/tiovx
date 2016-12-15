@@ -54,9 +54,6 @@ typedef struct _tivx_target_kernel_instance {
     /*! \brief border mode */
     vx_border_t border_mode;
 
-    /*! \brief Private kernel instance specific arguments */
-    void *priv_args;
-
 } tivx_target_kernel_instance_t;
 
 /*!
