@@ -1059,4 +1059,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
     return status;
 }
 
-
+void ownNodeClearExecuteState(vx_node node)
+{
+    if (NULL != node && NULL != node->obj_desc)
+    {
+        tivxFlagBitClear(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
+    }
+}

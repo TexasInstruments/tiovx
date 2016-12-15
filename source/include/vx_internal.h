@@ -145,7 +145,7 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 {
     uint32_t value = *flag_var;
 
-    value |= (value & ~flag_val);
+    value = (value & ~flag_val);
 
     *flag_var = value;
 }

@@ -170,6 +170,16 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
 
 }
 
+void ownGraphClearState(vx_graph graph)
+{
+    uint32_t i;
+
+    for(i=0; i < graph->num_nodes; i++)
+    {
+        ownNodeClearExecuteState(graph->nodes[i]);
+    }
+}
+
 VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
 {
     vx_graph  graph = NULL;
@@ -437,15 +447,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
 
     if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
     {
-        /* verify graph if not already verified */
-        status = vxVerifyGraph(graph);
+        status = vxScheduleGraph(graph);
         if(status == VX_SUCCESS)
         {
-            status = vxScheduleGraph(graph);
-            if(status == VX_SUCCESS)
-            {
-                status = vxWaitGraph(graph);
-            }
+            status = vxWaitGraph(graph);
         }
     }
     else
@@ -461,32 +466,39 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)
-        && (
-            graph->state == VX_GRAPH_STATE_VERIFIED
-            ||
-            graph->state == VX_GRAPH_STATE_COMPLETED
-           )
-        )
+    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
+
     {
-        /* A new graph cannot be scheduled until current graph execution finishes
-         */
-        ownReferenceLock(&graph->base);
+        /* verify graph if not already verified */
+        status = vxVerifyGraph(graph);
 
-        /* trigger graph execution by scheduling the head nodes
-         * Head nodes will trigger further nodes execution after their completion
-         * This will continue until leaf nodes executes
-         * After a leaf node executes, it will send a completion
-         * event.
-         * After all completion events are received, a graph is considered to have
-         * executed
-         */
-        for(i=0; i<graph->num_head_nodes; i++)
+        if ((status == VX_SUCCESS)
+            && (graph->state == VX_GRAPH_STATE_VERIFIED ||
+                graph->state == VX_GRAPH_STATE_COMPLETED))
         {
-            ownNodeKernelSchedule(graph->head_nodes[i]);
-        }
+            /* A new graph cannot be scheduled until current graph
+               execution finishes */
+            ownReferenceLock(&graph->base);
 
-        graph->state = VX_GRAPH_STATE_RUNNING;
+            ownGraphClearState(graph);
+
+            /* trigger graph execution by scheduling the head nodes
+             * Head nodes will trigger further nodes execution after
+             * their completion
+             * This will continue until leaf nodes executes
+             * After a leaf node executes, it will send a completion
+             * event.
+             * After all completion events are received, a graph is
+             * considered to have
+             * executed
+             */
+            for(i=0; i<graph->num_head_nodes; i++)
+            {
+                ownNodeKernelSchedule(graph->head_nodes[i]);
+            }
+
+            graph->state = VX_GRAPH_STATE_RUNNING;
+        }
     }
     else
     {

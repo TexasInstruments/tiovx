@@ -207,6 +207,12 @@ vx_action ownNodeExecuteUserCallback(vx_node node);
  */
 vx_status ownNodeSendCompletionEvent(vx_node node);
 
+/*! \brief clears execute status of the node
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeClearExecuteState(vx_node node);
+
 #ifdef __cplusplus
 }
 #endif
