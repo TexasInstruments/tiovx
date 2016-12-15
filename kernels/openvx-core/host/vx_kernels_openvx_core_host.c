@@ -39,6 +39,7 @@ vx_status tivxAddKernelPhase(vx_context context);
 vx_status tivxAddKernelMagnitude(vx_context context);
 vx_status tivxAddKernelConvertDepth(vx_context context);
 vx_status tivxAddKernelHistogram(vx_context context);
+vx_status tivxAddKernelEqualizeHistogram(vx_context context);
 
 vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
@@ -62,6 +63,7 @@ vx_status tivxRemoveKernelPhase(vx_context context);
 vx_status tivxRemoveKernelMagnitude(vx_context context);
 vx_status tivxRemoveKernelConvertDepth(vx_context context);
 vx_status tivxRemoveKernelHistogram(vx_context context);
+vx_status tivxRemoveKernelEqualizeHistogram(vx_context context);
 
 Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
@@ -85,7 +87,8 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelPhase, tivxRemoveKernelPhase},
     {tivxAddKernelMagnitude, tivxRemoveKernelMagnitude},
     {tivxAddKernelConvertDepth, tivxRemoveKernelConvertDepth},
-    {tivxAddKernelHistogram, tivxRemoveKernelHistogram}
+    {tivxAddKernelHistogram, tivxRemoveKernelHistogram},
+    {tivxAddKernelEqualizeHistogram, tivxRemoveKernelEqualizeHistogram}
 };
 
 static vx_status tivxPublishKernels(vx_context context)
