@@ -3,6 +3,7 @@
 * ALL RIGHTS RESERVED
 '''
 
+from .utils import *
 from .enums import *
 from .reference import *
 from .scalar import *
@@ -40,6 +41,8 @@ from .objectarray import *
 from .export import *
 from .export_image import *
 from .export_code import *
+from .kernel import *
+from .kernel_code import *
 
 from .array import *
 
