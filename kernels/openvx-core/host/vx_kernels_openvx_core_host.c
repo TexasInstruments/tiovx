@@ -44,6 +44,7 @@ vx_status tivxAddKernelMagnitude(vx_context context);
 vx_status tivxAddKernelMinMaxLoc(vx_context context);
 vx_status tivxAddKernelMeanStdDev(vx_context context);
 vx_status tivxAddKernelChannelExtract(vx_context context);
+vx_status tivxAddKernelChannelCombine(vx_context context);
 
 vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
@@ -72,6 +73,7 @@ vx_status tivxRemoveKernelMagnitude(vx_context context);
 vx_status tivxRemoveKernelMinMaxLoc(vx_context context);
 vx_status tivxRemoveKernelMeanStdDev(vx_context context);
 vx_status tivxRemoveKernelChannelExtract(vx_context context);
+vx_status tivxRemoveKernelChannelCombine(vx_context context);
 
 Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
@@ -97,10 +99,11 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelConvertDepth, tivxRemoveKernelConvertDepth},
     {tivxAddKernelHistogram, tivxRemoveKernelHistogram},
     {tivxAddKernelEqualizeHistogram, tivxRemoveKernelEqualizeHistogram},
-    {tivxAddKernelMagnitude, tivxRemoveKernelMagnitude}
+    {tivxAddKernelMagnitude, tivxRemoveKernelMagnitude},
     {tivxAddKernelMinMaxLoc, tivxRemoveKernelMinMaxLoc},
     {tivxAddKernelMeanStdDev, tivxRemoveKernelMeanStdDev},
     {tivxAddKernelChannelExtract, tivxRemoveKernelChannelExtract},
+    {tivxAddKernelChannelCombine, tivxRemoveKernelChannelCombine},
 };
 
 static vx_status tivxPublishKernels(vx_context context)

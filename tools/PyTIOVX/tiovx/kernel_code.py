@@ -232,14 +232,20 @@ class KernelExportCode :
 
         # define status variables and obj descriptor variable
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        need_plane_idx_var = False
         for prm in self.kernel.params :
+            if prm.do_map_umnap_all_planes :
+                need_plane_idx_var = True
             self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
+        if need_plane_idx_var is True :
+            self.target_c_code.write_line("uint16_t plane_idx;")
         self.target_c_code.write_newline()
 
         # checks function parameters
         self.target_c_code.write_line("if ( num_params != TIVX_KERNEL_%s_MAX_PARAMS" % self.kernel.name_upper )
         for prm in self.kernel.params :
-             self.target_c_code.write_line("    || (NULL == obj_desc[TIVX_KERNEL_%s_%s_IDX])" % (self.kernel.name_upper, prm.name_upper))
+            if prm.state is ParamState.REQUIRED :
+                self.target_c_code.write_line("    || (NULL == obj_desc[TIVX_KERNEL_%s_%s_IDX])" % (self.kernel.name_upper, prm.name_upper))
         self.target_c_code.write_line(")")
 
         self.target_c_code.write_open_brace()
@@ -270,24 +276,54 @@ class KernelExportCode :
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if Type.is_scalar_type(prm.type) is False :
-                self.target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
-                self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_line("if( %s != NULL)" % desc)
+                    self.target_c_code.write_open_brace()
+                if prm.do_map_umnap_all_planes :
+                    self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                    self.target_c_code.write_open_brace()
+                    self.target_c_code.write_line("%s->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                    self.target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_type);" % (desc, desc))
+                    self.target_c_code.write_close_brace()
+                else:
+                    self.target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                    self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
         # map descriptors pointer
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if prm.do_map :
-                self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[0].target_ptr," % desc )
-                self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
-                self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_line("if( %s != NULL)" % desc)
+                    self.target_c_code.write_open_brace()
+                if prm.do_map_umnap_all_planes :
+                    self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                    self.target_c_code.write_open_brace()
+                    self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[plane_idx].target_ptr," % desc )
+                    self.target_c_code.write_line("   %s->mem_size[plane_idx], %s->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                    self.target_c_code.write_close_brace()
+                else:
+                    self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[0].target_ptr," % desc )
+                    self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
+                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
         # set scalar values to local variables for input type scalars
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if (Type.is_scalar_type(prm.type) is True) and prm.direction != Direction.OUTPUT :
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_line("if( %s != NULL)" % desc)
+                    self.target_c_code.write_open_brace()
                 self.target_c_code.write_line("%s_value = %s->data.%s;" % (prm.name_lower, desc, Type.get_scalar_obj_desc_data_name(prm.type)))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
         self.target_c_code.write_comment_line("call kernel processing function")
@@ -301,9 +337,22 @@ class KernelExportCode :
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if prm.do_unmap :
-                self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[0].target_ptr," % desc )
-                self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
-                self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_line("if( %s != NULL)" % desc)
+                    self.target_c_code.write_open_brace()
+                if prm.do_map_umnap_all_planes :
+                    self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                    self.target_c_code.write_open_brace()
+                    self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[plane_idx].target_ptr," % desc )
+                    self.target_c_code.write_line("   %s->mem_size[plane_idx], %s->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                    self.target_c_code.write_close_brace()
+                else:
+                    self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[0].target_ptr," % desc )
+                    self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
+                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
         # set scalar values from local variables for output type scalars

@@ -44,6 +44,7 @@ void tivxAddTargetKernelMagnitude();
 void tivxAddTargetKernelMinMaxLoc();
 void tivxAddTargetKernelMeanStdDev();
 void tivxAddTargetKernelChannelExtract();
+void tivxAddTargetKernelChannelCombine();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -72,6 +73,7 @@ void tivxRemoveTargetKernelMagnitude();
 void tivxRemoveTargetKernelMinMaxLoc();
 void tivxRemoveTargetKernelMeanStdDev();
 void tivxRemoveTargetKernelChannelExtract();
+void tivxRemoveTargetKernelChannelCombine();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
@@ -101,6 +103,7 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
     {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
+    {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()
