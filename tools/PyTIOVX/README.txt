@@ -2,7 +2,7 @@
 
 'tiovx' is Python module to specify OpenVX graph in compact manner using
 predefined class and objects. After specification of OpenVX graph it
-can be exported in various formats included C code, JPG image
+can be exported in various formats including C code, JPG image
 
 Installation
 ============
@@ -18,12 +18,12 @@ Installation
      # dot -V
    
 3. Install 'tiovx' module by executing below command at folder specified
-   Folder: <tiovx install path>/tiovx/tools/tiovx
+   Folder: <tiovx install path>/tiovx/tools/PyTIOVX
    Type Command:
    # pip install -e .
 
    Expected output,
-     Obtaining file:///<tiovx install path>/tiovx/tools/tiovx
+     Obtaining file:///<tiovx install path>/tiovx/tools/PyTIOVX
      Installing collected packages: tiovx
        Running setup.py develop for tiovx
      Successfully installed tiovx-0.1
