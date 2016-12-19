@@ -38,6 +38,7 @@ void tivxAddTargetKernelSobel3x3();
 void tivxAddTargetKernelPhase();
 void tivxAddTargetKernelMagnitude();
 void tivxAddTargetKernelConvertDepth();
+void tivxAddTargetKernelHistogram();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -60,6 +61,7 @@ void tivxRemoveTargetKernelSobel3x3();
 void tivxRemoveTargetKernelPhase();
 void tivxRemoveTargetKernelMagnitude();
 void tivxRemoveTargetKernelConvertDepth();
+void tivxRemoveTargetKernelHistogram();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
@@ -82,7 +84,8 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelSobel3x3, tivxRemoveTargetKernelSobel3x3},
     {tivxAddTargetKernelPhase, tivxRemoveTargetKernelPhase},
     {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
-    {tivxAddTargetKernelConvertDepth, tivxRemoveTargetKernelConvertDepth}
+    {tivxAddTargetKernelConvertDepth, tivxRemoveTargetKernelConvertDepth},
+    {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram}
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()
