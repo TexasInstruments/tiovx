@@ -174,6 +174,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
     uint32_t node_cur_idx, node_next_idx;
     uint32_t prm_cur_idx, prm_next_idx;
     uint32_t prm_cur_dir, prm_next_dir;
+    vx_reference ref1, ref2;
 
     for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
     {
@@ -198,9 +199,22 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
                         if( prm_next_dir == VX_INPUT || prm_next_dir == VX_BIDIRECTIONAL)
                         {
+                            ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
+                            ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
+
                             /* check if input data reference of next node is equal to
                                output data reference of current */
-                            if(ownNodeGetParameterRef(node_cur, prm_cur_idx) == ownNodeGetParameterRef(node_next, prm_next_idx))
+                            if(ref1 == ref2)
+                            {
+                                /* add node_next as output node for current node if not already added */
+                                ownNodeAddOutNode(node_cur, node_next);
+
+                                /* add node_current as input node for next node if not already added */
+                                ownNodeAddInNode(node_next, node_cur);
+                            }
+
+                            if (((vx_reference)graph != ref2->scope) &&
+                                (ref1 == ref2->scope))
                             {
                                 /* add node_next as output node for current node if not already added */
                                 ownNodeAddOutNode(node_cur, node_next);
@@ -273,7 +287,7 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
                  * memory gets allocated only once
                  */
                 status = ownReferenceAllocMem(ref);
-  
+
                 if(status != VX_SUCCESS)
                 {
                     break;
@@ -339,7 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         meta[i] = vxCreateMetaFormat(graph->base.context);
 
         /* This should not fail at all */
-	if (vxGetStatus((vx_reference)meta[i]) != VX_SUCCESS)
+    if (vxGetStatus((vx_reference)meta[i]) != VX_SUCCESS)
         {
             status = VX_ERROR_NO_RESOURCES;
         }
