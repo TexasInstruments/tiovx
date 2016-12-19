@@ -322,12 +322,13 @@ static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     }
 }
 
-static void tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc)
+static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc)
 {
+    vx_action action;
     vx_node node = (vx_node)node_obj_desc->host_node_ref;
 
     /* return action is ignored */
-    ownNodeExecuteUserCallback(node);
+    action = ownNodeExecuteUserCallback(node);
 
     /* if this is leaf node, send completion event */
     if(ownNodeGetNumOutNodes(node)==0)
@@ -335,6 +336,16 @@ static void tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_d
         /* post completeion event */
         ownNodeSendCompletionEvent(node);
     }
+
+    return (action);
+}
+
+static void tivxTargetSetGraphStateAbandon(
+    tivx_obj_desc_node_t *node_obj_desc)
+{
+    vx_node node = (vx_node)node_obj_desc->host_node_ref;
+
+    node->graph->state = VX_GRAPH_STATE_ABANDONED;
 }
 
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
@@ -353,6 +364,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 {
     uint16_t node_obj_desc_id;
     tivx_obj_desc_node_t *node_obj_desc;
+    vx_action action;
     vx_status status = VX_SUCCESS;
 
     switch(cmd_obj_desc->cmd_id)
@@ -401,7 +413,12 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
             if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
             {
-                tivxTargetCmdDescHandleUserCallback(node_obj_desc);
+                action = tivxTargetCmdDescHandleUserCallback(node_obj_desc);
+
+                if (action == VX_ACTION_ABANDON)
+                {
+                    tivxTargetSetGraphStateAbandon(node_obj_desc);
+                }
             }
             /* No ack for user callback command */
             break;

@@ -482,6 +482,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 
             ownGraphClearState(graph);
 
+            /* Setting this state before starting, so that
+               user callback can set graph state correctly. */
+            graph->state = VX_GRAPH_STATE_RUNNING;
+
             /* trigger graph execution by scheduling the head nodes
              * Head nodes will trigger further nodes execution after
              * their completion
@@ -497,7 +501,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
                 ownNodeKernelSchedule(graph->head_nodes[i]);
             }
 
-            graph->state = VX_GRAPH_STATE_RUNNING;
         }
     }
     else
@@ -513,17 +516,29 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)
-        && graph->state == VX_GRAPH_STATE_RUNNING
-        )
+    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
     {
-        /* wait for completion events from all leaf nodes */
-        for(i=0; i<graph->num_leaf_nodes; i++)
+        if (graph->state == VX_GRAPH_STATE_RUNNING)
         {
-            ownNodeWaitCompletionEvent(graph->leaf_nodes[i]);
-        }
+            /* wait for completion events from all leaf nodes */
+            for(i=0; i<graph->num_leaf_nodes; i++)
+            {
+                ownNodeWaitCompletionEvent(graph->leaf_nodes[i]);
+            }
 
-        graph->state = VX_GRAPH_STATE_COMPLETED;
+            if (graph->state == VX_GRAPH_STATE_RUNNING)
+            {
+                graph->state = VX_GRAPH_STATE_COMPLETED;
+            }
+            if (graph->state == VX_GRAPH_STATE_ABANDONED)
+            {
+                status = VX_ERROR_GRAPH_ABANDONED;
+            }
+        }
+        else
+        {
+            status = VX_ERROR_GRAPH_ABANDONED;
+        }
 
         ownReferenceUnlock(&graph->base);
     }
