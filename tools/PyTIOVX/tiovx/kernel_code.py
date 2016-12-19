@@ -234,8 +234,9 @@ class KernelExportCode :
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
         need_plane_idx_var = False
         for prm in self.kernel.params :
-            if prm.do_map_umnap_all_planes :
-                need_plane_idx_var = True
+            if prm.do_map or prm.do_unmap :
+                if prm.do_map_unmap_all_planes :
+                    need_plane_idx_var = True
             self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
         if need_plane_idx_var is True :
             self.target_c_code.write_line("uint16_t plane_idx;")
@@ -279,15 +280,16 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if prm.do_map_umnap_all_planes :
-                    self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
-                    self.target_c_code.write_open_brace()
-                    self.target_c_code.write_line("%s->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(" % desc )
-                    self.target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_type);" % (desc, desc))
-                    self.target_c_code.write_close_brace()
-                else:
-                    self.target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
-                    self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
+                if prm.do_map or prm.do_unmap :
+                    if prm.do_map_unmap_all_planes :
+                        self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                        self.target_c_code.write_open_brace()
+                        self.target_c_code.write_line("%s->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                        self.target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_type);" % (desc, desc))
+                        self.target_c_code.write_close_brace()
+                    else:
+                        self.target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                        self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
@@ -299,7 +301,7 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if prm.do_map_umnap_all_planes :
+                if prm.do_map_unmap_all_planes :
                     self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                     self.target_c_code.write_open_brace()
                     self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[plane_idx].target_ptr," % desc )
@@ -340,7 +342,7 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if prm.do_map_umnap_all_planes :
+                if prm.do_map_unmap_all_planes :
                     self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                     self.target_c_code.write_open_brace()
                     self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[plane_idx].target_ptr," % desc )

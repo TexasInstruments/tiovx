@@ -25,7 +25,7 @@ vx_status tivxChannelCombine(
     tivx_obj_desc_image_t *src3_desc;
     tivx_obj_desc_image_t *dst_desc;
     uint16_t plane_idx;
-
+    
     if ( num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX])
@@ -36,13 +36,13 @@ vx_status tivxChannelCombine(
     }
     else
     {
-
+        
         src0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX];
         src1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX];
         src2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC2_IDX];
         src3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC3_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX];
-
+        
         src0_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_type);
         src1_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
@@ -62,7 +62,7 @@ vx_status tivxChannelCombine(
             dst_desc->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(
               dst_desc->mem_ptr[plane_idx].shared_ptr, dst_desc->mem_ptr[plane_idx].mem_type);
         }
-
+        
         tivxMemBufferMap(src0_desc->mem_ptr[0].target_ptr,
            src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -87,14 +87,14 @@ vx_status tivxChannelCombine(
                dst_desc->mem_size[plane_idx], dst_desc->mem_ptr[plane_idx].mem_type,
                 VX_WRITE_ONLY);
         }
-
-
+        
+        
         /* call kernel processing function */
-
-
-
+        
+        
+        
         /* kernel processing function complete */
-
+        
         tivxMemBufferUnmap(src0_desc->mem_ptr[0].target_ptr,
            src0_desc->mem_size[0], src0_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -119,10 +119,10 @@ vx_status tivxChannelCombine(
                dst_desc->mem_size[plane_idx], dst_desc->mem_ptr[plane_idx].mem_type,
                 VX_WRITE_ONLY);
         }
-
-
+        
+        
     }
-
+    
     return status;
 }
 
@@ -132,7 +132,7 @@ vx_status tivxChannelCombineCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-
+    
     return status;
 }
 
@@ -142,7 +142,7 @@ vx_status tivxChannelCombineDelete(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-
+    
     return status;
 }
 
@@ -152,7 +152,7 @@ vx_status tivxChannelCombineControl(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-
+    
     return status;
 }
 
@@ -161,9 +161,9 @@ void tivxAddTargetKernelChannelCombine()
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-
+    
     self_cpu = tivxGetSelfCpuId();
-
+    
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
@@ -179,7 +179,7 @@ void tivxAddTargetKernelChannelCombine()
     {
         status = VX_FAILURE;
     }
-
+    
     if (status == VX_SUCCESS)
     {
         vx_channel_combine_target_kernel = tivxAddTargetKernel(
@@ -196,7 +196,7 @@ void tivxAddTargetKernelChannelCombine()
 void tivxRemoveTargetKernelChannelCombine()
 {
     vx_status status = VX_SUCCESS;
-
+    
     status = tivxRemoveTargetKernel(vx_channel_combine_target_kernel);
     if (status == VX_SUCCESS)
     {

@@ -369,9 +369,6 @@ vx_status tivxChannelExtract(
     else
     {
         vx_enum channel_value;
-        vx_rectangle_t rect;
-        VXLIB_bufParams2D_t vxlib_dst;
-        uint8_t *dst_addr;
 
         in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_IN_IDX];
         channel_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
@@ -379,81 +376,89 @@ vx_status tivxChannelExtract(
 
         out_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_type);
-
+        
         tivxMemBufferMap(out_desc->mem_ptr[0].target_ptr,
            out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-         */
-        rect = out_desc->valid_roi;
-
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uint32_t)out_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &out_desc->imagepatch_addr[0]));
-
-        vxlib_dst.dim_x = out_desc->imagepatch_addr[0U].dim_x;
-        vxlib_dst.dim_y = out_desc->imagepatch_addr[0U].dim_y;
-        vxlib_dst.stride_y = out_desc->imagepatch_addr[0U].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
-
         channel_value = channel_desc->data.enm;
 
         /* call kernel processing function */
-        if (   in_desc->format == VX_DF_IMAGE_RGB
-            || in_desc->format == VX_DF_IMAGE_RGBX
-            )
         {
-            status = tivxChannelExtractRgbRgbxInput(
-                            in_desc, out_desc,
-                            channel_value,
-                            dst_addr, &vxlib_dst);
-        }
-        else
-        if(    in_desc->format == VX_DF_IMAGE_YUYV
-            || in_desc->format == VX_DF_IMAGE_UYVY
-            )
-        {
-            status = tivxChannelExtractYuyvUyvyInput(
-                            in_desc, out_desc,
-                            channel_value,
-                            dst_addr, &vxlib_dst);
-        }
-        else
-        if(    in_desc->format == VX_DF_IMAGE_NV12
-            || in_desc->format == VX_DF_IMAGE_NV21
-            )
-        {
-            status = tivxChannelExtractNv12Nv21Input(
-                            in_desc, out_desc,
-                            channel_value,
-                            dst_addr, &vxlib_dst);
-        }
-        else
-        if(    in_desc->format == VX_DF_IMAGE_IYUV
-            || in_desc->format == VX_DF_IMAGE_YUV4
-            )
-        {
-            status = tivxChannelExtractIyuvYuv4Input(
-                            in_desc, out_desc,
-                            channel_value,
-                            dst_addr, &vxlib_dst);
-        }
-        else
-        {
-            status = VX_FAILURE;
-        }
+            vx_rectangle_t rect;
+            VXLIB_bufParams2D_t vxlib_dst;
+            uint8_t *dst_addr;
 
-        if (VXLIB_SUCCESS != status)
-        {
-            status = VX_FAILURE;
-        }
+            /* Get the correct offset of the images from the valid roi parameter,
+             */
+            rect = out_desc->valid_roi;
 
+            /* TODO: Do we require to move pointer even for destination image */
+            dst_addr = (uint8_t *)((uint32_t)out_desc->mem_ptr[0U].target_ptr +
+                ownComputePatchOffset(rect.start_x, rect.start_y,
+                &out_desc->imagepatch_addr[0]));
+
+            vxlib_dst.dim_x = out_desc->imagepatch_addr[0U].dim_x;
+            vxlib_dst.dim_y = out_desc->imagepatch_addr[0U].dim_y;
+            vxlib_dst.stride_y = out_desc->imagepatch_addr[0U].stride_y;
+            vxlib_dst.data_type = VXLIB_UINT8;
+
+            if (   in_desc->format == VX_DF_IMAGE_RGB
+                || in_desc->format == VX_DF_IMAGE_RGBX
+                )
+            {
+                status = tivxChannelExtractRgbRgbxInput(
+                                in_desc, out_desc,
+                                channel_value,
+                                dst_addr, &vxlib_dst);
+            }
+            else
+            if(    in_desc->format == VX_DF_IMAGE_YUYV
+                || in_desc->format == VX_DF_IMAGE_UYVY
+                )
+            {
+                status = tivxChannelExtractYuyvUyvyInput(
+                                in_desc, out_desc,
+                                channel_value,
+                                dst_addr, &vxlib_dst);
+            }
+            else
+            if(    in_desc->format == VX_DF_IMAGE_NV12
+                || in_desc->format == VX_DF_IMAGE_NV21
+                )
+            {
+                status = tivxChannelExtractNv12Nv21Input(
+                                in_desc, out_desc,
+                                channel_value,
+                                dst_addr, &vxlib_dst);
+            }
+            else
+            if(    in_desc->format == VX_DF_IMAGE_IYUV
+                || in_desc->format == VX_DF_IMAGE_YUV4
+                )
+            {
+                status = tivxChannelExtractIyuvYuv4Input(
+                                in_desc, out_desc,
+                                channel_value,
+                                dst_addr, &vxlib_dst);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
+
+            if (VXLIB_SUCCESS != status)
+            {
+                status = VX_FAILURE;
+            }
+        }
         /* kernel processing function complete */
+
         tivxMemBufferUnmap(out_desc->mem_ptr[0].target_ptr,
            out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
+        
+        
     }
 
     return status;

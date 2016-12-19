@@ -39,14 +39,9 @@ vx_status tivxChannelExtract(
         channel_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
         out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX];
         
-        in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_type);
         out_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_type);
         
-        tivxMemBufferMap(in_desc->mem_ptr[0].target_ptr,
-           in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
-            VX_READ_ONLY);
         tivxMemBufferMap(out_desc->mem_ptr[0].target_ptr,
            out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
@@ -59,9 +54,6 @@ vx_status tivxChannelExtract(
         
         /* kernel processing function complete */
         
-        tivxMemBufferUnmap(in_desc->mem_ptr[0].target_ptr,
-           in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
-            VX_READ_ONLY);
         tivxMemBufferUnmap(out_desc->mem_ptr[0].target_ptr,
            out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
