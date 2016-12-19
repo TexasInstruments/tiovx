@@ -99,7 +99,6 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelConvertDepth, tivxRemoveKernelConvertDepth},
     {tivxAddKernelHistogram, tivxRemoveKernelHistogram},
     {tivxAddKernelEqualizeHistogram, tivxRemoveKernelEqualizeHistogram},
-    {tivxAddKernelMagnitude, tivxRemoveKernelMagnitude},
     {tivxAddKernelMinMaxLoc, tivxRemoveKernelMinMaxLoc},
     {tivxAddKernelMeanStdDev, tivxRemoveKernelMeanStdDev},
     {tivxAddKernelChannelExtract, tivxRemoveKernelChannelExtract},

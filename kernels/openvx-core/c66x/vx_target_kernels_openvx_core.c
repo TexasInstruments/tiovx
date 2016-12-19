@@ -99,7 +99,6 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelConvertDepth, tivxRemoveTargetKernelConvertDepth},
     {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram},
     {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
-    {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
     {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
     {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},

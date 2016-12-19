@@ -82,7 +82,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_KERNEL_MAX_OBJECTS                       (32u)
+#define TIVX_KERNEL_MAX_OBJECTS                       (64u)
 
 /*!
  * \brief Max number array objects supported
