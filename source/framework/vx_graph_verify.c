@@ -265,15 +265,19 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
         {
             ref = ownNodeGetParameterRef(node_cur, prm_cur_idx);
 
-            /* alloc memory for data reference, if not already allocated
-             * Its ok to call this multiple times for the same reference
-             * memory gets allocated only once
-             */
-            status = ownReferenceAllocMem(ref);
-
-            if(status != VX_SUCCESS)
+            /* reference could be null for optional parameters */
+            if (NULL != ref)
             {
-                break;
+                /* alloc memory for data reference, if not already allocated
+                 * Its ok to call this multiple times for the same reference
+                 * memory gets allocated only once
+                 */
+                status = ownReferenceAllocMem(ref);
+  
+                if(status != VX_SUCCESS)
+                {
+                    break;
+                }
             }
         }
         if(status != VX_SUCCESS)
