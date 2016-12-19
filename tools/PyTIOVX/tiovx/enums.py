@@ -44,11 +44,73 @@ class Type(Enum):
     META_FORMAT  = 35
     OBJECT_ARRAY = 36
 
+    def __lt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value < other.value
+        return NotImplemented
+
+    def __gt__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value > other.value
+        return NotImplemented
+
+    def __eq__(self, other):
+        if self.__class__ is other.__class__:
+            return self.value == other.value
+        return NotImplemented
+
     def get_vx_enum_name(type) :
         return "VX_TYPE_" + type.name
 
     def get_vx_name(type) :
         return "vx_" + type.name.lower()
+
+    def is_scalar_type(type) :
+        if type > Type.INVALID and type < Type.REFERENCE :
+            return True
+        if type == Type.SCALAR :
+            return True
+        return False
+
+    def get_obj_desc_name(type):
+        if Type.is_scalar_type(type) :
+            type = Type.SCALAR
+        return "tivx_obj_desc_" + type.name.lower() +  "_t"
+
+    def get_scalar_obj_desc_data_name(type) :
+        if Type.is_scalar_type(type) :
+            if type is Type.CHAR :
+                return "chr"
+            if type is Type.INT8 :
+                return "s8"
+            if type is Type.UINT8 :
+                return "u8"
+            if type is Type.INT16:
+                return "s16"
+            if type is Type.UINT16:
+                return "u16"
+            if type is Type.INT32:
+                return "s32"
+            if type is Type.UINT32:
+                return "u32"
+            if type is Type.INT64:
+                return "s64"
+            if type is Type.UINT64:
+                return "u64"
+            if type is Type.FLOAT32:
+                return "f32"
+            if type is Type.FLOAT64:
+                return "f64"
+            if type is Type.ENUM :
+                return "enm"
+            if type is Type.SIZE :
+                return "size"
+            if type is Type.DF_IMAGE:
+                return "fcc"
+            if type is Type.BOOL :
+                return "boolean"
+            return "invalid"
+        return "invalid"
 
 class DfImage(Enum) :
     INVALID = 0
@@ -100,6 +162,24 @@ class Channel(Enum) :
     def get_vx_name(type) :
         return "vx_channel_e"
 
+class Cpu(Enum) :
+    INVALID = 1
+    DSP1    = 2
+    DSP2    = 3
+    EVE1    = 4
+    EVE2    = 5
+    EVE3    = 6
+    EVE4    = 7
+    MPU_0   = 8
+    MPU_1   = 9
+    IPU1_0  = 10
+    IPU1_1  = 11
+    IPU2_0  = 12
+    IPU2_1  = 13
+
+    def get_vx_enum_name(type) :
+        return "TIVX_CPU_ID_" + type.name
+
 class Target(Enum) :
     INVALID = 1
     DSP1    = 2
@@ -115,6 +195,37 @@ class Target(Enum) :
     IPU2_0  = 12
     IPU2_1  = 13
     DEFAULT = DSP1
+
+    def get_vx_enum_name(type) :
+        return "TIVX_TARGET_" + type.name
+
+    def get_cpu(target) :
+        if target == Target.DSP1 :
+            return Cpu.DSP1
+        if target == Target.DSP2 :
+            return Cpu.DSP2
+        if target == Target.EVE1 :
+            return Cpu.EVE1
+        if target == Target.EVE2 :
+            return Cpu.EVE2
+        if target == Target.EVE3 :
+            return Cpu.EVE3
+        if target == Target.EVE4 :
+            return Cpu.EVE4
+        if target == Target.MPU_0 :
+            return Cpu.MPU_0
+        if target == Target.MPU_1 :
+            return Cpu.MPU_1
+        if target == Target.IPU1_0 :
+            return Cpu.IPU1_0
+        if target == Target.IPU1_1 :
+            return Cpu.IPU1_1
+        if target == Target.IPU2_0 :
+            return Cpu.IPU2_0
+        if target == Target.IPU2_1 :
+            return Cpu.IPU2_1
+
+        return Cpu.INVALID
 
 class Policy(Enum) :
     WRAP      = 1
@@ -179,3 +290,33 @@ class Norm(Enum):
 
     def get_vx_name(type) :
         return "vx_norm_e"
+
+class Direction(Enum):
+    INPUT = 1
+    OUTPUT = 2
+    BIDIRECTIONAL = 3
+
+    def get_vx_enum_name(type) :
+        return "VX_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_direction_e"
+
+    def get_access_type(type) :
+        if type == Direction.INPUT:
+            return "VX_READ_ONLY"
+        if type == Direction.OUTPUT:
+            return "VX_WRITE_ONLY"
+        if type == Direction.BIDIRECTIONAL:
+            return "VX_READ_WRITE"
+        return "INVALID"
+
+class ParamState(Enum):
+    REQUIRED = 1
+    OPTIONAL = 2
+
+    def get_vx_enum_name(type) :
+        return "VX_PARAMETER_STATE_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_parameter_state_e"
