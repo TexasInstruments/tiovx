@@ -43,6 +43,7 @@ void tivxAddTargetKernelEqualizeHistogram();
 void tivxAddTargetKernelMagnitude();
 void tivxAddTargetKernelMinMaxLoc();
 void tivxAddTargetKernelMeanStdDev();
+void tivxAddTargetKernelChannelExtract();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -70,6 +71,7 @@ void tivxRemoveTargetKernelEqualizeHistogram();
 void tivxRemoveTargetKernelMagnitude();
 void tivxRemoveTargetKernelMinMaxLoc();
 void tivxRemoveTargetKernelMeanStdDev();
+void tivxRemoveTargetKernelChannelExtract();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
@@ -97,7 +99,8 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
     {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
     {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
-    {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev}
+    {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
+    {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()

@@ -81,7 +81,7 @@ class KernelExportCode :
         self.host_c_code.write_line("status = vxFinalizeKernel(kernel);")
         self.host_c_code.write_close_brace()
 
-        self.host_c_code.write_if_status()
+        self.host_c_code.write_line("if (status != VX_SUCCESS)")
         self.host_c_code.write_open_brace()
         self.host_c_code.write_line("vxReleaseKernel(&kernel);")
         self.host_c_code.write_line("kernel = NULL;")

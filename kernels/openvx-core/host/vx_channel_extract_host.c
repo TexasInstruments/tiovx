@@ -20,8 +20,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
     vx_scalar scalar;
     vx_df_image fmt[2U];
     vx_df_image out_fmt;
-    vx_enum type;
-    vx_uint32 i, w[2U], h[2U];
+    vx_enum type, channel;
+    vx_uint32 i, w[2U], h[2U], out_w, out_h;
 
     for (i = 0U; i < TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS; i ++)
     {
@@ -47,6 +47,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
 
         status |= vxQueryScalar(scalar, VX_SCALAR_TYPE, &type, sizeof(type));
+
+        status |= vxCopyScalar(scalar, &channel, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
     }
 
     if (VX_SUCCESS == status)
@@ -73,6 +75,31 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         }
     }
 
+    out_fmt = VX_DF_IMAGE_U8;
+    out_w = w[0U];
+    out_h = h[0U];
+    /* output WxH MUST be equal to input WxH except in below conditions */
+    switch(fmt[0U])
+    {
+        case VX_DF_IMAGE_IYUV:
+        case VX_DF_IMAGE_NV12:
+        case VX_DF_IMAGE_NV21:
+            if(channel == VX_CHANNEL_U || channel == VX_CHANNEL_V)
+            {
+                out_w = out_w/2;
+                out_h = out_h/2;
+            }
+            break;
+        case VX_DF_IMAGE_UYVY:
+        case VX_DF_IMAGE_YUYV:
+            if(channel == VX_CHANNEL_U || channel == VX_CHANNEL_V)
+            {
+                out_w = out_w/2;
+            }
+            break;
+    }
+
+
     if ((VX_SUCCESS == status) &&
         (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
     {
@@ -82,12 +109,12 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
 
         /* Check for frame sizes */
-        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
+        if ((out_w != w[1U]) || (out_h != h[1U]))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ( fmt[1U] != VX_DF_IMAGE_U8 )
+        if ( fmt[1U] != out_fmt )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -95,15 +122,13 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        out_fmt = VX_DF_IMAGE_U8;
-
         i = TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX;
 
         vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
             sizeof(out_fmt));
-        vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
+        vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
             sizeof(w[0U]));
-        vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
+        vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,
             sizeof(h[0U]));
     }
 
@@ -171,7 +196,7 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status == VX_SUCCESS)
+        if (status != VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;

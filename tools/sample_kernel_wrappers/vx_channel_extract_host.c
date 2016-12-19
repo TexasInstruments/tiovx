@@ -80,7 +80,7 @@ vx_status tivxAddKernelChannelExtract(vx_context context)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if (status == VX_SUCCESS)
+        if (status != VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;
