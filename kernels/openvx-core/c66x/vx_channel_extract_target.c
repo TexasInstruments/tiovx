@@ -264,7 +264,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
 
         if(channel_value == VX_CHANNEL_Y)
         {
-            status = VXLIB_channelCombine_1to1_i8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
+            status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
         }
         else
         {
@@ -338,7 +338,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
            in_desc->mem_size[plane_idx], in_desc->mem_ptr[plane_idx].mem_type,
             VX_READ_ONLY);
 
-        status = VXLIB_channelCombine_1to1_i8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
+        status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
 
         tivxMemBufferUnmap(in_desc->mem_ptr[plane_idx].target_ptr,
            in_desc->mem_size[plane_idx], in_desc->mem_ptr[plane_idx].mem_type,
@@ -376,7 +376,7 @@ vx_status tivxChannelExtract(
 
         out_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_type);
-        
+
         tivxMemBufferMap(out_desc->mem_ptr[0].target_ptr,
            out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
@@ -457,8 +457,8 @@ vx_status tivxChannelExtract(
         tivxMemBufferUnmap(out_desc->mem_ptr[0].target_ptr,
            out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
-        
-        
+
+
     }
 
     return status;

@@ -118,12 +118,12 @@ static vx_status tivxKernelConvertDepth(
 
         if (VXLIB_INT16 == vxlib_dst.data_type)
         {
-            status = VXLIB_convertDepth_8to16((uint8_t *)src_addr,
+            status = VXLIB_convertDepth_i8u_o16s((uint8_t *)src_addr,
                         &vxlib_src, (int16_t *)dst_addr, &vxlib_dst, sc_desc[1]->data.s32);
         }
         else
         {
-            status = VXLIB_convertDepth_16to8((int16_t *)src_addr,
+            status = VXLIB_convertDepth_i16s_o8u((int16_t *)src_addr,
                         &vxlib_src, (uint8_t *)dst_addr, &vxlib_dst, sc_desc[1]->data.s32, overflow_policy);
         }
 
