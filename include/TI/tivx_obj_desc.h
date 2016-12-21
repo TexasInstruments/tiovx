@@ -402,7 +402,7 @@ typedef struct _tivx_obj_desc_pyramid
     vx_df_image format;
 
     /*! \brief array of object descriptor ids for the image object */
-    uint16_t obj_desc_id[TIVX_PYRAMID_MAX_OBJECT];
+    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_OBJECT];
 } tivx_obj_desc_pyramid_t;
 
 /*!

@@ -49,6 +49,14 @@ extern "C" {
  */
 
 
+/*!
+ * \brief Max levels supported for ORB scale factor
+ *        Note: If this macro is changed, change #gOrbScaleFactor also
+ *              in vx_pyramid file.
+ * \ingroup group_vx_pyramid
+ */
+#define VX_PYRAMID_MAX_LEVELS_FOR_ORB_SCALE_FACTOR      (17u)
+
 
 /*!
  * \brief Pyramid object internal state

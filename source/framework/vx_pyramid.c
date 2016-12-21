@@ -42,6 +42,28 @@ static vx_status ownDestructPyramid(vx_reference ref);
 static vx_status ownAllocPyramidBuffer(vx_reference ref);
 static vx_status ownInitPyramid(vx_pyramid prmd);
 
+static const vx_float32 gOrbScaleFactor
+    [VX_PYRAMID_MAX_LEVELS_FOR_ORB_SCALE_FACTOR] =
+{
+    1.0,
+    0.8408964152537146,
+    0.7071067811865476,
+    0.5946035575013605,
+    0.5,
+    0.4204482076268573,
+    0.3535533905932737,
+    0.2973017787506803,
+    0.25,
+    0.2102241038134287,
+    0.1767766952966369,
+    0.1486508893753401,
+    0.125,
+    0.1051120519067143,
+    0.08838834764831843,
+    0.07432544468767006,
+    0.0625
+};
+
 VX_API_ENTRY vx_status VX_API_CALL vxReleasePyramid(vx_pyramid *prmd)
 {
     return (ownReleaseReferenceInt(
@@ -68,6 +90,11 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
             status = VX_FAILURE;
         }
         if (levels > TIVX_PYRAMID_MAX_OBJECT)
+        {
+            status = VX_FAILURE;
+        }
+        if ((scale == VX_SCALE_PYRAMID_ORB) &&
+            (levels > VX_PYRAMID_MAX_LEVELS_FOR_ORB_SCALE_FACTOR))
         {
             status = VX_FAILURE;
         }
@@ -105,6 +132,13 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     obj_desc->scale = scale;
                     obj_desc->format = format;
                     prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
+
+                    status = ownInitPyramid(prmd);
+
+                    if (VX_SUCCESS != status)
+                    {
+                        vxReleasePyramid(&prmd);
+                    }
                 }
             }
         }
@@ -144,6 +178,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 {
     vx_pyramid prmd = NULL;
     vx_context context;
+    vx_uint32 i;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     /* levels can not be 0 even in virtual prmd */
@@ -190,6 +225,11 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 prmd->base.scope = (vx_reference)graph;
 
                 prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
+
+                for (i = 0u; i < TIVX_PYRAMID_MAX_OBJECT; i ++)
+                {
+                    prmd->img[i] = NULL;
+                }
             }
         }
 
@@ -218,7 +258,7 @@ vx_status ownInitVirtualPyramid(
             obj_desc->height = height;
             obj_desc->format = format;
 
-            status = VX_SUCCESS;
+            status = ownInitPyramid(prmd);
         }
     }
 
@@ -303,13 +343,34 @@ vx_status VX_API_CALL vxQueryPyramid(
 static vx_status ownAllocPyramidBuffer(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
+    vx_uint32 i, j;
     vx_pyramid prmd = (vx_pyramid)ref;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
+    vx_image img;
 
     if(prmd->base.type == VX_TYPE_PYRAMID)
     {
         if(prmd->base.obj_desc != NULL)
         {
-            status = ownInitPyramid(prmd);
+            obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
+            for (i = 0u; i < obj_desc->num_levels; i++)
+            {
+                img = prmd->img[i];
+
+                if ((NULL != img) && (NULL != img->base.mem_alloc_callback))
+                {
+                    status = img->base.mem_alloc_callback((vx_reference)img);
+
+                    if (VX_SUCCESS != status)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_VALUE;
+                }
+            }
         }
         else
         {
@@ -321,12 +382,45 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
+    if (VX_SUCCESS != status)
+    {
+        for (j = 0; j < i; j++)
+        {
+            if (NULL != prmd->img[j])
+            {
+                /* increment the internal counter on the image, not the
+                   external one */
+                ownDecrementReference((vx_reference)prmd->img[j], VX_INTERNAL);
+
+                ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
+                    VX_TYPE_IMAGE, VX_EXTERNAL, NULL);
+            }
+        }
+    }
+
     return status;
 }
 
 static vx_status ownDestructPyramid(vx_reference ref)
 {
     vx_pyramid prmd = (vx_pyramid)ref;
+    vx_uint32 i = 0;
+    tivx_obj_desc_pyramid_t *obj_desc = NULL;
+
+    obj_desc = (tivx_obj_desc_pyramid_t *)prmd->base.obj_desc;
+
+    for (i = 0; i < obj_desc->num_levels; i++)
+    {
+        if (NULL != prmd->img[i])
+        {
+            /* increment the internal counter on the image, not the
+               external one */
+            ownDecrementReference((vx_reference)prmd->img[i], VX_INTERNAL);
+
+            ownReleaseReferenceInt((vx_reference *)&prmd->img[i],
+                VX_TYPE_IMAGE, VX_EXTERNAL, NULL);
+        }
+    }
 
     if(prmd->base.type == VX_TYPE_PYRAMID)
     {
@@ -357,11 +451,12 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         img = vxCreateImage(prmd->base.context, w, h,
             obj_desc->format);
 
-        if (img != NULL)
+        if (vxGetStatus((vx_reference)img) == VX_SUCCESS)
         {
             prmd->img[i] = img;
-            obj_desc->obj_desc_id[i] =
-                img->base.obj_desc->obj_desc_id;
+            obj_desc->img_obj_desc[i] =
+                (tivx_obj_desc_image_t *)
+                    tivxObjDescGet(img->base.obj_desc->obj_desc_id);
 
             /* increment the internal counter on the image, not the
                external one */
@@ -372,14 +467,15 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
 
             if (VX_SCALE_PYRAMID_ORB == scale)
             {
-                w = (vx_uint32)ceilf((vx_float32)w * t1);
-                h = (vx_uint32)ceilf((vx_float32)h * t1);
-                t1 = t1 * scale;
+                w = (vx_uint32)ceilf((vx_float32)obj_desc->width *
+                    gOrbScaleFactor[i+1U]);
+                h = (vx_uint32)ceilf((vx_float32)obj_desc->height *
+                    gOrbScaleFactor[i+1U]);
             }
             else
             {
-                w = (vx_uint32)ceilf((vx_float32)w * t1);
-                h = (vx_uint32)ceilf((vx_float32)h * t1);
+                w = (vx_uint32)ceilf((vx_float32)obj_desc->width * t1);
+                h = (vx_uint32)ceilf((vx_float32)obj_desc->height * t1);
                 t1 = t1 * scale;
             }
         }
@@ -387,7 +483,7 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         {
             status = VX_FAILURE;
             vxAddLogEntry(&prmd->base.context->base, VX_ERROR_NO_RESOURCES,
-               "Could not allocate threshold object descriptor\n");
+               "Could not allocate image object descriptor\n");
             break;
         }
     }
@@ -396,10 +492,14 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
     {
         for (j = 0; j < i; j ++)
         {
-            if (NULL != prmd->img[j]->base.destructor_callback)
+            if (NULL != prmd->img[j])
             {
-                prmd->img[j]->base.destructor_callback(
-                    (vx_reference)prmd->img[j]);
+                /* increment the internal counter on the image, not the
+                   external one */
+                ownDecrementReference((vx_reference)prmd->img[j], VX_INTERNAL);
+
+                ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
+                    VX_TYPE_IMAGE, VX_EXTERNAL, NULL);
             }
         }
     }
