@@ -186,33 +186,30 @@ static int scale_check_pixel(CT_Image src, CT_Image dst, int x, int y, vx_enum i
         vx_int32 p01 = ct_image_get_pixel_8u(src, x_min + 0, y_min + 1, border);
         vx_int32 p10 = ct_image_get_pixel_8u(src, x_min + 1, y_min + 0, border);
         vx_int32 p11 = ct_image_get_pixel_8u(src, x_min + 1, y_min + 1, border);
+        vx_float32 ref_float;
         vx_int32 ref;
+
+        // We don't compare the output when an input pixel is undefined (UNDEFINED border mode)
         vx_bool defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
-        if (defined == vx_false_e)
-        {
-            vx_bool defined_any = (vx_bool)((p00 != -1) || (p10 != -1) || (p01 != -1) || (p11 != -1));
-            if (defined_any)
-            {
-                if ((p00 == -1 || p10 == -1) && fabs(t - 1.0) <= 1e-7)
-                    p00 = p10 = 0;
-                else if ((p01 == -1 || p11 == -1) && fabs(t - 0.0) <= 1e-7)
-                    p01 = p11 = 0;
-                if ((p00 == -1 || p01 == -1) && fabs(s - 1.0) <= 1e-7)
-                    p00 = p01 = 0;
-                else if ((p01 == -1 || p11 == -1) && fabs(s - 0.0) <= 1e-7)
-                    p01 = p11 = 0;
-                defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
-            }
+        if (defined == vx_false_e) {
+            return 1;
         }
-        if (defined == vx_false_e)
+
+        // Compute the expected result (float)
+        ref_float = (1 - s) * (1 - t) * p00 +
+                    (    s) * (1 - t) * p10 +
+                    (1 - s) * (    t) * p01 +
+                    (    s) * (    t) * p11;
+
+        // Take the nearest integer to avoid problems with casts in case of float rounding errors
+        // (e.g: 30.999999 should give 31, not 30)
+        ref = (vx_int32)(ref_float + 0.5f);
+
+        // A difference of 1 is allowed
+        if (abs(res - ref) <= 1) {
             return 1;
-        ref = (vx_int32)(
-                (1 - s) * (1 - t) * p00 +
-                (    s) * (1 - t) * p10 +
-                (1 - s) * (    t) * p01 +
-                (    s) * (    t) * p11);
-        if (abs(res - ref) <= 1)
-            return 1;
+        }
+
         return 0; // don't generate failure, we will check num failed pixels later
     }
     if (interpolation == VX_INTERPOLATION_AREA)
@@ -271,33 +268,30 @@ static int scale_check_pixel_exact(CT_Image src, CT_Image dst, int x, int y, vx_
         vx_int32 p01 = ct_image_get_pixel_8u(src, x_min + 0, y_min + 1, border);
         vx_int32 p10 = ct_image_get_pixel_8u(src, x_min + 1, y_min + 0, border);
         vx_int32 p11 = ct_image_get_pixel_8u(src, x_min + 1, y_min + 1, border);
+        vx_float32 ref_float;
         vx_int32 ref;
+
+        // We don't compare the output when an input pixel is undefined (UNDEFINED border mode)
         vx_bool defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
-        if (defined == vx_false_e)
-        {
-            vx_bool defined_any = (vx_bool)((p00 != -1) || (p10 != -1) || (p01 != -1) || (p11 != -1));
-            if (defined_any)
-            {
-                if ((p00 == -1 || p10 == -1) && fabs(t - 1.0) <= 1e-7)
-                    p00 = p10 = 0;
-                else if ((p01 == -1 || p11 == -1) && fabs(t - 0.0) <= 1e-7)
-                    p01 = p11 = 0;
-                if ((p00 == -1 || p01 == -1) && fabs(s - 1.0) <= 1e-7)
-                    p00 = p01 = 0;
-                else if ((p01 == -1 || p11 == -1) && fabs(s - 0.0) <= 1e-7)
-                    p01 = p11 = 0;
-                defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
-            }
+        if (defined == vx_false_e) {
+            return 1;
         }
-        if (defined == vx_false_e)
+
+        // Compute the expected result (float)
+        ref_float = (1 - s) * (1 - t) * p00 +
+                    (    s) * (1 - t) * p10 +
+                    (1 - s) * (    t) * p01 +
+                    (    s) * (    t) * p11;
+
+        // Take the nearest integer to avoid problems with casts in case of float rounding errors
+        // (e.g: 30.999999 should give 31, not 30)
+        ref = (vx_int32)(ref_float + 0.5f);
+
+        // The result must be exact
+        if (ref == res) {
             return 1;
-        ref = (vx_int32)(
-                (1 - s) * (1 - t) * p00 +
-                (    s) * (1 - t) * p10 +
-                (1 - s) * (    t) * p01 +
-                (    s) * (    t) * p11);
-        if (ref == res)
-            return 1;
+        }
+
         CT_FAIL_(return 0, "Check failed for pixel (%d, %d): %d (expected %d)", x, y, (int)res, (int)ref);
     }
     if (interpolation == VX_INTERPOLATION_AREA)
