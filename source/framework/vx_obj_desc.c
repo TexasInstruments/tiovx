@@ -194,3 +194,18 @@ uint16_t tivxReferenceGetObjDescId(vx_reference ref)
 
     return (obj_desc_id);
 }
+
+void tivxGetObjDescList(uint16_t obj_desc_id[],
+    tivx_obj_desc_t *obj_desc[], uint32_t num_desc_id)
+{
+    vx_uint32 i;
+
+    for (i = 0u; i < num_desc_id; i ++)
+    {
+        if (obj_desc_id[i] < g_obj_desc_table.num_entries)
+        {
+            obj_desc[i] =
+                (tivx_obj_desc_t*)&g_obj_desc_table.table_base[obj_desc_id[i]];
+        }
+    }
+}

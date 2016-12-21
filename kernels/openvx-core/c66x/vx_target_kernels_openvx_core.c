@@ -46,6 +46,7 @@ void tivxAddTargetKernelMeanStdDev();
 void tivxAddTargetKernelChannelExtract();
 void tivxAddTargetKernelChannelCombine();
 void tivxAddTargetKernelColorConvert();
+void tivxAddTargetKernelGaussianPyramid();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -76,9 +77,9 @@ void tivxRemoveTargetKernelMeanStdDev();
 void tivxRemoveTargetKernelChannelExtract();
 void tivxRemoveTargetKernelChannelCombine();
 void tivxRemoveTargetKernelColorConvert();
+void tivxRemoveTargetKernelGaussianPyramid();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
-    {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
     {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
     {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
@@ -106,6 +107,8 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
     {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
     {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
+    {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},
+    {tivxAddTargetKernelGaussianPyramid, tivxAddTargetKernelGaussianPyramid}
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()

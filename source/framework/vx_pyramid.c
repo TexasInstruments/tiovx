@@ -43,7 +43,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref);
 static vx_status ownInitPyramid(vx_pyramid prmd);
 
 static const vx_float32 gOrbScaleFactor
-    [VX_PYRAMID_MAX_LEVELS_FOR_ORB_SCALE_FACTOR] =
+    [TIVX_PYRAMID_MAX_LEVELS] =
 {
     1.0,
     0.8408964152537146,
@@ -94,7 +94,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
             status = VX_FAILURE;
         }
         if ((scale == VX_SCALE_PYRAMID_ORB) &&
-            (levels > VX_PYRAMID_MAX_LEVELS_FOR_ORB_SCALE_FACTOR))
+            (levels > TIVX_PYRAMID_MAX_LEVELS))
         {
             status = VX_FAILURE;
         }
@@ -454,9 +454,8 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
         if (vxGetStatus((vx_reference)img) == VX_SUCCESS)
         {
             prmd->img[i] = img;
-            obj_desc->img_obj_desc[i] =
-                (tivx_obj_desc_image_t *)
-                    tivxObjDescGet(img->base.obj_desc->obj_desc_id);
+            obj_desc->obj_desc_id[i] =
+                img->base.obj_desc->obj_desc_id;
 
             /* increment the internal counter on the image, not the
                external one */

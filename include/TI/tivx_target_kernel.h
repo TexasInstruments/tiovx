@@ -35,6 +35,14 @@ typedef struct _tivx_target_kernel *tivx_target_kernel;
 typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 
 /*!
+ * \brief Max levels supported for the pyramid
+ *        Note: If this macro is changed, change #gOrbScaleFactor also
+ *              in vx_pyramid file.
+ * \ingroup group_vx_pyramid
+ */
+#define TIVX_PYRAMID_MAX_LEVELS             (17u)
+
+/*!
 * \brief The target kernel callback
 *
 *        For create_func, delete_func and process_func callbacks

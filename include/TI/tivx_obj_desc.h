@@ -402,7 +402,7 @@ typedef struct _tivx_obj_desc_pyramid
     vx_df_image format;
 
     /*! \brief array of object descriptor ids for the image object */
-    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_OBJECT];
+    uint16_t obj_desc_id[TIVX_PYRAMID_MAX_OBJECT];
 } tivx_obj_desc_pyramid_t;
 
 /*!
@@ -585,6 +585,20 @@ typedef struct _tivx_obj_desc_scalar
     } data;
 
 } tivx_obj_desc_scalar_t;
+
+
+/*!
+ * \brief Function to get the pointer to object descriptors for the
+ *        given object descriptor id
+ *
+ * \param [in]  obj_desc_id  list of object descriptor id
+ * \param [out] obj_desc     object descriptor pointer
+ * \param [in]  num_desc_id  number of valid entries in obj_desc_id
+ *
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+void tivxGetObjDescList(uint16_t obj_desc_id[],
+    tivx_obj_desc_t *obj_desc[], uint32_t num_desc_id);
 
 #ifdef __cplusplus
 }
