@@ -45,6 +45,7 @@ void tivxAddTargetKernelMinMaxLoc();
 void tivxAddTargetKernelMeanStdDev();
 void tivxAddTargetKernelChannelExtract();
 void tivxAddTargetKernelChannelCombine();
+void tivxAddTargetKernelColorConvert();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelLut();
@@ -74,8 +75,10 @@ void tivxRemoveTargetKernelMinMaxLoc();
 void tivxRemoveTargetKernelMeanStdDev();
 void tivxRemoveTargetKernelChannelExtract();
 void tivxRemoveTargetKernelChannelCombine();
+void tivxRemoveTargetKernelColorConvert();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
+    {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
     {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
     {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},

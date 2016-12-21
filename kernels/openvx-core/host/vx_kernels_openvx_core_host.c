@@ -45,6 +45,7 @@ vx_status tivxAddKernelMinMaxLoc(vx_context context);
 vx_status tivxAddKernelMeanStdDev(vx_context context);
 vx_status tivxAddKernelChannelExtract(vx_context context);
 vx_status tivxAddKernelChannelCombine(vx_context context);
+vx_status tivxAddKernelColorConvert(vx_context context);
 
 vx_status tivxRemoveKernelAbsDiff(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
@@ -74,8 +75,10 @@ vx_status tivxRemoveKernelMinMaxLoc(vx_context context);
 vx_status tivxRemoveKernelMeanStdDev(vx_context context);
 vx_status tivxRemoveKernelChannelExtract(vx_context context);
 vx_status tivxRemoveKernelChannelCombine(vx_context context);
+vx_status tivxRemoveKernelColorConvert(vx_context context);
 
 Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
+    {tivxAddKernelColorConvert, tivxRemoveKernelColorConvert},
     {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
     {tivxAddKernelLut, tivxRemoveKernelLut},
     {tivxAddKernelBitwise, tivxRemoveKernelBitwise},
