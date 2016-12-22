@@ -18,97 +18,95 @@ typedef struct  {
 } Tivx_Target_Kernel_List;
 
 void tivxAddTargetKernelAbsDiff();
-void tivxAddTargetKernelLut();
-void tivxAddTargetKernelBitwise();
-void tivxAddTargetKernelAdd();
-void tivxAddTargetKernelSub();
-void tivxAddTargetKernelThreshold();
-void tivxAddTargetKernelErode3x3();
-void tivxAddTargetKernelMultiply();
-void tivxAddTargetKernelConvolve();
-void tivxAddTargetKernelWarpAffine();
-void tivxAddTargetKernelWarpPerspective();
-void tivxAddTargetKernelScale();
 void tivxAddTargetKernelAccumulate();
 void tivxAddTargetKernelAccumulateSquare();
 void tivxAddTargetKernelAccumulateWeighted();
-void tivxAddTargetKernelRemap();
-void tivxAddTargetKernelIntegralImage();
-void tivxAddTargetKernelSobel3x3();
-void tivxAddTargetKernelPhase();
-void tivxAddTargetKernelMagnitude();
-void tivxAddTargetKernelConvertDepth();
-void tivxAddTargetKernelHistogram();
-void tivxAddTargetKernelEqualizeHistogram();
-void tivxAddTargetKernelMagnitude();
-void tivxAddTargetKernelMinMaxLoc();
-void tivxAddTargetKernelMeanStdDev();
-void tivxAddTargetKernelChannelExtract();
+void tivxAddTargetKernelAdd();
+void tivxAddTargetKernelBitwise();
 void tivxAddTargetKernelChannelCombine();
+void tivxAddTargetKernelChannelExtract();
 void tivxAddTargetKernelColorConvert();
+void tivxAddTargetKernelConvertDepth();
+void tivxAddTargetKernelConvolve();
+void tivxAddTargetKernelEqualizeHistogram();
+void tivxAddTargetKernelErode3x3();
 void tivxAddTargetKernelGaussianPyramid();
+void tivxAddTargetKernelHistogram();
+void tivxAddTargetKernelIntegralImage();
+void tivxAddTargetKernelLut();
+void tivxAddTargetKernelMagnitude();
+void tivxAddTargetKernelMeanStdDev();
+void tivxAddTargetKernelMinMaxLoc();
+void tivxAddTargetKernelMultiply();
+void tivxAddTargetKernelPhase();
+void tivxAddTargetKernelRemap();
+void tivxAddTargetKernelScale();
+void tivxAddTargetKernelSobel3x3();
+void tivxAddTargetKernelSub();
+void tivxAddTargetKernelThreshold();
+void tivxAddTargetKernelWarpAffine();
+void tivxAddTargetKernelWarpPerspective();
 
 void tivxRemoveTargetKernelAbsDiff();
-void tivxRemoveTargetKernelLut();
-void tivxRemoveTargetKernelBitwise();
-void tivxRemoveTargetKernelAdd();
-void tivxRemoveTargetKernelSub();
-void tivxRemoveTargetKernelThreshold();
-void tivxRemoveTargetKernelErode3x3();
-void tivxRemoveTargetKernelMultiply();
-void tivxRemoveTargetKernelConvolve();
-void tivxRemoveTargetKernelWarpAffine();
-void tivxRemoveTargetKernelWarpPerspective();
-void tivxRemoveTargetKernelScale();
 void tivxRemoveTargetKernelAccumulate();
 void tivxRemoveTargetKernelAccumulateSquare();
 void tivxRemoveTargetKernelAccumulateWeighted();
-void tivxRemoveTargetKernelRemap();
-void tivxRemoveTargetKernelIntegralImage();
-void tivxRemoveTargetKernelSobel3x3();
-void tivxRemoveTargetKernelPhase();
-void tivxRemoveTargetKernelMagnitude();
-void tivxRemoveTargetKernelConvertDepth();
-void tivxRemoveTargetKernelHistogram();
-void tivxRemoveTargetKernelEqualizeHistogram();
-void tivxRemoveTargetKernelMagnitude();
-void tivxRemoveTargetKernelMinMaxLoc();
-void tivxRemoveTargetKernelMeanStdDev();
-void tivxRemoveTargetKernelChannelExtract();
+void tivxRemoveTargetKernelAdd();
+void tivxRemoveTargetKernelBitwise();
 void tivxRemoveTargetKernelChannelCombine();
+void tivxRemoveTargetKernelChannelExtract();
 void tivxRemoveTargetKernelColorConvert();
+void tivxRemoveTargetKernelConvertDepth();
+void tivxRemoveTargetKernelConvolve();
+void tivxRemoveTargetKernelEqualizeHistogram();
+void tivxRemoveTargetKernelErode3x3();
 void tivxRemoveTargetKernelGaussianPyramid();
+void tivxRemoveTargetKernelHistogram();
+void tivxRemoveTargetKernelIntegralImage();
+void tivxRemoveTargetKernelLut();
+void tivxRemoveTargetKernelMagnitude();
+void tivxRemoveTargetKernelMeanStdDev();
+void tivxRemoveTargetKernelMinMaxLoc();
+void tivxRemoveTargetKernelMultiply();
+void tivxRemoveTargetKernelPhase();
+void tivxRemoveTargetKernelRemap();
+void tivxRemoveTargetKernelScale();
+void tivxRemoveTargetKernelSobel3x3();
+void tivxRemoveTargetKernelSub();
+void tivxRemoveTargetKernelThreshold();
+void tivxRemoveTargetKernelWarpAffine();
+void tivxRemoveTargetKernelWarpPerspective();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
-    {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
-    {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
-    {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
-    {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
-    {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
-    {tivxAddTargetKernelErode3x3, tivxRemoveTargetKernelErode3x3},
-    {tivxAddTargetKernelMultiply, tivxRemoveTargetKernelMultiply},
-    {tivxAddTargetKernelConvolve, tivxRemoveTargetKernelConvolve},
-    {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
-    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective},
-    {tivxAddTargetKernelScale, tivxRemoveTargetKernelScale},
     {tivxAddTargetKernelAccumulate, tivxRemoveTargetKernelAccumulate},
     {tivxAddTargetKernelAccumulateSquare, tivxRemoveTargetKernelAccumulateSquare},
     {tivxAddTargetKernelAccumulateWeighted, tivxRemoveTargetKernelAccumulateWeighted},
-    {tivxAddTargetKernelRemap, tivxRemoveTargetKernelRemap},
-    {tivxAddTargetKernelIntegralImage, tivxRemoveTargetKernelIntegralImage},
-    {tivxAddTargetKernelSobel3x3, tivxRemoveTargetKernelSobel3x3},
-    {tivxAddTargetKernelPhase, tivxRemoveTargetKernelPhase},
-    {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
-    {tivxAddTargetKernelConvertDepth, tivxRemoveTargetKernelConvertDepth},
-    {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram},
-    {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
-    {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
-    {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
-    {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
+    {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
+    {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
     {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
+    {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
     {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},
-    {tivxAddTargetKernelGaussianPyramid, tivxAddTargetKernelGaussianPyramid}
+    {tivxAddTargetKernelConvertDepth, tivxRemoveTargetKernelConvertDepth},
+    {tivxAddTargetKernelConvolve, tivxRemoveTargetKernelConvolve},
+    {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
+    {tivxAddTargetKernelErode3x3, tivxRemoveTargetKernelErode3x3},
+    {tivxAddTargetKernelGaussianPyramid, tivxAddTargetKernelGaussianPyramid},
+    {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram},
+    {tivxAddTargetKernelIntegralImage, tivxRemoveTargetKernelIntegralImage},
+    {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
+    {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
+    {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
+    {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
+    {tivxAddTargetKernelMultiply, tivxRemoveTargetKernelMultiply},
+    {tivxAddTargetKernelPhase, tivxRemoveTargetKernelPhase},
+    {tivxAddTargetKernelRemap, tivxRemoveTargetKernelRemap},
+    {tivxAddTargetKernelScale, tivxRemoveTargetKernelScale},
+    {tivxAddTargetKernelSobel3x3, tivxRemoveTargetKernelSobel3x3},
+    {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
+    {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
+    {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
+    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()
