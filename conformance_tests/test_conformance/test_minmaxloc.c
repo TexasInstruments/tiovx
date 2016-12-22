@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -339,7 +339,7 @@ TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
     VX_CALL(vxReleaseArray(&maxloc_));
 
     if(ptbuf)
-        free(ptbuf);
+        ct_free_mem(ptbuf);
 }
 
 TESTCASE_TESTS(MinMaxLoc, testOnRandom)
