@@ -348,7 +348,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
     return status;
 }
 
-vx_status tivxChannelExtract(
+vx_status VX_CALLBACK tivxChannelExtract(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -464,7 +464,7 @@ vx_status tivxChannelExtract(
     return status;
 }
 
-vx_status tivxChannelExtractCreate(
+vx_status VX_CALLBACK tivxChannelExtractCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -474,7 +474,7 @@ vx_status tivxChannelExtractCreate(
     return status;
 }
 
-vx_status tivxChannelExtractDelete(
+vx_status VX_CALLBACK tivxChannelExtractDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -484,7 +484,7 @@ vx_status tivxChannelExtractDelete(
     return status;
 }
 
-vx_status tivxChannelExtractControl(
+vx_status VX_CALLBACK tivxChannelExtractControl(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

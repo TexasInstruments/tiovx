@@ -115,7 +115,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelWarpPerspective, tivxRemoveKernelWarpPerspective}
 };
 
-static vx_status tivxPublishKernels(vx_context context)
+static vx_status VX_CALLBACK tivxPublishKernels(vx_context context)
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 i;
@@ -137,7 +137,7 @@ static vx_status tivxPublishKernels(vx_context context)
     return status;
 }
 
-static vx_status tivxUnPublishKernels(vx_context context)
+static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context)
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 i;

@@ -17,7 +17,7 @@
 
 static tivx_target_kernel vx_absdiff_target_kernel = NULL;
 
-vx_status tivxAbsDiff(
+vx_status VX_CALLBACK tivxAbsDiff(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -145,21 +145,21 @@ vx_status tivxAbsDiff(
     return (status);
 }
 
-vx_status tivxAbsDiffCreate(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
+vx_status VX_CALLBACK tivxAbsDiffCreate(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 
     return status;
 }
 
-vx_status tivxAbsDiffDelete(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
+vx_status VX_CALLBACK tivxAbsDiffDelete(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 
     return status;
 }
 
-vx_status tivxAbsDiffControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
+vx_status VX_CALLBACK tivxAbsDiffControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 

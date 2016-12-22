@@ -59,7 +59,7 @@ tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
     },
 };
 
-vx_status tivxProcess3x3Filter(
+vx_status VX_CALLBACK tivxProcess3x3Filter(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -174,7 +174,7 @@ vx_status tivxProcess3x3Filter(
     return (status);
 }
 
-vx_status tivxFilter3x3Create(
+vx_status VX_CALLBACK tivxFilter3x3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -183,7 +183,7 @@ vx_status tivxFilter3x3Create(
     return status;
 }
 
-vx_status tivxFilter3x3Delete(
+vx_status VX_CALLBACK tivxFilter3x3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -192,7 +192,7 @@ vx_status tivxFilter3x3Delete(
     return status;
 }
 
-vx_status tivxFilter3x3Control(
+vx_status VX_CALLBACK tivxFilter3x3Control(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
     uint16_t num_params, void *priv_arg)
 {

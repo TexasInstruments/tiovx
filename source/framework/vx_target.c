@@ -429,7 +429,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
 }
 
-void tivxTargetTaskMain(void *app_var)
+void VX_CALLBACK tivxTargetTaskMain(void *app_var)
 {
     tivx_target target = (tivx_target)app_var;
     tivx_obj_desc_t *obj_desc;

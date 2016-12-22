@@ -13,7 +13,7 @@
 
 static tivx_target_kernel vx_channel_combine_target_kernel = NULL;
 
-vx_status tivxChannelCombine(
+vx_status VX_CALLBACK tivxChannelCombine(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -351,7 +351,7 @@ vx_status tivxChannelCombine(
     return status;
 }
 
-vx_status tivxChannelCombineCreate(
+vx_status VX_CALLBACK tivxChannelCombineCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -361,7 +361,7 @@ vx_status tivxChannelCombineCreate(
     return status;
 }
 
-vx_status tivxChannelCombineDelete(
+vx_status VX_CALLBACK tivxChannelCombineDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -371,7 +371,7 @@ vx_status tivxChannelCombineDelete(
     return status;
 }
 
-vx_status tivxChannelCombineControl(
+vx_status VX_CALLBACK tivxChannelCombineControl(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)

@@ -82,7 +82,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_ker
     return status;
 }
 
-VX_API_ENTRY vx_status tivxUnRegisterModule(char *name)
+VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name)
 {
     vx_status status = VX_FAILURE;
     uint32_t idx;

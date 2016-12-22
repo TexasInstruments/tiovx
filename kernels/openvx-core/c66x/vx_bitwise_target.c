@@ -56,7 +56,7 @@ tivxBitwiseKernelInfo gTivxBitwiseKernelInfo[] =
     }
 };
 
-vx_status tivxKernelBitwiseProcess(
+vx_status VX_CALLBACK tivxKernelBitwiseProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
     void *priv_arg)
@@ -167,7 +167,7 @@ vx_status tivxKernelBitwiseProcess(
     return (status);
 }
 
-vx_status tivxKernelBitwiseNotProcess(
+vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params,
     void *priv_arg)
