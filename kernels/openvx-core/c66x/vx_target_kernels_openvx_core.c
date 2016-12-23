@@ -46,6 +46,7 @@ void tivxAddTargetKernelSub();
 void tivxAddTargetKernelThreshold();
 void tivxAddTargetKernelWarpAffine();
 void tivxAddTargetKernelWarpPerspective();
+void tivxAddTargetKernelFastCorners();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelAccumulate();
@@ -76,6 +77,7 @@ void tivxRemoveTargetKernelSub();
 void tivxRemoveTargetKernelThreshold();
 void tivxRemoveTargetKernelWarpAffine();
 void tivxRemoveTargetKernelWarpPerspective();
+void tivxRemoveTargetKernelFastCorners();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
@@ -106,7 +108,8 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
     {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
     {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
-    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
+    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective},
+    {tivxAddTargetKernelFastCorners, tivxRemoveTargetKernelFastCorners}
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()
