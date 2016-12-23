@@ -33,6 +33,7 @@ vx_status tivxAddKernelErode3x3(vx_context context);
 vx_status tivxAddKernelFastCorners(vx_context context);
 vx_status tivxAddKernelGaussianPyramid(vx_context context);
 vx_status tivxAddKernelHarrisCorners(vx_context context);
+vx_status tivxAddKernelHalfscaleGaussian(vx_context context);
 vx_status tivxAddKernelHistogram(vx_context context);
 vx_status tivxAddKernelIntegralImage(vx_context context);
 vx_status tivxAddKernelLut(vx_context context);
@@ -65,6 +66,7 @@ vx_status tivxRemoveKernelErode3x3(vx_context context);
 vx_status tivxRemoveKernelFastCorners(vx_context context);
 vx_status tivxRemoveKernelGaussianPyramid(vx_context context);
 vx_status tivxRemoveKernelHarrisCorners(vx_context context);
+vx_status tivxRemoveKernelHalfscaleGaussian(vx_context context);
 vx_status tivxRemoveKernelHistogram(vx_context context);
 vx_status tivxRemoveKernelIntegralImage(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
@@ -98,6 +100,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelFastCorners, tivxRemoveKernelFastCorners},
     {tivxAddKernelGaussianPyramid, tivxRemoveKernelGaussianPyramid},
     {tivxAddKernelHarrisCorners, tivxRemoveKernelHarrisCorners},
+    {tivxAddKernelHalfscaleGaussian, tivxRemoveKernelHalfscaleGaussian},
     {tivxAddKernelHistogram, tivxRemoveKernelHistogram},
     {tivxAddKernelIntegralImage, tivxRemoveKernelIntegralImage},
     {tivxAddKernelLut, tivxRemoveKernelLut},
