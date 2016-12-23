@@ -30,7 +30,9 @@ void tivxAddTargetKernelConvertDepth();
 void tivxAddTargetKernelConvolve();
 void tivxAddTargetKernelEqualizeHistogram();
 void tivxAddTargetKernelErode3x3();
+void tivxAddTargetKernelFastCorners();
 void tivxAddTargetKernelGaussianPyramid();
+void tivxAddTargetKernelHarrisCorners();
 void tivxAddTargetKernelHistogram();
 void tivxAddTargetKernelIntegralImage();
 void tivxAddTargetKernelLut();
@@ -46,7 +48,6 @@ void tivxAddTargetKernelSub();
 void tivxAddTargetKernelThreshold();
 void tivxAddTargetKernelWarpAffine();
 void tivxAddTargetKernelWarpPerspective();
-void tivxAddTargetKernelFastCorners();
 
 void tivxRemoveTargetKernelAbsDiff();
 void tivxRemoveTargetKernelAccumulate();
@@ -61,7 +62,9 @@ void tivxRemoveTargetKernelConvertDepth();
 void tivxRemoveTargetKernelConvolve();
 void tivxRemoveTargetKernelEqualizeHistogram();
 void tivxRemoveTargetKernelErode3x3();
+void tivxRemoveTargetKernelFastCorners();
 void tivxRemoveTargetKernelGaussianPyramid();
+void tivxRemoveTargetKernelHarrisCorners();
 void tivxRemoveTargetKernelHistogram();
 void tivxRemoveTargetKernelIntegralImage();
 void tivxRemoveTargetKernelLut();
@@ -77,7 +80,6 @@ void tivxRemoveTargetKernelSub();
 void tivxRemoveTargetKernelThreshold();
 void tivxRemoveTargetKernelWarpAffine();
 void tivxRemoveTargetKernelWarpPerspective();
-void tivxRemoveTargetKernelFastCorners();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
@@ -93,7 +95,9 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelConvolve, tivxRemoveTargetKernelConvolve},
     {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
     {tivxAddTargetKernelErode3x3, tivxRemoveTargetKernelErode3x3},
+    {tivxAddTargetKernelFastCorners, tivxRemoveTargetKernelFastCorners},
     {tivxAddTargetKernelGaussianPyramid, tivxAddTargetKernelGaussianPyramid},
+    {tivxAddTargetKernelHarrisCorners, tivxRemoveTargetKernelHarrisCorners},
     {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram},
     {tivxAddTargetKernelIntegralImage, tivxRemoveTargetKernelIntegralImage},
     {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
@@ -108,8 +112,7 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
     {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
     {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
-    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective},
-    {tivxAddTargetKernelFastCorners, tivxRemoveTargetKernelFastCorners}
+    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
 };
 
 void tivxRegisterOpenVXCoreTargetKernels()
