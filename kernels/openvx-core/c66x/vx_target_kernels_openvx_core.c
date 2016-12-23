@@ -41,6 +41,7 @@ void tivxAddTargetKernelMagnitude();
 void tivxAddTargetKernelMeanStdDev();
 void tivxAddTargetKernelMinMaxLoc();
 void tivxAddTargetKernelMultiply();
+void tivxAddTargetKernelNonLinearFilter();
 void tivxAddTargetKernelPhase();
 void tivxAddTargetKernelRemap();
 void tivxAddTargetKernelScale();
@@ -74,6 +75,7 @@ void tivxRemoveTargetKernelMagnitude();
 void tivxRemoveTargetKernelMeanStdDev();
 void tivxRemoveTargetKernelMinMaxLoc();
 void tivxRemoveTargetKernelMultiply();
+void tivxRemoveTargetKernelNonLinearFilter();
 void tivxRemoveTargetKernelPhase();
 void tivxRemoveTargetKernelRemap();
 void tivxRemoveTargetKernelScale();
@@ -108,6 +110,7 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
     {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
     {tivxAddTargetKernelMultiply, tivxRemoveTargetKernelMultiply},
+    {tivxAddTargetKernelNonLinearFilter, tivxRemoveTargetKernelNonLinearFilter},
     {tivxAddTargetKernelPhase, tivxRemoveTargetKernelPhase},
     {tivxAddTargetKernelRemap, tivxRemoveTargetKernelRemap},
     {tivxAddTargetKernelScale, tivxRemoveTargetKernelScale},

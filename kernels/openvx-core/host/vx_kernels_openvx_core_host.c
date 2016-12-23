@@ -41,6 +41,7 @@ vx_status tivxAddKernelMagnitude(vx_context context);
 vx_status tivxAddKernelMeanStdDev(vx_context context);
 vx_status tivxAddKernelMinMaxLoc(vx_context context);
 vx_status tivxAddKernelMultiply(vx_context context);
+vx_status tivxAddKernelNonLinearFilter(vx_context context);
 vx_status tivxAddKernelPhase(vx_context context);
 vx_status tivxAddKernelRemap(vx_context context);
 vx_status tivxAddKernelScale(vx_context context);
@@ -74,6 +75,7 @@ vx_status tivxRemoveKernelMagnitude(vx_context context);
 vx_status tivxRemoveKernelMeanStdDev(vx_context context);
 vx_status tivxRemoveKernelMinMaxLoc(vx_context context);
 vx_status tivxRemoveKernelMultiply(vx_context context);
+vx_status tivxRemoveKernelNonLinearFilter(vx_context context);
 vx_status tivxRemoveKernelPhase(vx_context context);
 vx_status tivxRemoveKernelRemap(vx_context context);
 vx_status tivxRemoveKernelScale(vx_context context);
@@ -108,6 +110,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelMeanStdDev, tivxRemoveKernelMeanStdDev},
     {tivxAddKernelMinMaxLoc, tivxRemoveKernelMinMaxLoc},
     {tivxAddKernelMultiply, tivxRemoveKernelMultiply},
+    {tivxAddKernelNonLinearFilter, tivxRemoveKernelNonLinearFilter},
     {tivxAddKernelPhase, tivxRemoveKernelPhase},
     {tivxAddKernelRemap, tivxRemoveKernelRemap},
     {tivxAddKernelScale, tivxRemoveKernelScale},
