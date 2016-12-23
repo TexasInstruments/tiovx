@@ -70,16 +70,13 @@ $(_MODULE)_SRCS = $(CSOURCES) $(CPPSOURCES) $(ASSEMBLY) $(JSOURCES) $(KCSOURCES)
 ifneq ($(SKIPBUILD),1)
 
 NEEDS_COMPILER:=
-NEEDS_INSTALL := 
 ifeq ($($(_MODULE)_TYPE),library)
 	NEEDS_COMPILER=1
 	# no install for libs
 else ifeq ($($(_MODULE)_TYPE),dsmo)
 	NEEDS_COMPILER=1
-	NEEDS_INSTALL=1
 else ifeq ($($(_MODULE)_TYPE),exe)
 	NEEDS_COMPILER=1
-	NEEDS_INSTALL=1
 else ifeq ($($(_MODULE)_TYPE),jar)
 	include $(CONCERTO_ROOT)/compilers/java.mak
 else ifeq ($($(_MODULE)_TYPE),opencl_kernel)
@@ -101,6 +98,8 @@ ifeq ($(NEEDS_COMPILER),1)
 # which compiler does this need?
 ifeq ($(HOST_COMPILER),GCC)
 	include $(CONCERTO_ROOT)/compilers/gcc.mak
+else ifeq ($(HOST_COMPILER),GCC_WINDOWS)
+	include $(CONCERTO_ROOT)/compilers/gcc_windows.mak
 else ifeq ($(HOST_COMPILER),CLANG)
 	include $(CONCERTO_ROOT)/compilers/clang.mak
 else ifeq ($(HOST_COMPILER),CL)
@@ -120,14 +119,6 @@ else ifeq ($(HOST_COMPILER),ARP32CGT)
 else
 $(error Undefined compiler $(HOST_COMPILER))	
 endif
-endif
-
-ifeq ($(NEEDS_INSTALL),1)
-ifeq ($(TARGET_OS),Windows_NT)
-    include $(CONCERTO_ROOT)/os/windows.mak
-else 
-    include $(CONCERTO_ROOT)/os/posix.mak
-endif    
 endif
 
 else # SKIPBUILD=1

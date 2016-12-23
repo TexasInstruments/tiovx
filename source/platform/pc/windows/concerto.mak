@@ -26,43 +26,17 @@
 # MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 #
 
+ifeq ($(TARGET_PLATFORM),PC)
 
 include $(PRELUDE)
-TARGET      := vx_conformance_tests
+TARGET      := vx_platform_pc_windows
 TARGETTYPE  := library
-CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests
+CSOURCES    := tivx_event.c tivx_init.c tivx_ipc.c tivx_mem.c \
+               tivx_mutex.c tivx_platform.c tivx_platform_common.c \
+               tivx_queue.c tivx_task.c tivx_target_config_x86.c
+IDIRS       += $(HOST_ROOT)/source/include
 
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-CFLAGS += --diag_suppress=179
-CFLAGS += --diag_suppress=112
-CFLAGS += --diag_suppress=552
-endif
-
-ifeq ($(HOST_COMPILER),GCC)
-CFLAGS += -Wno-unused-function
-endif
-
-ifeq ($(HOST_COMPILER),GCC_WINDOWS)
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-endif
-
-ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),A15)
-SKIPBUILD=0
-endif
-
-ifeq ($(TARGET_CPU),M4)
-SKIPBUILD=0
-endif
 
 include $(FINALE)
+
+endif

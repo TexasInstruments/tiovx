@@ -34,6 +34,10 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
 IDIRS       += $(VXLIB_PATH)/packages
 
+ifeq ($(TARGET_CPU),X86)
+CFLAGS		+= -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
+endif
+
 ifeq ($(TARGET_CPU),C66)
 SKIPBUILD=0
 endif

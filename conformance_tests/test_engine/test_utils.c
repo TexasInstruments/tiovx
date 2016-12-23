@@ -1007,5 +1007,9 @@ void ct_destroy_vx_context(void **pContext)
 
 char *ct_get_test_file_path()
 {
+    #if defined(SYSBIOS)
     return "sd:";
+    #else
+    return "";
+    #endif
 }

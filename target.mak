@@ -45,3 +45,8 @@ ifeq ($(TARGET_PLATFORM),TDAX)
     endif
 endif
 
+ifeq ($(TARGET_PLATFORM),PC)
+    SYSDEFS +=
+    SYSIDIRS += $(GCC_WINDOWS_ROOT)/include
+    SYSLDIRS += $(GCC_WINDOWS_ROOT)/lib
+endif

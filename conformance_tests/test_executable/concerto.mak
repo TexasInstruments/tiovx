@@ -26,43 +26,20 @@
 # MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 #
 
+ifeq ($(TARGET_PLATFORM),PC)
+
 
 include $(PRELUDE)
-TARGET      := vx_conformance_tests
-TARGETTYPE  := library
+TARGET      := vx_conformance_tests_exe
+TARGETTYPE  := exe
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/conformance_tests
-
-ifeq ($(HOST_COMPILER),TIARMCGT)
-CFLAGS += --display_error_number
-CFLAGS += --diag_suppress=179
-CFLAGS += --diag_suppress=112
-CFLAGS += --diag_suppress=552
-endif
-
-ifeq ($(HOST_COMPILER),GCC)
-CFLAGS += -Wno-unused-function
-endif
-
-ifeq ($(HOST_COMPILER),GCC_WINDOWS)
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-endif
-
-ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),A15)
-SKIPBUILD=0
-endif
-
-ifeq ($(TARGET_CPU),M4)
-SKIPBUILD=0
-endif
+STATIC_LIBS := vx_conformance_tests vx_conformance_engine 
+STATIC_LIBS += vx_vxu vx_framework
+STATIC_LIBS += vx_platform_pc_windows vx_framework 
+STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
+STATIC_LIBS += vx_framework 
+STATIC_LIBS += vxlib_X86 c6xsim_X86_C66
 
 include $(FINALE)
+
+endif

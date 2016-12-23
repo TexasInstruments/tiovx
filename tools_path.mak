@@ -28,6 +28,7 @@ TIARMCGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/ti-cgt-arm_5.2.5
 GCC_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/gcc-arm-none-eabi-4_7-2013q3
 CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/c6000_7.4.2
 ARP32CGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/arp32_1.0.7
+GCC_WINDOWS_ROOT := C:/CodeBlocks/MinGW
 endif
 
 ifeq ($(BUILD_OS),Linux)

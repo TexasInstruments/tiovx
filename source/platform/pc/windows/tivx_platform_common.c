@@ -35,7 +35,7 @@
  */
 
 #include <vx_internal.h>
-#include <tivx_platform_vision_sdk.h>
+#include "tivx_platform_windows.h"
 
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
@@ -70,8 +70,6 @@ static tivx_platform_info_t g_tivx_platform_info =
 
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
-#pragma DATA_SECTION(gTivxObjDescShmEntry, ".bss:extMemNonCache:tiovxObjDescShm");
-#pragma DATA_ALIGN(gTivxObjDescShmEntry, 32);
 
 vx_status tivxPlatformInit()
 {
@@ -188,8 +186,6 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
         /* Change this according available entries*/
         table_info->last_alloc_index = 0U;
     }
-
-#if defined (M4)
     {
         tivx_obj_desc_t *tmp_obj_desc = NULL;
         uint32_t i;
@@ -202,6 +198,4 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 
         table_info->last_alloc_index = 0;
     }
-#endif
-
 }

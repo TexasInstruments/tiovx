@@ -42,7 +42,7 @@ static vx_status VX_CALLBACK tivxAddKernelFilt3x3Validate(vx_node node,
             vx_meta_format metas[]);
 
 
-tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
+static tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
 {
     {
         VX_KERNEL_ERODE_3x3,

@@ -654,7 +654,7 @@ int CT_main(int argc, char* argv[], const char* version_str)
         printf("\n");
     }
 
-    #ifndef SYSBIOS
+    #if !defined(SYSBIOS) && !defined(WINDOWS)
     {
         const char* test_data_path = getenv("VX_TEST_DATA_PATH");
         if (test_data_path && test_data_path[0] != '\0')

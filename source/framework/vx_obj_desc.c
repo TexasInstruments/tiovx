@@ -58,24 +58,7 @@ static void tivxObjDescIpcHandler(uint32_t payload)
 
 void tivxObjDescInit()
 {
-#if defined (M4)
-    tivx_obj_desc_t *tmp_obj_desc = NULL;
-    uint32_t i;
-#endif
-
     tivxPlatformGetObjDescTableInfo(&g_obj_desc_table);
-
-#if defined (M4)
-    /* Initializing all desc to be available */
-    for(i=0; i<g_obj_desc_table.num_entries; i++)
-    {
-        tmp_obj_desc = (tivx_obj_desc_t*)&g_obj_desc_table.table_base[i];
-        tmp_obj_desc->type = TIVX_OBJ_DESC_INVALID;
-    }
-
-    g_obj_desc_table.last_alloc_index = 0;
-#endif
-
     tivxIpcRegisterHandler(tivxObjDescIpcHandler);
 }
 

@@ -66,6 +66,9 @@ typedef struct _tivx_queue_t {
   tivx_mutex mutex_wr;
   /**< Write semaphore  */
 
+  tivx_mutex lock;
+  /**< Queue lock semaphore  */
+
   uint32_t flags;
   /**< Controls how APIs behave internally, i.e blocking wait or non-blocking */
 

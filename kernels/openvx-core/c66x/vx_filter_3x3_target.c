@@ -30,7 +30,7 @@ typedef struct
     VxLib_Filt3x3_Fxn       filter_func;
 } tivxFilter3x3KernelInfo;
 
-tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
+static tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
 {
     {
         VX_KERNEL_ERODE_3x3,

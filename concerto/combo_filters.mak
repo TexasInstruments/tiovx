@@ -23,7 +23,7 @@ ifeq ($(HOST_PLATFORM),PC)
 ifeq ($(HOST_OS),LINUX)
 TARGET_COMBOS := $(call FILTER_COMBO,LINUX SYSBIOS)
 else ifeq ($(HOST_OS),Windows_NT)
-TARGET_COMBOS := $(call FILTER_COMBO,SYSBIOS)
+TARGET_COMBOS := $(call FILTER_COMBO,WINDOWS SYSBIOS)
 endif
 endif
 
@@ -52,7 +52,7 @@ TARGET_COMBOS := $(call FILTER_COMBO,$(TARGET_BUILD))
 endif
 
 # The compilers which must have roots set. 
-COMPILER_ROOTS := TIARMCGT_ROOT GCC_ROOT
+COMPILER_ROOTS := TIARMCGT_ROOT GCC_ROOT GCC_WINDOWS_ROOT
 
 $(foreach root,$(COMPILER_ROOTS),$(info $(origin $(root)) $(root)=$(value $(root))))
 

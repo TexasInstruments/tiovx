@@ -26,6 +26,7 @@
 # MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 #
 
+ifeq ($(TARGET_PLATFORM),TDAX)
 
 include $(PRELUDE)
 TARGET      := vx_platform_vision_sdk_bios
@@ -69,3 +70,5 @@ SKIPBUILD=0
 endif
 
 include $(FINALE)
+
+endif
