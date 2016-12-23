@@ -302,7 +302,7 @@ TEST_WITH_ARG(HarrisCorners, testGraphProcessing, Arg,
     double scale = 1.0 / ((1 << (arg_->gradient_size - 1)) * arg_->block_size * 255.0);
     scale = scale * scale * scale * scale;
 
-    sprintf(filepath, "harriscorners/%s_%0.2f_%0.2f_%d_%d.txt", arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
+    sprintf(filepath, "%sharriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
     ASSERT_NO_FAILURE(harris_corner_read_truth_data(filepath, &truth_data, (float)scale));
 
     strength_thresh = truth_data.strength_thresh;
@@ -377,7 +377,7 @@ TEST_WITH_ARG(HarrisCorners, testImmediateProcessing, Arg,
     double scale = 1.0 / ((1 << (arg_->gradient_size - 1)) * arg_->block_size * 255.0);
     scale = scale * scale * scale * scale;
 
-    sprintf(filepath, "harriscorners/%s_%0.2f_%0.2f_%d_%d.txt", arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
+    sprintf(filepath, "%sharriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
     ASSERT_NO_FAILURE(harris_corner_read_truth_data(filepath, &truth_data, (float)scale));
 
     strength_thresh = truth_data.strength_thresh;
