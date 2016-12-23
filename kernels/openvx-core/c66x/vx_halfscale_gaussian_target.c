@@ -14,7 +14,7 @@
 
 static tivx_target_kernel vx_halfscale_gaussian_target_kernel = NULL;
 
-vx_status tivxHalfscaleGaussian(
+vx_status VX_CALLBACK tivxHalfscaleGaussian(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -26,7 +26,7 @@ vx_status tivxHalfscaleGaussian(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
     vx_rectangle_t rect;
-    
+
     if ( num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX])
@@ -37,16 +37,16 @@ vx_status tivxHalfscaleGaussian(
     else
     {
         int32_t gsize_value;
-        
+
         src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
         gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
-        
+
         src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
         dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
-        
+
         tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -75,7 +75,7 @@ vx_status tivxHalfscaleGaussian(
         vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y;
         vxlib_dst.stride_y = dst_desc->imagepatch_addr[0].stride_y;
         vxlib_dst.data_type = VXLIB_UINT8;
-        
+
         if( gsize_desc != NULL)
         {
             gsize_value = gsize_desc->data.s32;
@@ -117,19 +117,19 @@ vx_status tivxHalfscaleGaussian(
             }
 
         }
-        
+
         tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,
            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
         tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
-            VX_WRITE_ONLY);        
+            VX_WRITE_ONLY);
     }
-    
+
     return status;
 }
 
-vx_status tivxHalfscaleGaussianCreate(
+vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -193,7 +193,7 @@ vx_status tivxHalfscaleGaussianCreate(
     return (status);
 }
 
-vx_status tivxHalfscaleGaussianDelete(
+vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -250,13 +250,13 @@ vx_status tivxHalfscaleGaussianDelete(
     return (status);
 }
 
-vx_status tivxHalfscaleGaussianControl(
+vx_status VX_CALLBACK tivxHalfscaleGaussianControl(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    
+
     return status;
 }
 
@@ -265,9 +265,9 @@ void tivxAddTargetKernelHalfscaleGaussian()
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    
+
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
@@ -283,7 +283,7 @@ void tivxAddTargetKernelHalfscaleGaussian()
     {
         status = VX_FAILURE;
     }
-    
+
     if (status == VX_SUCCESS)
     {
         vx_halfscale_gaussian_target_kernel = tivxAddTargetKernel(
@@ -300,7 +300,7 @@ void tivxAddTargetKernelHalfscaleGaussian()
 void tivxRemoveTargetKernelHalfscaleGaussian()
 {
     vx_status status = VX_SUCCESS;
-    
+
     status = tivxRemoveTargetKernel(vx_halfscale_gaussian_target_kernel);
     if (status == VX_SUCCESS)
     {
