@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -276,7 +276,7 @@ TEST_WITH_ARG(FastCorners, testOnNaturalImages, format_arg,
         dst1->data.y[dst1stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
     }
 
-    free(corners_data);
+    ct_free_mem(corners_data);
 
     //ASSERT_EQ_CTIMAGE(dst0, dst1);
 
