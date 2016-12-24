@@ -1445,7 +1445,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         pImagePtr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
 
         pImageLine = pImagePtr + start_y*image_addr->stride_y/image_addr->step_y + start_x*image_addr->stride_x/image_addr->step_x;
-        pUserLine = pUserPtr + start_y*user_addr->stride_y/image_addr->step_y + start_x*user_addr->stride_x/image_addr->step_x;
+        pUserLine = pUserPtr;
 
         map_addr = pImageLine;
         map_size = (end_y - start_y)*image_addr->stride_y/image_addr->step_y;
