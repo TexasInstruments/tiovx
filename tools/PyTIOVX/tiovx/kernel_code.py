@@ -187,7 +187,7 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
     def generate_target_c_create_func_code(self):
-        self.target_c_code.write_line("vx_status tivx%sCreate(" % self.kernel.name_camel)
+        self.target_c_code.write_line("vx_status VX_CALLBACK tivx%sCreate(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
         self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
@@ -199,7 +199,7 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
     def generate_target_c_delete_func_code(self):
-        self.target_c_code.write_line("vx_status tivx%sDelete(" % self.kernel.name_camel)
+        self.target_c_code.write_line("vx_status VX_CALLBACK tivx%sDelete(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
         self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
@@ -211,7 +211,7 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
     def generate_target_c_control_func_code(self):
-        self.target_c_code.write_line("vx_status tivx%sControl(" % self.kernel.name_camel)
+        self.target_c_code.write_line("vx_status VX_CALLBACK tivx%sControl(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
         self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
@@ -224,7 +224,7 @@ class KernelExportCode :
 
     def generate_target_c_process_func_code(self):
         # define function name, and parameters
-        self.target_c_code.write_line("vx_status tivx%s(" % self.kernel.name_camel)
+        self.target_c_code.write_line("vx_status VX_CALLBACK tivx%s(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
         self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")

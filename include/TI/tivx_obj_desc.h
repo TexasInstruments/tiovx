@@ -345,13 +345,20 @@ typedef struct _tivx_obj_desc_matrix
     uint32_t rows;
     /*! \brief number of columns */
     uint32_t columns;
-    /*! \brief Pattern of the matrix */
+
+    /*! \brief position at which to place the mask */
+    uint32_t origin_x;
+    /*! \brief position at which to place the mask  */
+    uint32_t origin_y;
+
+    /*! \brief Pattern of the matrix \ref vx_pattern_e */
     vx_enum pattern;
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
     /*! \brief From \ref vx_type_e */
     vx_enum data_type;
+
     /*! \brief matrix memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_matrix_t;

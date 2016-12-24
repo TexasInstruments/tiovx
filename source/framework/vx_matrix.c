@@ -94,6 +94,8 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     obj_desc->data_type = data_type;
                     obj_desc->columns = columns;
                     obj_desc->rows = rows;
+                    obj_desc->origin_x = columns/2;
+                    obj_desc->origin_y = rows/2;
                     obj_desc->pattern = VX_PATTERN_OTHER;
                     obj_desc->mem_size = columns*rows*dim;
                     obj_desc->mem_ptr.host_ptr = NULL;
@@ -111,7 +113,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
 vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     vx_context context, vx_enum pattern, vx_size columns, vx_size rows)
 {
-    vx_status status = VX_FAILURE;
+    vx_status status = VX_SUCCESS;
     vx_matrix matrix = NULL;
     vx_size dim = 0ul, i, j;
     vx_uint8 *pTempDataPtr;
@@ -129,13 +131,19 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     }
 
     if ((VX_PATTERN_BOX != pattern) && (VX_PATTERN_CROSS != pattern) &&
-             (VX_PATTERN_OTHER != pattern))
+             (VX_PATTERN_OTHER != pattern) && (VX_PATTERN_DISK != pattern))
     {
         status = VX_FAILURE;
     }
 
     /* For Cross pattern, rows and columns must be odd */
-    if ((VX_PATTERN_CROSS == pattern) && (rows%2 != 0) && (columns%2 != 0))
+    if ((VX_PATTERN_CROSS == pattern) && (((rows%2) == 0) || ((columns%2) == 0)))
+    {
+        status = VX_FAILURE;
+    }
+
+    /* For Disk pattern, rows and columns must be equal */
+    if ((VX_PATTERN_DISK == pattern) && ( rows != columns ))
     {
         status = VX_FAILURE;
     }
@@ -175,6 +183,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 obj_desc->data_type = VX_TYPE_UINT8;
                 obj_desc->columns = columns;
                 obj_desc->rows = rows;
+                obj_desc->origin_x = columns/2;
+                obj_desc->origin_y = rows/2;
                 obj_desc->pattern = pattern;
                 obj_desc->mem_size = columns*rows*dim;
                 obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
@@ -242,18 +252,35 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             }
             /* Set data values in the centre row and column to 255  */
             pTempDataPtr = obj_desc->mem_ptr.host_ptr;
-            pTempDataPtr = pTempDataPtr + ((rows/2) + 1)*columns;
+            pTempDataPtr = pTempDataPtr + ((rows/2))*columns;
             for (i = 0U; i < columns; i ++)
             {
                 *pTempDataPtr = 255;
                 pTempDataPtr ++;
             }
             pTempDataPtr = obj_desc->mem_ptr.host_ptr;
-            pTempDataPtr = pTempDataPtr + ((rows/2) + 1);
+            pTempDataPtr = pTempDataPtr + ((columns/2));
             for (i = 0U; i < rows; i ++)
             {
                 *pTempDataPtr = 255;
                 pTempDataPtr += columns;
+            }
+        }
+        else if (VX_PATTERN_DISK == pattern)
+        {
+            vx_uint8* mask = (vx_uint8*)obj_desc->mem_ptr.host_ptr;
+            vx_uint8 ref;
+
+            for (i = 0U; i < rows; i ++)
+            {
+                for (j = 0U; j < columns; j ++)
+                {
+                    ref = (((i - rows / 2.0 + 0.5) * (i - rows / 2.0 + 0.5)) / ((rows / 2.0) * (rows / 2.0)) +
+                        ((j - columns / 2.0 + 0.5) * (j - columns / 2.0 + 0.5)) / ((columns / 2.0) * (columns / 2.0)))
+                        <= 1 ? 255 : 0;
+
+                    mask[j + i * columns] = ref;
+                }
             }
         }
         else /* VS_PATTERN_OTHER */
@@ -340,8 +367,8 @@ vx_status VX_API_CALL vxQueryMatrix(
                 {
                     vx_coordinates2d_t *rect = (vx_coordinates2d_t *)ptr;
 
-                    rect->x = obj_desc->columns / 2;
-                    rect->y = obj_desc->rows / 2;
+                    rect->x = obj_desc->origin_x;
+                    rect->y = obj_desc->origin_y;
                 }
                 else
                 {
@@ -351,8 +378,7 @@ vx_status VX_API_CALL vxQueryMatrix(
             case VX_MATRIX_PATTERN:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    /* TODO: Check */
-                    *(vx_enum *)ptr = VX_PATTERN_BOX;
+                    *(vx_enum *)ptr = obj_desc->pattern;
                 }
                 else
                 {

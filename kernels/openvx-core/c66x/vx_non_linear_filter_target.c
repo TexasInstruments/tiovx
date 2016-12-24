@@ -13,7 +13,7 @@
 
 static tivx_target_kernel vx_non_linear_filter_target_kernel = NULL;
 
-vx_status tivxNonLinearFilter(
+vx_status VX_CALLBACK tivxNonLinearFilter(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -28,9 +28,7 @@ vx_status tivxNonLinearFilter(
     uint8_t *src_addr;
     uint8_t *dst_addr;
     uint8_t *mask_addr;
-    uint8_t *dPtr;
-    vx_coordinates2d_t origin;
-    
+
     if ( num_params != TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX])
@@ -41,19 +39,19 @@ vx_status tivxNonLinearFilter(
         status = VX_FAILURE;
     }
     else
-    {        
+    {
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
         src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
         mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX];
-        
+
         src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
         mask_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
           mask_desc->mem_ptr.shared_ptr, mask_desc->mem_ptr.mem_type);
         dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
-        
+
         tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -64,6 +62,8 @@ vx_status tivxNonLinearFilter(
            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
+        mask_addr = (uint8_t *)((uint32_t)mask_desc->mem_ptr.target_ptr);
+
         rect = src_desc->valid_roi;
 
         src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0U].target_ptr +
@@ -71,10 +71,11 @@ vx_status tivxNonLinearFilter(
             &src_desc->imagepatch_addr[0U]));
 
         dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            ownComputePatchOffset(
+                    rect.start_x + (mask_desc->origin_x),
+                    rect.start_y + (mask_desc->origin_y),
             &dst_desc->imagepatch_addr[0U]));
 
-        mask_addr = (uint8_t *)((uint32_t)mask_desc->mem_ptr.target_ptr);
 
         vxlib_src.dim_x = src_desc->imagepatch_addr[0].dim_x;
         vxlib_src.dim_y = src_desc->imagepatch_addr[0].dim_y;
@@ -82,7 +83,7 @@ vx_status tivxNonLinearFilter(
         vxlib_src.data_type = VXLIB_UINT8;
 
         vxlib_dst.dim_x = dst_desc->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y;
+        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y - (2*(mask_desc->origin_y));
         vxlib_dst.stride_y = dst_desc->imagepatch_addr[0].stride_y;
         vxlib_dst.data_type = VXLIB_UINT8;
 
@@ -90,33 +91,36 @@ vx_status tivxNonLinearFilter(
         mask_params.dim_y    = mask_desc->rows;
         mask_params.stride_y = mask_desc->columns;
 
-        /* Figure out how to access this */
-        dPtr = &dst_addr[0];
-        /* TODO change to the line below when origin coordinates are implemented */
-        //dPtr = &dst_addr[vxlib_dst.stride_y*origin.y+origin.x];
-
         if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
         {
             status |= VXLIB_erode_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
-                                                      dPtr, &vxlib_dst,
-                                                      mask_addr, &mask_params);
+                                                  dst_addr, &vxlib_dst,
+                                                  mask_addr, &mask_params);
         }
         else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
         {
             status |= VXLIB_dilate_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
-                                                      dPtr, &vxlib_dst,
-                                                      mask_addr, &mask_params);
+                                                   dst_addr, &vxlib_dst,
+                                                   mask_addr, &mask_params);
         }
         else
         {
             void *scratch;
             uint32_t scratch_size;
-            status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
-            status |= VXLIB_median_MxN_i8u_i8u_o8u(src_addr, &vxlib_src,
-                                                      dPtr, &vxlib_dst,
-                                                      mask_addr, &mask_params, (int64_t*)scratch, scratch_size);
+            status = tivxGetTargetKernelInstanceContext(
+                            kernel,
+                            &scratch, &scratch_size);
+
+            if(status==VX_SUCCESS)
+            {
+                status |= VXLIB_median_MxN_i8u_i8u_o8u(
+                                        src_addr, &vxlib_src,
+                                        dst_addr, &vxlib_dst,
+                                        mask_addr, &mask_params,
+                                        (int64_t*)scratch, scratch_size);
+            }
         }
-        
+
         tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,
            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
             VX_READ_ONLY);
@@ -126,14 +130,14 @@ vx_status tivxNonLinearFilter(
         tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
-        
-        
+
+
     }
-    
+
     return status;
 }
 
-vx_status tivxNonLinearFilterCreate(
+vx_status VX_CALLBACK tivxNonLinearFilterCreate(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -187,7 +191,7 @@ vx_status tivxNonLinearFilterCreate(
     return (status);
 }
 
-vx_status tivxNonLinearFilterDelete(
+vx_status VX_CALLBACK tivxNonLinearFilterDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
@@ -237,13 +241,13 @@ vx_status tivxNonLinearFilterDelete(
     return (status);
 }
 
-vx_status tivxNonLinearFilterControl(
+vx_status VX_CALLBACK tivxNonLinearFilterControl(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    
+
     return status;
 }
 
@@ -252,9 +256,9 @@ void tivxAddTargetKernelNonLinearFilter()
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    
+
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ( self_cpu == TIVX_CPU_ID_DSP1 )
     {
         strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
@@ -270,7 +274,7 @@ void tivxAddTargetKernelNonLinearFilter()
     {
         status = VX_FAILURE;
     }
-    
+
     if (status == VX_SUCCESS)
     {
         vx_non_linear_filter_target_kernel = tivxAddTargetKernel(
@@ -287,7 +291,7 @@ void tivxAddTargetKernelNonLinearFilter()
 void tivxRemoveTargetKernelNonLinearFilter()
 {
     vx_status status = VX_SUCCESS;
-    
+
     status = tivxRemoveTargetKernel(vx_non_linear_filter_target_kernel);
     if (status == VX_SUCCESS)
     {

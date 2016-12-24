@@ -45,25 +45,10 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
         status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
 
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
-            sizeof(fmt[1U]));
-
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
-
         if (VX_SUCCESS == status)
         {
             /* Check for validity of data format */
-            if ( (VX_DF_IMAGE_U8 != fmt[0U]) ||
-                 (VX_DF_IMAGE_U8 != fmt[1U]) )
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
-
-            /* Check for validity of data format */
-            if ( (w[0] != w[1]) ||
-                 (h[0] != h[1]) )
+            if ( (VX_DF_IMAGE_U8 != fmt[0U]) )
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
             }
@@ -103,23 +88,43 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     }
 
+    if ((VX_SUCCESS == status) &&
+        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    {
+        /* Get the image width/heigh and format */
+        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U], sizeof(fmt[1U]));
+        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
+        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+
+        /* Check for frame sizes */
+        if ((w[0U] != w[1U]) || (h[1U] != h[1U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        if ( fmt[1U] != fmt[0U] )
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
     if (VX_SUCCESS == status)
     {
         out_fmt = VX_DF_IMAGE_U8;
-        for (i = 0U; i < TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS; i ++)
+
+        i = TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX;
+
+        if (NULL != metas[i])
         {
-            if (NULL != metas[i])
-            {
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                    sizeof(out_fmt));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                    sizeof(w[0U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                    sizeof(h[0U]));
-            }
+            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
+                sizeof(out_fmt));
+            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
+                sizeof(w[0U]));
+            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
+                sizeof(h[0U]));
         }
     }
-    
+
     return status;
 }
 
@@ -128,7 +133,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    
+
     kernel = vxAddUserKernel(
                 context,
                 "org.khronos.openvx.non_linear_filter",
@@ -138,12 +143,12 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
                 tivxAddKernelNonLinearFilterValidate,
                 NULL,
                 NULL);
-    
+
     status = vxGetStatus((vx_reference)kernel);
     if (status == VX_SUCCESS)
     {
         index = 0;
-        
+
         if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
@@ -205,7 +210,7 @@ vx_status tivxAddKernelNonLinearFilter(vx_context context)
         kernel = NULL;
     }
     vx_non_linear_filter_kernel = kernel;
-    
+
     return status;
 }
 
@@ -213,10 +218,10 @@ vx_status tivxRemoveKernelNonLinearFilter(vx_context context)
 {
     vx_status status;
     vx_kernel kernel = vx_non_linear_filter_kernel;
-    
+
     status = vxRemoveKernel(kernel);
     vx_non_linear_filter_kernel = NULL;
-    
+
     return status;
 }
 
