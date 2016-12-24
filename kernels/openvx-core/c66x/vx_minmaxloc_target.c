@@ -28,7 +28,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
     vx_rectangle_t rect;
     tivx_obj_desc_scalar_t *sc[4U];
     tivx_obj_desc_array_t *arr[2U];
-    uint32_t min_cnt = 0, max_cnt = 0, min_cap, max_cap;
+    uint32_t min_cnt = 0, max_cnt = 0, min_cap = 0, max_cap = 0;
     uint32_t *min_loc = NULL, *max_loc = NULL;
 
     if (num_params != TIVX_KERNEL_MML_MAX_PARAMS)
@@ -136,7 +136,6 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
         {
              sc[3U]->data.u32 = max_cnt;
         }
-
         if (NULL != arr[0u])
         {
             if (min_cnt > min_cap)
@@ -162,11 +161,16 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
 
         tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,
-            arr[0U]->mem_ptr.mem_type, VX_WRITE_ONLY);
-        tivxMemBufferUnmap(arr[1U]->mem_ptr.target_ptr, arr[1U]->mem_size,
-            arr[1U]->mem_ptr.mem_type, VX_WRITE_ONLY);
-
+        if (NULL != arr[0u])
+        {
+            tivxMemBufferUnmap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,
+                arr[0U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+        }
+        if (NULL != arr[1u])
+        {
+            tivxMemBufferUnmap(arr[1U]->mem_ptr.target_ptr, arr[1U]->mem_size,
+                arr[1U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+        }
     }
 
     return (status);

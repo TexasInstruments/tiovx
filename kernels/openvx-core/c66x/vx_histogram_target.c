@@ -81,6 +81,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
         if (VXLIB_SUCCESS == status)
         {
+            memset(dst->mem_ptr.target_ptr, 0, dst->mem_size);
+
             status = VXLIB_histogram_i8u_o32u(src_addr, &vxlib_src,
                     dst->mem_ptr.target_ptr, (uint32_t*)scratch, dst->offset, dst->range, dst->num_bins, 1);
         }

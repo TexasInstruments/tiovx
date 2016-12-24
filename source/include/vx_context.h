@@ -53,7 +53,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_REFERENCES     (96u)
+#define TIVX_CONTEXT_MAX_REFERENCES     (256u)
 
 
 /*!

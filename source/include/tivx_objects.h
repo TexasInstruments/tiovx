@@ -117,7 +117,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS                      (32u)
+#define TIVX_IMAGE_MAX_OBJECTS                      (128u)
 
 /*!
  * \brief Max number lut objects supported
