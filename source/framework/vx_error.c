@@ -36,7 +36,7 @@
 
 #include <vx_internal.h>
 
-static vx_status ownReleaseErrorInt(vx_reference *ref)
+static vx_status VX_API_CALL ownReleaseErrorInt(vx_reference *ref)
 {
     return ownReleaseReferenceInt(ref, VX_TYPE_ERROR, VX_INTERNAL, NULL);
 }

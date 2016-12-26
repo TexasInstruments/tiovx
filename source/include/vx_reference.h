@@ -72,7 +72,7 @@ typedef vx_status (*tivx_reference_callback_f)(vx_reference ref);
  *    callbacks from object dervied from references
  * \ingroup group_vx_reference
  */
-typedef vx_status (*tivx_reference_release_callback_f)(vx_reference *ref);
+typedef vx_status (* VX_API_CALL tivx_reference_release_callback_f)(vx_reference *ref);
 
 /*! \brief The most basic type in the OpenVX system. Any type that inherits
  *  from tivx_reference_t must have a vx_reference_t as its first memeber
