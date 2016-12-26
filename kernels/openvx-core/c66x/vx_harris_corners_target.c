@@ -307,7 +307,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     img->imagepatch_addr[0].stride_y * 4u;
 
                 prms->hcs_score_size = prms->vxlib_score.stride_y *
-                    prms->vxlib_score.dim_y;
+                    img->imagepatch_addr[0].dim_y;
 
                 prms->hcs_score = tivxMemAlloc(prms->hcs_score_size);
                 if (NULL == prms->hcs_score)
