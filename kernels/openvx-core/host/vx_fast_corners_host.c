@@ -130,6 +130,13 @@ static vx_status VX_CALLBACK tivxAddKernelFastCValidate(vx_node node,
 
         status = vxQueryArray(arr, VX_ARRAY_CAPACITY, &arr_capacity,
             sizeof(arr_capacity));
+        if (VX_SUCCESS == status)
+        {
+            if (0 == arr_capacity)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
     }
 
     if (VX_SUCCESS == status)
