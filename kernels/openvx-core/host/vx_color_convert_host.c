@@ -101,9 +101,9 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
 
         status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
-    }
 
-    status = vxGetValidRegionImage(img[0U], &rect);
+        status |= vxGetValidRegionImage(img[0U], &rect);
+    }
 
     if ((VX_SUCCESS == status) &&
         (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))

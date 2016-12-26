@@ -251,7 +251,7 @@ static vx_status VX_CALLBACK tivxAddKernelBitwiseValidate(vx_node node,
 vx_status tivxAddKernelBitwise(vx_context context)
 {
     vx_kernel kernel;
-    vx_status status;
+    vx_status status = VX_FAILURE;
     uint32_t index;
 
     if (NULL == vx_bitwise_not_kernel)
@@ -520,7 +520,7 @@ vx_status tivxAddKernelBitwise(vx_context context)
 
 vx_status tivxRemoveKernelBitwise(vx_context context)
 {
-    vx_status status;
+    vx_status status = VX_FAILURE;
 
     /* Kernel is released as part of Remove Kernel */
     if (NULL != vx_bitwise_not_kernel)
