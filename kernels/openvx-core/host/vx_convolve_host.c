@@ -24,6 +24,7 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
     vx_uint32 w[2U], h[2U], i;
     vx_df_image fmt[2U];
     vx_convolution conv;
+    vx_size size[2U];
 
     for (i = 0U; i < TIVX_KERNEL_CONVOLVE_MAX_PARAMS; i ++)
     {
@@ -56,17 +57,10 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((w[0U] <= TIVX_KERNEL_CONVOLVE_DIM_H) ||
-            (h[0U] <= TIVX_KERNEL_CONVOLVE_DIM_V))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
     }
 
     if (VX_SUCCESS == status)
     {
-        vx_size size[2U];
-
         status = vxQueryConvolution(conv, VX_CONVOLUTION_COLUMNS,
             &size[0U], sizeof(size[0u]));
         status |= vxQueryConvolution(conv, VX_CONVOLUTION_ROWS,
@@ -74,6 +68,15 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
 
         if ((size[0U] > TIVX_KERNEL_CONVOLVE_DIM_V) ||
             (size[1U] > TIVX_KERNEL_CONVOLVE_DIM_H))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if ((w[0U] < size[0u]) ||
+            (h[0U] < size[1u]))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
