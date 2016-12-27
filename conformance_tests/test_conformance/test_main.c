@@ -35,7 +35,11 @@
 #define VERSION_STR "unknown"
 #endif
 
+void TestModuleRegister();
+
 int vx_conformance_test_main(int argc, char* argv[])
 {
+    TestModuleRegister();
+
     return CT_main(argc, argv, VERSION_STR);
 }

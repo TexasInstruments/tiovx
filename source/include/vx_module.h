@@ -47,6 +47,10 @@ typedef struct _vx_module
     /*! \brief callback to unpublish nodes in a module */
     vx_unpublish_kernels_f unpublish;
 
+    /*! \brief flag to indicate if module is loaded,
+               module is counted only if it loaded */
+    vx_bool is_loaded;
+
 } tivx_module_t;
 
 

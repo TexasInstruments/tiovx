@@ -29,7 +29,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
         ((NULL == parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
          (NULL == parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX])))
     {
-        status = VX_ERROR_NO_MEMORY;
+        status = VX_ERROR_NOT_SUFFICIENT;
     }
 
     if (VX_SUCCESS == status)

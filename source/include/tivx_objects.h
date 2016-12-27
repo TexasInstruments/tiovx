@@ -175,6 +175,12 @@ extern "C" {
  */
 #define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (30u)
 
+/*!
+ * \brief Max number parameter objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_PARAMETER_MAX_OBJECTS                  (30u)
 
 /*!
  * \brief Structure to hold all framework objects
@@ -272,6 +278,11 @@ typedef struct _tivx_object_t
     /**< Object arrays*/
     vx_bool                 isObjArrUse[TIVX_OBJ_ARRAY_MAX_OBJECTS];
     /**< Flag indicating if object array is in use or not */
+
+    tivx_parameter_t        parameter[TIVX_PARAMETER_MAX_OBJECTS];
+    /**< Parameter objects */
+    vx_bool                 isParameterUse[TIVX_PARAMETER_MAX_OBJECTS];
+    /**< Flag indicating if Parameter object is use or not */
 } tivx_object_t;
 
 /*! \brief Alloc memory for a reference of specified type

@@ -22,6 +22,7 @@ static void ownCheckAndInitModule()
         {
             g_module_table[idx].publish = NULL;
             g_module_table[idx].unpublish = NULL;
+            g_module_table[idx].is_loaded = vx_false_e;
         }
         is_init = vx_true_e;
     }
@@ -38,6 +39,8 @@ uint32_t ownGetModuleCount()
         if( g_module_table[idx].publish != NULL
             &&
             g_module_table[idx].unpublish != NULL
+            &&
+            g_module_table[idx].is_loaded
           )
         {
             count++;
@@ -127,7 +130,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
 
             if (VX_SUCCESS == status)
             {
+                g_module_table[idx].is_loaded = vx_true_e;
                 kernels_loaded ++;
+                break;
             }
         }
     }
@@ -152,9 +157,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
             g_module_table[idx].unpublish != NULL
             &&
             (strncmp(g_module_table[idx].name, module, TIVX_MODULE_MAX_NAME) == 0)
+            &&
+            g_module_table[idx].is_loaded
           )
         {
             status = g_module_table[idx].unpublish(context);
+            g_module_table[idx].is_loaded = vx_false_e;
+            break;
         }
     }
     if(idx>=dimof(g_module_table))

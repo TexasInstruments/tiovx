@@ -123,8 +123,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kern, vx_enum 
             case VX_KERNEL_LOCAL_DATA_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    /* NOT required and not supported */
-                    status = VX_ERROR_NOT_SUPPORTED;
+                    kern->local_data_size = size;
                 }
                 else
                 {
@@ -236,12 +235,14 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->deinitialize = deinitialize;
                 kernel->num_targets = 0;
                 kernel->signature.num_parameters = numParams;
+                kernel->local_data_size = 0;
                 for(idx=0; idx<TIVX_KERNEL_MAX_PARAMS; idx++)
                 {
                     kernel->signature.directions[idx] = VX_TYPE_INVALID;
                     kernel->signature.types[idx] = VX_TYPE_INVALID;
                     kernel->signature.states[idx] = VX_TYPE_INVALID;
                 }
+                kernel->base.release_callback = (tivx_reference_release_callback_f)vxReleaseKernel;
             }
         }
         else

@@ -25,21 +25,25 @@
 # TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 # MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
 #
-
-ifeq ($(TARGET_PLATFORM),PC)
-
-
 include $(PRELUDE)
-TARGET      := vx_conformance_tests_exe
-TARGETTYPE  := exe
+TARGET      := vx_conformance_tests_testmodule
+TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-STATIC_LIBS := vx_conformance_tests vx_conformance_engine vx_conformance_tests_testmodule
-STATIC_LIBS += vx_vxu vx_framework
-STATIC_LIBS += vx_platform_pc_windows vx_framework 
-STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
-STATIC_LIBS += vx_framework 
-STATIC_LIBS += vxlib_X86 c6xsim_X86_C66
+
+ifeq ($(TARGET_CPU),C66)
+SKIPBUILD=1
+endif
+
+ifeq ($(TARGET_CPU),EVE)
+SKIPBUILD=1
+endif
+
+ifeq ($(TARGET_CPU),A15)
+SKIPBUILD=0
+endif
+
+ifeq ($(TARGET_CPU),M4)
+SKIPBUILD=0
+endif
 
 include $(FINALE)
-
-endif
