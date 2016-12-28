@@ -90,6 +90,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
     vx_context context, vx_reference exemplar, vx_size count)
 {
     vx_object_array objarr = NULL;
+    vx_status status = VX_SUCCESS;
 
     if ((ownIsValidContext(context) == vx_true_e) &&
         (NULL != exemplar))
@@ -109,9 +110,9 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 objarr->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseObjectArray;
 
-                objarr->obj_desc = (tivx_obj_desc_objarray_t*)tivxObjDescAlloc(
+                objarr->base.obj_desc = tivxObjDescAlloc(
                     TIVX_OBJ_DESC_OBJARRAY);
-                if(objarr->obj_desc==NULL)
+                if(objarr->base.obj_desc==NULL)
                 {
                     vxReleaseObjectArray(&objarr);
 
@@ -122,10 +123,23 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 }
                 else
                 {
-                    objarr->obj_desc->item_type = exemplar->type;
-                    objarr->obj_desc->num_items = count;
+                    tivx_obj_desc_objarray_t *obj_desc =
+                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
 
-                    ownInitObjArrayFromObject(context, objarr, exemplar);
+                    obj_desc->item_type = exemplar->type;
+                    obj_desc->num_items = count;
+
+                    status = ownInitObjArrayFromObject(context, objarr, exemplar);
+
+                    if(status != VX_SUCCESS)
+                    {
+                        vxReleaseObjectArray(&objarr);
+
+                        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+                            "Could not allocate objarr object descriptor\n");
+                        objarr = (vx_object_array)ownGetErrorObject(
+                            context, VX_ERROR_NO_RESOURCES);
+                    }
                 }
             }
         }
@@ -161,9 +175,9 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 objarr->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseObjectArray;
 
-                objarr->obj_desc = (tivx_obj_desc_objarray_t*)tivxObjDescAlloc(
+                objarr->base.obj_desc = tivxObjDescAlloc(
                     TIVX_OBJ_DESC_OBJARRAY);
-                if(objarr->obj_desc==NULL)
+                if(objarr->base.obj_desc==NULL)
                 {
                     vxReleaseObjectArray(&objarr);
 
@@ -174,8 +188,11 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 }
                 else
                 {
-                    objarr->obj_desc->item_type = exemplar->type;
-                    objarr->obj_desc->num_items = count;
+                    tivx_obj_desc_objarray_t *obj_desc =
+                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+                    obj_desc->item_type = exemplar->type;
+                    obj_desc->num_items = count;
 
                     ownInitObjArrayFromObject(context, objarr, exemplar);
 
@@ -193,10 +210,12 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     vx_object_array objarr, vx_uint32 index)
 {
     vx_reference ref = NULL;
+    tivx_obj_desc_objarray_t *obj_desc =
+        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
 
     if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) ==
-            vx_true_e) && (objarr->obj_desc != NULL) &&
-        (index < objarr->obj_desc->num_items) &&
+            vx_true_e) && (obj_desc != NULL) &&
+        (index < obj_desc->num_items) &&
         (objarr->base.is_virtual == vx_false_e))
     {
         ref = objarr->ref[index];
@@ -212,7 +231,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
 
     if (ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == vx_false_e
         ||
-        objarr->obj_desc == NULL
+        objarr->base.obj_desc == NULL
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -224,7 +243,10 @@ vx_status VX_API_CALL vxQueryObjectArray(
             case VX_OBJECT_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
                 {
-                    *(vx_enum *)ptr = objarr->obj_desc->item_type;
+                    tivx_obj_desc_objarray_t *obj_desc =
+                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+                    *(vx_enum *)ptr = obj_desc->item_type;
                 }
                 else
                 {
@@ -234,7 +256,10 @@ vx_status VX_API_CALL vxQueryObjectArray(
             case VX_OBJECT_ARRAY_NUMITEMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = objarr->obj_desc->num_items;
+                    tivx_obj_desc_objarray_t *obj_desc =
+                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+                    *(vx_size *)ptr = obj_desc->num_items;
                 }
                 else
                 {
@@ -314,7 +339,10 @@ static vx_status ownInitObjArrayWithLut(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             lut = vxCreateLUT(context, data_type, count);
@@ -322,7 +350,7 @@ static vx_status ownInitObjArrayWithLut(
             if (vxGetStatus((vx_reference)lut) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)lut;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -338,9 +366,9 @@ static vx_status ownInitObjArrayWithLut(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseLUT((vx_lut*)&objarr->ref[j]);
                 }
             }
         }
@@ -367,7 +395,10 @@ static vx_status ownInitObjArrayWithRemap(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             rem = vxCreateRemap(context, src_width, src_height, dst_width,
@@ -376,7 +407,7 @@ static vx_status ownInitObjArrayWithRemap(
             if (vxGetStatus((vx_reference)rem) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)rem;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -392,9 +423,9 @@ static vx_status ownInitObjArrayWithRemap(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseRemap((vx_remap*)&objarr->ref[j]);
                 }
             }
         }
@@ -419,7 +450,10 @@ static vx_status ownInitObjArrayWithMatrix(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             mat = vxCreateMatrix(context, type, columns, rows);
@@ -427,7 +461,7 @@ static vx_status ownInitObjArrayWithMatrix(
             if (vxGetStatus((vx_reference)mat) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)mat;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -443,9 +477,9 @@ static vx_status ownInitObjArrayWithMatrix(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseMatrix((vx_matrix*)&objarr->ref[j]);
                 }
             }
         }
@@ -472,7 +506,10 @@ static vx_status ownInitObjArrayWithPyramid(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             pmd = vxCreatePyramid(context, levels, scale, width, height,
@@ -481,7 +518,7 @@ static vx_status ownInitObjArrayWithPyramid(
             if (vxGetStatus((vx_reference)pmd) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)pmd;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -497,9 +534,9 @@ static vx_status ownInitObjArrayWithPyramid(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if(objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleasePyramid((vx_pyramid*)&objarr->ref[j]);
                 }
             }
         }
@@ -522,7 +559,10 @@ static vx_status ownInitObjArrayWithImage(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             img = vxCreateImage(context, width, height, format);
@@ -530,7 +570,7 @@ static vx_status ownInitObjArrayWithImage(
             if (vxGetStatus((vx_reference)img) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)img;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -546,9 +586,9 @@ static vx_status ownInitObjArrayWithImage(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseImage((vx_image*)&objarr->ref[j]);
                 }
             }
         }
@@ -571,7 +611,13 @@ static vx_status ownInitObjArrayWithArray(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+
+
+        num_items = obj_desc->num_items;
+
         for (i = 0; i < num_items; i ++)
         {
             arr = vxCreateArray(context, type, capacity);
@@ -579,7 +625,7 @@ static vx_status ownInitObjArrayWithArray(
             if (vxGetStatus((vx_reference)arr) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)arr;
-                objarr->obj_desc->obj_desc_id[i] = ((vx_reference)arr)->
+                obj_desc->obj_desc_id[i] = ((vx_reference)arr)->
                     obj_desc->obj_desc_id;
             }
             else
@@ -595,9 +641,9 @@ static vx_status ownInitObjArrayWithArray(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                   objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseArray((vx_array*)&objarr->ref[j]);
                 }
             }
         }
@@ -618,7 +664,10 @@ static vx_status ownInitObjArrayWithScalar(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             /* TODO: How to get the internal data pointer */
@@ -627,7 +676,7 @@ static vx_status ownInitObjArrayWithScalar(
             if (vxGetStatus((vx_reference)sc) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)sc;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -643,9 +692,9 @@ static vx_status ownInitObjArrayWithScalar(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseScalar((vx_scalar*)&objarr->ref[j]);
                 }
             }
         }
@@ -668,7 +717,9 @@ static vx_status ownInitObjArrayWithDistribution(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             dist = vxCreateDistribution(context, num_bins, offset, range);
@@ -676,7 +727,7 @@ static vx_status ownInitObjArrayWithDistribution(
             if (vxGetStatus((vx_reference)dist) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)dist;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -692,9 +743,9 @@ static vx_status ownInitObjArrayWithDistribution(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseDistribution((vx_distribution*)&objarr->ref[j]);
                 }
             }
         }
@@ -719,7 +770,9 @@ static vx_status ownInitObjArrayWithThreshold(
 
     if (VX_SUCCESS == status)
     {
-        num_items = objarr->obj_desc->num_items;
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+        num_items = obj_desc->num_items;
         for (i = 0; i < num_items; i ++)
         {
             thr = vxCreateThreshold(context, thr_type, data_type);
@@ -727,7 +780,7 @@ static vx_status ownInitObjArrayWithThreshold(
             if (vxGetStatus((vx_reference)thr) == VX_SUCCESS)
             {
                 objarr->ref[i] = (vx_reference)thr;
-                objarr->obj_desc->obj_desc_id[i] =
+                obj_desc->obj_desc_id[i] =
                     objarr->ref[i]->obj_desc->obj_desc_id;
             }
             else
@@ -743,9 +796,9 @@ static vx_status ownInitObjArrayWithThreshold(
         {
             for (j = 0; j < i; j ++)
             {
-                if (NULL != objarr->ref[j]->destructor_callback)
+                if (NULL != objarr->ref[j])
                 {
-                    objarr->ref[j]->destructor_callback(objarr->ref[j]);
+                    vxReleaseThreshold((vx_threshold*)&objarr->ref[j]);
                 }
             }
         }
@@ -760,9 +813,24 @@ static vx_status ownDestructObjArray(vx_reference ref)
 
     if(objarr->base.type == VX_TYPE_OBJECT_ARRAY)
     {
-        if(objarr->obj_desc!=NULL)
+        if(objarr->base.obj_desc!=NULL)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&objarr->obj_desc);
+            tivx_obj_desc_objarray_t *obj_desc =
+                (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+            vx_uint32 num_items, i;
+
+            num_items = obj_desc->num_items;
+
+            for (i = 0; i < num_items; i ++)
+            {
+                if(objarr->ref[i])
+                {
+                    vxReleaseReference(&objarr->ref[i]);
+                }
+            }
+
+            tivxObjDescFree(&objarr->base.obj_desc);
         }
     }
     return VX_SUCCESS;

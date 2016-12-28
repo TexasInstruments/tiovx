@@ -118,6 +118,11 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
     obj_desc->num_out_nodes = 0;
     obj_desc->num_in_nodes = 0;
 
+    if(kernel->is_target_kernel)
+    {
+        tivxFlagBitSet(&obj_desc->flags, TIVX_NODE_FLAG_IS_TARGET_KERNEL);
+    }
+
     node->obj_desc->target_id = (uint32_t)ownKernelGetDefaultTarget(kernel);
     if(node->obj_desc->target_id == (uint32_t)TIVX_TARGET_ID_INVALID)
     {
@@ -184,20 +189,65 @@ vx_status ownNodeKernelInit(vx_node node)
 
     if(node->is_kernel_created == vx_false_e)
     {
-        if (node->kernel->function)
-        {
-            /* user has given initialize function so call it */
-            status = node->kernel->function(node, node->parameters,
-                node->kernel->signature.num_parameters);
-        }
-        else
-        {
-            uint16_t obj_desc_id[1];
+            if ( !node->kernel->is_target_kernel)
+            {
+                if(node->kernel->local_data_size != 0)
+                {
+                    /* allocate memory for user kernel */
+                    node->local_data_size = node->kernel->local_data_size;
+                    node->local_data_ptr = tivxMemAlloc(node->local_data_size);
+                    if(node->local_data_ptr==NULL)
+                    {
+                        status = VX_ERROR_NO_MEMORY;
+                    }
+                    else
+                    {
+                        node->local_data_ptr_is_alloc = vx_true_e;
+                    }
+                }
+                else
+                {
+                    node->local_data_size = 0;
+                    node->local_data_ptr = NULL;
+                }
 
-            obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+                if(node->kernel->initialize && status == VX_SUCCESS)
+                {
+                    node->local_data_set_allow = vx_true_e;
 
-            status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
-        }
+                    /* user has given initialize function so call it */
+                    status = node->kernel->initialize(node, node->parameters,
+                        node->kernel->signature.num_parameters);
+
+                    node->local_data_set_allow = vx_false_e;
+
+                    if(node->kernel->local_data_size==0
+                        &&
+                        node->local_data_size != 0
+                        &&
+                        node->local_data_ptr == NULL
+                        )
+                    {
+                        node->local_data_ptr = tivxMemAlloc(node->local_data_size);
+                        if(node->local_data_ptr==NULL)
+                        {
+                            status = VX_ERROR_NO_MEMORY;
+                        }
+                        else
+                        {
+                            node->local_data_ptr_is_alloc = vx_true_e;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                uint16_t obj_desc_id[1];
+
+                obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+                status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_CREATE, 1, obj_desc_id);
+            }
 
         if(status==VX_SUCCESS)
         {
@@ -213,10 +263,29 @@ vx_status ownNodeKernelDeinit(vx_node node)
 
     if(node->is_kernel_created == vx_true_e)
     {
-        if(node->kernel->deinitialize)
+        if( !node->kernel->is_target_kernel)
         {
-            /* user has given deinitialize function so call it */
-            status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
+            if(node->kernel->deinitialize)
+            {
+                node->local_data_set_allow = vx_true_e;
+
+                /* user has given deinitialize function so call it */
+                status = node->kernel->deinitialize(node, node->parameters, node->kernel->signature.num_parameters);
+
+                node->local_data_set_allow = vx_false_e;
+            }
+            if(node->local_data_ptr_is_alloc
+                &&
+                node->local_data_ptr
+                &&
+                node->local_data_size
+                )
+            {
+                tivxMemFree(node->local_data_ptr, node->local_data_size);
+                node->local_data_ptr = NULL;
+                node->local_data_size = 0;
+                node->local_data_ptr_is_alloc = vx_false_e;
+            }
         }
         else
         {
@@ -239,6 +308,37 @@ vx_status ownNodeKernelSchedule(vx_node node)
     vx_status status = VX_SUCCESS;
 
     status = tivxObjDescSend(node->obj_desc->target_id, node->obj_desc->base.obj_desc_id);
+
+    return status;
+}
+
+vx_status ownNodeUserKernelExecute(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
+    {
+        if(node->kernel && node->is_kernel_created == vx_true_e)
+        {
+            if(node->kernel->function && !node->kernel->is_target_kernel)
+            {
+                /* user has given user kernel function so call it */
+                status = node->kernel->function(node, node->parameters, node->kernel->signature.num_parameters);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
+        }
+        else
+        {
+            status = VX_ERROR_INVALID_REFERENCE;
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
 
     return status;
 }
@@ -429,7 +529,10 @@ vx_status ownNodeCreateCompletionEvent(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    status = tivxEventCreate(&node->completion_event);
+    if(node->completion_event==NULL)
+    {
+        status = tivxEventCreate(&node->completion_event);
+    }
 
     return status;
 }
@@ -473,32 +576,35 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node)
 
     if(NULL != node)
     {
-        node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
-        if(node->obj_desc_cmd != NULL)
+        if(node->obj_desc_cmd==NULL)
         {
-            node->obj_desc->node_complete_cmd_obj_desc_id
-                = node->obj_desc_cmd->base.obj_desc_id;
+            node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
+            if(node->obj_desc_cmd != NULL)
+            {
+                node->obj_desc->node_complete_cmd_obj_desc_id
+                    = node->obj_desc_cmd->base.obj_desc_id;
 
-            node->obj_desc_cmd->cmd_id = TIVX_CMD_NODE_USER_CALLBACK;
+                node->obj_desc_cmd->cmd_id = TIVX_CMD_NODE_USER_CALLBACK;
 
-            /* No ACK needed */
-            node->obj_desc_cmd->flags = 0;
+                /* No ACK needed */
+                node->obj_desc_cmd->flags = 0;
 
-            /* this command is sent by the target node to HOST hence dst_target_id is HOST */
-            node->obj_desc_cmd->dst_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+                /* this command is sent by the target node to HOST hence dst_target_id is HOST */
+                node->obj_desc_cmd->dst_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
 
-            /* source is node target which is not known at this moment, however
-             * since ACK is not required for this command, this can be set to INVALID
-             */
-            node->obj_desc_cmd->src_target_id = TIVX_TARGET_ID_INVALID;
+                /* source is node target which is not known at this moment, however
+                 * since ACK is not required for this command, this can be set to INVALID
+                 */
+                node->obj_desc_cmd->src_target_id = TIVX_TARGET_ID_INVALID;
 
-            /* parameter is node object descriptor ID */
-            node->obj_desc_cmd->num_obj_desc = 1;
-            node->obj_desc_cmd->obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
-        }
-        else
-        {
-            status = VX_ERROR_NO_RESOURCES;
+                /* parameter is node object descriptor ID */
+                node->obj_desc_cmd->num_obj_desc = 1;
+                node->obj_desc_cmd->obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+            }
+            else
+            {
+                status = VX_ERROR_NO_RESOURCES;
+            }
         }
     }
     return status;
@@ -556,6 +662,10 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->completion_event = NULL;
                     node->obj_desc_cmd = NULL;
                     node->user_callback = NULL;
+                    node->local_data_ptr = NULL;
+                    node->local_data_size = 0;
+                    node->local_data_ptr_is_alloc = vx_false_e;
+                    node->local_data_set_allow = vx_false_e;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = ownDestructNode;
@@ -649,7 +759,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_LOCAL_DATA_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    *(vx_size *)ptr = 0;
+                    *(vx_size *)ptr = node->local_data_size;
                 }
                 else
                 {
@@ -659,7 +769,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_LOCAL_DATA_PTR:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
                 {
-                    *(vx_uint32 *)ptr = (vx_uint32)NULL;
+                    *(vx_uint32 *)ptr = (vx_uint32)node->local_data_ptr;
                 }
                 else
                 {
@@ -768,10 +878,44 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
             switch (attribute)
             {
                 case VX_NODE_LOCAL_DATA_SIZE:
-                    /* NOT SUPPORTED */
+                    if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3) && node->kernel)
+                    {
+                        if(node->local_data_ptr_is_alloc || node->local_data_set_allow == vx_false_e)
+                        {
+                            /* local data ptr is allocated or local data size cannot be set
+                             * by user
+                             */
+                            status = VX_ERROR_INVALID_PARAMETERS;
+                        }
+                        else
+                        {
+                            node->local_data_size = *(vx_size*)ptr;
+                        }
+                    }
+                    else
+                    {
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                    }
                     break;
                 case VX_NODE_LOCAL_DATA_PTR:
-                    /* NOT SUPPORTED */
+                    if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3) && node->kernel)
+                    {
+                        if(node->local_data_ptr_is_alloc || node->local_data_set_allow == vx_false_e)
+                        {
+                            /* local data ptr is allocated or local data ptr cannot be set
+                             * by user
+                             */
+                            status = VX_ERROR_INVALID_PARAMETERS;
+                        }
+                        else
+                        {
+                            node->local_data_ptr = (void*)(*(vx_uint32*)ptr);
+                        }
+                    }
+                    else
+                    {
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                    }
                     break;
                 case VX_NODE_BORDER:
                     if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))

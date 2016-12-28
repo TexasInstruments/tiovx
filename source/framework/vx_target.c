@@ -168,33 +168,51 @@ static void tivxTargetNodeDescTriggerNextNodes(tivx_obj_desc_node_t *node_obj_de
     }
 }
 
+static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc)
+{
+    tivx_target_kernel_instance target_kernel_instance;
+    tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
+    uint16_t i;
+
+    target_kernel_instance = tivxTargetKernelInstanceGet(node_obj_desc->target_kernel_index, node_obj_desc->kernel_id);
+
+    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
+    {
+        /* TODO: Handle replicated node */
+
+    }
+    else
+    {
+        for(i=0; i<node_obj_desc->num_params ; i++)
+        {
+            params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
+        }
+
+        node_obj_desc->exe_status = tivxTargetKernelExecute(target_kernel_instance, params, node_obj_desc->num_params);
+    }
+}
+
+static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc)
+{
+    node_obj_desc->exe_status = ownNodeUserKernelExecute((vx_node)node_obj_desc->host_node_ref);
+}
+
 static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
 {
-    tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
     uint32_t cur_time;
-    uint16_t i;
-    tivx_target_kernel_instance target_kernel_instance;
 
     /* if node is already executed do nothing */
     if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_EXECUTED) == vx_false_e )
     {
-        target_kernel_instance = tivxTargetKernelInstanceGet(node_obj_desc->target_kernel_index, node_obj_desc->kernel_id);
-
         cur_time = tivxPlatformGetTimeInUsecs();
 
-        if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
+        if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
         {
-            /* TODO: Handle replicated node */
-
+            tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc);
         }
         else
         {
-            for(i=0; i<node_obj_desc->num_params ; i++)
-            {
-                params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
-            }
-
-            node_obj_desc->exe_status = tivxTargetKernelExecute(target_kernel_instance, params, node_obj_desc->num_params);
+            tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc);
         }
 
         node_obj_desc->exe_time_usecs = tivxPlatformGetTimeInUsecs() - cur_time;
@@ -379,19 +397,22 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
                 if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
                 {
-                    if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_CREATE)
+                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
                     {
-                        status = tivxTargetNodeDescNodeCreate(node_obj_desc);
-                    }
-                    else
-                    if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_DELETE)
-                    {
-                        status = tivxTargetNodeDescNodeDelete(node_obj_desc);
-                    }
-                    else
-                    if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_CONTROL)
-                    {
-                        status = tivxTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
+                        if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_CREATE)
+                        {
+                            status = tivxTargetNodeDescNodeCreate(node_obj_desc);
+                        }
+                        else
+                        if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_DELETE)
+                        {
+                            status = tivxTargetNodeDescNodeDelete(node_obj_desc);
+                        }
+                        else
+                        if(cmd_obj_desc->cmd_id == TIVX_CMD_NODE_CONTROL)
+                        {
+                            status = tivxTargetNodeDescNodeControl(cmd_obj_desc, node_obj_desc);
+                        }
                     }
                 }
                 else

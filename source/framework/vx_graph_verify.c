@@ -353,6 +353,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     uint32_t i;
     vx_status status = VX_SUCCESS;
     vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS];
+    vx_bool first_time_verify = ((graph->verified == vx_false_e) && (graph->reverify == vx_false_e)) ? vx_true_e : vx_false_e;
 
     for (i = 0; i < TIVX_KERNEL_MAX_PARAMS; i ++)
     {
@@ -370,7 +371,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     {
         ownReferenceLock(&graph->base);
 
-        if(graph->state == VX_GRAPH_STATE_UNVERIFIED)
+        graph->verified = vx_false_e;
+
+        if(first_time_verify == vx_false_e)
+        {
+            ownGraphNodeKernelDeinit(graph);
+        }
         {
             /* Call validate function for each node
              * If validation fails then return with error
@@ -438,6 +444,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             {
                 /* everything passed, now graph is verified */
                 graph->verified = vx_true_e;
+                graph->reverify = vx_false_e;
                 graph->state = VX_GRAPH_STATE_VERIFIED;
             }
 

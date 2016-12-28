@@ -79,6 +79,19 @@ typedef struct _vx_node {
      *         This is set by graph only for leaf nodes
      */
     tivx_event completion_event;
+    /*! local data pointer */
+    void *local_data_ptr;
+    /*! local data size */
+    vx_size local_data_size;
+    /*! flag to indicate if local_data_ptr is allocated by system
+     *  TRUE: allocated by system (TIOVX implementation)
+     *  FALSE: allocated by user, or not allocated
+     */
+    vx_bool local_data_ptr_is_alloc;
+
+    /*! Flag to indicate if local data size and ptr set is allowed */
+    vx_bool local_data_set_allow;
+
 } tivx_node_t;
 
 /**
@@ -212,6 +225,12 @@ vx_status ownNodeSendCompletionEvent(vx_node node);
  * \ingroup group_vx_node
  */
 void ownNodeClearExecuteState(vx_node node);
+
+/*! \brief Execute user kernel
+ *
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeUserKernelExecute(vx_node node);
 
 #ifdef __cplusplus
 }

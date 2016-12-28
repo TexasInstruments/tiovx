@@ -69,6 +69,11 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_USER_CALLBACK  (0x00000004u)
 
+/*! \brief Flag to indicate if kernel associated with this node is a
+ *         user kernel or target kernel
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)
 
 
 /*!

@@ -85,6 +85,9 @@ typedef struct _vx_graph {
     /*! \brief Flag to maintain state of graph verification */
     vx_bool verified;
 
+    /*! \brief Flag to maintain state of graph re-verification */
+    vx_bool reverify;
+
     /*! \brief Nodes in a graph */
     vx_node nodes[TIVX_GRAPH_MAX_NODES];
 

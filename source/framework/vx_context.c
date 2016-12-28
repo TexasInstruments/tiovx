@@ -438,6 +438,11 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
 
             if(status == VX_SUCCESS)
             {
+                /* set flag to disallow removal of built kernels
+                 * via remove kernel API
+                 */
+                ownContextSetKernelRemoveLock(context, vx_true_e);
+
                 /* this loads default module kernels
                  * Any additional modules should be loaded by the user using
                  * vxLoadKernels()
@@ -445,6 +450,11 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                  * User can check kernels that are added using vxQueryContext()
                  */
                 vxLoadKernels(context, g_context_default_load_module);
+
+                /* set flag to allow removal additional kernels
+                 * installed by user via remove kernel API
+                 */
+                ownContextSetKernelRemoveLock(context, vx_false_e);
             }
         }
         else
@@ -472,8 +482,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         if (ownDecrementReference(&context->base, VX_EXTERNAL) == 0)
         {
+            ownContextSetKernelRemoveLock(context, vx_true_e);
+
             /* Unload kernels */
             vxUnloadKernels(context, g_context_default_load_module);
+
+            ownContextSetKernelRemoveLock(context, vx_false_e);
 
             /* Deregister any log callbacks if there is any registered */
             vxRegisterLogCallback(context, NULL, vx_false_e);
@@ -979,3 +993,12 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
     return kernel;
 }
 
+vx_bool ownContextGetKernelRemoveLock(vx_context context)
+{
+    return context->remove_kernel_lock;
+}
+
+void ownContextSetKernelRemoveLock(vx_context context, vx_bool do_lock)
+{
+    context->remove_kernel_lock = do_lock;
+}

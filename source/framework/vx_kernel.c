@@ -123,7 +123,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kern, vx_enum 
             case VX_KERNEL_LOCAL_DATA_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
                 {
-                    kern->local_data_size = size;
+                    kern->local_data_size = *(vx_size*)ptr;
                 }
                 else
                 {
@@ -147,9 +147,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
     vx_status status = VX_SUCCESS;
     if (kernel && ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
     {
-        status = ownRemoveKernelFromContext(kernel->base.context, kernel);
-        if(status==VX_SUCCESS)
+        if(kernel->lock_kernel_remove == vx_true_e
+            &&
+            ownContextGetKernelRemoveLock(kernel->base.context) == vx_false_e
+            )
         {
+            /* kernel removal is locked, return error */
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        else
+        {
+            /* remove from context if it exists in context */
+            ownRemoveKernelFromContext(kernel->base.context, kernel);
+
             status = vxReleaseKernel(&kernel);
         }
     }
@@ -236,6 +246,15 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->num_targets = 0;
                 kernel->signature.num_parameters = numParams;
                 kernel->local_data_size = 0;
+                kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
+                if(kernel->function)
+                {
+                    kernel->is_target_kernel = vx_false_e;
+                }
+                else
+                {
+                    kernel->is_target_kernel = vx_true_e;
+                }
                 for(idx=0; idx<TIVX_KERNEL_MAX_PARAMS; idx++)
                 {
                     kernel->signature.directions[idx] = VX_TYPE_INVALID;
@@ -243,6 +262,11 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                     kernel->signature.states[idx] = VX_TYPE_INVALID;
                 }
                 kernel->base.release_callback = (tivx_reference_release_callback_f)vxReleaseKernel;
+                if( !kernel->is_target_kernel )
+                {
+                    /* for user kernel, add to HOST target by default */
+                    tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
+                }
             }
         }
         else

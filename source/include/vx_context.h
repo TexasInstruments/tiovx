@@ -53,7 +53,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_REFERENCES     (256u)
+#define TIVX_CONTEXT_MAX_REFERENCES     (512u)
 
 
 /*!
@@ -134,6 +134,11 @@ typedef struct _vx_context {
     /*! Event used to received a command ACK */
     tivx_event cmd_ack_event;
 
+    /*! Flag to disallow kernel removal,
+     *  used for built in kernels added during context create
+     */
+    vx_bool remove_kernel_lock;
+
 } tivx_context_t;
 
 /**
@@ -206,6 +211,26 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
  * \ingroup group_vx_context
  */
 vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, uint16_t *obj_desc_id);
+
+/*!
+ * \brief Get value of kernel remove lock flag
+ *
+ * \param context      [in] context
+ *
+ * \ingroup group_vx_context
+ */
+vx_bool ownContextGetKernelRemoveLock(vx_context context);
+
+/*!
+ * \brief Set value of kernel remove lock flag
+ *
+ * \param context      [in] context
+ * \param do_lock      [in] kernel remove lock value to set
+ *
+ * \ingroup group_vx_context
+ */
+void ownContextSetKernelRemoveLock(vx_context context, vx_bool do_lock);
+
 
 #ifdef __cplusplus
 }

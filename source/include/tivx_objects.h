@@ -89,77 +89,77 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_ARRAY_MAX_OBJECTS                      (16u)
+#define TIVX_ARRAY_MAX_OBJECTS                      (48u)
 
 /*!
  * \brief Max number convolution objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_CONVOLUTION_MAX_OBJECTS                (16u)
+#define TIVX_CONVOLUTION_MAX_OBJECTS                (48u)
 
 /*!
  * \brief Max number delay objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_DELAY_MAX_OBJECTS                      (8u)
+#define TIVX_DELAY_MAX_OBJECTS                      (48u)
 
 /*!
  * \brief Max number distribution objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_DISTRIBUTION_MAX_OBJECTS               (16u)
+#define TIVX_DISTRIBUTION_MAX_OBJECTS               (48u)
 
 /*!
  * \brief Max number image objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_IMAGE_MAX_OBJECTS                      (128u)
+#define TIVX_IMAGE_MAX_OBJECTS                      (384u)
 
 /*!
  * \brief Max number lut objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_LUT_MAX_OBJECTS                        (16u)
+#define TIVX_LUT_MAX_OBJECTS                        (48u)
 
 /*!
  * \brief Max number matrix objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_MATRIX_MAX_OBJECTS                     (16u)
+#define TIVX_MATRIX_MAX_OBJECTS                     (48u)
 
 /*!
  * \brief Max number pyramid objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECTS                    (18u)
+#define TIVX_PYRAMID_MAX_OBJECTS                    (48u)
 
 /*!
  * \brief Max number remap objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_REMAP_MAX_OBJECTS                      (16u)
+#define TIVX_REMAP_MAX_OBJECTS                      (48u)
 
 /*!
  * \brief Max number scalar objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_SCALAR_MAX_OBJECTS                     (32u)
+#define TIVX_SCALAR_MAX_OBJECTS                     (48u)
 
 /*!
  * \brief Max number threshold objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_THRESHOLD_MAX_OBJECTS                  (16u)
+#define TIVX_THRESHOLD_MAX_OBJECTS                  (48u)
 
 /*!
  * \brief Max number error objects supported
@@ -173,14 +173,14 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (30u)
+#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (48u)
 
 /*!
  * \brief Max number parameter objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_PARAMETER_MAX_OBJECTS                  (30u)
+#define TIVX_PARAMETER_MAX_OBJECTS                  (48u)
 
 /*!
  * \brief Structure to hold all framework objects

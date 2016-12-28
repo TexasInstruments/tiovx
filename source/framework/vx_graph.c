@@ -100,7 +100,10 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
                 ownGraphGetFreeNodeIndex() */
             ownIncrementReference(&node->base, VX_INTERNAL);
             graph->nodes[graph->num_nodes] = node;
-            graph->num_nodes++;;
+            graph->num_nodes++;
+            graph->reverify = graph->verified;
+            graph->verified = vx_false_e;
+            graph->state = VX_GRAPH_STATE_UNVERIFIED;
         }
         else
         {
@@ -157,6 +160,9 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
                 graph->num_nodes--;
                 ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
                 status = VX_SUCCESS;
+                graph->reverify = graph->verified;
+                graph->verified = vx_false_e;
+                graph->state = VX_GRAPH_STATE_UNVERIFIED;
                 break;
             }
         }
@@ -216,6 +222,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             }
 
             graph->verified = vx_false_e;
+            graph->reverify = vx_false_e;
             graph->state = VX_GRAPH_STATE_UNVERIFIED;
         }
     }
@@ -469,8 +476,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
 
     {
-        /* verify graph if not already verified */
-        status = vxVerifyGraph(graph);
+        if(!vxIsGraphVerified(graph))
+        {
+            /* verify graph if not already verified */
+            status = vxVerifyGraph(graph);
+        }
 
         if ((status == VX_SUCCESS)
             && (graph->state == VX_GRAPH_STATE_VERIFIED ||

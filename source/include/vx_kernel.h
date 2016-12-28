@@ -97,6 +97,13 @@ typedef struct _vx_kernel
     char                    target_name[TIVX_MAX_TARGETS_PER_KERNEL][TIVX_TARGET_MAX_NAME];
     /*! \brief Local data size for user kernels */
     vx_size                 local_data_size;
+    /*! \brief Flag to check if this is a user kernel or target kernel */
+    vx_bool                 is_target_kernel;
+
+    /*! \brief when this flag is true, kernel cannot be removed via
+     *         remove kernel API
+     */
+    vx_bool                 lock_kernel_remove;
 
 } tivx_kernel_t;
 
