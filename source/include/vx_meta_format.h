@@ -173,7 +173,7 @@ typedef struct _vx_meta_format
 
 /*! \brief Releases a meta-format object.
  *
- * \param [in] pmeta
+ * \param [in] meta meta format object
  *
  * \ingroup group_int_meta_format
  */

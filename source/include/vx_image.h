@@ -125,7 +125,7 @@ void ownPrintImage(vx_image image);
 /*!
  * \brief function to initialize virtual image's parameters
  *
- * \param pmd       [in] virtual image reference
+ * \param img       [in] virtual image reference
  * \param width     [in] image width
  * \param height    [in] image height
  * \param format    [in] image format

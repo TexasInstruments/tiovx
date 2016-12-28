@@ -170,7 +170,7 @@ void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type);
 /*!
  * \brief Convert target memory pointer to shared pointer
  *
- * \param [in] shared_ptr Shared memory pointer
+ * \param [in] target_ptr Target memory pointer
  * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
  *
  * \return Converted host memory pointer

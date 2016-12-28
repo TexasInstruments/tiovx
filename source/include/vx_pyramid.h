@@ -66,7 +66,7 @@ typedef struct _vx_pyramid
 /*!
  * \brief function to initialize virtual pyramid's parameters
  *
- * \param pmd       [in] virtual pyramid reference
+ * \param prmd      [in] virtual pyramid reference
  * \param width     [in] base width of image pyramid
  * \param height    [in] base height of image pyramid
  * \param format    [in] image format

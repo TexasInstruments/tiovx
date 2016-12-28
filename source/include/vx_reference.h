@@ -242,7 +242,7 @@ vx_bool ownIsValidReference(vx_reference ref);
 /*! \brief Used to initialize any vx_reference as a delay element
  * \param [in] ref The pointer to the reference object.
  * \param [in] d The delay to which the object belongs
- * \param [in] the index in the delay
+ * \param [in] index the index in the delay
  * \ingroup group_vx_reference
  */
 void ownInitReferenceForDelay(vx_reference ref, vx_delay d, vx_int32 index);
