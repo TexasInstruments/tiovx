@@ -23,6 +23,7 @@ void tivxAddTargetKernelAccumulateSquare();
 void tivxAddTargetKernelAccumulateWeighted();
 void tivxAddTargetKernelAdd();
 void tivxAddTargetKernelBitwise();
+void tivxAddTargetKernelCannyEd();
 void tivxAddTargetKernelChannelCombine();
 void tivxAddTargetKernelChannelExtract();
 void tivxAddTargetKernelColorConvert();
@@ -36,6 +37,7 @@ void tivxAddTargetKernelHarrisCorners();
 void tivxAddTargetKernelHalfscaleGaussian();
 void tivxAddTargetKernelHistogram();
 void tivxAddTargetKernelIntegralImage();
+void tivxAddTargetKernelLaplacianPyramid();
 void tivxAddTargetKernelLut();
 void tivxAddTargetKernelMagnitude();
 void tivxAddTargetKernelMeanStdDev();
@@ -57,6 +59,7 @@ void tivxRemoveTargetKernelAccumulateSquare();
 void tivxRemoveTargetKernelAccumulateWeighted();
 void tivxRemoveTargetKernelAdd();
 void tivxRemoveTargetKernelBitwise();
+void tivxRemoveTargetKernelCannyEd();
 void tivxRemoveTargetKernelChannelCombine();
 void tivxRemoveTargetKernelChannelExtract();
 void tivxRemoveTargetKernelColorConvert();
@@ -70,6 +73,7 @@ void tivxRemoveTargetKernelHarrisCorners();
 void tivxRemoveTargetKernelHalfscaleGaussian();
 void tivxRemoveTargetKernelHistogram();
 void tivxRemoveTargetKernelIntegralImage();
+void tivxRemoveTargetKernelLaplacianPyramid();
 void tivxRemoveTargetKernelLut();
 void tivxRemoveTargetKernelMagnitude();
 void tivxRemoveTargetKernelMeanStdDev();
@@ -92,6 +96,7 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAccumulateWeighted, tivxRemoveTargetKernelAccumulateWeighted},
     {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
     {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
+    {tivxAddTargetKernelCannyEd, tivxRemoveTargetKernelCannyEd},
     {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
     {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
     {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},
@@ -105,6 +110,7 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelHalfscaleGaussian, tivxAddTargetKernelHalfscaleGaussian},
     {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram},
     {tivxAddTargetKernelIntegralImage, tivxRemoveTargetKernelIntegralImage},
+    {tivxAddTargetKernelLaplacianPyramid, tivxRemoveTargetKernelLaplacianPyramid},
     {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
     {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},

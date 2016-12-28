@@ -23,6 +23,7 @@ vx_status tivxAddKernelAccumulateSquare(vx_context context);
 vx_status tivxAddKernelAccumulateWeighted(vx_context context);
 vx_status tivxAddKernelAdd(vx_context context);
 vx_status tivxAddKernelBitwise(vx_context context);
+vx_status tivxAddKernelCannyEd(vx_context context);
 vx_status tivxAddKernelChannelCombine(vx_context context);
 vx_status tivxAddKernelChannelExtract(vx_context context);
 vx_status tivxAddKernelColorConvert(vx_context context);
@@ -36,6 +37,7 @@ vx_status tivxAddKernelHarrisCorners(vx_context context);
 vx_status tivxAddKernelHalfscaleGaussian(vx_context context);
 vx_status tivxAddKernelHistogram(vx_context context);
 vx_status tivxAddKernelIntegralImage(vx_context context);
+vx_status tivxAddKernelLaplacianPyramid(vx_context context);
 vx_status tivxAddKernelLut(vx_context context);
 vx_status tivxAddKernelMagnitude(vx_context context);
 vx_status tivxAddKernelMeanStdDev(vx_context context);
@@ -57,6 +59,7 @@ vx_status tivxRemoveKernelAccumulateSquare(vx_context context);
 vx_status tivxRemoveKernelAccumulateWeighted(vx_context context);
 vx_status tivxRemoveKernelAdd(vx_context context);
 vx_status tivxRemoveKernelBitwise(vx_context context);
+vx_status tivxRemoveKernelCannyEd(vx_context context);
 vx_status tivxRemoveKernelChannelCombine(vx_context context);
 vx_status tivxRemoveKernelChannelExtract(vx_context context);
 vx_status tivxRemoveKernelColorConvert(vx_context context);
@@ -71,6 +74,7 @@ vx_status tivxRemoveKernelHalfscaleGaussian(vx_context context);
 vx_status tivxRemoveKernelHistogram(vx_context context);
 vx_status tivxRemoveKernelIntegralImage(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
+vx_status tivxRemoveKernelLaplacianPyramid(vx_context context);
 vx_status tivxRemoveKernelMagnitude(vx_context context);
 vx_status tivxRemoveKernelMeanStdDev(vx_context context);
 vx_status tivxRemoveKernelMinMaxLoc(vx_context context);
@@ -92,6 +96,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAccumulateWeighted, tivxRemoveKernelAccumulateWeighted},
     {tivxAddKernelAdd, tivxRemoveKernelAdd},
     {tivxAddKernelBitwise, tivxRemoveKernelBitwise},
+    {tivxAddKernelCannyEd, tivxRemoveKernelCannyEd},
     {tivxAddKernelChannelCombine, tivxRemoveKernelChannelCombine},
     {tivxAddKernelChannelExtract, tivxRemoveKernelChannelExtract},
     {tivxAddKernelColorConvert, tivxRemoveKernelColorConvert},
@@ -105,6 +110,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelHalfscaleGaussian, tivxRemoveKernelHalfscaleGaussian},
     {tivxAddKernelHistogram, tivxRemoveKernelHistogram},
     {tivxAddKernelIntegralImage, tivxRemoveKernelIntegralImage},
+    {tivxAddKernelLaplacianPyramid, tivxRemoveKernelLaplacianPyramid},
     {tivxAddKernelLut, tivxRemoveKernelLut},
     {tivxAddKernelMagnitude, tivxRemoveKernelMagnitude},
     {tivxAddKernelMeanStdDev, tivxRemoveKernelMeanStdDev},
