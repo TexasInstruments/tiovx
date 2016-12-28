@@ -94,13 +94,13 @@ vx_status VX_CALLBACK tivxChannelCombine(
             VXLIB_bufParams2D_t *vxlib_src[3U];
             uint8_t *src_addr[3U];
             VXLIB_bufParams2D_t vxlib_src0;
-            uint8_t *src0_addr;
+            uint8_t *src0_addr = NULL;
             VXLIB_bufParams2D_t vxlib_src1;
-            uint8_t *src1_addr;
+            uint8_t *src1_addr = NULL;
             VXLIB_bufParams2D_t vxlib_src2;
-            uint8_t *src2_addr;
+            uint8_t *src2_addr = NULL;
             VXLIB_bufParams2D_t vxlib_src3;
-            uint8_t *src3_addr;
+            uint8_t *src3_addr = NULL;
             VXLIB_bufParams2D_t vxlib_dst;
             uint8_t *dst_addr[4U];
             vx_rectangle_t rect;

@@ -249,7 +249,7 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
                 }
                 if (prms->scratch)
                 {
-                    tivxMemFree(prms->scratch, size);
+                    tivxMemFree(prms->scratch, prms->scratch_size);
                     prms->scratch = NULL;
                 }
 

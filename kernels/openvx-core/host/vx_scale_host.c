@@ -86,10 +86,14 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             status = VX_ERROR_INVALID_TYPE;
         }
     }
-    /* Output image cannot be virtual in this case */
-    if (vx_true_e == tivxIsReferenceVirtual((vx_reference)img[1U]))
+
+    if (VX_SUCCESS == status)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
+        /* Output image cannot be virtual in this case */
+        if (vx_true_e == tivxIsReferenceVirtual((vx_reference)img[1U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
     }
 
     if (VX_SUCCESS == status)

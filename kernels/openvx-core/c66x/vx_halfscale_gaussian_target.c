@@ -36,7 +36,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
     }
     else
     {
-        int32_t gsize_value;
+        int32_t gsize_value = 1;
 
         src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];

@@ -16,7 +16,7 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 {
     vx_status status = VX_SUCCESS;
 
-    vx_image img[2U];
+    vx_image img[2U] = {NULL};
     vx_scalar scalar;
     vx_df_image fmt[2U];
     vx_df_image out_fmt;
@@ -100,23 +100,25 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
     }
 
 
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    if (VX_SUCCESS == status)
     {
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U], sizeof(fmt[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
-
-        /* Check for frame sizes */
-        if ((out_w != w[1U]) || (out_h != h[1U]))
+        if(vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U]))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+            /* Get the image width/heigh and format */
+            status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U], sizeof(fmt[1U]));
+            status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
+            status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
 
-        if ( fmt[1U] != out_fmt )
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            /* Check for frame sizes */
+            if ((out_w != w[1U]) || (out_h != h[1U]))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+
+            if ( fmt[1U] != out_fmt )
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
         }
     }
 
