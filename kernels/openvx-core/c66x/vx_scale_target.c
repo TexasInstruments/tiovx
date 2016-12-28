@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
                     vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
                     0, 0, 0, 0);
             }
-            else if (VX_BORDER_CONSTANT == border.mode)
+            else /* For both constant and undefined mode, this api is used */
             {
                 status = VXLIB_scaleImageBilinear_bc_i8u_o8u(
                     src_addr, &vxlib_src,
@@ -107,13 +107,6 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
                     vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y,
                     border.constant_value.U8,
                     0, 0, 0, 0);
-            }
-            else
-            {
-                status = VXLIB_scaleImageBilinear_i8u_o8u(src_addr, &vxlib_src,
-                    dst_addr, &vxlib_dst,
-                    vxlib_src.dim_x/(VXLIB_F32)vxlib_dst.dim_x,
-                    vxlib_src.dim_y/(VXLIB_F32)vxlib_dst.dim_y, 0, 0, 0, 0);
             }
         }
         else if ((VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm) ||
