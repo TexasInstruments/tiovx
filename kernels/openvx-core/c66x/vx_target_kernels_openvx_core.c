@@ -38,6 +38,7 @@ void tivxAddTargetKernelHalfscaleGaussian();
 void tivxAddTargetKernelHistogram();
 void tivxAddTargetKernelIntegralImage();
 void tivxAddTargetKernelLaplacianPyramid();
+void tivxAddTargetKernelLaplacianReconstruct();
 void tivxAddTargetKernelLut();
 void tivxAddTargetKernelMagnitude();
 void tivxAddTargetKernelMeanStdDev();
@@ -74,6 +75,7 @@ void tivxRemoveTargetKernelHalfscaleGaussian();
 void tivxRemoveTargetKernelHistogram();
 void tivxRemoveTargetKernelIntegralImage();
 void tivxRemoveTargetKernelLaplacianPyramid();
+void tivxRemoveTargetKernelLaplacianReconstruct();
 void tivxRemoveTargetKernelLut();
 void tivxRemoveTargetKernelMagnitude();
 void tivxRemoveTargetKernelMeanStdDev();
@@ -111,6 +113,7 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelHistogram, tivxRemoveTargetKernelHistogram},
     {tivxAddTargetKernelIntegralImage, tivxRemoveTargetKernelIntegralImage},
     {tivxAddTargetKernelLaplacianPyramid, tivxRemoveTargetKernelLaplacianPyramid},
+    {tivxAddTargetKernelLaplacianReconstruct, tivxRemoveTargetKernelLaplacianReconstruct},
     {tivxAddTargetKernelLut, tivxRemoveTargetKernelLut},
     {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},

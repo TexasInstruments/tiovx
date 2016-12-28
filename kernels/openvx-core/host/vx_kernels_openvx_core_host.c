@@ -38,6 +38,7 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context);
 vx_status tivxAddKernelHistogram(vx_context context);
 vx_status tivxAddKernelIntegralImage(vx_context context);
 vx_status tivxAddKernelLaplacianPyramid(vx_context context);
+vx_status tivxAddKernelLaplacianReconstruct(vx_context context);
 vx_status tivxAddKernelLut(vx_context context);
 vx_status tivxAddKernelMagnitude(vx_context context);
 vx_status tivxAddKernelMeanStdDev(vx_context context);
@@ -75,6 +76,7 @@ vx_status tivxRemoveKernelHistogram(vx_context context);
 vx_status tivxRemoveKernelIntegralImage(vx_context context);
 vx_status tivxRemoveKernelLut(vx_context context);
 vx_status tivxRemoveKernelLaplacianPyramid(vx_context context);
+vx_status tivxRemoveKernelLaplacianReconstruct(vx_context context);
 vx_status tivxRemoveKernelMagnitude(vx_context context);
 vx_status tivxRemoveKernelMeanStdDev(vx_context context);
 vx_status tivxRemoveKernelMinMaxLoc(vx_context context);
@@ -111,6 +113,7 @@ Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelHistogram, tivxRemoveKernelHistogram},
     {tivxAddKernelIntegralImage, tivxRemoveKernelIntegralImage},
     {tivxAddKernelLaplacianPyramid, tivxRemoveKernelLaplacianPyramid},
+    {tivxAddKernelLaplacianReconstruct, tivxRemoveKernelLaplacianReconstruct},
     {tivxAddKernelLut, tivxRemoveKernelLut},
     {tivxAddKernelMagnitude, tivxRemoveKernelMagnitude},
     {tivxAddKernelMeanStdDev, tivxRemoveKernelMeanStdDev},
