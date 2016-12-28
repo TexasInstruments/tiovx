@@ -63,6 +63,9 @@ typedef struct _vx_meta_format
     /*!< \brief The type of meta data */
     vx_enum type;
 
+    /*! only valid for image and pyramid type */
+    vx_kernel_image_valid_rectangle_f valid_rect_callback;
+
     /*!< \brief structure containing information about image
                 used when type is set to VX_TYPE_IMAGE */
     struct image {
@@ -104,6 +107,66 @@ typedef struct _vx_meta_format
         /*!< \brief The capacity of the Array */
         vx_size capacity;
     } arr;
+
+    /*!< \brief structure containing information about matrix
+                used when type is set to VX_TYPE_MATRIX */
+    struct matrix {
+        /*! The value type of the matrix */
+        vx_enum type;
+        /*! The M dimension of the matrix */
+        vx_size rows;
+        /*! The N dimension of the matrix */
+        vx_size cols;
+    } mat;
+
+    /*!< \brief structure containing information about distribution
+                used when type is set to VX_TYPE_DISTRIBUTION */
+    struct distribution {
+        /*! Indicates the number of bins. */
+        vx_size bins;
+        /*! Indicates the start of the values to use (inclusive). */
+        vx_int32 offset;
+        /*! Indicates the total number of the consecutive values of the distribution interval. */
+        vx_uint32 range;
+    } dist;
+
+    /*!< \brief structure containing information about remap
+                used when type is set to VX_TYPE_REMAP */
+    struct _remap {
+        /*! The source width */
+        vx_uint32 src_width;
+        /*! The source height */
+        vx_uint32 src_height;
+        /*! The destination width */
+        vx_uint32 dst_width;
+        /*! The destination height */
+        vx_uint32 dst_height;
+    } remap;
+
+    /*!< \brief structure containing information about lut
+                used when type is set to VX_TYPE_LUT */
+    struct _lut {
+        /*! Indicates the value type of the LUT. */
+        vx_enum type;
+        /*! Indicates the number of elements in the LUT */
+        vx_size count;
+    } lut;
+
+    /*!< \brief structure containing information about threshold
+                used when type is set to VX_TYPE_THRESHOLD */
+    struct threshold {
+        /*! The value type of the threshold */
+        vx_enum type;
+    } thres;
+
+    /*!< \brief structure containing information about object array
+                used when type is set to VX_TYPE_OBJECT_ARRAY */
+    struct object_array {
+        /*! The type of the ObjectArray items */
+        vx_enum item_type;
+        /*! The number of items in the ObjectArray */
+        vx_size num_items;
+    } objarr;
 
 } tivx_meta_format_t;
 

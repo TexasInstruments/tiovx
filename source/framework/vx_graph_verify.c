@@ -13,6 +13,101 @@
 
 #include <vx_internal.h>
 
+static vx_status ownGraphValidRectCallback(
+    vx_graph graph, vx_node node, vx_meta_format meta[])
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 num_in_image = 0, num_params, i;
+    vx_reference ref;
+    vx_meta_format mf;
+
+    num_params = node->kernel->signature.num_parameters;
+    for (i = 0; i < num_params; i ++)
+    {
+        ref = node->parameters[i];
+
+        if(node->kernel->signature.directions[i] == VX_INPUT
+            &&
+            ref
+            &&
+            ref->type == VX_TYPE_IMAGE
+            )
+        {
+            graph->in_valid_rect_ptr[num_in_image] = &graph->in_valid_rect[num_in_image];
+
+            status |= vxGetValidRegionImage((vx_image)ref, &graph->in_valid_rect[num_in_image]);
+
+            num_in_image++;
+        }
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        for (i = 0; i < num_params; i ++)
+        {
+            ref = node->parameters[i];
+            mf = meta[i];
+
+            if(node->kernel->signature.directions[i] == VX_OUTPUT
+                &&
+                ref
+                &&
+                mf
+                &&
+                mf->valid_rect_callback
+                )
+            {
+                if(ref->type == VX_TYPE_IMAGE)
+                {
+                    vx_status tmp_status;
+
+                    graph->out_valid_rect_ptr[0] = &graph->out_valid_rect[0];
+
+                    tmp_status = mf->valid_rect_callback(node, i,
+                                    (const vx_rectangle_t* const*)graph->in_valid_rect_ptr,
+                                    graph->out_valid_rect_ptr);
+                    if(tmp_status==VX_SUCCESS)
+                    {
+                        status |= vxSetImageValidRectangle((vx_image)ref, &graph->out_valid_rect[0]);
+                    }
+                }
+                else
+                if(ref->type == VX_TYPE_PYRAMID)
+                {
+                    vx_status tmp_status;
+                    vx_size levels, k;
+
+                    status |= vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
+
+                    if(status==VX_SUCCESS)
+                    {
+                        for(k=0; k<levels; k++)
+                        {
+                            graph->out_valid_rect_ptr[k] = &graph->out_valid_rect[k];
+                        }
+
+                        tmp_status = mf->valid_rect_callback(node, i,
+                                        (const vx_rectangle_t* const*)graph->in_valid_rect_ptr,
+                                        graph->out_valid_rect_ptr);
+                        if(tmp_status==VX_SUCCESS)
+                        {
+                            for(k=0; k<levels; k++)
+                            {
+                                vx_image img = vxGetPyramidLevel((vx_pyramid)ref, k);
+
+                                status |= vxSetImageValidRectangle(img, &graph->out_valid_rect[k]);
+
+                                vxReleaseImage(&img);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return status;
+}
+
 static vx_status ownGraphInitVirtualNode(
     vx_graph graph, vx_node node, vx_meta_format meta[])
 {
@@ -122,6 +217,12 @@ static vx_status ownGraphNodeKernelValidate(
         }
 
         status = ownGraphInitVirtualNode(graph, node, meta);
+        if(status != VX_SUCCESS)
+        {
+            break;
+        }
+
+        status = ownGraphValidRectCallback(graph, node, meta);
         if(status != VX_SUCCESS)
         {
             break;

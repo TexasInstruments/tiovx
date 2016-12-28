@@ -45,6 +45,18 @@ static vx_status ownInitMetaFormatWithScalar(
     vx_meta_format meta, vx_scalar exemplar);
 static vx_status ownInitMetaFormatWithPyramid(
     vx_meta_format meta, vx_pyramid exemplar);
+static vx_status ownInitMetaFormatWithMatrix(
+    vx_meta_format meta, vx_matrix exemplar);
+static vx_status ownInitMetaFormatWithDistribution(
+    vx_meta_format meta, vx_distribution exemplar);
+static vx_status ownInitMetaFormatWithRemap(
+    vx_meta_format meta, vx_remap exemplar);
+static vx_status ownInitMetaFormatWithLut(
+    vx_meta_format meta, vx_lut exemplar);
+static vx_status ownInitMetaFormatWithThreshold(
+    vx_meta_format meta, vx_threshold exemplar);
+static vx_status ownInitMetaFormatWithObjectArray(
+    vx_meta_format meta, vx_object_array exemplar);
 
 
 vx_meta_format vxCreateMetaFormat(vx_context context)
@@ -61,6 +73,7 @@ vx_meta_format vxCreateMetaFormat(vx_context context)
         {
             meta->size = sizeof(tivx_meta_format_t);
             meta->type = VX_TYPE_INVALID;
+            meta->valid_rect_callback = NULL;
         }
     }
 
@@ -84,15 +97,39 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
-    if (VX_TYPE(attribute) != meta->type)
+    if(attribute != VX_VALID_RECT_CALLBACK)
     {
-        status = VX_ERROR_INVALID_TYPE;
+        if (VX_TYPE(attribute) != meta->type
+
+            )
+        {
+            status = VX_ERROR_INVALID_TYPE;
+        }
     }
 
     if (VX_SUCCESS == status)
     {
         switch(attribute)
         {
+            case VX_VALID_RECT_CALLBACK:
+                if(meta->type==VX_TYPE_IMAGE
+                   || meta->type==VX_TYPE_PYRAMID
+                  )
+                {
+                    if (VX_CHECK_PARAM(ptr, size, vx_kernel_image_valid_rectangle_f, 0x0))
+                    {
+                        meta->valid_rect_callback = *(vx_kernel_image_valid_rectangle_f *)ptr;
+                    }
+                    else
+                    {
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                    }
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_TYPE;
+                }
+                break;
             case VX_IMAGE_FORMAT:
                 if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3))
                 {
@@ -214,6 +251,171 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 break;
 
+            case VX_MATRIX_TYPE:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
+                    meta->mat.type = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_MATRIX_ROWS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    meta->mat.rows = *(vx_size *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_MATRIX_COLUMNS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    meta->mat.cols = *(vx_size *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_DISTRIBUTION_BINS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    meta->dist.bins = *(vx_size *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_DISTRIBUTION_OFFSET:
+                if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3))
+                {
+                    meta->dist.offset = *(vx_int32 *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_DISTRIBUTION_RANGE:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    meta->dist.range = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_REMAP_SOURCE_WIDTH:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    meta->remap.src_width = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_REMAP_SOURCE_HEIGHT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    meta->remap.src_height = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_REMAP_DESTINATION_WIDTH:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    meta->remap.dst_width = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_REMAP_DESTINATION_HEIGHT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
+                    meta->remap.dst_height = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_LUT_TYPE:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
+                    meta->lut.type = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_LUT_COUNT:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    meta->lut.count = *(vx_size *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_THRESHOLD_TYPE:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
+                    meta->thres.type = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_OBJECT_ARRAY_ITEMTYPE:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
+                    meta->objarr.item_type = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_OBJECT_ARRAY_NUMITEMS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
+                    meta->objarr.num_items = *(vx_size *)ptr;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             default:
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
@@ -248,6 +450,33 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
             case VX_TYPE_PYRAMID:
                 status = ownInitMetaFormatWithPyramid(
                     meta, (vx_pyramid)exemplar);
+                break;
+            case VX_TYPE_MATRIX:
+                status = ownInitMetaFormatWithMatrix(
+                    meta, (vx_matrix)exemplar);
+                break;
+            case VX_TYPE_DISTRIBUTION:
+                status = ownInitMetaFormatWithDistribution(
+                    meta, (vx_distribution)exemplar);
+                break;
+            case VX_TYPE_THRESHOLD:
+                status = ownInitMetaFormatWithThreshold(
+                    meta, (vx_threshold)exemplar);
+                break;
+            case VX_TYPE_REMAP:
+                status = ownInitMetaFormatWithRemap(
+                    meta, (vx_remap)exemplar);
+                break;
+            case VX_TYPE_LUT:
+                status = ownInitMetaFormatWithLut(
+                    meta, (vx_lut)exemplar);
+                break;
+            case VX_TYPE_OBJECT_ARRAY:
+                status = ownInitMetaFormatWithObjectArray(
+                    meta, (vx_object_array)exemplar);
+                break;
+            default:
+                status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
@@ -307,9 +536,92 @@ static vx_status ownInitMetaFormatWithScalar(
 {
     vx_status status = VX_SUCCESS;
 
-    status |= vxQueryScalar(exemplar, VX_ARRAY_ITEMTYPE, &meta->sc.type,
+    status |= vxQueryScalar(exemplar, VX_SCALAR_TYPE, &meta->sc.type,
         sizeof(meta->sc.type));
 
     return (status);
 }
 
+static vx_status ownInitMetaFormatWithMatrix(
+    vx_meta_format meta, vx_matrix exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryMatrix(exemplar, VX_MATRIX_TYPE, &meta->mat.type,
+        sizeof(meta->mat.type));
+    status |= vxQueryMatrix(exemplar, VX_MATRIX_ROWS, &meta->mat.rows,
+        sizeof(meta->mat.rows));
+    status |= vxQueryMatrix(exemplar, VX_MATRIX_COLUMNS, &meta->mat.cols,
+        sizeof(meta->mat.cols));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithDistribution(
+    vx_meta_format meta, vx_distribution exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_BINS, &meta->dist.bins,
+        sizeof(meta->dist.bins));
+    status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_OFFSET, &meta->dist.offset,
+        sizeof(meta->dist.offset));
+    status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_RANGE, &meta->dist.range,
+        sizeof(meta->dist.range));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithRemap(
+    vx_meta_format meta, vx_remap exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_WIDTH, &meta->remap.src_width,
+        sizeof(meta->remap.src_width));
+    status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_HEIGHT, &meta->remap.src_height,
+        sizeof(meta->remap.src_height));
+    status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_WIDTH, &meta->remap.dst_width,
+        sizeof(meta->remap.dst_width));
+    status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_HEIGHT, &meta->remap.dst_height,
+        sizeof(meta->remap.dst_height));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithLut(
+    vx_meta_format meta, vx_lut exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryLUT(exemplar, VX_LUT_TYPE, &meta->lut.type,
+        sizeof(meta->lut.type));
+    status |= vxQueryLUT(exemplar, VX_LUT_COUNT, &meta->lut.count,
+        sizeof(meta->lut.count));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithThreshold(
+    vx_meta_format meta, vx_threshold exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryThreshold(exemplar, VX_THRESHOLD_TYPE, &meta->thres.type,
+        sizeof(meta->thres.type));
+
+    return status;
+}
+
+static vx_status ownInitMetaFormatWithObjectArray(
+    vx_meta_format meta, vx_object_array exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryObjectArray(exemplar, VX_OBJECT_ARRAY_ITEMTYPE, &meta->objarr.item_type,
+        sizeof(meta->objarr.item_type));
+    status |= vxQueryObjectArray(exemplar, VX_OBJECT_ARRAY_NUMITEMS, &meta->objarr.num_items,
+        sizeof(meta->objarr.num_items));
+
+    return status;
+}

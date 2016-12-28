@@ -125,6 +125,19 @@ typedef struct _vx_graph {
     /*! \brief The array of all delays in this graph */
     vx_delay       delays[TIVX_GRAPH_MAX_DELAYS];
 
+    /*! \brief valid rect information for input image's */
+    vx_rectangle_t in_valid_rect[TIVX_KERNEL_MAX_PARAMS];
+
+    /*! \brief valid rect information for input image's */
+    vx_rectangle_t *in_valid_rect_ptr[TIVX_KERNEL_MAX_PARAMS];
+
+
+    /*! \brief valid rect information for output image's */
+    vx_rectangle_t out_valid_rect[TIVX_PYRAMID_MAX_OBJECT];
+
+    /*! \brief valid rect information for output image's */
+    vx_rectangle_t *out_valid_rect_ptr[TIVX_PYRAMID_MAX_OBJECT];
+
 } tivx_graph_t;
 
 
