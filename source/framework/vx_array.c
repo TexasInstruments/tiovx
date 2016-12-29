@@ -187,10 +187,9 @@ vx_array VX_API_CALL vxCreateVirtualArray(
             {
                 ownInitArrayObject(arr, item_type, capacity, vx_true_e);
 
-                arr->base.scope = (vx_reference)graph;
+                ownReferenceSetScope(&arr->base, &graph->base);
             }
         }
-
     }
 
     return (arr);

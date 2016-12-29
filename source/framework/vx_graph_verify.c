@@ -389,11 +389,21 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
             /* reference could be null for optional parameters */
             if (NULL != ref)
             {
-                /* alloc memory for data reference, if not already allocated
-                 * Its ok to call this multiple times for the same reference
-                 * memory gets allocated only once
-                 */
-                status = ownReferenceAllocMem(ref);
+                if(ownNodeIsPrmReplicated(node_cur, prm_cur_idx))
+                {
+                    /* if this is a replicated node, replicated parameter
+                     * then allocate memory for parent object
+                     */
+                    status = ownReferenceAllocMem(ref->scope);
+                }
+                else
+                {
+                    /* alloc memory for data reference, if not already allocated
+                     * Its ok to call this multiple times for the same reference
+                     * memory gets allocated only once
+                     */
+                    status = ownReferenceAllocMem(ref);
+                }
 
                 if(status != VX_SUCCESS)
                 {

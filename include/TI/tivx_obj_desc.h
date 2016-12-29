@@ -185,8 +185,14 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief Type of object descritor, see \ref tivx_obj_desc_type_e */
     uint16_t type;
 
+    /*! \brief object descriptor ID of the scope in which this object is created
+     *         For element of pyramid and object array, this is obj_desc_id
+     *         of excompassing pyramid, object array
+     */
+    uint16_t scope_obj_desc_id;
+
     /*! \brief reserved field to make this structure a multiple of 64b */
-    uint16_t rsv[2];
+    uint16_t rsv[1];
 
 } tivx_obj_desc_t;
 
@@ -255,6 +261,19 @@ typedef struct _tivx_obj_desc_node
 
     /*! \brief border mode */
     vx_border_t border_mode;
+
+    /*! \brief bitmask which indicates if prm is replicated
+     *         valid only when TIVX_NODE_FLAG_IS_REPLICATED is
+     *         set in flags.
+     *         bitN = 1 means param at index N is replicated
+     */
+    uint32_t is_prm_replicated;
+
+    /*! \brief number of times node is replicated
+     *         valid only when TIVX_NODE_FLAG_IS_REPLICATED is
+     *         set in flags.
+     */
+    uint32_t num_of_replicas;
 
     /*! \brief parameter object descriptors */
     uint16_t data_id[TIVX_KERNEL_MAX_PARAMS];

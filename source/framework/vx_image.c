@@ -147,7 +147,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
     uint16_t p;
 
     /* remember that the scope of the subimage is the parent image */
-    subimage->base.scope = (vx_reference)parent;
+    ownReferenceSetScope(&subimage->base, &parent->base);
 
     /* refer to our parent image and internally refcount it */
     subimage->parent = parent;
@@ -913,7 +913,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateVirtualImage(vx_graph graph, vx_uint32
             width, height, format, TIVX_IMAGE_NORMAL);
         if (vxGetStatus((vx_reference)image) == VX_SUCCESS && image->base.type == VX_TYPE_IMAGE)
         {
-            image->base.scope = (vx_reference)graph;
+            ownReferenceSetScope(&image->base, &graph->base);
             image->base.is_virtual = vx_true_e;
         }
     }

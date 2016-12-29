@@ -257,6 +257,12 @@ vx_status ownReferenceAllocMem(vx_reference ref);
  */
 vx_size ownSizeOfEnumType(vx_enum item_type);
 
+
+/*! \brief Set scope of a reference
+ * \ingroup group_vx_reference
+ */
+void ownReferenceSetScope(vx_reference ref, vx_reference scope);
+
 #ifdef __cplusplus
 }
 #endif

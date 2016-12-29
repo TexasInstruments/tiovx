@@ -228,7 +228,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 obj_desc->format = format;
 
                 prmd->base.is_virtual = vx_true_e;
-                prmd->base.scope = (vx_reference)graph;
+                ownReferenceSetScope(&prmd->base, &graph->base);
 
                 prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
@@ -388,22 +388,6 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref)
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
-    if (VX_SUCCESS != status)
-    {
-        for (j = 0; j < i; j++)
-        {
-            if (NULL != prmd->img[j])
-            {
-                /* increment the internal counter on the image, not the
-                   external one */
-                ownDecrementReference((vx_reference)prmd->img[j], VX_INTERNAL);
-
-                ownReleaseReferenceInt((vx_reference *)&prmd->img[j],
-                    VX_TYPE_IMAGE, VX_EXTERNAL, NULL);
-            }
-        }
-    }
-
     return status;
 }
 
@@ -469,7 +453,7 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
             ownIncrementReference((vx_reference)img, VX_INTERNAL);
 
             /* remember that the scope of the image is the prmd */
-            img->base.scope = (vx_reference)prmd;
+            ownReferenceSetScope(&img->base, &prmd->base);
 
             if (VX_SCALE_PYRAMID_ORB == scale)
             {

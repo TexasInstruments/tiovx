@@ -117,6 +117,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
 
     obj_desc->num_out_nodes = 0;
     obj_desc->num_in_nodes = 0;
+    obj_desc->is_prm_replicated = 0;
 
     if(kernel->is_target_kernel)
     {
@@ -626,6 +627,22 @@ vx_action ownNodeExecuteUserCallback(vx_node node)
     return action;
 }
 
+vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
+{
+    vx_bool is_replicated = vx_false_e;
+
+    if(node && node->obj_desc)
+    {
+        if( tivxFlagIsBitSet( node->obj_desc->flags, TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e
+            &&
+            node->replicated_flags[prm_idx])
+        {
+            is_replicated = vx_true_e;
+        }
+    }
+    return is_replicated;
+}
+
 VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel kernel)
 {
     vx_node node = NULL;
@@ -1125,9 +1142,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     {
         /* set replicate flag for node */
         first_node->obj_desc->flags |= TIVX_NODE_FLAG_IS_REPLICATED;
+        first_node->obj_desc->is_prm_replicated = 0;
+        first_node->obj_desc->num_of_replicas = num_of_replicas;
 
         for (n = 0; n < number_of_parameters; n++)
         {
+            if(replicate[n])
+            {
+                first_node->obj_desc->is_prm_replicated |= (1U<<n);
+            }
+
             first_node->replicated_flags[n] = replicate[n];
         }
     }

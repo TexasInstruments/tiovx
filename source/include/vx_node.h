@@ -232,6 +232,13 @@ void ownNodeClearExecuteState(vx_node node);
  */
 vx_status ownNodeUserKernelExecute(vx_node node);
 
+
+/*! \brief Is prm_idx of node replicated
+ *
+ * \ingroup group_vx_node
+ */
+vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx);
+
 #ifdef __cplusplus
 }
 #endif

@@ -59,6 +59,8 @@ static vx_status ownInitObjArrayWithRemap(
 static vx_status ownInitObjArrayWithLut(
     vx_context context, vx_object_array objarr, vx_lut exemplar);
 
+static vx_status ownAllocObjectArrayBuffer(vx_reference ref);
+
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = vx_false_e;
@@ -106,7 +108,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
             {
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = ownDestructObjArray;
-                objarr->base.mem_alloc_callback = NULL;
+                objarr->base.mem_alloc_callback = ownAllocObjectArrayBuffer;
                 objarr->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseObjectArray;
 
@@ -171,7 +173,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
             {
                 /* assign refernce type specific callback's */
                 objarr->base.destructor_callback = ownDestructObjArray;
-                objarr->base.mem_alloc_callback = NULL;
+                objarr->base.mem_alloc_callback = ownAllocObjectArrayBuffer;
                 objarr->base.release_callback =
                     (tivx_reference_release_callback_f)vxReleaseObjectArray;
 
@@ -197,7 +199,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                     ownInitObjArrayFromObject(context, objarr, exemplar);
 
                     objarr->base.is_virtual = vx_true_e;
-                    objarr->base.scope = (vx_reference)graph;
+                    ownReferenceSetScope(&objarr->base, &graph->base);
                 }
             }
         }
@@ -323,6 +325,52 @@ static vx_status ownInitObjArrayFromObject(
     return (status);
 }
 
+static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr, vx_reference ref, uint32_t i)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (vxGetStatus(ref) == VX_SUCCESS)
+    {
+        tivx_obj_desc_objarray_t *obj_desc =
+            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+
+        objarr->ref[i] = ref;
+        obj_desc->obj_desc_id[i] =
+            ref->obj_desc->obj_desc_id;
+
+        /* increment the internal counter on the image, not the
+           external one */
+        ownIncrementReference(ref, VX_INTERNAL);
+
+        ownReferenceSetScope(ref, &objarr->base);
+    }
+    else
+    {
+        status = VX_FAILURE;
+        vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
+           "Could not allocate image object descriptor\n");
+   }
+
+   return status;
+}
+
+static void ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items)
+{
+    uint32_t i;
+
+    for (i = 0; i < num_items; i ++)
+    {
+        if (NULL != objarr->ref[i])
+        {
+            /* increment the internal counter on the image, not the
+               external one */
+            ownDecrementReference(objarr->ref[i], VX_INTERNAL);
+
+            vxReleaseReference(&objarr->ref[i]);
+        }
+    }
+}
+
 static vx_status ownInitObjArrayWithLut(
     vx_context context, vx_object_array objarr, vx_lut exemplar)
 {
@@ -330,7 +378,7 @@ static vx_status ownInitObjArrayWithLut(
     vx_enum data_type;
     vx_size count;
     vx_lut lut;
-    vx_uint32 i, j, num_items;
+    vx_uint32 i, num_items;
 
     status |= vxQueryLUT(exemplar, VX_LUT_TYPE, &data_type,
         sizeof(data_type));
@@ -347,30 +395,14 @@ static vx_status ownInitObjArrayWithLut(
         {
             lut = vxCreateLUT(context, data_type, count);
 
-            if (vxGetStatus((vx_reference)lut) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)lut;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate image object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)lut, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseLUT((vx_lut*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -381,7 +413,7 @@ static vx_status ownInitObjArrayWithRemap(
     vx_context context, vx_object_array objarr, vx_remap exemplar)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint32 src_width, src_height, dst_width, dst_height, i, num_items, j;
+    vx_uint32 src_width, src_height, dst_width, dst_height, i, num_items;
     vx_remap rem;
 
     status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_WIDTH, &src_width,
@@ -404,30 +436,14 @@ static vx_status ownInitObjArrayWithRemap(
             rem = vxCreateRemap(context, src_width, src_height, dst_width,
                 dst_height);
 
-            if (vxGetStatus((vx_reference)rem) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)rem;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate image object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)rem, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseRemap((vx_remap*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -439,7 +455,7 @@ static vx_status ownInitObjArrayWithMatrix(
 {
     vx_status status = VX_SUCCESS;
     vx_size rows, columns;
-    vx_uint32 i, num_items, j;
+    vx_uint32 i, num_items;
     vx_enum type;
     vx_matrix mat;
 
@@ -458,30 +474,14 @@ static vx_status ownInitObjArrayWithMatrix(
         {
             mat = vxCreateMatrix(context, type, columns, rows);
 
-            if (vxGetStatus((vx_reference)mat) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)mat;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate image object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)mat, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseMatrix((vx_matrix*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -494,7 +494,7 @@ static vx_status ownInitObjArrayWithPyramid(
     vx_status status = VX_SUCCESS;
     vx_size levels;
     vx_float32 scale;
-    vx_uint32 width, height, i, num_items, j;
+    vx_uint32 width, height, i, num_items;
     vx_df_image format;
     vx_pyramid pmd;
 
@@ -515,30 +515,14 @@ static vx_status ownInitObjArrayWithPyramid(
             pmd = vxCreatePyramid(context, levels, scale, width, height,
                 format);
 
-            if (vxGetStatus((vx_reference)pmd) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)pmd;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate image object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)pmd, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if(objarr->ref[j])
-                {
-                    vxReleasePyramid((vx_pyramid*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -549,7 +533,7 @@ static vx_status ownInitObjArrayWithImage(
     vx_context context, vx_object_array objarr, vx_image exemplar)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint32 width, height, i, num_items, j;
+    vx_uint32 width, height, i, num_items;
     vx_df_image format;
     vx_image img;
 
@@ -567,30 +551,14 @@ static vx_status ownInitObjArrayWithImage(
         {
             img = vxCreateImage(context, width, height, format);
 
-            if (vxGetStatus((vx_reference)img) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)img;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate image object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)img, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseImage((vx_image*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -604,7 +572,7 @@ static vx_status ownInitObjArrayWithArray(
     vx_enum type;
     vx_size capacity;
     vx_array arr;
-    vx_uint32 num_items, i, j;
+    vx_uint32 num_items, i;
 
     status |= vxQueryArray(exemplar, VX_ARRAY_ITEMTYPE, &type, sizeof(type));
     status |= vxQueryArray(exemplar, VX_ARRAY_CAPACITY, &capacity, sizeof(capacity));
@@ -614,38 +582,19 @@ static vx_status ownInitObjArrayWithArray(
         tivx_obj_desc_objarray_t *obj_desc =
             (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
 
-
-
         num_items = obj_desc->num_items;
-
         for (i = 0; i < num_items; i ++)
         {
             arr = vxCreateArray(context, type, capacity);
 
-            if (vxGetStatus((vx_reference)arr) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)arr;
-                obj_desc->obj_desc_id[i] = ((vx_reference)arr)->
-                    obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate array object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)arr, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseArray((vx_array*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -658,7 +607,7 @@ static vx_status ownInitObjArrayWithScalar(
     vx_status status = VX_SUCCESS;
     vx_enum type;
     vx_scalar sc;
-    vx_uint32 num_items, i, j;
+    vx_uint32 num_items, i;
 
     status |= vxQueryScalar(exemplar, VX_SCALAR_TYPE, &type, sizeof(type));
 
@@ -673,42 +622,27 @@ static vx_status ownInitObjArrayWithScalar(
             /* TODO: How to get the internal data pointer */
             sc = vxCreateScalar(context, type, NULL);
 
-            if (vxGetStatus((vx_reference)sc) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)sc;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate array object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)sc, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseScalar((vx_scalar*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
     return (status);
 }
+
 static vx_status ownInitObjArrayWithDistribution(
     vx_context context, vx_object_array objarr, vx_distribution exemplar)
 {
     vx_status status = VX_SUCCESS;
     vx_size num_bins;
     vx_int32 offset;
-    vx_uint32 num_items, i, j, range;
+    vx_uint32 num_items, i, range;
     vx_distribution dist;
 
     status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_OFFSET, &offset, sizeof(offset));
@@ -724,30 +658,14 @@ static vx_status ownInitObjArrayWithDistribution(
         {
             dist = vxCreateDistribution(context, num_bins, offset, range);
 
-            if (vxGetStatus((vx_reference)dist) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)dist;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate distribution object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)dist, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseDistribution((vx_distribution*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -761,7 +679,7 @@ static vx_status ownInitObjArrayWithThreshold(
     vx_enum thr_type;
     vx_enum data_type;
     vx_threshold thr;
-    vx_uint32 num_items, i, j;
+    vx_uint32 num_items, i;
 
     status |= vxQueryThreshold(exemplar, VX_THRESHOLD_DATA_TYPE, &data_type,
         sizeof(data_type));
@@ -777,30 +695,14 @@ static vx_status ownInitObjArrayWithThreshold(
         {
             thr = vxCreateThreshold(context, thr_type, data_type);
 
-            if (vxGetStatus((vx_reference)thr) == VX_SUCCESS)
-            {
-                objarr->ref[i] = (vx_reference)thr;
-                obj_desc->obj_desc_id[i] =
-                    objarr->ref[i]->obj_desc->obj_desc_id;
-            }
-            else
-            {
-                status = VX_FAILURE;
-                vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                   "Could not allocate threshold object descriptor\n");
+            status = ownAddRefToObjArray(context, objarr, (vx_reference)thr, i);
+            if(status!=VX_SUCCESS)
                 break;
-           }
         }
 
         if (VX_SUCCESS != status)
         {
-            for (j = 0; j < i; j ++)
-            {
-                if (NULL != objarr->ref[j])
-                {
-                    vxReleaseThreshold((vx_threshold*)&objarr->ref[j]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, i);
         }
     }
 
@@ -818,17 +720,7 @@ static vx_status ownDestructObjArray(vx_reference ref)
             tivx_obj_desc_objarray_t *obj_desc =
                 (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
 
-            vx_uint32 num_items, i;
-
-            num_items = obj_desc->num_items;
-
-            for (i = 0; i < num_items; i ++)
-            {
-                if(objarr->ref[i])
-                {
-                    vxReleaseReference(&objarr->ref[i]);
-                }
-            }
+            ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
 
             tivxObjDescFree(&objarr->base.obj_desc);
         }
@@ -836,3 +728,51 @@ static vx_status ownDestructObjArray(vx_reference ref)
     return VX_SUCCESS;
 }
 
+static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i=0;
+    vx_object_array objarr = (vx_object_array)objarr_ref;
+    tivx_obj_desc_objarray_t *obj_desc = NULL;
+    vx_reference ref;
+
+    if(objarr->base.type == VX_TYPE_OBJECT_ARRAY)
+    {
+        if(objarr->base.obj_desc != NULL)
+        {
+            obj_desc = (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+            for (i = 0u; i < obj_desc->num_items; i++)
+            {
+                ref = objarr->ref[i];
+
+                if (ref)
+                {
+                    status = VX_SUCCESS;
+                    if(ref->mem_alloc_callback)
+                    {
+                        status = ref->mem_alloc_callback(ref);
+                    }
+
+                    if (VX_SUCCESS != status)
+                    {
+                        break;
+                    }
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_VALUE;
+                }
+            }
+        }
+        else
+        {
+            status = VX_ERROR_INVALID_VALUE;
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}

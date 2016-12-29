@@ -178,8 +178,61 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node
 
     if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
     {
-        /* TODO: Handle replicated node */
+        uint32_t n;
+        uint32_t exe_status = 0;
+        uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
+        tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
+        tivx_obj_desc_t *prm_obj_desc;
 
+        for(i=0; i<node_obj_desc->num_params ; i++)
+        {
+            parent_obj_desc[i] = NULL;
+
+            if(is_prm_replicated & (1U<<i))
+            {
+                prm_obj_desc = tivxObjDescGet(node_obj_desc->data_id[i]);
+                if(prm_obj_desc)
+                {
+                    parent_obj_desc[i] = tivxObjDescGet(prm_obj_desc->scope_obj_desc_id);
+                }
+            }
+        }
+
+        for(n=0; n<node_obj_desc->num_of_replicas; n++)
+        {
+            for(i=0; i<node_obj_desc->num_params ; i++)
+            {
+                params[i] = NULL;
+                if(is_prm_replicated & (1U<<i))
+                {
+                    if(parent_obj_desc[i])
+                    {
+                        if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_OBJARRAY)
+                        {
+                            params[i] = tivxObjDescGet(
+                                ((tivx_obj_desc_objarray_t*)parent_obj_desc[i])->obj_desc_id[n]
+                                );
+                        }
+                        else
+                        if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_PYRAMID)
+                        {
+                            params[i] = tivxObjDescGet(
+                                ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->obj_desc_id[n]
+                                );
+                        }
+                    }
+                }
+                else
+                {
+                    params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
+                }
+            }
+
+            exe_status |= tivxTargetKernelExecute(target_kernel_instance, params, node_obj_desc->num_params);
+        }
+
+
+        node_obj_desc->exe_status = exe_status;
     }
     else
     {
@@ -241,13 +294,8 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         /* save index key for fast retrival of handle during run-time */
         node_obj_desc->target_kernel_index = tivxTargetKernelInstanceGetIndex(target_kernel_instance);
 
-        if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
         {
-            /* TODO: Handle replicated node */
-
-        }
-        else
-        {
+            /* NOTE: nothing special for replicated node during create/delete */
             for(i=0; i<node_obj_desc->num_params ; i++)
             {
                 params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
@@ -283,13 +331,8 @@ static vx_status tivxTargetNodeDescNodeDelete(tivx_obj_desc_node_t *node_obj_des
     }
     else
     {
-        if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
         {
-            /* TODO: Handle replicated node */
-
-        }
-        else
-        {
+            /* NOTE: nothing special for replicated node during create/delete */
             for(i=0; i<node_obj_desc->num_params ; i++)
             {
                 params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);

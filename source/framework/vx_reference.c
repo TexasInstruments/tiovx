@@ -140,7 +140,6 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->magic = TIVX_MAGIC;
         ref->type = type;
         ref->context = context;
-        ref->scope = scope;
         ref->internal_count = 0;
         ref->external_count = 0;
         ref->mem_alloc_callback = NULL;
@@ -149,11 +148,22 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->delay_slot_index = 0;
         ref->is_virtual = vx_false_e;
         ref->obj_desc = NULL;
+        ref->lock = NULL;
 
-        status = tivxMutexCreate(&ref->lock);
-        if (status)
+        ownReferenceSetScope(ref, scope);
+
+        status = VX_SUCCESS;
+
+        if(ref->type==VX_TYPE_CONTEXT||ref->type==VX_TYPE_GRAPH)
         {
-           VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
+            /* create referencec only for context and graph
+             * for others use the context lock
+             */
+            status = tivxMutexCreate(&ref->lock);
+            if (status)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
+            }
         }
     }
 
@@ -166,7 +176,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
     vx_uint32 result = UINT32_MAX;
     if (ref)
     {
-        tivxMutexLock(ref->lock);
+        ownReferenceLock(ref);
         if (reftype == VX_INTERNAL || reftype == VX_BOTH)
         {
             if (ref->internal_count == 0)
@@ -190,7 +200,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
             }
         }
         result = ref->internal_count + ref->external_count;
-        tivxMutexUnlock(ref->lock);
+        ownReferenceUnlock(ref);
     }
     return result;
 }
@@ -201,9 +211,9 @@ vx_uint32 ownTotalReferenceCount(vx_reference ref)
     vx_uint32 count = 0;
     if (ref)
     {
-        tivxMutexLock(ref->lock);
+        ownReferenceLock(ref);
         count = ref->external_count + ref->internal_count;
-        tivxMutexUnlock(ref->lock);
+        ownReferenceUnlock(ref);
     }
     return count;
 }
@@ -213,13 +223,13 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
     vx_uint32 count = 0u;
     if (ref)
     {
-        tivxMutexLock(ref->lock);
+        ownReferenceLock(ref);
         if (reftype == VX_EXTERNAL || reftype == VX_BOTH)
             ref->external_count++;
         if (reftype == VX_INTERNAL || reftype == VX_BOTH)
             ref->internal_count++;
         count = ref->internal_count + ref->external_count;
-        tivxMutexUnlock(ref->lock);
+        ownReferenceUnlock(ref);
     }
     return count;
 }
@@ -255,7 +265,10 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
                     destructor(ref);
                 }
 
-                tivxMutexDelete(&ref->lock);
+                if(ref->lock)
+                {
+                    tivxMutexDelete(&ref->lock);
+                }
                 ref->magic = TIVX_BAD_MAGIC; /* make sure no existing copies of refs can use ref again */
 
                 tivxObjectFree(ref);
@@ -369,7 +382,17 @@ vx_status ownReferenceLock(vx_reference ref)
 
     if(ref)
     {
-        status = tivxMutexLock(ref->lock);
+        if(ref->lock)
+        {
+            status = tivxMutexLock(ref->lock);
+        }
+        else
+        {
+            if(ref->context)
+            {
+                status = tivxMutexLock(ref->context->base.lock);
+            }
+        }
     }
 
     return status;
@@ -381,7 +404,17 @@ vx_status ownReferenceUnlock(vx_reference ref)
 
     if(ref)
     {
-        status = tivxMutexUnlock(ref->lock);
+        if(ref->lock)
+        {
+            status = tivxMutexUnlock(ref->lock);
+        }
+        else
+        {
+            if(ref->context)
+            {
+                status = tivxMutexUnlock(ref->context->base.lock);
+            }
+        }
     }
 
     return status;
@@ -409,6 +442,22 @@ vx_status ownReferenceAllocMem(vx_reference ref)
     }
 
     return status;
+}
+
+void ownReferenceSetScope(vx_reference ref, vx_reference scope)
+{
+    if(ref)
+    {
+        ref->scope = scope;
+        if(ref->obj_desc)
+        {
+            ref->obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+            if(scope && scope->obj_desc)
+            {
+                ref->obj_desc->scope_obj_desc_id = scope->obj_desc->obj_desc_id;
+            }
+        }
+    }
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size)
