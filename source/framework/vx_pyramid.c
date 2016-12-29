@@ -76,6 +76,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
 {
     vx_status status = VX_SUCCESS;
     vx_pyramid prmd = NULL;
+    vx_uint32 i;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
@@ -132,6 +133,11 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     obj_desc->scale = scale;
                     obj_desc->format = format;
                     prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
+
+                    for (i = 0u; i < TIVX_PYRAMID_MAX_OBJECT; i ++)
+                    {
+                        prmd->img[i] = NULL;
+                    }
 
                     status = ownInitPyramid(prmd);
 
@@ -411,7 +417,8 @@ static vx_status ownDestructPyramid(vx_reference ref)
 
     for (i = 0; i < obj_desc->num_levels; i++)
     {
-        if (NULL != prmd->img[i])
+        if ((NULL != prmd->img[i]) &&
+            (vxGetStatus((vx_reference)prmd->img[i]) == VX_SUCCESS))
         {
             /* increment the internal counter on the image, not the
                external one */

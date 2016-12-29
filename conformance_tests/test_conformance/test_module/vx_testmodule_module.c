@@ -52,10 +52,12 @@ typedef enum _test_params_e {
  */
 vx_status VX_CALLBACK TestModuleValidator(vx_node node, const vx_reference parameters[], vx_uint32 num, vx_meta_format metas[])
 {
+    vx_uint32 i;
+
     if (num != (TESTMODULE_PARAM_TEMP + 1))
         return VX_ERROR_INVALID_PARAMETERS;
 
-    for (vx_uint32 i = 0u; i < num; i++)
+    for (i = 0u; i < num; i++)
     {
         if (!parameters[i])
             return VX_ERROR_INVALID_REFERENCE;

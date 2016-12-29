@@ -151,6 +151,10 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->obj_desc = NULL;
 
         status = tivxMutexCreate(&ref->lock);
+        if (status)
+        {
+           VX_PRINT(VX_ZONE_ERROR, "Cannot create Semaphore\n");
+        }
     }
 
     return status;

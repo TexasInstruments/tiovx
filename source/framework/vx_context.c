@@ -1002,3 +1002,4 @@ void ownContextSetKernelRemoveLock(vx_context context, vx_bool do_lock)
 {
     context->remove_kernel_lock = do_lock;
 }
+
