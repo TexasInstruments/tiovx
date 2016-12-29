@@ -79,9 +79,9 @@ $(_MODULE)_COPT += -Wno-unknown-pragmas -Wno-missing-braces -Wno-format -Wno-unu
 endif
 
 ifeq ($(TARGET_BUILD),debug)
-$(_MODULE)_COPT += -ggdb -ggdb3 -gdwarf-2
+$(_MODULE)_COPT += -ggdb -ggdb3 -gdwarf-2 -DDEBUG
 else ifneq ($(filter $(TARGET_BUILD),release production),)
-$(_MODULE)_COPT += -O3
+$(_MODULE)_COPT += -O3 -DNDEBUG
 endif
 
 ifeq ($(TARGET_BUILD),production)

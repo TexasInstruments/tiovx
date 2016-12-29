@@ -32,7 +32,7 @@
 #ifdef HAVE_VERSION_INC
 #include "openvx_cts_version.inc"
 #else
-#define VERSION_STR "unknown"
+#define VERSION_STR "v1.1"
 #endif
 
 void TestModuleRegister();
