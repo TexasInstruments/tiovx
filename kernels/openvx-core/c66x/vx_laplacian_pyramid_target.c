@@ -19,7 +19,7 @@ static tivx_target_kernel vx_laplacian_pyramid_target_kernel = NULL;
 
 typedef struct
 {
-    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVELS];
+    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
     uint8_t *gauss_output;
     uint8_t *hsg_output0;
     uint8_t *hsg_output1;

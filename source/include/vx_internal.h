@@ -417,6 +417,11 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
  */
 
 /*!
+ * \defgroup group_vx_delay_cfg Data Object: Delay Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
  * \defgroup group_tivx_obj_cfg Object Configuration
  * \ingroup group_vx_framework_config
  */

@@ -19,7 +19,7 @@ static tivx_target_kernel vx_laplacian_reconstruct_target_kernel = NULL;
 
 typedef struct
 {
-    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVELS];
+    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
     int16_t *add_output;
     int16_t *scale_output;
     uint32_t buff_size;

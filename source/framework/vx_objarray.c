@@ -83,7 +83,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
         (NULL != exemplar))
     {
         if ((vx_true_e == ownIsValidObject(exemplar->type)) &&
-            (count < TIVX_OBJECT_ARRAY_MAX_OBJECT))
+            (count < TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
             objarr = (vx_object_array)ownCreateReference(
                 context, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, &context->base);
@@ -148,7 +148,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
         context = graph->base.context;
 
         if ((vx_true_e == ownIsValidObject(exemplar->type)) &&
-            (count < TIVX_OBJECT_ARRAY_MAX_OBJECT))
+            (count < TIVX_OBJECT_ARRAY_MAX_ITEMS))
         {
             objarr = (vx_object_array)ownCreateReference(
                 context, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, &context->base);

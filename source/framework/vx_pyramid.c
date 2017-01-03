@@ -43,7 +43,7 @@ static vx_status ownAllocPyramidBuffer(vx_reference ref);
 static vx_status ownInitPyramid(vx_pyramid prmd);
 
 static const vx_float32 gOrbScaleFactor
-    [TIVX_PYRAMID_MAX_LEVELS] =
+    [TIVX_PYRAMID_MAX_LEVELS_ORB] =
 {
     1.0,
     0.8408964152537146,
@@ -90,12 +90,12 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
         {
             status = VX_FAILURE;
         }
-        if (levels > TIVX_PYRAMID_MAX_OBJECT)
+        if (levels > TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
         {
             status = VX_FAILURE;
         }
         if ((scale == VX_SCALE_PYRAMID_ORB) &&
-            (levels > TIVX_PYRAMID_MAX_LEVELS))
+            (levels > TIVX_PYRAMID_MAX_LEVELS_ORB))
         {
             status = VX_FAILURE;
         }
@@ -134,7 +134,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     obj_desc->format = format;
                     prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
-                    for (i = 0u; i < TIVX_PYRAMID_MAX_OBJECT; i ++)
+                    for (i = 0u; i < TIVX_PYRAMID_MAX_LEVEL_OBJECTS; i ++)
                     {
                         prmd->img[i] = NULL;
                     }
@@ -190,7 +190,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     /* levels can not be 0 even in virtual prmd */
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
             vx_true_e) &&
-        (levels > 0) && (levels < TIVX_PYRAMID_MAX_OBJECT))
+        (levels > 0) && (levels < TIVX_PYRAMID_MAX_LEVEL_OBJECTS))
     {
         context = graph->base.context;
 
@@ -232,7 +232,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
 
                 prmd->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
-                for (i = 0u; i < TIVX_PYRAMID_MAX_OBJECT; i ++)
+                for (i = 0u; i < TIVX_PYRAMID_MAX_LEVEL_OBJECTS; i ++)
                 {
                     prmd->img[i] = NULL;
                 }

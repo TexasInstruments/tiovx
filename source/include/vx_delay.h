@@ -49,12 +49,12 @@ extern "C" {
  */
 
 /*! \brief Maximum number of objects supported inside delay object
- * \ingroup group_tivx_obj_desc_cfg
+ * \ingroup group_vx_delay_cfg
  */
 #define TIVX_DELAY_MAX_OBJECT           (8)
 
 /*! \brief Maximum number of paramter objects that can be associated with a delay
- * \ingroup group_tivx_obj_desc_cfg
+ * \ingroup group_vx_delay_cfg
  */
 #define TIVX_DELAY_MAX_PRM_OBJECT       (16)
 
@@ -88,7 +88,7 @@ typedef struct _vx_delay
     /*! \brief object type within the delay */
     vx_enum type;
     /*! \brief delay for objects within a pyramid */
-    vx_delay pyr_delay[TIVX_PYRAMID_MAX_OBJECT];
+    vx_delay pyr_delay[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
     /*! number of levels in pyramid object */
     vx_size pyr_num_levels;
     /*! Maximum number of paramter objects that can be associated with a delay */

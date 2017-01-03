@@ -47,12 +47,12 @@ extern "C" {
 /*! \brief Maximum number of objects supported in pyramid
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_PYRAMID_MAX_OBJECT         (32)
+#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32)
 
 /*! \brief Maximum number of objects supported in object array
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJECT_ARRAY_MAX_OBJECT           (32)
+#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32)
 
 /*! \brief Flag to indicate if node is replicated
  * \ingroup group_tivx_obj_desc
@@ -433,7 +433,7 @@ typedef struct _tivx_obj_desc_pyramid
     vx_df_image format;
 
     /*! \brief array of object descriptor ids for the image object */
-    uint16_t obj_desc_id[TIVX_PYRAMID_MAX_OBJECT];
+    uint16_t obj_desc_id[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 } tivx_obj_desc_pyramid_t;
 
 /*!
@@ -559,7 +559,7 @@ typedef struct _tivx_obj_desc_objarray
     uint32_t num_items;
 
     /*! \brief array of descriptor ids of the objects */
-    uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_OBJECT];
+    uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_ITEMS];
 } tivx_obj_desc_objarray_t;
 
 /*!

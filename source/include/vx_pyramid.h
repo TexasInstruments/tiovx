@@ -49,6 +49,15 @@ extern "C" {
  */
 
 /*!
+ * \brief Max levels supported for the pyramid
+ *        Note: If this macro is changed, change #gOrbScaleFactor also
+ *              in vx_pyramid file.
+ * \ingroup group_vx_pyramid
+ */
+#define TIVX_PYRAMID_MAX_LEVELS_ORB             (17u)
+
+
+/*!
  * \brief Pyramid object internal state
  *
  * \ingroup group_vx_pyramid
@@ -59,7 +68,7 @@ typedef struct _vx_pyramid
     tivx_reference_t base;
 
     /*! \brief array of image objects */
-    vx_image img[TIVX_PYRAMID_MAX_OBJECT];
+    vx_image img[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 } tivx_pyramid_t;
 
 

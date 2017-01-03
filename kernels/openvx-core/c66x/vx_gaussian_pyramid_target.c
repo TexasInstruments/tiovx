@@ -19,7 +19,7 @@ static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
 
 typedef struct
 {
-    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVELS];
+    tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
     uint8_t *interm_output;
     uint32_t interm_output_size;
 } tivxGassPyrmdParams;

@@ -133,10 +133,10 @@ typedef struct _vx_graph {
 
 
     /*! \brief valid rect information for output image's */
-    vx_rectangle_t out_valid_rect[TIVX_PYRAMID_MAX_OBJECT];
+    vx_rectangle_t out_valid_rect[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 
     /*! \brief valid rect information for output image's */
-    vx_rectangle_t *out_valid_rect_ptr[TIVX_PYRAMID_MAX_OBJECT];
+    vx_rectangle_t *out_valid_rect_ptr[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 
 } tivx_graph_t;
 
