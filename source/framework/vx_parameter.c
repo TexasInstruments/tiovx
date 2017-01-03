@@ -262,7 +262,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
                 if (node->parameters[index])
                 {
                     if (node->parameters[index]->delay!=NULL) {
-                        // we already have a delay element here */
+                        /* we already have a delay element here */
                         vx_bool res = ownRemoveAssociationToDelay(node->parameters[index], node, index);
                         if (res == vx_false_e) {
                             VX_PRINT(VX_ZONE_ERROR, "Internal error removing delay association\n");
@@ -286,16 +286,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
 
             if(status == VX_SUCCESS)
             {
-                if (node->parameters[index]) {
-                    ownReleaseReferenceInt(&node->parameters[index], node->parameters[index]->type, VX_INTERNAL, NULL);
-                }
-
-                ownIncrementReference(value, VX_INTERNAL);
-                node->parameters[index] = value;
-
-                /* Assign parameter descriptor id in the node */
-                node->obj_desc->data_id[index] =
-                    tivxReferenceGetObjDescId(value);
+                ownNodeSetParameter(node, index, value);
             }
 
             /* Note that we don't need to do anything special for parameters to child graphs. */

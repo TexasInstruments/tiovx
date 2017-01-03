@@ -239,6 +239,12 @@ vx_status ownNodeUserKernelExecute(vx_node node);
  */
 vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx);
 
+/*! \brief Set parameter at node
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+
 #ifdef __cplusplus
 }
 #endif

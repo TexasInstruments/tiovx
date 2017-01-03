@@ -40,26 +40,11 @@
 static vx_status ownDestructObjArray(vx_reference ref);
 static vx_status ownInitObjArrayFromObject(
     vx_context context, vx_object_array objarr, vx_reference exemplar);
-static vx_status ownInitObjArrayWithImage(
-    vx_context context, vx_object_array objarr, vx_image exemplar);
-static vx_status ownInitObjArrayWithArray(
-    vx_context context, vx_object_array objarr, vx_array exemplar);
-static vx_status ownInitObjArrayWithScalar(
-    vx_context context, vx_object_array objarr, vx_scalar exemplar);
-static vx_status ownInitObjArrayWithDistribution(
-    vx_context context, vx_object_array objarr, vx_distribution exemplar);
-static vx_status ownInitObjArrayWithThreshold(
-    vx_context context, vx_object_array objarr, vx_threshold exemplar);
-static vx_status ownInitObjArrayWithPyramid(
-    vx_context context, vx_object_array objarr, vx_pyramid exemplar);
-static vx_status ownInitObjArrayWithMatrix(
-    vx_context context, vx_object_array objarr, vx_matrix exemplar);
-static vx_status ownInitObjArrayWithRemap(
-    vx_context context, vx_object_array objarr, vx_remap exemplar);
-static vx_status ownInitObjArrayWithLut(
-    vx_context context, vx_object_array objarr, vx_lut exemplar);
-
 static vx_status ownAllocObjectArrayBuffer(vx_reference ref);
+static vx_status ownAddRefToObjArray(vx_context context,
+            vx_object_array objarr, vx_reference ref, uint32_t i);
+static void ownReleaseRefFromObjArray(
+            vx_object_array objarr, uint32_t num_items);
 
 static vx_bool ownIsValidObject(vx_enum type)
 {
@@ -281,45 +266,34 @@ static vx_status ownInitObjArrayFromObject(
     vx_context context, vx_object_array objarr, vx_reference exemplar)
 {
     vx_status status = VX_SUCCESS;
+    vx_reference ref;
+    tivx_obj_desc_objarray_t *obj_desc =
+        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+    vx_uint32 num_items, i;
 
-    switch (exemplar->type)
+    num_items = obj_desc->num_items;
+    for (i = 0; i < num_items; i ++)
     {
-        case VX_TYPE_LUT:
-            status = ownInitObjArrayWithLut(
-                context, objarr, (vx_lut)exemplar);
+        ref = ownCreateReferenceFromExemplar(context, exemplar);
+
+        status = VX_SUCCESS;
+        if(ownIsValidReference(ref)==vx_false_e)
+        {
+            status = VX_ERROR_INVALID_REFERENCE;
+        }
+        if(status == VX_SUCCESS)
+        {
+            status = ownAddRefToObjArray(context, objarr, ref, i);
+        }
+        if(status!=VX_SUCCESS)
+        {
             break;
-        case VX_TYPE_REMAP:
-            status = ownInitObjArrayWithRemap(
-                context, objarr, (vx_remap)exemplar);
-            break;
-        case VX_TYPE_MATRIX:
-            status = ownInitObjArrayWithMatrix(
-                context, objarr, (vx_matrix)exemplar);
-            break;
-        case VX_TYPE_PYRAMID:
-            status = ownInitObjArrayWithPyramid(
-                context, objarr, (vx_pyramid)exemplar);
-            break;
-        case VX_TYPE_IMAGE:
-            status = ownInitObjArrayWithImage(
-                context, objarr, (vx_image)exemplar);
-            break;
-        case VX_TYPE_ARRAY:
-            status = ownInitObjArrayWithArray(
-                context, objarr, (vx_array)exemplar);
-            break;
-        case VX_TYPE_SCALAR:
-            status = ownInitObjArrayWithScalar(
-                context, objarr, (vx_scalar)exemplar);
-            break;
-        case VX_TYPE_DISTRIBUTION:
-            status = ownInitObjArrayWithDistribution(
-                context, objarr, (vx_distribution)exemplar);
-            break;
-        case VX_TYPE_THRESHOLD:
-            status = ownInitObjArrayWithThreshold(
-                context, objarr, (vx_threshold)exemplar);
-            break;
+        }
+    }
+
+    if (VX_SUCCESS != status)
+    {
+        ownReleaseRefFromObjArray(objarr, i);
     }
 
     return (status);
@@ -369,344 +343,6 @@ static void ownReleaseRefFromObjArray(vx_object_array objarr, uint32_t num_items
             vxReleaseReference(&objarr->ref[i]);
         }
     }
-}
-
-static vx_status ownInitObjArrayWithLut(
-    vx_context context, vx_object_array objarr, vx_lut exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_enum data_type;
-    vx_size count;
-    vx_lut lut;
-    vx_uint32 i, num_items;
-
-    status |= vxQueryLUT(exemplar, VX_LUT_TYPE, &data_type,
-        sizeof(data_type));
-    status |= vxQueryLUT(exemplar, VX_LUT_COUNT, &count,
-        sizeof(count));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            lut = vxCreateLUT(context, data_type, count);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)lut, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithRemap(
-    vx_context context, vx_object_array objarr, vx_remap exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_uint32 src_width, src_height, dst_width, dst_height, i, num_items;
-    vx_remap rem;
-
-    status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_WIDTH, &src_width,
-        sizeof(src_width));
-    status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_HEIGHT, &src_height,
-        sizeof(src_height));
-    status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_WIDTH, &dst_width,
-        sizeof(dst_width));
-    status |= vxQueryRemap(exemplar, VX_REMAP_DESTINATION_HEIGHT, &dst_height,
-        sizeof(dst_height));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            rem = vxCreateRemap(context, src_width, src_height, dst_width,
-                dst_height);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)rem, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithMatrix(
-    vx_context context, vx_object_array objarr, vx_matrix exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_size rows, columns;
-    vx_uint32 i, num_items;
-    vx_enum type;
-    vx_matrix mat;
-
-    status |= vxQueryMatrix(exemplar, VX_MATRIX_TYPE, &type, sizeof(type));
-    status |= vxQueryMatrix(exemplar, VX_MATRIX_ROWS, &rows, sizeof(rows));
-    status |= vxQueryMatrix(exemplar, VX_MATRIX_COLUMNS, &columns,
-        sizeof(columns));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            mat = vxCreateMatrix(context, type, columns, rows);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)mat, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithPyramid(
-    vx_context context, vx_object_array objarr, vx_pyramid exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_size levels;
-    vx_float32 scale;
-    vx_uint32 width, height, i, num_items;
-    vx_df_image format;
-    vx_pyramid pmd;
-
-    status |= vxQueryPyramid(exemplar, VX_PYRAMID_LEVELS, &levels, sizeof(width));
-    status |= vxQueryPyramid(exemplar, VX_PYRAMID_SCALE, &scale, sizeof(width));
-    status |= vxQueryPyramid(exemplar, VX_PYRAMID_WIDTH, &width, sizeof(width));
-    status |= vxQueryPyramid(exemplar, VX_PYRAMID_HEIGHT, &height, sizeof(height));
-    status |= vxQueryPyramid(exemplar, VX_PYRAMID_FORMAT, &format, sizeof(format));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            pmd = vxCreatePyramid(context, levels, scale, width, height,
-                format);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)pmd, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithImage(
-    vx_context context, vx_object_array objarr, vx_image exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_uint32 width, height, i, num_items;
-    vx_df_image format;
-    vx_image img;
-
-    status |= vxQueryImage(exemplar, VX_IMAGE_WIDTH, &width, sizeof(width));
-    status |= vxQueryImage(exemplar, VX_IMAGE_HEIGHT, &height, sizeof(height));
-    status |= vxQueryImage(exemplar, VX_IMAGE_FORMAT, &format, sizeof(format));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            img = vxCreateImage(context, width, height, format);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)img, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithArray(
-    vx_context context, vx_object_array objarr, vx_array exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_enum type;
-    vx_size capacity;
-    vx_array arr;
-    vx_uint32 num_items, i;
-
-    status |= vxQueryArray(exemplar, VX_ARRAY_ITEMTYPE, &type, sizeof(type));
-    status |= vxQueryArray(exemplar, VX_ARRAY_CAPACITY, &capacity, sizeof(capacity));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            arr = vxCreateArray(context, type, capacity);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)arr, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithScalar(
-    vx_context context, vx_object_array objarr, vx_scalar exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_enum type;
-    vx_scalar sc;
-    vx_uint32 num_items, i;
-
-    status |= vxQueryScalar(exemplar, VX_SCALAR_TYPE, &type, sizeof(type));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            /* TODO: How to get the internal data pointer */
-            sc = vxCreateScalar(context, type, NULL);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)sc, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithDistribution(
-    vx_context context, vx_object_array objarr, vx_distribution exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_size num_bins;
-    vx_int32 offset;
-    vx_uint32 num_items, i, range;
-    vx_distribution dist;
-
-    status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_OFFSET, &offset, sizeof(offset));
-    status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_RANGE, &range, sizeof(range));
-    status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_BINS, &num_bins, sizeof(num_bins));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            dist = vxCreateDistribution(context, num_bins, offset, range);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)dist, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
-}
-
-static vx_status ownInitObjArrayWithThreshold(
-    vx_context context, vx_object_array objarr, vx_threshold exemplar)
-{
-    vx_status status = VX_SUCCESS;
-    vx_enum thr_type;
-    vx_enum data_type;
-    vx_threshold thr;
-    vx_uint32 num_items, i;
-
-    status |= vxQueryThreshold(exemplar, VX_THRESHOLD_DATA_TYPE, &data_type,
-        sizeof(data_type));
-    status |= vxQueryThreshold(exemplar, VX_THRESHOLD_TYPE, &thr_type,
-        sizeof(thr_type));
-
-    if (VX_SUCCESS == status)
-    {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
-        num_items = obj_desc->num_items;
-        for (i = 0; i < num_items; i ++)
-        {
-            thr = vxCreateThreshold(context, thr_type, data_type);
-
-            status = ownAddRefToObjArray(context, objarr, (vx_reference)thr, i);
-            if(status!=VX_SUCCESS)
-                break;
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            ownReleaseRefFromObjArray(objarr, i);
-        }
-    }
-
-    return (status);
 }
 
 static vx_status ownDestructObjArray(vx_reference ref)

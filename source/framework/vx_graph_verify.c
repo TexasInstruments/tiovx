@@ -397,6 +397,14 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
                     status = ownReferenceAllocMem(ref->scope);
                 }
                 else
+                if(ref->delay != NULL )
+                {
+                    /* if this is part of delay then allocate memory for all
+                     * delay objects
+                     */
+                    status = ownReferenceAllocMem((vx_reference)ref->delay);
+                }
+                else
                 {
                     /* alloc memory for data reference, if not already allocated
                      * Its ok to call this multiple times for the same reference

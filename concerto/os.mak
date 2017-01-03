@@ -13,7 +13,8 @@
 # limitations under the License.
 
 ifeq ($(OS),Windows_NT)
-    ifeq ($(TERM),cygwin)
+    HOST_OS=Windows_NT
+	ifeq ($(TERM),cygwin)
         HOST_OS=CYGWIN
 	endif
 else

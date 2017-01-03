@@ -323,7 +323,7 @@ vx_status ownNodeUserKernelExecute(vx_node node)
         {
             if(node->kernel->function && !node->kernel->is_target_kernel)
             {
-                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->base.obj_desc;
+                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc;
 
                 if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
                 {
@@ -1284,4 +1284,18 @@ void ownNodeClearExecuteState(vx_node node)
     {
         tivxFlagBitClear(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
     }
+}
+
+void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
+{
+    if (node->parameters[index]) {
+        ownReleaseReferenceInt(&node->parameters[index], node->parameters[index]->type, VX_INTERNAL, NULL);
+    }
+
+    ownIncrementReference(value, VX_INTERNAL);
+    node->parameters[index] = (vx_reference)value;
+
+    /* Assign parameter descriptor id in the node */
+    node->obj_desc->data_id[index] =
+        tivxReferenceGetObjDescId(value);
 }

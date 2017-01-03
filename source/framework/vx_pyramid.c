@@ -349,7 +349,7 @@ vx_status VX_API_CALL vxQueryPyramid(
 static vx_status ownAllocPyramidBuffer(vx_reference ref)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint32 i=0, j;
+    vx_uint32 i=0;
     vx_pyramid prmd = (vx_pyramid)ref;
     tivx_obj_desc_pyramid_t *obj_desc = NULL;
     vx_image img;

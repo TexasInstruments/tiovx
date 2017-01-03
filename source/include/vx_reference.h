@@ -130,7 +130,7 @@ typedef struct _vx_reference {
     tivx_mutex lock;
 
     /* \brief This indicates if the object belongs to a delay */
-    struct _vx_delay *delay;
+    vx_delay delay;
     /* \brief This indicates the original delay slot index when the object belongs to a delay */
     vx_int32 delay_slot_index;
 
@@ -262,6 +262,13 @@ vx_size ownSizeOfEnumType(vx_enum item_type);
  * \ingroup group_vx_reference
  */
 void ownReferenceSetScope(vx_reference ref, vx_reference scope);
+
+
+/*! \brief Create reference from a exemplar object
+ * \ingroup group_vx_reference
+ */
+vx_reference ownCreateReferenceFromExemplar(
+    vx_context context, vx_reference exemplar);
 
 #ifdef __cplusplus
 }

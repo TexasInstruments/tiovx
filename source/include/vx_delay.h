@@ -48,6 +48,26 @@ extern "C" {
  * \brief Implementation of Delay object
  */
 
+/*! \brief Maximum number of objects supported inside delay object
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_DELAY_MAX_OBJECT           (8)
+
+/*! \brief Maximum number of paramter objects that can be associated with a delay
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_DELAY_MAX_PRM_OBJECT       (16)
+
+/*! \brief The internal representation of the delay parameters as a list.
+ * \ingroup group_vx_delay
+ */
+typedef struct _vx_delay_param_t {
+    struct _vx_delay_param_t *next;
+    vx_node node;
+    vx_uint32 index;
+} tivx_delay_param_t;
+
+
 /*!
  * \brief Delay object internal state
  *
@@ -57,7 +77,22 @@ typedef struct _vx_delay
 {
     /*! \brief reference object */
     tivx_reference_t base;
-
+    /*! \brief reference's of object within delay */
+    vx_reference     refs[TIVX_DELAY_MAX_OBJECT];
+    /*! \brief information about delay reference's */
+    tivx_delay_param_t set[TIVX_DELAY_MAX_OBJECT];
+    /*! \brief current delay position */
+    vx_uint32 index;
+    /*! number of objects within delay */
+    vx_uint32 count;
+    /*! \brief object type within the delay */
+    vx_enum type;
+    /*! \brief delay for objects within a pyramid */
+    vx_delay pyr_delay[TIVX_PYRAMID_MAX_OBJECT];
+    /*! number of levels in pyramid object */
+    vx_size pyr_num_levels;
+    /*! Maximum number of paramter objects that can be associated with a delay */
+    tivx_delay_param_t prm_pool[TIVX_DELAY_MAX_PRM_OBJECT];
 } tivx_delay_t;
 
 

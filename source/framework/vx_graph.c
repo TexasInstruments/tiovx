@@ -536,6 +536,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
                 ownNodeWaitCompletionEvent(graph->leaf_nodes[i]);
             }
 
+            for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++)
+            {
+                if(graph->delays[i])
+                {
+                    vxAgeDelay(graph->delays[i]);
+                }
+                else
+                {
+                    /* no more delays registered */
+                    break;
+                }
+            }
+
             if (graph->state == VX_GRAPH_STATE_RUNNING)
             {
                 graph->state = VX_GRAPH_STATE_COMPLETED;
@@ -559,3 +572,4 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
 
     return status;
 }
+
