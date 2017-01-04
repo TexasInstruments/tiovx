@@ -49,11 +49,6 @@ extern "C" {
  */
 
 
-/*! \brief Max possible nodes in graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_NODES               (32u)
-
 /*! \brief Max possible head nodes in graph
  * \ingroup group_vx_graph_cfg
  */
@@ -178,6 +173,25 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
  * \ingroup group_vx_graph
  */
 vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
+
+
+/*! \brief Perform topological sort of graph nodes
+ *
+ * \param context   [in] context to use while sorting
+ * \param nodes     [in/out] IN: Unosrted node, OUT: Sorted nodes
+ * \param num_nodes [in] Number of nodes
+ * \param has_cycles [out] vx_true_e: Graph has cycles and cannot be sorted
+ *                         vx_false_e: Graph is acyclic and nodes[] contains the sorted nodes
+ *
+ * \ingroup group_vx_graph
+ */
+void ownGraphTopologicalSort(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
+
+
+/*! \brief Mark graph to be reverified
+ * \ingroup group_vx_graph
+ */
+void ownGraphSetReverify(vx_graph graph);
 
 #ifdef __cplusplus
 }

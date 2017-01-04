@@ -37,9 +37,9 @@
 #include <vx_internal.h>
 #include <windows.h>
 
-uint32_t tivxPlatformGetTimeInUsecs()
+uint64_t tivxPlatformGetTimeInUsecs()
 {
-    uint32_t timeInUsecs = 0;
+    uint64_t timeInUsecs = 0;
     LARGE_INTEGER value, hz, tmp;
     BOOL is_ok;
 
@@ -48,9 +48,9 @@ uint32_t tivxPlatformGetTimeInUsecs()
     {
         is_ok = QueryPerformanceFrequency(&hz);
 
-        tmp.QuadPart = (value.QuadPart*1000000U)/hz.QuadPart;
+        tmp.QuadPart = (value.QuadPart*1000000ULL/hz.QuadPart);
 
-        timeInUsecs = tmp.LowPart;
+        timeInUsecs = tmp.QuadPart;
     }
 
     return timeInUsecs;

@@ -39,7 +39,7 @@
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
 
-uint32_t tivxPlatformGetTimeInUsecs()
+uint64_t tivxPlatformGetTimeInUsecs()
 {
     return BspOsal_getCurTimeInUsec();
 }

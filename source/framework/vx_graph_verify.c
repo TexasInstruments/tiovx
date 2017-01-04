@@ -272,6 +272,26 @@ static vx_status ownGraphNodeKernelDeinit(vx_graph graph)
     return status;
 }
 
+static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2)
+{
+    vx_bool is_match = vx_false_e;
+
+    if(ref1 && ref2)
+    {
+        if(ref1 == ref2)
+        {
+            is_match = vx_true_e;
+        }
+        else
+        if (((vx_reference)graph != ref2->scope) &&
+            (ref1 == ref2->scope))
+        {
+            is_match = vx_true_e;
+        }
+    }
+    return is_match;
+}
+
 static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 {
     vx_node node_cur, node_next;
@@ -279,6 +299,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
     uint32_t prm_cur_idx, prm_next_idx;
     uint32_t prm_cur_dir, prm_next_dir;
     vx_reference ref1, ref2;
+    vx_status status = VX_SUCCESS;
 
     for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
     {
@@ -287,6 +308,8 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
         for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
         {
             prm_cur_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
+
+            ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
 
             if( prm_cur_dir == VX_OUTPUT || prm_cur_dir == VX_BIDIRECTIONAL)
             {
@@ -301,32 +324,32 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                     {
                         prm_next_dir = ownNodeGetParameterDir(node_next, prm_next_idx);
 
-                        if( prm_next_dir == VX_INPUT || prm_next_dir == VX_BIDIRECTIONAL)
+                        ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
+
+                        if(ref2)
                         {
-                            ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
-                            ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
-
-                            /* check if input data reference of next node is equal to
-                               output data reference of current */
-                            if(ref1 == ref2)
+                            if( prm_next_dir == VX_INPUT || prm_next_dir == VX_BIDIRECTIONAL)
                             {
-                                /* add node_next as output node for current node if not already added */
-                                ownNodeAddOutNode(node_cur, node_next);
-
-                                /* add node_current as input node for next node if not already added */
-                                ownNodeAddInNode(node_next, node_cur);
-                            }
-
-                            if(ref2)
-                            {
-                                if (((vx_reference)graph != ref2->scope) &&
-                                    (ref1 == ref2->scope))
+                                /* check if input data reference of next node is equal to
+                                   output data reference of current */
+                                if(ownGraphIsRefMatch(graph, ref1, ref2))
                                 {
                                     /* add node_next as output node for current node if not already added */
                                     ownNodeAddOutNode(node_cur, node_next);
 
                                     /* add node_current as input node for next node if not already added */
                                     ownNodeAddInNode(node_next, node_cur);
+                                }
+                            }
+                            else
+                            if( prm_next_dir == VX_OUTPUT )
+                            {
+                                /* check if any output of next node matches current node
+                                 * This would mean two nodes output to same data object which is not allowed
+                                 */
+                                if(ownGraphIsRefMatch(graph, ref1, ref2))
+                                {
+                                    status = VX_FAILURE;
                                 }
                             }
                         }
@@ -336,7 +359,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
         }
     }
 
-    return VX_SUCCESS;
+    return status;
 }
 
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
@@ -497,11 +520,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             ownGraphNodeKernelDeinit(graph);
         }
         {
-            /* Call validate function for each node
-             * If validation fails then return with error
-             * No resources are allcoated in this step
-             */
-            status = ownGraphNodeKernelValidate(graph, meta);
 
             if(status == VX_SUCCESS)
             {
@@ -509,6 +527,37 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * No resources are allcoated in this step
                  */
                 status = ownGraphCalcInAndOutNodes(graph);
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                vx_bool has_cycle;
+
+                ownContextLock(graph->base.context);
+
+                /* Topological sort graph to find cycles
+                 */
+                ownGraphTopologicalSort(
+                            &graph->base.context->graph_sort_context,
+                            graph->nodes,
+                            graph->num_nodes,
+                            &has_cycle);
+
+                ownContextUnlock(graph->base.context);
+
+                if(has_cycle)
+                {
+                    status = VX_FAILURE;
+                }
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                /* Call validate function for each node
+                 * If validation fails then return with error
+                 * No resources are allcoated in this step
+                 */
+                status = ownGraphNodeKernelValidate(graph, meta);
             }
 
             if(status == VX_SUCCESS)

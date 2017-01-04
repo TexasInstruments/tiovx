@@ -92,6 +92,9 @@ typedef struct _vx_node {
     /*! Flag to indicate if local data size and ptr set is allowed */
     vx_bool local_data_set_allow;
 
+    /*! used by graph topological sort for internal state keeping */
+    uint16_t incounter;
+
 } tivx_node_t;
 
 /**
@@ -244,6 +247,12 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx);
  * \ingroup group_vx_node
  */
 void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
+
+/*! \brief Get next node at given output index
+ *
+ * \ingroup group_vx_node
+ */
+vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index);
 
 #ifdef __cplusplus
 }

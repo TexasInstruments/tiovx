@@ -62,9 +62,31 @@ vx_status ownResetGraphPerf(vx_graph graph)
         graph->perf.end = 0;
         graph->perf.sum = 0;
         graph->perf.avg = 0;
-        graph->perf.min = 0xFFFFFFFFFFFFFFFFUL;
+        graph->perf.min = 0xFFFFFFFFFFFFFFFFULL;
         graph->perf.num = 0;
         graph->perf.max = 0;
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    return status;
+}
+
+vx_status ownUpdateGraphPerf(vx_graph graph)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (graph && ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    {
+        graph->perf.tmp = (graph->perf.end - graph->perf.beg)*1000; /* convert to nano secs */
+        graph->perf.sum += graph->perf.tmp;
+        graph->perf.num++;
+        if(graph->perf.tmp < graph->perf.min)
+            graph->perf.min = graph->perf.tmp;
+        if(graph->perf.tmp > graph->perf.max)
+            graph->perf.max = graph->perf.tmp;
+        graph->perf.avg = graph->perf.sum/graph->perf.num;
     }
     else
     {
@@ -101,9 +123,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
             ownIncrementReference(&node->base, VX_INTERNAL);
             graph->nodes[graph->num_nodes] = node;
             graph->num_nodes++;
-            graph->reverify = graph->verified;
-            graph->verified = vx_false_e;
-            graph->state = VX_GRAPH_STATE_UNVERIFIED;
+            ownGraphSetReverify(graph);
         }
         else
         {
@@ -160,9 +180,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
                 graph->num_nodes--;
                 ownReleaseReferenceInt((vx_reference *)&node, VX_TYPE_NODE, VX_INTERNAL, NULL);
                 status = VX_SUCCESS;
-                graph->reverify = graph->verified;
-                graph->verified = vx_false_e;
-                graph->state = VX_GRAPH_STATE_UNVERIFIED;
+                ownGraphSetReverify(graph);
                 break;
             }
         }
@@ -203,6 +221,8 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_head_nodes = 0;
             graph->num_leaf_nodes = 0;
             graph->num_params = 0;
+
+            ownResetGraphPerf(graph);
 
             for (idx = 0; idx < TIVX_GRAPH_MAX_DELAYS; idx++)
             {
@@ -484,8 +504,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 
         if ((status == VX_SUCCESS)
             && (graph->state == VX_GRAPH_STATE_VERIFIED ||
-                graph->state == VX_GRAPH_STATE_COMPLETED))
+                graph->state == VX_GRAPH_STATE_COMPLETED||
+                graph->state == VX_GRAPH_STATE_ABANDONED
+                ))
         {
+            graph->perf.beg = tivxPlatformGetTimeInUsecs();
             /* A new graph cannot be scheduled until current graph
                execution finishes */
             ownReferenceLock(&graph->base);
@@ -510,7 +533,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
             {
                 ownNodeKernelSchedule(graph->head_nodes[i]);
             }
-
         }
     }
     else
@@ -534,6 +556,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             for(i=0; i<graph->num_leaf_nodes; i++)
             {
                 ownNodeWaitCompletionEvent(graph->leaf_nodes[i]);
+            }
+
+            /* update node performance */
+            for(i=0; i<graph->num_nodes; i++)
+            {
+                ownUpdateNodePerf(graph->nodes[i]);
             }
 
             for(i=0; i<TIVX_GRAPH_MAX_DELAYS; i++)
@@ -563,6 +591,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             status = VX_ERROR_GRAPH_ABANDONED;
         }
 
+        graph->perf.end = tivxPlatformGetTimeInUsecs();
+
+        ownUpdateGraphPerf(graph);
+
         ownReferenceUnlock(&graph->base);
     }
     else
@@ -573,3 +605,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
     return status;
 }
 
+void ownGraphSetReverify(vx_graph graph)
+{
+    if(graph)
+    {
+        graph->reverify = graph->verified;
+        graph->verified = vx_false_e;
+        graph->state = VX_GRAPH_STATE_UNVERIFIED;
+    }
+}

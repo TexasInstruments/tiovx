@@ -93,7 +93,7 @@ void tivxPlatformSystemUnlock(vx_enum lock_id);
  *
  * \ingroup group_tivx_platform
  */
-uint32_t tivxPlatformGetTimeInUsecs();
+uint64_t tivxPlatformGetTimeInUsecs();
 
 /*!
  * \brief Init Platform module

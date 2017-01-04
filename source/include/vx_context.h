@@ -85,6 +85,22 @@ extern "C" {
 */
 #define TIVX_CONTEXT_MAX_NONLINEAR_DIM (9)
 
+/*! \brief Context used while sorting a graph
+ * \ingroup group_vx_context
+ */
+typedef struct _tivx_graph_sort_context {
+
+    /*! \brief Sorted node list */
+    vx_node   sorted_nodes[TIVX_GRAPH_MAX_NODES];
+    /*! stack used while sorting */
+    vx_node   stack[TIVX_GRAPH_MAX_NODES];
+    /*! stack top */
+    uint16_t  stack_top;
+    /*! stack max size */
+    uint16_t  stack_max_elems;
+
+} tivx_graph_sort_context;
+
 /*! \brief The top level context data for the entire OpenVX instance
  * \ingroup group_vx_context
  */
@@ -141,6 +157,8 @@ typedef struct _vx_context {
      */
     vx_bool remove_kernel_lock;
 
+    /*! Context used while sorting a graph */
+    tivx_graph_sort_context graph_sort_context;
 } tivx_context_t;
 
 /**
@@ -250,6 +268,7 @@ vx_status ownContextLock(vx_context context);
  * \ingroup group_vx_context
  */
 vx_status ownContextUnlock(vx_context context);
+
 
 #ifdef __cplusplus
 }

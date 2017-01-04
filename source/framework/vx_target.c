@@ -252,12 +252,12 @@ static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_o
 
 static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
 {
-    uint32_t cur_time;
+    uint64_t beg_time, end_time;
 
     /* if node is already executed do nothing */
     if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_EXECUTED) == vx_false_e )
     {
-        cur_time = tivxPlatformGetTimeInUsecs();
+        beg_time = tivxPlatformGetTimeInUsecs();
 
         if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
         {
@@ -268,7 +268,19 @@ static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
             tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc);
         }
 
-        node_obj_desc->exe_time_usecs = tivxPlatformGetTimeInUsecs() - cur_time;
+        end_time = tivxPlatformGetTimeInUsecs();
+
+        tivx_uint64_to_uint32(
+                beg_time,
+                &node_obj_desc->exe_time_beg_h,
+                &node_obj_desc->exe_time_beg_l
+            );
+
+        tivx_uint64_to_uint32(
+                end_time,
+                &node_obj_desc->exe_time_end_h,
+                &node_obj_desc->exe_time_end_l
+            );
 
         tivxFlagBitSet(&node_obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
 

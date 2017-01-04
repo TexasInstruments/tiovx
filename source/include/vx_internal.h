@@ -150,6 +150,24 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
     *flag_var = value;
 }
 
+/*! \brief Macro to convert 2x uint32 to uint64
+ * \ingroup group_vx_utils
+ */
+static inline void tivx_uint32_to_uint64(uint64_t *val, uint32_t h, uint32_t l)
+{
+    *val = (((uint64_t)h<<32) | (uint64_t)l);
+}
+
+/*! \brief Macro to convert uint64 to 2x uint32
+ * \ingroup group_vx_utils
+ */
+static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
+{
+    *h = (uint32_t)(val >> 32);
+    *l = (uint32_t)(val >>  0);
+}
+
+
 #include <vx_debug.h>
 #include <vx_reference.h>
 #include <vx_context.h>

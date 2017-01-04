@@ -107,7 +107,6 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
 
     obj_desc->target_kernel_index = 0;
     obj_desc->exe_status = 0;
-    obj_desc->exe_time_usecs = 0;
     obj_desc->num_params = kernel->signature.num_parameters;
 
     for(idx=0; idx<kernel->signature.num_parameters; idx++)
@@ -423,13 +422,25 @@ vx_status ownUpdateNodePerf(vx_node node)
 
     if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
     {
-        node->perf.tmp = node->obj_desc->exe_time_usecs*1000; /* convert to nano secs */
+        tivx_uint32_to_uint64(
+                &node->perf.beg,
+                node->obj_desc->exe_time_beg_h,
+                node->obj_desc->exe_time_beg_l
+            );
+
+        tivx_uint32_to_uint64(
+                &node->perf.end,
+                node->obj_desc->exe_time_end_h,
+                node->obj_desc->exe_time_end_l
+            );
+
+        node->perf.tmp = (node->perf.end - node->perf.beg)*1000; /* convert to nano secs */
         node->perf.sum += node->perf.tmp;
         node->perf.num++;
         if(node->perf.tmp < node->perf.min)
             node->perf.min = node->perf.tmp;
         if(node->perf.tmp > node->perf.max)
-            node->perf.min = node->perf.max;
+            node->perf.max = node->perf.tmp;
         node->perf.avg = node->perf.sum/node->perf.num;
     }
     else
@@ -1298,4 +1309,24 @@ void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
     /* Assign parameter descriptor id in the node */
     node->obj_desc->data_id[index] =
         tivxReferenceGetObjDescId(value);
+}
+
+vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
+{
+    vx_node next_node = NULL;
+
+    if(node && node->obj_desc && index < node->obj_desc->num_out_nodes)
+    {
+        tivx_obj_desc_node_t *next_node_obj_desc;
+
+        next_node_obj_desc =
+            (tivx_obj_desc_node_t *)
+                tivxObjDescGet( node->obj_desc->out_node_id[index] );
+
+        if(next_node_obj_desc)
+        {
+            next_node = (vx_node)next_node_obj_desc->host_node_ref;
+        }
+    }
+    return next_node;
 }

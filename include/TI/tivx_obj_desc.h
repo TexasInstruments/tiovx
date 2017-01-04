@@ -75,6 +75,10 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)
 
+/*! \brief Max possible nodes in graph
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_GRAPH_MAX_NODES               (32u)
 
 /*!
  * \brief Enum that list all possible object descriptor type's
@@ -247,8 +251,17 @@ typedef struct _tivx_obj_desc_node
     /*! \brief node execution status */
     uint32_t exe_status;
 
-    /*! \brief node execution time in units of usecs */
-    uint32_t exe_time_usecs;
+    /*! \brief node execution time */
+    uint32_t exe_time_beg_h;
+
+    /*! \brief node execution time */
+    uint32_t exe_time_beg_l;
+
+    /*! \brief node execution time */
+    uint32_t exe_time_end_h;
+
+    /*! \brief node execution time */
+    uint32_t exe_time_end_l;
 
     /*! \brief number of parameters associated with this node */
     uint32_t num_params;
