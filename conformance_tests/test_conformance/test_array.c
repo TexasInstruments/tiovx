@@ -511,10 +511,8 @@ TEST(Array, DISABLED_testAccessCopyWrite)
     {
         vx_size stride = sizeof(vx_coordinates2d_t);
         vx_coordinates2d_t *p = &localArray[N/2];
-        VX_CALL( vxMapArrayRange(array, N/2, N, &map_id, &stride, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyArrayRange(array, N/2, N, stride, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localArray[N/2]);
-        ASSERT(stride == sizeof(vx_coordinates2d_t));
-        VX_CALL( vxUnmapArrayRange (array, map_id));
     }
     /* Check (MAP) */
     {
@@ -535,10 +533,8 @@ TEST(Array, DISABLED_testAccessCopyWrite)
     {
         vx_size stride = 3*sizeof(vx_coordinates2d_t);
         vx_coordinates2d_t *p = &localArray2[3*(N/2)];
-        VX_CALL( vxMapArrayRange(array, N/2, N, &map_id, &stride, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyArrayRange(array, N/2, N, stride, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localArray2[3*(N/2)]);
-        ASSERT(stride == 3*sizeof(vx_coordinates2d_t));
-        VX_CALL( vxUnmapArrayRange (array, map_id));
     }
     /* Check (MAP) */
     {
@@ -592,10 +588,8 @@ TEST(Array, DISABLED_testAccessCopyRead)
     {
         vx_size stride = sizeof(vx_coordinates2d_t);
         vx_coordinates2d_t *p = &localArray[N/2];
-        VX_CALL( vxMapArrayRange(array, N/2, N, &map_id, &stride, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyArrayRange(array, N/2, N, stride, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localArray[N/2]);
-        ASSERT(stride == sizeof(vx_coordinates2d_t));
-        VX_CALL( vxUnmapArrayRange (array, map_id));
     }
     /* Check */
     for (i = 0; i < N/2; i++) {
@@ -611,10 +605,8 @@ TEST(Array, DISABLED_testAccessCopyRead)
     {
         vx_size stride = 3*sizeof(vx_coordinates2d_t);
         vx_coordinates2d_t *p = &localArray2[3*(N/2)];
-        VX_CALL( vxMapArrayRange(array, N/2, N, &map_id, &stride, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyArrayRange(array, N/2, N, stride, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localArray2[3*(N/2)]);
-        ASSERT(stride == 3*sizeof(vx_coordinates2d_t));
-        VX_CALL( vxUnmapArrayRange (array, map_id));
     }
     /* Check */
     for (i = 0; i < N/2; i++) {
