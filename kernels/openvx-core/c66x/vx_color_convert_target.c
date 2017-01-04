@@ -388,7 +388,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
         {
             uint32_t temp_ptr_size;
 
-            temp_ptr_size = 4 * dst->imagepatch_addr[0].stride_y * sizeof(uint8_t);
+            temp_ptr_size = 4 * dst->imagepatch_addr[0].dim_x * sizeof(uint8_t);
 
             temp_ptr = tivxMemAlloc(temp_ptr_size);
 
