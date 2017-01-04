@@ -1,0 +1,2190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="tiovx_ct_win32" />
+		<Option makefile_is_custom="1" />
+		<Option execution_dir="D:/ked/ADAS/code/ti_components/algorithms_codecs/tiovx/" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="../../../out/PC/X86/WINDOWS/debug/vx_conformance_tests_exe" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../../out/PC/X86/WINDOWS/debug" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="null" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release">
+				<Option output="../../../out/PC/X86/WINDOWS/release/vx_conformance_tests_exe" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../../out/PC/X86/WINDOWS/release" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="null" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+		</Compiler>
+		<Unit filename="../../../.gitignore" />
+		<Unit filename="../../../Makefile" />
+		<Unit filename="../../../concerto/README" />
+		<Unit filename="../../../concerto/combo.mak" />
+		<Unit filename="../../../concerto/combo_filters.mak" />
+		<Unit filename="../../../concerto/compilers/arp32.mak" />
+		<Unit filename="../../../concerto/compilers/cgt6x.mak" />
+		<Unit filename="../../../concerto/compilers/gcc.mak" />
+		<Unit filename="../../../concerto/compilers/gcc_windows.mak" />
+		<Unit filename="../../../concerto/compilers/tiarmcgt.mak" />
+		<Unit filename="../../../concerto/definitions.mak" />
+		<Unit filename="../../../concerto/finale.mak" />
+		<Unit filename="../../../concerto/machine.mak" />
+		<Unit filename="../../../concerto/os.mak" />
+		<Unit filename="../../../concerto/prelude.mak" />
+		<Unit filename="../../../concerto/rules.mak" />
+		<Unit filename="../../../concerto/shell.mak" />
+		<Unit filename="../../../docs/TIOVX_API_GUIDE.CHM" />
+		<Unit filename="../../../include/TI/tivx.h" />
+		<Unit filename="../../../include/TI/tivx_mem.h" />
+		<Unit filename="../../../include/TI/tivx_obj_desc.h" />
+		<Unit filename="../../../include/TI/tivx_target_kernel.h" />
+		<Unit filename="../../../include/VX/vx.h" />
+		<Unit filename="../../../include/VX/vx_api.h" />
+		<Unit filename="../../../include/VX/vx_compatibility.h" />
+		<Unit filename="../../../include/VX/vx_kernels.h" />
+		<Unit filename="../../../include/VX/vx_nodes.h" />
+		<Unit filename="../../../include/VX/vx_types.h" />
+		<Unit filename="../../../include/VX/vx_vendors.h" />
+		<Unit filename="../../../include/VX/vxu.h" />
+		<Unit filename="../../../internal_docs/design/OpenVX_DesignAnalysis.xlsx" />
+		<Unit filename="../../../internal_docs/design/OpenVX_Graph_Optimization_Problems.pptx" />
+		<Unit filename="../../../internal_docs/design/OpenVX_Graph_Pipeline.pptx" />
+		<Unit filename="../../../internal_docs/design/OpenVX_TI_Implementation_Proposal.pptx" />
+		<Unit filename="../../../internal_docs/design/UML/TI OpenVX - Framework Class Diagram.jpg" />
+		<Unit filename="../../../internal_docs/design/UML/TI OpenVX - Inheritance Class Diagram.jpg" />
+		<Unit filename="../../../internal_docs/design/UML/TI OpenVX - Package Diagram.jpg" />
+		<Unit filename="../../../internal_docs/design/UML/TI OpenVX - Platform Class  Diagram.jpg" />
+		<Unit filename="../../../internal_docs/design/UML/TI OpenVX.uml" />
+		<Unit filename="../../../internal_docs/doxy_cfg/README.txt" />
+		<Unit filename="../../../internal_docs/doxy_cfg/api.cfg" />
+		<Unit filename="../../../internal_docs/doxy_cfg/build_doc.bat" />
+		<Unit filename="../../../internal_docs/doxy_cfg/doxy_warnings.txt" />
+		<Unit filename="../../../internal_docs/doxy_cfg/footer.html" />
+		<Unit filename="../../../internal_docs/doxy_cfg/header.html" />
+		<Unit filename="../../../internal_docs/doxy_cfg/layout.xml" />
+		<Unit filename="../../../internal_docs/doxy_cfg/ti_disclaim.htm" />
+		<Unit filename="../../../internal_docs/doxy_cfg/ti_logo.gif" />
+		<Unit filename="../../../kernels/openvx-core/c66x/concerto.mak" />
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_absdiff_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_accumulate_square_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_accumulate_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_accumulate_weighted_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_addsub_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_bitwise_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_canny_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_channel_combine_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_channel_extract_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_color_convert_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_convert_depth_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_convole_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_equalize_histogram_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_fast_corners_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_filter_3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_gaussian_pyramid_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_halfscale_gaussian_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_harris_corners_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_histogram_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_intgimg_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_laplacian_pyramid_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_laplacian_reconstruct_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_lut_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_magnitude_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_meanstddev_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_minmaxloc_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_multiply_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_non_linear_filter_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_phase_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_remap_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_scale_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_sobel3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_target_kernels_openvx_core.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_threshold_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_warp_affine_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_warp_perspective_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/concerto.mak" />
+		<Unit filename="../../../kernels/openvx-core/host/vx_absdiff_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_accumulate_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_accumulate_square_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_accumulate_weighted_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_addsub_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_bitwise_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_canny_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_channel_combine_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_channel_extract_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_color_convert_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_convert_depth_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_convolve_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_equalize_histogram_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_fast_corners_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_filter_3x3_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_gaussian_pyramid_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_halfscale_gaussian_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_harris_corners_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_histogram_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_intgimg_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_kernels_openvx_core_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_laplacian_pyramid_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_laplacian_reconstruct_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_lut_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_magnitude_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_meanstddev_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_minmaxloc_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_multiply_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_non_linear_filter_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_phase_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_remap_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_scale_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_sobel3x3_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_threshold_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_warp_affine_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_warp_perspective_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_absdiff.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_accumulate.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_accumulate_square.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_accumulate_weighted.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_addsub.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_bitwise.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_canny.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_channel_combine.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_channel_extract.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_color_convert.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_convert_depth.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_convolve.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_equalize_histogram.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_fast_corners.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_filter_3x3.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_gaussian_pyramid.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_halfscale_gaussian.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_harris_corners.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_histogram.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_intgimg.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_laplacian_pyramid.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_laplacian_reconstruct.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_lut.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_magnitude.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_meanstddev.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_minmaxloc.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_multiply.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_non_linear_filter.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_phase.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_remap.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_scale.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_sobel3x3.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_threshold.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_utils.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_warp_affine.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_warp_perspective.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_openvx_core_kernels.h" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/baboon.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_100_120_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_100_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_100_120_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_100_120_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_120_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_150_220_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_150_220_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_150_220_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_150_220_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_70_71_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_70_71_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_70_71_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_70_71_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_90_125_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_90_130_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_90_130_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_3x3_90_130_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_100_100_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_100_120_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_100_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_100_120_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_100_120_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_1200_1440_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_5x5_1200_1440_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_100_120_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_100_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_100_120_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_100_120_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_16000_19200_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_16000_19200_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/canny_7x7_80_80_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/colors.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_0.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_3.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_30.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_fsc_5.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_0.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_3.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_30.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/harriscorners/hc_msc_5.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/lena.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libc6xsim_X86_C66.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_conformance_engine.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_conformance_tests.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_conformance_tests_testmodule.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_framework.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_kernels_openvx_core.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_platform_pc_windows.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_sample_usecases.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_target_kernels_openvx_core.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvx_vxu.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/libvxlib_X86.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance.test_module/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance.test_module/vx_testmodule_lib.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance.test_module/vx_testmodule_lib.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance.test_module/vx_testmodule_module.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance.test_module/vx_testmodule_module.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_accumulate.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_accumulate.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_accumulatesquare.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_accumulatesquare.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_accumulateweighted.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_accumulateweighted.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_addsub.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_addsub.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_array.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_array.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_binop16s.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_binop16s.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_binop8u.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_binop8u.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_box3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_box3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_canny.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_canny.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_channelcombine.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_channelcombine.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_channelextract.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_channelextract.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convertcolor.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convertcolor.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convertdepth.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convertdepth.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convolution.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convolution.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convolve.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_convolve.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_dilate3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_dilate3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_eqhist.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_eqhist.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_erode3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_erode3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_fast.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_fast.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_gaussian3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_gaussian3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_gaussianpyramid.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_gaussianpyramid.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph_callbacks.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph_callbacks.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph_delay.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph_delay.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph_roi.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_graph_roi.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_halfscalegaussian.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_halfscalegaussian.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_harriscorners.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_harriscorners.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_histogram.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_histogram.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_integral.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_integral.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_laplacianpyramid.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_laplacianpyramid.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_logging.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_logging.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_lut.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_lut.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_magnitude.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_magnitude.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_main.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_main.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_matrix.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_matrix.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_meanstddev.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_meanstddev.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_median3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_median3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_minmaxloc.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_minmaxloc.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_multiply.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_multiply.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_nonlinearfilter.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_nonlinearfilter.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_not.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_not.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_object_array.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_object_array.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_optflowpyrlk.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_optflowpyrlk.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_phase.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_phase.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_remap.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_remap.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_scalar.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_scalar.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_scale.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_scale.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_smoke.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_smoke.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_sobel3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_sobel3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_threshold.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_threshold.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_usernode.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_usernode.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_vximage.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_vximage.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_warpaffine.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_warpaffine.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_warpperspective.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_conformance/test_warpperspective.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_bmp.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_bmp.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_engine.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_engine.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_image.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_image.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_mem.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_mem.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_utils.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_engine/test_utils.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_executable/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_executable/main.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/conformance_tests.test_executable/main.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_absdiff_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_absdiff_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_accumulate_square_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_accumulate_square_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_accumulate_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_accumulate_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_accumulate_weighted_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_accumulate_weighted_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_addsub_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_addsub_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_bitwise_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_bitwise_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_canny_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_canny_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_channel_combine_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_channel_combine_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_channel_extract_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_channel_extract_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_color_convert_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_color_convert_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_convert_depth_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_convert_depth_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_convole_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_convole_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_equalize_histogram_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_equalize_histogram_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_fast_corners_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_fast_corners_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_filter_3x3_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_filter_3x3_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_gaussian_pyramid_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_gaussian_pyramid_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_halfscale_gaussian_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_halfscale_gaussian_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_harris_corners_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_harris_corners_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_histogram_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_histogram_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_intgimg_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_intgimg_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_laplacian_pyramid_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_laplacian_pyramid_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_laplacian_reconstruct_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_laplacian_reconstruct_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_lut_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_lut_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_magnitude_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_magnitude_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_meanstddev_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_meanstddev_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_minmaxloc_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_minmaxloc_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_multiply_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_multiply_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_non_linear_filter_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_non_linear_filter_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_phase_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_phase_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_remap_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_remap_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_scale_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_scale_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_sobel3x3_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_sobel3x3_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_target_kernels_openvx_core.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_target_kernels_openvx_core.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_threshold_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_threshold_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_warp_affine_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_warp_affine_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_warp_perspective_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.c66x/vx_warp_perspective_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_absdiff_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_absdiff_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_accumulate_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_accumulate_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_accumulate_square_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_accumulate_square_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_accumulate_weighted_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_accumulate_weighted_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_addsub_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_addsub_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_bitwise_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_bitwise_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_canny_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_canny_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_channel_combine_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_channel_combine_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_channel_extract_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_channel_extract_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_color_convert_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_color_convert_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_convert_depth_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_convert_depth_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_convolve_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_convolve_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_equalize_histogram_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_equalize_histogram_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_fast_corners_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_fast_corners_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_filter_3x3_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_filter_3x3_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_gaussian_pyramid_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_gaussian_pyramid_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_halfscale_gaussian_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_halfscale_gaussian_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_harris_corners_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_harris_corners_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_histogram_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_histogram_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_intgimg_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_intgimg_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_kernels_openvx_core_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_kernels_openvx_core_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_laplacian_pyramid_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_laplacian_pyramid_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_laplacian_reconstruct_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_laplacian_reconstruct_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_lut_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_lut_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_magnitude_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_magnitude_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_meanstddev_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_meanstddev_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_minmaxloc_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_minmaxloc_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_multiply_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_multiply_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_non_linear_filter_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_non_linear_filter_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_phase_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_phase_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_remap_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_remap_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_scale_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_scale_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_sobel3x3_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_sobel3x3_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_threshold_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_threshold_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_warp_affine_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_warp_affine_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_warp_perspective_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/kernels.openvx-core.host/vx_warp_perspective_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/tivx_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/tivx_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_array.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_array.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_context.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_context.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_convolution.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_convolution.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_debug.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_debug.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_delay.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_delay.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_distribution.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_distribution.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_error.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_error.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_graph.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_graph.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_graph_verify.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_graph_verify.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_image.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_image.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_kernel.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_kernel.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_log.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_log.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_lut.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_lut.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_matrix.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_matrix.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_meta_format.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_meta_format.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_module.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_module.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_node.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_node.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_node_api.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_node_api.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_obj_desc.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_obj_desc.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_objarray.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_objarray.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_objects.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_objects.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_parameter.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_parameter.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_pyramid.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_pyramid.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_reference.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_reference.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_remap.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_remap.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_scalar.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_scalar.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_target_kernel.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_target_kernel.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_target_kernel_instance.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_target_kernel_instance.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_threshold.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.framework/vx_threshold.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_event.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_event.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_init.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_init.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_ipc.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_ipc.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_mem.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_mem.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_mutex.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_mutex.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_platform.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_platform.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_platform_common.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_platform_common.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_queue.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_queue.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_target_config_x86.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_target_config_x86.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_task.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.platform.pc.windows/tivx_task.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.vxu/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.vxu/vx_utility.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/source.vxu/vx_utility.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/uc_sample_03.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/uc_sample_03.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/uc_sample_05.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/uc_sample_05.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/uc_sample_06.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/module/tools.sample_use_cases/uc_sample_06.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/op.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/optflow_00.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/optflow_01.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/optflow_pyrlk_5x5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/optflow_pyrlk_9x9.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/vx_conformance_tests_exe.exe" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/debug/vx_conformance_tests_exe.map" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/baboon.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_100_120_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_100_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_100_120_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_100_120_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_120_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_150_220_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_150_220_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_150_220_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_150_220_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_70_71_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_70_71_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_70_71_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_70_71_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_90_125_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_90_130_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_90_130_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_3x3_90_130_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_100_100_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_100_120_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_100_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_100_120_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_100_120_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_1200_1440_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_5x5_1200_1440_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_100_120_L1_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_100_120_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_100_120_L2_blurred_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_100_120_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_16000_19200_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_16000_19200_L2_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/canny_7x7_80_80_L1_lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/colors.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_0.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_3.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_30.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_fsc_5.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_0.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_3.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_30.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.04_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.10_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_3_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_3_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_3_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_5_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_5_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_5_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_7_3.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_7_5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/harriscorners/hc_msc_5.00_0.15_7_7.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/lena.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/lena_gray.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libc6xsim_X86_C66.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_conformance_engine.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_conformance_tests.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_conformance_tests_testmodule.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_framework.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_kernels_openvx_core.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_platform_pc_windows.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_sample_usecases.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_target_kernels_openvx_core.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvx_vxu.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/libvxlib_X86.a" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance.test_module/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance.test_module/vx_testmodule_lib.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance.test_module/vx_testmodule_lib.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance.test_module/vx_testmodule_module.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance.test_module/vx_testmodule_module.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_accumulate.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_accumulate.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_accumulatesquare.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_accumulatesquare.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_accumulateweighted.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_accumulateweighted.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_addsub.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_addsub.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_array.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_array.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_binop16s.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_binop16s.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_binop8u.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_binop8u.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_box3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_box3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_canny.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_canny.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_channelcombine.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_channelcombine.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_channelextract.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_channelextract.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convertcolor.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convertcolor.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convertdepth.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convertdepth.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convolution.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convolution.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convolve.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_convolve.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_dilate3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_dilate3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_eqhist.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_eqhist.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_erode3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_erode3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_fast.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_fast.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_gaussian3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_gaussian3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_gaussianpyramid.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_gaussianpyramid.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph_callbacks.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph_callbacks.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph_delay.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph_delay.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph_roi.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_graph_roi.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_halfscalegaussian.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_halfscalegaussian.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_harriscorners.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_harriscorners.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_histogram.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_histogram.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_integral.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_integral.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_laplacianpyramid.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_laplacianpyramid.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_logging.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_logging.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_lut.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_lut.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_magnitude.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_magnitude.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_main.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_main.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_matrix.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_matrix.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_meanstddev.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_meanstddev.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_median3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_median3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_minmaxloc.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_minmaxloc.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_multiply.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_multiply.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_nonlinearfilter.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_nonlinearfilter.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_not.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_not.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_object_array.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_object_array.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_optflowpyrlk.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_optflowpyrlk.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_phase.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_phase.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_remap.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_remap.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_scalar.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_scalar.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_scale.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_scale.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_smoke.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_smoke.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_sobel3x3.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_sobel3x3.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_threshold.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_threshold.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_usernode.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_usernode.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_vximage.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_vximage.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_warpaffine.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_warpaffine.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_warpperspective.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_conformance/test_warpperspective.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_bmp.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_bmp.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_engine.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_engine.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_image.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_image.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_mem.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_mem.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_utils.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_engine/test_utils.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_executable/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_executable/main.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/conformance_tests.test_executable/main.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_absdiff_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_absdiff_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_accumulate_square_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_accumulate_square_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_accumulate_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_accumulate_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_accumulate_weighted_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_accumulate_weighted_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_addsub_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_addsub_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_bitwise_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_bitwise_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_canny_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_canny_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_channel_combine_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_channel_combine_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_channel_extract_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_channel_extract_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_color_convert_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_color_convert_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_convert_depth_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_convert_depth_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_convole_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_convole_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_equalize_histogram_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_equalize_histogram_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_fast_corners_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_fast_corners_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_filter_3x3_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_filter_3x3_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_gaussian_pyramid_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_gaussian_pyramid_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_halfscale_gaussian_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_halfscale_gaussian_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_harris_corners_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_harris_corners_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_histogram_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_histogram_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_intgimg_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_intgimg_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_laplacian_pyramid_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_laplacian_pyramid_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_laplacian_reconstruct_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_laplacian_reconstruct_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_lut_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_lut_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_magnitude_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_magnitude_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_meanstddev_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_meanstddev_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_minmaxloc_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_minmaxloc_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_multiply_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_multiply_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_non_linear_filter_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_non_linear_filter_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_phase_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_phase_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_remap_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_remap_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_scale_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_scale_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_sobel3x3_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_sobel3x3_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_target_kernels_openvx_core.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_target_kernels_openvx_core.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_threshold_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_threshold_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_warp_affine_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_warp_affine_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_warp_perspective_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.c66x/vx_warp_perspective_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_absdiff_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_absdiff_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_accumulate_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_accumulate_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_accumulate_square_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_accumulate_square_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_accumulate_weighted_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_accumulate_weighted_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_addsub_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_addsub_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_bitwise_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_bitwise_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_canny_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_canny_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_channel_combine_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_channel_combine_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_channel_extract_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_channel_extract_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_color_convert_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_color_convert_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_convert_depth_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_convert_depth_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_convolve_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_convolve_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_equalize_histogram_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_equalize_histogram_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_fast_corners_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_fast_corners_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_filter_3x3_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_filter_3x3_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_gaussian_pyramid_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_gaussian_pyramid_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_halfscale_gaussian_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_halfscale_gaussian_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_harris_corners_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_harris_corners_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_histogram_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_histogram_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_intgimg_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_intgimg_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_kernels_openvx_core_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_kernels_openvx_core_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_laplacian_pyramid_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_laplacian_pyramid_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_laplacian_reconstruct_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_laplacian_reconstruct_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_lut_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_lut_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_magnitude_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_magnitude_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_meanstddev_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_meanstddev_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_minmaxloc_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_minmaxloc_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_multiply_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_multiply_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_non_linear_filter_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_non_linear_filter_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_phase_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_phase_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_remap_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_remap_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_scale_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_scale_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_sobel3x3_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_sobel3x3_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_threshold_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_threshold_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_warp_affine_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_warp_affine_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_warp_perspective_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/kernels.openvx-core.host/vx_warp_perspective_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/tivx_host.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/tivx_host.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_array.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_array.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_context.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_context.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_convolution.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_convolution.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_debug.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_debug.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_delay.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_delay.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_distribution.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_distribution.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_error.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_error.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_graph.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_graph.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_graph_verify.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_graph_verify.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_image.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_image.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_kernel.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_kernel.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_log.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_log.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_lut.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_lut.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_matrix.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_matrix.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_meta_format.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_meta_format.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_module.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_module.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_node.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_node.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_node_api.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_node_api.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_obj_desc.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_obj_desc.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_objarray.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_objarray.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_objects.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_objects.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_parameter.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_parameter.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_pyramid.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_pyramid.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_reference.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_reference.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_remap.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_remap.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_scalar.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_scalar.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_target.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_target.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_target_kernel.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_target_kernel.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_target_kernel_instance.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_target_kernel_instance.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_threshold.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.framework/vx_threshold.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_event.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_event.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_init.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_init.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_ipc.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_ipc.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_mem.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_mem.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_mutex.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_mutex.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_platform.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_platform.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_platform_common.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_platform_common.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_queue.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_queue.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_target_config_x86.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_target_config_x86.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_task.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.platform.pc.windows/tivx_task.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.vxu/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.vxu/vx_utility.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/source.vxu/vx_utility.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/.gitignore" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/uc_sample_03.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/uc_sample_03.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/uc_sample_05.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/uc_sample_05.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/uc_sample_06.dep" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/module/tools.sample_use_cases/uc_sample_06.o" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/optflow_00.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/optflow_01.bmp" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/optflow_pyrlk_5x5.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/optflow_pyrlk_9x9.txt" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/vx_conformance_tests_exe.exe" />
+		<Unit filename="../../../out/PC/X86/WINDOWS/release/vx_conformance_tests_exe.map" />
+		<Unit filename="../../../source/framework/concerto.mak" />
+		<Unit filename="../../../source/framework/tivx_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_array.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_context.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_convolution.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_delay.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_distribution.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_error.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_graph.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_graph_verify.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_image.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_kernel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_log.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_lut.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_meta_format.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_module.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_node.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_node_api.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_obj_desc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_objarray.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_objects.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_parameter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_pyramid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_reference.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_remap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_scalar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_target_kernel.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_target_kernel_instance.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/framework/vx_threshold.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/include/tivx_event.h" />
+		<Unit filename="../../../source/include/tivx_host.h" />
+		<Unit filename="../../../source/include/tivx_ipc.h" />
+		<Unit filename="../../../source/include/tivx_mutex.h" />
+		<Unit filename="../../../source/include/tivx_obj_desc_priv.h" />
+		<Unit filename="../../../source/include/tivx_objects.h" />
+		<Unit filename="../../../source/include/tivx_platform.h" />
+		<Unit filename="../../../source/include/tivx_queue.h" />
+		<Unit filename="../../../source/include/tivx_target.h" />
+		<Unit filename="../../../source/include/tivx_target_kernel_instance.h" />
+		<Unit filename="../../../source/include/tivx_target_kernel_priv.h" />
+		<Unit filename="../../../source/include/tivx_task.h" />
+		<Unit filename="../../../source/include/vx_array.h" />
+		<Unit filename="../../../source/include/vx_context.h" />
+		<Unit filename="../../../source/include/vx_convolution.h" />
+		<Unit filename="../../../source/include/vx_debug.h" />
+		<Unit filename="../../../source/include/vx_delay.h" />
+		<Unit filename="../../../source/include/vx_distribution.h" />
+		<Unit filename="../../../source/include/vx_error.h" />
+		<Unit filename="../../../source/include/vx_graph.h" />
+		<Unit filename="../../../source/include/vx_image.h" />
+		<Unit filename="../../../source/include/vx_internal.h" />
+		<Unit filename="../../../source/include/vx_kernel.h" />
+		<Unit filename="../../../source/include/vx_lut.h" />
+		<Unit filename="../../../source/include/vx_matrix.h" />
+		<Unit filename="../../../source/include/vx_meta_format.h" />
+		<Unit filename="../../../source/include/vx_module.h" />
+		<Unit filename="../../../source/include/vx_node.h" />
+		<Unit filename="../../../source/include/vx_objarray.h" />
+		<Unit filename="../../../source/include/vx_parameter.h" />
+		<Unit filename="../../../source/include/vx_pyramid.h" />
+		<Unit filename="../../../source/include/vx_reference.h" />
+		<Unit filename="../../../source/include/vx_remap.h" />
+		<Unit filename="../../../source/include/vx_scalar.h" />
+		<Unit filename="../../../source/include/vx_threshold.h" />
+		<Unit filename="../../../source/platform/pc/windows/concerto.mak" />
+		<Unit filename="../../../source/platform/pc/windows/tivx_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_ipc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_mutex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_platform.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_platform_common.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_platform_windows.h" />
+		<Unit filename="../../../source/platform/pc/windows/tivx_queue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_target_config_x86.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/pc/windows/tivx_task.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/concerto.mak" />
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_event.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_ipc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_mutex.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_platform.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_platform_common.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_queue.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_target_config_a15.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_target_config_dsp_eve.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_target_config_ipu1_0.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_target_config_ipu1_1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/bios/tivx_task.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../source/platform/vision_sdk/common/tivx_platform_vision_sdk.h" />
+		<Unit filename="../../../source/vxu/concerto.mak" />
+		<Unit filename="../../../source/vxu/vx_utility.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../target.mak" />
+		<Unit filename="../../../tools/PyTIOVX/README.txt" />
+		<Unit filename="../../../tools/PyTIOVX/setup.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx.egg-info/PKG-INFO" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx.egg-info/SOURCES.txt" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx.egg-info/dependency_links.txt" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx.egg-info/not-zip-safe" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx.egg-info/top_level.txt" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__init__.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/__init__.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/array.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/array_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/code_generate.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/context.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/context_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/convolution.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/convolution_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/distribution.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/distribution_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/enums.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/export.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/export_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/export_image.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/graph.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/graph_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/image.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/image_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/kernel.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/kernel_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/lut.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/lut_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/matrix.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/matrix_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/node.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/node_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/objectarray.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/objectarray_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/pyramid.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/pyramid_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/reference.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/reference_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/remap.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/remap_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/scalar.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/scalar_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/threshold.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/threshold_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/usecase_code.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/__pycache__/utils.cpython-35.pyc" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/array.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/array_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/code_generate.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/context.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/context_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/convolution.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/convolution_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/distribution.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/distribution_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/enums.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/export.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/export_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/export_image.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/graph.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/graph_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/image.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/image_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/kernel.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/kernel_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/lut.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/lut_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/matrix.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/matrix_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/node.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/node_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/objectarray.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/objectarray_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/pyramid.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/pyramid_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/reference.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/reference_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/remap.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/remap_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/scalar.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/scalar_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/threshold.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/threshold_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/usecase_code.py" />
+		<Unit filename="../../../tools/PyTIOVX/tiovx/utils.py" />
+		<Unit filename="../../../tools/newKernel.sh" />
+		<Unit filename="../../../tools/sample_kernel_wrappers/kernel_channel_combine.py" />
+		<Unit filename="../../../tools/sample_kernel_wrappers/kernel_channel_extract.py" />
+		<Unit filename="../../../tools/sample_kernel_wrappers/kernel_run_all.py" />
+		<Unit filename="../../../tools/sample_kernel_wrappers/tivx_kernel_channel_combine.h" />
+		<Unit filename="../../../tools/sample_kernel_wrappers/tivx_kernel_channel_extract.h" />
+		<Unit filename="../../../tools/sample_kernel_wrappers/vx_channel_combine_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_kernel_wrappers/vx_channel_combine_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_kernel_wrappers/vx_channel_extract_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_kernel_wrappers/vx_channel_extract_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_use_cases/concerto.mak" />
+		<Unit filename="../../../tools/sample_use_cases/uc_run_all.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_01.jpg" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_01.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_01_img.txt" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_02.jpg" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_02.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_02_img.txt" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_03.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_03.h" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_03.jpg" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_03.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_03_img.txt" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_04.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_05.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_05.h" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_05.jpg" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_05.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_05_img.txt" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_06.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_06.h" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_06.jpg" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_06.py" />
+		<Unit filename="../../../tools/sample_use_cases/uc_sample_06_img.txt" />
+		<Unit filename="../../../tools_path.mak" />
+		<Unit filename="../../test_conformance/concerto.mak" />
+		<Unit filename="../../test_conformance/shared_functions.h" />
+		<Unit filename="../../test_conformance/test_accumulate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_accumulatesquare.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_accumulateweighted.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_addsub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_array.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_binop16s.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_binop8u.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_box3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_canny.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_channelcombine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_channelextract.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_convertcolor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_convertdepth.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_convolution.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_convolve.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_dilate3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_eqhist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_erode3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_fast.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_gaussian3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_gaussianpyramid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_graph.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_graph_callbacks.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_graph_delay.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_graph_roi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_halfscalegaussian.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_harriscorners.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_histogram.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_integral.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_laplacianpyramid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_logging.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_lut.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_magnitude.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_main.h" />
+		<Unit filename="../../test_conformance/test_matrix.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_meanstddev.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_median3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_minmaxloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_module/concerto.mak" />
+		<Unit filename="../../test_conformance/test_module/vx_lib_testmodule.h" />
+		<Unit filename="../../test_conformance/test_module/vx_testmodule_lib.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_module/vx_testmodule_module.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_multiply.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_nonlinearfilter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_not.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_object_array.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_optflowpyrlk.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_phase.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_remap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_scalar.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_scale.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_smoke.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_sobel3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_threshold.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_usernode.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_vximage.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_warpaffine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_conformance/test_warpperspective.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_engine/concerto.mak" />
+		<Unit filename="../../test_engine/test.h" />
+		<Unit filename="../../test_engine/test_bmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_engine/test_bmp.h" />
+		<Unit filename="../../test_engine/test_engine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_engine/test_image.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_engine/test_image.h" />
+		<Unit filename="../../test_engine/test_list_helper.h" />
+		<Unit filename="../../test_engine/test_mem.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_engine/test_utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_engine/test_utils.h" />
+		<Unit filename="../concerto.mak" />
+		<Unit filename="../main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
