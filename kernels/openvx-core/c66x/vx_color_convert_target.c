@@ -7,11 +7,11 @@
  *******************************************************************************
  */
 
-#include <TI/tivx.h> 
+#include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_color_convert.h>
-#include <TI/tivx_target_kernel.h> 
+#include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernel_utils.h>
 
@@ -151,7 +151,7 @@ static vx_status tivxKernelColorConvert(
             if (VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBtoNV12_i8u_o8u((uint8_t *)src_addr[0],
-                    &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], &vxlib_dst1, 
+                    &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], &vxlib_dst1,
                     scratch, scratch_size);
             }
         }
@@ -168,7 +168,7 @@ static vx_status tivxKernelColorConvert(
             if (VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
-                    &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], 
+                    &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1],
                     &vxlib_dst1, (uint8_t *)dst_addr[2], &vxlib_dst2, scratch, scratch_size);
             }
         }
@@ -192,7 +192,7 @@ static vx_status tivxKernelColorConvert(
         else if ((VX_DF_IMAGE_RGBX == src_desc->format) && (VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
             status = VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u((uint8_t *)src_addr[0],
-                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], 
+                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1],
                 &vxlib_dst1, (uint8_t *)dst_addr[2], &vxlib_dst2);
         }
         else if ((VX_DF_IMAGE_RGBX == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
@@ -202,7 +202,7 @@ static vx_status tivxKernelColorConvert(
             if (VX_SUCCESS == status)
             {
                 status = VXLIB_colorConvert_RGBXtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
-                    &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], 
+                    &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1],
                     &vxlib_dst1, (uint8_t *)dst_addr[2], &vxlib_dst2, scratch, scratch_size);
             }
         }
@@ -262,7 +262,7 @@ static vx_status tivxKernelColorConvert(
         {
             vxlib_dst1.dim_x = dst_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_YUVXtoNV12_i8u_o8u((uint8_t *)src_addr[0],
-                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], 
+                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1],
                 &vxlib_dst1, 0);
         }
         else if ((VX_DF_IMAGE_YUYV == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
@@ -287,18 +287,18 @@ static vx_status tivxKernelColorConvert(
         {
             vxlib_dst1.dim_x = dst_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_YUVXtoNV12_i8u_o8u((uint8_t *)src_addr[0],
-                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], 
+                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1],
                 &vxlib_dst1, 1);
         }
         else if ((VX_DF_IMAGE_UYVY == src_desc->format) && (VX_DF_IMAGE_IYUV == dst_desc->format))
         {
             status = VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u((uint8_t *)src_addr[0],
-                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], 
+                &vxlib_src, (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1],
                 &vxlib_dst1, (uint8_t *)dst_addr[2], &vxlib_dst2, 1);
         }
         else if ((VX_DF_IMAGE_IYUV == src_desc->format) && (VX_DF_IMAGE_RGB == dst_desc->format))
         {
-            status = VXLIB_colorConvert_IYUVtoRGB_i8u_o8u((uint8_t *)src_addr[0], 
+            status = VXLIB_colorConvert_IYUVtoRGB_i8u_o8u((uint8_t *)src_addr[0],
                 &vxlib_src, (uint8_t *)src_addr[1], &vxlib_src1, (uint8_t *)src_addr[2],
                 &vxlib_src2, (uint8_t *)dst_addr[0], &vxlib_dst,
                 src_desc->color_space - VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE));
@@ -314,7 +314,7 @@ static vx_status tivxKernelColorConvert(
         {
             vxlib_dst1.dim_x = dst_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_IYUVtoNV12_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src,
-                (uint8_t *)src_addr[1], &vxlib_src1, (uint8_t *)src_addr[2], &vxlib_src2, 
+                (uint8_t *)src_addr[1], &vxlib_src1, (uint8_t *)src_addr[2], &vxlib_src2,
                 (uint8_t *)dst_addr[0], &vxlib_dst, (uint8_t *)dst_addr[1], &vxlib_dst1);
         }
         else if ((VX_DF_IMAGE_IYUV == src_desc->format) && (VX_DF_IMAGE_YUV4 == dst_desc->format))
@@ -386,8 +386,11 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
              ((VX_DF_IMAGE_RGBX == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||
              ((VX_DF_IMAGE_RGBX == src->format) && (VX_DF_IMAGE_IYUV == dst->format)) )
         {
-            temp_ptr = tivxMemAlloc(4 * dst->imagepatch_addr[0].dim_x *
-                sizeof(uint8_t));
+            uint32_t temp_ptr_size;
+
+            temp_ptr_size = 4 * dst->imagepatch_addr[0].stride_y * sizeof(uint8_t);
+
+            temp_ptr = tivxMemAlloc(temp_ptr_size);
 
             if (NULL == temp_ptr)
             {
@@ -395,10 +398,8 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
             }
             else
             {
-                memset(temp_ptr, 0, 4 * dst->imagepatch_addr[0].stride_y *
-                    sizeof(uint8_t));
-                tivxSetTargetKernelInstanceContext(kernel, temp_ptr,
-                    4 * dst->imagepatch_addr[0].stride_y * sizeof(uint8_t));
+                memset(temp_ptr, 0, temp_ptr_size);
+                tivxSetTargetKernelInstanceContext(kernel, temp_ptr, temp_ptr_size);
             }
         }
     }

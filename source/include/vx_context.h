@@ -105,6 +105,8 @@ typedef struct _vx_context {
     vx_bool             log_enabled;
     /*! \brief Lock to use for locking log print's */
     tivx_mutex          log_lock;
+    /*! \brief Lock to use for locking context */
+    tivx_mutex          lock;
     /*! \brief The performance counter enable toggle. */
     vx_bool             perf_enabled;
     /*! \brief The immediate mode border */
@@ -231,6 +233,23 @@ vx_bool ownContextGetKernelRemoveLock(vx_context context);
  */
 void ownContextSetKernelRemoveLock(vx_context context, vx_bool do_lock);
 
+/*!
+ * \brief Lock context
+ *
+ * \param context      [in] context
+ *
+ * \ingroup group_vx_context
+ */
+vx_status ownContextLock(vx_context context);
+
+/*!
+ * \brief Lock context
+ *
+ * \param context      [in] context
+ *
+ * \ingroup group_vx_context
+ */
+vx_status ownContextUnlock(vx_context context);
 
 #ifdef __cplusplus
 }

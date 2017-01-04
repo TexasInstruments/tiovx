@@ -82,7 +82,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
     }
     else
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
@@ -101,7 +101,7 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
             }
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
 
     return status;
@@ -147,6 +147,16 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
     return status;
 }
 
+vx_status ownContextLock(vx_context context)
+{
+    return tivxMutexLock(context->lock);
+}
+
+vx_status ownContextUnlock(vx_context context)
+{
+    return tivxMutexUnlock(context->lock);
+}
+
 vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
 {
     uint32_t ref_idx;
@@ -154,7 +164,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
 
     if (ownIsValidContext(context)==vx_true_e)
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
         {
@@ -167,7 +177,7 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
             }
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     return is_success;
 }
@@ -179,7 +189,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
 
     if (ownIsValidContext(context)==vx_true_e)
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(ref_idx=0; ref_idx < dimof(context->reftable); ref_idx++)
         {
@@ -192,7 +202,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
             }
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     return is_success;
 }
@@ -224,7 +234,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
     }
     else
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
@@ -243,7 +253,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
             status = VX_ERROR_NO_RESOURCES;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
 
     return status;
@@ -263,7 +273,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
     }
     else
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
@@ -282,7 +292,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
             status = VX_ERROR_INVALID_REFERENCE;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
 
     return status;
@@ -300,7 +310,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     }
     else
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         *is_found = vx_false_e;
 
@@ -322,7 +332,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
             }
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
 
     return status;
@@ -335,7 +345,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
     if( ownIsValidContext(context) == vx_true_e && num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS)
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         context->obj_desc_cmd->cmd_id = cmd;
         context->obj_desc_cmd->dst_target_id = target_id;
@@ -356,7 +366,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
             status = tivxEventWait(context->cmd_ack_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     else
     {
@@ -411,7 +421,11 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
             context->base.release_callback =
                 (tivx_reference_release_callback_f)vxReleaseContext;
 
-            status = tivxMutexCreate(&context->log_lock);
+            status = tivxMutexCreate(&context->lock);
+            if(status==VX_SUCCESS)
+            {
+                status = tivxMutexCreate(&context->log_lock);
+            }
             if(status==VX_SUCCESS)
             {
                 status = ownInitReference(&context->base, NULL, VX_TYPE_CONTEXT, NULL);
@@ -427,6 +441,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
                 }
                 if(status!=VX_SUCCESS)
                 {
+                    tivxMutexDelete(&context->lock);
                     tivxMutexDelete(&context->log_lock);
                 }
             }
@@ -540,6 +555,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             tivxMutexDelete(&context->base.lock);
 
             tivxMutexDelete(&context->log_lock);
+            tivxMutexDelete(&context->lock);
 
             memset(context, 0, sizeof(tivx_context_t));
 
@@ -822,7 +838,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
     if ((ownIsValidContext(context) == vx_true_e) &&
         (size != 0))
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for (i = 0; i < TIVX_CONTEXT_MAX_USER_STRUCTS; ++i)
         {
@@ -835,7 +851,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
             }
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     return type;
 }
@@ -845,7 +861,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == vx_true_e) && pKernelEnumId)
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         status = VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_kernel_id <= VX_KERNEL_MASK)
@@ -854,7 +870,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
             status = VX_SUCCESS;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     return status;
 }
@@ -864,7 +880,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     if ((ownIsValidContext(context) == vx_true_e) && pLibraryId)
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         status = VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_library_id <= VX_LIBRARY(VX_LIBRARY_MASK))
@@ -873,7 +889,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
             status = VX_SUCCESS;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     return status;
 }
@@ -883,7 +899,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
     vx_status status = VX_ERROR_INVALID_REFERENCE;
     if (ownIsValidContext(context) == vx_true_e)
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         switch (target_enum)
         {
@@ -912,7 +928,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImmediateModeTarget(vx_context context, 
                 break;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
     return status;
 }
@@ -928,7 +944,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
     }
     else
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
@@ -949,7 +965,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
             kernel = NULL;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
 
     return kernel;
@@ -966,7 +982,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
     }
     else
     {
-        ownReferenceLock(&context->base);
+        ownContextLock(context);
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
@@ -987,7 +1003,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
             kernel = NULL;
         }
 
-        ownReferenceUnlock(&context->base);
+        ownContextUnlock(context);
     }
 
     return kernel;

@@ -111,7 +111,7 @@ static vx_reference ownCreateRemapFromExemplar(
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 src_width, src_height, dst_width, dst_height;
-    vx_remap rem;
+    vx_remap rem = NULL;
 
     status |= vxQueryRemap(exemplar, VX_REMAP_SOURCE_WIDTH, &src_width,
         sizeof(src_width));
@@ -137,7 +137,7 @@ static vx_reference ownCreateMatrixFromExemplar(
     vx_status status = VX_SUCCESS;
     vx_size rows, columns;
     vx_enum type;
-    vx_matrix mat;
+    vx_matrix mat = NULL;
 
     status |= vxQueryMatrix(exemplar, VX_MATRIX_TYPE, &type, sizeof(type));
     status |= vxQueryMatrix(exemplar, VX_MATRIX_ROWS, &rows, sizeof(rows));
@@ -160,7 +160,7 @@ static vx_reference ownCreatePyramidFromExemplar(
     vx_float32 scale;
     vx_uint32 width, height;
     vx_df_image format;
-    vx_pyramid pmd;
+    vx_pyramid pmd = NULL;
 
     status |= vxQueryPyramid(exemplar, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
     status |= vxQueryPyramid(exemplar, VX_PYRAMID_SCALE, &scale, sizeof(scale));
@@ -183,7 +183,7 @@ static vx_reference ownCreateImageFromExemplar(
     vx_status status = VX_SUCCESS;
     vx_uint32 width, height;
     vx_df_image format;
-    vx_image img;
+    vx_image img = NULL;
 
     status |= vxQueryImage(exemplar, VX_IMAGE_WIDTH, &width, sizeof(width));
     status |= vxQueryImage(exemplar, VX_IMAGE_HEIGHT, &height, sizeof(height));
@@ -203,7 +203,7 @@ static vx_reference ownCreateArrayFromExemplar(
     vx_status status = VX_SUCCESS;
     vx_enum type;
     vx_size capacity;
-    vx_array arr;
+    vx_array arr = NULL;
 
     status |= vxQueryArray(exemplar, VX_ARRAY_ITEMTYPE, &type, sizeof(type));
     status |= vxQueryArray(exemplar, VX_ARRAY_CAPACITY, &capacity, sizeof(capacity));
@@ -221,7 +221,7 @@ static vx_reference ownCreateScalarFromExemplar(
 {
     vx_status status = VX_SUCCESS;
     vx_enum type;
-    vx_scalar sc;
+    vx_scalar sc = NULL;
 
     status |= vxQueryScalar(exemplar, VX_SCALAR_TYPE, &type, sizeof(type));
 
@@ -240,7 +240,7 @@ static vx_reference ownCreateDistributionFromExemplar(
     vx_size num_bins;
     vx_int32 offset;
     vx_uint32 range;
-    vx_distribution dist;
+    vx_distribution dist = NULL;
 
     status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_OFFSET, &offset, sizeof(offset));
     status |= vxQueryDistribution(exemplar, VX_DISTRIBUTION_RANGE, &range, sizeof(range));
@@ -260,7 +260,7 @@ static vx_reference ownCreateThresholdFromExemplar(
     vx_status status = VX_SUCCESS;
     vx_enum thr_type;
     vx_enum data_type;
-    vx_threshold thr;
+    vx_threshold thr = NULL;
 
     status |= vxQueryThreshold(exemplar, VX_THRESHOLD_DATA_TYPE, &data_type,
         sizeof(data_type));
@@ -280,7 +280,7 @@ static vx_reference ownCreateConvolutionFromExemplar(
 {
     vx_status status = VX_SUCCESS;
     vx_size rows, columns;
-    vx_convolution conv;
+    vx_convolution conv = NULL;
 
     status |= vxQueryConvolution(exemplar, VX_CONVOLUTION_ROWS, &rows, sizeof(rows));
     status |= vxQueryConvolution(exemplar, VX_CONVOLUTION_COLUMNS, &columns,

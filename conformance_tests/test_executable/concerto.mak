@@ -33,6 +33,7 @@ include $(PRELUDE)
 TARGET      := vx_conformance_tests_exe
 TARGETTYPE  := exe
 CSOURCES    := $(call all-c-files)
+LDIRS		:= $(TIOVX_PATH)/lib/PC/X86/WINDOWS/$(TARGET_BUILD)
 STATIC_LIBS := vx_conformance_tests vx_conformance_engine vx_conformance_tests_testmodule
 STATIC_LIBS += vx_vxu vx_framework
 STATIC_LIBS += vx_platform_pc_windows vx_framework 

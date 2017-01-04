@@ -32,7 +32,7 @@ VX_API_ENTRY void VX_API_CALL vxRegisterLogCallback(vx_context cntxt, vx_log_cal
 {
     if (ownIsValidContext(cntxt) == vx_true_e)
     {
-        ownReferenceLock(&cntxt->base);
+        ownContextLock(cntxt);
         if ((cntxt->log_callback == NULL) && (callback != NULL))
         {
             cntxt->log_enabled = vx_true_e;
@@ -44,7 +44,7 @@ VX_API_ENTRY void VX_API_CALL vxRegisterLogCallback(vx_context cntxt, vx_log_cal
             cntxt->log_enabled = vx_false_e;
         }
         cntxt->log_callback = callback;
-        ownReferenceUnlock(&cntxt->base);
+        ownContextUnlock(cntxt);
     }
 }
 

@@ -41,21 +41,6 @@ extern "C" {
  */
 #define TIVX_TASK_AFFINITY_ANY      (0xFFFFu)
 
-/*!
- * \brief Highest task priority for the OS
- *
- * \ingroup group_tivx_task
- */
-#define TIVX_TASK_PRIORITY_HIGHEST      (0u)
-
-/*!
- * \brief Lowest task priority for the OS
- *
- * \ingroup group_tivx_task
- */
-#define TIVX_TASK_PRIORITY_LOWEST       (16u)
-
-
 /*! \brief Entry point of task
  *
  *  \param target [in] target handle

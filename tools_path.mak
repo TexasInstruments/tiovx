@@ -46,3 +46,5 @@ VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_1_0_0_1
 STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
 BSP_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/vayu_drivers/bspdrivers_
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
+
+TIOVX_PATH := $(abspath .)

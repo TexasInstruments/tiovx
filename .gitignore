@@ -11,7 +11,7 @@ out/
 *.obj
 *.d
 *~
-lib
+*.lib
 package
 
 # Top-level generic files
@@ -19,6 +19,7 @@ tags
 TAGS
 !.gitignore
 !.mailmap
+!lib
 
 # stgit generated dirs
 patches-*

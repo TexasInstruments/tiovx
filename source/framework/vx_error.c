@@ -71,7 +71,7 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
     tivx_error_t *error = NULL;
     vx_size i = 0ul;
 
-    ownReferenceLock(&context->base);
+    ownContextLock(context);
 
     for (i = 0ul; i < dimof(context->reftable); i++)
     {
@@ -89,7 +89,7 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
         }
     }
 
-    ownReferenceUnlock(&context->base);
+    ownContextUnlock(context);
 
     return (vx_reference)error;
 }

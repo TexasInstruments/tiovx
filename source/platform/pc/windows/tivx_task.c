@@ -46,7 +46,7 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
         memset(params, 0, sizeof(tivx_task_create_params_t));
 
         params->core_affinity = TIVX_TASK_AFFINITY_ANY;
-        params->priority = TIVX_TASK_PRIORITY_LOWEST;
+        params->priority = TIVX_TASK_PRI_LOWEST;
     }
 }
 
