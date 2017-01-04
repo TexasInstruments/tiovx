@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK tivxAddKernelGassianPyramidValidate(vx_node node,
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_G_PYD_OUT_PYT_IDX],
                 VX_PYRAMID_HEIGHT, &h, sizeof(h));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_G_PYD_OUT_PYT_IDX],
-                VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
+                VX_PYRAMID_FORMAT, &fmt, sizeof(fmt));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_G_PYD_OUT_PYT_IDX],
                 VX_PYRAMID_LEVELS, &num_levels, sizeof(num_levels));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_G_PYD_OUT_PYT_IDX],
