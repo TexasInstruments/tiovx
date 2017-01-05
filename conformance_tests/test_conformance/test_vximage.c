@@ -1441,16 +1441,15 @@ TEST(Image, testAccessCopyWrite)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchDense[0];
-        VX_CALL( vxMapImagePatch(image, &rectPatch, 0, &map_id, &addrPatch, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchDense[0]);
-        VX_CALL( vxUnmapImagePatch(image, map_id));
     }
     /* Check (MAP) */
     {
         vx_rectangle_t rectFull = {0, 0, IMAGE_SIZE_X, IMAGE_SIZE_Y};
         vx_imagepatch_addressing_t addrFull;
         vx_uint8 *p = NULL, *pLine, *pPixel = NULL;
-        VX_CALL( vxMapImagePatch(image, &rectFull, 0, &map_id, &addrFull, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxMapImagePatch(image, &rectFull, 0, &map_id, &addrFull, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
         for (y = 0, pLine = p; y < IMAGE_SIZE_Y; y++, pLine += addrFull.stride_y) {
             for (x = 0, pPixel = pLine; x < IMAGE_SIZE_X; x++, pPixel += addrFull.stride_x) {
                 if ( (x<PATCH_ORIGIN_X) || (x>=PATCH_ORIGIN_X+PATCH_SIZE_X) ||
@@ -1474,16 +1473,15 @@ TEST(Image, testAccessCopyWrite)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchSparse[0];
-        VX_CALL( vxMapImagePatch(image, &rectPatch, 0, &map_id, &addrPatch, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchSparse[0]);
-        VX_CALL( vxUnmapImagePatch(image, map_id));
     }
     /* Check (MAP) */
     {
         vx_rectangle_t rectFull = {0, 0, IMAGE_SIZE_X, IMAGE_SIZE_Y};
         vx_imagepatch_addressing_t addrFull;
         vx_uint8 *p = NULL, *pLine, *pPixel = NULL;
-        VX_CALL( vxMapImagePatch(image, &rectFull, 0, &map_id, &addrFull, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxMapImagePatch(image, &rectFull, 0, &map_id, &addrFull, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
         for (y = 0, pLine = p; y < IMAGE_SIZE_Y; y++, pLine += addrFull.stride_y) {
             for (x = 0, pPixel = pLine; x < IMAGE_SIZE_X; x++, pPixel += addrFull.stride_x) {
                 if ( (x<PATCH_ORIGIN_X) || (x>=PATCH_ORIGIN_X+PATCH_SIZE_X) ||
@@ -1557,11 +1555,10 @@ TEST(Image, testAccessCopyRead)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchDense[0];
-        VX_CALL( vxMapImagePatch(image, &rectPatch, 0, &map_id, &addrPatch, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchDense[0]);
         ASSERT(addrPatch.stride_x == sizeof(vx_uint8));
         ASSERT(addrPatch.stride_y == PATCH_SIZE_X*sizeof(vx_uint8));
-        VX_CALL( vxUnmapImagePatch(image, map_id));
     }
     /* Check */
     for (y = 0; y < PATCH_SIZE_Y; y++) {
@@ -1578,11 +1575,10 @@ TEST(Image, testAccessCopyRead)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchSparse[0];
-        VX_CALL( vxMapImagePatch(image, &rectPatch, 0, &map_id, &addrPatch, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchSparse[0]);
         ASSERT(addrPatch.stride_x == 3*sizeof(vx_uint8));
         ASSERT(addrPatch.stride_y == 3*3*PATCH_SIZE_X*sizeof(vx_uint8));
-        VX_CALL( vxUnmapImagePatch(image, map_id));
     }
     /* Check */
     for (y = 0; y < PATCH_SIZE_Y; y++) {
@@ -1630,14 +1626,10 @@ TEST(Image, testAccessCopyWriteUniformImage)
     vx_uint32 roi_height = 128;
     vx_rectangle_t roi_rect = {0, 0, roi_width, roi_height};
     vx_uint8 *external_data = (vx_uint8 *)ct_alloc_mem(roi_width * roi_height * sizeof(vx_uint8));
-    status = vxMapImagePatch(image, &roi_rect, 0, &map_id, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
-    status = vxUnmapImagePatch(image, map_id);
+    status = vxCopyImagePatch(image, &roi_rect, 0, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
 
-    status = vxMapImagePatch(image, &roi_rect, 0, &map_id, &addr, (void **)&external_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
-    status = vxUnmapImagePatch(image, map_id);
+    status = vxCopyImagePatch(image, &roi_rect, 0, &addr, (void **)&external_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
 
     //test ROI image(from uniform image), behaviour must be equal to uniform image
@@ -1650,14 +1642,10 @@ TEST(Image, testAccessCopyWriteUniformImage)
     status = vxUnmapImagePatch(roi_image, map_id);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
 
-    status = vxMapImagePatch(roi_image, &roi_rect, 0, &map_id, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
-    status = vxUnmapImagePatch(roi_image, map_id);
+    status = vxCopyImagePatch(roi_image, &roi_rect, 0, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
 
-    status = vxMapImagePatch(roi_image, &roi_rect, 0, &map_id, &addr, (void **)&external_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
-    status = vxUnmapImagePatch(roi_image, map_id);
+    status = vxCopyImagePatch(roi_image, &roi_rect, 0, &addr, (void **)&external_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST);
     ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&image));
