@@ -147,8 +147,9 @@ static vx_size own_read_keypoints(const char* fileName_tmp, vx_keypoint_t** p_ol
 #if 1
     FILE* f = fopen(fileName, "rb");
 
+    ASSERT_(return 0, f);
     fseek(f, 0, SEEK_END);
-    ASSERT(f);
+
     sz = ftell(f);
     fseek(f, 0, SEEK_SET);
 
