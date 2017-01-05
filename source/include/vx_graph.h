@@ -180,7 +180,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
  * \param context   [in] context to use while sorting
  * \param nodes     [in/out] IN: Unosrted node, OUT: Sorted nodes
  * \param num_nodes [in] Number of nodes
- * \param has_cycles [out] vx_true_e: Graph has cycles and cannot be sorted
+ * \param has_cycle [out] vx_true_e: Graph has cycles and cannot be sorted
  *                         vx_false_e: Graph is acyclic and nodes[] contains the sorted nodes
  *
  * \ingroup group_vx_graph
