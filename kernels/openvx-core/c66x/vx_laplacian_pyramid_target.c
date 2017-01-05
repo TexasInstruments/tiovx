@@ -20,9 +20,9 @@ static tivx_target_kernel vx_laplacian_pyramid_target_kernel = NULL;
 typedef struct
 {
     tivx_obj_desc_image_t *img_obj_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
+    uint8_t *upsample_output;
     uint8_t *gauss_output;
-    uint8_t *hsg_output0;
-    uint8_t *hsg_output1;
+    uint8_t *hsg_output[2];
     uint32_t buff_size;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst, vxlib_low_out;
     VXLIB_bufParams2D_t vxlib_gauss0, vxlib_gauss1;
@@ -90,43 +90,50 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         tivxMemBufferMap(low_img->mem_ptr[0].target_ptr, low_img->mem_size[0],
             low_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
+        src = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_LPL_PMD_IN_IMG_IDX];
+
+        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+
+        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
+            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+
+        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
+
+        prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
+        prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
+        prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
+        prms->vxlib_src.data_type = VXLIB_UINT8;
+
         for (levels = 0; (levels < pmd->num_levels) && (VX_SUCCESS == status);
                 levels ++)
         {
-            src = (tivx_obj_desc_image_t *)obj_desc[
-                TIVX_KERNEL_LPL_PMD_IN_IMG_IDX];
+            uint32_t buf = levels & 1;
 
             dst = prms->img_obj_desc[levels];
 
-            src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
             dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
                 dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
 
-            tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-                src->mem_ptr[0].mem_type, VX_READ_ONLY);
             tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
             /* Valid rectangle is ignore here */
-            src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
             dst_addr = (int16_t *)((uint32_t)dst->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
 
-            prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            prms->vxlib_src.data_type = VXLIB_UINT8;
-
-            prms->vxlib_gauss0.dim_x = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_gauss0.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_gauss0.stride_y = dst->imagepatch_addr[0].dim_y;
+            /* Half scaled intermediate result */
+            prms->vxlib_gauss0.dim_x = dst->imagepatch_addr[0].dim_x / 2;
+            prms->vxlib_gauss0.dim_y = dst->imagepatch_addr[0].dim_y / 2;
+            prms->vxlib_gauss0.stride_y = dst->imagepatch_addr[0].dim_x / 2;
             prms->vxlib_gauss0.data_type = VXLIB_UINT8;
 
+            /* Full scale intermediate result (half scaled upsampled) */
             prms->vxlib_gauss1.dim_x = dst->imagepatch_addr[0].dim_x;
             prms->vxlib_gauss1.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_gauss1.stride_y = dst->imagepatch_addr[0].dim_y * 2;
+            prms->vxlib_gauss1.stride_y = dst->imagepatch_addr[0].dim_x;
             prms->vxlib_gauss1.data_type = VXLIB_UINT8;
 
             prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
@@ -134,56 +141,60 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
             prms->vxlib_dst.data_type = VXLIB_INT16;
 
-            prms->vxlib_low_out.dim_x = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_low_out.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_low_out.stride_y = dst->imagepatch_addr[0].stride_y;
-            prms->vxlib_low_out.data_type = VXLIB_INT16;
-
-            if (0u == levels)
-            {
-                status = VXLIB_channelCopy_1to1_i8u_o8u(
-                    src_addr, &prms->vxlib_src,
-                    prms->hsg_output0, &prms->vxlib_gauss0);
-            }
-            else
-            {
-                /* First do half scale gaussian filter */
-                status = VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(
-                    src_addr, &prms->vxlib_src,
-                    prms->hsg_output0, &prms->vxlib_gauss0,
-                    prms->hsg_output1, &prms->vxlib_gauss1, 0, 0);
-            }
+            /* First do half scale gaussian filter with included upsampled result */
+            status = VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(
+                src_addr, &prms->vxlib_src,
+                prms->hsg_output[buf], &prms->vxlib_gauss0,
+                prms->upsample_output, &prms->vxlib_gauss1, 0, 0);
 
             if (VXLIB_SUCCESS == status)
             {
+                /* Then do gaussian filter with * 4 multiply on upsampled result */
                 status = VXLIB_gaussian_5x5_br_i8u_o8u(
-                    prms->hsg_output0, &prms->vxlib_gauss0,
-                    prms->gauss_output,&prms->vxlib_gauss0, 8, 0, 0);
+                    prms->upsample_output, &prms->vxlib_gauss1,
+                    prms->gauss_output, &prms->vxlib_gauss1, 6, 0, 0);
             }
 
             if (VXLIB_SUCCESS == status)
             {
+                /* Then subtract gaussian filtered upsample from original of this level */
                 status = VXLIB_subtract_i8u_i8u_o16s(
-                    prms->hsg_output0, &prms->vxlib_gauss0,
-                    prms->gauss_output, &prms->vxlib_gauss0,
+                    src_addr, &prms->vxlib_src,
+                    prms->gauss_output, &prms->vxlib_gauss1,
                     dst_addr, &prms->vxlib_dst, VXLIB_CONVERT_POLICY_WRAP);
             }
 
-            if ((VXLIB_SUCCESS == status) &&
-                (levels == (pmd->num_levels - 1u)))
+            if (VXLIB_SUCCESS == status)
             {
-                dst_addr = (int16_t *)(
-                    (uint32_t)low_img->mem_ptr[0U].target_ptr +
-                    ownComputePatchOffset(0, 0,
-                    &low_img->imagepatch_addr[0]));
+                if(levels == (pmd->num_levels - 1u))
+                {
+                    prms->vxlib_low_out.dim_x = low_img->imagepatch_addr[0].dim_x;
+                    prms->vxlib_low_out.dim_y = low_img->imagepatch_addr[0].dim_y;
+                    prms->vxlib_low_out.stride_y = low_img->imagepatch_addr[0].stride_y;
+                    prms->vxlib_low_out.data_type = VXLIB_INT16;
 
-                status = VXLIB_convertDepth_i8u_o16s(prms->gauss_output,
-                        &prms->vxlib_gauss0, dst_addr, &prms->vxlib_low_out,
-                        0);
+                    dst_addr = (int16_t *)(
+                        (uint32_t)low_img->mem_ptr[0U].target_ptr +
+                        ownComputePatchOffset(0, 0,
+                        &low_img->imagepatch_addr[0]));
+
+                    status = VXLIB_convertDepth_i8u_o16s(
+                        prms->hsg_output[buf], &prms->vxlib_gauss0,
+                        dst_addr, &prms->vxlib_low_out, 0);
+                }
+                else
+                {
+                    /* Prepare for next level */
+                    src_addr = prms->hsg_output[buf];
+
+                    prms->vxlib_src.dim_x = prms->vxlib_gauss0.dim_x;
+                    prms->vxlib_src.dim_y = prms->vxlib_gauss0.dim_y;
+                    prms->vxlib_src.stride_y = prms->vxlib_gauss0.stride_y;
+
+                    memset(prms->upsample_output, 0, prms->vxlib_src.dim_x*prms->vxlib_src.dim_y);
+                }
             }
 
-            tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-                src->mem_ptr[0].mem_type, VX_READ_ONLY);
             tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
@@ -193,6 +204,9 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 break;
             }
         }
+
+        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
+            src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
         tivxMemBufferUnmap(low_img->mem_ptr[0].target_ptr, low_img->mem_size[0],
             low_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
@@ -237,44 +251,56 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
         {
             memset(prms, 0, sizeof(tivxLaplacianPyramidParams));
 
-            prms->buff_size = (img->imagepatch_addr[0].stride_y *
+            prms->buff_size = (img->imagepatch_addr[0].dim_x *
                 img->imagepatch_addr[0].dim_y);
 
-            prms->gauss_output = tivxMemAlloc(prms->buff_size);
+            prms->upsample_output = tivxMemAlloc(prms->buff_size);
 
-            if (NULL == prms->gauss_output)
+            if (NULL == prms->upsample_output)
             {
                 status = VX_ERROR_NO_MEMORY;
             }
 
             if (VX_SUCCESS == status)
             {
-                prms->hsg_output0 = tivxMemAlloc(prms->buff_size);
+                prms->gauss_output = tivxMemAlloc(prms->buff_size);
 
-                if (NULL == prms->hsg_output0)
+                if (NULL == prms->gauss_output)
                 {
                     status = VX_ERROR_NO_MEMORY;
+                    tivxMemFree(prms->upsample_output, prms->buff_size);
+                }
+            }
+
+            if (VX_SUCCESS == status)
+            {
+                prms->hsg_output[0] = tivxMemAlloc(prms->buff_size / 4);
+
+                if (NULL == prms->hsg_output[0])
+                {
+                    status = VX_ERROR_NO_MEMORY;
+                    tivxMemFree(prms->upsample_output, prms->buff_size);
                     tivxMemFree(prms->gauss_output, prms->buff_size);
                 }
             }
 
             if (VX_SUCCESS == status)
             {
-                prms->hsg_output1 = tivxMemAlloc(prms->buff_size);
+                prms->hsg_output[1] = tivxMemAlloc(prms->buff_size / 16);
 
-                if (NULL == prms->hsg_output1)
+                if (NULL == prms->hsg_output[1])
                 {
                     status = VX_ERROR_NO_MEMORY;
+                    tivxMemFree(prms->upsample_output, prms->buff_size);
                     tivxMemFree(prms->gauss_output, prms->buff_size);
-                    tivxMemFree(prms->hsg_output0, prms->buff_size);
+                    tivxMemFree(prms->hsg_output[0], prms->buff_size / 4);
                 }
                 else
                 {
-                    memset(prms->hsg_output0, 0, prms->buff_size);
-                    memset(prms->hsg_output1, 0, prms->buff_size);
-                    memset(prms->gauss_output, 0, prms->buff_size);
+                    memset(prms->upsample_output, 0, prms->buff_size);
                 }
             }
+
             if (VX_SUCCESS == status)
             {
                 tivxSetTargetKernelInstanceContext(kernel, prms,
@@ -323,17 +349,22 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxLaplacianPyramidParams) == size))
         {
-            if (NULL != prms->hsg_output0)
+
+            if (NULL != prms->upsample_output)
             {
-                tivxMemFree(prms->hsg_output0, prms->buff_size);
-            }
-            if (NULL != prms->hsg_output1)
-            {
-                tivxMemFree(prms->hsg_output1, prms->buff_size);
+                tivxMemFree(prms->upsample_output, prms->buff_size);
             }
             if (NULL != prms->gauss_output)
             {
                 tivxMemFree(prms->gauss_output, prms->buff_size);
+            }
+            if (NULL != prms->hsg_output[0])
+            {
+                tivxMemFree(prms->hsg_output[0], prms->buff_size / 4);
+            }
+            if (NULL != prms->hsg_output[1])
+            {
+                tivxMemFree(prms->hsg_output[1], prms->buff_size / 16);
             }
 
             tivxMemFree(prms, size);
