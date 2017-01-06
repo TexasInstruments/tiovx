@@ -169,6 +169,7 @@ static vx_status ownDestructImage(vx_reference ref)
 {
     tivx_obj_desc_image_t *obj_desc = NULL;
     uint16_t plane_idx;
+    vx_image image = (vx_image)ref;
 
     if(ref->type == VX_TYPE_IMAGE)
     {
@@ -189,6 +190,10 @@ static vx_status ownDestructImage(vx_reference ref)
                 }
             }
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+        }
+        if (NULL != image->parent)
+        {
+            ownReleaseReferenceInt((vx_reference *)&image->parent, VX_TYPE_IMAGE, VX_INTERNAL, NULL);
         }
     }
     return VX_SUCCESS;

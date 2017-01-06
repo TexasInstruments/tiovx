@@ -995,8 +995,8 @@ TEST_WITH_ARG(Image, testSwapImageHandle, SwapImageHandle_Arg, SWAP_IMAGE_HANDLE
             }
         }
 
-        VX_CALL(vxReleaseImage(&roi2));
         VX_CALL(vxReleaseImage(&roi1));
+        VX_CALL(vxReleaseImage(&roi2));
         ASSERT(roi1 == 0);
         ASSERT(roi2 == 0);
     }
