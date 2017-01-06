@@ -13,17 +13,17 @@
 				<Option working_dir="../../../out/PC/X86/WINDOWS/debug" />
 				<Option object_output="obj/Debug/" />
 				<Option type="1" />
-				<Option compiler="null" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
 				</Compiler>
 				<MakeCommands>
-					<Build command="" />
-					<CompileFile command="" />
-					<Clean command="" />
+					<Build command="gmake -s -j PROFILE=debug" />
+					<CompileFile command="gmake -s -j PROFILE=debug" />
+					<Clean command="gmake -s -j clean PROFILE=debug" />
 					<DistClean command="$make -f $makefile distclean$target" />
 					<AskRebuildNeeded command="" />
-					<SilentBuild command=" &gt; $(CMD_NULL)" />
+					<SilentBuild command="gmake -s -j PROFILE=debug &gt; $(CMD_NULL)" />
 				</MakeCommands>
 			</Target>
 			<Target title="Release">
@@ -31,7 +31,7 @@
 				<Option working_dir="../../../out/PC/X86/WINDOWS/release" />
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
-				<Option compiler="null" />
+				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
 				</Compiler>
@@ -39,12 +39,12 @@
 					<Add option="-s" />
 				</Linker>
 				<MakeCommands>
-					<Build command="" />
-					<CompileFile command="" />
-					<Clean command="" />
+					<Build command="gmake -s -j PROFILE=release" />
+					<CompileFile command="gmake -s -j PROFILE=release" />
+					<Clean command="gmake -s -j clean PROFILE=release" />
 					<DistClean command="$make -f $makefile distclean$target" />
 					<AskRebuildNeeded command="" />
-					<SilentBuild command=" &gt; $(CMD_NULL)" />
+					<SilentBuild command="gmake -s -j PROFILE=release &gt; $(CMD_NULL)" />
 				</MakeCommands>
 			</Target>
 		</Build>

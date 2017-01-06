@@ -206,6 +206,7 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
         (objarr->base.is_virtual == vx_false_e))
     {
         ref = objarr->ref[index];
+        ownIncrementReference(ref, VX_EXTERNAL);
     }
 
     return (ref);
