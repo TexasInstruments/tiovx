@@ -96,7 +96,6 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 
         if (context->log_callback == NULL)
         {
-            VX_PRINT(VX_ZONE_ERROR, "No callback is registered\n");
             ret = VX_ERROR_INVALID_VALUE;
         }
     }

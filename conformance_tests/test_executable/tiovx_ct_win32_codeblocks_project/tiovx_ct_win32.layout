@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_layout_file>
 	<ActiveTarget name="Debug" />
-	<File name="..\..\..\concerto\compilers\gcc.mak" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\..\test_conformance\test_convolution.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="917" topLine="17" />
-		</Cursor>
-	</File>
-	<File name="..\..\..\source\platform\pc\windows\tivx_init.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="552" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="..\..\..\source\framework\vx_pyramid.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="11268" topLine="345" />
-		</Cursor>
-	</File>
-	<File name="..\..\..\kernels\openvx-core\c66x\vx_target_kernels_openvx_core.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6188" topLine="115" />
+			<Cursor1 position="3047" topLine="67" />
 		</Cursor>
 	</File>
 	<File name="..\..\..\source\framework\vx_matrix.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -26,9 +11,9 @@
 			<Cursor1 position="0" topLine="0" />
 		</Cursor>
 	</File>
-	<File name="..\main.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\..\test_engine\test_engine.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="1500" topLine="12" />
+			<Cursor1 position="12416" topLine="448" />
 		</Cursor>
 	</File>
 	<File name="..\..\..\source\framework\vx_module.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
@@ -36,14 +21,64 @@
 			<Cursor1 position="3607" topLine="120" />
 		</Cursor>
 	</File>
-	<File name="..\..\test_conformance\test_vximage.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="..\..\..\source\framework\vx_node.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="82878" topLine="2409" />
+			<Cursor1 position="37661" topLine="1149" />
 		</Cursor>
 	</File>
 	<File name="..\..\..\source\framework\vx_context.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="13811" topLine="437" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\concerto\compilers\gcc.mak" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="917" topLine="17" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\source\framework\vx_convolution.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="7918" topLine="209" />
+		</Cursor>
+	</File>
+	<File name="..\..\test_conformance\test_smoke.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="26650" topLine="552" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\source\platform\pc\windows\tivx_init.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="552" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\source\framework\vx_parameter.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11758" topLine="211" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\source\framework\vx_pyramid.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="11268" topLine="345" />
+		</Cursor>
+	</File>
+	<File name="..\main.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1500" topLine="3" />
+		</Cursor>
+	</File>
+	<File name="..\..\test_conformance\test_vximage.c" open="0" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="82878" topLine="2409" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\source\framework\vx_reference.c" open="0" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="13245" topLine="492" />
+		</Cursor>
+	</File>
+	<File name="..\..\..\kernels\openvx-core\c66x\vx_target_kernels_openvx_core.c" open="0" top="0" tabpos="0" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="6188" topLine="115" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

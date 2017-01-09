@@ -231,10 +231,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
                 status = VX_ERROR_INVALID_PARAMETERS;
                 break;
         }
-        if (status != VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to set attribute on convolution! (%d)\n", status);
-        }
     }
     return status;
 }

@@ -326,14 +326,6 @@ vx_bool ownIsValidSpecificReference(vx_reference ref, vx_enum type)
         {
             ret = vx_true_e;
         }
-        else if (ref->type != VX_TYPE_CONTEXT)
-        {
-            VX_PRINT(VX_ZONE_ERROR, "Not a valid reference!\n");
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_WARNING, "Reference was NULL\n");
     }
     return ret;
 }
