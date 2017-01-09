@@ -274,6 +274,8 @@ static vx_status VX_CALLBACK take10_Kernel(vx_node node, const vx_reference *par
     return VX_SUCCESS;
 }
 
+static vx_kernel take10_kernel = 0;
+
 static void take10_node(vx_graph graph, vx_array in, vx_array out)
 {
     vx_kernel kernel = 0;
@@ -293,6 +295,9 @@ static void take10_node(vx_graph graph, vx_array in, vx_array out)
             take10_ParameterValidator,
             NULL,
             NULL), VX_TYPE_KERNEL);
+
+    take10_kernel = kernel;
+
     VX_CALL(vxAddParameterToKernel(kernel, 0, VX_INPUT,  VX_TYPE_ARRAY, VX_PARAMETER_STATE_REQUIRED));
     VX_CALL(vxAddParameterToKernel(kernel, 1, VX_OUTPUT, VX_TYPE_ARRAY, VX_PARAMETER_STATE_REQUIRED));
     VX_CALL(vxFinalizeKernel(kernel));
@@ -398,6 +403,7 @@ TEST(Graph, testVirtualArray)
     VX_CALL(vxReleaseNode(&n3));
     VX_CALL(vxReleaseNode(&n4));
     VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxRemoveKernel(take10_kernel));
 }
 
 
