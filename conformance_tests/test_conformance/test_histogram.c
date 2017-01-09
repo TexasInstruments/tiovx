@@ -279,7 +279,7 @@ TEST_WITH_ARG(Histogram, testOnRandom, format_arg,
 
             reverse_histogram(nbins, hist1);
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapDistribution(dist1, &map1, (void*)&hptr1, VX_WRITE_ONLY, mem_type, flags));
-            memcpy(hist1, hptr1, nbins*sizeof(hist1[0]));
+            memcpy(hptr1, hist1, nbins*sizeof(hist1[0]));
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapDistribution(dist1, map1));
             ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyDistribution(dist1, hist1r, VX_READ_ONLY, mem_type));
             COMPARE_HISTOGRAMS(equal, hist1, hist1r);
