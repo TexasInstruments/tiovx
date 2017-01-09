@@ -337,24 +337,25 @@ void ct_adjust_roi(CT_Image img, int left, int top, int right, int bottom)
     }
 }
 
-CT_Image ct_read_image(const char* fileName_tmp, int dcn)
+CT_Image ct_read_image(const char* fileName, int dcn)
 {
     FILE* f = 0;
     size_t sz;
     char* buf = 0;
     CT_Image image = 0;
-    char fileName[512];
+    char file[512];
 
-    if (!fileName_tmp)
+    if (!fileName)
     {
         CT_ADD_FAILURE("Image file name not specified\n");
         return 0;
     }
 
-    strcpy(fileName, ct_get_test_file_path());
-    strcat(fileName, fileName_tmp);
+    strncpy(file, ct_get_test_file_path(), 512);
+    sz = 512 - strlen(file);
+    strncat(file, fileName, sz);
 
-    f = fopen(fileName, "rb");
+    f = fopen(file, "rb");
     if (!f)
     {
         CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
@@ -382,22 +383,24 @@ CT_Image ct_read_image(const char* fileName_tmp, int dcn)
     return image;
 }
 
-void ct_write_image(const char* fileName_tmp, CT_Image image)
+void ct_write_image(const char* fileName, CT_Image image)
 {
     char* dotpos;
     int result = -1;
-    char fileName[512];
+    size_t size;
+    char file[512];
 
-    if (fileName_tmp)
+    if (fileName)
     {
-        strcpy(fileName, ct_get_test_file_path());
-        strcat(fileName, fileName_tmp);
+        strncpy(file, ct_get_test_file_path(), 512);
+        size = 512 - strlen(file);
+        strncat(file, fileName, size);
 
-        dotpos = strrchr(fileName, '.');
+        dotpos = strrchr(file, '.');
         if(dotpos &&
            (strcmp(dotpos, ".bmp") == 0 ||
             strcmp(dotpos, ".BMP") == 0))
-            result = ct_write_bmp(fileName, image);
+            result = ct_write_bmp(file, image);
         if( result < 0 )
             CT_ADD_FAILURE("Can not write image to \"%s\"", fileName);
     }

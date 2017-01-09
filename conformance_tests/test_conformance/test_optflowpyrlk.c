@@ -136,17 +136,17 @@ static CT_Image optflow_pyrlk_read_image(const char* fileName, int width, int he
     return image;
 }
 
-static vx_size own_read_keypoints(const char* fileName_tmp, vx_keypoint_t** p_old_points, vx_keypoint_t** p_new_points)
+static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_points, vx_keypoint_t** p_new_points)
 {
     size_t sz = 0;
     void* buf = 0;
-    char fileName[512];
+    char file[512];
 
-    strcpy(fileName, ct_get_test_file_path());
-    strcat(fileName, fileName_tmp);
+    strncpy(file, ct_get_test_file_path(), 512);
+    sz = 512 - strlen(file);
+    strncat(file, fileName, sz);
 #if 1
-    FILE* f = fopen(fileName, "rb");
-
+    FILE* f = fopen(file, "rb");
     ASSERT_(return 0, f);
     fseek(f, 0, SEEK_END);
 
