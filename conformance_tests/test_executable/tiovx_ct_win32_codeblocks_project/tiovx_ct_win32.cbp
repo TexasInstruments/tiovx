@@ -184,6 +184,9 @@
 		<Unit filename="../../../kernels/openvx-core/c66x/vx_non_linear_filter_target.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/vx_optical_flow_pyr_lk_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../kernels/openvx-core/c66x/vx_phase_target.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -296,6 +299,9 @@
 		<Unit filename="../../../kernels/openvx-core/host/vx_non_linear_filter_host.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_optical_flow_pyr_lk_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../kernels/openvx-core/host/vx_phase_host.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -345,6 +351,7 @@
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_minmaxloc.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_multiply.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_non_linear_filter.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_optical_flow_pyr_lk.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_phase.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_remap.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_scale.h" />
