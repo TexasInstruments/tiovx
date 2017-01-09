@@ -295,6 +295,29 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
     return status;
 }
 
+static void ownDelayInit(vx_delay delay, vx_size count, vx_enum type)
+{
+    vx_size i;
+
+    delay->type = type;
+    delay->count = count;
+    delay->pyr_num_levels = 0;
+    delay->index = 0;
+    ownResetDelayPrmPool(delay);
+    for(i=0; i<count; i++)
+    {
+        delay->set[i].next = NULL;
+        delay->set[i].node = NULL;
+        delay->set[i].index = 0;
+    }
+
+    /* assign refernce type specific callback's */
+    delay->base.destructor_callback = ownDestructDelay;
+    delay->base.mem_alloc_callback = ownAllocDelayBuffer;
+    delay->base.release_callback =
+        (tivx_reference_release_callback_f)vxReleaseDelay;
+}
+
 VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                               vx_reference exemplar,
                               vx_size count)
@@ -312,17 +335,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                     context, VX_TYPE_DELAY, VX_EXTERNAL, &context->base);
             if (vxGetStatus((vx_reference)delay) == VX_SUCCESS && delay->base.type == VX_TYPE_DELAY)
             {
-                delay->type = exemplar->type;
-                delay->count = count;
-                delay->pyr_num_levels = 0;
-                delay->index = 0;
-                ownResetDelayPrmPool(delay);
-
-                /* assign refernce type specific callback's */
-                delay->base.destructor_callback = ownDestructDelay;
-                delay->base.mem_alloc_callback = ownAllocDelayBuffer;
-                delay->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseDelay;
+                ownDelayInit(delay, count, exemplar->type);
 
                 for(i=0; i<count; i++)
                 {
@@ -356,18 +369,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                             delay->pyr_delay[level_idx] = pyrdelay;
                             if (vxGetStatus((vx_reference)pyrdelay) == VX_SUCCESS && pyrdelay->base.type == VX_TYPE_DELAY)
                             {
-                                pyrdelay->type = VX_TYPE_IMAGE;
-                                pyrdelay->count = count;
-                                pyrdelay->pyr_num_levels = 0;
-                                pyrdelay->index = 0;
-                                ownResetDelayPrmPool(pyrdelay);
-
-                                /* assign refernce type specific callback's */
-                                pyrdelay->base.destructor_callback = ownDestructDelay;
-                                pyrdelay->base.mem_alloc_callback = ownAllocDelayBuffer;
-                                pyrdelay->base.release_callback =
-                                    (tivx_reference_release_callback_f)vxReleaseDelay;
-
+                                ownDelayInit(pyrdelay, count, VX_TYPE_IMAGE);
                                 for (i = 0; i < count; i++)
                                 {
                                     ref = (vx_reference)vxGetPyramidLevel((vx_pyramid)delay->refs[i], (vx_uint32)level_idx);
