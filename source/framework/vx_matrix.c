@@ -190,6 +190,9 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
                 matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
+                obj_desc->mem_ptr.host_ptr = NULL;
+                obj_desc->mem_ptr.shared_ptr = NULL;
+
                 /* Allocate memory for matrix since matrix need to be
                    filled up with a pattern  */
                 status = ownAllocMatrixBuffer(&matrix->base);

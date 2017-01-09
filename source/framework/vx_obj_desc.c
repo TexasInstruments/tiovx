@@ -77,6 +77,8 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type)
 
         if(tmp_obj_desc->type==TIVX_OBJ_DESC_INVALID)
         {
+            memset(tmp_obj_desc, 0, sizeof(tivx_obj_desc_shm_entry_t));
+
             /* free entry found */
             tmp_obj_desc->obj_desc_id = idx;
             tmp_obj_desc->type = type;
