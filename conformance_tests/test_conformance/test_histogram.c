@@ -31,6 +31,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 
 static void reference_histogram(CT_Image src, int32_t* hist, int nbins, int offset, int range)

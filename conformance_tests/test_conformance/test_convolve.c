@@ -29,6 +29,7 @@
 #include "test_engine/test.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <string.h>
 
 #define MAX_CONV_SIZE 15
 

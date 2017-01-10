@@ -31,6 +31,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 
 static void reference_threshold(CT_Image src, CT_Image dst, vx_enum ttype, int ta, int tb, int true_val, int false_val)

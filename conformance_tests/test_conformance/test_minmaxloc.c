@@ -31,6 +31,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 
 typedef vx_coordinates2d_t Point;

@@ -30,6 +30,7 @@
 #include "test_bmp.h"
 
 #include <VX/vx.h>
+#include <string.h>
 
 // #define DEBUG_CT_IMAGE
 

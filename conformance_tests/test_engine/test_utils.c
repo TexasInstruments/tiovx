@@ -27,6 +27,7 @@
  */
 
 #include <math.h>
+#include <string.h>
 #include "test.h"
 
 // As for OpenVX 1.0 both of following defines result in udefined behavior:

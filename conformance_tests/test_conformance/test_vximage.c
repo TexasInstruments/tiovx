@@ -1441,7 +1441,7 @@ TEST(Image, testAccessCopyWrite)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchDense[0];
-        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void *)p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchDense[0]);
     }
     /* Check (MAP) */
@@ -1473,7 +1473,7 @@ TEST(Image, testAccessCopyWrite)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchSparse[0];
-        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void *)p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchSparse[0]);
     }
     /* Check (MAP) */
@@ -1555,7 +1555,7 @@ TEST(Image, testAccessCopyRead)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchDense[0];
-        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void *)p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchDense[0]);
         ASSERT(addrPatch.stride_x == sizeof(vx_uint8));
         ASSERT(addrPatch.stride_y == PATCH_SIZE_X*sizeof(vx_uint8));
@@ -1575,7 +1575,7 @@ TEST(Image, testAccessCopyRead)
                                                 VX_SCALE_UNITY, VX_SCALE_UNITY,
                                                 1, 1 };
         vx_uint8 *p = &localPatchSparse[0];
-        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL( vxCopyImagePatch(image, &rectPatch, 0, &addrPatch, (void *)p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
         ASSERT(p == &localPatchSparse[0]);
         ASSERT(addrPatch.stride_x == 3*sizeof(vx_uint8));
         ASSERT(addrPatch.stride_y == 3*3*PATCH_SIZE_X*sizeof(vx_uint8));
@@ -1626,11 +1626,13 @@ TEST(Image, testAccessCopyWriteUniformImage)
     vx_uint32 roi_height = 128;
     vx_rectangle_t roi_rect = {0, 0, roi_width, roi_height};
     vx_uint8 *external_data = (vx_uint8 *)ct_alloc_mem(roi_width * roi_height * sizeof(vx_uint8));
-    status = vxCopyImagePatch(image, &roi_rect, 0, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
+    //Write is not be allowed for uniformimage
+    status = vxCopyImagePatch(image, &roi_rect, 0, &addr, (void *)external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, status);
 
-    status = vxCopyImagePatch(image, &roi_rect, 0, &addr, (void **)&external_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
+    //ok to read
+    status = vxCopyImagePatch(image, &roi_rect, 0, &addr, (void *)external_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     //test ROI image(from uniform image), behaviour must be equal to uniform image
     vx_image roi_image = 0;
@@ -1642,11 +1644,11 @@ TEST(Image, testAccessCopyWriteUniformImage)
     status = vxUnmapImagePatch(roi_image, map_id);
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
 
-    status = vxCopyImagePatch(roi_image, &roi_rect, 0, &addr, (void **)&external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
+    status = vxCopyImagePatch(roi_image, &roi_rect, 0, &addr, (void *)external_data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_PARAMETERS, status);
 
-    status = vxCopyImagePatch(roi_image, &roi_rect, 0, &addr, (void **)&external_data, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, status);
+    status = vxCopyImagePatch(roi_image, &roi_rect, 0, &addr, (void *)external_data, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
 
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&image));
     EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&roi_image));

@@ -27,6 +27,7 @@
  */
 
 #include <math.h>
+#include <string.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
 

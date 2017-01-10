@@ -29,6 +29,7 @@
 #include "test_engine/test.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <string.h>
 
 
 TESTCASE(LUT, CT_VXContext, ct_setup_vx_context, 0)

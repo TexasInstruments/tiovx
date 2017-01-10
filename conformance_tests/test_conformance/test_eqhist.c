@@ -31,6 +31,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <stdlib.h>
+#include <string.h>
 #include <limits.h>
 
 static void reference_eqhist(CT_Image src, CT_Image dst)
