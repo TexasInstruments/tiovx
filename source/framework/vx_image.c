@@ -1093,7 +1093,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
                 {
                     if (parent->subimages[subimage_idx] == this_image)
                     {
-                        ownDecrementReference(&parent->base, VX_INTERNAL);
                         parent->subimages[subimage_idx] = NULL;
                         break;
                     }
