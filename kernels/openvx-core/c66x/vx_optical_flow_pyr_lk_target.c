@@ -325,7 +325,8 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
         window_dimension_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX];
         old_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX];
         window_dimension_value = window_dimension_desc->data.size;
-        list_length = prevpts_desc->num_items;
+
+        list_length = prevpts_desc->capacity;
 
         tivxGetObjDescList(old_pyramid_desc->obj_desc_id,
             (tivx_obj_desc_t **)img_obj_desc_old, old_pyramid_desc->num_levels);
