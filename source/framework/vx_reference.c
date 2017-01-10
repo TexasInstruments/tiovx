@@ -149,6 +149,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
         ref->is_virtual = vx_false_e;
         ref->obj_desc = NULL;
         ref->lock = NULL;
+        ref->is_accessible = vx_false_e;
 
         ownReferenceSetScope(ref, scope);
 

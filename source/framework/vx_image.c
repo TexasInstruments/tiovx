@@ -541,6 +541,14 @@ static vx_status ownCopyAndMapCheckParams(
             status = VX_ERROR_NOT_SUPPORTED;
             vxAddLogEntry(&image->base, status, "Can't write to constant data, only read!\n");
         }
+        if (image->base.is_virtual == vx_true_e
+            &&
+            image->base.is_accessible == vx_false_e
+            )
+        {
+            /* cannot be accessed by app */
+            status = VX_ERROR_OPTIMIZED_AWAY;
+        }
     }
 
     return status;
@@ -1623,6 +1631,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
     if (ownIsValidImage(image) == vx_false_e)
     {
         status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    if(status == VX_SUCCESS)
+    {
+        if (image->base.is_virtual == vx_true_e
+            &&
+            image->base.is_accessible == vx_false_e
+            )
+        {
+            /* cannot be accessed by app */
+            status = VX_ERROR_OPTIMIZED_AWAY;
+        }
     }
 
     if(status == VX_SUCCESS)

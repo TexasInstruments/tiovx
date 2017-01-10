@@ -137,6 +137,11 @@ typedef struct _vx_reference {
     /*! \brief This indicates if the object is virtual or not */
     vx_bool is_virtual;
 
+    /*! \brief Can this reference be accessed by user application
+     *         Used for virtual reference's only
+     */
+    vx_bool is_accessible;
+
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
 } tivx_reference_t;
