@@ -561,10 +561,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
 
             g_context_handle = NULL;
         }
-        else
-        {
-            VX_PRINT(VX_ZONE_WARNING, "Context still has %u holders\n", ownTotalReferenceCount(&context->base));
-        }
     }
     else
     {
