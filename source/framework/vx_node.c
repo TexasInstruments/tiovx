@@ -153,6 +153,19 @@ static vx_status ownRemoveNodeInt(vx_node *n)
     return status;
 }
 
+static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible)
+{
+    vx_uint32 i;
+
+    for(i=0; i<num_params ; i++)
+    {
+        if( params[i] != NULL && params[i]->is_virtual)
+        {
+            params[i]->is_accessible = is_accessible;
+        }
+    }
+}
+
 vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
 {
     vx_status status = VX_SUCCESS;
@@ -323,13 +336,13 @@ vx_status ownNodeUserKernelExecute(vx_node node)
             if(node->kernel->function && !node->kernel->is_target_kernel)
             {
                 tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc;
+                uint32_t num_params = node->kernel->signature.num_parameters;
 
                 if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
                 {
                     vx_reference params[TIVX_KERNEL_MAX_PARAMS];
                     vx_reference parent_ref[TIVX_KERNEL_MAX_PARAMS];
                     uint32_t i, n;
-                    uint32_t num_params = node->kernel->signature.num_parameters;
 
                     for(i=0; i<num_params ; i++)
                     {
@@ -367,13 +380,21 @@ vx_status ownNodeUserKernelExecute(vx_node node)
                             }
                         }
 
+                        ownNodeUserKernelSetParamsAccesible(params, num_params, vx_true_e);
+
                         status |= node->kernel->function(node, params, num_params);
+
+                        ownNodeUserKernelSetParamsAccesible(params, num_params, vx_false_e);
                     }
                 }
                 else
                 {
+                    ownNodeUserKernelSetParamsAccesible(node->parameters, num_params, vx_true_e);
+
                     /* user has given user kernel function so call it */
-                    status = node->kernel->function(node, node->parameters, node->kernel->signature.num_parameters);
+                    status = node->kernel->function(node, node->parameters, num_params);
+
+                    ownNodeUserKernelSetParamsAccesible(node->parameters, num_params, vx_false_e);
                 }
             }
             else

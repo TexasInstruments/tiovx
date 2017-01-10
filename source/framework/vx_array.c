@@ -410,6 +410,15 @@ vx_status VX_API_CALL vxCopyArrayRange(
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
+        if (arr->base.is_virtual == vx_true_e
+            &&
+            arr->base.is_accessible == vx_false_e
+            )
+        {
+            /* cannot be accessed by app */
+            status = VX_ERROR_OPTIMIZED_AWAY;
+        }
+
         if (VX_MEMORY_TYPE_HOST != user_mem_type)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -486,6 +495,15 @@ vx_status VX_API_CALL vxMapArrayRange(
     }
     else
     {
+        if (arr->base.is_virtual == vx_true_e
+            &&
+            arr->base.is_accessible == vx_false_e
+            )
+        {
+            /* cannot be accessed by app */
+            status = VX_ERROR_OPTIMIZED_AWAY;
+        }
+
         /* Not of condition */
         if (!((range_end > range_start) &&
               (range_end <= obj_desc->num_items)))
@@ -551,6 +569,15 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
     }
     else
     {
+        if (arr->base.is_virtual == vx_true_e
+            &&
+            arr->base.is_accessible == vx_false_e
+            )
+        {
+            /* cannot be accessed by app */
+            status = VX_ERROR_OPTIMIZED_AWAY;
+        }
+
         if ((map_id >= TIVX_ARRAY_MAX_MAPS) ||
             (arr->maps[map_id].map_addr == NULL) ||
             (arr->maps[map_id].map_size == 0))
