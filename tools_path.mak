@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+TIOVX_PATH := $(abspath .)
+
 VSDK_INSTALL_PATH := $(abspath ../../..)
 VSDK_TOOLS_PATH := $(VSDK_INSTALL_PATH)/ti_components
 
@@ -39,12 +41,9 @@ CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/c6000_7_4_2
 ARP32CGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 endif
 
-
 BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
 VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_1_0_0_1
 
 STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
-BSP_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/vayu_drivers/bspdrivers_
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
 
-TIOVX_PATH := $(abspath .)
