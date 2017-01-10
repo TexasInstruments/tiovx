@@ -53,7 +53,7 @@ typedef struct
 
     VXLIB_bufParams2D_t vxlib_src;
 
-    vx_int32 rad;
+    vx_float32 rad;
 } tivxHarrisCornersParams;
 
 static vx_status tivxHarrisCCalcSobel(tivxHarrisCornersParams *prms,
@@ -160,10 +160,17 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         }
         if (VXLIB_SUCCESS == status)
         {
-            status = VXLIB_harrisCornersNMS_i32f(prms->hcd_corners,
-                prms->hcd_strength, num_corners_hcd, prms->nms_corners,
-                prms->nms_strength, num_corners_hcd, &num_corners,
-                prms->nms_scratch, prms->nms_scratch_size, prms->rad, NULL);
+            if(prms->rad >= 2.0f)
+            {
+                status = VXLIB_harrisCornersNMS_i32f(prms->hcd_corners,
+                    prms->hcd_strength, num_corners_hcd, prms->nms_corners,
+                    prms->nms_strength, num_corners_hcd, &num_corners,
+                    prms->nms_scratch, prms->nms_scratch_size, prms->rad, NULL);
+            }
+            else
+            {
+                num_corners = num_corners_hcd;
+            }
         }
 
         if (status != VXLIB_SUCCESS)
@@ -366,46 +373,54 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->nms_corners_size = img->imagepatch_addr[0].dim_x *
-                    img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
-
-                prms->nms_corners = tivxMemAlloc(prms->nms_corners_size);
-                if (NULL == prms->nms_corners)
-                {
-                    status = VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if (VX_SUCCESS == status)
-            {
-                prms->nms_strength_size = img->imagepatch_addr[0].dim_x *
-                    img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
-
-                prms->nms_strength = tivxMemAlloc(prms->nms_strength_size);
-                if (NULL == prms->nms_strength)
-                {
-                    status = VX_ERROR_NO_MEMORY;
-                }
-            }
-
-            if (VX_SUCCESS == status)
-            {
                 vx_float32 radius = sc_dist->data.f32;
 
-                prms->rad = (vx_int32)radius;
-                if (prms->rad <= 0)
+                prms->rad = radius;
+                if (prms->rad >= 2.0f)
                 {
-                    prms->rad = 1;
+                    /* We need to run the NMS function, so allocate buffers */
+
+                    prms->nms_scratch_size = (img->imagepatch_addr[0].dim_x *
+                        img->imagepatch_addr[0].dim_y) +
+                            (((uint32_t)prms->rad+1)*2)*(((uint32_t)prms->rad+1)*2)*2;
+
+                    prms->nms_scratch = tivxMemAlloc(prms->nms_scratch_size);
+                    if (NULL == prms->nms_scratch)
+                    {
+                        status = VX_ERROR_NO_MEMORY;
+                    }
+
+                    if (VX_SUCCESS == status)
+                    {
+                        prms->nms_corners_size = img->imagepatch_addr[0].dim_x *
+                            img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
+
+                        prms->nms_corners = tivxMemAlloc(prms->nms_corners_size);
+                        if (NULL == prms->nms_corners)
+                        {
+                            status = VX_ERROR_NO_MEMORY;
+                        }
+                    }
+
+                    if (VX_SUCCESS == status)
+                    {
+                        prms->nms_strength_size = img->imagepatch_addr[0].dim_x *
+                            img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
+
+                        prms->nms_strength = tivxMemAlloc(prms->nms_strength_size);
+                        if (NULL == prms->nms_strength)
+                        {
+                            status = VX_ERROR_NO_MEMORY;
+                        }
+                    }
                 }
-
-                prms->nms_scratch_size = (img->imagepatch_addr[0].dim_x *
-                    img->imagepatch_addr[0].dim_y) +
-                        ((prms->rad+1)*2)*((prms->rad+1)*2)*2;
-
-                prms->nms_scratch = tivxMemAlloc(prms->nms_scratch_size);
-                if (NULL == prms->nms_scratch)
+                else
                 {
-                    status = VX_ERROR_NO_MEMORY;
+                    /* We don't need to run the NMS operation since distance is within 3x3 neighborhood which "detect" already covers */
+                    /* Set output pointers to be same as input pointers */
+
+                    prms->nms_corners = prms->hcd_corners;
+                    prms->nms_strength = prms->hcd_strength;
                 }
             }
         }
@@ -555,20 +570,23 @@ static void tivxHarrisCFreeMem(tivxHarrisCornersParams *prms)
             tivxMemFree(prms->hcd_strength, prms->hcd_strength_size);
             prms->hcd_strength = NULL;
         }
-        if (NULL != prms->nms_corners)
+        if(prms->rad >= 2.0f)
         {
-            tivxMemFree(prms->nms_corners, prms->nms_corners_size);
-            prms->nms_corners = NULL;
-        }
-        if (NULL != prms->nms_strength)
-        {
-            tivxMemFree(prms->nms_strength, prms->nms_strength_size);
-            prms->nms_strength = NULL;
-        }
-        if (NULL != prms->nms_scratch)
-        {
-            tivxMemFree(prms->nms_scratch, prms->nms_scratch_size);
-            prms->nms_scratch = NULL;
+            if (NULL != prms->nms_corners)
+            {
+                tivxMemFree(prms->nms_corners, prms->nms_corners_size);
+                prms->nms_corners = NULL;
+            }
+            if (NULL != prms->nms_strength)
+            {
+                tivxMemFree(prms->nms_strength, prms->nms_strength_size);
+                prms->nms_strength = NULL;
+            }
+            if (NULL != prms->nms_scratch)
+            {
+                tivxMemFree(prms->nms_scratch, prms->nms_scratch_size);
+                prms->nms_scratch = NULL;
+            }
         }
 
         tivxMemFree(prms, sizeof(tivxHarrisCornersParams));
