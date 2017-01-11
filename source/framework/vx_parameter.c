@@ -229,7 +229,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetParameterByIndex(vx_node node, vx_uint32
             if(status == VX_SUCCESS)
             {
                 /* if it was a valid reference then get the type from it */
-                vxQueryReference(value, VX_REF_ATTRIBUTE_TYPE, &type, sizeof(type));
+                vxQueryReference(value, VX_REFERENCE_TYPE, &type, sizeof(type));
                 VX_PRINT(VX_ZONE_PARAMETER, "Query returned type %08x for ref "VX_FMT_REF"\n", type, value);
 
                 /* Check that signature type matches reference type*/

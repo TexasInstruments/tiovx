@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -93,14 +93,14 @@ TEST(SmokeTest, test_vxReleaseReference)
     {
         /* test context reference */
         ref = (vx_reference)context;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)context;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
     }
 
@@ -109,14 +109,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_graph graph = 0;
         EXPECT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
         ref = (vx_reference)graph;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)graph;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseGraph(&graph));
@@ -135,14 +135,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         EXPECT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
         EXPECT_VX_OBJECT(node = vxAddNode(graph, src1, src2, VX_CONVERT_POLICY_WRAP, dst), VX_TYPE_NODE);
         ref = (vx_reference)node;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)node;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseImage(&src1));
@@ -157,14 +157,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_array array = 0;
         EXPECT_VX_OBJECT(array = vxCreateArray(context, VX_TYPE_KEYPOINT, 32), VX_TYPE_ARRAY);
         ref = (vx_reference)array;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)array;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseArray(&array));
@@ -175,14 +175,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_convolution convolution = 0;
         EXPECT_VX_OBJECT(convolution = vxCreateConvolution(context, 5, 5), VX_TYPE_CONVOLUTION);
         ref = (vx_reference)convolution;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)convolution;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseConvolution(&convolution));
@@ -193,14 +193,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_distribution distribution = 0;
         EXPECT_VX_OBJECT(distribution = vxCreateDistribution(context, 32, 0, 255), VX_TYPE_DISTRIBUTION);
         ref = (vx_reference)distribution;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)distribution;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseDistribution(&distribution));
@@ -211,14 +211,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_image image = 0;
         EXPECT_VX_OBJECT(image = vxCreateImage(context, 320, 240, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ref = (vx_reference)image;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)image;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseImage(&image));
@@ -229,14 +229,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_lut lut = 0;
         EXPECT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 127), VX_TYPE_LUT);
         ref = (vx_reference)lut;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)lut;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseLUT(&lut));
@@ -247,14 +247,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_graph graph = 0;
         EXPECT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
         ref = (vx_reference)graph;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)graph;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseGraph(&graph));
@@ -265,14 +265,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_matrix matrix = 0;
         EXPECT_VX_OBJECT(matrix = vxCreateMatrix(context, VX_TYPE_FLOAT32, 32, 32), VX_TYPE_MATRIX);
         ref = (vx_reference)matrix;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)matrix;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseMatrix(&matrix));
@@ -283,14 +283,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_pyramid pyramid = 0;
         EXPECT_VX_OBJECT(pyramid = vxCreatePyramid(context, 3, VX_SCALE_PYRAMID_HALF, 320, 240, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
         ref = (vx_reference)pyramid;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)pyramid;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleasePyramid(&pyramid));
@@ -301,14 +301,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_remap remap = 0;
         EXPECT_VX_OBJECT(remap = vxCreateRemap(context, 320, 240, 160, 120), VX_TYPE_REMAP);
         ref = (vx_reference)remap;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)remap;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseRemap(&remap));
@@ -320,14 +320,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_uint32 val = 5;
         EXPECT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT32, &val), VX_TYPE_SCALAR);
         ref = (vx_reference)scalar;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)scalar;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseScalar(&scalar));
@@ -338,14 +338,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_threshold threshold = 0;
         EXPECT_VX_OBJECT(threshold = vxCreateThreshold(context, VX_THRESHOLD_TYPE_BINARY, VX_TYPE_UINT8), VX_TYPE_THRESHOLD);
         ref = (vx_reference)threshold;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)threshold;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseThreshold(&threshold));
@@ -358,14 +358,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         EXPECT_VX_OBJECT(exemplar = vxCreateImage(context, 320, 240, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         EXPECT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)exemplar, 5), VX_TYPE_DELAY);
         ref = (vx_reference)delay;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)delay;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseImage(&exemplar));
@@ -377,14 +377,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         vx_kernel kernel = 0;
         EXPECT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_ADD), VX_TYPE_KERNEL);
         ref = (vx_reference)kernel;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)kernel;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseKernel(&kernel));
@@ -397,14 +397,14 @@ TEST(SmokeTest, test_vxReleaseReference)
         EXPECT_VX_OBJECT(kernel = vxGetKernelByEnum(context, VX_KERNEL_ADD), VX_TYPE_KERNEL);
         EXPECT_VX_OBJECT(parameter = vxGetKernelParameterByIndex(kernel, 0), VX_TYPE_PARAMETER);
         ref = (vx_reference)parameter;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count0, sizeof(ref_count0)), VX_SUCCESS);
         VX_CALL(vxRetainReference(ref));
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 1);
         VX_CALL(vxReleaseReference(&ref));
         ref = (vx_reference)parameter;
         ref_count1 = 0;
-        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REF_ATTRIBUTE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
+        ASSERT_EQ_VX_STATUS(vxQueryReference(ref, VX_REFERENCE_COUNT, (void*)&ref_count1, sizeof(ref_count1)), VX_SUCCESS);
         ASSERT_EQ_INT(ref_count1 - ref_count0, 0);
 
         VX_CALL(vxReleaseKernel(&kernel));
@@ -433,8 +433,8 @@ TEST(SmokeTest, test_vxRetainReference)
 
     image_ref = (vx_reference)image;
     graph_ref = (vx_reference)graph;
-    ASSERT_EQ_VX_STATUS(vxQueryReference(image_ref, VX_REF_ATTRIBUTE_COUNT, (void*)&image_count, sizeof(image_count)), VX_SUCCESS);
-    ASSERT_EQ_VX_STATUS(vxQueryReference(graph_ref, VX_REF_ATTRIBUTE_COUNT, (void*)&graph_count, sizeof(graph_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference(image_ref, VX_REFERENCE_COUNT, (void*)&image_count, sizeof(image_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference(graph_ref, VX_REFERENCE_COUNT, (void*)&graph_count, sizeof(graph_count)), VX_SUCCESS);
     ASSERT_EQ_INT(image_count, 1);
     ASSERT_EQ_INT(graph_count, 1);
 
@@ -445,8 +445,8 @@ TEST(SmokeTest, test_vxRetainReference)
 
     image_ref = (vx_reference)image;
     graph_ref = (vx_reference)graph;
-    ASSERT_EQ_VX_STATUS(vxQueryReference(image_ref, VX_REF_ATTRIBUTE_COUNT, (void*)&image_count, sizeof(image_count)), VX_SUCCESS);
-    ASSERT_EQ_VX_STATUS(vxQueryReference(graph_ref, VX_REF_ATTRIBUTE_COUNT, (void*)&graph_count, sizeof(graph_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference(image_ref, VX_REFERENCE_COUNT, (void*)&image_count, sizeof(image_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference(graph_ref, VX_REFERENCE_COUNT, (void*)&graph_count, sizeof(graph_count)), VX_SUCCESS);
     ASSERT_EQ_INT(image_count, 2);
     ASSERT_EQ_INT(graph_count, 2);
 
@@ -460,8 +460,8 @@ TEST(SmokeTest, test_vxRetainReference)
 
     image_ref = (vx_reference)image;
     graph_ref = (vx_reference)graph;
-    ASSERT_EQ_VX_STATUS(vxQueryReference(image_ref, VX_REF_ATTRIBUTE_COUNT, (void*)&image_count, sizeof(image_count)), VX_SUCCESS);
-    ASSERT_EQ_VX_STATUS(vxQueryReference(graph_ref, VX_REF_ATTRIBUTE_COUNT, (void*)&graph_count, sizeof(graph_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference(image_ref, VX_REFERENCE_COUNT, (void*)&image_count, sizeof(image_count)), VX_SUCCESS);
+    ASSERT_EQ_VX_STATUS(vxQueryReference(graph_ref, VX_REFERENCE_COUNT, (void*)&graph_count, sizeof(graph_count)), VX_SUCCESS);
     ASSERT_EQ_INT(image_count, 1);
     ASSERT_EQ_INT(graph_count, 1);
 
@@ -523,7 +523,7 @@ TEST(SmokeTest, test_vxSetReferenceName)
     char* actual_name = NULL;
 
     VX_CALL(vxSetReferenceName((vx_reference)image, image_name));
-    VX_CALL(vxQueryReference((vx_reference)image, VX_REF_ATTRIBUTE_NAME, &actual_name, sizeof(actual_name)));
+    VX_CALL(vxQueryReference((vx_reference)image, VX_REFERENCE_NAME, &actual_name, sizeof(actual_name)));
 
     ASSERT(0 == strcmp(image_name, actual_name));
 

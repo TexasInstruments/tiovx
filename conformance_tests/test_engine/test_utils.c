@@ -161,7 +161,7 @@ int ct_assert_reference_impl(vx_reference ref, enum vx_type_e expect_type, vx_st
         }
     }
 
-    s = vxQueryReference(ref, VX_REF_ATTRIBUTE_TYPE, &ref_type, sizeof(ref_type));
+    s = vxQueryReference(ref, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type));
 
     if (s == VX_ERROR_INVALID_REFERENCE)
     {

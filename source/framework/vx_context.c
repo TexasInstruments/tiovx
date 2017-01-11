@@ -772,7 +772,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDirective(vx_reference reference, vx_enum d
     vx_context context;
     vx_enum ref_type;
 
-    status = vxQueryReference(reference, VX_REF_ATTRIBUTE_TYPE, &ref_type, sizeof(ref_type));
+    status = vxQueryReference(reference, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type));
     if (status == VX_SUCCESS)
     {
         if (ref_type == VX_TYPE_CONTEXT)

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -270,7 +270,7 @@ typedef struct _vx_remap *vx_remap;
  */
 typedef struct _vx_array *vx_array;
 
-/*! \brief The ObjectArray Object. ObjectArray is a strongly-typed container of OpenVX data-objects. 
+/*! \brief The ObjectArray Object. ObjectArray is a strongly-typed container of OpenVX data-objects.
  * \ingroup group_object_array
  */
 typedef struct _vx_object_array *vx_object_array;
@@ -294,12 +294,12 @@ typedef enum _vx_bool_e {
 } vx_bool;
 
 /*!
- * \brief This object is used by output validation functions to specify the meta data 
- * of the expected output data object. 
- * \note When the actual output object of the user node is virtual, the information 
- * given through the vx_meta_format object allows the OpenVX framework to automatically 
- * create the data object when meta data were not specified by the application at object 
- * creation time. 
+ * \brief This object is used by output validation functions to specify the meta data
+ * of the expected output data object.
+ * \note When the actual output object of the user node is virtual, the information
+ * given through the vx_meta_format object allows the OpenVX framework to automatically
+ * create the data object when meta data were not specified by the application at object
+ * creation time.
  * \ingroup group_user_kernels
  */
 typedef struct _vx_meta_format* vx_meta_format;
@@ -733,7 +733,7 @@ enum vx_target_e {
     /*! \brief Target, explicitly specified by its (case-insensitive) name string. */
     VX_TARGET_STRING = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_TARGET) + 0x0001,
     /*! \brief Start of Vendor specific target enumerates. */
-    VX_TARGET_VENDOR_BEGIN = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_TARGET) + 0x1000, 
+    VX_TARGET_VENDOR_BEGIN = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_TARGET) + 0x1000,
 };
 
 /*! \brief The reference attributes list.
@@ -741,11 +741,11 @@ enum vx_target_e {
  */
 enum vx_reference_attribute_e {
     /*! \brief Returns the reference count of the object. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
-    VX_REF_ATTRIBUTE_COUNT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x0,
+    VX_REFERENCE_COUNT = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x0,
     /*! \brief Returns the <tt>\ref vx_type_e</tt> of the reference. Read-only. Use a <tt>\ref vx_enum</tt> parameter. */
-    VX_REF_ATTRIBUTE_TYPE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x1,
+    VX_REFERENCE_TYPE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x1,
     /*! \brief Used to query the reference for its name. Read-write. Use a <tt>\ref *vx_char</tt> parameter. */
-    VX_REF_ATTRIBUTE_NAME = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x2,
+    VX_REFERENCE_NAME = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_REFERENCE) + 0x2,
 };
 
 /*! \brief A list of context attributes.
@@ -768,8 +768,8 @@ enum vx_context_attribute_e {
     VX_CONTEXT_EXTENSIONS_SIZE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0x6,
     /*! \brief Retrieves the extensions string. Read-only.
      * This is a space-separated string of extension names. Each OpenVX official extension has a unique identifier,
-     * comprised of capital letters, numbers and the underscore character, prefixed with "KHR_", for example "KHR_NEW_FEATURE". 
-     * Use a <tt>\ref vx_char</tt> pointer allocated to the size returned from <tt>\ref VX_CONTEXT_EXTENSIONS_SIZE</tt>. 
+     * comprised of capital letters, numbers and the underscore character, prefixed with "KHR_", for example "KHR_NEW_FEATURE".
+     * Use a <tt>\ref vx_char</tt> pointer allocated to the size returned from <tt>\ref VX_CONTEXT_EXTENSIONS_SIZE</tt>.
      */
     VX_CONTEXT_EXTENSIONS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0x7,
     /*! \brief The maximum width or height of a convolution matrix.
@@ -799,14 +799,14 @@ enum vx_context_attribute_e {
      */
     VX_CONTEXT_UNIQUE_KERNEL_TABLE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xB,
     /*! \brief The unsupported border mode policy for immediate mode functions. Read-only.
-     *  
+     *
      * \details Graph mode functions are unaffected by this attribute. Use a <tt>\ref vx_enum</tt> as parameter.
      * \note The assumed default value for immediate mode functions is <tt>\ref VX_BORDER_POLICY_DEFAULT_TO_UNDEFINED</tt>.
      */
     VX_CONTEXT_IMMEDIATE_BORDER_POLICY = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xC,
     /*! \brief The dimension of the largest nonlinear filter supported. See <tt>\ref vxNonLinearFilterNode</tt>.
-     * \details The implementation must support all dimensions (height or width, not necessarily the same) 
-     * up to the value of this attribute.  The lowest value that must be supported for this attribute is 9. 
+     * \details The implementation must support all dimensions (height or width, not necessarily the same)
+     * up to the value of this attribute.  The lowest value that must be supported for this attribute is 9.
      * Read-only. Use a <tt>\ref vx_size</tt> parameter.
      */
     VX_CONTEXT_NONLINEAR_MAX_DIMENSION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_CONTEXT) + 0xd,
@@ -844,8 +844,8 @@ enum vx_node_attribute_e {
     VX_NODE_STATUS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x0,
     /*! \brief Queries the performance of the node execution.
      * The accuracy of timing information is platform dependent and also depends on the graph
-     * optimizations. Read-only. 
-     * \note Performance tracking must have been enabled. See <tt>\ref vx_directive_e</tt>. 
+     * optimizations. Read-only.
+     * \note Performance tracking must have been enabled. See <tt>\ref vx_directive_e</tt>.
      */
     VX_NODE_PERFORMANCE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x1,
     /*! \brief Gets or sets the border mode of the node.
@@ -866,15 +866,15 @@ enum vx_node_attribute_e {
      * Read-only. Use a <tt>\ref vx_uint32</tt> parameter.
      */
     VX_NODE_PARAMETERS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x5,
-    /*! \brief Indicates whether the node is replicated. Read-only. 
+    /*! \brief Indicates whether the node is replicated. Read-only.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
     VX_NODE_IS_REPLICATED = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x6,
-    /*! \brief Indicates the replicated parameters. Read-only. 
+    /*! \brief Indicates the replicated parameters. Read-only.
      * Use a <tt>\ref vx_bool</tt>* parameter.
      */
     VX_NODE_REPLICATE_FLAGS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x7,
-    /*! \brief Indicates the behavior with respect to the valid rectangle. Read-only. 
+    /*! \brief Indicates the behavior with respect to the valid rectangle. Read-only.
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
     VX_NODE_VALID_RECT_RESET = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x8,
@@ -914,7 +914,7 @@ enum vx_image_attribute_e {
     VX_IMAGE_RANGE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0x5,
     /*! \brief Queries an image for its total number of bytes. Read-only. Use a <tt>\ref vx_size</tt> parameter. */
     VX_IMAGE_SIZE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0x6,
-    /*! \brief Queries memory type if created using vxCreateImageFromHandle. If vx_image was not created using 
+    /*! \brief Queries memory type if created using vxCreateImageFromHandle. If vx_image was not created using
         vxCreateImageFromHandle, VX_MEMORY_TYPE_NONE is returned. Use a <tt>\ref vx_memory_type_e</tt> parameter. */
     VX_IMAGE_MEMORY_TYPE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_IMAGE) + 0x7,
 };
@@ -949,11 +949,11 @@ enum vx_distribution_attribute_e {
     VX_DISTRIBUTION_DIMENSIONS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DISTRIBUTION) + 0x0,
     /*! \brief Indicates the start of the values to use (inclusive). Read-only. Use a <tt>\ref vx_int32</tt> parameter. */
     VX_DISTRIBUTION_OFFSET = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DISTRIBUTION) + 0x1,
-    /*! \brief Indicates the total number of the consecutive values of the distribution interval. */ 
+    /*! \brief Indicates the total number of the consecutive values of the distribution interval. */
     VX_DISTRIBUTION_RANGE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DISTRIBUTION) + 0x2,
     /*! \brief Indicates the number of bins. Read-only. Use a <tt>\ref vx_size</tt> parameter. */
     VX_DISTRIBUTION_BINS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DISTRIBUTION) + 0x3,
-    /*! \brief Indicates the width of a bin. Equal to the range divided by the number of bins. If the range is not a 
+    /*! \brief Indicates the width of a bin. Equal to the range divided by the number of bins. If the range is not a
      * multiple of the number of bins, it is not valid. Read-only. Use a <tt>\ref vx_uint32</tt> parameter.  */
     VX_DISTRIBUTION_WINDOW = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DISTRIBUTION) + 0x4,
     /*! \brief Indicates the total size of the distribution in bytes. Read-only. Use a <tt>\ref vx_size</tt> parameter. */
@@ -1002,7 +1002,7 @@ enum vx_matrix_attribute_e {
     VX_MATRIX_COLUMNS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_MATRIX) + 0x2,
     /*! \brief The total size of the matrix in bytes. Read-only. Use a <tt>\ref vx_size</tt> parameter. */
     VX_MATRIX_SIZE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_MATRIX) + 0x3,
-    /*! \brief The origin of the matrix with a default value of [floor(VX_MATRIX_COLUMNS/2), 
+    /*! \brief The origin of the matrix with a default value of [floor(VX_MATRIX_COLUMNS/2),
          floor(VX_MATRIX_ROWS/2)]. Read-only. Use a <tt>\ref vx_coordinates2d_t</tt> parameter. */
     VX_MATRIX_ORIGIN = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_MATRIX) + 0x4,
     /*! \brief The pattern of the matrix. See <tt>\ref vx_pattern_e </tt>. Read-only. Use a <tt>\ref vx_enum</tt> parameter. */
@@ -1173,9 +1173,9 @@ enum vx_non_linear_filter_e {
     /*! \brief Nonlinear median filter. */
     VX_NONLINEAR_FILTER_MEDIAN = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NONLINEAR) + 0x0,
     /*! \brief Nonlinear Erode. */
-    VX_NONLINEAR_FILTER_MIN = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NONLINEAR) + 0x1 , 
+    VX_NONLINEAR_FILTER_MIN = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NONLINEAR) + 0x1 ,
     /*! \brief Nonlinear Dilate. */
-    VX_NONLINEAR_FILTER_MAX = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NONLINEAR) + 0x2, 
+    VX_NONLINEAR_FILTER_MAX = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NONLINEAR) + 0x2,
 };
 
 /*! \brief An enumeration of matrix patterns. See <tt>\ref vxCreateMatrixFromPattern </tt>

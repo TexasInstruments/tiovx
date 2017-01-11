@@ -99,9 +99,9 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
     vx_meta_format meta = metas[OWN_PARAM_OUTPUT];
 
     vx_enum in_ref_type = VX_TYPE_INVALID;
-    VX_CALL_(return VX_ERROR_INVALID_PARAMETERS, vxQueryReference(input, VX_REF_ATTRIBUTE_TYPE, &in_ref_type, sizeof(vx_enum)));
+    VX_CALL_(return VX_ERROR_INVALID_PARAMETERS, vxQueryReference(input, VX_REFERENCE_TYPE, &in_ref_type, sizeof(vx_enum)));
     vx_enum out_ref_type = VX_TYPE_INVALID;
-    VX_CALL_(return VX_ERROR_INVALID_PARAMETERS, vxQueryReference(output, VX_REF_ATTRIBUTE_TYPE, &out_ref_type, sizeof(vx_enum)));
+    VX_CALL_(return VX_ERROR_INVALID_PARAMETERS, vxQueryReference(output, VX_REFERENCE_TYPE, &out_ref_type, sizeof(vx_enum)));
 
     if (in_ref_type == out_ref_type)
     {

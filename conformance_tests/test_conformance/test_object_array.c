@@ -99,9 +99,9 @@ static void own_check_meta(vx_reference item, vx_reference ref)
 {
     vx_enum ref_type, item_type;
 
-    VX_CALL(vxQueryReference(ref, VX_REF_ATTRIBUTE_TYPE, &ref_type, sizeof(ref_type)));
+    VX_CALL(vxQueryReference(ref, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type)));
 
-    VX_CALL(vxQueryReference(item, VX_REF_ATTRIBUTE_TYPE, &item_type, sizeof(item_type)));
+    VX_CALL(vxQueryReference(item, VX_REFERENCE_TYPE, &item_type, sizeof(item_type)));
 
     ASSERT(item_type == ref_type);
 

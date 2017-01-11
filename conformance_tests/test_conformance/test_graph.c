@@ -1361,7 +1361,7 @@ static void ref_replicate_op(vx_context context, vx_reference input1, vx_referen
     vx_size levels = 0;
     vx_enum type = VX_TYPE_INVALID;
 
-    VX_CALL(vxQueryReference(input1, VX_REF_ATTRIBUTE_TYPE, &type, sizeof(type)));
+    VX_CALL(vxQueryReference(input1, VX_REFERENCE_TYPE, &type, sizeof(type)));
 
     if (type == VX_TYPE_PYRAMID)
     {
@@ -1496,7 +1496,7 @@ static void tst_replicate_op(vx_context context, vx_reference input1, vx_referen
     vx_size levels = 0;
     vx_enum type = VX_TYPE_INVALID;
 
-    VX_CALL(vxQueryReference(input1, VX_REF_ATTRIBUTE_TYPE, &type, sizeof(type)));
+    VX_CALL(vxQueryReference(input1, VX_REFERENCE_TYPE, &type, sizeof(type)));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -1654,7 +1654,7 @@ static void check_replicas(vx_reference ref, vx_reference tst)
     vx_size tst_levels = 0;
     vx_enum type = VX_TYPE_INVALID;
 
-    VX_CALL(vxQueryReference(ref, VX_REF_ATTRIBUTE_TYPE, &type, sizeof(type)));
+    VX_CALL(vxQueryReference(ref, VX_REFERENCE_TYPE, &type, sizeof(type)));
 
     if (type == VX_TYPE_PYRAMID)
     {
