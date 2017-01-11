@@ -69,6 +69,9 @@ typedef struct _tivx_queue_t {
   tivx_mutex lock;
   /**< Queue lock semaphore  */
 
+  void *context;
+  /**< Private context of queue handle */
+
   uint32_t flags;
   /**< Controls how APIs behave internally, i.e blocking wait or non-blocking */
 

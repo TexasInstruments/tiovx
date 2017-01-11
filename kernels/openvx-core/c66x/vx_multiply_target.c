@@ -75,15 +75,15 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
            Assuming valid Roi is same for src0 and src1 images */
         rect = src0->valid_roi;
 
-        src0_addr = (uint8_t *)((uint32_t)src0->mem_ptr[0U].target_ptr +
+        src0_addr = (uint8_t *)((uintptr_t)src0->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src0->imagepatch_addr[0U]));
-        src1_addr = (uint8_t *)((uint32_t)src1->mem_ptr[0U].target_ptr +
+        src1_addr = (uint8_t *)((uintptr_t)src1->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src1->imagepatch_addr[0U]));
 
         /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uint32_t)dst->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0]));
 

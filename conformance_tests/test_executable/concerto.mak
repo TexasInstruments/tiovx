@@ -33,13 +33,24 @@ include $(PRELUDE)
 TARGET      := vx_conformance_tests_exe
 TARGETTYPE  := exe
 CSOURCES    := $(call all-c-files)
+
+ifeq ($(TARGET_OS),LINUX)
+  ifeq ($(TARGET_FAMILY),X86)
+  LDIRS		:= $(TIOVX_PATH)/lib/PC/X86/LINUX/$(TARGET_BUILD)
+  endif
+endif
+
+ifeq ($(TARGET_OS),WINDOWS)
 LDIRS		:= $(TIOVX_PATH)/lib/PC/X86/WINDOWS/$(TARGET_BUILD)
+endif
+
 STATIC_LIBS := vx_conformance_tests vx_conformance_engine vx_conformance_tests_testmodule
 STATIC_LIBS += vx_vxu vx_framework
-STATIC_LIBS += vx_platform_pc_windows vx_framework 
+STATIC_LIBS += vx_platform_pc vx_framework 
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
 STATIC_LIBS += vx_framework 
 STATIC_LIBS += vxlib_X86 c6xsim_X86_C66
+
 
 include $(FINALE)
 

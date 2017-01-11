@@ -45,7 +45,7 @@ void *ct_alloc_mem(size_t size)
         {
             /* First word stores the size of the memory allocated */
             *(uint32_t*)ptr = size;
-            ptr = (void *)((uint32_t)ptr + CT_MEM_HEADER_SIZE);
+            ptr = (void *)((uintptr_t)ptr + CT_MEM_HEADER_SIZE);
         }
     }
 
@@ -58,7 +58,7 @@ void ct_free_mem(void *ptr)
 
     if (NULL != ptr)
     {
-        ptr = (void *)((uint32_t)ptr - CT_MEM_HEADER_SIZE);
+        ptr = (void *)((uintptr_t)ptr - CT_MEM_HEADER_SIZE);
         size = *(uint32_t*)ptr;
         tivxMemFree(ptr, size);
     }

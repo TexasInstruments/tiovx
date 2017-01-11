@@ -91,7 +91,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             arr->mem_ptr.mem_type, VX_WRITE_ONLY);
 
         /* Valid rectangle is ignore here */
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
 
         vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;

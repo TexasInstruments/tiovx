@@ -76,15 +76,15 @@ static vx_status tivxKernelAddSub(
            Assuming valid Roi is same for src0 and src1 images */
         rect = src0_desc->valid_roi;
 
-        src0_addr = (uint8_t *)((uint32_t)src0_desc->mem_ptr[0U].target_ptr +
+        src0_addr = (uint8_t *)((uintptr_t)src0_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src0_desc->imagepatch_addr[0U]));
-        src1_addr = (uint8_t *)((uint32_t)src1_desc->mem_ptr[0U].target_ptr +
+        src1_addr = (uint8_t *)((uintptr_t)src1_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src1_desc->imagepatch_addr[0U]));
 
         /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 

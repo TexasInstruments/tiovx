@@ -58,11 +58,11 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
            Assuming valid Roi is same for src0 and src1 images */
         rect = src_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src_desc->imagepatch_addr[0U]));
 
-        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0U]));
 
@@ -139,7 +139,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
     void *temp_ptr;
     tivx_obj_desc_image_t *src_desc;
     tivx_obj_desc_scalar_t *gsize_desc;
-    int32_t gsize_value;
+    int32_t gsize_value = 0;
 
     if (num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
     {
@@ -203,7 +203,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
     void *temp_ptr;
     uint32_t temp_ptr_size;
     tivx_obj_desc_scalar_t *gsize_desc;
-    int32_t gsize_value;
+    int32_t gsize_value = 0;
 
     if (num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
     {

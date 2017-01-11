@@ -143,13 +143,13 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
            Assuming valid Roi is same for src0 and src1 images */
         rect = src_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src_desc->imagepatch_addr[0U]));
 
         /* TODO: Do we require to move pointer even for destination image */
         /* Need to move destination start pointer by 1 line and 1 pixel */
-        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x + 1, rect.start_y + 1,
             &dst_desc->imagepatch_addr[0]));
 

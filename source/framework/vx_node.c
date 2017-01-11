@@ -100,7 +100,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
 
     obj_desc->node_complete_cmd_obj_desc_id = TIVX_OBJ_DESC_INVALID;
 
-    obj_desc->host_node_ref = (uint32_t)node;
+    obj_desc->host_node_ref = (uintptr_t)node;
 
     obj_desc->border_mode.mode = VX_BORDER_UNDEFINED;
     memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
@@ -867,9 +867,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_LOCAL_DATA_PTR:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3))
                 {
-                    *(vx_uint32 *)ptr = (vx_uint32)node->local_data_ptr;
+                    *(uintptr_t *)ptr = (uintptr_t)node->local_data_ptr;
                 }
                 else
                 {
@@ -998,7 +998,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     break;
                 case VX_NODE_LOCAL_DATA_PTR:
-                    if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3) && node->kernel)
+                    if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3) && node->kernel)
                     {
                         if(node->local_data_ptr_is_alloc || node->local_data_set_allow == vx_false_e)
                         {
@@ -1009,7 +1009,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                         }
                         else
                         {
-                            node->local_data_ptr = (void*)(*(vx_uint32*)ptr);
+                            node->local_data_ptr = (void*)(*(uintptr_t*)ptr);
                         }
                     }
                     else

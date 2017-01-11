@@ -70,11 +70,11 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
            Assuming valid Roi is same images */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
         /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uint32_t)dst->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x + (conv->columns/2U),
             rect.start_y + (conv->rows/2U),
             &dst->imagepatch_addr[0]));

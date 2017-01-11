@@ -114,7 +114,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
              */
             rect = src0_desc->valid_roi;
 
-            src0_addr = (uint8_t *)((uint32_t)src0_desc->mem_ptr[0U].target_ptr +
+            src0_addr = (uint8_t *)((uintptr_t)src0_desc->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(rect.start_x, rect.start_y,
                 &src0_desc->imagepatch_addr[0U]));
 
@@ -127,7 +127,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
              */
             rect = src1_desc->valid_roi;
 
-            src1_addr = (uint8_t *)((uint32_t)src1_desc->mem_ptr[0U].target_ptr +
+            src1_addr = (uint8_t *)((uintptr_t)src1_desc->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(rect.start_x, rect.start_y,
                 &src1_desc->imagepatch_addr[0U]));
 
@@ -142,7 +142,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                  */
                 rect = src2_desc->valid_roi;
 
-                src2_addr = (uint8_t *)((uint32_t)src2_desc->mem_ptr[0U].target_ptr +
+                src2_addr = (uint8_t *)((uintptr_t)src2_desc->mem_ptr[0U].target_ptr +
                     ownComputePatchOffset(rect.start_x, rect.start_y,
                     &src2_desc->imagepatch_addr[0U]));
             }
@@ -158,7 +158,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 vxlib_src3.stride_y = src3_desc->imagepatch_addr[0U].stride_y;
                 vxlib_src3.data_type = VXLIB_UINT8;
 
-                src3_addr = (uint8_t *)((uint32_t)src3_desc->mem_ptr[0U].target_ptr +
+                src3_addr = (uint8_t *)((uintptr_t)src3_desc->mem_ptr[0U].target_ptr +
                     ownComputePatchOffset(rect.start_x, rect.start_y,
                     &src3_desc->imagepatch_addr[0U]));
             }
@@ -176,7 +176,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
 
             for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
             {
-                dst_addr[plane_idx] = (uint8_t *)((uint32_t)dst_desc->mem_ptr[plane_idx].target_ptr +
+                dst_addr[plane_idx] = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[plane_idx].target_ptr +
                     ownComputePatchOffset(rect.start_x, rect.start_y,
                         &dst_desc->imagepatch_addr[plane_idx]));
             }

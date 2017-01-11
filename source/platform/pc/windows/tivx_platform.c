@@ -56,7 +56,3 @@ uint64_t tivxPlatformGetTimeInUsecs()
     return timeInUsecs;
 }
 
-void tivxPlatformPrintf(const char *format)
-{
-    printf(format);
-}

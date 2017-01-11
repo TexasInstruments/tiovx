@@ -61,7 +61,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
@@ -79,7 +79,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
                 dst0->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
             /* TODO: Do we require to move pointer even for destination image */
-            dst_addr = (int16_t *)((uint32_t)dst0->mem_ptr[0U].target_ptr +
+            dst_addr = (int16_t *)((uintptr_t)dst0->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(rect.start_x + 1U, rect.start_y + 1U,
                 &dst0->imagepatch_addr[0]));
 
@@ -109,7 +109,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
                 dst1->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
             /* TODO: Do we require to move pointer even for destination image */
-            dst_addr = (int16_t *)((uint32_t)dst1->mem_ptr[0U].target_ptr +
+            dst_addr = (int16_t *)((uintptr_t)dst1->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(rect.start_x + 1U, rect.start_y + 1U,
                 &dst1->imagepatch_addr[0]));
 

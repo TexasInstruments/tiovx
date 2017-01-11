@@ -237,7 +237,7 @@ typedef struct _tivx_obj_desc_node
 
     /*! \brief Handle to OpenVX Node reference, valid only on host side
      */
-    uint32_t host_node_ref;
+    uintptr_t host_node_ref;
 
     /*! \brief Index in target kernel table
      *

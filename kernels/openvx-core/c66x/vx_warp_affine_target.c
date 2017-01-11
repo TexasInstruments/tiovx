@@ -75,13 +75,13 @@ static vx_status VX_CALLBACK tivxKernelWarpAffineProcess(
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
-        mat_addr = (float *)((uint32_t)mat->mem_ptr.target_ptr);
+        mat_addr = (float *)((uintptr_t)mat->mem_ptr.target_ptr);
 
         /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uint32_t)dst->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0]));
 

@@ -78,7 +78,7 @@ typedef struct _tivx_obj_desc_cmd
     /*! \brief Handle of ACK event that is posted when ACK is received
      *     MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set
      */
-    uint32_t ack_event_handle;
+    uintptr_t ack_event_handle;
 
     /*! \brief Number of object descriptor parameters with this command */
     uint32_t num_obj_desc;

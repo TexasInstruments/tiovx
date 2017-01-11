@@ -137,7 +137,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
@@ -382,7 +382,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
 
                     prms->nms_scratch_size = (img->imagepatch_addr[0].dim_x *
                         img->imagepatch_addr[0].dim_y) +
-                            (((uint32_t)prms->rad+1)*2)*(((uint32_t)prms->rad+1)*2)*2;
+                            (((uintptr_t)prms->rad+1)*2)*(((uintptr_t)prms->rad+1)*2)*2;
 
                     prms->nms_scratch = tivxMemAlloc(prms->nms_scratch_size);
                     if (NULL == prms->nms_scratch)

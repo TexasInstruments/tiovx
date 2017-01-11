@@ -66,7 +66,7 @@ static vx_status tivxKernelColorConvert(
             tivxMemBufferMap(src_desc->mem_ptr[i].target_ptr, src_desc->mem_size[i],
                 src_desc->mem_ptr[i].mem_type, VX_READ_ONLY);
 
-            src_addr[i] = (uint8_t *)((uint32_t)src_desc->mem_ptr[i].target_ptr +
+            src_addr[i] = (uint8_t *)((uintptr_t)src_desc->mem_ptr[i].target_ptr +
                 ownComputePatchOffset(rect.start_x, rect.start_y,
                 &src_desc->imagepatch_addr[i]));
         }
@@ -79,7 +79,7 @@ static vx_status tivxKernelColorConvert(
                 dst_desc->mem_ptr[i].mem_type, VX_WRITE_ONLY);
 
             /* TODO: Do we require to move pointer even for destination image */
-            dst_addr[i] = (uint8_t *)((uint32_t)dst_desc->mem_ptr[i].target_ptr +
+            dst_addr[i] = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[i].target_ptr +
                 ownComputePatchOffset(rect.start_x, rect.start_y,
                 &dst_desc->imagepatch_addr[i]));
         }

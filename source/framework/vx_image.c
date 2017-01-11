@@ -901,10 +901,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                                 ownComputePatchOffset(rect->start_x, rect->start_y, subimage_imagepatch_addr);
 
                             subimage_mem_ptr->shared_ptr =
-                                (void*)((uint32_t)image_mem_ptr->shared_ptr + subimage->mem_offset[plane_idx]);
+                                (void*)((uintptr_t)image_mem_ptr->shared_ptr + subimage->mem_offset[plane_idx]);
 
                             subimage_mem_ptr->host_ptr =
-                                (void*)((uint32_t)image_mem_ptr->host_ptr + subimage->mem_offset[plane_idx]);
+                                (void*)((uintptr_t)image_mem_ptr->host_ptr + subimage->mem_offset[plane_idx]);
                         }
                     }
                 }
@@ -1602,8 +1602,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 *user_ptr = map_addr;
 
                 end_addr = map_addr + map_size;
-                map_addr = (vx_uint8*)TIVX_FLOOR((vx_uint32)map_addr, 128U);
-                end_addr = (vx_uint8*)TIVX_ALIGN((vx_uint32)end_addr, 128U);
+                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
+                end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 map_size = end_addr - map_addr;
                 tivxMemBufferMap(map_addr, map_size,
                     obj_desc->mem_ptr[plane_index].mem_type, usage);
@@ -1669,8 +1669,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             map_size = image->maps[map_id].map_size;
 
             end_addr = map_addr + map_size;
-            map_addr = (vx_uint8*)TIVX_FLOOR((vx_uint32)map_addr, 128);
-            end_addr = (vx_uint8*)TIVX_ALIGN((vx_uint32)end_addr, 128);
+            map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128);
+            end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128);
             map_size = end_addr - map_addr;
 
             tivxMemBufferUnmap(

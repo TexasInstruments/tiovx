@@ -34,7 +34,7 @@ vx_status tivxChannelExtractRgbRgbxInput(
      */
     rect = in_desc->valid_roi;
 
-    src_addr = (uint8_t *)((uint32_t)in_desc->mem_ptr[0U].target_ptr +
+    src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[0U].target_ptr +
         ownComputePatchOffset(rect.start_x, rect.start_y,
         &in_desc->imagepatch_addr[0U]));
 
@@ -119,7 +119,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
      */
     rect = in_desc->valid_roi;
 
-    src_addr = (uint8_t *)((uint32_t)in_desc->mem_ptr[0U].target_ptr +
+    src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[0U].target_ptr +
         ownComputePatchOffset(rect.start_x, rect.start_y,
         &in_desc->imagepatch_addr[0U]));
 
@@ -223,7 +223,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
          */
         rect = in_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)in_desc->mem_ptr[plane_idx].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[plane_idx].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &in_desc->imagepatch_addr[plane_idx]));
 
@@ -321,7 +321,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
          */
         rect = in_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)in_desc->mem_ptr[plane_idx].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[plane_idx].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &in_desc->imagepatch_addr[plane_idx]));
 
@@ -394,7 +394,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
             rect = out_desc->valid_roi;
 
             /* TODO: Do we require to move pointer even for destination image */
-            dst_addr = (uint8_t *)((uint32_t)out_desc->mem_ptr[0U].target_ptr +
+            dst_addr = (uint8_t *)((uintptr_t)out_desc->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(rect.start_x, rect.start_y,
                 &out_desc->imagepatch_addr[0]));
 

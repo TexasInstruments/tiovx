@@ -19,8 +19,8 @@ DIRECTORIES += tools/sample_use_cases
 
 TARGET_COMBOS :=
 
-BUILD_EMULATION_MODE?=no
-BUILD_TARGET_MODE?=yes
+BUILD_EMULATION_MODE?=yes
+BUILD_TARGET_MODE?=no
 
 PROFILE?=all
 
@@ -41,12 +41,22 @@ ifeq ($(BUILD_TARGET_MODE),yes)
 endif
 
 ifeq ($(BUILD_EMULATION_MODE),yes)
-  ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-  TARGET_COMBOS += PC:WINDOWS:X86:1:debug:GCC_WINDOWS
-  endif
+  ifeq ($(OS),Windows_NT)
+    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
+    TARGET_COMBOS += PC:WINDOWS:X86:1:debug:GCC_WINDOWS
+    endif
 
-  ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-  TARGET_COMBOS += PC:WINDOWS:X86:1:release:GCC_WINDOWS
+    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
+    TARGET_COMBOS += PC:WINDOWS:X86:1:release:GCC_WINDOWS
+    endif
+  else
+    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
+    TARGET_COMBOS += PC:LINUX:X86:1:debug:GCC
+    endif
+
+    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
+    TARGET_COMBOS += PC:LINUX:X86:1:release:GCC
+    endif
   endif
 endif
 

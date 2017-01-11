@@ -21,7 +21,7 @@ ifeq ($(TARGET_CPU),X86)
 endif
 
 ifneq ($(HOST_FAMILY),$(TARGET_FAMILY))
-$(if $(CROSS_COMPILE),,$(error Cross Compiling is not enabled! TARGET_FAMILY != HOST_FAMILY))
+#$(if $(CROSS_COMPILE),,$(error Cross Compiling is not enabled! TARGET_FAMILY != HOST_FAMILY))
 endif
 
 ifeq ($(HOST_OS),Windows_NT)
@@ -96,7 +96,7 @@ $(_MODULE)_DEP_HEADERS := $(foreach inc,$($(_MODULE)_HEADERS),$($(_MODULE)_SDIR)
 ifneq ($(TARGET_OS),CYGWIN)
 $(_MODULE)_COPT += -fPIC
 endif
-$(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings
+$(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings -Wno-format-security -Wno-unused-variable
 
 ifeq ($(TARGET_OS),SYSBIOS)
 $(_MODULE)_COPT += -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A15F -DCGT_GCC -c -mcpu=cortex-a15 -g -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame  -ffunction-sections -fdata-sections 
@@ -111,7 +111,7 @@ endif
 
 ifeq ($(TARGET_BUILD),production)
 # Remove all symbols.
-$(_MODULE)_LOPT += -s
+$(_MODULE)_LOPT += -s 
 endif
 
 ifeq ($(TARGET_FAMILY),ARM)
@@ -131,6 +131,8 @@ endif
 
 ifeq ($(HOST_CPU),$(TARGET_CPU))
 $(_MODULE)_COPT += -march=native
+else ifeq ($(TARGET_CPU),X86)
+$(_MODULE)_COPT += -march=native -pthread
 else ifeq ($(TARGET_CPU),M3)
 $(_MODULE)_COPT += -mcpu=cortex-m3
 else ifeq ($(TARGET_CPU),M4)

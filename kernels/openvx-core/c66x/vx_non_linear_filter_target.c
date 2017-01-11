@@ -62,15 +62,15 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        mask_addr = (uint8_t *)((uint32_t)mask_desc->mem_ptr.target_ptr);
+        mask_addr = (uint8_t *)((uintptr_t)mask_desc->mem_ptr.target_ptr);
 
         rect = src_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src_desc->imagepatch_addr[0U]));
 
-        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(
                     rect.start_x + (mask_desc->origin_x),
                     rect.start_y + (mask_desc->origin_y),

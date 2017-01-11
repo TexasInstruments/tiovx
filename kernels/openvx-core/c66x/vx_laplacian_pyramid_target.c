@@ -99,7 +99,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
 
         prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
@@ -121,7 +121,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
             /* Valid rectangle is ignore here */
-            dst_addr = (int16_t *)((uint32_t)dst->mem_ptr[0U].target_ptr +
+            dst_addr = (int16_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
 
             /* Half scaled intermediate result */
@@ -174,7 +174,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                     prms->vxlib_low_out.data_type = VXLIB_INT16;
 
                     dst_addr = (int16_t *)(
-                        (uint32_t)low_img->mem_ptr[0U].target_ptr +
+                        (uintptr_t)low_img->mem_ptr[0U].target_ptr +
                         ownComputePatchOffset(0, 0,
                         &low_img->imagepatch_addr[0]));
 

@@ -61,7 +61,7 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 

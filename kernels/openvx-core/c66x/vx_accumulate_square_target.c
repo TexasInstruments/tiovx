@@ -70,12 +70,12 @@ static vx_status tivxKernelAccumulateSquare(
            Assuming valid Roi is same for src image */
         rect = src_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uint32_t)src_desc->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src_desc->imagepatch_addr[0U]));
 
         /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uint32_t)dst_desc->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst_desc->imagepatch_addr[0]));
 
