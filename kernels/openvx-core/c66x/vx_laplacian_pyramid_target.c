@@ -161,7 +161,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 status = VXLIB_subtract_i8u_i8u_o16s(
                     src_addr, &prms->vxlib_src,
                     prms->gauss_output, &prms->vxlib_gauss1,
-                    dst_addr, &prms->vxlib_dst, VXLIB_CONVERT_POLICY_WRAP);
+                    dst_addr, &prms->vxlib_dst);
             }
 
             if (VXLIB_SUCCESS == status)

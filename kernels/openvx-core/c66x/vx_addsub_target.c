@@ -149,7 +149,7 @@ static vx_status tivxKernelAddSub(
             {
                 status = VXLIB_add_i8u_i8u_o16s((uint8_t *)src0_addr,
                     &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
-                    (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
+                    (int16_t *)dst_addr, &vxlib_dst);
             }
             /* If both the input are in S16 format, output will be in
                S16 format */
@@ -193,7 +193,7 @@ static vx_status tivxKernelAddSub(
             {
                 status = VXLIB_subtract_i8u_i8u_o16s((uint8_t *)src0_addr,
                     &vxlib_src0, (uint8_t *)src1_addr, &vxlib_src1,
-                    (int16_t *)dst_addr, &vxlib_dst, overflow_policy);
+                    (int16_t *)dst_addr, &vxlib_dst);
             }
             /* If both the input are in S16 format, output will be in
                S16 format */

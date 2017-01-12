@@ -288,19 +288,17 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         if(dst_desc->format == VX_DF_IMAGE_NV21)
                         {
                             status = VXLIB_channelCombine_2to1_i8u_o8u(
-                                src1_addr, &vxlib_src1,
                                 src2_addr, &vxlib_src2,
-                                dst_addr[plane_idx], &vxlib_dst,
-                                0 /* Index of V component in C plane */
+                                src1_addr, &vxlib_src1,
+                                dst_addr[plane_idx], &vxlib_dst
                                 );
                         }
                         else
                         {
                             status = VXLIB_channelCombine_2to1_i8u_o8u(
-                                src2_addr, &vxlib_src2,
                                 src1_addr, &vxlib_src1,
-                                dst_addr[plane_idx], &vxlib_dst,
-                                0 /* Index of V component in C plane */
+                                src2_addr, &vxlib_src2,
+                                dst_addr[plane_idx], &vxlib_dst
                                 );
                         }
                     }
