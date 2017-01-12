@@ -22,7 +22,8 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
     vx_status status = VX_SUCCESS;
     vx_image img[2U];
     vx_matrix matrix;
-    vx_uint32 w[3U], h[3U], i;
+    vx_uint32 w[2U], h[2U], i;
+    vx_size mat_w, mat_h;
     vx_df_image fmt[2U];
     vx_enum matrix_type = 0;
     vx_enum interpolation_type = 0;
@@ -64,8 +65,8 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
 
         /* Get the image width/heigh and format */
         status = vxQueryMatrix(matrix, VX_MATRIX_TYPE, &matrix_type, sizeof(matrix_type));
-        status |= vxQueryMatrix(matrix, VX_MATRIX_COLUMNS, &w[2U], sizeof(w[2U]));
-        status |= vxQueryMatrix(matrix, VX_MATRIX_ROWS, &h[2U], sizeof(h[2U]));
+        status |= vxQueryMatrix(matrix, VX_MATRIX_COLUMNS, &mat_w, sizeof(mat_w));
+        status |= vxQueryMatrix(matrix, VX_MATRIX_ROWS, &mat_h, sizeof(mat_h));
 
         if (VX_SUCCESS == status)
         {
@@ -76,7 +77,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
             }
 
             /* Check for frame sizes */
-            if ((w[2U] != 2U) || (h[2U] != 3U))
+            if ((mat_w != 2U) || (mat_h != 3U))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
             }
@@ -142,6 +143,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
+
 #if 0
     if (VX_SUCCESS == status)
     {

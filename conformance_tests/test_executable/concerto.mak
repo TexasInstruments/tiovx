@@ -34,15 +34,7 @@ TARGET      := vx_conformance_tests_exe
 TARGETTYPE  := exe
 CSOURCES    := $(call all-c-files)
 
-ifeq ($(TARGET_OS),LINUX)
-  ifeq ($(TARGET_FAMILY),X86)
-  LDIRS		:= $(TIOVX_PATH)/lib/PC/X86/LINUX/$(TARGET_BUILD)
-  endif
-endif
-
-ifeq ($(TARGET_OS),WINDOWS)
-LDIRS		:= $(TIOVX_PATH)/lib/PC/X86/WINDOWS/$(TARGET_BUILD)
-endif
+LDIRS       := $(TIOVX_PATH)/lib/PC/X86/$(TARGET_OS)/$(TARGET_BUILD)
 
 STATIC_LIBS := vx_conformance_tests vx_conformance_engine vx_conformance_tests_testmodule
 STATIC_LIBS += vx_vxu vx_framework

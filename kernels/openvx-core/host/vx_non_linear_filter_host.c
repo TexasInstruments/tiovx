@@ -19,7 +19,8 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
     vx_matrix matrix;
     vx_scalar function;
     vx_enum func;
-    vx_uint32 w[3U], h[3U], i;
+    vx_uint32 w[2U], h[2U], i;
+    vx_size mat_h, mat_w;
     vx_df_image fmt[2U];
     vx_df_image out_fmt;
     vx_enum matrix_type = 0;
@@ -61,8 +62,8 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
         /* Get the image width/heigh and format */
         status = vxQueryMatrix(matrix, VX_MATRIX_TYPE, &matrix_type, sizeof(matrix_type));
-        status |= vxQueryMatrix(matrix, VX_MATRIX_COLUMNS, &w[2U], sizeof(w[2U]));
-        status |= vxQueryMatrix(matrix, VX_MATRIX_ROWS, &h[2U], sizeof(h[2U]));
+        status |= vxQueryMatrix(matrix, VX_MATRIX_COLUMNS, &mat_w, sizeof(mat_w));
+        status |= vxQueryMatrix(matrix, VX_MATRIX_ROWS, &mat_h, sizeof(mat_h));
 
         if (VX_SUCCESS == status)
         {

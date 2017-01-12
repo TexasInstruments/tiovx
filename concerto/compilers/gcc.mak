@@ -96,7 +96,7 @@ $(_MODULE)_DEP_HEADERS := $(foreach inc,$($(_MODULE)_HEADERS),$($(_MODULE)_SDIR)
 ifneq ($(TARGET_OS),CYGWIN)
 $(_MODULE)_COPT += -fPIC
 endif
-$(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings -Wno-format-security -Wno-unused-variable
+$(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings -Wno-format-security 
 
 ifeq ($(TARGET_OS),SYSBIOS)
 $(_MODULE)_COPT += -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A15F -DCGT_GCC -c -mcpu=cortex-a15 -g -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame  -ffunction-sections -fdata-sections 
@@ -130,7 +130,7 @@ endif
 endif
 
 ifeq ($(HOST_CPU),$(TARGET_CPU))
-$(_MODULE)_COPT += -march=native
+$(_MODULE)_COPT += -march=native -pthread
 else ifeq ($(TARGET_CPU),X86)
 $(_MODULE)_COPT += -march=native -pthread
 else ifeq ($(TARGET_CPU),M3)
