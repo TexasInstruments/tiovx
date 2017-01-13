@@ -24,7 +24,7 @@ typedef struct
     uint8_t *gauss_output;
     uint8_t *hsg_output[2];
     uint32_t buff_size;
-    VXLIB_bufParams2D_t vxlib_src, vxlib_dst, vxlib_low_out;
+    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     VXLIB_bufParams2D_t vxlib_gauss0, vxlib_gauss1;
 } tivxLaplacianPyramidParams;
 
@@ -39,6 +39,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
     tivx_obj_desc_pyramid_t *pmd;
     uint8_t *src_addr;
     int16_t *dst_addr;
+    uint8_t *out_addr;
     uint32_t size, levels;
 
     if (num_params != TIVX_KERNEL_LPL_PMD_MAX_PARAMS)
@@ -107,6 +108,10 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
         prms->vxlib_src.data_type = VXLIB_UINT8;
 
+        prms->vxlib_gauss0.data_type = VXLIB_UINT8;
+        prms->vxlib_gauss1.data_type = VXLIB_UINT8;
+        prms->vxlib_dst.data_type = VXLIB_INT16;
+
         for (levels = 0; (levels < pmd->num_levels) && (VX_SUCCESS == status);
                 levels ++)
         {
@@ -125,26 +130,41 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 ownComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
 
             /* Half scaled intermediate result */
-            prms->vxlib_gauss0.dim_x = dst->imagepatch_addr[0].dim_x / 2;
-            prms->vxlib_gauss0.dim_y = dst->imagepatch_addr[0].dim_y / 2;
-            prms->vxlib_gauss0.stride_y = dst->imagepatch_addr[0].dim_x / 2;
-            prms->vxlib_gauss0.data_type = VXLIB_UINT8;
+            if(levels == (pmd->num_levels - 1u))
+            {
+                prms->vxlib_gauss0.dim_x = low_img->imagepatch_addr[0].dim_x;
+                prms->vxlib_gauss0.dim_y = low_img->imagepatch_addr[0].dim_y;
+                prms->vxlib_gauss0.stride_y = low_img->imagepatch_addr[0].stride_y;
+
+                out_addr = (uint8_t *)(
+                    (uintptr_t)low_img->mem_ptr[0U].target_ptr +
+                    ownComputePatchOffset(0, 0,
+                    &low_img->imagepatch_addr[0]));
+            }
+            else
+            {
+                /* Half scaled intermediate result */
+                prms->vxlib_gauss0.dim_x = dst->imagepatch_addr[0].dim_x / 2;
+                prms->vxlib_gauss0.dim_y = dst->imagepatch_addr[0].dim_y / 2;
+                prms->vxlib_gauss0.stride_y = dst->imagepatch_addr[0].dim_x / 2;
+
+                out_addr = prms->hsg_output[buf];
+            }
+
 
             /* Full scale intermediate result (half scaled upsampled) */
             prms->vxlib_gauss1.dim_x = dst->imagepatch_addr[0].dim_x;
             prms->vxlib_gauss1.dim_y = dst->imagepatch_addr[0].dim_y;
             prms->vxlib_gauss1.stride_y = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_gauss1.data_type = VXLIB_UINT8;
 
             prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
             prms->vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
             prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            prms->vxlib_dst.data_type = VXLIB_INT16;
 
             /* First do half scale gaussian filter with included upsampled result */
             status = VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(
                 src_addr, &prms->vxlib_src,
-                prms->hsg_output[buf], &prms->vxlib_gauss0,
+                out_addr, &prms->vxlib_gauss0,
                 prms->upsample_output, &prms->vxlib_gauss1, 0, 0);
 
             if (VXLIB_SUCCESS == status)
@@ -166,23 +186,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
             if (VXLIB_SUCCESS == status)
             {
-                if(levels == (pmd->num_levels - 1u))
-                {
-                    prms->vxlib_low_out.dim_x = low_img->imagepatch_addr[0].dim_x;
-                    prms->vxlib_low_out.dim_y = low_img->imagepatch_addr[0].dim_y;
-                    prms->vxlib_low_out.stride_y = low_img->imagepatch_addr[0].stride_y;
-                    prms->vxlib_low_out.data_type = VXLIB_INT16;
-
-                    dst_addr = (int16_t *)(
-                        (uintptr_t)low_img->mem_ptr[0U].target_ptr +
-                        ownComputePatchOffset(0, 0,
-                        &low_img->imagepatch_addr[0]));
-
-                    status = VXLIB_convertDepth_i8u_o16s(
-                        prms->hsg_output[buf], &prms->vxlib_gauss0,
-                        dst_addr, &prms->vxlib_low_out, 0);
-                }
-                else
+                if(levels < (pmd->num_levels - 1u))
                 {
                     /* Prepare for next level */
                     src_addr = prms->hsg_output[buf];

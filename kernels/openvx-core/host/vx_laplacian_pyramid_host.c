@@ -53,7 +53,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if (VX_DF_IMAGE_U8 != fmt)
+        if ((VX_DF_IMAGE_U8 != fmt) && (VX_DF_IMAGE_S16 != fmt))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
         status |= vxQueryImage(low_img, VX_IMAGE_FORMAT, &p_fmt, sizeof(p_fmt));
 
         /* Check for format */
-        if (VX_DF_IMAGE_S16 != p_fmt)
+        if (fmt != p_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -128,6 +128,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX],
                 VX_PYRAMID_SCALE, &scale, sizeof(scale));
         }
+        /* TODO: Need to set meta for low_img? */
     }
 
     return status;

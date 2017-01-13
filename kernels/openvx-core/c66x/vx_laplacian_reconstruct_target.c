@@ -98,14 +98,27 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         tivxMemBufferMap(out_img->mem_ptr[0].target_ptr, out_img->mem_size[0],
             out_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Reinterpret low_img as an 8 bit image, where every other byte is 0 */
-        prms->vxlib_src.dim_x = low_img->imagepatch_addr[0].dim_x*2u;
-        prms->vxlib_src.dim_y = low_img->imagepatch_addr[0].dim_y;
-        prms->vxlib_src.stride_y = low_img->imagepatch_addr[0].stride_y;
-        prms->vxlib_src.data_type = VXLIB_UINT8;
+        /* Input is 8-bit image ... need to convert to 16 */
+        prms->vxlib_scratch.dim_x = low_img->imagepatch_addr[0].dim_x;
+        prms->vxlib_scratch.dim_y = low_img->imagepatch_addr[0].dim_y;
+        prms->vxlib_scratch.stride_y = low_img->imagepatch_addr[0].stride_y;
+        prms->vxlib_scratch.data_type = VXLIB_UINT8;
 
-        src_addr = (uint8_t *)low_img->mem_ptr[0U].target_ptr;
+        prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x;
+        prms->vxlib_src.dim_y = prms->vxlib_scratch.dim_y;
+        prms->vxlib_src.stride_y = prms->vxlib_scratch.dim_x*2u;
+        prms->vxlib_src.data_type = VXLIB_INT16;
+
+        src_addr = (uint8_t *)prms->add_output;
         dst_addr = (uint8_t *)out_img->mem_ptr[0U].target_ptr;
+
+        status = VXLIB_convertDepth_i8u_o16s(
+            (uint8_t *)low_img->mem_ptr[0U].target_ptr, &prms->vxlib_scratch,
+            (int16_t *)src_addr, &prms->vxlib_src, 0);
+
+        /* Reinterpret 16-bit version of low_img as an 8 bit image, where every other byte is 0 */
+        prms->vxlib_src.dim_x = low_img->imagepatch_addr[0].dim_x*2u;
+        prms->vxlib_src.data_type = VXLIB_UINT8;
 
         for (level = pmd->num_levels-1; (level >= 0) && (VX_SUCCESS == status);
                 level --)
@@ -176,8 +189,6 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 else
                 {
                     /* Prepare for next level */
-                    src_addr = (uint8_t *)prms->add_output;
-
                     prms->vxlib_src.dim_x = prms->vxlib_add.dim_x*2u;
                     prms->vxlib_src.dim_y = prms->vxlib_add.dim_y;
                     prms->vxlib_src.stride_y = prms->vxlib_add.stride_y;

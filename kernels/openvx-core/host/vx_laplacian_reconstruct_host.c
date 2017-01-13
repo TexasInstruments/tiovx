@@ -24,7 +24,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     vx_pyramid pmd;
     vx_uint32 w, h, i;
     vx_uint32 p_w, p_h;
-    vx_df_image fmt, p_fmt;
+    vx_df_image fmt, o_fmt, p_fmt;
     vx_float32 scale;
 
     for (i = 0U; i < TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS; i ++)
@@ -52,7 +52,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     if (VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if (VX_DF_IMAGE_S16 != fmt)
+        if ((VX_DF_IMAGE_S16 != fmt) && (VX_DF_IMAGE_U8 != fmt))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -88,7 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
         (vx_false_e == tivxIsReferenceVirtual((vx_reference)pmd)))
     {
         /* Get the image width/heigh and format */
-        status = vxQueryImage(out_img, VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
+        status = vxQueryImage(out_img, VX_IMAGE_FORMAT, &o_fmt, sizeof(o_fmt));
         status |= vxQueryImage(out_img, VX_IMAGE_WIDTH, &w, sizeof(w));
         status |= vxQueryImage(out_img, VX_IMAGE_HEIGHT, &h, sizeof(h));
 
@@ -99,7 +99,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
         }
 
         /* Check for format */
-        if (VX_DF_IMAGE_U8 != fmt)
+        if (o_fmt != fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
