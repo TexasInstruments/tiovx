@@ -32,6 +32,9 @@ typedef enum {
     /*! \brief Lock the shared object descriptor table */
     TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE = 0,
 
+    /*! \brief Lock the context during context create and delete */
+    TIVX_PLATFORM_LOCK_CONTEXT,
+
     /*! \brief Max number of locks */
     TIVX_PLATFORM_LOCK_MAX
 
@@ -115,6 +118,23 @@ void tivxPlatformDeInit();
  * \ingroup group_tivx_platform
  */
 void tivxPlatformPrintf(const char *format);
+
+/*!
+ * \brief Function to set the target configuration
+ *
+ *        It creates target and adds it to the list of targets supported
+ *        on each core.
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformCreateTargets();
+
+/*!
+ * \brief Function to destroy created targets
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformDeleteTargets();
 
 #ifdef __cplusplus
 }

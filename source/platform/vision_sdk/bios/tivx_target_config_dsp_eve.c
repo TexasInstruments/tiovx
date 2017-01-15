@@ -24,7 +24,7 @@
 uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE];
 
 
-void tivxTargetConfig(void)
+void tivxPlatformCreateTargets(void)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
@@ -65,6 +65,45 @@ void tivxTargetConfig(void)
     status = tivxTargetCreate(target_id, &target_create_prms);
     if (VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Cound not Add new Target\n");
+        VX_PRINT(VX_ZONE_ERROR, "Cound not Add Target\n");
+    }
+}
+
+void tivxPlatformDeleteTargets(void)
+{
+    vx_status status;
+    vx_enum self_cpu, target_id;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    switch (self_cpu)
+    {
+        case TIVX_CPU_ID_DSP1:
+            target_id = TIVX_TARGET_ID_DSP1;
+            break;
+        case TIVX_CPU_ID_DSP2:
+            target_id = TIVX_TARGET_ID_DSP2;
+            break;
+        case TIVX_CPU_ID_EVE1:
+            target_id = TIVX_TARGET_ID_EVE1;
+            break;
+        case TIVX_CPU_ID_EVE2:
+            target_id = TIVX_TARGET_ID_EVE2;
+            break;
+        case TIVX_CPU_ID_EVE3:
+            target_id = TIVX_TARGET_ID_EVE3;
+            break;
+        case TIVX_CPU_ID_EVE4:
+            target_id = TIVX_TARGET_ID_EVE4;
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "Incorrect CPU\n");
+            break;
+    }
+
+    status = tivxTargetDelete(target_id);
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Cound not Delete Target\n");
     }
 }

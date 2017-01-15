@@ -14,7 +14,7 @@
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY   (8u)
 
 
-static void tivxTargetConfigTargetId(vx_enum target_id)
+static void tivxTargetCreateTargetId(vx_enum target_id)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
@@ -27,14 +27,33 @@ static void tivxTargetConfigTargetId(vx_enum target_id)
     status = tivxTargetCreate(target_id, &target_create_prms);
     if (VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Cound not Add new Target\n");
+        VX_PRINT(VX_ZONE_ERROR, "Cound not Add Target\n");
     }
 }
 
-void tivxTargetConfig()
+static void tivxTargetDeleteTargetId(vx_enum target_id)
 {
-    tivxTargetConfigTargetId(TIVX_TARGET_ID_CPU1);
-    tivxTargetConfigTargetId(TIVX_TARGET_ID_CPU2);
-    tivxTargetConfigTargetId(TIVX_TARGET_ID_CPU3);
-    tivxTargetConfigTargetId(TIVX_TARGET_ID_CPU4);
+    vx_status status;
+
+    status = tivxTargetDelete(target_id);
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Cound not Delete Target\n");
+    }
+}
+
+void tivxPlatformCreateTargets()
+{
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU1);
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU2);
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU3);
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU4);
+}
+
+void tivxPlatformDeleteTargets(void)
+{
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU1);
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU2);
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU3);
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU4);
 }

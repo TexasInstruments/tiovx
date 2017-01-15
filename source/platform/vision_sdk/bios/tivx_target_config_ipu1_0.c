@@ -22,7 +22,7 @@
 uint8_t gHost_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE];
 
 
-void tivxTargetConfig(void)
+void tivxPlatformCreateTargets(void)
 {
     vx_status status;
     tivx_target_create_params_t target_create_prms;
@@ -35,6 +35,17 @@ void tivxTargetConfig(void)
     status = tivxTargetCreate(TIVX_TARGET_ID_IPU1_0, &target_create_prms);
     if (VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Cound not Add new Target\n");
+        VX_PRINT(VX_ZONE_ERROR, "Cound not Add Target\n");
+    }
+}
+
+void tivxPlatformDeleteTargets(void)
+{
+    vx_status status;
+
+    status = tivxTargetDelete(TIVX_TARGET_ID_IPU1_0);
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Cound not Delete Target\n");
     }
 }

@@ -26,11 +26,13 @@ void tivxInit(void)
 
     tivxObjDescInit();
 
-    tivxTargetConfig();
+    tivxPlatformCreateTargets();
 }
 
 void tivxDeInit(void)
 {
+    tivxPlatformDeleteTargets();
+
     /* DeInitialize Host */
     tivxUnRegisterOpenVXCoreTargetKernels();
     tivxHostDeInit();

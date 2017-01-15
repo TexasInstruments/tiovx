@@ -263,15 +263,6 @@ void tivxTargetInit();
  */
 void tivxTargetDeInit();
 
-/*!
- * \brief Function to set the target configuration
- *
- *        It creates target and adds it to the list of targets supported
- *        on each core.
- *
- * \ingroup group_tivx_target
- */
-void tivxTargetConfig();
 
 #ifdef __cplusplus
 }

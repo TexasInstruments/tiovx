@@ -45,8 +45,6 @@ static const vx_char g_context_extensions[] = " ";
 
 static vx_context g_context_handle = NULL;
 
-static tivx_mutex g_context_lock = NULL;
-
 static tivx_context_t g_context_obj;
 
 static vx_bool ownIsValidBorderMode(vx_enum mode)
@@ -382,14 +380,9 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
     vx_status status = VX_SUCCESS;
     uint32_t idx;
 
-    if (g_context_lock == NULL)
-    {
-        status = tivxMutexCreate(&g_context_lock);
-    }
+    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_CONTEXT);
 
-    if(status==VX_SUCCESS)
     {
-        tivxMutexLock(g_context_lock);
         if (g_context_handle == NULL)
         {
             context = &g_context_obj;
@@ -477,8 +470,9 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
             context = g_context_handle;
             ownIncrementReference(&context->base, VX_EXTERNAL);
         }
-        tivxMutexUnlock(g_context_lock);
     }
+    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_CONTEXT);
+
     return context;
 }
 
@@ -492,7 +486,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         *c = 0;
     }
-    tivxMutexLock(g_context_lock);
+    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_CONTEXT);
     if (ownIsValidContext(context) == vx_true_e)
     {
         if (ownDecrementReference(&context->base, VX_EXTERNAL) == 0)
@@ -566,7 +560,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
-    tivxMutexUnlock(g_context_lock);
+    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_CONTEXT);
+
     return status;
 }
 

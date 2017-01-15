@@ -100,6 +100,8 @@ ifeq ($(HOST_COMPILER),GCC)
 	include $(CONCERTO_ROOT)/compilers/gcc.mak
 else ifeq ($(HOST_COMPILER),GCC_WINDOWS)
 	include $(CONCERTO_ROOT)/compilers/gcc_windows.mak
+else ifeq ($(HOST_COMPILER),GCC_LINUX)
+	include $(CONCERTO_ROOT)/compilers/gcc_linux.mak
 else ifeq ($(HOST_COMPILER),CLANG)
 	include $(CONCERTO_ROOT)/compilers/clang.mak
 else ifeq ($(HOST_COMPILER),CL)
