@@ -141,11 +141,10 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
 {
     size_t sz = 0;
     void* buf = 0;
-    char file[512];
+    char file[MAXPATHLENGTH];
 
-    strncpy(file, ct_get_test_file_path(), 512);
-    sz = 512 - strlen(file);
-    strncat(file, fileName, sz);
+    sz = snprintf(file, MAXPATHLENGTH, "%s%s", ct_get_test_file_path(), fileName);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
 #if 1
     FILE* f = fopen(file, "rb");
     ASSERT_(return 0, f);

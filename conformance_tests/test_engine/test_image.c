@@ -210,7 +210,7 @@ static CT_Image ct_allocate_image_hdr_impl(uint32_t width, uint32_t height, uint
 
         bytes = (uint8_t*)ct_alloc_mem(memory_size);
         CT_ASSERT_(return 0, bytes); // out of memory
-        memset(bytes, 153, memory_size); // fill with some "magic" value
+        ct_memset(bytes, 153, memory_size); // fill with some "magic" value
         image->data_begin_ = bytes;
         image->refcount_ = (uint32_t*)( (((size_t)bytes) + sizeof(uint32_t) - 1) & ~((size_t)(sizeof(uint32_t) - 1)) ); // align ptr to 4 bytes
         *image->refcount_ = 1;
@@ -344,7 +344,7 @@ CT_Image ct_read_image(const char* fileName, int dcn)
     size_t sz;
     char* buf = 0;
     CT_Image image = 0;
-    char file[512];
+    char file[MAXPATHLENGTH];
 
     if (!fileName)
     {
@@ -352,9 +352,8 @@ CT_Image ct_read_image(const char* fileName, int dcn)
         return 0;
     }
 
-    strncpy(file, ct_get_test_file_path(), 512);
-    sz = 512 - strlen(file);
-    strncat(file, fileName, sz);
+    sz = snprintf(file, MAXPATHLENGTH, "%s%s", ct_get_test_file_path(), fileName);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
 
     f = fopen(file, "rb");
     if (!f)
@@ -389,13 +388,12 @@ void ct_write_image(const char* fileName, CT_Image image)
     char* dotpos;
     int result = -1;
     size_t size;
-    char file[512];
+    char file[MAXPATHLENGTH];
 
     if (fileName)
     {
-        strncpy(file, ct_get_test_file_path(), 512);
-        size = 512 - strlen(file);
-        strncat(file, fileName, size);
+        size = snprintf(file, MAXPATHLENGTH, "%s%s", ct_get_test_file_path(), fileName);
+        ASSERT(size < MAXPATHLENGTH);
 
         dotpos = strrchr(file, '.');
         if(dotpos &&

@@ -507,7 +507,7 @@ static vx_status VX_CALLBACK own_Initialize(vx_node node, const vx_reference *pa
     if (local_size_kernel_alloc > 0)
     {
         size = local_size_kernel_alloc;
-        ptr = calloc(1, local_size_kernel_alloc);
+        ptr = ct_calloc(1, local_size_kernel_alloc);
     }
     set_local_size_status_init = vxSetNodeAttribute(node, VX_NODE_LOCAL_DATA_SIZE, &size, sizeof(size));
     set_local_ptr_status_init = vxSetNodeAttribute(node, VX_NODE_LOCAL_DATA_PTR, &ptr, sizeof(ptr));
@@ -535,7 +535,7 @@ static vx_status VX_CALLBACK own_Deinitialize(vx_node node, const vx_reference *
         size = 0;
         if (ptr != NULL)
         {
-            free(ptr);
+            ct_free_mem(ptr);
             ptr = NULL;
         }
     }

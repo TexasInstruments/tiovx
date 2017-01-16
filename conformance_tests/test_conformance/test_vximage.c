@@ -1245,7 +1245,7 @@ TEST_WITH_ARG(Image, testUniformImage, format_arg,
     switch (arg_->format)
     {
         case VX_DF_IMAGE_U8:
-            memset(refimg->data.y, vals.U8, 640*480);
+            ct_memset(refimg->data.y, vals.U8, 640*480);
             break;
         case VX_DF_IMAGE_U16:
             for (i = 0; i < 640*480; ++i)
@@ -1281,17 +1281,17 @@ TEST_WITH_ARG(Image, testUniformImage, format_arg,
             }
             break;
         case VX_DF_IMAGE_YUV4:
-            memset(refimg->data.y + 640*480*0, vals.YUV[0], 640*480);
-            memset(refimg->data.y + 640*480*1, vals.YUV[1], 640*480);
-            memset(refimg->data.y + 640*480*2, vals.YUV[2], 640*480);
+            ct_memset(refimg->data.y + 640*480*0, vals.YUV[0], 640*480);
+            ct_memset(refimg->data.y + 640*480*1, vals.YUV[1], 640*480);
+            ct_memset(refimg->data.y + 640*480*2, vals.YUV[2], 640*480);
             break;
         case VX_DF_IMAGE_IYUV:
-            memset(refimg->data.y, vals.YUV[0], 640 * 480);
-            memset(refimg->data.y + 640*480, vals.YUV[1], 640/2*480/2);
-            memset(refimg->data.y + 640*480 + 640/2*480/2, vals.YUV[2], 640/2*480/2);
+            ct_memset(refimg->data.y, vals.YUV[0], 640 * 480);
+            ct_memset(refimg->data.y + 640*480, vals.YUV[1], 640/2*480/2);
+            ct_memset(refimg->data.y + 640*480 + 640/2*480/2, vals.YUV[2], 640/2*480/2);
             break;
         case VX_DF_IMAGE_NV12:
-            memset(refimg->data.y, vals.YUV[0], 640 * 480);
+            ct_memset(refimg->data.y, vals.YUV[0], 640 * 480);
             for (i = 0; i < 640/2*480/2; ++i)
             {
                 refimg->data.y[640*480 + 2 * i + 0] = vals.YUV[1];
@@ -1299,7 +1299,7 @@ TEST_WITH_ARG(Image, testUniformImage, format_arg,
             }
             break;
         case VX_DF_IMAGE_NV21:
-            memset(refimg->data.y, vals.YUV[0], 640 * 480);
+            ct_memset(refimg->data.y, vals.YUV[0], 640 * 480);
             for (i = 0; i < 640/2*480/2; ++i)
             {
                 refimg->data.y[640*480 + 2 * i + 0] = vals.YUV[2];
@@ -3638,7 +3638,7 @@ TEST_WITH_ARG(vxCreateImageFromChannel, testChannelFromRandomImage, CreateImageF
         vxCopyImagePatch(tst, &rect, 0, &addr, ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
         /* clean patch memory */
-        memset(ptr, 0, sz);
+        ct_memset(ptr, 0, sz);
 
         /* get channel patch from original image */
         vxCopyImagePatch(src, &rect, p, &addr, ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
@@ -3691,7 +3691,7 @@ TEST_WITH_ARG(vxCreateImageFromChannel, testChannelFromRandomImage, CreateImageF
         vxCopyImagePatch(src, &rect, p, &addr, ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
         /* clean patch memory */
-        memset(ptr, 0, sz);
+        ct_memset(ptr, 0, sz);
 
         /* get patch from image created from channel */
         vxCopyImagePatch(tst, &rect, 0, &addr, ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);

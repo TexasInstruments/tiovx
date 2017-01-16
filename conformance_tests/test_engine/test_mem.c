@@ -72,3 +72,26 @@ void ct_memset(void *ptr, vx_uint8 c, size_t size)
         tivxMemBufferUnmap(ptr, size, TIVX_MEM_EXTERNAL, VX_WRITE_ONLY);
     }
 }
+
+void *ct_calloc(size_t nmemb, size_t size)
+{
+    void *ptr = NULL;
+    size_t new_size;
+
+    if ((0 != size) && (0 != nmemb))
+    {
+        new_size = size * nmemb;
+        new_size = (new_size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
+            ~(CT_MEM_ALLOC_ALIGN);
+        ptr = tivxMemAlloc(new_size);
+
+        if (NULL != ptr)
+        {
+            /* First word stores the size of the memory allocated */
+            *(uint32_t*)ptr = new_size;
+            ptr = (void *)((uint32_t)ptr + CT_MEM_HEADER_SIZE);
+        }
+    }
+
+    return (ptr);
+}

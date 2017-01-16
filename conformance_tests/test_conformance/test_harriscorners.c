@@ -294,7 +294,7 @@ TEST_WITH_ARG(HarrisCorners, testGraphProcessing, Arg,
     vx_scalar strength_thresh_scalar, min_distance_scalar, sensitivity_scalar, num_corners_scalar;
     vx_array corners;
 
-    char filepath[2048];
+    char filepath[MAXPATHLENGTH];
 
     CT_Image input = NULL;
     TruthData truth_data;
@@ -365,11 +365,12 @@ TEST_WITH_ARG(HarrisCorners, testImmediateProcessing, Arg,
     vx_float32 min_distance = arg_->min_distance + FLT_EPSILON;
     vx_float32 sensitivity = arg_->sensitivity;
     vx_size num_corners;
+    size_t sz = 0;
 
     vx_scalar strength_thresh_scalar, min_distance_scalar, sensitivity_scalar, num_corners_scalar;
     vx_array corners;
 
-    char filepath[2048];
+    char filepath[MAXPATHLENGTH];
 
     CT_Image input = NULL;
     TruthData truth_data;
@@ -377,7 +378,8 @@ TEST_WITH_ARG(HarrisCorners, testImmediateProcessing, Arg,
     double scale = 1.0 / ((1 << (arg_->gradient_size - 1)) * arg_->block_size * 255.0);
     scale = scale * scale * scale * scale;
 
-    sprintf(filepath, "%sharriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
+    sz = snprintf(filepath, MAXPATHLENGTH, "%sharriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
+    ASSERT(sz < MAXPATHLENGTH);
     ASSERT_NO_FAILURE(harris_corner_read_truth_data(filepath, &truth_data, (float)scale));
 
     strength_thresh = truth_data.strength_thresh;

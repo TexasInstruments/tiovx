@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -149,7 +149,7 @@ TEST_WITH_ARG(EqualizeHistogram, testOnRandom, format_arg,
         if( iter % 20 == 0 )
         {
             uint8_t val = (uint8_t)CT_RNG_NEXT_INT(rng, a, b);
-            memset(src0->data.y, val, ct_stride_bytes(src0)*src0->height);
+            ct_memset(src0->data.y, val, ct_stride_bytes(src0)*src0->height);
         }
         ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, format));
         ASSERT_NO_FAILURE(reference_eqhist(src0, dst0));

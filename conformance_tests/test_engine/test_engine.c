@@ -654,23 +654,6 @@ int CT_main(int argc, char* argv[], const char* version_str)
         printf("\n");
     }
 
-    #if !defined(SYSBIOS) && !defined(WINDOWS)
-    {
-        const char* test_data_path = getenv("VX_TEST_DATA_PATH");
-        if (test_data_path && test_data_path[0] != '\0')
-        {
-#ifdef _MSC_VER
-            if (0 != _chdir(test_data_path))
-#else
-            if (0 != chdir(test_data_path))
-#endif
-            {
-                printf("ERROR: VX_TEST_DATA_PATH points to bad location\n");
-            }
-        }
-    }
-    #endif
-
 #ifdef CT_TEST_TIME
     g_tickFreq = CT_getTickFrequency();
 #endif

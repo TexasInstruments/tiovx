@@ -432,7 +432,7 @@ static struct GrfmtReader* readBmpHeader(const uchar* data, int datasize, int* _
     reader = (GrfmtBmpReader*)ct_alloc_mem(sizeof(*reader));
     if( !reader )
         return 0;
-    memset(reader, 0, sizeof(*reader));
+    ct_memset(reader, 0, sizeof(*reader));
     reader->base.release = releaseBmpReader;
     reader->base.read = readBmpData;
 
@@ -494,7 +494,7 @@ static int writeBMP( const char* filename, const uchar* img, int step, int width
     PUT_DWORD(p, height);
     PUT_DWORD(p, 1 | (channels << 19));
     PUT_DWORD(p, BMP_RGB);
-    memset(p, 0, 20);
+    ct_memset(p, 0, 20);
     p += 20;
 
     if( channels == 1 )
@@ -522,7 +522,7 @@ static int writeBMP( const char* filename, const uchar* img, int step, int width
             }
         }
         if( fileStep > width3 )
-            memset(p + width3, 0, fileStep - width3);
+            ct_memset(p + width3, 0, fileStep - width3);
     }
 
     fwrite(buf, 1, fileSize, f);

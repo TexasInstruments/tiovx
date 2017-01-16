@@ -31,6 +31,8 @@
 
 #include <VX/vx.h>
 
+#define MAXPATHLENGTH           (512u)
+
 #define VX_CALL(fn_call) ASSERT_EQ_VX_STATUS(VX_SUCCESS, fn_call)
 #define VX_CALL_(ret_code, fn_call) ASSERT_EQ_VX_STATUS_AT_(ret_code, VX_SUCCESS, fn_call, __FUNCTION__, __FILE__, __LINE__)
 #define VX_CALL_RET(fn_call) ASSERT_EQ_VX_STATUS_AT_(return VX_FAILURE, VX_SUCCESS, fn_call, __FUNCTION__, __FILE__, __LINE__)
@@ -228,6 +230,8 @@ void *ct_alloc_mem(size_t size);
 void ct_free_mem(void *ptr);
 
 void ct_memset(void *ptr, vx_uint8 c, size_t);
+
+void *ct_calloc(size_t nmemb, size_t size);
 
 char *ct_get_test_file_path();
 

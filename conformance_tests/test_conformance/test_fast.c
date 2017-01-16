@@ -87,7 +87,7 @@ static uint32_t reference_fast(CT_Image src, CT_Image dst, CT_Image mask, int th
     height = src->height;
     srcstride = (int32_t)ct_stride_bytes(src);
     dststride = (int32_t)ct_stride_bytes(dst);
-    memset( dst->data.y, 0, (vx_size)dststride*height );
+    ct_memset( dst->data.y, 0, (vx_size)dststride*height );
 
     for( y = r; y < height - r; y++ )
     {
@@ -227,7 +227,7 @@ TEST_WITH_ARG(FastCorners, testOnNaturalImages, format_arg,
     ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
     ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
     dst1stride = ct_stride_bytes(dst1);
-    memset(dst1->data.y, 0, (vx_size)dst1stride*height);
+    ct_memset(dst1->data.y, 0, (vx_size)dst1stride*height);
 
     ncorners0 = reference_fast(src0, dst0, mask0, threshold, nonmax);
 

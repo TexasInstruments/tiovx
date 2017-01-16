@@ -1011,6 +1011,6 @@ char *ct_get_test_file_path()
     #if defined(SYSBIOS)
     return "sd:test_data/";
     #else
-    return "../../../../../conformance_tests/test_data/";
+    return getenv("VX_TEST_DATA_PATH");
     #endif
 }

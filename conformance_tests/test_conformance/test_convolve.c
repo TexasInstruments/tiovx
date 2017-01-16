@@ -54,7 +54,7 @@ static vx_convolution convolution_create(vx_context context, int cols, int rows,
 static void convolution_data_fill_identity(int cols, int rows, vx_int16* data)
 {
     int x = cols / 2, y = rows / 2;
-    memset(data, 0, sizeof(vx_int16) * cols * rows);
+    ct_memset(data, 0, sizeof(vx_int16) * cols * rows);
     data[y * cols + x] = 1;
 }
 
