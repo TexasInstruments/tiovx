@@ -2010,7 +2010,7 @@ static void test_laplacianpyramid(vx_context context)
         vx_node node = 0;
 
         ASSERT_VX_OBJECT(src = vxCreateImage(context, 320, 240, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(out = vxCreateImage(context, 160, 120, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(out = vxCreateImage(context, 160, 120, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst = vxCreatePyramid(context, levels, scale, 320, 240, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
         ASSERT_VX_OBJECT(node = vxLaplacianPyramidNode(graph, src, dst, out), VX_TYPE_NODE);
@@ -2063,7 +2063,7 @@ static void test_laplacianreconstruct(vx_context context)
         vx_node node = 0;
 
         ASSERT_VX_OBJECT(src = vxCreatePyramid(context, levels, scale, 320, 240, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
-        ASSERT_VX_OBJECT(in = vxCreateImage(context, 160, 120, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(in = vxCreateImage(context, 160, 120, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst = vxCreateImage(context, 320, 240, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
         ASSERT_VX_OBJECT(node = vxLaplacianReconstructNode(graph, src, in, dst), VX_TYPE_NODE);
