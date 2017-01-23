@@ -40,6 +40,17 @@
 #define tivxIsValidDelay(d) ((d) && ownIsValidSpecificReference((vx_reference)(d), VX_TYPE_DELAY))
 #define tivxIsValidGraph(g) ((g) && ownIsValidSpecificReference((vx_reference)(g), VX_TYPE_GRAPH))
 
+static vx_bool ownIsValidObject(vx_enum type);
+static void ownResetDelayPrmPool(vx_delay delay);
+static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay);
+static void ownFreeDelayPrm(vx_delay delay, tivx_delay_param_t *prm);
+static vx_status ownAddRefToDelay(vx_context context, vx_delay delay, vx_reference ref, uint32_t i);
+static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items);
+static vx_status ownDestructDelay(vx_reference ref);
+static vx_status ownAllocDelayBuffer(vx_reference delay_ref);
+static void ownDelayInit(vx_delay delay, vx_size count, vx_enum type);
+
+
 static vx_bool ownIsValidObject(vx_enum type)
 {
     vx_bool status = vx_false_e;
@@ -159,7 +170,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     vx_int32 index = (delay->index + delay->count - abs(delay_index)) % (vx_int32)delay->count;
     vx_status status = vx_true_e;
 
-    if (delay->set[index].node == n && delay->set[index].index == i) /* head is a match */
+    if ( (delay->set[index].node == n) && (delay->set[index].index == i) ) /* head is a match */
     {
         delay->set[index].node = NULL;
         delay->set[index].index = 0;
@@ -172,7 +183,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
         {
             if (*ptr != NULL)
             {
-                if ((*ptr)->node == n && (*ptr)->index == i)
+                if ( ((*ptr)->node == n) && ((*ptr)->index == i) )
                 {
                     next = (*ptr)->next;
                     ownFreeDelayPrm(delay, *ptr);
@@ -221,7 +232,7 @@ static void ownReleaseRefFromDelay(vx_delay delay, uint32_t num_items)
 {
     uint32_t i;
 
-    if (tivxIsValidDelay(delay) && (delay->type == VX_TYPE_PYRAMID) && delay->pyr_num_levels > 0)
+    if (tivxIsValidDelay(delay) && (delay->type == VX_TYPE_PYRAMID) && (delay->pyr_num_levels > 0) )
     {
         /* release pyramid delays */
         for (i = 0; i < delay->pyr_num_levels; i++)
@@ -329,11 +340,11 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
     if ( ownIsValidContext(context) )
     {
-        if (ownIsValidReference(exemplar) && ownIsValidObject(exemplar->type) && count <= TIVX_DELAY_MAX_OBJECT)
+        if (ownIsValidReference(exemplar) && ownIsValidObject(exemplar->type) && (count <= TIVX_DELAY_MAX_OBJECT) )
         {
             delay = (vx_delay)ownCreateReference(
                                     context, VX_TYPE_DELAY, VX_EXTERNAL, &context->base);
-            if (vxGetStatus((vx_reference)delay) == VX_SUCCESS && delay->base.type == VX_TYPE_DELAY)
+            if ( (vxGetStatus((vx_reference)delay) == VX_SUCCESS) && (delay->base.type == VX_TYPE_DELAY) )
             {
                 ownDelayInit(delay, count, exemplar->type);
 
@@ -354,7 +365,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         break;
                     }
                 }
-                if (status == VX_SUCCESS && exemplar->type == VX_TYPE_PYRAMID)
+                if ( (status == VX_SUCCESS) && (exemplar->type == VX_TYPE_PYRAMID) )
                 {
                     vx_size levels, level_idx;
                     vx_delay pyrdelay;
@@ -367,7 +378,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                         {
                             pyrdelay = (vx_delay)ownCreateReference(context, VX_TYPE_DELAY, VX_INTERNAL, (vx_reference)delay);
                             delay->pyr_delay[level_idx] = pyrdelay;
-                            if (vxGetStatus((vx_reference)pyrdelay) == VX_SUCCESS && pyrdelay->base.type == VX_TYPE_DELAY)
+                            if ( (vxGetStatus((vx_reference)pyrdelay) == VX_SUCCESS) && (pyrdelay->base.type == VX_TYPE_DELAY) )
                             {
                                 ownDelayInit(pyrdelay, count, VX_TYPE_IMAGE);
                                 for (i = 0; i < count; i++)
@@ -495,12 +506,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
             } while (param != NULL);
         }
 
-        if (delay->type == VX_TYPE_PYRAMID && delay->pyr_num_levels > 0)
+        if ( (delay->type == VX_TYPE_PYRAMID) && (delay->pyr_num_levels > 0) )
         {
             /* age pyramid levels */
             vx_int32 numLevels = (vx_int32)delay->pyr_num_levels;
             for (i = 0; i < numLevels; ++i)
+            {
                 vxAgeDelay(delay->pyr_delay[i]);
+            }
         }
     }
     else

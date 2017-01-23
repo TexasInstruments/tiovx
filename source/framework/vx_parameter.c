@@ -28,6 +28,8 @@
 
 #include <vx_internal.h>
 
+static vx_status ownDestructParameter(vx_reference ref);
+
 static vx_status ownDestructParameter(vx_reference ref)
 {
     vx_parameter param = (vx_parameter)ref;
@@ -111,10 +113,10 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
 
     if (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
     {
-        if (index < TIVX_KERNEL_MAX_PARAMS && index < kernel->signature.num_parameters)
+        if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < kernel->signature.num_parameters))
         {
             parameter = (vx_parameter)ownCreateReference(kernel->base.context, VX_TYPE_PARAMETER, VX_EXTERNAL, &kernel->base.context->base);
-            if (vxGetStatus((vx_reference)parameter) == VX_SUCCESS && parameter->base.type == VX_TYPE_PARAMETER)
+            if ((vxGetStatus((vx_reference)parameter) == VX_SUCCESS) && (parameter->base.type == VX_TYPE_PARAMETER))
             {
                 parameter->base.destructor_callback = ownDestructParameter;
                 parameter->base.release_callback = (tivx_reference_release_callback_f)vxReleaseParameter;
@@ -148,10 +150,10 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
         }
         else
         {
-            if (index < TIVX_KERNEL_MAX_PARAMS && index < node->kernel->signature.num_parameters)
+            if ((index < TIVX_KERNEL_MAX_PARAMS) && (index < node->kernel->signature.num_parameters))
             {
                 param = (vx_parameter)ownCreateReference(node->base.context, VX_TYPE_PARAMETER, VX_EXTERNAL, &node->base);
-                if (vxGetStatus((vx_reference)param) == VX_SUCCESS && param->base.type == VX_TYPE_PARAMETER)
+                if ((vxGetStatus((vx_reference)param) == VX_SUCCESS) && (param->base.type == VX_TYPE_PARAMETER))
                 {
                     param->base.destructor_callback = ownDestructParameter;
                     param->base.release_callback = (tivx_reference_release_callback_f)vxReleaseParameter;

@@ -36,6 +36,7 @@
 
 #include <vx_internal.h>
 
+static vx_char *find_zone_name(vx_enum zone);
 
 static vx_uint32 g_debug_zonemask = 0;
 
@@ -86,7 +87,7 @@ static vx_char *find_zone_name(vx_enum zone)
 
 void tivx_set_debug_zone(vx_enum zone)
 {
-    if (0 <= zone && zone < VX_ZONE_MAX) {
+    if ( (0 <= zone) && (zone < VX_ZONE_MAX) ) {
         g_debug_zonemask |= ZONE_BIT(zone);
         tivx_print(zone, "Enabled\n");
     }
@@ -94,7 +95,7 @@ void tivx_set_debug_zone(vx_enum zone)
 
 void tivx_clr_debug_zone(vx_enum zone)
 {
-    if (0 <= zone && zone < VX_ZONE_MAX) {
+    if ( (0 <= zone) && (zone < VX_ZONE_MAX) ) {
         tivx_print(zone, "Disabled\n");
         g_debug_zonemask &= ~(ZONE_BIT(zone));
     }
@@ -104,7 +105,7 @@ vx_bool tivx_get_debug_zone(vx_enum zone)
 {
     vx_bool zone_enabled;
 
-    if (0 <= zone && zone < VX_ZONE_MAX)
+    if ( (0 <= zone) && (zone < VX_ZONE_MAX) )
     {
         zone_enabled = ((g_debug_zonemask & zone)?vx_true_e:vx_false_e);
     }

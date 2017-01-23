@@ -95,7 +95,7 @@ uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_ker
     uint32_t index = TIVX_TARGET_KERNEL_INSTANCE_MAX;
 
     if(target_kernel_instance &&
-        target_kernel_instance->index < TIVX_TARGET_KERNEL_INSTANCE_MAX)
+        (target_kernel_instance->index < TIVX_TARGET_KERNEL_INSTANCE_MAX))
     {
         index = target_kernel_instance->index;
     }
@@ -108,7 +108,7 @@ tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance
     tivx_target_kernel kernel = NULL;
 
     if(target_kernel_instance
-        && target_kernel_instance->kernel_id != TIVX_TARGET_KERNEL_ID_INVALID)
+        && (target_kernel_instance->kernel_id != TIVX_TARGET_KERNEL_ID_INVALID))
     {
         kernel = target_kernel_instance->kernel;
     }

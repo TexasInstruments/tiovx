@@ -103,7 +103,7 @@ static vx_reference ownCreateLutFromExemplar(
         lut = vxCreateLUT(context, data_type, count);
     }
 
-    return (vx_reference)(lut);
+    return (vx_reference)lut;
 }
 
 static vx_reference ownCreateRemapFromExemplar(
@@ -128,7 +128,7 @@ static vx_reference ownCreateRemapFromExemplar(
             dst_height);
     }
 
-    return (vx_reference)(rem);
+    return (vx_reference)rem;
 }
 
 static vx_reference ownCreateMatrixFromExemplar(
@@ -149,7 +149,7 @@ static vx_reference ownCreateMatrixFromExemplar(
         mat = vxCreateMatrix(context, type, columns, rows);
     }
 
-    return (vx_reference)(mat);
+    return (vx_reference)mat;
 }
 
 static vx_reference ownCreatePyramidFromExemplar(
@@ -174,7 +174,7 @@ static vx_reference ownCreatePyramidFromExemplar(
             format);
     }
 
-    return (vx_reference)(pmd);
+    return (vx_reference)pmd;
 }
 
 static vx_reference ownCreateImageFromExemplar(
@@ -194,7 +194,7 @@ static vx_reference ownCreateImageFromExemplar(
         img = vxCreateImage(context, width, height, format);
     }
 
-    return (vx_reference)(img);
+    return (vx_reference)img;
 }
 
 static vx_reference ownCreateArrayFromExemplar(
@@ -213,7 +213,7 @@ static vx_reference ownCreateArrayFromExemplar(
         arr = vxCreateArray(context, type, capacity);
     }
 
-    return (vx_reference)(arr);
+    return (vx_reference)arr;
 }
 
 static vx_reference ownCreateScalarFromExemplar(
@@ -230,7 +230,7 @@ static vx_reference ownCreateScalarFromExemplar(
         sc = vxCreateScalar(context, type, NULL);
     }
 
-    return (vx_reference)(sc);
+    return (vx_reference)sc;
 }
 
 static vx_reference ownCreateDistributionFromExemplar(
@@ -251,7 +251,7 @@ static vx_reference ownCreateDistributionFromExemplar(
         dist = vxCreateDistribution(context, num_bins, offset, range);
     }
 
-    return (vx_reference)(dist);
+    return (vx_reference)dist;
 }
 
 static vx_reference ownCreateThresholdFromExemplar(
@@ -272,7 +272,7 @@ static vx_reference ownCreateThresholdFromExemplar(
         thr = vxCreateThreshold(context, thr_type, data_type);
     }
 
-    return (vx_reference)(thr);
+    return (vx_reference)thr;
 }
 
 static vx_reference ownCreateConvolutionFromExemplar(
@@ -291,5 +291,5 @@ static vx_reference ownCreateConvolutionFromExemplar(
         conv = vxCreateConvolution(context, columns, rows);
     }
 
-    return (vx_reference)(conv);
+    return (vx_reference)conv;
 }

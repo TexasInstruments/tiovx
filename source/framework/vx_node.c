@@ -37,7 +37,10 @@
 
 #include <vx_internal.h>
 
-
+static vx_status ownDestructNode(vx_reference ref);
+static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel);
+static vx_status ownRemoveNodeInt(vx_node *n);
+static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
 
 static vx_status ownDestructNode(vx_reference ref)
 {
@@ -159,7 +162,7 @@ static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32
 
     for(i=0; i<num_params ; i++)
     {
-        if( params[i] != NULL && params[i]->is_virtual)
+        if( (params[i] != NULL) && (params[i]->is_virtual))
         {
             params[i]->is_accessible = is_accessible;
         }
@@ -224,7 +227,7 @@ vx_status ownNodeKernelInit(vx_node node)
                     node->local_data_ptr = NULL;
                 }
 
-                if(node->kernel->initialize && status == VX_SUCCESS)
+                if((node->kernel->initialize) && (status == VX_SUCCESS))
                 {
                     node->local_data_set_allow = vx_true_e;
 
@@ -234,11 +237,11 @@ vx_status ownNodeKernelInit(vx_node node)
 
                     node->local_data_set_allow = vx_false_e;
 
-                    if(node->kernel->local_data_size==0
+                    if((node->kernel->local_data_size==0)
                         &&
-                        node->local_data_size != 0
+                        (node->local_data_size != 0)
                         &&
-                        node->local_data_ptr == NULL
+                        (node->local_data_ptr == NULL)
                         )
                     {
                         node->local_data_ptr = tivxMemAlloc(node->local_data_size);
@@ -331,7 +334,7 @@ vx_status ownNodeUserKernelExecute(vx_node node)
 
     if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
     {
-        if(node->kernel && node->is_kernel_created == vx_true_e)
+        if(node->kernel && (node->is_kernel_created == vx_true_e))
         {
             if(node->kernel->function && !node->kernel->is_target_kernel)
             {
@@ -419,7 +422,7 @@ vx_status ownResetNodePerf(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e))
     {
         node->perf.tmp = 0;
         node->perf.beg = 0;
@@ -441,7 +444,7 @@ vx_status ownUpdateNodePerf(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e))
     {
         tivx_uint32_to_uint64(
                 &node->perf.beg,
@@ -475,7 +478,7 @@ vx_status ownSetNodeImmTarget(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e))
     {
         vx_context context = node->base.context;
 
@@ -495,7 +498,7 @@ vx_status ownSetNodeAttributeValidRectReset(vx_node node, vx_bool is_reset)
 {
    vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e))
     {
         node->valid_rect_reset = is_reset;
     }
@@ -625,7 +628,7 @@ vx_status ownNodeSendCompletionEvent(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e && node->completion_event)
+    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e) && node->completion_event)
     {
         status = tivxEventPost(node->completion_event);
     }
@@ -641,7 +644,7 @@ vx_status ownNodeWaitCompletionEvent(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e && node->completion_event)
+    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e) && node->completion_event)
     {
         status = tivxEventWait(node->completion_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
     }
@@ -716,7 +719,7 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
 
     if(node && node->obj_desc)
     {
-        if( tivxFlagIsBitSet( node->obj_desc->flags, TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e
+        if( (tivxFlagIsBitSet( node->obj_desc->flags, TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e)
             &&
             node->replicated_flags[prm_idx])
         {
@@ -744,7 +747,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
             if(n>=0)
             {
                 node = (vx_node)ownCreateReference(graph->base.context, VX_TYPE_NODE, VX_EXTERNAL, &graph->base);
-                if (vxGetStatus((vx_reference)node) == VX_SUCCESS && node->base.type == VX_TYPE_NODE)
+                if ((vxGetStatus((vx_reference)node) == VX_SUCCESS) && (node->base.type == VX_TYPE_NODE))
                 {
                     /* set kernel, params, graph to NULL */
                     node->kernel = NULL;
@@ -923,7 +926,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_REPLICATE_FLAGS:
             {
                 vx_size sz = sizeof(vx_bool)*node->kernel->signature.num_parameters;
-                if (size == sz && ((vx_size)ptr & 0x3) == 0)
+                if ((size == sz) && (((vx_size)ptr & 0x3) == 0))
                 {
                     vx_uint32 i = 0;
                     vx_uint32 numParams = node->kernel->signature.num_parameters;
@@ -980,7 +983,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                 case VX_NODE_LOCAL_DATA_SIZE:
                     if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3) && node->kernel)
                     {
-                        if(node->local_data_ptr_is_alloc || node->local_data_set_allow == vx_false_e)
+                        if((node->local_data_ptr_is_alloc) || (node->local_data_set_allow == vx_false_e))
                         {
                             /* local data ptr is allocated or local data size cannot be set
                              * by user
@@ -1000,7 +1003,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                 case VX_NODE_LOCAL_DATA_PTR:
                     if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3) && node->kernel)
                     {
-                        if(node->local_data_ptr_is_alloc || node->local_data_set_allow == vx_false_e)
+                        if((node->local_data_ptr_is_alloc) || (node->local_data_set_allow == vx_false_e))
                         {
                             /* local data ptr is allocated or local data ptr cannot be set
                              * by user
@@ -1170,7 +1173,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             vxQueryParameter(param, VX_PARAMETER_STATE, &state, sizeof(vx_enum));
             vxQueryParameter(param, VX_PARAMETER_DIRECTION, &dir, sizeof(vx_enum));
 
-            if (replicate[p] == vx_false_e && (dir == VX_OUTPUT || dir == VX_BIDIRECTIONAL))
+            if ((replicate[p] == vx_false_e) && ((dir == VX_OUTPUT) || (dir == VX_BIDIRECTIONAL)))
             {
                 status = VX_FAILURE;
             }
@@ -1201,7 +1204,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                             if (num_of_replicas == 0)
                                 num_of_replicas = items;
 
-                            if (num_of_replicas != 0 && items != num_of_replicas)
+                            if ((num_of_replicas != 0) && (items != num_of_replicas))
                                 status = VX_FAILURE;
                         }
                     }
@@ -1232,7 +1235,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
         {
             if(replicate[n])
             {
-                first_node->obj_desc->is_prm_replicated |= (1U<<n);
+                first_node->obj_desc->is_prm_replicated |= 1U<<n;
             }
 
             first_node->replicated_flags[n] = replicate[n];
@@ -1312,7 +1315,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
 
 void ownNodeClearExecuteState(vx_node node)
 {
-    if (NULL != node && NULL != node->obj_desc)
+    if ((NULL != node) && (NULL != node->obj_desc))
     {
         tivxFlagBitClear(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
     }
@@ -1336,7 +1339,7 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
 {
     vx_node next_node = NULL;
 
-    if(node && node->obj_desc && index < node->obj_desc->num_out_nodes)
+    if(node && node->obj_desc && (index < node->obj_desc->num_out_nodes))
     {
         tivx_obj_desc_node_t *next_node_obj_desc;
 

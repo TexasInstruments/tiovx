@@ -11,6 +11,27 @@
 
 static tivx_target_t g_target_table[TIVX_TARGET_MAX_TARGETS_IN_CPU];
 
+static tivx_target tivxTargetAllocHandle(vx_enum target_id);
+static void tivxTargetFreeHandle(tivx_target *target_handle);
+static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout);
+static tivx_target tivxTargetGetHandle(vx_enum target_id);
+static void tivxTargetNodeDescSendComplete(tivx_obj_desc_node_t *node_obj_desc);
+static vx_bool tivxTargetNodeDescCanNodeExecute(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescTriggerNextNodes(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc);
+static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
+static vx_status tivxTargetNodeDescNodeDelete(tivx_obj_desc_node_t *node_obj_desc);
+static vx_status tivxTargetNodeDescNodeControl(tivx_obj_desc_cmd_t *cmd_obj_desc, tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
+static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetSetGraphStateAbandon(
+    tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
+static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
+
+
 static tivx_target tivxTargetAllocHandle(vx_enum target_id)
 {
     uint16_t target_inst = TIVX_GET_TARGET_INST(target_id);
@@ -40,7 +61,7 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
 
 static void tivxTargetFreeHandle(tivx_target *target_handle)
 {
-    if(target_handle && *target_handle!=NULL)
+    if(target_handle && (*target_handle!=NULL))
     {
         /* mark target handle as free */
         (*target_handle)->target_id = TIVX_TARGET_ID_INVALID;
@@ -98,7 +119,7 @@ static void tivxTargetNodeDescSendComplete(tivx_obj_desc_node_t *node_obj_desc)
 
     if( tivxFlagIsBitSet(node_obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK)
             ||
-        node_obj_desc->num_out_nodes == 0
+        (node_obj_desc->num_out_nodes == 0)
         )
     {
         cmd_obj_desc_id = node_obj_desc->node_complete_cmd_obj_desc_id;
@@ -517,8 +538,8 @@ void VX_CALLBACK tivxTargetTaskMain(void *app_var)
         status = tivxTargetDequeueObjDesc(target,
                     &obj_desc_id, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
-        if(    status != VX_SUCCESS
-            || obj_desc_id == TIVX_OBJ_DESC_INVALID )
+        if(    (status != VX_SUCCESS)
+            || (obj_desc_id == TIVX_OBJ_DESC_INVALID) )
         {
             /* in case of error, do nothing,
              * if target exit was requested, while(...) condition check with

@@ -13,6 +13,9 @@
 
 #include <vx_internal.h>
 
+static inline void tivxGraphSortStackReset(tivx_graph_sort_context *context, uint16_t max_elems);
+static inline vx_bool tivxGraphSortStackPush(tivx_graph_sort_context *context, vx_node elem);
+static inline vx_bool tivxGraphSortStackPop(tivx_graph_sort_context *context, vx_node *elem);
 
 static inline void tivxGraphSortStackReset(tivx_graph_sort_context *context, uint16_t max_elems)
 {

@@ -37,6 +37,12 @@
 
 #include <vx_internal.h>
 
+static vx_bool ownIsValidBorderMode(vx_enum mode);
+static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_t *kernel_info, uint32_t max_kernels);
+static vx_status ownContextCreateCmdObj(vx_context context);
+static vx_status ownContextDeleteCmdObj(vx_context context);
+
+
 static const vx_char g_context_implmentation_name[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
 
 static const vx_char g_context_default_load_module[] = TIVX_MODULE_NAME;
@@ -127,7 +133,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
 
 static vx_status ownContextDeleteCmdObj(vx_context context)
 {
-    vx_status status = VX_SUCCESS, status1, status2;
+    vx_status status = VX_SUCCESS, status1 = VX_SUCCESS, status2 = VX_SUCCESS;
 
     if(context->obj_desc_cmd != NULL)
     {
@@ -137,7 +143,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context)
     {
         status2 = tivxEventDelete(&context->cmd_ack_event);
     }
-    if(status1 != VX_SUCCESS || status2 != VX_SUCCESS )
+    if( (status1 != VX_SUCCESS) || (status2 != VX_SUCCESS) )
     {
         status = VX_FAILURE;
     }
@@ -223,9 +229,9 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
     vx_status status = VX_SUCCESS;
     uint32_t idx;
 
-    if( ownIsValidContext(context) == vx_false_e
+    if( (ownIsValidContext(context) == vx_false_e)
        ||
-        ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_false_e
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_false_e)
      )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -262,9 +268,9 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
     vx_status status = VX_SUCCESS;
     uint32_t idx;
 
-    if( ownIsValidContext(context) == vx_false_e
+    if( (ownIsValidContext(context) == vx_false_e)
        ||
-        ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_false_e
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_false_e)
      )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -275,7 +281,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
 
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
-            if(context->kerneltable[idx]==kernel && context->num_unique_kernels>0)
+            if( (context->kerneltable[idx]==kernel) && (context->num_unique_kernels>0) )
             {
                 /* found free entry */
                 context->kerneltable[idx] = NULL;
@@ -302,7 +308,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     uint32_t idx;
     vx_kernel kernel;
 
-    if( ownIsValidContext(context) == vx_false_e || is_found == NULL)
+    if( (ownIsValidContext(context) == vx_false_e) || (is_found == NULL) )
     {
         status = VX_FAILURE;
     }
@@ -317,10 +323,9 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
             kernel = context->kerneltable[idx];
             if(kernel && ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
                 &&
-                ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0
+                ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
                     ||
-                    kernel->enumeration == enumeration
-
+                    (kernel->enumeration == enumeration)
                 )
                 )
             {
@@ -341,7 +346,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
-    if( ownIsValidContext(context) == vx_true_e && num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS)
+    if( (ownIsValidContext(context) == vx_true_e) && (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
     {
         ownContextLock(context);
 
@@ -516,21 +521,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 vx_reference ref = context->reftable[r];
 
                 /* Warnings should only come when users have not released all external references */
-                if (ref && ref->external_count > 0) {
+                if (ref && (ref->external_count > 0) ) {
                     VX_PRINT(VX_ZONE_WARNING,"Stale reference "VX_FMT_REF" of type %08x at external count %u, internal count %u\n",
                              ref, ref->type, ref->external_count, ref->internal_count);
                 }
 
                 /* These were internally opened during creation, so should internally close ERRORs */
-                if(ref && ref->type == VX_TYPE_ERROR) {
+                if(ref && (ref->type == VX_TYPE_ERROR) ) {
                     ownReleaseReferenceInt(&ref, ref->type, VX_INTERNAL, NULL);
                 }
 
                 /* Warning above so user can fix release external objects, but close here anyway */
-                while (ref && ref->external_count > 1) {
+                while (ref && (ref->external_count > 1) ) {
                     ownDecrementReference(ref, VX_EXTERNAL);
                 }
-                if (ref && ref->external_count > 0) {
+                if (ref && (ref->external_count > 0) ) {
                     ownReleaseReferenceInt(&ref, ref->type, VX_EXTERNAL, NULL);
                 }
             }
@@ -617,7 +622,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_IMPLEMENTATION:
-                if (size <= VX_MAX_IMPLEMENTATION_NAME && ptr)
+                if ( (size <= VX_MAX_IMPLEMENTATION_NAME) && ptr)
                 {
                     strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
                 }
@@ -637,7 +642,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_EXTENSIONS:
-                if (size <= sizeof(g_context_extensions) && ptr)
+                if ( (size <= sizeof(g_context_extensions) ) && ptr)
                 {
                     strncpy(ptr, g_context_extensions, sizeof(g_context_extensions));
                 }

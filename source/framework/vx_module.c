@@ -9,6 +9,8 @@
 
 #include <vx_internal.h>
 
+static void ownCheckAndInitModule();
+
 static tivx_module_t g_module_table[TIVX_MODULE_MAX];
 
 static void ownCheckAndInitModule()
@@ -36,11 +38,11 @@ uint32_t ownGetModuleCount()
 
     for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( g_module_table[idx].publish != NULL
+        if( (g_module_table[idx].publish != NULL)
             &&
-            g_module_table[idx].unpublish != NULL
+            (g_module_table[idx].unpublish != NULL)
             &&
-            g_module_table[idx].is_loaded
+            (g_module_table[idx].is_loaded)
           )
         {
             count++;
@@ -56,13 +58,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_ker
 
     ownCheckAndInitModule();
 
-    if(publish != NULL && unpublish != NULL)
+    if((publish != NULL) && (unpublish != NULL))
     {
         for(idx=0; idx<dimof(g_module_table); idx++)
         {
-            if(g_module_table[idx].publish == NULL
+            if((g_module_table[idx].publish == NULL)
                 &&
-                g_module_table[idx].unpublish == NULL
+                (g_module_table[idx].unpublish == NULL)
               )
             {
                 strncpy(g_module_table[idx].name, name, TIVX_MODULE_MAX_NAME);
@@ -94,9 +96,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name)
 
     for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( g_module_table[idx].publish != NULL
+        if( (g_module_table[idx].publish != NULL)
             &&
-            g_module_table[idx].unpublish != NULL
+            (g_module_table[idx].unpublish != NULL)
             &&
             (strncmp(g_module_table[idx].name, name, TIVX_MODULE_MAX_NAME) == 0)
           )
@@ -119,9 +121,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
     ownCheckAndInitModule();
     for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( g_module_table[idx].publish != NULL
+        if( (g_module_table[idx].publish != NULL)
             &&
-            g_module_table[idx].unpublish != NULL
+            (g_module_table[idx].unpublish != NULL)
             &&
             (strncmp(g_module_table[idx].name, module, TIVX_MODULE_MAX_NAME) == 0)
           )
@@ -152,9 +154,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
     ownCheckAndInitModule();
     for(idx=0; idx<dimof(g_module_table); idx++)
     {
-        if( g_module_table[idx].publish != NULL
+        if( (g_module_table[idx].publish != NULL)
             &&
-            g_module_table[idx].unpublish != NULL
+            (g_module_table[idx].unpublish != NULL)
             &&
             (strncmp(g_module_table[idx].name, module, TIVX_MODULE_MAX_NAME) == 0)
             &&

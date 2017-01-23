@@ -41,6 +41,8 @@ static vx_status ownDestructArray(vx_reference ref);
 static vx_status ownAllocArrayBuffer(vx_reference ref);
 static void ownInitArrayObject(
     vx_array arr, vx_enum item_type, vx_size capacity, vx_bool is_virtual);
+static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type);
+static vx_bool ownIsValidArrayItemType(vx_context context, vx_enum item_type);
 
 /* Function to get the size of user defined structure */
 static vx_size ownGetArrayItemSize(vx_context context, vx_enum item_type)
@@ -336,7 +338,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -378,7 +380,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -410,9 +412,9 @@ vx_status VX_API_CALL vxCopyArrayRange(
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if (arr->base.is_virtual == vx_true_e
+        if ( (arr->base.is_virtual == vx_true_e)
             &&
-            arr->base.is_accessible == vx_false_e
+            (arr->base.is_accessible == vx_false_e)
             )
         {
             /* cannot be accessed by app */
@@ -489,15 +491,15 @@ vx_status VX_API_CALL vxMapArrayRange(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        if (arr->base.is_virtual == vx_true_e
+        if ( (arr->base.is_virtual == vx_true_e)
             &&
-            arr->base.is_accessible == vx_false_e
+            (arr->base.is_accessible == vx_false_e)
             )
         {
             /* cannot be accessed by app */
@@ -563,15 +565,15 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if (obj_desc == NULL || obj_desc->mem_ptr.host_ptr == NULL)
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        if (arr->base.is_virtual == vx_true_e
+        if ( (arr->base.is_virtual == vx_true_e)
             &&
-            arr->base.is_accessible == vx_false_e
+            (arr->base.is_accessible == vx_false_e)
             )
         {
             /* cannot be accessed by app */

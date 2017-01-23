@@ -112,8 +112,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
         switch(attribute)
         {
             case VX_VALID_RECT_CALLBACK:
-                if(meta->type==VX_TYPE_IMAGE
-                   || meta->type==VX_TYPE_PYRAMID
+                if((meta->type==VX_TYPE_IMAGE)
+                   || (meta->type==VX_TYPE_PYRAMID)
                   )
                 {
                     if (VX_CHECK_PARAM(ptr, size, vx_kernel_image_valid_rectangle_f, 0x0))
@@ -429,7 +429,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
 {
     vx_status status = VX_SUCCESS;
 
-    if (NULL == meta || NULL == exemplar)
+    if ((NULL == meta) || (NULL == exemplar))
     {
         status = VX_FAILURE;
     }

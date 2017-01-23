@@ -102,9 +102,9 @@ vx_status VX_API_CALL vxQueryThreshold(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e
+    if ((ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e)
         ||
-        thr->base.obj_desc == NULL
+        (thr->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -200,9 +200,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e
+    if ((ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e)
         ||
-        thr->base.obj_desc == NULL
+        (thr->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;

@@ -9,7 +9,11 @@
 
 #include <vx_internal.h>
 
-
+static inline uint32_t tivxIpcPayloadMake(
+    vx_enum dst_target_id, uint16_t obj_desc_id);
+static inline uint16_t tivxIpcPayloadGetObjDescId(uint32_t payload);
+static inline vx_enum tivxIpcPayloadGetTargetId(uint32_t payload);
+static void tivxObjDescIpcHandler(uint32_t payload);
 
 static tivx_obj_desc_table_info_t g_obj_desc_table;
 
@@ -135,8 +139,8 @@ vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e t
     vx_bool is_valid = vx_false_e;
 
     if(    obj_desc
-        && obj_desc->type == type
-        && obj_desc->obj_desc_id < g_obj_desc_table.num_entries)
+        && (obj_desc->type == type)
+        && (obj_desc->obj_desc_id < g_obj_desc_table.num_entries))
     {
         is_valid = vx_true_e;
     }

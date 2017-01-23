@@ -37,6 +37,7 @@
 
 #include <vx_internal.h>
 
+static vx_bool ownIsValidObject(vx_enum type);
 static vx_status ownDestructObjArray(vx_reference ref);
 static vx_status ownInitObjArrayFromObject(
     vx_context context, vx_object_array objarr, vx_reference exemplar);
@@ -217,9 +218,9 @@ vx_status VX_API_CALL vxQueryObjectArray(
 {
     vx_status status = VX_SUCCESS;
 
-    if (ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == vx_false_e
+    if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) == vx_false_e)
         ||
-        objarr->base.obj_desc == NULL
+        (objarr->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;

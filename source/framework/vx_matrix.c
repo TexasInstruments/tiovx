@@ -64,7 +64,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
             dim = 0ul;
         }
 
-        if (rows != 0 && columns != 0 && dim != 0ul)
+        if ((rows != 0) && (columns != 0) && (dim != 0ul))
         {
             matrix = (vx_matrix)ownCreateReference(context, VX_TYPE_MATRIX,
                 VX_EXTERNAL, &context->base);
@@ -312,9 +312,9 @@ vx_status VX_API_CALL vxQueryMatrix(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e
+    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e)
         ||
-        matrix->base.obj_desc == NULL
+        (matrix->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -410,9 +410,9 @@ vx_status VX_API_CALL vxCopyMatrix(
     vx_uint32 size;
     tivx_obj_desc_matrix_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e
+    if ((ownIsValidSpecificReference(&matrix->base, VX_TYPE_MATRIX) == vx_false_e)
         ||
-        matrix->base.obj_desc == NULL
+        (matrix->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;

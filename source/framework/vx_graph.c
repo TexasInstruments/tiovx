@@ -37,6 +37,8 @@
 
 #include <vx_internal.h>
 
+static vx_status ownDestructGraph(vx_reference ref);
+
 static vx_status ownDestructGraph(vx_reference ref)
 {
     vx_graph graph = (vx_graph)ref;
@@ -55,7 +57,7 @@ vx_status ownResetGraphPerf(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
-    if (graph && ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (graph && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
     {
         graph->perf.tmp = 0;
         graph->perf.beg = 0;
@@ -77,7 +79,7 @@ vx_status ownUpdateGraphPerf(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
-    if (graph && ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (graph && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
     {
         graph->perf.tmp = (graph->perf.end - graph->perf.beg)*1000; /* convert to nano secs */
         graph->perf.sum += graph->perf.tmp;
@@ -99,7 +101,7 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
 {
     int32_t free_index = -1;
 
-    if (graph && ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (graph && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
     {
         if(graph->num_nodes < TIVX_GRAPH_MAX_NODES)
         {
@@ -114,9 +116,9 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
 {
     vx_status status = VX_SUCCESS;
 
-    if (graph && ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (graph && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
     {
-        if(index < TIVX_GRAPH_MAX_NODES && index == graph->num_nodes)
+        if( (index < TIVX_GRAPH_MAX_NODES) && (index == graph->num_nodes) )
         {
             /* index MUST be graph->num_nodes, since that is what is returned via
                 ownGraphGetFreeNodeIndex() */
@@ -143,7 +145,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
     vx_status status = VX_FAILURE;
     uint32_t i;
 
-    if (graph && ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
+    if (graph && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
     {
         /* remove node from head nodes and leaf nodes if found */
         for(i=0; i < graph->num_head_nodes; i++)
@@ -212,7 +214,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
     if (ownIsValidContext(context) == vx_true_e)
     {
         graph = (vx_graph)ownCreateReference(context, VX_TYPE_GRAPH, VX_EXTERNAL, &context->base);
-        if (vxGetStatus((vx_reference)graph) == VX_SUCCESS && graph->base.type == VX_TYPE_GRAPH)
+        if ( (vxGetStatus((vx_reference)graph) == VX_SUCCESS) && (graph->base.type == VX_TYPE_GRAPH) )
         {
             graph->base.destructor_callback = ownDestructGraph;
             graph->base.release_callback = (tivx_reference_release_callback_f)vxReleaseGraph;
@@ -503,9 +505,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
         }
 
         if ((status == VX_SUCCESS)
-            && (graph->state == VX_GRAPH_STATE_VERIFIED ||
-                graph->state == VX_GRAPH_STATE_COMPLETED||
-                graph->state == VX_GRAPH_STATE_ABANDONED
+            && ( (graph->state == VX_GRAPH_STATE_VERIFIED) ||
+                 (graph->state == VX_GRAPH_STATE_COMPLETED) ||
+                 (graph->state == VX_GRAPH_STATE_ABANDONED)
                 ))
         {
             graph->perf.beg = tivxPlatformGetTimeInUsecs();

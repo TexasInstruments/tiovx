@@ -37,6 +37,10 @@
 
 #include <vx_internal.h>
 
+static vx_status ownDestructRemap(vx_reference ref);
+static tivx_remap_point_t *ownGetRemapPoint(tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y);
+static vx_status ownAllocRemapBuffer(vx_reference ref);
+
 static vx_status ownDestructRemap(vx_reference ref)
 {
     tivx_obj_desc_remap_t *obj_desc = NULL;
@@ -61,7 +65,7 @@ static vx_status ownDestructRemap(vx_reference ref)
 static tivx_remap_point_t *ownGetRemapPoint(tivx_obj_desc_remap_t *obj_desc, vx_uint32 dst_x, vx_uint32 dst_y)
 {
     return (tivx_remap_point_t*)obj_desc->mem_ptr.host_ptr
-                 + dst_y*obj_desc->dst_width
+                 + (dst_y*obj_desc->dst_width)
                  + dst_x
            ;
 }
@@ -121,10 +125,10 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
 
     if(ownIsValidContext(context)==vx_true_e)
     {
-        if (src_width != 0 && src_height != 0 && dst_width != 0 && dst_height != 0)
+        if ((src_width != 0) && (src_height != 0) && (dst_width != 0) && (dst_height != 0))
         {
             remap = (vx_remap)ownCreateReference(context, VX_TYPE_REMAP, VX_EXTERNAL, &context->base);
-            if (vxGetStatus((vx_reference)remap) == VX_SUCCESS && remap->base.type == VX_TYPE_REMAP)
+            if ((vxGetStatus((vx_reference)remap) == VX_SUCCESS) && (remap->base.type == VX_TYPE_REMAP))
             {
                 /* assign refernce type specific callback's */
                 remap->base.destructor_callback = ownDestructRemap;
@@ -173,9 +177,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_remap_t *obj_desc = NULL;
 
-    if (ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_false_e
+    if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_false_e)
         &&
-        remap->base.obj_desc != NULL
+        (remap->base.obj_desc != NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
@@ -242,7 +246,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
 
     if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_true_e)
          &&
-        remap->base.obj_desc != NULL
+        (remap->base.obj_desc != NULL)
          )
     {
         ownAllocRemapBuffer(&remap->base);
@@ -294,7 +298,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
 
     if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_true_e)
          &&
-        remap->base.obj_desc != NULL
+        (remap->base.obj_desc != NULL)
          )
     {
         obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;

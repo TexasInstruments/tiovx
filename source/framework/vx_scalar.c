@@ -38,6 +38,10 @@
 
 #include <vx_internal.h>
 
+static vx_status ownDestructScalar(vx_reference ref);
+static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr);
+static vx_status ownHostMemToScalar(vx_scalar scalar, void* user_ptr);
+
 static vx_status ownDestructScalar(vx_reference ref)
 {
     vx_scalar scalar = (vx_scalar)ref;
@@ -195,7 +199,7 @@ void ownPrintScalar(vx_scalar scalar)
             VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %zu\n", scalar, obj_desc->data.size);
             break;
         case VX_TYPE_BOOL:
-            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, (obj_desc->data.boolean == vx_true_e?"TRUE":"FALSE"));
+            VX_PRINT(VX_ZONE_SCALAR, "scalar "VX_FMT_REF" = %s\n", scalar, obj_desc->data.boolean == vx_true_e?"TRUE":"FALSE");
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Case %08x is not covered!\n", obj_desc->data_type);
@@ -221,7 +225,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
         else
         {
             scalar = (vx_scalar)ownCreateReference(context, VX_TYPE_SCALAR, VX_EXTERNAL, &context->base);
-            if (vxGetStatus((vx_reference)scalar) == VX_SUCCESS && scalar->base.type == VX_TYPE_SCALAR)
+            if ((vxGetStatus((vx_reference)scalar) == VX_SUCCESS) && (scalar->base.type == VX_TYPE_SCALAR))
             {
                 /* assign refernce type specific callback's */
                 scalar->base.destructor_callback = ownDestructScalar;
@@ -296,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
     }
     else
     {
-        if (NULL == user_ptr || VX_MEMORY_TYPE_HOST != user_mem_type)
+        if ((NULL == user_ptr) || (VX_MEMORY_TYPE_HOST != user_mem_type))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }

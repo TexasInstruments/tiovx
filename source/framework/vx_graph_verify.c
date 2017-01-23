@@ -14,6 +14,22 @@
 #include <vx_internal.h>
 
 static vx_status ownGraphValidRectCallback(
+    vx_graph graph, vx_node node, vx_meta_format meta[]);
+static vx_status ownGraphInitVirtualNode(
+    vx_graph graph, vx_node node, vx_meta_format meta[]);
+static vx_status ownGraphNodeKernelValidate(
+    vx_graph graph, vx_meta_format meta[]);
+static vx_status ownGraphNodeKernelInit(vx_graph graph);
+static vx_status ownGraphNodeKernelDeinit(vx_graph graph);
+static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
+static vx_status ownGraphCalcInAndOutNodes(vx_graph graph);
+static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
+static vx_status ownGraphAllocateDataObjects(vx_graph graph);
+static vx_status ownGraphNodeCreateCompletionEvents(vx_graph graph);
+static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
+
+
+static vx_status ownGraphValidRectCallback(
     vx_graph graph, vx_node node, vx_meta_format meta[])
 {
     vx_status status = VX_SUCCESS;
@@ -26,11 +42,11 @@ static vx_status ownGraphValidRectCallback(
     {
         ref = node->parameters[i];
 
-        if(node->kernel->signature.directions[i] == VX_INPUT
+        if( (node->kernel->signature.directions[i] == VX_INPUT)
             &&
             ref
             &&
-            ref->type == VX_TYPE_IMAGE
+            (ref->type == VX_TYPE_IMAGE)
             )
         {
             graph->in_valid_rect_ptr[num_in_image] = &graph->in_valid_rect[num_in_image];
@@ -48,13 +64,13 @@ static vx_status ownGraphValidRectCallback(
             ref = node->parameters[i];
             mf = meta[i];
 
-            if(node->kernel->signature.directions[i] == VX_OUTPUT
+            if( (node->kernel->signature.directions[i] == VX_OUTPUT)
                 &&
                 ref
                 &&
                 mf
                 &&
-                mf->valid_rect_callback
+                (mf->valid_rect_callback)
                 )
             {
                 if(ref->type == VX_TYPE_IMAGE)
@@ -125,7 +141,7 @@ static vx_status ownGraphInitVirtualNode(
         ref = node->parameters[i];
         mf = meta[i];
 
-        if(ref != NULL && mf != NULL)
+        if( (ref != NULL) && (mf != NULL) )
         {
             if ((node->kernel->signature.directions[i] == VX_OUTPUT) &&
                 (vx_true_e == ref->is_virtual))
@@ -311,7 +327,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
             ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
 
-            if( prm_cur_dir == VX_OUTPUT || prm_cur_dir == VX_BIDIRECTIONAL)
+            if( (prm_cur_dir == VX_OUTPUT) || (prm_cur_dir == VX_BIDIRECTIONAL) )
             {
                 /* for each output, see if it matches any node input data */
                 for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
@@ -328,7 +344,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
                         if(ref2)
                         {
-                            if( prm_next_dir == VX_INPUT || prm_next_dir == VX_BIDIRECTIONAL)
+                            if( (prm_next_dir == VX_INPUT) || (prm_next_dir == VX_BIDIRECTIONAL) )
                             {
                                 /* check if input data reference of next node is equal to
                                    output data reference of current */

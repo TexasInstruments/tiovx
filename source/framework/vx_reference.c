@@ -155,7 +155,7 @@ vx_status ownInitReference(vx_reference ref, vx_context context, vx_enum type, v
 
         status = VX_SUCCESS;
 
-        if(ref->type==VX_TYPE_CONTEXT||ref->type==VX_TYPE_GRAPH)
+        if((ref->type==VX_TYPE_CONTEXT) || (ref->type==VX_TYPE_GRAPH))
         {
             /* create referencec only for context and graph
              * for others use the context lock
@@ -178,7 +178,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
     if (ref)
     {
         ownReferenceLock(ref);
-        if (reftype == VX_INTERNAL || reftype == VX_BOTH)
+        if ((reftype == VX_INTERNAL) || (reftype == VX_BOTH))
         {
             if (ref->internal_count == 0)
             {
@@ -189,7 +189,7 @@ vx_uint32 ownDecrementReference(vx_reference ref, vx_enum reftype)
                 ref->internal_count--;
             }
         }
-        if (reftype == VX_EXTERNAL || reftype == VX_BOTH)
+        if ((reftype == VX_EXTERNAL) || (reftype == VX_BOTH))
         {
             if (ref->external_count == 0)
             {
@@ -225,9 +225,9 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
     if (ref)
     {
         ownReferenceLock(ref);
-        if (reftype == VX_EXTERNAL || reftype == VX_BOTH)
+        if ((reftype == VX_EXTERNAL) || (reftype == VX_BOTH))
             ref->external_count++;
-        if (reftype == VX_INTERNAL || reftype == VX_BOTH)
+        if ((reftype == VX_INTERNAL) || (reftype == VX_BOTH))
             ref->internal_count++;
         count = ref->internal_count + ref->external_count;
         ownReferenceUnlock(ref);
@@ -242,7 +242,7 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 {
     vx_status status = VX_SUCCESS;
     vx_reference ref = (pref ? *pref : NULL);
-    if (ref && ownIsValidSpecificReference(ref, type) == vx_true_e)
+    if (ref && (ownIsValidSpecificReference(ref, type) == vx_true_e))
     {
         if (ownDecrementReference(ref, reftype) == 0)
         {
@@ -581,7 +581,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxHint(vx_reference reference, vx_enum hint, 
     vx_status status = VX_SUCCESS;
 
     /* reference param should be a valid OpenVX reference*/
-    if (ownIsValidContext((vx_context)reference) == vx_false_e && ownIsValidReference(reference) == vx_false_e)
+    if ((ownIsValidContext((vx_context)reference) == vx_false_e) && (ownIsValidReference(reference) == vx_false_e))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }

@@ -34,6 +34,11 @@
 
 #include <vx_internal.h>
 
+static vx_node vxCreateNodeByStructure(vx_graph graph,
+                                vx_enum kernelenum,
+                                vx_reference params[],
+                                vx_uint32 num);
+
 /* Note: with the current sample implementation structure, we have no other choice than
 returning 0 in case of errors not due to vxCreateGenericNode, because vxGetErrorObject
 is internal to another library and is not exported. This is not an issue since vxGetStatus
@@ -113,7 +118,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxChannelExtractNode(vx_graph graph,
                                            VX_KERNEL_CHANNEL_EXTRACT,
                                            params,
                                            dimof(params));
-    vxReleaseScalar(&scalar); // node hold reference
+    vxReleaseScalar(&scalar); /* node hold reference */
     return node;
 }
 
