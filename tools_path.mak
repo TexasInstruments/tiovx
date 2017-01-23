@@ -14,7 +14,7 @@
 
 TIOVX_PATH := $(abspath .)
 
-VSDK_INSTALL_PATH := $(abspath ../../..)
+VSDK_INSTALL_PATH := $(abspath ../)
 VSDK_TOOLS_PATH := /datalocal1/ti_components
 
 CROSS_COMPILE := arm-none-eabi-
@@ -28,7 +28,7 @@ ifeq ($(BUILD_OS),Windows_NT)
 XDC_PATH := $(VSDK_TOOLS_PATH)/os_tools/windows/xdctools_3_32_00_06_core
 TIARMCGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/ti-cgt-arm_5.2.5
 GCC_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/gcc-arm-none-eabi-4_7-2013q3
-CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/c6000_7.4.2
+CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/C6000_7.4.2
 ARP32CGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/windows/arp32_1.0.7
 GCC_WINDOWS_ROOT := C:/CodeBlocks/MinGW
 endif
@@ -37,7 +37,7 @@ ifeq ($(BUILD_OS),Linux)
 XDC_PATH := $(VSDK_TOOLS_PATH)/os_tools/linux/xdctools_3_32_00_06_core
 TIARMCGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-arm_5.2.5
 GCC_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/gcc-arm-none-eabi-4_7-2013q3
-CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/c6000_7_4_2
+CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/C6000_7.4.2
 ARP32CGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 GCC_LINUX_ROOT := /usr/
 endif
