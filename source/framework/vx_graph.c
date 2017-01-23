@@ -85,9 +85,13 @@ vx_status ownUpdateGraphPerf(vx_graph graph)
         graph->perf.sum += graph->perf.tmp;
         graph->perf.num++;
         if(graph->perf.tmp < graph->perf.min)
+        {
             graph->perf.min = graph->perf.tmp;
+        }
         if(graph->perf.tmp > graph->perf.max)
+        {
             graph->perf.max = graph->perf.tmp;
+        }
         graph->perf.avg = graph->perf.sum/graph->perf.num;
     }
     else
@@ -454,7 +458,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
 
                 /* report error if there is no empty slots to register delay */
                 if (is_full == vx_true_e)
+                {
                     status = VX_ERROR_NO_RESOURCES;
+                }
             }
         }
         else

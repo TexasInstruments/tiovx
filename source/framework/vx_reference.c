@@ -226,9 +226,13 @@ vx_uint32 ownIncrementReference(vx_reference ref, vx_enum reftype)
     {
         ownReferenceLock(ref);
         if ((reftype == VX_EXTERNAL) || (reftype == VX_BOTH))
+        {
             ref->external_count++;
+        }
         if ((reftype == VX_INTERNAL) || (reftype == VX_BOTH))
+        {
             ref->internal_count++;
+        }
         count = ref->internal_count + ref->external_count;
         ownReferenceUnlock(ref);
     }

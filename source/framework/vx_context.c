@@ -544,7 +544,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             for (r = 0; r < dimof(context->reftable); r++)
             {
                 if(context->reftable[r])
+                {
                     VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
+                }
             }
 
             ownContextDeleteCmdObj(context);

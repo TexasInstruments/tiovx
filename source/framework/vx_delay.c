@@ -448,15 +448,23 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
         {
             case VX_DELAY_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
                     *(vx_enum *)ptr = delay->type;
+                }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             case VX_DELAY_SLOTS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                {
                     *(vx_size *)ptr = (vx_size)delay->count;
+                }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             default:
                 status = VX_ERROR_NOT_SUPPORTED;

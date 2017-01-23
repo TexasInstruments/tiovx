@@ -121,9 +121,13 @@ static vx_bool ownIsValidImage(vx_image image)
 static vx_bool ownIsOdd(vx_uint32 a)
 {
     if (a & 0x1)
+    {
         return vx_true_e;
+    }
     else
+    {
         return vx_false_e;
+    }
 }
 
 static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_image color)
@@ -1030,7 +1034,9 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                 ptr[1] = value->RGBX[1];
                                 ptr[2] = value->RGBX[2];
                                 if (format == VX_DF_IMAGE_RGBX)
+                                {
                                     ptr[3] = value->RGBX[3];
+                                }
                             }
                             else if ((format == VX_DF_IMAGE_YUV4) ||
                                      (format == VX_DF_IMAGE_IYUV))
@@ -1784,7 +1790,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                         obj_desc;
 
                     if (new_ptrs == NULL)
+                    {
                         status = vxSwapImageHandle(subimage, NULL, NULL, si_obj_desc->planes);
+                    }
                     else
                     {
                         vx_uint8* ptrs[4];

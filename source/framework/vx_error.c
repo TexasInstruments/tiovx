@@ -64,7 +64,9 @@ vx_bool ownCreateConstErrors(vx_context context)
     for (e = VX_STATUS_MIN; (e < VX_SUCCESS) && (ret == vx_true_e); e++)
     {
         if (ownAllocateError(context, e) == NULL)
+        {
             ret = vx_false_e;
+        }
     }
     return ret;
 }
@@ -79,7 +81,9 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
     for (i = 0ul; i < dimof(context->reftable); i++)
     {
         if (context->reftable[i] == NULL)
+        {
             continue;
+        }
 
         if (context->reftable[i]->type == VX_TYPE_ERROR)
         {

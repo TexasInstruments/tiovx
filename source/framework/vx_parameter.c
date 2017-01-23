@@ -334,27 +334,43 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
         {
             case VX_PARAMETER_DIRECTION:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
                     *(vx_enum *)ptr = parameter->kernel->signature.directions[parameter->index];
+                }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             case VX_PARAMETER_INDEX:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                {
                     *(vx_uint32 *)ptr = parameter->index;
+                }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             case VX_PARAMETER_TYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
                     *(vx_enum *)ptr = parameter->kernel->signature.types[parameter->index];
+                }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             case VX_PARAMETER_STATE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                {
                     *(vx_enum *)ptr = (vx_enum)parameter->kernel->signature.states[parameter->index];
+                }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             case VX_PARAMETER_REF:
                 if (VX_CHECK_PARAM(ptr, size, vx_reference, 0x3))
@@ -375,10 +391,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryParameter(vx_parameter parameter, vx_e
                         *(vx_reference *)ptr = (vx_reference)ref;
                     }
                     else
+                    {
                         status = VX_ERROR_NOT_SUPPORTED;
+                    }
                 }
                 else
+                {
                     status = VX_ERROR_INVALID_PARAMETERS;
+                }
                 break;
             default:
                 status = VX_ERROR_NOT_SUPPORTED;

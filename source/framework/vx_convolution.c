@@ -377,11 +377,17 @@ static vx_status ownDestructConvolution(vx_reference ref)
 static vx_bool vxIsPowerOfTwo(vx_uint32 a)
 {
     if (a == 0)
+    {
         return vx_false_e;
+    }
     else if ((a & ((a) - 1)) == 0)
+    {
         return vx_true_e;
+    }
     else
+    {
         return vx_false_e;
+    }
 }
 
 static int isodd(size_t a)

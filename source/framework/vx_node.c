@@ -462,9 +462,13 @@ vx_status ownUpdateNodePerf(vx_node node)
         node->perf.sum += node->perf.tmp;
         node->perf.num++;
         if(node->perf.tmp < node->perf.min)
+        {
             node->perf.min = node->perf.tmp;
+        }
         if(node->perf.tmp > node->perf.max)
+        {
             node->perf.max = node->perf.tmp;
+        }
         node->perf.avg = node->perf.sum/node->perf.num;
     }
     else
@@ -1136,13 +1140,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     if(status == VX_SUCCESS)
     {
         if (first_node->graph != graph)
+        {
             status = VX_FAILURE;
+        }
     }
 
     if(status == VX_SUCCESS)
     {
         if (replicate == NULL)
+        {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
     }
 
     if(status == VX_SUCCESS)
@@ -1152,7 +1160,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
         if (VX_SUCCESS == status)
         {
             if (numParams != number_of_parameters)
+            {
                 status = VX_ERROR_INVALID_PARAMETERS;
+            }
         }
     }
 
@@ -1202,10 +1212,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                         if(status == VX_SUCCESS)
                         {
                             if (num_of_replicas == 0)
+                            {
                                 num_of_replicas = items;
+                            }
 
                             if ((num_of_replicas != 0) && (items != num_of_replicas))
+                            {
                                 status = VX_FAILURE;
+                            }
                         }
                     }
                     else
@@ -1220,7 +1234,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                 vxReleaseParameter(&param);
             }
             if(status != VX_SUCCESS)
+            {
                 break;
+            }
         }
     }
 
