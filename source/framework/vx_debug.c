@@ -69,19 +69,21 @@ static struct vx_string_and_enum_e g_debug_enumnames[] = {
     _STR2(VX_ZONE_DELAY),
     _STR2(VX_ZONE_TARGET),
     _STR2(VX_ZONE_LOG),
-    {"UNKNOWN", -1}, /* if the zone is not found, this will be returned. */
+    {"UNKNOWN", -1} /* if the zone is not found, this will be returned. */
 };
 
 static vx_char *find_zone_name(vx_enum zone)
 {
     vx_uint32 i;
-    for (i = 0; i < dimof(g_debug_enumnames); i++)
+
+    for (i = 0; i < (dimof(g_debug_enumnames) - 1u); i++)
     {
         if (g_debug_enumnames[i].value == zone)
         {
             break;
         }
     }
+
     return g_debug_enumnames[i].name;
 }
 

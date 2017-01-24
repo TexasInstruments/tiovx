@@ -102,7 +102,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
             VXLIB_bufParams2D_t vxlib_src3;
             uint8_t *src3_addr = NULL;
             VXLIB_bufParams2D_t vxlib_dst;
-            uint8_t *dst_addr[4U];
+            uint8_t *dst_addr[4U] = {NULL};
             vx_rectangle_t rect;
 
             vxlib_src0.dim_x = src0_desc->imagepatch_addr[0U].dim_x;

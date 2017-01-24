@@ -512,10 +512,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 {
     uint32_t i;
     vx_status status = VX_SUCCESS;
-    vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS];
-    vx_bool first_time_verify = ((graph->verified == vx_false_e) && (graph->reverify == vx_false_e)) ? vx_true_e : vx_false_e;
+    vx_meta_format meta[TIVX_KERNEL_MAX_PARAMS] = {NULL};
+    vx_bool first_time_verify = vx_true_e;
 
-    for (i = 0; i < TIVX_KERNEL_MAX_PARAMS; i ++)
+    if (NULL != graph)
+    {
+        first_time_verify = ((graph->verified == vx_false_e) &&
+            (graph->reverify == vx_false_e)) ? vx_true_e : vx_false_e;
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0; (i < TIVX_KERNEL_MAX_PARAMS) && (VX_SUCCESS == status); i ++)
     {
         meta[i] = vxCreateMetaFormat(graph->base.context);
 
@@ -538,7 +548,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             ownGraphNodeKernelDeinit(graph);
         }
         {
-
             if(status == VX_SUCCESS)
             {
                 /* Find out nodes and in nodes for each node in the graph

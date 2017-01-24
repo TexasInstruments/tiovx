@@ -25,7 +25,7 @@ static vx_status tivxKernelColorConvert(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     uint32_t i;
-    void *src_addr[4], *dst_addr[4];
+    void *src_addr[4] = {NULL}, *dst_addr[4] = {NULL};
     vx_rectangle_t rect;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     VXLIB_bufParams2D_t vxlib_src1, vxlib_dst1;

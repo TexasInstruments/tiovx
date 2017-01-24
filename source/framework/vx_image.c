@@ -1224,31 +1224,36 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
 
     if (ownIsValidImage(image) == vx_true_e)
     {
-        if (rect)
-        {
-            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
+        obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
-            if ((rect->start_x <= rect->end_x) && (rect->start_y <= rect->end_y) &&
-                (rect->end_x <= obj_desc->width) && (rect->end_y <= obj_desc->height))
+        if (NULL != obj_desc)
+        {
+            if (rect)
             {
-                obj_desc->valid_roi.start_x = rect->start_x;
-                obj_desc->valid_roi.start_y = rect->start_y;
-                obj_desc->valid_roi.end_x   = rect->end_x;
-                obj_desc->valid_roi.end_y   = rect->end_y;
-                status = VX_SUCCESS;
+                if ((rect->start_x <= rect->end_x) &&
+                    (rect->start_y <= rect->end_y) &&
+                    (rect->end_x <= obj_desc->width) &&
+                    (rect->end_y <= obj_desc->height))
+                {
+                    obj_desc->valid_roi.start_x = rect->start_x;
+                    obj_desc->valid_roi.start_y = rect->start_y;
+                    obj_desc->valid_roi.end_x   = rect->end_x;
+                    obj_desc->valid_roi.end_y   = rect->end_y;
+                    status = VX_SUCCESS;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
             }
             else
             {
-                status = VX_ERROR_INVALID_PARAMETERS;
+                obj_desc->valid_roi.start_x = 0;
+                obj_desc->valid_roi.start_y = 0;
+                obj_desc->valid_roi.end_x   = obj_desc->width;
+                obj_desc->valid_roi.end_y   = obj_desc->height;
+                status = VX_SUCCESS;
             }
-        }
-        else
-        {
-            obj_desc->valid_roi.start_x = 0;
-            obj_desc->valid_roi.start_y = 0;
-            obj_desc->valid_roi.end_x   = obj_desc->width;
-            obj_desc->valid_roi.end_y   = obj_desc->height;
-            status = VX_SUCCESS;
         }
     }
 

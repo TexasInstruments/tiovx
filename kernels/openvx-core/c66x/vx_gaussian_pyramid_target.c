@@ -64,19 +64,25 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
-            (size == sizeof(tivxGassPyrmdParams)))
+        if (VX_SUCCESS == status)
         {
-            tivxGetObjDescList(pmd->obj_desc_id,
-                (tivx_obj_desc_t **)prms->img_obj_desc, pmd->num_levels);
-
-            for (levels = 0U; levels < pmd->num_levels; levels ++)
+            if ((NULL != prms) && (size == sizeof(tivxGassPyrmdParams)))
             {
-                if (NULL == prms->img_obj_desc[levels])
+                tivxGetObjDescList(pmd->obj_desc_id,
+                    (tivx_obj_desc_t **)prms->img_obj_desc, pmd->num_levels);
+
+                for (levels = 0U; levels < pmd->num_levels; levels ++)
                 {
-                    status = VX_FAILURE;
-                    break;
+                    if (NULL == prms->img_obj_desc[levels])
+                    {
+                        status = VX_FAILURE;
+                        break;
+                    }
                 }
+            }
+            else
+            {
+                status = VX_FAILURE;
             }
         }
     }

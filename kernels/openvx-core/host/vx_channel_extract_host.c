@@ -75,30 +75,32 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
         }
     }
 
-    out_fmt = VX_DF_IMAGE_U8;
-    out_w = w[0U];
-    out_h = h[0U];
-    /* output WxH MUST be equal to input WxH except in below conditions */
-    switch(fmt[0U])
+    if (VX_SUCCESS == status)
     {
-        case VX_DF_IMAGE_IYUV:
-        case VX_DF_IMAGE_NV12:
-        case VX_DF_IMAGE_NV21:
-            if(channel == VX_CHANNEL_U || channel == VX_CHANNEL_V)
-            {
-                out_w = out_w/2;
-                out_h = out_h/2;
-            }
-            break;
-        case VX_DF_IMAGE_UYVY:
-        case VX_DF_IMAGE_YUYV:
-            if(channel == VX_CHANNEL_U || channel == VX_CHANNEL_V)
-            {
-                out_w = out_w/2;
-            }
-            break;
+        out_fmt = VX_DF_IMAGE_U8;
+        out_w = w[0U];
+        out_h = h[0U];
+        /* output WxH MUST be equal to input WxH except in below conditions */
+        switch(fmt[0U])
+        {
+            case VX_DF_IMAGE_IYUV:
+            case VX_DF_IMAGE_NV12:
+            case VX_DF_IMAGE_NV21:
+                if(channel == VX_CHANNEL_U || channel == VX_CHANNEL_V)
+                {
+                    out_w = out_w/2;
+                    out_h = out_h/2;
+                }
+                break;
+            case VX_DF_IMAGE_UYVY:
+            case VX_DF_IMAGE_YUYV:
+                if(channel == VX_CHANNEL_U || channel == VX_CHANNEL_V)
+                {
+                    out_w = out_w/2;
+                }
+                break;
+        }
     }
-
 
     if (VX_SUCCESS == status)
     {

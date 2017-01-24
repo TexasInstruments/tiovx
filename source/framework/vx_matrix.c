@@ -225,7 +225,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         }
     }
 
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != obj_desc->mem_ptr.host_ptr))
     {
         tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
             obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
@@ -486,11 +486,12 @@ static vx_status ownAllocMatrixBuffer(vx_reference ref)
             /* memory is not allocated, so allocate it */
             if(obj_desc->mem_ptr.host_ptr == NULL)
             {
-                tivxMemBufferAlloc(
+                status = tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==NULL)
+                if ((VX_SUCCESS != status) ||
+                    (obj_desc->mem_ptr.host_ptr == NULL))
                 {
                     /* could not allocate memory */
                     status = VX_ERROR_NO_MEMORY ;

@@ -51,6 +51,21 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
     uint32_t size, levels;
     uint8_t *old_image_addr, *new_image_addr;
 
+    uint8_t termination_value;
+    VXLIB_F32 epsilon_value;
+    uint32_t num_iterations_value;
+    bool use_initial_estimate_value;
+    size_t window_dimension_value;
+
+    vx_int32 level;
+    size_t num_levels;
+    vx_float32 pyramid_scale, scale;
+    vx_size list_length;
+    vx_keypoint_t *oldPts_addr;
+    vx_keypoint_t *estPts_addr;
+    vx_keypoint_t *newPts_addr;
+    vx_size list_indx;
+
     if ( num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX])
@@ -68,21 +83,6 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
     }
     else
     {
-        uint8_t termination_value;
-        VXLIB_F32 epsilon_value;
-        uint32_t num_iterations_value;
-        bool use_initial_estimate_value;
-        size_t window_dimension_value;
-
-        vx_int32 level;
-        size_t num_levels;
-        vx_float32 pyramid_scale, scale;
-        vx_size list_length;
-        vx_keypoint_t *oldPts_addr;
-        vx_keypoint_t *estPts_addr;
-        vx_keypoint_t *newPts_addr;
-        vx_size list_indx;
-
         old_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX];
         new_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX];
         prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_PREVPTS_IDX];
@@ -97,34 +97,47 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) &&
-            (size == sizeof(tivxOpticalFlowPyrLkParams)))
+        if (VX_SUCCESS == status)
         {
-            tivxGetObjDescList(old_pyramid_desc->obj_desc_id,
-                (tivx_obj_desc_t **)prms->img_obj_desc_old, old_pyramid_desc->num_levels);
-
-            for (levels = 0U; levels < old_pyramid_desc->num_levels; levels ++)
+            if ((NULL != prms) && (size == sizeof(tivxOpticalFlowPyrLkParams)))
             {
-                if (NULL == prms->img_obj_desc_old[levels])
+                tivxGetObjDescList(old_pyramid_desc->obj_desc_id,
+                    (tivx_obj_desc_t **)prms->img_obj_desc_old,
+                    old_pyramid_desc->num_levels);
+
+                for (levels = 0U; levels < old_pyramid_desc->num_levels;
+                            levels ++)
                 {
-                    status = VX_FAILURE;
-                    break;
+                    if (NULL == prms->img_obj_desc_old[levels])
+                    {
+                        status = VX_FAILURE;
+                        break;
+                    }
+                }
+
+                tivxGetObjDescList(new_pyramid_desc->obj_desc_id,
+                    (tivx_obj_desc_t **)prms->img_obj_desc_new,
+                    new_pyramid_desc->num_levels);
+
+                for (levels = 0U; levels < new_pyramid_desc->num_levels;
+                        levels ++)
+                {
+                    if (NULL == prms->img_obj_desc_new[levels])
+                    {
+                        status = VX_FAILURE;
+                        break;
+                    }
                 }
             }
-
-            tivxGetObjDescList(new_pyramid_desc->obj_desc_id,
-                (tivx_obj_desc_t **)prms->img_obj_desc_new, new_pyramid_desc->num_levels);
-
-            for (levels = 0U; levels < new_pyramid_desc->num_levels; levels ++)
+            else
             {
-                if (NULL == prms->img_obj_desc_new[levels])
-                {
-                    status = VX_FAILURE;
-                    break;
-                }
+                status = VX_FAILURE;
             }
         }
+    }
 
+    if (VX_SUCCESS == status)
+    {
         prevpts_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
           prevpts_desc->mem_ptr.shared_ptr, prevpts_desc->mem_ptr.mem_type);
         estimatedpts_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(

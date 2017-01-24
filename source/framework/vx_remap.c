@@ -179,8 +179,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
 
     if ((ownIsValidSpecificReference(&remap->base, VX_TYPE_REMAP) == vx_false_e)
         &&
-        (remap->base.obj_desc != NULL)
-        )
+        (remap->base.obj_desc == NULL))
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }

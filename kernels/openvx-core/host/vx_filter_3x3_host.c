@@ -274,7 +274,7 @@ vx_status tivxAddKernelErode3x3(vx_context context)
 
 vx_status tivxRemoveKernelErode3x3(vx_context context)
 {
-    vx_status status;
+    vx_status status = VX_SUCCESS;
     vx_uint32 i;
 
     for (i = 0; i < sizeof(gTivxFilt3x3KernelInfo)/

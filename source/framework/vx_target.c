@@ -640,21 +640,24 @@ vx_status tivxTargetDelete(vx_enum target_id)
 
     /* delete task */
 
-    /* set flag to break target from main loop */
-    target->targetExitRequest = vx_true_e;
-
-    /* queue a invalid object descriptor to unblock queue wait */
-    tivxTargetQueueObjDesc(target_id, TIVX_OBJ_DESC_INVALID);
-
-    /* wait until target exit is done */
-    while(target->targetExitDone==vx_false_e)
+    if (NULL != target)
     {
-        tivxTaskWaitMsecs(1);
-    }
-    tivxTaskDelete(&target->task_handle);
+        /* set flag to break target from main loop */
+        target->targetExitRequest = vx_true_e;
 
-    /* delete job queue */
-    tivxQueueDelete(&target->job_queue_handle);
+        /* queue a invalid object descriptor to unblock queue wait */
+        tivxTargetQueueObjDesc(target_id, TIVX_OBJ_DESC_INVALID);
+
+        /* wait until target exit is done */
+        while(target->targetExitDone==vx_false_e)
+        {
+            tivxTaskWaitMsecs(1);
+        }
+        tivxTaskDelete(&target->task_handle);
+
+        /* delete job queue */
+        tivxQueueDelete(&target->job_queue_handle);
+    }
 
     return status;
 }

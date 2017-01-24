@@ -103,6 +103,12 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
 
         status |= vxGetValidRegionImage(img[0U], &rect);
+
+        if (VX_SUCCESS == status)
+        {
+            status = tivxCheckFormatAndPlanes(src_planes, src_format);
+        }
+        dst_format = src_format;
     }
 
     if ((VX_SUCCESS == status) &&
@@ -113,33 +119,30 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
 
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
-    }
 
-    if (VX_SUCCESS == status)
-    {
-        /* Verifies luma channel size */
-        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
+        if (VX_SUCCESS == status)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            /* Verifies luma channel size */
+            if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+
+            if(src_format == dst_format)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
         }
 
-        if(src_format == dst_format)
+        if (VX_SUCCESS == status)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            status = tivxCheckFormatAndPlanes(dst_planes, dst_format);
         }
     }
 
     if (VX_SUCCESS == status)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
-
-        status = tivxCheckFormatAndPlanes(src_planes, src_format);
-        status |= tivxCheckFormatAndPlanes(dst_planes, dst_format);
-    }
-
-    out_fmt = dst_format;
-    if (VX_SUCCESS == status)
-    {
+        out_fmt = dst_format;
         for (i = 0U; i < TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS; i ++)
         {
             if (NULL != metas[i])
