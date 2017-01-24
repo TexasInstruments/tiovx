@@ -137,7 +137,7 @@ vx_status VX_API_CALL vxQueryLUT(
         switch (attribute)
         {
             case VX_LUT_TYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->item_type;
                 }
@@ -147,7 +147,7 @@ vx_status VX_API_CALL vxQueryLUT(
                 }
                 break;
             case VX_LUT_COUNT:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_items;
                 }
@@ -157,7 +157,7 @@ vx_status VX_API_CALL vxQueryLUT(
                 }
                 break;
             case VX_LUT_SIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->mem_size;
                 }

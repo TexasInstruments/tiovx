@@ -288,7 +288,7 @@ vx_status VX_API_CALL vxQueryPyramid(
         switch (attribute)
         {
             case VX_PYRAMID_LEVELS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_levels;
                 }
@@ -298,7 +298,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 break;
             case VX_PYRAMID_SCALE:
-                if (VX_CHECK_PARAM(ptr, size, vx_float32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_float32, 0x3U))
                 {
                     *(vx_float32 *)ptr = obj_desc->scale;
                 }
@@ -308,7 +308,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 break;
             case VX_PYRAMID_WIDTH:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->width;
                 }
@@ -318,7 +318,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 break;
             case VX_PYRAMID_HEIGHT:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->height;
                 }
@@ -328,7 +328,7 @@ vx_status VX_API_CALL vxQueryPyramid(
                 }
                 break;
             case VX_PYRAMID_FORMAT:
-                if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3U))
                 {
                     *(vx_df_image *)ptr = obj_desc->format;
                 }

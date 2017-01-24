@@ -202,6 +202,8 @@ static vx_status ownGraphInitVirtualNode(
                             }
                         }
                         break;
+                    default:
+                        break;
                 }
 
                 if (status != VX_SUCCESS)

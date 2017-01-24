@@ -135,7 +135,7 @@ vx_status VX_API_CALL vxQueryConvolution(
         switch (attribute)
         {
             case VX_CONVOLUTION_SCALE:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->scale;
                 }
@@ -145,7 +145,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 break;
             case VX_CONVOLUTION_COLUMNS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->columns;
                 }
@@ -155,7 +155,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 break;
             case VX_CONVOLUTION_ROWS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->rows;
                 }
@@ -165,7 +165,7 @@ vx_status VX_API_CALL vxQueryConvolution(
                 }
                 break;
             case VX_CONVOLUTION_SIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr =
                         obj_desc->mem_size;
@@ -210,7 +210,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetConvolutionAttribute(
         switch (attribute)
         {
             case VX_CONVOLUTION_SCALE:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     vx_uint32 scale = *(vx_uint32 *)ptr;
                     if (vxIsPowerOfTwo(scale) == vx_true_e)
@@ -392,6 +392,6 @@ static vx_bool vxIsPowerOfTwo(vx_uint32 a)
 
 static int isodd(size_t a)
 {
-    return (int)(a & 1);
+    return (int)(a & 1U);
 }
 

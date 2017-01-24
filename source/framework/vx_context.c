@@ -584,7 +584,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
         switch (attribute)
         {
             case VX_CONTEXT_VENDOR_ID:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint16, 0x1))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint16, 0x1U))
                 {
                     *(vx_uint16 *)ptr = VX_ID_TI;
                 }
@@ -594,7 +594,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_VERSION:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint16, 0x1))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint16, 0x1U))
                 {
                     *(vx_uint16 *)ptr = (vx_uint16)VX_VERSION;
                 }
@@ -604,7 +604,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_MODULES:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = ownGetModuleCount();
                 }
@@ -614,7 +614,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_REFERENCES:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = context->num_references;
                 }
@@ -634,7 +634,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_EXTENSIONS_SIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = sizeof(g_context_extensions);
                 }
@@ -654,7 +654,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_CONVOLUTION_MAX_DIMENSION:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_CONVOLUTION_DIM;
                 }
@@ -664,7 +664,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_NONLINEAR_MAX_DIMENSION:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_NONLINEAR_DIM;
                 }
@@ -674,7 +674,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM;
                 }
@@ -684,7 +684,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_IMMEDIATE_BORDER:
-                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
                     *(vx_border_t *)ptr = context->imm_border;
                 }
@@ -694,7 +694,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_IMMEDIATE_BORDER_POLICY:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = context->imm_border_policy;
                 }
@@ -704,7 +704,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_UNIQUE_KERNELS:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = context->num_unique_kernels;
                 }
@@ -743,7 +743,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetContextAttribute(vx_context context, vx_
     {
         switch (attribute) {
             case VX_CONTEXT_IMMEDIATE_BORDER:
-                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
                     vx_border_t *config = (vx_border_t *)ptr;
                     if (ownIsValidBorderMode(config->mode) == vx_false_e)

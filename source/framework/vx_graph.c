@@ -278,7 +278,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
         switch (attribute)
         {
             case VX_GRAPH_PERFORMANCE:
-                if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
                     memcpy(ptr, &graph->perf, size);
                 }
@@ -288,7 +288,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 break;
             case VX_GRAPH_STATE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_status *)ptr = graph->state;
                 }
@@ -298,7 +298,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 break;
             case VX_GRAPH_NUMNODES:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->num_nodes;
                 }
@@ -308,7 +308,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 break;
             case VX_GRAPH_NUMPARAMETERS:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = graph->num_params;
                 }

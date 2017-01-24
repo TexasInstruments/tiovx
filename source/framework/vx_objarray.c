@@ -230,7 +230,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
         switch (attribute)
         {
             case VX_OBJECT_ARRAY_ITEMTYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     tivx_obj_desc_objarray_t *obj_desc =
                         (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
@@ -243,7 +243,7 @@ vx_status VX_API_CALL vxQueryObjectArray(
                 }
                 break;
             case VX_OBJECT_ARRAY_NUMITEMS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     tivx_obj_desc_objarray_t *obj_desc =
                         (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;

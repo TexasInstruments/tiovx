@@ -120,7 +120,7 @@ static vx_bool ownIsValidImage(vx_image image)
 
 static vx_bool ownIsOdd(vx_uint32 a)
 {
-    if (a & 0x1)
+    if (a & 0x1U)
     {
         return vx_true_e;
     }
@@ -825,6 +825,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         }
                         break;
                     }
+                    default:
+                        break;
                 }
 
                 subimage = (vx_image)ownCreateImageInt(context, width, height, format, TIVX_IMAGE_FROM_CHANNEL);
@@ -1309,7 +1311,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
         switch (attribute)
         {
             case VX_IMAGE_FORMAT:
-                if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_df_image, 0x3U))
                 {
                     *(vx_df_image *)ptr = obj_desc->format;
                 }
@@ -1319,7 +1321,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_WIDTH:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->width;
                 }
@@ -1329,7 +1331,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_HEIGHT:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->height;
                 }
@@ -1339,7 +1341,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_PLANES:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->planes;
                 }
@@ -1349,7 +1351,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_SPACE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->color_space;
                 }
@@ -1359,7 +1361,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_RANGE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->color_range;
                 }
@@ -1369,7 +1371,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_SIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     vx_size size = 0ul;
                     vx_uint32 p;
@@ -1385,7 +1387,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 break;
             case VX_IMAGE_MEMORY_TYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = VX_MEMORY_TYPE_NONE;
                 }
@@ -1415,7 +1417,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
         switch (attribute)
         {
             case VX_IMAGE_SPACE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     ((tivx_obj_desc_image_t *)image->base.obj_desc)->
                         color_space = *(vx_enum *)ptr;

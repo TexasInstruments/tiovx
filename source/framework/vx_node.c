@@ -844,7 +844,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
         switch (attribute)
         {
             case VX_NODE_PERFORMANCE:
-                if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_perf_t, 0x3U))
                 {
                     memcpy(ptr, &node->perf, size);
                 }
@@ -854,7 +854,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_STATUS:
-                if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3U))
                 {
                     *(vx_status *)ptr = node->obj_desc->exe_status;
                 }
@@ -864,7 +864,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_LOCAL_DATA_SIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = node->local_data_size;
                 }
@@ -874,7 +874,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_LOCAL_DATA_PTR:
-                if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3U))
                 {
                     *(uintptr_t *)ptr = (uintptr_t)node->local_data_ptr;
                 }
@@ -884,7 +884,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_BORDER:
-                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
                     memcpy((vx_border_t *)ptr, &node->obj_desc->border_mode, sizeof(vx_border_t));
                 }
@@ -894,7 +894,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_PARAMETERS:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     vx_uint32 numParams = node->kernel->signature.num_parameters;
 
@@ -906,7 +906,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 }
                 break;
             case VX_NODE_IS_REPLICATED:
-                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
                 {
                     uint32_t is_replicated_flag = node->obj_desc->flags & TIVX_NODE_FLAG_IS_REPLICATED;
 
@@ -930,7 +930,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_REPLICATE_FLAGS:
             {
                 vx_size sz = sizeof(vx_bool)*node->kernel->signature.num_parameters;
-                if ((size == sz) && (((vx_size)ptr & 0x3) == 0))
+                if ((size == sz) && (((vx_size)ptr & 0x3U) == 0))
                 {
                     vx_uint32 i = 0;
                     vx_uint32 numParams = node->kernel->signature.num_parameters;
@@ -946,7 +946,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             }
                 break;
             case VX_NODE_VALID_RECT_RESET:
-                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
                 {
                     vx_bool valid_rect_reset = node->valid_rect_reset;
 
@@ -985,7 +985,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
             switch (attribute)
             {
                 case VX_NODE_LOCAL_DATA_SIZE:
-                    if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3) && node->kernel)
+                    if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U) && node->kernel)
                     {
                         if((node->local_data_ptr_is_alloc) || (node->local_data_set_allow == vx_false_e))
                         {
@@ -1005,7 +1005,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     break;
                 case VX_NODE_LOCAL_DATA_PTR:
-                    if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3) && node->kernel)
+                    if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3U) && node->kernel)
                     {
                         if((node->local_data_ptr_is_alloc) || (node->local_data_set_allow == vx_false_e))
                         {
@@ -1025,7 +1025,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     break;
                 case VX_NODE_BORDER:
-                    if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3))
+                    if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                     {
                         memcpy(&node->obj_desc->border_mode, (vx_border_t *)ptr, sizeof(vx_border_t));
                     }

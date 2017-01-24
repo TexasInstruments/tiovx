@@ -471,7 +471,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
         switch (attribute)
         {
             case VX_REFERENCE_COUNT:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = ref->external_count;
                 }
@@ -481,7 +481,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 break;
             case VX_REFERENCE_TYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = ref->type;
                 }
@@ -491,7 +491,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum at
                 }
                 break;
             case VX_REFERENCE_NAME:
-                if (VX_CHECK_PARAM(ptr, size, vx_char*, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_char*, 0x3U))
                 {
                     *(vx_char**)ptr = &ref->name[0];
                 }

@@ -214,7 +214,7 @@ vx_status VX_API_CALL vxQueryArray(
         switch (attribute)
         {
             case VX_ARRAY_ITEMTYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum *)ptr = obj_desc->item_type;
                 }
@@ -224,7 +224,7 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 break;
             case VX_ARRAY_NUMITEMS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_items;
                 }
@@ -234,7 +234,7 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 break;
             case VX_ARRAY_CAPACITY:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->capacity;
                 }
@@ -244,7 +244,7 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 break;
             case VX_ARRAY_ITEMSIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->item_size;
                 }

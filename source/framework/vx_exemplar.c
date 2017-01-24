@@ -80,6 +80,8 @@ vx_reference ownCreateReferenceFromExemplar(
             ref = ownCreateConvolutionFromExemplar(
                 context, (vx_convolution)exemplar);
             break;
+        default:
+            break;
     }
 
     return (ref);

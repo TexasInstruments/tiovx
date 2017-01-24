@@ -118,7 +118,7 @@ vx_status VX_API_CALL vxQueryDistribution(
         switch (attribute)
         {
             case VX_DISTRIBUTION_DIMENSIONS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     /* Only 1D is supported */
                     *(vx_size *)ptr = 1U;
@@ -129,7 +129,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 }
                 break;
             case VX_DISTRIBUTION_OFFSET:
-                if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U))
                 {
                     *(vx_int32 *)ptr = obj_desc->offset;
                 }
@@ -139,7 +139,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 }
                 break;
             case VX_DISTRIBUTION_RANGE:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->range;
                 }
@@ -149,7 +149,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 }
                 break;
             case VX_DISTRIBUTION_BINS:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->num_bins;
                 }
@@ -159,7 +159,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 }
                 break;
             case VX_DISTRIBUTION_WINDOW:
-                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = obj_desc->num_win;
                 }
@@ -169,7 +169,7 @@ vx_status VX_API_CALL vxQueryDistribution(
                 }
                 break;
             case VX_DISTRIBUTION_SIZE:
-                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
                     *(vx_size *)ptr = obj_desc->mem_size;
                 }

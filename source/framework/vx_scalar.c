@@ -270,7 +270,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryScalar(vx_scalar scalar, vx_enum attri
         switch (attribute)
         {
             case VX_SCALAR_TYPE:
-                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3))
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
                     *(vx_enum*)ptr = ((tivx_obj_desc_scalar_t*)(pscalar->
                         base.obj_desc))->data_type;
