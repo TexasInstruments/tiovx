@@ -600,7 +600,7 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
         target->task_params.stack_size = params->task_stack_size;
         target->task_params.core_affinity = params->task_core_affinity;
         target->task_params.priority = params->task_priority;
-        target->task_params.task_main = tivxTargetTaskMain;
+        target->task_params.task_main = &tivxTargetTaskMain;
         target->task_params.app_var = target;
 
         target->targetExitRequest = vx_false_e;

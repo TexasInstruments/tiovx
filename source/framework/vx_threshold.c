@@ -67,10 +67,10 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                 (thr->base.type == VX_TYPE_THRESHOLD))
             {
                 /* assign refernce type specific callback's */
-                thr->base.destructor_callback = ownDestructThreshold;
-                thr->base.mem_alloc_callback = ownAllocThresholdBuffer;
+                thr->base.destructor_callback = &ownDestructThreshold;
+                thr->base.mem_alloc_callback = &ownAllocThresholdBuffer;
                 thr->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseThreshold;
+                    (tivx_reference_release_callback_f)&vxReleaseThreshold;
 
                 obj_desc = (tivx_obj_desc_threshold_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_THRESHOLD);

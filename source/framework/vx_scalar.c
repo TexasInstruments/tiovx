@@ -228,8 +228,8 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
             if ((vxGetStatus((vx_reference)scalar) == VX_SUCCESS) && (scalar->base.type == VX_TYPE_SCALAR))
             {
                 /* assign refernce type specific callback's */
-                scalar->base.destructor_callback = ownDestructScalar;
-                scalar->base.release_callback = (tivx_reference_release_callback_f)vxReleaseScalar;
+                scalar->base.destructor_callback = &ownDestructScalar;
+                scalar->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseScalar;
 
                 obj_desc = (tivx_obj_desc_scalar_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_SCALAR);
                 if(obj_desc==NULL)

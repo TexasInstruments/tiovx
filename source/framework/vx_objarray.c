@@ -93,10 +93,10 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 (objarr->base.type == VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
-                objarr->base.destructor_callback = ownDestructObjArray;
-                objarr->base.mem_alloc_callback = ownAllocObjectArrayBuffer;
+                objarr->base.destructor_callback = &ownDestructObjArray;
+                objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseObjectArray;
+                    (tivx_reference_release_callback_f)&vxReleaseObjectArray;
 
                 objarr->base.obj_desc = tivxObjDescAlloc(
                     TIVX_OBJ_DESC_OBJARRAY);
@@ -158,10 +158,10 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 (objarr->base.type == VX_TYPE_OBJECT_ARRAY))
             {
                 /* assign refernce type specific callback's */
-                objarr->base.destructor_callback = ownDestructObjArray;
-                objarr->base.mem_alloc_callback = ownAllocObjectArrayBuffer;
+                objarr->base.destructor_callback = &ownDestructObjArray;
+                objarr->base.mem_alloc_callback = &ownAllocObjectArrayBuffer;
                 objarr->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseObjectArray;
+                    (tivx_reference_release_callback_f)&vxReleaseObjectArray;
 
                 objarr->base.obj_desc = tivxObjDescAlloc(
                     TIVX_OBJ_DESC_OBJARRAY);

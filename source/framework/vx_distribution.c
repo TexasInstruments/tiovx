@@ -57,10 +57,10 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                 (dist->base.type == VX_TYPE_DISTRIBUTION))
             {
                 /* assign refernce type specific callback's */
-                dist->base.destructor_callback = ownDestructDistribution;
-                dist->base.mem_alloc_callback = ownAllocDistributionBuffer;
+                dist->base.destructor_callback = &ownDestructDistribution;
+                dist->base.mem_alloc_callback = &ownAllocDistributionBuffer;
                 dist->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseDistribution;
+                    (tivx_reference_release_callback_f)&vxReleaseDistribution;
 
                 obj_desc = (tivx_obj_desc_distribution_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_DISTRIBUTION);

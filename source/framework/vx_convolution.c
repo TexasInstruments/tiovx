@@ -62,10 +62,10 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                 (cnvl->base.type == VX_TYPE_CONVOLUTION))
             {
                 /* assign refernce type specific callback's */
-                cnvl->base.destructor_callback = ownDestructConvolution;
-                cnvl->base.mem_alloc_callback = ownAllocConvolutionBuffer;
+                cnvl->base.destructor_callback = &ownDestructConvolution;
+                cnvl->base.mem_alloc_callback = &ownAllocConvolutionBuffer;
                 cnvl->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseConvolution;
+                    (tivx_reference_release_callback_f)&vxReleaseConvolution;
 
                 obj_desc = (tivx_obj_desc_convolution_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_CONVOLUTION);

@@ -118,8 +118,8 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetKernelParameterByIndex(vx_kernel kern
             parameter = (vx_parameter)ownCreateReference(kernel->base.context, VX_TYPE_PARAMETER, VX_EXTERNAL, &kernel->base.context->base);
             if ((vxGetStatus((vx_reference)parameter) == VX_SUCCESS) && (parameter->base.type == VX_TYPE_PARAMETER))
             {
-                parameter->base.destructor_callback = ownDestructParameter;
-                parameter->base.release_callback = (tivx_reference_release_callback_f)vxReleaseParameter;
+                parameter->base.destructor_callback = &ownDestructParameter;
+                parameter->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
                 parameter->index = index;
                 parameter->node = NULL;
                 parameter->kernel = kernel;
@@ -155,8 +155,8 @@ VX_API_ENTRY vx_parameter VX_API_CALL vxGetParameterByIndex(vx_node node, vx_uin
                 param = (vx_parameter)ownCreateReference(node->base.context, VX_TYPE_PARAMETER, VX_EXTERNAL, &node->base);
                 if ((vxGetStatus((vx_reference)param) == VX_SUCCESS) && (param->base.type == VX_TYPE_PARAMETER))
                 {
-                    param->base.destructor_callback = ownDestructParameter;
-                    param->base.release_callback = (tivx_reference_release_callback_f)vxReleaseParameter;
+                    param->base.destructor_callback = &ownDestructParameter;
+                    param->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseParameter;
                     param->index = index;
                     param->node = node;
                     ownIncrementReference(&param->node->base, VX_INTERNAL);

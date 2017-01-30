@@ -131,9 +131,9 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
             if ((vxGetStatus((vx_reference)remap) == VX_SUCCESS) && (remap->base.type == VX_TYPE_REMAP))
             {
                 /* assign refernce type specific callback's */
-                remap->base.destructor_callback = ownDestructRemap;
-                remap->base.mem_alloc_callback = ownAllocRemapBuffer;
-                remap->base.release_callback = (tivx_reference_release_callback_f)vxReleaseRemap;
+                remap->base.destructor_callback = &ownDestructRemap;
+                remap->base.mem_alloc_callback = &ownAllocRemapBuffer;
+                remap->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseRemap;
 
                 obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_REMAP);
                 if(obj_desc==NULL)

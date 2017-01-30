@@ -84,10 +84,10 @@ vx_lut VX_API_CALL vxCreateLUT(
                 (lut->base.type == VX_TYPE_LUT))
             {
                 /* assign refernce type specific callback's */
-                lut->base.destructor_callback = ownDestructLut;
-                lut->base.mem_alloc_callback = ownAllocLutBuffer;
+                lut->base.destructor_callback = &ownDestructLut;
+                lut->base.mem_alloc_callback = &ownAllocLutBuffer;
                 lut->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleaseLUT;
+                    (tivx_reference_release_callback_f)&vxReleaseLUT;
 
                 obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_LUT);

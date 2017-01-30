@@ -109,10 +109,10 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                 (prmd->base.type == VX_TYPE_PYRAMID))
             {
                 /* assign refernce type specific callback's */
-                prmd->base.destructor_callback = ownDestructPyramid;
-                prmd->base.mem_alloc_callback = ownAllocPyramidBuffer;
+                prmd->base.destructor_callback = &ownDestructPyramid;
+                prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
                 prmd->base.release_callback =
-                    (tivx_reference_release_callback_f)vxReleasePyramid;
+                    (tivx_reference_release_callback_f)&vxReleasePyramid;
 
                 obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_PYRAMID);
@@ -203,10 +203,10 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
             (prmd->base.type == VX_TYPE_PYRAMID))
         {
             /* assign refernce type specific callback's */
-            prmd->base.destructor_callback = ownDestructPyramid;
-            prmd->base.mem_alloc_callback = ownAllocPyramidBuffer;
+            prmd->base.destructor_callback = &ownDestructPyramid;
+            prmd->base.mem_alloc_callback = &ownAllocPyramidBuffer;
             prmd->base.release_callback =
-                (tivx_reference_release_callback_f)vxReleasePyramid;
+                (tivx_reference_release_callback_f)&vxReleasePyramid;
 
             obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
                 TIVX_OBJ_DESC_PYRAMID);

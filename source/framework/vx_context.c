@@ -417,7 +417,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
             context->num_unique_kernels = 0;
             context->log_enabled = vx_false_e;
             context->base.release_callback =
-                (tivx_reference_release_callback_f)vxReleaseContext;
+                (tivx_reference_release_callback_f)&vxReleaseContext;
 
             status = tivxMutexCreate(&context->lock);
             if(status==VX_SUCCESS)

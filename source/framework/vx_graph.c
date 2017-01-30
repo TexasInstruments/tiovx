@@ -220,8 +220,8 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
         graph = (vx_graph)ownCreateReference(context, VX_TYPE_GRAPH, VX_EXTERNAL, &context->base);
         if ( (vxGetStatus((vx_reference)graph) == VX_SUCCESS) && (graph->base.type == VX_TYPE_GRAPH) )
         {
-            graph->base.destructor_callback = ownDestructGraph;
-            graph->base.release_callback = (tivx_reference_release_callback_f)vxReleaseGraph;
+            graph->base.destructor_callback = &ownDestructGraph;
+            graph->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseGraph;
 
             graph->num_nodes = 0;
             graph->num_head_nodes = 0;

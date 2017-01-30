@@ -476,9 +476,9 @@ static vx_image ownCreateImageInt(vx_context context,
                 if ( (vxGetStatus((vx_reference)image) == VX_SUCCESS) && (image->base.type == VX_TYPE_IMAGE) )
                 {
                     /* assign refernce type specific callback's */
-                    image->base.destructor_callback = ownDestructImage;
-                    image->base.mem_alloc_callback = ownAllocImageBuffer;
-                    image->base.release_callback = (tivx_reference_release_callback_f)vxReleaseImage;
+                    image->base.destructor_callback = &ownDestructImage;
+                    image->base.mem_alloc_callback = &ownAllocImageBuffer;
+                    image->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseImage;
 
                     obj_desc = (tivx_obj_desc_image_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_IMAGE);
 

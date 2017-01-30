@@ -50,7 +50,7 @@ static tivx_error_t *ownAllocateError(vx_context context, vx_status status)
     tivx_error_t *error = (tivx_error_t *)ownCreateReference(context, VX_TYPE_ERROR, VX_INTERNAL, &context->base);
     if (error)
     {
-        error->base.release_callback = ownReleaseErrorInt;
+        error->base.release_callback = &ownReleaseErrorInt;
         error->status = status;
     }
     return error;
