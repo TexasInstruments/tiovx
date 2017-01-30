@@ -122,6 +122,12 @@ extern "C" {
 #define dimof(x) (sizeof(x)/sizeof(x[0]))
 #endif
 
+static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val);
+static inline void tivxFlagBitSet(uint32_t *flag_var, uint32_t flag_val);
+static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val);
+static inline void tivx_uint32_to_uint64(uint64_t *val, uint32_t h, uint32_t l);
+static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l);
+
 /*! \brief Macro to check if flag is set, flag MUST be of bit type
  * \ingroup group_vx_utils
  */

@@ -30,6 +30,7 @@ static void tivxTargetSetGraphStateAbandon(
     tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
 static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
+static void VX_CALLBACK tivxTargetTaskMain(void *app_var);
 
 
 static tivx_target tivxTargetAllocHandle(vx_enum target_id)
@@ -526,7 +527,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
 }
 
-void VX_CALLBACK tivxTargetTaskMain(void *app_var)
+static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
 {
     tivx_target target = (tivx_target)app_var;
     tivx_obj_desc_t *obj_desc;

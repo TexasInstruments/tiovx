@@ -315,7 +315,7 @@ static void ownInitPlane(vx_image image,
         imagepatch_addr->dim_y = height;
         imagepatch_addr->stride_x = size_of_ch*channels;
         imagepatch_addr->stride_y = TIVX_ALIGN(
-                    imagepatch_addr->dim_x*imagepatch_addr->stride_x/step_x,
+                    (imagepatch_addr->dim_x*imagepatch_addr->stride_x)/step_x,
                     TIVX_DEFAULT_STRIDE_Y_ALIGN
                     );
         imagepatch_addr->scale_x = VX_SCALE_UNITY/step_x;
@@ -323,7 +323,7 @@ static void ownInitPlane(vx_image image,
         imagepatch_addr->step_x = step_x;
         imagepatch_addr->step_y = step_y;
 
-        mem_size = imagepatch_addr->stride_y*imagepatch_addr->dim_y/step_y;
+        mem_size = (imagepatch_addr->stride_y*imagepatch_addr->dim_y)/step_y;
 
         obj_desc->mem_size[index] = mem_size;
 
@@ -690,7 +690,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 imagepatch_addr->stride_x = addrs[plane_idx].stride_x;
                 imagepatch_addr->stride_y = addrs[plane_idx].stride_y;
 
-                obj_desc->mem_size[plane_idx] = imagepatch_addr->stride_y*imagepatch_addr->dim_y/imagepatch_addr->step_y;
+                obj_desc->mem_size[plane_idx] = (imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
 
                 mem_ptr->mem_type =  TIVX_MEM_EXTERNAL;
                 mem_ptr->host_ptr = ptrs[plane_idx];
@@ -930,7 +930,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                             subimage_imagepatch_addr->stride_x = image_imagepatch_addr->stride_x;
                             subimage_imagepatch_addr->stride_y = image_imagepatch_addr->stride_y;
 
-                            mem_size = subimage_imagepatch_addr->stride_y*subimage_imagepatch_addr->dim_y/subimage_imagepatch_addr->step_y;
+                            mem_size = (subimage_imagepatch_addr->stride_y*subimage_imagepatch_addr->dim_y)/subimage_imagepatch_addr->step_y;
 
                             si_obj_desc->mem_size[plane_idx] = mem_size;
 
@@ -1500,18 +1500,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         image_addr = &obj_desc->imagepatch_addr[plane_index];
         pImagePtr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
 
-        pImageLine = pImagePtr + start_y*image_addr->stride_y/image_addr->step_y + start_x*image_addr->stride_x/image_addr->step_x;
+        pImageLine = pImagePtr + ((start_y*image_addr->stride_y)/image_addr->step_y) + ((start_x*image_addr->stride_x)/image_addr->step_x);
         pUserLine = pUserPtr;
 
         map_addr = pImageLine;
-        map_size = (end_y - start_y)*image_addr->stride_y/image_addr->step_y;
+        map_size = ((end_y - start_y)*image_addr->stride_y)/image_addr->step_y;
 
         tivxMemBufferMap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
 
         /* copy the patch from the image */
         if (user_addr->stride_x == image_addr->stride_x)
         {
-            len = (end_x - start_x)*image_addr->stride_x/image_addr->step_x;
+            len = ((end_x - start_x)*image_addr->stride_x)/image_addr->step_x;
 
             if(usage == VX_READ_ONLY)
             {

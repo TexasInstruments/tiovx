@@ -255,7 +255,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             }
             /* Set data values in the centre row and column to 255  */
             pTempDataPtr = obj_desc->mem_ptr.host_ptr;
-            pTempDataPtr = pTempDataPtr + ((rows/2))*columns;
+            pTempDataPtr = pTempDataPtr + (((rows/2))*columns);
             for (i = 0U; i < columns; i ++)
             {
                 *pTempDataPtr = 255;
@@ -278,11 +278,11 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
             {
                 for (j = 0U; j < columns; j ++)
                 {
-                    ref = (((i - rows / 2.0 + 0.5) * (i - rows / 2.0 + 0.5)) / ((rows / 2.0) * (rows / 2.0)) +
-                        ((j - columns / 2.0 + 0.5) * (j - columns / 2.0 + 0.5)) / ((columns / 2.0) * (columns / 2.0)))
+                    ref = ( ( ( (i - (rows / 2.0)) + 0.5) * ( (i - (rows / 2.0) ) + 0.5) ) / ( (rows / 2.0) * (rows / 2.0) ) +
+                        (((j - (columns / 2.0)) + 0.5) * ((j - (columns / 2.0)) + 0.5)) / ((columns / 2.0) * (columns / 2.0)))
                         <= 1 ? 255 : 0;
 
-                    mask[j + i * columns] = ref;
+                    mask[j + (i * columns)] = ref;
                 }
             }
         }

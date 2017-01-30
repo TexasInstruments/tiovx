@@ -37,7 +37,7 @@
 
 #include <vx_internal.h>
 
-
+static vx_enum ownKernelMatchTarget(vx_kernel kernel, const char *target_string);
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
@@ -345,7 +345,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
     return status;
 }
 
-vx_enum ownKernelMatchTarget(vx_kernel kernel, const char *target_string)
+static vx_enum ownKernelMatchTarget(vx_kernel kernel, const char *target_string)
 {
     vx_enum target_id = TIVX_TARGET_ID_INVALID;
 

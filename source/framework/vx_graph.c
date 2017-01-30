@@ -38,6 +38,9 @@
 #include <vx_internal.h>
 
 static vx_status ownDestructGraph(vx_reference ref);
+static vx_status ownResetGraphPerf(vx_graph graph);
+static vx_status ownUpdateGraphPerf(vx_graph graph);
+static void ownGraphClearState(vx_graph graph);
 
 static vx_status ownDestructGraph(vx_reference ref)
 {
@@ -53,7 +56,7 @@ static vx_status ownDestructGraph(vx_reference ref)
     return VX_SUCCESS;
 }
 
-vx_status ownResetGraphPerf(vx_graph graph)
+static vx_status ownResetGraphPerf(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
@@ -75,7 +78,7 @@ vx_status ownResetGraphPerf(vx_graph graph)
     return status;
 }
 
-vx_status ownUpdateGraphPerf(vx_graph graph)
+static vx_status ownUpdateGraphPerf(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
@@ -200,7 +203,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
 
 }
 
-void ownGraphClearState(vx_graph graph)
+static void ownGraphClearState(vx_graph graph)
 {
     uint32_t i;
 
@@ -424,7 +427,7 @@ VX_API_ENTRY vx_bool VX_API_CALL vxIsGraphVerified(vx_graph graph)
 
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay delay)
 {
-    unsigned int i;
+    uint8_t i;
     vx_status status = VX_SUCCESS;
     vx_bool is_registered = vx_false_e;
     vx_bool is_full = vx_true_e;

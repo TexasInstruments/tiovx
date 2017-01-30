@@ -40,7 +40,7 @@
 static vx_status ownDestructConvolution(vx_reference ref);
 static vx_status ownAllocConvolutionBuffer(vx_reference ref);
 static vx_bool vxIsPowerOfTwo(vx_uint32 a);
-static int isodd(size_t a);
+static int8_t isodd(size_t a);
 
 vx_convolution VX_API_CALL vxCreateConvolution(
     vx_context context, vx_size columns, vx_size rows)
@@ -390,8 +390,8 @@ static vx_bool vxIsPowerOfTwo(vx_uint32 a)
     }
 }
 
-static int isodd(size_t a)
+static int8_t isodd(size_t a)
 {
-    return (int)(a & 1U);
+    return (int8_t)(a & 1U);
 }
 
