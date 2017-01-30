@@ -134,11 +134,11 @@ static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_ima
 {
     vx_bool is_valid = vx_true_e;
 
-    if (ownIsOdd(width) && ( (color == VX_DF_IMAGE_UYVY) || (color == VX_DF_IMAGE_YUYV)))
+    if ((ownIsOdd(width)) && ( (color == VX_DF_IMAGE_UYVY) || (color == VX_DF_IMAGE_YUYV)))
     {
         is_valid = vx_false_e;
     }
-    else if ((ownIsOdd(width) || ownIsOdd(height)) &&
+    else if (((ownIsOdd(width)) || (ownIsOdd(height))) &&
               ((color == VX_DF_IMAGE_IYUV) || (color == VX_DF_IMAGE_NV12) || (color == VX_DF_IMAGE_NV21)))
     {
         is_valid = vx_false_e;

@@ -117,7 +117,7 @@ static void tivxTargetNodeDescSendComplete(tivx_obj_desc_node_t *node_obj_desc)
 {
     uint16_t cmd_obj_desc_id;
 
-    if( tivxFlagIsBitSet(node_obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK)
+    if( (tivxFlagIsBitSet(node_obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK))
             ||
         (node_obj_desc->num_out_nodes == 0)
         )

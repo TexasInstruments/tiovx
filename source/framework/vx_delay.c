@@ -37,8 +37,8 @@
 
 #include <vx_internal.h>
 
-#define tivxIsValidDelay(d) ((d) && ownIsValidSpecificReference((vx_reference)(d), VX_TYPE_DELAY))
-#define tivxIsValidGraph(g) ((g) && ownIsValidSpecificReference((vx_reference)(g), VX_TYPE_GRAPH))
+#define tivxIsValidDelay(d) ((d) && (ownIsValidSpecificReference((vx_reference)(d), VX_TYPE_DELAY)))
+#define tivxIsValidGraph(g) ((g) && (ownIsValidSpecificReference((vx_reference)(g), VX_TYPE_GRAPH)))
 
 static vx_bool ownIsValidObject(vx_enum type);
 static void ownResetDelayPrmPool(vx_delay delay);
@@ -340,7 +340,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
 
     if ( ownIsValidContext(context) )
     {
-        if (ownIsValidReference(exemplar) && ownIsValidObject(exemplar->type) && (count <= TIVX_DELAY_MAX_OBJECT) )
+        if ((ownIsValidReference(exemplar)) && (ownIsValidObject(exemplar->type)) && (count <= TIVX_DELAY_MAX_OBJECT) )
         {
             delay = (vx_delay)ownCreateReference(
                                     context, VX_TYPE_DELAY, VX_EXTERNAL, &context->base);

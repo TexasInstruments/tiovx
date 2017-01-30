@@ -429,9 +429,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
     vx_bool is_registered = vx_false_e;
     vx_bool is_full = vx_true_e;
 
-    if(delay && ownIsValidSpecificReference((vx_reference)delay, VX_TYPE_DELAY))
+    if((delay) && (ownIsValidSpecificReference((vx_reference)delay, VX_TYPE_DELAY)))
     {
-        if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
+        if((graph) && (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
         {
             /* check if this particular delay is already registered in the graph */
             for (i = 0; i < TIVX_GRAPH_MAX_DELAYS; i++)
@@ -480,7 +480,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
+    if((graph) && (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
         status = vxScheduleGraph(graph);
         if(status == VX_SUCCESS)
@@ -501,8 +501,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
-
+    if((graph) && (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
         if(!vxIsGraphVerified(graph))
         {
@@ -556,7 +555,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH))
+    if((graph) && (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
         if (graph->state == VX_GRAPH_STATE_RUNNING)
         {

@@ -449,7 +449,7 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
         if(ref->obj_desc)
         {
             ref->obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
-            if(scope && scope->obj_desc)
+            if((scope) && (scope->obj_desc))
             {
                 ref->obj_desc->scope_obj_desc_id = scope->obj_desc->obj_desc_id;
             }

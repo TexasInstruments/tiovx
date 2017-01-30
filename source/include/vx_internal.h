@@ -87,22 +87,22 @@ extern "C" {
 /*! \brief Used to determine if a type is a scalar.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_SCALAR(type) (VX_TYPE_INVALID < (type) && (type) < VX_TYPE_SCALAR_MAX)
+#define TIVX_TYPE_IS_SCALAR(type) ((VX_TYPE_INVALID < (type)) && ((type) < VX_TYPE_SCALAR_MAX))
 
 /*! \brief Used to determine if a type is a struct.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_STRUCT(type) ((type) >= VX_TYPE_RECTANGLE && (type) < VX_TYPE_KHRONOS_STRUCT_MAX)
+#define TIVX_TYPE_IS_STRUCT(type) (((type) >= VX_TYPE_RECTANGLE) && ((type) < VX_TYPE_KHRONOS_STRUCT_MAX))
 
 /*! \brief Used to determine if a type is an object.
  * \ingroup group_vx_utils
  */
-#define TIVX_TYPE_IS_OBJECT(type) ((type) >= VX_TYPE_REFERENCE && (type) < VX_TYPE_KHRONOS_OBJECT_END)
+#define TIVX_TYPE_IS_OBJECT(type) (((type) >= VX_TYPE_REFERENCE) && ((type) < VX_TYPE_KHRONOS_OBJECT_END))
 
 /*! \brief A magic value to look for and set in references.
  * \ingroup group_vx_utils
  */
-#define TIVX_MAGIC            (0xFACEC0DE)
+#define TIVX_MAGIC            (0xFACEC0DEU)
 
 
 /*! \brief A magic value to look for and set in references. Used to indicate a free'ed reference
@@ -113,7 +113,7 @@ extern "C" {
 /*! \brief A parameter checker for size and alignment.
  * \ingroup group_vx_utils
  */
-#define VX_CHECK_PARAM(ptr, size, type, align) (size == sizeof(type) && ((vx_size)ptr & align) == 0)
+#define VX_CHECK_PARAM(ptr, size, type, align) ((size == sizeof(type)) && (((vx_size)ptr & align) == 0))
 
 /*! \brief Macro to find size of array
  * \ingroup group_vx_utils
@@ -145,7 +145,7 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
 {
     uint32_t value = *flag_var;
 
-    value = (value & ~flag_val);
+    value = value & ~flag_val;
 
     *flag_var = value;
 }
@@ -155,7 +155,7 @@ static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val)
  */
 static inline void tivx_uint32_to_uint64(uint64_t *val, uint32_t h, uint32_t l)
 {
-    *val = (((uint64_t)h<<32) | (uint64_t)l);
+    *val = ((uint64_t)h<<32) | (uint64_t)l;
 }
 
 /*! \brief Macro to convert uint64 to 2x uint32

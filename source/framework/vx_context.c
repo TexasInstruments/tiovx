@@ -321,7 +321,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if(kernel && ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+            if((kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
                 &&
                 ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
                     ||
@@ -947,7 +947,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if( kernel && ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+            if( (kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
                 &&
                 ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
                 )
@@ -985,7 +985,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if(kernel && ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL)
+            if((kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
                 &&
                 ( kernel->enumeration == kernelenum )
                 )

@@ -536,7 +536,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         }
     }
 
-    if(graph && ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH) &&
+    if((graph) && (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)) &&
         (VX_SUCCESS == status))
     {
         ownReferenceLock(&graph->base);

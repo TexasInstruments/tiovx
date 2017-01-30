@@ -160,7 +160,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
             &&
             (strncmp(g_module_table[idx].name, module, TIVX_MODULE_MAX_NAME) == 0)
             &&
-            g_module_table[idx].is_loaded
+            (g_module_table[idx].is_loaded)
           )
         {
             status = g_module_table[idx].unpublish(context);

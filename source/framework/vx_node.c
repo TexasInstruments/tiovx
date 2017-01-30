@@ -142,7 +142,7 @@ static vx_status ownRemoveNodeInt(vx_node *n)
     vx_node node = (n?*n:0);
     vx_status status =  VX_ERROR_INVALID_REFERENCE;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
+    if ((node) && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE)))
     {
         if (node->graph)
         {
@@ -175,7 +175,7 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
     uint32_t i;
     uint32_t num_params;
 
-    if(node && node->kernel)
+    if((node) && (node->kernel))
     {
         if(node->kernel->validate)
         {
@@ -290,11 +290,11 @@ vx_status ownNodeKernelDeinit(vx_node node)
 
                 node->local_data_set_allow = vx_false_e;
             }
-            if(node->local_data_ptr_is_alloc
+            if((node->local_data_ptr_is_alloc)
                 &&
-                node->local_data_ptr
+                (node->local_data_ptr)
                 &&
-                node->local_data_size
+                (node->local_data_size)
                 )
             {
                 tivxMemFree(node->local_data_ptr, node->local_data_size);
@@ -332,9 +332,9 @@ vx_status ownNodeUserKernelExecute(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
+    if ((node) && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE)))
     {
-        if(node->kernel && (node->is_kernel_created == vx_true_e))
+        if((node->kernel) && (node->is_kernel_created == vx_true_e))
         {
             if(node->kernel->function && !node->kernel->is_target_kernel)
             {
@@ -351,7 +351,7 @@ vx_status ownNodeUserKernelExecute(vx_node node)
                     {
                         parent_ref[i] = NULL;
 
-                        if(node->replicated_flags[i] && node->parameters[i])
+                        if((node->replicated_flags[i]) && (node->parameters[i]))
                         {
                             parent_ref[i] = node->parameters[i]->scope;
                         }
@@ -632,7 +632,7 @@ vx_status ownNodeSendCompletionEvent(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e) && node->completion_event)
+    if ((node) && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e) && (node->completion_event))
     {
         status = tivxEventPost(node->completion_event);
     }
@@ -648,7 +648,7 @@ vx_status ownNodeWaitCompletionEvent(vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
-    if (node && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e) && node->completion_event)
+    if ((node) && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e) && (node->completion_event))
     {
         status = tivxEventWait(node->completion_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
     }
@@ -721,11 +721,11 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
 {
     vx_bool is_replicated = vx_false_e;
 
-    if(node && node->obj_desc)
+    if((node) && (node->obj_desc))
     {
         if( (tivxFlagIsBitSet( node->obj_desc->flags, TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e)
             &&
-            node->replicated_flags[prm_idx])
+            (node->replicated_flags[prm_idx]))
         {
             is_replicated = vx_true_e;
         }
@@ -985,7 +985,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
             switch (attribute)
             {
                 case VX_NODE_LOCAL_DATA_SIZE:
-                    if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U) && node->kernel)
+                    if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U) && (node->kernel))
                     {
                         if((node->local_data_ptr_is_alloc) || (node->local_data_set_allow == vx_false_e))
                         {
@@ -1005,7 +1005,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     }
                     break;
                 case VX_NODE_LOCAL_DATA_PTR:
-                    if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3U) && node->kernel)
+                    if (VX_CHECK_PARAM(ptr, size, uintptr_t, 0x3U) && (node->kernel))
                     {
                         if((node->local_data_ptr_is_alloc) || (node->local_data_set_allow == vx_false_e))
                         {
@@ -1051,7 +1051,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRemoveNode(vx_node *n)
 {
     vx_node node = (vx_node)(n?*n:0);
     vx_status status =  VX_ERROR_INVALID_REFERENCE;
-    if (node && ownIsValidSpecificReference(&node->base, VX_TYPE_NODE))
+    if ((node) && (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE)))
     {
         status = ownRemoveNodeInt(n);
         if(status == VX_SUCCESS) {
@@ -1355,7 +1355,7 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
 {
     vx_node next_node = NULL;
 
-    if(node && node->obj_desc && (index < node->obj_desc->num_out_nodes))
+    if((node) && (node->obj_desc) && (index < node->obj_desc->num_out_nodes))
     {
         tivx_obj_desc_node_t *next_node_obj_desc;
 
