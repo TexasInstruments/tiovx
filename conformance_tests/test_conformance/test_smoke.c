@@ -494,7 +494,8 @@ TEST(SmokeTest, test_vxUnloadKernels)
     ASSERT(num_modules1 >= 0u);
     ASSERT(num_unique_kernels1 > 0u);
 
-    ASSERT_VX_ERROR(vxGetKernelByName(context, "org.khronos.test.testmodule"), VX_ERROR_INVALID_PARAMETERS);
+    kernel = vxGetKernelByName(context, "org.khronos.test.testmodule");
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)kernel));
 
     VX_CALL(vxLoadKernels(context, "test-testmodule"));
     ASSERT_VX_OBJECT(kernel = vxGetKernelByName(context, "org.khronos.test.testmodule"), VX_TYPE_KERNEL);
@@ -506,7 +507,9 @@ TEST(SmokeTest, test_vxUnloadKernels)
     ASSERT(num_unique_kernels2 > num_unique_kernels1);
 
     VX_CALL(vxUnloadKernels(context, "test-testmodule"));
-    ASSERT_VX_ERROR(vxGetKernelByName(context, "org.khronos.test.testmodule"), VX_ERROR_INVALID_PARAMETERS);
+
+    kernel = vxGetKernelByName(context, "org.khronos.test.testmodule");
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)kernel));
 
     ASSERT_EQ_VX_STATUS(vxQueryContext(context, VX_CONTEXT_MODULES, (void*)&num_modules2, sizeof(num_modules1)), VX_SUCCESS);
     ASSERT_EQ_VX_STATUS(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, (void*)&num_unique_kernels2, sizeof(num_unique_kernels2)), VX_SUCCESS);
@@ -568,12 +571,12 @@ TEST(SmokeTest, test_vxSetParameterByIndex)
 
     // 2. check that vxSetParameterByIndex failed to set required params to NULL
     ASSERT(node_parameters == 3);
-    ASSERT_EQ_VX_STATUS(VX_ERROR_INVALID_REFERENCE, vxSetParameterByIndex(node, 0, (vx_reference)NULL)); // required parameter
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 0, (vx_reference)NULL)); // required parameter
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 1, (vx_reference)NULL)); // output images are optional
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 2, (vx_reference)dy)); // (but at least one should specified)
 
     // 3. check that vxVerifyGraph does not allow required params to be NULL
-    ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUFFICIENT, vxVerifyGraph(graph));
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(node, 0, (vx_reference)image));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 

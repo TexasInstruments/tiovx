@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2016 The Khronos Group Inc.
+ * Copyright (c) 2015-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -563,7 +563,6 @@ TEST(Array, DISABLED_testAccessCopyRead)
     vx_coordinates2d_t localArray2[N*3];
     vx_array array;
     int i;
-    vx_map_id map_id;
 
     /* Initialization */
     for (i = 0; i < N; i++) {

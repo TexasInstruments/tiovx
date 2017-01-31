@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -351,7 +351,7 @@ static struct GrfmtReader* readBmpHeader(const uchar* data, int datasize, int* _
     offset = GET_DWORD(p);
     size = GET_DWORD(p);
 
-    memset(&palette[0], 0, sizeof(palette));
+    ct_memset(&palette[0], 0, sizeof(palette));
 
     if( size >= 36 )
     {

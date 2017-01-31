@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+/* 
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -143,7 +143,7 @@ static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_po
     void* buf = 0;
     char file[MAXPATHLENGTH];
 
-    sz = snprintf(file, MAXPATHLENGTH, "%s%s", ct_get_test_file_path(), fileName);
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
     ASSERT_(return 0, (sz < MAXPATHLENGTH));
 #if 1
     FILE* f = fopen(file, "rb");

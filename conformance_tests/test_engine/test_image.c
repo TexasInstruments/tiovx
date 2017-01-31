@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+/* 
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -352,7 +352,7 @@ CT_Image ct_read_image(const char* fileName, int dcn)
         return 0;
     }
 
-    sz = snprintf(file, MAXPATHLENGTH, "%s%s", ct_get_test_file_path(), fileName);
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
     ASSERT_(return 0, (sz < MAXPATHLENGTH));
 
     f = fopen(file, "rb");
@@ -392,7 +392,7 @@ void ct_write_image(const char* fileName, CT_Image image)
 
     if (fileName)
     {
-        size = snprintf(file, MAXPATHLENGTH, "%s%s", ct_get_test_file_path(), fileName);
+        size = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
         ASSERT(size < MAXPATHLENGTH);
 
         dotpos = strrchr(file, '.');

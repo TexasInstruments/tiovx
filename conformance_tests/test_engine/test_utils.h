@@ -225,14 +225,13 @@ void ct_set_check_any_size(int flag);
 
 void ct_destroy_vx_context(void **pContext);
 
+char *ct_get_test_file_path();
+
 void *ct_alloc_mem(size_t size);
 
 void ct_free_mem(void *ptr);
 
 void ct_memset(void *ptr, vx_uint8 c, size_t);
-
 void *ct_calloc(size_t nmemb, size_t size);
-
-char *ct_get_test_file_path();
 
 #endif // __VX_CT_TEST_UTILS_H__

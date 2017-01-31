@@ -323,8 +323,9 @@ static void scale_validate(CT_Image src, CT_Image dst, vx_enum interpolation, vx
                     ASSERT_NO_FAILURE(check = scale_check_pixel(src, dst, x, y, interpolation, border));
                 else
                     ASSERT_NO_FAILURE(check = scale_check_pixel_exact(src, dst, x, y, interpolation, border));
-                if (check == 0)
+                if (check == 0) {
                     num_failed++;
+                }
             });
     if (interpolation == VX_INTERPOLATION_BILINEAR)
     {

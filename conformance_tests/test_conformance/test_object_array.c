@@ -319,7 +319,8 @@ TEST_WITH_ARG(ObjectArray, test_vxCreateObjectArray, Obj_Array_Arg, PARAMETERS)
     }
 
     /* 5. check that we can't get item out of object array's range */
-    ASSERT_VX_ERROR(actual_item = vxGetObjectArrayItem(object_array, (vx_uint32)num_items), VX_ERROR_INVALID_PARAMETERS);
+    actual_item = vxGetObjectArrayItem(object_array, (vx_uint32)num_items);
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)actual_item));
 
     VX_CALL(vxReleaseReference(&exemplar));
     ASSERT(exemplar == 0);

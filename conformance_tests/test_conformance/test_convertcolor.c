@@ -540,7 +540,7 @@ TEST_WITH_ARG(ColorConvert, testOnRandomAndNatural, format_arg,
         ASSERT_NO_FAILURE(src = ct_image_to_vx_image(src0, context));
         ASSERT_VX_OBJECT(src, VX_TYPE_IMAGE);
 /* commented out until specification clarifies VX_IMAGE_RANGE
-        ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(src, VX_IMAGE_RANGE, &range, sizeof(range)));
+        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_RANGE, &range, sizeof(range)));
 */
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_SPACE, &space, sizeof(space)));
 
@@ -549,7 +549,7 @@ TEST_WITH_ARG(ColorConvert, testOnRandomAndNatural, format_arg,
         ASSERT_VX_OBJECT(dst = vxCreateImage(context, width, height, dstformat), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst, VX_TYPE_IMAGE);
 /* commented out until specification clarifies VX_IMAGE_RANGE
-        ASSERT_EQ_VX_STATUS(VX_ERROR_NOT_SUPPORTED, vxSetImageAttribute(dst, VX_IMAGE_RANGE, &range, sizeof(range)));
+        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_RANGE, &range, sizeof(range)));
 */
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
 
