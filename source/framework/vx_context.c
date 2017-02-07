@@ -379,7 +379,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
     return status;
 }
 
-VX_API_ENTRY vx_context VX_API_CALL vxCreateContext()
+VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
 {
     vx_context context = NULL;
     vx_status status = VX_SUCCESS;

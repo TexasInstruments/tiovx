@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_CONVOLVE_
-#define _TIVX_KENREL_CONVOLVE_
+#ifndef TIVX_KENREL_CONVOLVE_
+#define TIVX_KENREL_CONVOLVE_
 
 
 #ifdef __cplusplus

@@ -71,7 +71,7 @@ static tivx_platform_info_t g_tivx_platform_info =
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
 
-vx_status tivxPlatformInit()
+vx_status tivxPlatformInit(void)
 {
     vx_status status;
     uint32_t i = 0;
@@ -94,7 +94,7 @@ vx_status tivxPlatformInit()
 }
 
 
-void tivxPlatformDeInit()
+void tivxPlatformDeInit(void)
 {
     uint32_t i;
 

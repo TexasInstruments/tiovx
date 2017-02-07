@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_MEM_H_
-#define _TIVX_MEM_H_
+#ifndef TIVX_MEM_H_
+#define TIVX_MEM_H_
 
 #include <VX/vx.h>
 

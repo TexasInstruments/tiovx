@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_OBJ_DESC_PRIV_H_
-#define _TIVX_OBJ_DESC_PRIV_H_
+#ifndef TIVX_OBJ_DESC_PRIV_H_
+#define TIVX_OBJ_DESC_PRIV_H_
 
 #include <TI/tivx_obj_desc.h>
 
@@ -195,7 +195,7 @@ vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e t
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-void tivxObjDescInit();
+void tivxObjDescInit(void);
 
 /*!
  * \brief Function to get the descriptor object from the given reference

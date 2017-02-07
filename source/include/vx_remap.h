@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_REMAP_H_
-#define _VX_REMAP_H_
+#ifndef VX_REMAP_H_
+#define VX_REMAP_H_
 
 
 #ifdef __cplusplus

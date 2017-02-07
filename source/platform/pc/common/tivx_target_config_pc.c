@@ -42,7 +42,7 @@ static void tivxTargetDeleteTargetId(vx_enum target_id)
     }
 }
 
-void tivxPlatformCreateTargets()
+void tivxPlatformCreateTargets(void)
 {
     tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU1);
     tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU2);

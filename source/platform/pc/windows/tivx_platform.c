@@ -37,7 +37,7 @@
 #include <vx_internal.h>
 #include <windows.h>
 
-uint64_t tivxPlatformGetTimeInUsecs()
+uint64_t tivxPlatformGetTimeInUsecs(void)
 {
     uint64_t timeInUsecs = 0;
     LARGE_INTEGER value, hz, tmp;

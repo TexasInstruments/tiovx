@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_META_FORMAT_H_
-#define _VX_META_FORMAT_H_
+#ifndef VX_META_FORMAT_H_
+#define VX_META_FORMAT_H_
 
 
 #ifdef __cplusplus

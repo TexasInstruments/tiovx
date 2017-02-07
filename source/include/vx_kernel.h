@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_KERNEL_H_
-#define _VX_KERNEL_H_
+#ifndef VX_KERNEL_H_
+#define VX_KERNEL_H_
 
 
 #ifdef __cplusplus

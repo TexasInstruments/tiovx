@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _VX_MODULE_H_
-#define _VX_MODULE_H_
+#ifndef VX_MODULE_H_
+#define VX_MODULE_H_
 
 
 #ifdef __cplusplus
@@ -59,7 +59,7 @@ typedef struct _vx_module
  *
  * \ingroup group_vx_module
  */
-uint32_t ownGetModuleCount();
+uint32_t ownGetModuleCount(void);
 
 
 #ifdef __cplusplus

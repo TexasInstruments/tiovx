@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_CNED_
-#define _TIVX_KERNEL_CNED_
+#ifndef TIVX_KERNEL_CNED_
+#define TIVX_KERNEL_CNED_
 
 
 #ifdef __cplusplus

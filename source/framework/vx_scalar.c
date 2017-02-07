@@ -79,7 +79,7 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
             case VX_TYPE_UINT32:   *(vx_uint32*)user_ptr = obj_desc->data.u32; break;
             case VX_TYPE_INT64:    *(vx_int64*)user_ptr = obj_desc->data.s64; break;
             case VX_TYPE_UINT64:   *(vx_uint64*)user_ptr = obj_desc->data.u64; break;
-        #if OVX_SUPPORT_HALF_FLOAT
+        #ifdef OVX_SUPPORT_HALF_FLOAT
             case VX_TYPE_FLOAT16:  *(vx_float16*)ptr = obj_desc->data.f16; break;
         #endif
             case VX_TYPE_FLOAT32:  *(vx_float32*)user_ptr = obj_desc->data.f32; break;
@@ -125,7 +125,7 @@ static vx_status ownHostMemToScalar(vx_scalar scalar, void* user_ptr)
             case VX_TYPE_UINT32:   obj_desc->data.u32 = *(vx_uint32*)user_ptr; break;
             case VX_TYPE_INT64:    obj_desc->data.s64 = *(vx_int64*)user_ptr; break;
             case VX_TYPE_UINT64:   obj_desc->data.u64 = *(vx_uint64*)user_ptr; break;
-        #if OVX_SUPPORT_HALF_FLOAT
+        #ifdef OVX_SUPPORT_HALF_FLOAT
             case VX_TYPE_FLOAT16:  obj_desc->data.f16 = *(vx_float16*)user_ptr; break;
         #endif
             case VX_TYPE_FLOAT32:  obj_desc->data.f32 = *(vx_float32*)user_ptr; break;

@@ -9,11 +9,11 @@
 
 #include <vx_internal.h>
 
-static void ownCheckAndInitModule();
+static void ownCheckAndInitModule(void);
 
 static tivx_module_t g_module_table[TIVX_MODULE_MAX];
 
-static void ownCheckAndInitModule()
+static void ownCheckAndInitModule(void)
 {
     static vx_bool is_init = vx_false_e;
     uint32_t idx;
@@ -30,7 +30,7 @@ static void ownCheckAndInitModule()
     }
 }
 
-uint32_t ownGetModuleCount()
+uint32_t ownGetModuleCount(void)
 {
     uint32_t count=0, idx;
 

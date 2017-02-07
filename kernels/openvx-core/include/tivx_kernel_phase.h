@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_PHASE_
-#define _TIVX_KERNEL_PHASE_
+#ifndef TIVX_KERNEL_PHASE_
+#define TIVX_KERNEL_PHASE_
 
 
 #ifdef __cplusplus

@@ -133,21 +133,33 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     {
         case VX_CHANNEL_Y:
             if(in_desc->format == VX_DF_IMAGE_YUYV)
+            {
                 channel_offset = 0;
+            }
             else
+            {
                 channel_offset = 1;
+            }
             break;
         case VX_CHANNEL_U:
             if(in_desc->format == VX_DF_IMAGE_YUYV)
+            {
                 channel_offset = 1;
+            }
             else
+            {
                 channel_offset = 0;
+            }
             break;
         case VX_CHANNEL_V:
             if(in_desc->format == VX_DF_IMAGE_YUYV)
+            {
                 channel_offset = 3;
+            }
             else
+            {
                 channel_offset = 2;
+            }
             break;
         default:
             status = VX_FAILURE;
@@ -240,15 +252,23 @@ vx_status tivxChannelExtractNv12Nv21Input(
                 break;
             case VX_CHANNEL_U:
                 if(in_desc->format == VX_DF_IMAGE_NV12)
+                {
                     channel_offset = 0;
+                }
                 else
+                {
                     channel_offset = 1;
+                }
                 break;
             case VX_CHANNEL_V:
                 if(in_desc->format == VX_DF_IMAGE_NV12)
+                {
                     channel_offset = 1;
+                }
                 else
+                {
                     channel_offset = 0;
+                }
                 break;
             default:
                 status = VX_FAILURE;

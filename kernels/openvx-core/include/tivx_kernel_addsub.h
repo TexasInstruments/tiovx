@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_ADDSUB_
-#define _TIVX_KENREL_ADDSUB_
+#ifndef TIVX_KENREL_ADDSUB_
+#define TIVX_KENREL_ADDSUB_
 
 
 #ifdef __cplusplus

@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_CONTEXT_H_
-#define _VX_CONTEXT_H_
+#ifndef VX_CONTEXT_H_
+#define VX_CONTEXT_H_
 
 
 #ifdef __cplusplus

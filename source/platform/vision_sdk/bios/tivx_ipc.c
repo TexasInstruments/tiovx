@@ -113,7 +113,7 @@ vx_status tivxIpcSendMsg(
     return status;
 }
 
-vx_enum tivxGetSelfCpuId()
+vx_enum tivxGetSelfCpuId(void)
 {
     vx_enum cpu_id = TIVX_INVALID_CPU_ID;
     uint32_t i, vsdk_cpu_id;
@@ -132,13 +132,13 @@ vx_enum tivxGetSelfCpuId()
     return (cpu_id);
 }
 
-void tivxIpcInit()
+void tivxIpcInit(void)
 {
     /* Register IPC Handler */
     System_registerOpenVxNotifyCb(tivxIpcHandler);
 }
 
-void tivxIpcDeInit()
+void tivxIpcDeInit(void)
 {
     /* Un-Register IPC Handler */
     System_registerOpenVxNotifyCb(NULL);

@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_ACCUMULATE_
-#define _TIVX_KENREL_ACCUMULATE_
+#ifndef TIVX_KENREL_ACCUMULATE_
+#define TIVX_KENREL_ACCUMULATE_
 
 
 #ifdef __cplusplus

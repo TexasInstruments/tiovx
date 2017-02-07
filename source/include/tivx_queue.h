@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_QUEUE_H_
-#define _TIVX_QUEUE_H_
+#ifndef TIVX_QUEUE_H_
+#define TIVX_QUEUE_H_
 
 #ifdef __cplusplus
 extern "C" {

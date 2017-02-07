@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_TARGET_KERNEL_RPIV_H_
-#define _TIVX_TARGET_KERNEL_PRIV_H_
+#ifndef TIVX_TARGET_KERNEL_RPIV_H_
+#define TIVX_TARGET_KERNEL_PRIV_H_
 
 
 #ifdef __cplusplus
@@ -104,14 +104,14 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, vx_enum target_id);
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelInit();
+vx_status tivxTargetKernelInit(void);
 
 /*!
  * \brief DeInit target kernel module
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-void tivxTargetKernelDeInit();
+void tivxTargetKernelDeInit(void);
 
 
 #ifdef __cplusplus

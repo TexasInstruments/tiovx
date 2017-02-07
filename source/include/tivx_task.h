@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_TASK_H_
-#define _TIVX_TASK_H_
+#ifndef TIVX_TASK_H_
+#define TIVX_TASK_H_
 
 #ifdef __cplusplus
 extern "C" {

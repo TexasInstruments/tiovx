@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_MUTEX_H_
-#define _TIVX_MUTEX_H_
+#ifndef TIVX_MUTEX_H_
+#define TIVX_MUTEX_H_
 
 #ifdef __cplusplus
 extern "C" {

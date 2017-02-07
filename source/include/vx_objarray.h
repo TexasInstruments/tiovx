@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_OBJARRAY_H_
-#define _VX_OBJARRAY_H_
+#ifndef VX_OBJARRAY_H_
+#define VX_OBJARRAY_H_
 
 
 #ifdef __cplusplus

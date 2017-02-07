@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_TARGET_KERNEL_H_
-#define _TIVX_TARGET_KERNEL_H_
+#ifndef TIVX_TARGET_KERNEL_H_
+#define TIVX_TARGET_KERNEL_H_
 
 #ifdef __cplusplus
 extern "C" {

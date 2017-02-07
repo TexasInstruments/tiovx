@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_PYRAMID_H_
-#define _VX_PYRAMID_H_
+#ifndef VX_PYRAMID_H_
+#define VX_PYRAMID_H_
 
 
 #ifdef __cplusplus

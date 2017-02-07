@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_MATRIX_H_
-#define _VX_MATRIX_H_
+#ifndef VX_MATRIX_H_
+#define VX_MATRIX_H_
 
 
 #ifdef __cplusplus

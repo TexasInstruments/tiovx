@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _TIVX_OBJECTS_H_
-#define _TIVX_OBJECTS_H_
+#ifndef TIVX_OBJECTS_H_
+#define TIVX_OBJECTS_H_
 
 #include <vx_internal.h>
 

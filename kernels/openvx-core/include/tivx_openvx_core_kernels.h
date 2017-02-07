@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _VX_CORE_KERNEL_H_
-#define _VX_CORE_KERNEL_H_
+#ifndef VX_CORE_KERNEL_H_
+#define VX_CORE_KERNEL_H_
 
 
 #ifdef __cplusplus

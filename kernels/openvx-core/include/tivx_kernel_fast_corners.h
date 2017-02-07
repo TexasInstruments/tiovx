@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_FAST_CORNER_
-#define _TIVX_KERNEL_FAST_CORNER_
+#ifndef TIVX_KERNEL_FAST_CORNER_
+#define TIVX_KERNEL_FAST_CORNER_
 
 
 #ifdef __cplusplus

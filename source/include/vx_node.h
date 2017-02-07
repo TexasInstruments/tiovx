@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_NODE_H_
-#define _VX_NODE_H_
+#ifndef VX_NODE_H_
+#define VX_NODE_H_
 
 
 #ifdef __cplusplus

@@ -12,7 +12,7 @@
 static tivx_target_kernel_instance_t g_target_kernel_instance_table[TIVX_TARGET_KERNEL_INSTANCE_MAX];
 static tivx_mutex g_target_kernel_instance_lock;
 
-vx_status tivxTargetKernelInstanceInit()
+vx_status tivxTargetKernelInstanceInit(void)
 {
     uint16_t i;
     vx_status status;
@@ -28,7 +28,7 @@ vx_status tivxTargetKernelInstanceInit()
     return status;
 }
 
-void tivxTargetKernelInstanceDeInit()
+void tivxTargetKernelInstanceDeInit(void)
 {
     tivxMutexDelete(&g_target_kernel_instance_lock);
 }

@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_DISTRIBUTION_H_
-#define _VX_DISTRIBUTION_H_
+#ifndef VX_DISTRIBUTION_H_
+#define VX_DISTRIBUTION_H_
 
 
 #ifdef __cplusplus

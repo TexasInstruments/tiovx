@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_UTILS_
-#define _TIVX_KERNEL_UTILS_
+#ifndef TIVX_KERNEL_UTILS_
+#define TIVX_KERNEL_UTILS_
 
 
 #ifdef __cplusplus

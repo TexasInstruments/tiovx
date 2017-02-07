@@ -3,8 +3,8 @@
  * ALL RIGHTS RESERVED
  */
 
-#ifndef _TIVX_KERNEL_NON_LINEAR_FILTER_
-#define _TIVX_KERNEL_NON_LINEAR_FILTER_
+#ifndef TIVX_KERNEL_NON_LINEAR_FILTER_
+#define TIVX_KERNEL_NON_LINEAR_FILTER_
 
 #ifdef __cplusplus
 extern "C" {

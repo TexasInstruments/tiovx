@@ -60,7 +60,7 @@ static void tivxObjDescIpcHandler(uint32_t payload)
     tivxTargetQueueObjDesc(dst_target_id, obj_desc_id);
 }
 
-void tivxObjDescInit()
+void tivxObjDescInit(void)
 {
     tivxPlatformGetObjDescTableInfo(&g_obj_desc_table);
     tivxIpcRegisterHandler(tivxObjDescIpcHandler);

@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_FILTER_3X3_
-#define _TIVX_KENREL_FILTER_3X3_
+#ifndef TIVX_KENREL_FILTER_3X3_
+#define TIVX_KENREL_FILTER_3X3_
 
 
 #ifdef __cplusplus

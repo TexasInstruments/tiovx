@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_LUT_H_
-#define _VX_LUT_H_
+#ifndef VX_LUT_H_
+#define VX_LUT_H_
 
 
 #ifdef __cplusplus

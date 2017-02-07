@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_INTGIMG_
-#define _TIVX_KENREL_INTGIMG_
+#ifndef TIVX_KENREL_INTGIMG_
+#define TIVX_KENREL_INTGIMG_
 
 
 #ifdef __cplusplus

@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_IPC_H_
-#define _TIVX_IPC_H_
+#ifndef TIVX_IPC_H_
+#define TIVX_IPC_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -46,14 +46,14 @@ void tivxIpcRegisterHandler(tivx_ipc_handler_f ipc_handler_func);
  *
  * \ingroup group_tivx_ipc
  */
-void tivxIpcInit();
+void tivxIpcInit(void);
 
 /*!
  * \brief DeInit IPC module
  *
  * \ingroup group_tivx_ipc
  */
-void tivxIpcDeInit();
+void tivxIpcDeInit(void);
 
 #ifdef __cplusplus
 }

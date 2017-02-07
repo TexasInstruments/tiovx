@@ -64,17 +64,17 @@ vx_status tivxIpcSendMsg(
     return status;
 }
 
-vx_enum tivxGetSelfCpuId()
+vx_enum tivxGetSelfCpuId(void)
 {
     vx_enum cpu_id = TIVX_CPU_ID_DSP1;
 
     return (cpu_id);
 }
 
-void tivxIpcInit()
+void tivxIpcInit(void)
 {
 }
 
-void tivxIpcDeInit()
+void tivxIpcDeInit(void)
 {
 }

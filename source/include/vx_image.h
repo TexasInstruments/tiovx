@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_IMAGE_H_
-#define _VX_IMAGE_H_
+#ifndef VX_IMAGE_H_
+#define VX_IMAGE_H_
 
 
 #ifdef __cplusplus

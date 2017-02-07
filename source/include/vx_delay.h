@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_DELAY_H_
-#define _VX_DELAY_H_
+#ifndef VX_DELAY_H_
+#define VX_DELAY_H_
 
 
 #ifdef __cplusplus

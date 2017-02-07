@@ -3,8 +3,8 @@
  * ALL RIGHTS RESERVED
  */
 
-#ifndef _TIVX_KERNEL_CHANNEL_COMBINE_
-#define _TIVX_KERNEL_CHANNEL_COMBINE_
+#ifndef TIVX_KERNEL_CHANNEL_COMBINE_
+#define TIVX_KERNEL_CHANNEL_COMBINE_
 
 #ifdef __cplusplus
 extern "C" {

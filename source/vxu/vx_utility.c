@@ -52,7 +52,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuColorConvert(vx_context context, vx_image 
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -75,7 +77,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuChannelExtract(vx_context context, vx_imag
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -103,7 +107,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuChannelCombine(vx_context context,
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -188,9 +194,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuSobel3x3(vx_context context, vx_image src,
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -213,7 +223,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMagnitude(vx_context context, vx_image gra
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -236,7 +248,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuPhase(vx_context context, vx_image grad_x,
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -259,9 +273,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuScaleImage(vx_context context, vx_image sr
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -284,7 +302,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuTableLookup(vx_context context, vx_image i
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -307,7 +327,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuHistogram(vx_context context, vx_image inp
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -330,7 +352,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuEqualizeHist(vx_context context, vx_image 
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -353,7 +377,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuAbsDiff(vx_context context, vx_image in1, 
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -378,7 +404,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMeanStdDev(vx_context context, vx_image in
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -405,7 +433,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuThreshold(vx_context context, vx_image inp
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -428,7 +458,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuIntegralImage(vx_context context, vx_image
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -451,9 +483,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuErode3x3(vx_context context, vx_image inpu
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -476,9 +512,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuDilate3x3(vx_context context, vx_image inp
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -501,9 +541,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMedian3x3(vx_context context, vx_image inp
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -526,9 +570,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuBox3x3(vx_context context, vx_image input,
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -551,9 +599,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuGaussian3x3(vx_context context, vx_image i
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -576,9 +628,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuNonLinearFilter(vx_context context, vx_enu
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -601,9 +657,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuConvolve(vx_context context, vx_image inpu
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_3, dimof(border_modes_3));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -626,9 +686,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuGaussianPyramid(vx_context context, vx_ima
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -651,9 +715,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuLaplacianPyramid(vx_context context, vx_im
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -676,9 +744,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuLaplacianReconstruct(vx_context context, v
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -701,7 +773,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuAccumulateImage(vx_context context, vx_ima
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -724,7 +798,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuAccumulateWeightedImage(vx_context context
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -747,7 +823,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuAccumulateSquareImage(vx_context context, 
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -773,7 +851,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMinMaxLoc(vx_context context, vx_image inp
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -799,7 +879,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuConvertDepth(vx_context context, vx_image 
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -826,7 +908,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuCannyEdgeDetector(vx_context context, vx_i
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -849,9 +933,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuHalfScaleGaussian(vx_context context, vx_i
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -874,7 +962,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuAnd(vx_context context, vx_image in1, vx_i
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -897,7 +987,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuOr(vx_context context, vx_image in1, vx_im
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -920,7 +1012,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuXor(vx_context context, vx_image in1, vx_i
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -943,7 +1037,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuNot(vx_context context, vx_image input, vx
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -969,7 +1065,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuMultiply(vx_context context, vx_image in1,
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -994,7 +1092,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuAdd(vx_context context, vx_image in1, vx_i
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -1017,7 +1117,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuSubtract(vx_context context, vx_image in1,
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -1040,7 +1142,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuWarpAffine(vx_context context, vx_image in
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
                 status = vxVerifyGraph(graph);
             if (status == VX_SUCCESS)
@@ -1065,9 +1169,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuWarpPerspective(vx_context context, vx_ima
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -1097,7 +1205,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuHarrisCorners(vx_context context, vx_image
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -1120,7 +1230,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuFastCorners(vx_context context, vx_image i
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -1153,7 +1265,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxuOpticalFlowPyrLK(vx_context context, vx_py
         {
             status = setNodeTarget(node);
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);
@@ -1176,9 +1290,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuRemap(vx_context context, vx_image input, 
         {
             status = vx_useImmediateBorderMode(context, node, border_modes_2, dimof(border_modes_2));
             if (status == VX_SUCCESS)
+            {
                 status = setNodeTarget(node);
+            }
             if (status == VX_SUCCESS)
+            {
                 status = vxVerifyGraph(graph);
+            }
             if (status == VX_SUCCESS)
             {
                 status = vxProcessGraph(graph);

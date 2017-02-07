@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_CONVERT_DEPTH_
-#define _TIVX_KENREL_CONVERT_DEPTH_
+#ifndef TIVX_KENREL_CONVERT_DEPTH_
+#define TIVX_KENREL_CONVERT_DEPTH_
 
 
 #ifdef __cplusplus

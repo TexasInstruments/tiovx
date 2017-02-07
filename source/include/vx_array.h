@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_ARRAY_H_
-#define _VX_ARRAY_H_
+#ifndef VX_ARRAY_H_
+#define VX_ARRAY_H_
 
 
 #ifdef __cplusplus

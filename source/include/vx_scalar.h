@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_SCALAR_H_
-#define _VX_SCALAR_H_
+#ifndef VX_SCALAR_H_
+#define VX_SCALAR_H_
 
 
 #ifdef __cplusplus

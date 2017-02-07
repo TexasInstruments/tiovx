@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_HARRISC_CORNERS_
-#define _TIVX_KERNEL_HARRISC_CORNERS_
+#ifndef TIVX_KERNEL_HARRISC_CORNERS_
+#define TIVX_KERNEL_HARRISC_CORNERS_
 
 
 #ifdef __cplusplus

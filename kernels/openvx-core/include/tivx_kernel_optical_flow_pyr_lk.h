@@ -3,8 +3,8 @@
  * ALL RIGHTS RESERVED
  */
 
-#ifndef _TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_
-#define _TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_
+#ifndef TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_
+#define TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_
 
 #ifdef __cplusplus
 extern "C" {

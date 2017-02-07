@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_TARGET_KERNEL_INSTANCE_H_
-#define _TIVX_TARGET_KERNEL_INSTANCE_H_
+#ifndef TIVX_TARGET_KERNEL_INSTANCE_H_
+#define TIVX_TARGET_KERNEL_INSTANCE_H_
 
 
 #ifdef __cplusplus
@@ -105,14 +105,14 @@ tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-vx_status tivxTargetKernelInstanceInit();
+vx_status tivxTargetKernelInstanceInit(void);
 
 /*!
  * \brief De-Init Target Kernel Instance Module
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-void tivxTargetKernelInstanceDeInit();
+void tivxTargetKernelInstanceDeInit(void);
 
 #ifdef __cplusplus
 }

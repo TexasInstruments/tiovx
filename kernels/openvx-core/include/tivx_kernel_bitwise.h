@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_LUT_
-#define _TIVX_KENREL_LUT_
+#ifndef TIVX_KENREL_LUT_
+#define TIVX_KENREL_LUT_
 
 
 #ifdef __cplusplus

@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_HOST_H_
-#define _TIVX_HOST_H_
+#ifndef TIVX_HOST_H_
+#define TIVX_HOST_H_
 
 
 #ifdef __cplusplus

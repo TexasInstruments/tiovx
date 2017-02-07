@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_THRESHOLD_
-#define _TIVX_KERNEL_THRESHOLD_
+#ifndef TIVX_KERNEL_THRESHOLD_
+#define TIVX_KERNEL_THRESHOLD_
 
 
 #ifdef __cplusplus

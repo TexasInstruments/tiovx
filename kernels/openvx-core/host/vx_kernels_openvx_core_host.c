@@ -177,12 +177,12 @@ static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context)
     return status;
 }
 
-void tivxRegisterOpenVXCoreKernels()
+void tivxRegisterOpenVXCoreKernels(void)
 {
     tivxRegisterModule(TIVX_MODULE_NAME, tivxPublishKernels, tivxUnPublishKernels);
 }
 
-void tivxUnRegisterOpenVXCoreKernels()
+void tivxUnRegisterOpenVXCoreKernels(void)
 {
     tivxUnRegisterModule(TIVX_MODULE_NAME);
 }

@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_MEANSTDDEV_
-#define _TIVX_KERNEL_MEANSTDDEV_
+#ifndef TIVX_KERNEL_MEANSTDDEV_
+#define TIVX_KERNEL_MEANSTDDEV_
 
 
 #ifdef __cplusplus

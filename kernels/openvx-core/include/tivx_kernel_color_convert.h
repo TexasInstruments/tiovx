@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_COLOR_CONVERT_
-#define _TIVX_KENREL_COLOR_CONVERT_
+#ifndef TIVX_KENREL_COLOR_CONVERT_
+#define TIVX_KENREL_COLOR_CONVERT_
 
 
 #ifdef __cplusplus

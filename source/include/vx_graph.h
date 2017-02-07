@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_GRAPH_H_
-#define _VX_GRAPH_H_
+#ifndef VX_GRAPH_H_
+#define VX_GRAPH_H_
 
 
 #ifdef __cplusplus

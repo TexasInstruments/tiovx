@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_WARP_AFFINE_
-#define _TIVX_KENREL_WARP_AFFINE_
+#ifndef TIVX_KENREL_WARP_AFFINE_
+#define TIVX_KENREL_WARP_AFFINE_
 
 
 #ifdef __cplusplus

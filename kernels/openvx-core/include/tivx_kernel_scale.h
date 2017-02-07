@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KENREL_SCALE_
-#define _TIVX_KENREL_SCALE_
+#ifndef TIVX_KENREL_SCALE_
+#define TIVX_KENREL_SCALE_
 
 
 #ifdef __cplusplus

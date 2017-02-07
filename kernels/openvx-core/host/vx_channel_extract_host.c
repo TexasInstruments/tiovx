@@ -99,6 +99,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
                     out_w = out_w/2;
                 }
                 break;
+            default:
+                break;
         }
     }
 

@@ -9,8 +9,8 @@
 
 #include <vx_internal.h>
 
-void tivxRegisterOpenVXCoreKernels();
-void tivxUnRegisterOpenVXCoreKernels();
+void tivxRegisterOpenVXCoreKernels(void);
+void tivxUnRegisterOpenVXCoreKernels(void);
 
 void tivxHostInit(void)
 {

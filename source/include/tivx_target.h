@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_TARGET_H_
-#define _TIVX_TARGET_H_
+#ifndef TIVX_TARGET_H_
+#define TIVX_TARGET_H_
 
 
 #ifdef __cplusplus
@@ -252,7 +252,7 @@ vx_status tivxTargetDelete(vx_enum target_id);
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetInit();
+void tivxTargetInit(void);
 
 /*!
  * \brief De-Init global state of target module
@@ -261,7 +261,7 @@ void tivxTargetInit();
  *
  * \ingroup group_tivx_target
  */
-void tivxTargetDeInit();
+void tivxTargetDeInit(void);
 
 
 #ifdef __cplusplus

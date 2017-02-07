@@ -690,7 +690,7 @@ vx_enum tivxTargetGetCpuId(vx_enum target_id)
     return TIVX_GET_CPU_ID(target_id);
 }
 
-void tivxTargetInit()
+void tivxTargetInit(void)
 {
     uint16_t i;
 
@@ -703,7 +703,7 @@ void tivxTargetInit()
     tivxTargetKernelInstanceInit();
 }
 
-void tivxTargetDeInit()
+void tivxTargetDeInit(void)
 {
     tivxTargetKernelInstanceDeInit();
     tivxTargetKernelDeInit();

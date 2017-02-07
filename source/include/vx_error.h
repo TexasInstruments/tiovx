@@ -34,8 +34,8 @@
  *******************************************************************************
  */
 
-#ifndef _TIVX_ERROR_H_
-#define _TIVX_ERROR_H_
+#ifndef TIVX_ERROR_H_
+#define TIVX_ERROR_H_
 
 /*!
  * \file

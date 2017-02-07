@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_KERNEL_MINMAXLOC_
-#define _TIVX_KERNEL_MINMAXLOC_
+#ifndef TIVX_KERNEL_MINMAXLOC_
+#define TIVX_KERNEL_MINMAXLOC_
 
 
 #ifdef __cplusplus

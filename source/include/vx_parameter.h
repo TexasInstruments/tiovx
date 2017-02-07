@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_PARAMETER_H_
-#define _VX_PARAMETER_H_
+#ifndef VX_PARAMETER_H_
+#define VX_PARAMETER_H_
 
 
 #ifdef __cplusplus

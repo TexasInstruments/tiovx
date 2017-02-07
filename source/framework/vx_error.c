@@ -80,19 +80,17 @@ vx_reference ownGetErrorObject(vx_context context, vx_status status)
 
     for (i = 0ul; i < dimof(context->reftable); i++)
     {
-        if (context->reftable[i] == NULL)
+        if (context->reftable[i] != NULL)
         {
-            continue;
-        }
-
-        if (context->reftable[i]->type == VX_TYPE_ERROR)
-        {
-            error = (tivx_error_t *)context->reftable[i];
-            if (error->status == status)
+            if (context->reftable[i]->type == VX_TYPE_ERROR)
             {
-                break;
+                error = (tivx_error_t *)context->reftable[i];
+                if (error->status == status)
+                {
+                    break;
+                }
+                error = NULL;
             }
-            error = NULL;
         }
     }
 

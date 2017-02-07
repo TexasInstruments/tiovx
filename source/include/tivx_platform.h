@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_PLATFORM_H_
-#define _TIVX_PLATFORM_H_
+#ifndef TIVX_PLATFORM_H_
+#define TIVX_PLATFORM_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -96,21 +96,21 @@ void tivxPlatformSystemUnlock(vx_enum lock_id);
  *
  * \ingroup group_tivx_platform
  */
-uint64_t tivxPlatformGetTimeInUsecs();
+uint64_t tivxPlatformGetTimeInUsecs(void);
 
 /*!
  * \brief Init Platform module
  *
  * \ingroup group_tivx_platform
  */
-vx_status tivxPlatformInit();
+vx_status tivxPlatformInit(void);
 
 /*!
  * \brief DeInit Platform module
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformDeInit();
+void tivxPlatformDeInit(void);
 
 /*!
  * \brief Print given string
@@ -127,14 +127,14 @@ void tivxPlatformPrintf(const char *format);
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformCreateTargets();
+void tivxPlatformCreateTargets(void);
 
 /*!
  * \brief Function to destroy created targets
  *
  * \ingroup group_tivx_platform
  */
-void tivxPlatformDeleteTargets();
+void tivxPlatformDeleteTargets(void);
 
 #ifdef __cplusplus
 }

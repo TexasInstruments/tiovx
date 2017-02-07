@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_REFERENCE_H_
-#define _VX_REFERENCE_H_
+#ifndef VX_REFERENCE_H_
+#define VX_REFERENCE_H_
 
 
 

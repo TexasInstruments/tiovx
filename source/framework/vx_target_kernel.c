@@ -12,7 +12,7 @@
 static tivx_target_kernel_t g_target_kernel_table[TIVX_TARGET_KERNEL_MAX];
 static tivx_mutex g_target_kernel_lock;
 
-vx_status tivxTargetKernelInit()
+vx_status tivxTargetKernelInit(void)
 {
     uint32_t i;
     vx_status status;
@@ -28,7 +28,7 @@ vx_status tivxTargetKernelInit()
     return status;
 }
 
-void tivxTargetKernelDeInit()
+void tivxTargetKernelDeInit(void)
 {
     tivxMutexDelete(&g_target_kernel_lock);
 }

@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_EVENT_H_
-#define _TIVX_EVENT_H_
+#ifndef TIVX_EVENT_H_
+#define TIVX_EVENT_H_
 
 #ifdef __cplusplus
 extern "C" {

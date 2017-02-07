@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_CONVOLUTION_H_
-#define _VX_CONVOLUTION_H_
+#ifndef VX_CONVOLUTION_H_
+#define VX_CONVOLUTION_H_
 
 
 #ifdef __cplusplus

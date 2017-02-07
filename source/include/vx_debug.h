@@ -34,8 +34,8 @@
  *******************************************************************************
  */
 
-#ifndef _OPENVX_INT_DEBUG_H_
-#define _OPENVX_INT_DEBUG_H_
+#ifndef OPENVX_INT_DEBUG_H_
+#define OPENVX_INT_DEBUG_H_
 
 /*!
  * \file

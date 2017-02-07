@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _VX_EXT_TI_H_
-#define _VX_EXT_TI_H_
+#ifndef VX_EXT_TI_H_
+#define VX_EXT_TI_H_
 
 #include <VX/vx.h>
 
@@ -222,7 +222,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
  *
  * \ingroup group_tivx_ext
  */
-vx_enum tivxGetSelfCpuId();
+vx_enum tivxGetSelfCpuId(void);
 
 
 /*!

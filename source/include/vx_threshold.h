@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_THRESHOLD_H_
-#define _VX_THRESHOLD_H_
+#ifndef VX_THRESHOLD_H_
+#define VX_THRESHOLD_H_
 
 
 #ifdef __cplusplus

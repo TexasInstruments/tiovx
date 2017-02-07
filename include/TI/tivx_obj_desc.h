@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_OBJ_DESC_H_
-#define _TIVX_OBJ_DESC_H_
+#ifndef TIVX_OBJ_DESC_H_
+#define TIVX_OBJ_DESC_H_
 
 #include <TI/tivx_mem.h>
 

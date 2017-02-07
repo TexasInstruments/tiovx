@@ -35,8 +35,8 @@
  */
 
 
-#ifndef _VX_INTERNAL_H_
-#define _VX_INTERNAL_H_
+#ifndef VX_INTERNAL_H_
+#define VX_INTERNAL_H_
 
 #include <stdarg.h>
 #include <stdio.h>

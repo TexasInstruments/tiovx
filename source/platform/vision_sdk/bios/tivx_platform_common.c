@@ -73,7 +73,7 @@ tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
 #pragma DATA_SECTION(gTivxObjDescShmEntry, ".bss:extMemNonCache:tiovxObjDescShm");
 #pragma DATA_ALIGN(gTivxObjDescShmEntry, 32);
 
-vx_status tivxPlatformInit()
+vx_status tivxPlatformInit(void)
 {
     vx_status status;
     uint32_t i = 0;
@@ -96,7 +96,7 @@ vx_status tivxPlatformInit()
 }
 
 
-void tivxPlatformDeInit()
+void tivxPlatformDeInit(void)
 {
     uint32_t i;
 

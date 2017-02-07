@@ -37,7 +37,7 @@
 #include <vx_internal.h>
 #include <sys/time.h>
 
-uint64_t tivxPlatformGetTimeInUsecs()
+uint64_t tivxPlatformGetTimeInUsecs(void)
 {
     uint64_t timeInUsecs = 0;
     struct timeval tv;
