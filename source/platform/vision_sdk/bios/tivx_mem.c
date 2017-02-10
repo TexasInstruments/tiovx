@@ -55,7 +55,7 @@ vx_status tivxMemBufferAlloc(
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
 
-    if ((NULL == mem_ptr) || (0 == size))
+    if ((NULL == mem_ptr) || (0U == size))
     {
         status = VX_FAILURE;
     }
@@ -111,7 +111,7 @@ void *tivxMemAlloc(vx_uint32 size)
 
 void tivxMemFree(void *ptr, vx_uint32 size)
 {
-    if ((NULL != ptr) && (0 != size))
+    if ((NULL != ptr) && (0U != size))
     {
         Utils_memFree(
             UTILS_HEAPID_DDR_CACHED_SR, ptr, size);
@@ -124,7 +124,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
 
-    if ((NULL == mem_ptr) || (0 == size))
+    if ((NULL == mem_ptr) || (0U == size))
     {
         status = VX_FAILURE;
     }
@@ -169,7 +169,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 void tivxMemBufferMap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0 != size))
+    if ((NULL != host_ptr) && (0U != size))
     {
         BspOsal_cacheInv(
             host_ptr,
@@ -182,7 +182,7 @@ void tivxMemBufferMap(
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0 != size) && 
+    if ((NULL != host_ptr) && (0U != size) && 
         ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
         BspOsal_cacheWb(

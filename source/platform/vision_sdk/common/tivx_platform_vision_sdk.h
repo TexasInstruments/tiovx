@@ -8,8 +8,8 @@
  */
 
 
-#ifndef _TIVX_PLATFORM_VISION_SDK_H_
-#define _TIVX_PLATFORM_VISION_SDK_H_
+#ifndef TIVX_PLATFORM_VISION_SDK_H_
+#define TIVX_PLATFORM_VISION_SDK_H_
 
 #ifdef __cplusplus
 extern "C" {

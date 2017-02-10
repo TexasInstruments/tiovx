@@ -42,6 +42,8 @@
 #include <include/link_api/system_procId.h>
 #include <src/links_common/system/system_priv_openvx.h>
 
+static void tivxIpcHandler(uint32_t payload);
+
 /*! \brief An array of vision sdk CPU Ids. This is used for mapping
  *   tivx_cpu_id_e to vision sdk cpu id. This mapping is required for
  *   sending notify event using vision sdk API.

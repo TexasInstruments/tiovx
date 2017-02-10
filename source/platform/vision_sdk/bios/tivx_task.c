@@ -39,13 +39,13 @@
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
 
+static void tivxTaskDefHandle(UInt32 arg0, UInt32 arg1);
 
-
-void tivxTaskDefHandle(UInt32 arg0, UInt32 arg1)
+static void tivxTaskDefHandle(UInt32 arg0, UInt32 arg1)
 {
     tivx_task *task;
 
-    if (0 != arg0)
+    if (0U != arg0)
     {
         task = (tivx_task *)arg0;
 
