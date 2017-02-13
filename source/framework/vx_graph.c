@@ -106,7 +106,7 @@ static vx_status ownUpdateGraphPerf(vx_graph graph)
 
 int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
 {
-    int32_t free_index = -1;
+    int32_t free_index = -(int32_t)1;
 
     if (graph && (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
     {
@@ -373,7 +373,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
     }
     else
     {
-
+        /* Do Nothing */
     }
     return status;
 }

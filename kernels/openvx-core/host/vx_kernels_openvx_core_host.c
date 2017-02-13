@@ -139,7 +139,7 @@ static vx_status VX_CALLBACK tivxPublishKernels(vx_context context)
     vx_uint32 i;
 
     for (i = 0; i <
-        sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List); i ++)
+        (sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List)); i ++)
     {
         if (gTivx_host_kernel_list[i].add_kernel)
         {
@@ -161,7 +161,7 @@ static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context)
     vx_uint32 i;
 
     for (i = 0; i <
-        sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List); i ++)
+        (sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List)); i ++)
     {
         if (gTivx_host_kernel_list[i].remove_kernel)
         {

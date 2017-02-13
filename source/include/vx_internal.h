@@ -59,6 +59,31 @@
 #include <tivx_target_kernel_priv.h>
 #include <tivx_target_kernel_instance.h>
 
+#include <vx_debug.h>
+#include <vx_reference.h>
+#include <vx_context.h>
+#include <vx_error.h>
+#include <vx_graph.h>
+#include <vx_kernel.h>
+#include <vx_node.h>
+#include <vx_parameter.h>
+#include <vx_remap.h>
+#include <vx_scalar.h>
+#include <vx_image.h>
+#include <vx_matrix.h>
+#include <vx_lut.h>
+#include <vx_convolution.h>
+#include <vx_distribution.h>
+#include <vx_threshold.h>
+#include <vx_pyramid.h>
+#include <vx_objarray.h>
+#include <vx_array.h>
+#include <vx_delay.h>
+#include <vx_module.h>
+#include <vx_meta_format.h>
+
+#include <tivx_objects.h>
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -72,7 +97,7 @@ extern "C" {
 /*! \brief Macro to align a 'value' to 'align' units
  * \ingroup group_vx_utils
  */
-#define TIVX_ALIGN(value, align)      ((((value)+(align-1))/(align))*(align))
+#define TIVX_ALIGN(value, align)      ((((value)+((align)-1))/(align))*(align))
 
 /*! \brief Macro to floor a 'value' to 'align' units
  * \ingroup group_vx_utils
@@ -173,31 +198,6 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
     *l = (uint32_t)(val >>  0);
 }
 
-
-#include <vx_debug.h>
-#include <vx_reference.h>
-#include <vx_context.h>
-#include <vx_error.h>
-#include <vx_graph.h>
-#include <vx_kernel.h>
-#include <vx_node.h>
-#include <vx_parameter.h>
-#include <vx_remap.h>
-#include <vx_scalar.h>
-#include <vx_image.h>
-#include <vx_matrix.h>
-#include <vx_lut.h>
-#include <vx_convolution.h>
-#include <vx_distribution.h>
-#include <vx_threshold.h>
-#include <vx_pyramid.h>
-#include <vx_objarray.h>
-#include <vx_array.h>
-#include <vx_delay.h>
-#include <vx_module.h>
-#include <vx_meta_format.h>
-
-#include <tivx_objects.h>
 
 #ifdef __cplusplus
 }

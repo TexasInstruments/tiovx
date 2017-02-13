@@ -70,7 +70,7 @@ extern "C" {
  *
  * \ingroup group_tivx_target
  */
-#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)((((cpu)&TIVX_CPU_ID_MASK) << TIVX_CPU_ID_SHIFT) |(((target_inst)&TIVX_TARGET_INST_MASK) << TIVX_TARGET_INST_SHIFT)))
+#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)(((((uint32_t)cpu)&TIVX_CPU_ID_MASK) << TIVX_CPU_ID_SHIFT) |((((uint32_t)target_inst)&TIVX_TARGET_INST_MASK) << TIVX_TARGET_INST_SHIFT)))
 
 /*! \brief Get CPU Id from given target
  *

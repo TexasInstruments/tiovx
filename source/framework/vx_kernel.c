@@ -293,7 +293,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
-                else
+
                 if (ownIsValidType(kernel->signature.types[p]) == vx_false_e)
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;

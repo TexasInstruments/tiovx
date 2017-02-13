@@ -125,8 +125,8 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             kp = (vx_keypoint_t *)arr->mem_ptr.target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
-                kp->x = prms->corners[i] & 0xFFFF;
-                kp->y = (prms->corners[i] & 0xFFFF0000) >> 16u;
+                kp->x = prms->corners[i] & 0xFFFFu;
+                kp->y = (prms->corners[i] & 0xFFFF0000u) >> 16u;
                 kp->strength = prms->strength[i];
                 kp->scale = 0.0f;
                 kp->orientation = 0.0f;
@@ -203,7 +203,7 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
 
             if (VX_SUCCESS == status)
             {
-                if ((img->imagepatch_addr[0].dim_x*4u + arr->capacity + 30u) >
+                if (((img->imagepatch_addr[0].dim_x*4u) + arr->capacity + 30u) >
                         512u)
                 {
                     size = img->imagepatch_addr[0].dim_x*4u +

@@ -84,7 +84,7 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
 
-        if (NULL == src_desc || NULL == dst_desc)
+        if ((NULL == src_desc) || (NULL == dst_desc))
         {
             status = VX_FAILURE;
         }
@@ -222,8 +222,8 @@ void tivxAddTargetKernelErode3x3()
                 TIVX_TARGET_MAX_NAME);
         }
 
-        for (i = 0; i < sizeof(gTivxFilt3x3KernelInfo)/
-                sizeof(tivxFilter3x3KernelInfo); i ++)
+        for (i = 0; i < (sizeof(gTivxFilt3x3KernelInfo)/
+                sizeof(tivxFilter3x3KernelInfo)); i ++)
         {
             gTivxFilt3x3KernelInfo[i].target_kernel = tivxAddTargetKernel(
                         gTivxFilt3x3KernelInfo[i].kernel_id,
@@ -246,8 +246,8 @@ void tivxRemoveTargetKernelErode3x3()
     vx_status status = VX_SUCCESS;
     vx_uint32 i;
 
-    for (i = 0; i < sizeof(gTivxFilt3x3KernelInfo)/
-            sizeof(tivxFilter3x3KernelInfo); i ++)
+    for (i = 0; i < (sizeof(gTivxFilt3x3KernelInfo)/
+            sizeof(tivxFilter3x3KernelInfo)); i ++)
     {
         status = tivxRemoveTargetKernel(gTivxFilt3x3KernelInfo[i].target_kernel);
 

@@ -29,12 +29,11 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
     uint8_t *dst_addr;
     uint8_t *mask_addr;
 
-    if ( num_params != TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS
+    if ((num_params != TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX])
-    )
+        || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX]))
     {
         status = VX_FAILURE;
     }

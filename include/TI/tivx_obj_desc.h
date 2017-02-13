@@ -88,52 +88,52 @@ extern "C" {
 typedef enum _tivx_obj_desc_type_e {
 
     /*! \brief Object desciptor that has information related to image object */
-    TIVX_OBJ_DESC_IMAGE,
+    TIVX_OBJ_DESC_IMAGE         = 0x0,
 
     /*! \brief Object desciptor that has information related to scalar object */
-    TIVX_OBJ_DESC_SCALAR,
+    TIVX_OBJ_DESC_SCALAR        = 0x1,
 
     /*! \brief Object desciptor that has information related to remap object */
-    TIVX_OBJ_DESC_REMAP,
+    TIVX_OBJ_DESC_REMAP         = 0x2,
 
     /*! \brief Object desciptor that has information related to node object */
-    TIVX_OBJ_DESC_NODE,
+    TIVX_OBJ_DESC_NODE          = 0x3,
 
     /*! \brief Object desciptor that has information related to command object */
-    TIVX_OBJ_DESC_CMD,
+    TIVX_OBJ_DESC_CMD           = 0x4,
 
     /*! \brief Object desciptor that has information related to matrix object */
-    TIVX_OBJ_DESC_MATRIX,
+    TIVX_OBJ_DESC_MATRIX        = 0x5,
 
     /*! \brief Object desciptor that has information related to Lut object */
-    TIVX_OBJ_DESC_LUT,
+    TIVX_OBJ_DESC_LUT           = 0x6,
 
     /*! \brief Object desciptor that has information related to
         Convolution object */
-    TIVX_OBJ_DESC_CONVOLUTION,
+    TIVX_OBJ_DESC_CONVOLUTION   = 0x7,
 
     /*! \brief Object desciptor that has information related to
         Distribution object */
-    TIVX_OBJ_DESC_DISTRIBUTION,
+    TIVX_OBJ_DESC_DISTRIBUTION  = 0x8,
 
     /*! \brief Object desciptor that has information related to
         threshold object */
-    TIVX_OBJ_DESC_THRESHOLD,
+    TIVX_OBJ_DESC_THRESHOLD     = 0x9,
 
     /*! \brief Object desciptor that has information related to
         Array object */
-    TIVX_OBJ_DESC_ARRAY,
+    TIVX_OBJ_DESC_ARRAY         = 0xA,
 
     /*! \brief Object desciptor that has information related to
         Pyramid object */
-    TIVX_OBJ_DESC_PYRAMID,
+    TIVX_OBJ_DESC_PYRAMID       = 0xB,
 
     /*! \brief Object desciptor that has information related to
         Object Array object */
-    TIVX_OBJ_DESC_OBJARRAY,
+    TIVX_OBJ_DESC_OBJARRAY      = 0xC,
 
     /*! \brief Value of a invalid object descriptor */
-    TIVX_OBJ_DESC_INVALID = 0xFFFFu
+    TIVX_OBJ_DESC_INVALID       = 0xFFFFu
 
 } tivx_obj_desc_type_e;
 

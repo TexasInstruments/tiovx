@@ -136,13 +136,12 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
                 {
                     (*ptr)->node = n;
                     (*ptr)->index = i;
-                    break;
                 }
                 else
                 {
                     status = vx_false_e;
-                    break;
                 }
+                break;
             }
             else
             {
@@ -166,9 +165,10 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
 {
     vx_delay delay = value->delay;
     vx_int32 delay_index = value->delay_slot_index;
+    vx_bool do_break;
 
     vx_int32 index = ((delay->index + delay->count) - abs(delay_index)) % (vx_int32)delay->count;
-    vx_status status = vx_true_e;
+    vx_bool status = vx_true_e;
 
     if ( (delay->set[index].node == n) && (delay->set[index].index == i) ) /* head is a match */
     {
@@ -179,6 +179,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     {
         tivx_delay_param_t **ptr = &delay->set[index].next;
         tivx_delay_param_t *next = NULL;
+        do_break = vx_false_e;
         do
         {
             if (*ptr != NULL)
@@ -188,7 +189,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
                     next = (*ptr)->next;
                     ownFreeDelayPrm(delay, *ptr);
                     *ptr = next;
-                    break;
+                    do_break = vx_true_e;
                 }
                 else
                 {
@@ -198,6 +199,11 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
             else
             {
                 status = vx_false_e;
+                do_break = vx_true_e;
+            }
+
+            if (vx_true_e == do_break)
+            {
                 break;
             }
         } while (1);

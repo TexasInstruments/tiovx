@@ -33,7 +33,7 @@ static inline void* ownFormatImagePatchAddress2d(
     const vx_imagepatch_addressing_t *addr)
 {
     vx_uint8 *new_ptr = NULL;
-    if (ptr && x < addr->dim_x && y < addr->dim_y)
+    if (ptr && (x < addr->dim_x) && (y < addr->dim_y))
     {
         vx_uint32 offset = ownComputePatchOffset(x, y, addr);
         new_ptr = (vx_uint8 *)ptr;

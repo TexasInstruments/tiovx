@@ -230,7 +230,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
  *
  * \ingroup group_vx_context
  */
-vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, uint16_t *obj_desc_id);
+vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id);
 
 /*!
  * \brief Get value of kernel remove lock flag

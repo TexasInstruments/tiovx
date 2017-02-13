@@ -26,11 +26,10 @@ vx_status VX_CALLBACK tivxChannelCombine(
     tivx_obj_desc_image_t *dst_desc;
     uint16_t plane_idx;
 
-    if ( num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS
+    if ((num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX])
-    )
+        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX]))
     {
         status = VX_FAILURE;
     }
@@ -223,8 +222,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                         0
                         );
                 }
-                else
-                if( dst_desc->format == VX_DF_IMAGE_UYVY)
+                else /* format is VX_DF_IMAGE_UYVY */
                 {
                     status = VXLIB_channelCombine_yuyv_i8u_o8u(
                         src0_addr, &vxlib_src0,
@@ -301,6 +299,10 @@ vx_status VX_CALLBACK tivxChannelCombine(
                                 dst_addr[plane_idx], &vxlib_dst
                                 );
                         }
+                    }
+                    else
+                    {
+                        status = VX_FAILURE;
                     }
                 }
             }

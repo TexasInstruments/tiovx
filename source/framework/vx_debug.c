@@ -40,8 +40,11 @@ static vx_char *find_zone_name(vx_enum zone);
 
 static vx_uint32 g_debug_zonemask = 0;
 
+#ifdef ZONE_BIT
 #undef  ZONE_BIT
-#define ZONE_BIT(zone)  (1 << zone)
+#endif
+
+#define ZONE_BIT(zone)  (1 << (zone))
 
 #define _STR2(x) {#x, x}
 

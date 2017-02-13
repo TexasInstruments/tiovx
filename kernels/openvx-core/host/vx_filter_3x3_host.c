@@ -196,8 +196,8 @@ vx_status tivxAddKernelErode3x3(vx_context context)
     uint32_t index;
     vx_uint32 i, j;
 
-    for (i = 0; i < sizeof(gTivxFilt3x3KernelInfo)/
-            sizeof(tivxFilter3x3KernelInfo); i ++)
+    for (i = 0; i < (sizeof(gTivxFilt3x3KernelInfo)/
+            sizeof(tivxFilter3x3KernelInfo)); i ++)
     {
         kernel = vxAddUserKernel(
                                 context,
@@ -277,8 +277,8 @@ vx_status tivxRemoveKernelErode3x3(vx_context context)
     vx_status status = VX_SUCCESS;
     vx_uint32 i;
 
-    for (i = 0; i < sizeof(gTivxFilt3x3KernelInfo)/
-            sizeof(tivxFilter3x3KernelInfo); i ++)
+    for (i = 0; i < (sizeof(gTivxFilt3x3KernelInfo)/
+            sizeof(tivxFilter3x3KernelInfo)); i ++)
     {
         if (NULL != gTivxFilt3x3KernelInfo[i].kernel)
         {

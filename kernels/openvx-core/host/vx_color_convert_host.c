@@ -11,7 +11,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_color_convert.h>
 #include <TI/tivx_target_kernel.h>
-#include <stdio.h>
+
 
 static vx_kernel vx_color_convert_kernel = NULL;
 
@@ -30,6 +30,7 @@ static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format)
                 case VX_DF_IMAGE_UYVY:
                 case VX_DF_IMAGE_YUYV:
                     status = VX_SUCCESS;
+                    break;
                 default:
                     break;
             }
@@ -42,6 +43,7 @@ static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format)
                 case VX_DF_IMAGE_NV12:
                 case VX_DF_IMAGE_NV21:
                     status = VX_SUCCESS;
+                    break;
                 default:
                     break;
             }
@@ -54,6 +56,7 @@ static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format)
                 case VX_DF_IMAGE_IYUV:
                 case VX_DF_IMAGE_YUV4:
                     status = VX_SUCCESS;
+                    break;
                 default:
                     break;
             }

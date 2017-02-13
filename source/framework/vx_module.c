@@ -51,7 +51,7 @@ uint32_t ownGetModuleCount(void)
     return count;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish)
+VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish)
 {
     uint32_t idx;
     vx_status status = VX_FAILURE;

@@ -40,7 +40,7 @@
 
 static vx_status ownDestructScalar(vx_reference ref);
 static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr);
-static vx_status ownHostMemToScalar(vx_scalar scalar, void* user_ptr);
+static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr);
 
 static vx_status ownDestructScalar(vx_reference ref)
 {
@@ -102,7 +102,7 @@ static vx_status ownScalarToHostMem(vx_scalar scalar, void* user_ptr)
     return status;
 }
 
-static vx_status ownHostMemToScalar(vx_scalar scalar, void* user_ptr)
+static vx_status ownHostMemToScalar(vx_scalar scalar, const void* user_ptr)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_scalar_t *obj_desc = NULL;

@@ -152,7 +152,8 @@ void tivxUnRegisterOpenVXCoreTargetKernels()
     vx_uint32 i;
 
     for (i = 0; i <
-        sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List); i ++)
+        (sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List));
+        i ++)
     {
         if (gTivx_target_kernel_list[i].remove_kernel)
         {

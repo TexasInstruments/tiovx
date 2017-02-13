@@ -36,9 +36,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
         if (NULL == parameters[i])
         {
             /* Check for NULL for required parameters */
-            if(   i == TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX
-               || i == TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX
-               || i == TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX
+            if((i == TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX)
+               || (i == TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX)
+               || (i == TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX)
                 )
             {
                 status = VX_ERROR_NO_MEMORY;

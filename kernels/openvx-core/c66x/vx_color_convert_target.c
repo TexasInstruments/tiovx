@@ -209,7 +209,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_RGB == dst_desc->format))
         {
-            int u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
 
             vxlib_src1.dim_x = src_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_NVXXtoRGB_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src,
@@ -219,7 +219,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_RGBX == dst_desc->format))
         {
-            int u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
 
             vxlib_src1.dim_x = src_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src,
@@ -229,7 +229,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_YUV4 == dst_desc->format))
         {
-            int u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
 
             vxlib_src1.dim_x = src_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src,
@@ -239,7 +239,7 @@ static vx_status tivxKernelColorConvert(
         else if ( ( (VX_DF_IMAGE_NV12 == src_desc->format) || (VX_DF_IMAGE_NV21 == src_desc->format) ) &&
                  (VX_DF_IMAGE_IYUV == dst_desc->format))
         {
-            int u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+            uint8_t u_pix = src_desc->format == VX_DF_IMAGE_NV12 ? 0 : 1;
 
             vxlib_src1.dim_x = src_desc->imagepatch_addr[1].dim_x;
             status = VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u((uint8_t *)src_addr[0], &vxlib_src,
@@ -323,6 +323,10 @@ static vx_status tivxKernelColorConvert(
                 (uint8_t *)src_addr[1], &vxlib_src1, (uint8_t *)src_addr[2], &vxlib_src2,
                 (uint8_t *)dst_addr[0],  &vxlib_dst, (uint8_t *)dst_addr[1],  &vxlib_dst1,
                 (uint8_t *)dst_addr[2], &vxlib_dst2);
+        }
+        else
+        {
+            status = VX_FAILURE;
         }
 
         if (VXLIB_SUCCESS != status)

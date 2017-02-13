@@ -29,7 +29,7 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
     tivx_obj_desc_scalar_t *sc;
     uint8_t *src_addr;
     uint8_t *dst_addr;
-    float *mat_addr;
+    VXLIB_F32 *mat_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     vx_rectangle_t rect;
     vx_border_t border;
@@ -78,7 +78,7 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
-        mat_addr = (float *)((uintptr_t)mat->mem_ptr.target_ptr);
+        mat_addr = (VXLIB_F32 *)((uintptr_t)mat->mem_ptr.target_ptr);
 
         /* TODO: Do we require to move pointer even for destination image */
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +

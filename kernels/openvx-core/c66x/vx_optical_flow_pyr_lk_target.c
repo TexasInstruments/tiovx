@@ -66,7 +66,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
     vx_keypoint_t *newPts_addr;
     vx_size list_indx;
 
-    if ( num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS
+    if ((num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_PREVPTS_IDX])
@@ -180,8 +180,8 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         /* Consider making this a VXLIB function (init function) */
         for(list_indx = 0; list_indx < list_length; list_indx++)
         {
-            prms->oldPoints[list_indx] = _ftof2((float)oldPts_addr[list_indx].y, (float)oldPts_addr[list_indx].x);
-            prms->newPoints[list_indx] = _ftof2((float)estPts_addr[list_indx].y, (float)estPts_addr[list_indx].x);
+            prms->oldPoints[list_indx] = _ftof2((VXLIB_F32)oldPts_addr[list_indx].y, (VXLIB_F32)oldPts_addr[list_indx].x);
+            prms->newPoints[list_indx] = _ftof2((VXLIB_F32)estPts_addr[list_indx].y, (VXLIB_F32)estPts_addr[list_indx].x);
             prms->tracking[list_indx] = estPts_addr[list_indx].tracking_status;
         }
 
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 new_image->mem_ptr[0].mem_type);
             tivxMemBufferMap(new_image->mem_ptr[0].target_ptr,
                 new_image->mem_size[0], new_image->mem_ptr[0].mem_type,
-                VX_READ_ONLY); // Not sure if this is READ_ONLY
+                VX_READ_ONLY); /* Not sure if this is READ_ONLY */
 
             new_image_addr = (uint8_t *)((uintptr_t)new_image->mem_ptr[0U].target_ptr +
                 ownComputePatchOffset(0, 0, &new_image->imagepatch_addr[0U]));

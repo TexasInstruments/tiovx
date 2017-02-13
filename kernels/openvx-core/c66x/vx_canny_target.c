@@ -42,7 +42,7 @@ typedef struct
 } tivxCannyParams;
 
 static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
-    uint8_t *src_addr, int32_t gs);
+    const uint8_t *src_addr, int32_t gs);
 static vx_status tivxCannyCalcNorm(tivxCannyParams *prms, vx_enum norm,
     int32_t gs);
 static vx_status tivxCannyCalcNms(tivxCannyParams *prms, int32_t gs);
@@ -447,7 +447,7 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
 }
 
 static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
-    uint8_t *src_addr, int32_t gs)
+    const uint8_t *src_addr, int32_t gs)
 {
     vx_status status = VX_FAILURE;
 
@@ -470,10 +470,10 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
                 break;
             case 5:
                 temp1_16 = (int16_t *)((uintptr_t)prms->sobel_x +
-                    prms->vxlib_sobx.stride_y*2u + 4u);
+                    (prms->vxlib_sobx.stride_y*2u) + 4u);
 
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
-                    prms->vxlib_soby.stride_y*2u + 4u);
+                    (prms->vxlib_soby.stride_y*2u) + 4u);
 
                 status = VXLIB_sobel_5x5_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,
@@ -482,10 +482,10 @@ static vx_status tivxCannyCalcSobel(tivxCannyParams *prms,
             case 7:
             default:
                 temp1_16 = (int16_t *)((uintptr_t)prms->sobel_x +
-                    prms->vxlib_sobx.stride_y*3u + 6u);
+                    (prms->vxlib_sobx.stride_y*3u) + 6u);
 
                 temp2_16 = (int16_t *)((uintptr_t)prms->sobel_y +
-                    prms->vxlib_soby.stride_y*3u + 6u);
+                    (prms->vxlib_soby.stride_y*3u) + 6u);
 
                 status = VXLIB_sobel_7x7_i8u_o16s_o16s(src_addr,
                     &prms->vxlib_src, temp1_16, &prms->vxlib_sobx,

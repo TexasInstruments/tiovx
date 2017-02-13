@@ -27,10 +27,9 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
     uint8_t *src_addr, *dst_addr;
     vx_rectangle_t rect;
 
-    if ( num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS
+    if ((num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX])
-    )
+        || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX]))
     {
         status = VX_FAILURE;
     }
@@ -81,13 +80,14 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
             gsize_value = gsize_desc->data.s32;
         }
 
-        if(gsize_value == 1) {
-
+        if(gsize_value == 1)
+        {
             status |= VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                                                       dst_addr, &vxlib_dst,
                                                       2, 2, 0, 0, 0, 0);
-
-        } else if (gsize_value == 3 || gsize_value == 5) {
+        }
+        else if (gsize_value == 3 || gsize_value == 5)
+        {
 
             VXLIB_bufParams2D_t gauss_params;
             uint8_t *pGauss;
@@ -115,7 +115,10 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
                 status |= VXLIB_halfScaleGaussian_5x5_i8u_o8u(src_addr, &vxlib_src,
                                                               pGauss, &vxlib_dst);
             }
-
+        }
+        else
+        {
+            status = VX_FAILURE;
         }
 
         tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,

@@ -118,6 +118,11 @@ static vx_status ownGraphValidRectCallback(
                         }
                     }
                 }
+                else
+                {
+                    /* not supported for other references */
+                    status = VX_FAILURE;
+                }
             }
         }
     }
@@ -149,61 +154,69 @@ static vx_status ownGraphInitVirtualNode(
                 if ((ref->scope->type == VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
                 {
                     status = VX_ERROR_INVALID_SCOPE;
-                    break;
                 }
 
-                switch (mf->type)
+                if (VX_SUCCESS == status)
                 {
-                    case VX_TYPE_SCALAR:
-                        status = vxQueryScalar((vx_scalar)ref, VX_SCALAR_TYPE,
-                            &type, sizeof(type));
-                        /* For scalar, just check if type is correct or not */
-                        if (VX_SUCCESS == status)
-                        {
-                            if (type != mf->sc.type)
+                    switch (mf->type)
+                    {
+                        case VX_TYPE_SCALAR:
+                            status = vxQueryScalar((vx_scalar)ref,
+                                VX_SCALAR_TYPE, &type, sizeof(type));
+                            /* For scalar, just check if type is correct or
+                                not */
+                            if (VX_SUCCESS == status)
                             {
-                                status = VX_ERROR_INVALID_TYPE;
+                                if (type != mf->sc.type)
+                                {
+                                    status = VX_ERROR_INVALID_TYPE;
+                                }
                             }
-                        }
-                        break;
-                    case VX_TYPE_IMAGE:
-                        if ((0 == mf->img.width) || (0 == mf->img.height))
-                        {
-                            status = VX_ERROR_INVALID_VALUE;
-                        }
-                        else
-                        {
-                            status = ownInitVirtualImage((vx_image)ref,
-                                mf->img.width, mf->img.height, mf->img.format);
-                        }
-                        break;
-                    case VX_TYPE_ARRAY:
-                        status = ownInitVirtualArray(
-                            (vx_array)ref, mf->arr.item_type, mf->arr.capacity);
-                        break;
-                    case VX_TYPE_PYRAMID:
-                        pmd = (vx_pyramid)ref;
-
-                        status = vxQueryPyramid(
-                            pmd, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
-
-                        if (VX_SUCCESS == status)
-                        {
-                            /* Levels must be same even in this case */
-                            if ((levels != mf->pmd.levels) ||
-                                (0 == mf->pmd.width) || (0 == mf->pmd.height))
+                            break;
+                        case VX_TYPE_IMAGE:
+                            if ((0 == mf->img.width) || (0 == mf->img.height))
                             {
                                 status = VX_ERROR_INVALID_VALUE;
                             }
                             else
                             {
-                                status = ownInitVirtualPyramid(pmd, mf->pmd.width,
-                                    mf->pmd.height, mf->pmd.format);
+                                status = ownInitVirtualImage((vx_image)ref,
+                                    mf->img.width, mf->img.height,
+                                    mf->img.format);
                             }
-                        }
-                        break;
-                    default:
-                        break;
+                            break;
+                        case VX_TYPE_ARRAY:
+                            status = ownInitVirtualArray(
+                                (vx_array)ref, mf->arr.item_type,
+                                mf->arr.capacity);
+                            break;
+                        case VX_TYPE_PYRAMID:
+                            pmd = (vx_pyramid)ref;
+
+                            status = vxQueryPyramid(
+                                pmd, VX_PYRAMID_LEVELS, &levels,
+                                sizeof(levels));
+
+                            if (VX_SUCCESS == status)
+                            {
+                                /* Levels must be same even in this case */
+                                if ((levels != mf->pmd.levels) ||
+                                    (0 == mf->pmd.width) ||
+                                    (0 == mf->pmd.height))
+                                {
+                                    status = VX_ERROR_INVALID_VALUE;
+                                }
+                                else
+                                {
+                                    status = ownInitVirtualPyramid(pmd,
+                                        mf->pmd.width, mf->pmd.height,
+                                        mf->pmd.format);
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
 
                 if (status != VX_SUCCESS)
@@ -229,18 +242,15 @@ static vx_status ownGraphNodeKernelValidate(
         node = graph->nodes[i];
 
         status = ownNodeKernelValidate(node, meta);
-        if(status != VX_SUCCESS)
+        if(status == VX_SUCCESS)
         {
-            break;
+            status = ownGraphInitVirtualNode(graph, node, meta);
+            if(status == VX_SUCCESS)
+            {
+                status = ownGraphValidRectCallback(graph, node, meta);
+            }
         }
 
-        status = ownGraphInitVirtualNode(graph, node, meta);
-        if(status != VX_SUCCESS)
-        {
-            break;
-        }
-
-        status = ownGraphValidRectCallback(graph, node, meta);
         if(status != VX_SUCCESS)
         {
             break;
@@ -300,11 +310,14 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
         {
             is_match = vx_true_e;
         }
-        else
-        if (((vx_reference)graph != ref2->scope) &&
+        else if (((vx_reference)graph != ref2->scope) &&
             (ref1 == ref2->scope))
         {
             is_match = vx_true_e;
+        }
+        else
+        {
+            is_match = vx_false_e;
         }
     }
     return is_match;
@@ -369,6 +382,11 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                 {
                                     status = VX_FAILURE;
                                 }
+                            }
+                            else
+                            {
+                                /* Do nothing as there is no other
+                                   direction possible */
                             }
                         }
                     }

@@ -72,7 +72,7 @@ enum tivx_debug_zone_e {
     VX_ZONE_MAX         = 32
 };
 
-#define VX_PRINT(zone, message, ...) do { tivx_print(zone, "[%s:%u] "message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (0)
+#define VX_PRINT(zone, message, ...) do { tivx_print((zone), "[%s:%u] "message, __FUNCTION__, __LINE__, ## __VA_ARGS__); } while (0)
 
 /*! \def VX_PRINT
  * \brief The OpenVX Debugging Facility.

@@ -120,14 +120,17 @@ static vx_bool ownIsValidImage(vx_image image)
 
 static vx_bool ownIsOdd(vx_uint32 a)
 {
+    vx_bool isOdd;
     if (a & 0x1U)
     {
-        return vx_true_e;
+        isOdd = vx_true_e;
     }
     else
     {
-        return vx_false_e;
+        isOdd = vx_false_e;
     }
+
+    return (isOdd);
 }
 
 static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_image color)
@@ -143,6 +146,11 @@ static vx_bool ownIsValidDimensions(vx_uint32 width, vx_uint32 height, vx_df_ima
     {
         is_valid = vx_false_e;
     }
+    else
+    {
+        /* do nothing as is_valid is already initialized */
+    }
+
     return is_valid;
 }
 
@@ -1099,6 +1107,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                                     ptr[1] = pixel[2];
                                 }
                             }
+                            else
+                            {
+                                /* Do Nothing */
+                            }
                         }
                     }
                     vxUnmapImagePatch(image, map_id);
@@ -1819,6 +1831,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                             ptrs[0] = new_ptrs[subimage->channel_plane];
 
                             status = vxSwapImageHandle(subimage, (void**)ptrs, NULL, si_obj_desc->planes);
+                        }
+                        else
+                        {
+                            /* Should not hit this condition */
+                            status = VX_FAILURE;
                         }
                     }
                 }

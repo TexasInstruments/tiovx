@@ -123,6 +123,10 @@ vx_bool ownIsValidReference(vx_reference ref)
         {
             VX_PRINT(VX_ZONE_ERROR, "Not a valid reference!\n");
         }
+        else
+        {
+            /* do nothing as ret is already initialized */
+        }
     }
     else
     {
@@ -576,6 +580,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetStatus(vx_reference ref)
     {
         status = VX_SUCCESS;
     }
+    else
+    {
+        /* do nothing */
+    }
 
     return status;
 }
@@ -617,6 +625,7 @@ VX_API_ENTRY vx_context VX_API_CALL vxGetContext(vx_reference reference)
     }
     else
     {
+        /* Do nothing as context is already initialized with null */
     }
     return context;
 }

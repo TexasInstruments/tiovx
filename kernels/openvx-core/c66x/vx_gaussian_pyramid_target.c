@@ -169,7 +169,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                     vxlib_gauss.stride_y = src->imagepatch_addr[0].stride_y;
 
                     temp_buf = (uint8_t*)(prms->interm_output +
-                        2U*vxlib_gauss.stride_y + 2U);
+                        (2U*vxlib_gauss.stride_y) + 2U);
 
                     status = VXLIB_gaussian_5x5_i8u_o8u(
                         src_addr, &vxlib_src, temp_buf, &vxlib_gauss, 8);

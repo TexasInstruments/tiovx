@@ -370,10 +370,13 @@ vx_status ownNodeUserKernelExecute(vx_node node)
                                     {
                                         params[i] = ((vx_object_array)parent_ref[i])->ref[n];
                                     }
-                                    else
-                                    if(parent_ref[i]->type==VX_TYPE_PYRAMID)
+                                    else if(parent_ref[i]->type==VX_TYPE_PYRAMID)
                                     {
                                         params[i] = (vx_reference)((vx_pyramid)parent_ref[i])->img[n];
+                                    }
+                                    else
+                                    {
+                                        params[i] = NULL;
                                     }
                                 }
                             }
@@ -920,7 +923,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                     {
                         is_replicated = vx_false_e;
                     }
-                    memcpy((vx_bool*)ptr, &is_replicated, sizeof(is_replicated));
+                    *(vx_bool*)ptr = is_replicated;
                 }
                 else
                 {
@@ -950,7 +953,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 {
                     vx_bool valid_rect_reset = node->valid_rect_reset;
 
-                    memcpy((vx_bool*)ptr, &valid_rect_reset, sizeof(valid_rect_reset));
+                    *(vx_bool*)ptr = valid_rect_reset;
                 }
                 else
                 {
@@ -1247,11 +1250,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
         first_node->obj_desc->is_prm_replicated = 0;
         first_node->obj_desc->num_of_replicas = num_of_replicas;
 
-        for (n = 0; n < number_of_parameters; n++)
+        for (n = 0u; n < number_of_parameters; n++)
         {
             if(replicate[n])
             {
-                first_node->obj_desc->is_prm_replicated |= 1U<<n;
+                first_node->obj_desc->is_prm_replicated |= (((uint32_t)1U)<<n);
             }
 
             first_node->replicated_flags[n] = replicate[n];

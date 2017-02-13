@@ -45,7 +45,7 @@ static tivx_mutex g_tivx_objects_lock;
 static vx_status ownCheckUseFlag(vx_bool inUse[], uint32_t num_ele);
 static void ownInitUseFlag(vx_bool inUse[], uint32_t num_ele);
 static vx_status ownFreeObject(
-    uint8_t *obj_ptr, uint8_t *obj_start_ptr, vx_bool inUse[],
+    const uint8_t *obj_ptr, const uint8_t *obj_start_ptr, vx_bool inUse[],
     uint32_t max_objects, uint32_t size);
 static uint8_t *ownAllocObject(
     uint8_t *obj_start_ptr, vx_bool inUse[], uint32_t max_objects,
@@ -431,7 +431,7 @@ static uint8_t *ownAllocObject(
 }
 
 static vx_status ownFreeObject(
-    uint8_t *obj_ptr, uint8_t *obj_start_ptr, vx_bool inUse[],
+    const uint8_t *obj_ptr, const uint8_t *obj_start_ptr, vx_bool inUse[],
     uint32_t max_objects, uint32_t size)
 {
     uint32_t i;

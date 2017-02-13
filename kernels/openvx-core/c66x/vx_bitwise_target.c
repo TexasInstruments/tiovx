@@ -289,8 +289,8 @@ void tivxAddTargetKernelBitwise()
                 TIVX_TARGET_MAX_NAME);
         }
 
-        for (i = 0; i < sizeof(gTivxBitwiseKernelInfo)/
-                sizeof(tivxBitwiseKernelInfo); i ++)
+        for (i = 0; i < (sizeof(gTivxBitwiseKernelInfo)/
+                sizeof(tivxBitwiseKernelInfo)); i ++)
         {
             if (VX_KERNEL_NOT == gTivxBitwiseKernelInfo[i].kernel_id)
             {
@@ -329,8 +329,8 @@ void tivxRemoveTargetKernelBitwise()
     vx_status status;
     vx_uint32 i;
 
-    for (i = 0; i < sizeof(gTivxBitwiseKernelInfo)/
-            sizeof(tivxBitwiseKernelInfo); i ++)
+    for (i = 0; i < (sizeof(gTivxBitwiseKernelInfo)/
+            sizeof(tivxBitwiseKernelInfo)); i ++)
     {
         if (gTivxBitwiseKernelInfo[i].target_kernel)
         {

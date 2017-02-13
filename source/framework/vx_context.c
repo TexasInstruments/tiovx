@@ -341,7 +341,7 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     return status;
 }
 
-vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, uint16_t *obj_desc_id)
+vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id)
 {
     vx_status status = VX_SUCCESS;
     uint32_t i;
@@ -545,7 +545,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             {
                 if(context->reftable[r])
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
+                        VX_PRINT(VX_ZONE_ERROR,"Reference %d not removed\n", r);
                 }
             }
 
@@ -883,7 +883,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context cont
         status = VX_ERROR_NO_RESOURCES;
         if(context->next_dynamic_user_library_id <= VX_LIBRARY(VX_LIBRARY_MASK))
         {
-            *pLibraryId = context->next_dynamic_user_library_id++;
+            *pLibraryId = context->next_dynamic_user_library_id;
+            context->next_dynamic_user_library_id =
+                context->next_dynamic_user_library_id + 1u;
             status = VX_SUCCESS;
         }
 

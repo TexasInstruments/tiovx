@@ -15,19 +15,21 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id);
 static void tivxTargetFreeHandle(tivx_target *target_handle);
 static vx_status tivxTargetDequeueObjDesc(tivx_target target, uint16_t *obj_desc_id, uint32_t timeout);
 static tivx_target tivxTargetGetHandle(vx_enum target_id);
-static void tivxTargetNodeDescSendComplete(tivx_obj_desc_node_t *node_obj_desc);
-static vx_bool tivxTargetNodeDescCanNodeExecute(tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescTriggerNextNodes(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescSendComplete(const tivx_obj_desc_node_t *node_obj_desc);
+static vx_bool tivxTargetNodeDescCanNodeExecute(const tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescTriggerNextNodes(const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc);
 static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
-static vx_status tivxTargetNodeDescNodeDelete(tivx_obj_desc_node_t *node_obj_desc);
-static vx_status tivxTargetNodeDescNodeControl(tivx_obj_desc_cmd_t *cmd_obj_desc, tivx_obj_desc_node_t *node_obj_desc);
+static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc);
+static vx_status tivxTargetNodeDescNodeControl(
+    tivx_obj_desc_cmd_t *cmd_obj_desc,
+    const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
 static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetSetGraphStateAbandon(
-    tivx_obj_desc_node_t *node_obj_desc);
+    const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
 static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc);
 static void VX_CALLBACK tivxTargetTaskMain(void *app_var);
@@ -114,7 +116,8 @@ static tivx_target tivxTargetGetHandle(vx_enum target_id)
     return target;
 }
 
-static void tivxTargetNodeDescSendComplete(tivx_obj_desc_node_t *node_obj_desc)
+static void tivxTargetNodeDescSendComplete(
+    const tivx_obj_desc_node_t *node_obj_desc)
 {
     uint16_t cmd_obj_desc_id;
 
@@ -140,7 +143,8 @@ static void tivxTargetNodeDescSendComplete(tivx_obj_desc_node_t *node_obj_desc)
     }
 }
 
-static vx_bool tivxTargetNodeDescCanNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
+static vx_bool tivxTargetNodeDescCanNodeExecute(
+    const tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_obj_desc_node_t *prev_node_obj_desc;
     uint16_t prev_node_obj_desc_id;
@@ -165,7 +169,8 @@ static vx_bool tivxTargetNodeDescCanNodeExecute(tivx_obj_desc_node_t *node_obj_d
     return can_execute;
 }
 
-static void tivxTargetNodeDescTriggerNextNodes(tivx_obj_desc_node_t *node_obj_desc)
+static void tivxTargetNodeDescTriggerNextNodes(
+    const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_bool can_execute;
     uint16_t i;
@@ -194,7 +199,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node
 {
     tivx_target_kernel_instance target_kernel_instance;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
-    uint16_t i;
+    uint32_t i;
 
     target_kernel_instance = tivxTargetKernelInstanceGet(node_obj_desc->target_kernel_index, node_obj_desc->kernel_id);
 
@@ -241,6 +246,10 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node
                             params[i] = tivxObjDescGet(
                                 ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->obj_desc_id[n]
                                 );
+                        }
+                        else
+                        {
+                            params[i] = NULL;
                         }
                     }
                 }
@@ -350,7 +359,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     return status;
 }
 
-static vx_status tivxTargetNodeDescNodeDelete(tivx_obj_desc_node_t *node_obj_desc)
+static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_target_kernel_instance target_kernel_instance;
     vx_status status = VX_SUCCESS;
@@ -381,7 +390,9 @@ static vx_status tivxTargetNodeDescNodeDelete(tivx_obj_desc_node_t *node_obj_des
     return status;
 }
 
-static vx_status tivxTargetNodeDescNodeControl(tivx_obj_desc_cmd_t *cmd_obj_desc, tivx_obj_desc_node_t *node_obj_desc)
+static vx_status tivxTargetNodeDescNodeControl(
+    tivx_obj_desc_cmd_t *cmd_obj_desc,
+    const tivx_obj_desc_node_t *node_obj_desc)
 {
     tivx_target_kernel_instance target_kernel_instance;
     vx_status status = VX_SUCCESS;
@@ -436,7 +447,7 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
 }
 
 static void tivxTargetSetGraphStateAbandon(
-    tivx_obj_desc_node_t *node_obj_desc)
+    const tivx_obj_desc_node_t *node_obj_desc)
 {
     vx_node node = (vx_node)node_obj_desc->host_node_ref;
 

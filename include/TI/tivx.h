@@ -208,7 +208,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
  *
  * \ingroup group_tivx_ext
  */
-VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish);
+VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish);
 
 /*!
  * \brief UnRegister publish and unpublish functions if previously registered

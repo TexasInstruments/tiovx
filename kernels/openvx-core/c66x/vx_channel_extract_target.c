@@ -89,6 +89,10 @@ vx_status tivxChannelExtractRgbRgbxInput(
         {
             status = VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
+        else
+        {
+            status = VX_FAILURE;
+        }
 
         tivxMemBufferUnmap(in_desc->mem_ptr[0].target_ptr,
            in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
@@ -103,7 +107,7 @@ vx_status tivxChannelExtractYuyvUyvyInput(
             tivx_obj_desc_image_t *out_desc,
             vx_enum channel_value,
             uint8_t *dst_addr,
-            VXLIB_bufParams2D_t *vxlib_dst
+            const VXLIB_bufParams2D_t *vxlib_dst
             )
 {
     VXLIB_bufParams2D_t vxlib_src;

@@ -11,7 +11,6 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_accumulate_square.h>
 #include <TI/tivx_target_kernel.h>
-#include <stdio.h>
 
 static vx_kernel vx_accumulate_square_kernel = NULL;
 

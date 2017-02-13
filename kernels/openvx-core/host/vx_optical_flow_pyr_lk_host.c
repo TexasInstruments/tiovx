@@ -53,13 +53,12 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             status |= vxQueryPyramid(pyr[i], VX_PYRAMID_FORMAT, &df_image[i], sizeof(df_image[i]));
         }
 
-        if(    levels[0U] != levels[1U]
-            || scale[0U] != scale[1U]
-            || w[0U] != w[1U]
-            || h[0U] != h[1U]
-            || df_image[0U] != df_image[1U]
-            || df_image[0U] != VX_DF_IMAGE_U8
-            )
+        if((levels[0U] != levels[1U])
+            || (scale[0U] != scale[1U])
+            || (w[0U] != w[1U])
+            || (h[0U] != h[1U])
+            || (df_image[0U] != df_image[1U])
+            || (df_image[0U] != VX_DF_IMAGE_U8))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
