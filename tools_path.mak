@@ -14,7 +14,7 @@
 
 TIOVX_PATH := $(abspath .)
 
-VSDK_INSTALL_PATH := $(abspath ../)
+VSDK_INSTALL_PATH := $(abspath ../../../)
 VSDK_TOOLS_PATH := /datalocal1/ti_components
 
 CROSS_COMPILE := arm-none-eabi-
@@ -43,7 +43,7 @@ GCC_LINUX_ROOT := /usr/
 endif
 
 BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
-VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_1_0_0_0
+VXLIB_PATH := $(VSDK_INSTALL_PATH)/ti_components/algorithms_codecs/vxlib_c66x_1_0_0_0
 
 STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk

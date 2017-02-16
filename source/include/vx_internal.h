@@ -206,28 +206,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
 #endif
 
 /*!
- *
- * \mainpage OpenVX - TI Implementation - API Guide
- *
- * \par Introduction
- *
- *      TI's implementation of OpenVX
- *
- * \par IMPORTANT NOTE
- *
- *      See also \ref TI_DISCLAIMER.
- */
-
-/*!
- *
- * \page  TI_DISCLAIMER  TI Disclaimer
- *
- * \htmlinclude ti_disclaim.htm
- *
- */
-
-/*!
- * \defgroup group_tivx_api TI Interface Modules
+ * \defgroup group_tivx_api TIOVX Interface Modules
  */
 
 /*!
@@ -251,7 +230,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_framework TI OpenVX Implementation Modules
+ * \defgroup group_vx_framework TIOVX Implementation Modules
  */
 
 /*!
@@ -391,7 +370,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_framework_config Framework Configuration Parameters
+ * \defgroup group_vx_framework_config TIOVX Configuration Parameters
  * \ingroup group_vx_framework
  */
 
@@ -472,7 +451,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_platform TI Platform Modules
+ * \defgroup group_vx_platform TIOVX Platform Modules
  */
 
 /*!
