@@ -33,10 +33,9 @@
  *
  *******************************************************************************
  */
-
 #include <vx_internal.h>
 #include <pthread.h>
-
+#include <time.h>
 
 int nanosleep (const struct timespec *requested_time, struct timespec *remaining);
 

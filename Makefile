@@ -8,12 +8,6 @@ BUILD_PLATFORM :=
 
 
 DIRECTORIES :=
-DIRECTORIES += conformance_tests/test_conformance
-DIRECTORIES += conformance_tests/test_engine
-DIRECTORIES += conformance_tests/test_executable
-DIRECTORIES += conformance_tests/test_tiovx
-DIRECTORIES += conformance_tests/test_tiovx_engine
-DIRECTORIES += conformance_tests/test_tiovx_executable
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
@@ -24,6 +18,19 @@ TARGET_COMBOS :=
 
 BUILD_EMULATION_MODE?=yes
 BUILD_TARGET_MODE?=yes
+HOST_CORE?=IPU1_0
+A15_TARGET_OS?=Linux
+
+BUILD_CONFORMANCE_TEST?=yes
+
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
+  DIRECTORIES += conformance_tests/test_conformance
+  DIRECTORIES += conformance_tests/test_engine
+  DIRECTORIES += conformance_tests/test_executable
+  DIRECTORIES += conformance_tests/test_tiovx
+  DIRECTORIES += conformance_tests/test_tiovx_engine
+  DIRECTORIES += conformance_tests/test_tiovx_executable
+endif
 
 PROFILE?=all
 
@@ -33,6 +40,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
   TARGET_COMBOS += TDAX:SYSBIOS:C66:1:debug:CGT6X
   TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:debug:ARP32CGT
   TARGET_COMBOS += TDAX:SYSBIOS:A15:1:debug:GCC
+  TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC
   endif
 
   ifeq ($(PROFILE), $(filter $(PROFILE), release all))
@@ -40,6 +48,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
   TARGET_COMBOS += TDAX:SYSBIOS:C66:1:release:CGT6X
   TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:release:ARP32CGT
   TARGET_COMBOS += TDAX:SYSBIOS:A15:1:release:GCC
+  TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC
   endif
 endif
 

@@ -34,6 +34,12 @@ extern "C" {
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (512u)
 
 
+/*! \brief Default buffer allocation alignment
+ * \ingroup group_tivx_mem
+ */
+#define TIVX_MEM_BUFFER_ALLOC_ALIGN             (16U)
+
+
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform
  */
@@ -77,6 +83,7 @@ typedef enum _tivx_target_id_e {
  *
  * \ingroup group_tivx_platform
  */
+#if defined(HOST_CORE_IPU1_0)
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \
     {TIVX_TARGET_DSP1, TIVX_TARGET_ID_DSP1},                                   \
@@ -91,6 +98,22 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_A15_0, TIVX_TARGET_ID_A15_0},                                 \
     {TIVX_TARGET_HOST, TIVX_TARGET_ID_IPU1_0}                                  \
 }
+#elif defined (HOST_CORE_A15_0)
+#define TIVX_TARGET_INFO                                                       \
+{                                                                              \
+    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_DSP1},                                   \
+    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_DSP2},                                   \
+    {TIVX_TARGET_EVE1, TIVX_TARGET_ID_EVE1},                                   \
+    {TIVX_TARGET_EVE2, TIVX_TARGET_ID_EVE2},                                   \
+    {TIVX_TARGET_EVE3, TIVX_TARGET_ID_EVE3},                                   \
+    {TIVX_TARGET_EVE4, TIVX_TARGET_ID_EVE4},                                   \
+    {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_IPU1_0},                               \
+    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_IPU1_1},                               \
+    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_IPU2_0},                                 \
+    {TIVX_TARGET_A15_0, TIVX_TARGET_ID_A15_0},                                 \
+    {TIVX_TARGET_HOST, TIVX_TARGET_ID_A15_0}                                   \
+}
+#endif
 
 #ifdef __cplusplus
 }

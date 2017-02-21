@@ -706,11 +706,11 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 {
                     /* ptrs[plane_idx] can be NULL */
                     mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, TIVX_MEM_EXTERNAL);
-                }
 
-                tivxMemBufferUnmap(mem_ptr->host_ptr,
-                    obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL,
-                    VX_WRITE_ONLY);
+                    tivxMemBufferUnmap(mem_ptr->host_ptr,
+                        obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL,
+                        VX_WRITE_ONLY);
+                }
             }
         }
     }
@@ -1800,8 +1800,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                 {
                     prev_ptrs[p] = obj_desc->mem_ptr[p].host_ptr;
 
-                    tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
-                        obj_desc->mem_ptr[p].mem_type, VX_WRITE_ONLY);
+                    if (NULL != prev_ptrs[p])
+                    {
+                        tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
+                            obj_desc->mem_ptr[p].mem_type, VX_WRITE_ONLY);
+                    }
                 }
             }
 
@@ -1862,8 +1865,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                     obj_desc->mem_ptr[p].host_ptr = new_ptrs[p];
                     obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr(new_ptrs[p], obj_desc->mem_ptr[p].mem_type);
 
-                    tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
-                        obj_desc->mem_ptr[p].mem_type, VX_WRITE_ONLY);
+                    if (NULL != new_ptrs[p])
+                    {
+                        tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
+                            obj_desc->mem_ptr[p].mem_type, VX_WRITE_ONLY);
+                    }
                 }
             }
         }

@@ -37,8 +37,6 @@
 
 #include <vx_internal.h>
 
-
-
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
     vx_status status = VX_SUCCESS;

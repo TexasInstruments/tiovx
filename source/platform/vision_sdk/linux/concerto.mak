@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2012-2016 The Khronos Group Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -27,20 +27,30 @@
 #
 
 ifeq ($(TARGET_PLATFORM),TDAX)
-ifeq ($(TARGET_OS),SYSBIOS)
+ifeq ($(TARGET_OS),LINUX)
 
 include $(PRELUDE)
-TARGET      := vx_platform_vision_sdk_bios
+TARGET      := vx_platform_vision_sdk_linux
 TARGETTYPE  := library
-CSOURCES    := tivx_event.c tivx_init.c tivx_ipc.c tivx_mem.c \
-               tivx_mutex.c tivx_platform.c tivx_platform_common.c \
-               tivx_queue.c tivx_task.c
+
+COMMON_FILES_REL_PATH = ../../os/linux
+
+CSOURCES    := \
+    $(COMMON_FILES_REL_PATH)/tivx_event.c \
+    tivx_ipc.c tivx_mem.c tivx_init.c     \
+    $(COMMON_FILES_REL_PATH)/tivx_mutex.c \
+    tivx_platform_common.c                \
+    $(COMMON_FILES_REL_PATH)/tivx_queue.c \
+    $(COMMON_FILES_REL_PATH)/tivx_task.c
+
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
 IDIRS       += $(STW_PATH)/include
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 IDIRS       += $(VSDK_PATH)
+IDIRS       += $(TARGETFS)/usr/include
+IDIRS       += $(TARGETFS)/usr
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
@@ -51,13 +61,11 @@ ifeq ($(HOST_COMPILER),GCC)
 endif
 
 ifeq ($(TARGET_CPU),C66)
-CSOURCES += tivx_target_config_dsp_eve.c
-SKIPBUILD=0
+SKIPBUILD=1
 endif
 
 ifeq ($(TARGET_CPU),EVE)
-CSOURCES += tivx_target_config_dsp_eve.c
-SKIPBUILD=0
+SKIPBUILD=1
 endif
 
 ifeq ($(TARGET_CPU),A15)
@@ -66,8 +74,7 @@ SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),M4)
-CSOURCES += tivx_target_config_ipu1_0.c
-SKIPBUILD=0
+SKIPBUILD=1
 endif
 
 include $(FINALE)

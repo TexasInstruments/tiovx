@@ -17,7 +17,11 @@ TIOVX_PATH := $(abspath .)
 VSDK_INSTALL_PATH := $(abspath ../../../)
 VSDK_TOOLS_PATH := /datalocal1/ti_components
 
+ifeq ($(A15_TARGET_OS),Linux)
+CROSS_COMPILE := arm-linux-gnueabihf-
+else
 CROSS_COMPILE := arm-none-eabi-
+endif
 
 BUILD_OS ?= Linux
 ifeq ($(OS),Windows_NT)
@@ -36,7 +40,13 @@ endif
 ifeq ($(BUILD_OS),Linux)
 XDC_PATH := $(VSDK_TOOLS_PATH)/os_tools/linux/xdctools_3_32_00_06_core
 TIARMCGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-arm_5.2.5
+
+ifeq ($(CROSS_COMPILE),arm-none-eabi-)
 GCC_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/gcc-arm-none-eabi-4_7-2013q3
+else
+GCC_ROOT := $(VSDK_TOOLS_PATH)/os_tools/linux/linaro/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf
+endif
+
 CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/C6000_7.4.2
 ARP32CGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 GCC_LINUX_ROOT := /usr/
@@ -44,7 +54,10 @@ endif
 
 BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
 VXLIB_PATH := $(VSDK_INSTALL_PATH)/ti_components/algorithms_codecs/vxlib_c66x_1_0_0_0
+XDIAS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/xdais_7_24_00_04
+EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
 
 STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
+TARGETFS := $(VSDK_INSTALL_PATH)/vision_sdk/hlos/linux/targetfs
 

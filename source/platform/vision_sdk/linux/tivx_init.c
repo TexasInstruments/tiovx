@@ -22,14 +22,11 @@ void tivxInit(void)
     tivxTargetInit();
 
     /* Initialize Host */
-#if defined (C66) || defined (EVE)
+#if defined (C66)
     tivxRegisterOpenVXCoreTargetKernels();
 #endif
-
-#if defined(HOST_CORE_IPU1_0)
-#if defined (M4)
+#if defined (A15)
     tivxHostInit();
-#endif
 #endif
 
     tivxObjDescInit();
@@ -42,14 +39,11 @@ void tivxDeInit(void)
     tivxPlatformDeleteTargets();
 
     /* DeInitialize Host */
-#if defined (C66) || defined (EVE)
+#if defined (C66)
     tivxUnRegisterOpenVXCoreTargetKernels();
 #endif
-
-#if defined(HOST_CORE_IPU1_0)
-#if defined (M4)
+#if defined (A15)
     tivxHostDeInit();
-#endif
 #endif
 
     /* DeInitialize Target */
