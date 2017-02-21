@@ -29,6 +29,9 @@
 #ifndef __VX_CT_TEST_UTILS_H__
 #define __VX_CT_TEST_UTILS_H__
 
+#define __STDC_FORMAT_MACROS
+#include <inttypes.h>
+
 #include <VX/vx.h>
 
 #define MAXPATHLENGTH           (512u)
@@ -36,6 +39,8 @@
 #define VX_CALL(fn_call) ASSERT_EQ_VX_STATUS(VX_SUCCESS, fn_call)
 #define VX_CALL_(ret_code, fn_call) ASSERT_EQ_VX_STATUS_AT_(ret_code, VX_SUCCESS, fn_call, __FUNCTION__, __FILE__, __LINE__)
 #define VX_CALL_RET(fn_call) ASSERT_EQ_VX_STATUS_AT_(return VX_FAILURE, VX_SUCCESS, fn_call, __FUNCTION__, __FILE__, __LINE__)
+
+void printPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
 
 const char* ct_vx_status_to_str(vx_status s);
 const char* ct_vx_type_to_str(enum vx_type_e type);
