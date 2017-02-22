@@ -37,7 +37,7 @@
 
 #include <vx_internal.h>
 
-static vx_enum ownKernelMatchTarget(vx_kernel kernel, const char *target_string);
+
 
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
@@ -343,27 +343,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;
-}
-
-static vx_enum ownKernelMatchTarget(vx_kernel kernel, const char *target_string)
-{
-    vx_enum target_id = TIVX_TARGET_ID_INVALID;
-
-    if (kernel && (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
-    {
-        uint32_t idx;
-
-        for(idx = 0; idx < kernel->num_targets; idx++)
-        {
-            if(tivxPlatformTargetMatch(kernel->target_name[idx], target_string) == vx_true_e)
-            {
-                /* found a compatible target for this kernel */
-                target_id = tivxPlatformGetTargetId(target_string);
-                break;
-            }
-        }
-    }
-    return target_id;
 }
 
 vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
