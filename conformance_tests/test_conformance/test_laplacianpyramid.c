@@ -122,7 +122,7 @@ static vx_size own_pyramid_calc_max_levels_count(int width, int height, vx_float
     return level;
 }
 
-vx_status ownCopyImage(vx_image input, vx_image output)
+static vx_status ownCopyImage(vx_image input, vx_image output)
 {
     vx_status status = VX_SUCCESS; // assume success until an error occurs.
     vx_uint32 p = 0;

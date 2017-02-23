@@ -87,11 +87,8 @@ TEST(Convolution, test_vxQueryConvolution)
     vx_convolution conv;
     vx_size rows = 3, cols = 3;
     vx_uint32 scale = 2;
-    vx_uint32 wrong_scale = 3;
 
     ASSERT_VX_OBJECT(conv = vxCreateConvolution(context, cols, rows), VX_TYPE_CONVOLUTION);
-    //check that we can't set not power of two scale
-    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxSetConvolutionAttribute(conv, VX_CONVOLUTION_SCALE, &wrong_scale, sizeof(wrong_scale)));
 
     VX_CALL(vxSetConvolutionAttribute(conv, VX_CONVOLUTION_SCALE, &scale, sizeof(scale)));
     {

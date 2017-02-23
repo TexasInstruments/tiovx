@@ -189,8 +189,25 @@ static int scale_check_pixel(CT_Image src, CT_Image dst, int x, int y, vx_enum i
         vx_float32 ref_float;
         vx_int32 ref;
 
-        // We don't compare the output when an input pixel is undefined (UNDEFINED border mode)
+        // If the computed coordinate is very close to the boundary (1e-7), we don't
+        // consider it out-of-bound, in order to handle potential float accuracy errors
         vx_bool defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
+        if (defined == vx_false_e)
+        {
+            vx_bool defined_any = (vx_bool)((p00 != -1) || (p10 != -1) || (p01 != -1) || (p11 != -1));
+            if (defined_any)
+            {
+                if ((p00 == -1 || p10 == -1) && fabs(t - 1.0) <= 1e-7)
+                    p00 = p10 = 0;
+                else if ((p01 == -1 || p11 == -1) && fabs(t - 0.0) <= 1e-7)
+                    p01 = p11 = 0;
+                if ((p00 == -1 || p01 == -1) && fabs(s - 1.0) <= 1e-7)
+                    p00 = p01 = 0;
+                else if ((p10 == -1 || p11 == -1) && fabs(s - 0.0) <= 1e-7)
+                    p10 = p11 = 0;
+                defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
+            }
+        }
         if (defined == vx_false_e) {
             return 1;
         }
@@ -271,8 +288,25 @@ static int scale_check_pixel_exact(CT_Image src, CT_Image dst, int x, int y, vx_
         vx_float32 ref_float;
         vx_int32 ref;
 
-        // We don't compare the output when an input pixel is undefined (UNDEFINED border mode)
+        // If the computed coordinate is very close to the boundary (1e-7), we don't
+        // consider it out-of-bound, in order to handle potential float accuracy errors
         vx_bool defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
+        if (defined == vx_false_e)
+        {
+            vx_bool defined_any = (vx_bool)((p00 != -1) || (p10 != -1) || (p01 != -1) || (p11 != -1));
+            if (defined_any)
+            {
+                if ((p00 == -1 || p10 == -1) && fabs(t - 1.0) <= 1e-7)
+                    p00 = p10 = 0;
+                else if ((p01 == -1 || p11 == -1) && fabs(t - 0.0) <= 1e-7)
+                    p01 = p11 = 0;
+                if ((p00 == -1 || p01 == -1) && fabs(s - 1.0) <= 1e-7)
+                    p00 = p01 = 0;
+                else if ((p10 == -1 || p11 == -1) && fabs(s - 0.0) <= 1e-7)
+                    p10 = p11 = 0;
+                defined = (vx_bool)((p00 != -1) && (p10 != -1) && (p01 != -1) && (p11 != -1));
+            }
+        }
         if (defined == vx_false_e) {
             return 1;
         }

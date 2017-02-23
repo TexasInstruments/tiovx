@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -26,6 +26,9 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+#include <stdlib.h>
+#include <string.h>
+#include <VX/vx.h>
 #include <TI/tivx_mem.h>
 
 #define CT_MEM_ALLOC_ALIGN      (255U)
@@ -69,7 +72,6 @@ void ct_memset(void *ptr, vx_uint8 c, size_t size)
     if (NULL != ptr)
     {
         memset(ptr, c, size);
-        tivxMemBufferUnmap(ptr, size, TIVX_MEM_EXTERNAL, VX_WRITE_ONLY);
     }
 }
 

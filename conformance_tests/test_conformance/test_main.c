@@ -35,14 +35,7 @@
 #define VERSION_STR "v1.1"
 #endif
 
-void TestModuleRegister();
-void tivx_set_debug_zone(vx_enum zone);
-
 int vx_conformance_test_main(int argc, char* argv[])
 {
-    TestModuleRegister();
-    tivx_set_debug_zone(0);
-    tivx_set_debug_zone(1);
-
     return CT_main(argc, argv, VERSION_STR);
 }

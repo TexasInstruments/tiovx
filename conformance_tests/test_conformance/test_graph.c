@@ -274,17 +274,17 @@ static vx_status VX_CALLBACK take10_Kernel(vx_node node, const vx_reference *par
     return VX_SUCCESS;
 }
 
-static vx_kernel take10_node(vx_graph graph, vx_array in, vx_array out)
+static void take10_node(vx_graph graph, vx_array in, vx_array out)
 {
     vx_kernel kernel = 0;
     vx_node node = 0;
     vx_context context = vxGetContext((vx_reference)graph);
     vx_enum take10_enumId = 0u;
 
-    ASSERT_VX_OBJECT_(return NULL, context, VX_TYPE_CONTEXT);
+    ASSERT_VX_OBJECT(context, VX_TYPE_CONTEXT);
 
-    VX_CALL_(return NULL, vxAllocateUserKernelId(context, &take10_enumId));
-    ASSERT_VX_OBJECT_(return NULL, kernel = vxAddUserKernel(
+    VX_CALL(vxAllocateUserKernelId(context, &take10_enumId));
+    ASSERT_VX_OBJECT(kernel = vxAddUserKernel(
             context,
             VX_KERNEL_CONFORMANCE_TEST_TAKE10_NAME,
             take10_enumId,
@@ -294,18 +294,19 @@ static vx_kernel take10_node(vx_graph graph, vx_array in, vx_array out)
             NULL,
             NULL), VX_TYPE_KERNEL);
 
-    VX_CALL_(return NULL, vxAddParameterToKernel(kernel, 0, VX_INPUT,  VX_TYPE_ARRAY, VX_PARAMETER_STATE_REQUIRED));
-    VX_CALL_(return NULL, vxAddParameterToKernel(kernel, 1, VX_OUTPUT, VX_TYPE_ARRAY, VX_PARAMETER_STATE_REQUIRED));
-    VX_CALL_(return NULL, vxFinalizeKernel(kernel));
+    VX_CALL(vxAddParameterToKernel(kernel, 0, VX_INPUT,  VX_TYPE_ARRAY, VX_PARAMETER_STATE_REQUIRED));
+    VX_CALL(vxAddParameterToKernel(kernel, 1, VX_OUTPUT, VX_TYPE_ARRAY, VX_PARAMETER_STATE_REQUIRED));
+    VX_CALL(vxFinalizeKernel(kernel));
 
-    ASSERT_VX_OBJECT_(return NULL, node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
-    VX_CALL_(return NULL, vxSetParameterByIndex(node, 0, (vx_reference)in));
-    VX_CALL_(return NULL, vxSetParameterByIndex(node, 1, (vx_reference)out));
+    ASSERT_VX_OBJECT(node = vxCreateGenericNode(graph, kernel), VX_TYPE_NODE);
+    VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)in));
+    VX_CALL(vxSetParameterByIndex(node, 1, (vx_reference)out));
 
-    VX_CALL_(return NULL, vxReleaseNode(&node));
-    ASSERT_(return NULL, node == 0);
+    VX_CALL(vxReleaseNode(&node));
+    ASSERT(node == 0);
 
-    return kernel;
+    VX_CALL(vxReleaseKernel(&kernel));
+    ASSERT(kernel == 0);
 }
 
 TEST(Graph, testVirtualArray)
@@ -374,7 +375,7 @@ TEST(Graph, testVirtualArray)
 
     ASSERT_VX_OBJECT(n4 = vxOpticalFlowPyrLKNode(graph, p0, p1, corners, corners, new_corners, VX_TERM_CRITERIA_BOTH, flow_eps, flow_num_iter, flow_use_estimations, window), VX_TYPE_NODE);
 
-    ASSERT_VX_OBJECT(kernel = take10_node(graph, new_corners, corners10), VX_TYPE_KERNEL);
+    take10_node(graph, new_corners, corners10);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -399,6 +400,8 @@ TEST(Graph, testVirtualArray)
     VX_CALL(vxReleaseNode(&n3));
     VX_CALL(vxReleaseNode(&n4));
     VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT_VX_OBJECT(kernel = vxGetKernelByName(context, VX_KERNEL_CONFORMANCE_TEST_TAKE10_NAME), VX_TYPE_KERNEL);
     VX_CALL(vxRemoveKernel(kernel));
 }
 

@@ -29,8 +29,6 @@
 #include <math.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
-/* TODO: remove vx_compatibility.h after transition period */
-#include <VX/vx_compatibility.h>
 
 #include "test_engine/test.h"
 

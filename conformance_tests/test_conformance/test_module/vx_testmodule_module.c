@@ -232,10 +232,9 @@ vx_status VX_CALLBACK TestModuleDeinitialize(vx_node node, const vx_reference *p
  * and uses the predefined name for the entry point, "vxPublishKernels".
  * \ingroup group_testmodule_kernel
  */
-static vx_status VX_API_CALL vxPublishKernels(vx_context context)
+/*VX_API_ENTRY*/ vx_status VX_API_CALL vxPublishKernels(vx_context context)
 {
     vx_status status = VX_SUCCESS;
-
     vx_kernel kernel = vxAddUserKernel(context,
                                     "org.khronos.test.testmodule",
                                     VX_KERNEL_KHR_TESTMODULE,
@@ -275,7 +274,7 @@ exit:
  * and uses the predefined name for the entry point, "vxUnpublishKernels".
  * \ingroup group_testmodule_kernel
  */
-static vx_status VX_API_CALL vxUnpublishKernels(vx_context context)
+/*VX_API_ENTRY*/ vx_status VX_API_CALL vxUnpublishKernels(vx_context context)
 {
     vx_status status = VX_SUCCESS;
     vx_kernel kernel = vxGetKernelByName(context, "org.khronos.test.testmodule");

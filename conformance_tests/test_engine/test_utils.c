@@ -687,17 +687,22 @@ static void ct_teardown_vx_context(void/*CT_VXContext*/ **context_)
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryContext(context->vx_context_, VX_CONTEXT_MODULES, &modules, sizeof(modules)));
             EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxQueryContext(context->vx_context_, VX_CONTEXT_UNIQUE_KERNELS, &kernels, sizeof(kernels)));
 
+            // The specification needs to be clarified. Implementations may have a different interpretation of what
+            // is an 'active reference'. The number of active references may or may not be 0 just after context creation.
             dangling_refs_count -= context->vx_context_base_references_;
 
-            if (modules == context->vx_context_base_modules_ && kernels == context->vx_context_base_kernels_)
-            {
-                EXPECT_EQ_INT(0, dangling_refs_count);
-            }
-            else // TODO: make a parameter to enable this check
+            // The specification needs to be clarified. An implementation may or may not consider kernel objects
+            // that are not referenced by the application (but that are still alive since a kernels exist until
+            // explicitly removed) as 'active references'. In case the implementation does, an aditionnal subtraction
+            // is needed.
+            if ( ((modules != context->vx_context_base_modules_) ||
+                  (kernels != context->vx_context_base_kernels_)) &&
+                 (dangling_refs_count > 0))
             {
                 dangling_refs_count -= kernels - context->vx_context_base_kernels_;
-                EXPECT_EQ_INT(0, dangling_refs_count);
             }
+
+            EXPECT_EQ_INT(0, dangling_refs_count);
         }
         vxReleaseContext(&context->vx_context_);
         ASSERT(context->vx_context_ == 0);
