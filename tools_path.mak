@@ -57,6 +57,12 @@ VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_src_1_0_0_0
 XDIAS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/xdais_7_24_00_04
 EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
 
+# This path is temporary for our development since the above release doesn't have bam_plugins yet
+VXLIB2_PATH := /home/a0323847local/gitrepo/vxlib
+BAM_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/bam
+DMAUTILS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/dmautils
+EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
+
 STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
 TARGETFS := $(VSDK_INSTALL_PATH)/vision_sdk/hlos/linux/targetfs

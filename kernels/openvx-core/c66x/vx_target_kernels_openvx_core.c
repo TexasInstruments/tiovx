@@ -18,6 +18,50 @@ typedef struct  {
     tivxTargetKernel_Fxn    remove_kernel;
 } Tivx_Target_Kernel_List;
 
+#ifdef USE_BAM
+
+Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
+    {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
+    {tivxAddTargetKernelAccumulate, tivxRemoveTargetKernelAccumulate},
+    {tivxAddTargetKernelAccumulateSquare, tivxRemoveTargetKernelAccumulateSquare},
+    {tivxAddTargetKernelAccumulateWeighted, tivxRemoveTargetKernelAccumulateWeighted},
+    {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
+    {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
+    {tivxAddTargetKernelCannyEd, tivxRemoveTargetKernelCannyEd},
+    {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
+    {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
+    {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},
+    {tivxAddTargetKernelConvertDepth, tivxRemoveTargetKernelConvertDepth},
+    {tivxAddTargetKernelConvolve, tivxRemoveTargetKernelConvolve},
+    {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
+    {tivxAddTargetKernelErode3x3, tivxRemoveTargetKernelErode3x3},
+    {tivxAddTargetKernelFastCorners, tivxRemoveTargetKernelFastCorners},
+    {tivxAddTargetKernelGaussianPyramid, tivxAddTargetKernelGaussianPyramid},
+    {tivxAddTargetKernelHarrisCorners, tivxRemoveTargetKernelHarrisCorners},
+    {tivxAddTargetKernelHalfscaleGaussian, tivxAddTargetKernelHalfscaleGaussian},
+    {tivxAddTargetKernelBamHistogram, tivxRemoveTargetKernelBamHistogram},
+    {tivxAddTargetKernelIntegralImage, tivxRemoveTargetKernelIntegralImage},
+    {tivxAddTargetKernelLaplacianPyramid, tivxRemoveTargetKernelLaplacianPyramid},
+    {tivxAddTargetKernelLaplacianReconstruct, tivxRemoveTargetKernelLaplacianReconstruct},
+    {tivxAddTargetKernelBamLut, tivxRemoveTargetKernelBamLut},
+    {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
+    {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
+    {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
+    {tivxAddTargetKernelMultiply, tivxRemoveTargetKernelMultiply},
+    {tivxAddTargetKernelNonLinearFilter, tivxRemoveTargetKernelNonLinearFilter},
+    {tivxAddTargetKernelOpticalFlowPyrLk, tivxRemoveTargetKernelOpticalFlowPyrLk},
+    {tivxAddTargetKernelPhase, tivxRemoveTargetKernelPhase},
+    {tivxAddTargetKernelRemap, tivxRemoveTargetKernelRemap},
+    {tivxAddTargetKernelScale, tivxRemoveTargetKernelScale},
+    {tivxAddTargetKernelBamSobel3x3, tivxRemoveTargetKernelBamSobel3x3},
+    {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
+    {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
+    {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
+    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
+};
+
+#else
+
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
     {tivxAddTargetKernelAccumulate, tivxRemoveTargetKernelAccumulate},
@@ -57,6 +101,8 @@ Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
     {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
 };
+
+#endif
 
 void tivxRegisterOpenVXCoreTargetKernels()
 {
