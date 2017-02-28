@@ -369,6 +369,14 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
             status = tivxEventWait(context->cmd_ack_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
         }
 
+        if(status == VX_SUCCESS)
+        {
+            if (VX_SUCCESS != context->obj_desc_cmd->cmd_status)
+            {
+                status = VX_FAILURE;
+            }
+        }
+
         ownContextUnlock(context);
     }
     else
