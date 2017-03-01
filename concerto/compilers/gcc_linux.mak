@@ -103,6 +103,8 @@ $(_MODULE)_COPT += -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name_
 $(_MODULE)_COPT += -Wno-unknown-pragmas -Wno-missing-braces -Wno-format -Wno-unused-variable
 endif
 
+$(_MODULE)_COPT += -Wno-unknown-pragmas
+
 ifeq ($(TARGET_BUILD),debug)
 $(_MODULE)_COPT += -ggdb -ggdb3 -gdwarf-2 -DDEBUG
 else ifneq ($(filter $(TARGET_BUILD),release production),)
@@ -143,6 +145,12 @@ else ifneq ($(filter $(TARGET_CPU),A9 A9F),)
 $(_MODULE)_COPT += -mcpu=cortex-a9
 else ifneq ($(filter $(TARGET_CPU),A15 A15F),)
 $(_MODULE)_COPT += -mcpu=cortex-a15
+endif
+
+ifeq ($(TARGET_ARCH),32)
+ifneq ($(TARGET_CPU),ARM)
+$(_MODULE)_COPT += -m32 -fno-stack-protector
+endif
 endif
 
 $(_MODULE)_MAP      := $($(_MODULE)_BIN).map
