@@ -27,6 +27,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
     vx_df_image fmt[2U];
     vx_enum matrix_type = 0;
     vx_enum interpolation_type = 0;
+    vx_df_image out_fmt;
 
     for (i = 0U; i < TIVX_KERNEL_WARP_PERSPECTIVE_MAX_PARAMS; i ++)
     {
@@ -116,13 +117,6 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
         }
     }
 
-    /* Warp output can not be virtual */
-    if ((VX_SUCCESS == status) &&
-        (vx_true_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
-    {
-        status = VX_ERROR_INVALID_TYPE;
-    }
-
     if (VX_SUCCESS == status)
     {
         /* Get the image width/heigh and format */
@@ -132,18 +126,20 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
 
         /* Check for frame sizes */
+        /* If output is a virtual image, it must not have a size of 0, 0 */
         if ((w[1U] <= 0) || (h[1U] <= 0))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
         /* Check for format */
+        /* If output is a virtual image, the format must be specified */
         if (VX_DF_IMAGE_U8 != fmt[1U])
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
-#if 0
+#if 1
     if (VX_SUCCESS == status)
     {
         for (i = 0U; i < TIVX_KERNEL_WARP_PERSPECTIVE_MAX_PARAMS; i ++)
@@ -152,10 +148,10 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
             {
                 vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
                     sizeof(out_fmt));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                    sizeof(w[0U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                    sizeof(h[0U]));
+                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[1U],
+                    sizeof(w[1U]));
+                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[1U],
+                    sizeof(h[1U]));
             }
         }
     }

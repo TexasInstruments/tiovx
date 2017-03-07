@@ -69,9 +69,7 @@ static vx_status VX_CALLBACK tivxAddKernelMagnitudeValidate(vx_node node,
             VX_IMAGE_HEIGHT, &h[TIVX_KERNEL_MAGNITUDE_IN1_IMG_IDX],
             sizeof(vx_uint32));
     }
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual(
-            parameters[TIVX_KERNEL_MAGNITUDE_OUT_IMG_IDX])))
+    if (VX_SUCCESS == status)
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[TIVX_KERNEL_MAGNITUDE_OUT_IMG_IDX],

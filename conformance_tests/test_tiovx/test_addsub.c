@@ -26,10 +26,19 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+
 #include "test_tiovx_engine/test.h"
 
 #include <VX/vx.h>
-#include <VX/vxu.h>
 
 //#define CT_EXECUTE_ASYNC
 
@@ -165,7 +174,6 @@ static void referenceSubtract(CT_Image src0, CT_Image src1, CT_Image src2, CT_Im
     ASSERT_NO_FAILURE(referenceSubtractSingle(virt1, virt2, dst, policy));
 }
 
-typedef vx_status (VX_API_CALL *vxuArithmFunction)(vx_context, vx_image, vx_image, vx_enum, vx_image);
 typedef vx_node   (VX_API_CALL *vxArithmFunction) (vx_graph, vx_image, vx_image, vx_enum, vx_image);
 typedef void      (*referenceFunction)(CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, enum vx_convert_policy_e);
 
@@ -177,20 +185,18 @@ typedef struct {
     enum vx_convert_policy_e policy;
     int width, height;
     vx_df_image arg1_format, arg2_format, result_format;
-    vxuArithmFunction vxuFunc;
     vxArithmFunction vxFunc;
     referenceFunction referenceFunc;
 } fuzzy_arg;
 
 #define FUZZY_ARG(func, p, w, h, f1, f2, fr)        \
     ARG(#func ": " #p " " #w "x" #h " " #f1 SGN_##func #f2 "=" #fr,   \
-        VX_CONVERT_POLICY_##p, w, h, VX_DF_IMAGE_##f1, VX_DF_IMAGE_##f2, VX_DF_IMAGE_##fr, vxu##func, vx##func##Node, reference##func)
+        VX_CONVERT_POLICY_##p, w, h, VX_DF_IMAGE_##f1, VX_DF_IMAGE_##f2, VX_DF_IMAGE_##fr, vx##func##Node, reference##func)
 
 #define ARITHM_FUZZY_ARGS(func)                         \
     FUZZY_ARG(func, SATURATE, 18, 18, U8, U8, U8),    \
     FUZZY_ARG(func, SATURATE, 644, 258, U8, U8, S16),   \
-    FUZZY_ARG(func, SATURATE, 1600, 1200, U8, S16, S16),  \
-    ARG_EXTENDED_END()
+    FUZZY_ARG(func, SATURATE, 1600, 1200, U8, S16, S16)
 
 TESTCASE(vxAddSub,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -265,9 +271,9 @@ TEST_WITH_ARG(vxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_FUZ
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
 
-    printPerformance(perf_node2, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2, arg_->width*arg_->height, "N2");
 
-    printPerformance(perf_node3, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node3, arg_->width*arg_->height, "N3");
 
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }

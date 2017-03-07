@@ -114,8 +114,7 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         dst_format = src_format;
     }
 
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    if (VX_SUCCESS == status)
     {
         status |= vxQueryImage(img[1U], VX_IMAGE_FORMAT, &dst_format, sizeof(dst_format));
         status |= vxQueryImage(img[1U], VX_IMAGE_PLANES, &dst_planes, sizeof(dst_planes));
@@ -123,6 +122,18 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
 
+        if (VX_SUCCESS == status)
+        {
+            if(src_format == dst_format)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+    }
+
+    if ((VX_SUCCESS == status) &&
+        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    {
         if (VX_SUCCESS == status)
         {
             /* Verifies luma channel size */

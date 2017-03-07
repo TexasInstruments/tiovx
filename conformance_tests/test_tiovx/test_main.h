@@ -26,7 +26,38 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
+
+/*TESTCASE(Accumulate)
+TESTCASE(AccumulateSquare) 
 TESTCASE(AccumulateWeighted)
+TESTCASE(vxAddSub)
+TESTCASE(vxMultiply)
+TESTCASE(vxNot)
+TESTCASE(vxBinOp8u)  
+TESTCASE(vxBinOp16s)
+TESTCASE(Box3x3)
+TESTCASE(Dilate3x3)
+TESTCASE(Erode3x3)
+TESTCASE(Gaussian3x3)
+TESTCASE(Median3x3)
+TESTCASE(LUT)
+TESTCASE(Magnitude)
+TESTCASE(Phase)
+TESTCASE(WarpAffine)
+TESTCASE(WarpPerspective)*/
+//TESTCASE(vxConvertDepth)
+//TESTCASE(ChannelExtractCombine)
+TESTCASE(ChannelCombine)
+
 
 /*TESTCASE(Graph)
 TESTCASE(GraphCallback)
@@ -42,7 +73,6 @@ TESTCASE(vxCreateImageFromChannel)
 TESTCASE(vxCopyImagePatch)
 TESTCASE(vxMapImagePatch)
 
-TESTCASE(vxuConvertDepth)
 TESTCASE(vxConvertDepth)
 
 TESTCASE(ChannelCombine)
@@ -50,39 +80,14 @@ TESTCASE(ChannelExtract)
 
 TESTCASE(ColorConvert)
 
-TESTCASE(vxuAddSub)
-TESTCASE(vxAddSub)
-
-TESTCASE(vxuNot)
-TESTCASE(vxNot)
-
-TESTCASE(vxuBinOp8u)
-TESTCASE(vxBinOp8u)  
-
-TESTCASE(vxuBinOp16s)
-TESTCASE(vxBinOp16s)
-
-TESTCASE(vxuMultiply)
-TESTCASE(vxMultiply)
-
 TESTCASE(Histogram)
 TESTCASE(EqualizeHistogram)
 TESTCASE(MeanStdDev)
 TESTCASE(MinMaxLoc)
 TESTCASE(Threshold)
 
-TESTCASE(Box3x3)
-TESTCASE(Convolve)
-TESTCASE(Dilate3x3)
-TESTCASE(Erode3x3)
-TESTCASE(Gaussian3x3)
-TESTCASE(Median3x3)
 TESTCASE(Sobel3x3)
 TESTCASE(NonLinearFilter)
-
-TESTCASE(Accumulate)
-TESTCASE(AccumulateSquare) 
-TESTCASE(AccumulateWeighted)
 
 TESTCASE(Integral)
 TESTCASE(LUT)
@@ -104,8 +109,7 @@ TESTCASE(HalfScaleGaussian)*/
 /*TESTCASE(LaplacianPyramid)
 TESTCASE(LaplacianReconstruct)*/
 
-/*TESTCASE(vxuCanny)
-TESTCASE(vxCanny)
+/*TESTCASE(vxCanny)
 TESTCASE(OptFlowPyrLK)
 
 TESTCASE(UserNode)

@@ -1,0 +1,395 @@
+/* 
+ * Copyright (c) 2012-2016 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ */
+
+#include "test_tiovx_engine/test.h"
+
+#include <VX/vx.h>
+
+#include <math.h>
+#include <float.h>
+
+#ifndef M_PI
+#define M_PIF   3.14159265358979323846f
+#else
+#define M_PIF   (vx_float32)M_PI
+#endif
+
+
+TESTCASE(Remap, CT_VXContext, ct_setup_vx_context, 0)
+
+#define SRC_WIDTH       128
+#define SRC_HEIGHT      128
+
+#define VX_MAP_IDENT         0
+#define VX_MAP_SCALE         1
+#define VX_MAP_SCALE_ROTATE  2
+#define VX_MAP_RANDOM        3
+
+#define VX_NN_AREA_SIZE         1.5
+#define VX_BILINEAR_TOLERANCE   1
+
+static CT_Image remap_read_image_8u(const char* fileName, int width, int height)
+{
+    CT_Image image = NULL;
+
+    image = ct_read_image(fileName, 1);
+    ASSERT_(return 0, image);
+    ASSERT_(return 0, image->format == VX_DF_IMAGE_U8);
+
+    return image;
+}
+
+static CT_Image remap_generate_random(const char* fileName, int width, int height)
+{
+    CT_Image image;
+
+    ASSERT_NO_FAILURE_(return 0,
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+
+    return image;
+}
+
+#define RND_FLT(low, high)      (vx_float32)CT_RNG_NEXT_REAL(tiovx()->seed_, low, high);
+
+static vx_remap remap_generate_map(vx_context context, int src_width, int src_height, int dst_width, int dst_height, int type)
+{
+    vx_uint32 i;
+    vx_uint32 j;
+    vx_float32 x;
+    vx_float32 y;
+    vx_remap map = 0;
+    vx_status status;
+
+    map = vxCreateRemap(context, src_width, src_height, dst_width, dst_height);
+    if (vxGetStatus((vx_reference)map) == VX_SUCCESS)
+    {
+        vx_float32 mat[3][2];
+        vx_float32 angle, scale_x, scale_y, cos_a, sin_a;
+        if (VX_MAP_IDENT == type)
+        {
+            mat[0][0] = 1.f;
+            mat[0][1] = 0.f;
+
+            mat[1][0] = 0.f;
+            mat[1][1] = 1.f;
+
+            mat[2][0] = 0.f;
+            mat[2][1] = 0.f;
+        }
+        else if (VX_MAP_SCALE == type)
+        {
+            scale_x = src_width  / (vx_float32)dst_width;
+            scale_y = src_height / (vx_float32)dst_height;
+
+            mat[0][0] = scale_x;
+            mat[0][1] = 0.f;
+
+            mat[1][0] = 0.f;
+            mat[1][1] = scale_y;
+
+            mat[2][0] = 0.f;
+            mat[2][1] = 0.f;
+        }
+        else if (VX_MAP_SCALE_ROTATE == type)
+        {
+            angle = M_PIF / RND_FLT(3.f, 6.f);
+            scale_x = src_width  / (vx_float32)dst_width;
+            scale_y = src_height / (vx_float32)dst_height;
+            cos_a = cosf(angle);
+            sin_a = sinf(angle);
+
+            mat[0][0] = cos_a * scale_x;
+            mat[0][1] = sin_a * scale_y;
+
+            mat[1][0] = -sin_a * scale_x;
+            mat[1][1] = cos_a  * scale_y;
+
+            mat[2][0] = 0.f;
+            mat[2][1] = 0.f;
+        }
+        else// if (VX_MATRIX_RANDOM == type)
+        {
+            angle = M_PIF / RND_FLT(3.f, 6.f);
+            scale_x = src_width / (vx_float32)dst_width;
+            scale_y = src_height / (vx_float32)dst_height;
+            cos_a = cosf(angle);
+            sin_a = sinf(angle);
+
+            mat[0][0] = cos_a * RND_FLT(scale_x / 2.f, scale_x);
+            mat[0][1] = sin_a * RND_FLT(scale_y / 2.f, scale_y);
+
+            mat[1][0] = -sin_a * RND_FLT(scale_y / 2.f, scale_y);
+            mat[1][1] = cos_a  * RND_FLT(scale_x / 2.f, scale_x);
+
+            mat[2][0] = src_width  / 5.f * RND_FLT(-1.f, 1.f);
+            mat[2][1] = src_height / 5.f * RND_FLT(-1.f, 1.f);
+        }
+
+        for (i = 0; i < (vx_uint32)dst_height; i++)
+        {
+            for (j = 0; j < (vx_uint32)dst_width; j++)
+            {
+                x = j * mat[0][0] + i * mat[1][0] + mat[2][0];
+                y = j * mat[0][1] + i * mat[1][1] + mat[2][1];
+                status = vxSetRemapPoint(map, j, i, x, y);
+                if (VX_SUCCESS != status)
+                    return 0;
+            }
+        }
+    }
+
+    return map;
+}
+
+static int remap_check_pixel(CT_Image input, CT_Image output, int x, int y, vx_enum interp_type, vx_border_t border, vx_remap map, vx_bool do_report)
+{
+    vx_float32 _x0;
+    vx_float32 _y0;
+    vx_float64 x0, y0, xlower, ylower, s, t;
+    vx_int32 xi, yi;
+    int candidate;
+    vx_uint8 res = *CT_IMAGE_DATA_PTR_8U(output, x, y);
+
+    VX_CALL_RET(vxGetRemapPoint(map, x, y, &_x0, &_y0));
+
+    x0 = (vx_float64)_x0;
+    y0 = (vx_float64)_y0;
+
+    if (VX_INTERPOLATION_NEAREST_NEIGHBOR == interp_type)
+    {
+        for (yi = (vx_int32)ceil(y0 - VX_NN_AREA_SIZE); (vx_float64)yi <= y0 + VX_NN_AREA_SIZE; yi++)
+        {
+            for (xi = (vx_int32)ceil(x0 - VX_NN_AREA_SIZE); (vx_float64)xi <= x0 + VX_NN_AREA_SIZE; xi++)
+            {
+                if (0 <= xi && 0 <= yi && xi < (vx_int32)input->width && yi < (vx_int32)input->height)
+                {
+                    candidate = *CT_IMAGE_DATA_PTR_8U(input, xi, yi);
+                }
+                else if (VX_BORDER_CONSTANT == border.mode)
+                {
+                    candidate = border.constant_value.U8;
+                }
+                else if (VX_BORDER_REPLICATE == border.mode)
+                {
+                    candidate = CT_IMAGE_DATA_REPLICATE_8U(input, xi, yi);
+                }
+                else
+                {
+                    candidate = -1;
+                }
+                if (candidate == -1 || candidate == res)
+                    return 0;
+            }
+        }
+        if (do_report)
+            CT_FAIL_(return 1, "Check failed for pixel (%d, %d): %d", x, y, (int)res);
+        else
+            return 1;
+    }
+    else if (VX_INTERPOLATION_BILINEAR == interp_type)
+    {
+        xlower = floor(x0);
+        ylower = floor(y0);
+
+        s = x0 - xlower;
+        t = y0 - ylower;
+
+        xi = (vx_int32)xlower;
+        yi = (vx_int32)ylower;
+
+        candidate = -1;
+        if (VX_BORDER_UNDEFINED == border.mode)
+        {
+            if (xi >= 0 && yi >= 0 && xi < (vx_int32)input->width - 1 && yi < (vx_int32)input->height - 1)
+            {
+                candidate = (int)((1. - s) * (1. - t) * (vx_float64) *CT_IMAGE_DATA_PTR_8U(input, xi    , yi    ) +
+                                        s  * (1. - t) * (vx_float64) *CT_IMAGE_DATA_PTR_8U(input, xi + 1, yi    ) +
+                                  (1. - s) *       t  * (vx_float64) *CT_IMAGE_DATA_PTR_8U(input, xi    , yi + 1) +
+                                        s  *       t  * (vx_float64) *CT_IMAGE_DATA_PTR_8U(input, xi + 1, yi + 1));
+            }
+        }
+        else if (VX_BORDER_CONSTANT == border.mode)
+        {
+            candidate = (int)((1. - s) * (1. - t) * (vx_float64)CT_IMAGE_DATA_CONSTANT_8U(input, xi    , yi    , border.constant_value.U8) +
+                                    s  * (1. - t) * (vx_float64)CT_IMAGE_DATA_CONSTANT_8U(input, xi + 1, yi    , border.constant_value.U8) +
+                              (1. - s) *       t  * (vx_float64)CT_IMAGE_DATA_CONSTANT_8U(input, xi    , yi + 1, border.constant_value.U8) +
+                                    s  *       t  * (vx_float64)CT_IMAGE_DATA_CONSTANT_8U(input, xi + 1, yi + 1, border.constant_value.U8));
+        }
+        else if (VX_BORDER_REPLICATE == border.mode)
+        {
+            candidate = (int)((1. - s) * (1. - t) * (vx_float64)CT_IMAGE_DATA_REPLICATE_8U(input, xi    , yi    ) +
+                                    s  * (1. - t) * (vx_float64)CT_IMAGE_DATA_REPLICATE_8U(input, xi + 1, yi    ) +
+                              (1. - s) *       t  * (vx_float64)CT_IMAGE_DATA_REPLICATE_8U(input, xi    , yi + 1) +
+                                    s  *       t  * (vx_float64)CT_IMAGE_DATA_REPLICATE_8U(input, xi + 1, yi + 1));
+        }
+        if (candidate == -1 || (abs(candidate - res) <= VX_BILINEAR_TOLERANCE))
+            return 0;
+        return 1;
+    }
+    if (do_report)
+        CT_FAIL_(return 1, "Interpolation type undefined");
+    else
+        return 1;
+}
+
+static void remap_validate(CT_Image input, CT_Image output, vx_enum interp_type, vx_border_t border, vx_remap map)
+{
+    vx_uint32 err_count = 0;
+
+    CT_FILL_IMAGE_8U(, output,
+            {
+                ASSERT_NO_FAILURE(err_count += remap_check_pixel(input, output, x, y, interp_type, border, map, vx_true_e));
+            });
+    if (10 * err_count > output->width * output->height)
+        CT_FAIL_(return, "Check failed for %d pixels", err_count);
+}
+
+static vx_bool remap_is_equal(CT_Image input, CT_Image output, vx_enum interp_type, vx_border_t border, vx_remap map)
+{
+    CT_FILL_IMAGE_8U(, output,
+            {
+                if (0 != remap_check_pixel(input, output, x, y, interp_type, border, map, vx_false_e))
+                    return vx_false_e;
+            });
+    return vx_true_e;
+}
+
+static void remap_check(CT_Image input, CT_Image output, vx_enum interp_type, vx_border_t border, vx_remap map)
+{
+    ASSERT(input && output);
+    ASSERT( (interp_type == VX_INTERPOLATION_NEAREST_NEIGHBOR) ||
+            (interp_type == VX_INTERPOLATION_BILINEAR));
+
+    ASSERT( (border.mode == VX_BORDER_UNDEFINED) ||
+            (border.mode == VX_BORDER_CONSTANT) );
+
+    remap_validate(input, output, interp_type, border, map);
+    if (tiovx_HasFailure())
+    {
+        printf("=== INPUT ===\n");
+        ct_dump_image_info(input);
+        printf("=== OUTPUT ===\n");
+        ct_dump_image_info(output);
+    }
+}
+
+static void remap_check_param(CT_Image input, CT_Image output, vx_enum interp_type, vx_border_t border, vx_remap map)
+{
+    ASSERT(input && output);
+    ASSERT( (interp_type == VX_INTERPOLATION_NEAREST_NEIGHBOR) ||
+            (interp_type == VX_INTERPOLATION_BILINEAR));
+
+    ASSERT( (border.mode == VX_BORDER_UNDEFINED) ||
+            (border.mode == VX_BORDER_CONSTANT) ||
+            (border.mode == VX_BORDER_REPLICATE) );
+}
+
+typedef struct {
+    const char* testName;
+    CT_Image(*generator)(const char* fileName, int width, int height);
+    const char*      fileName;
+    int width, height;
+    vx_border_t border;
+    vx_enum border_policy;
+    vx_enum interp_type;
+    int map_type;
+} Arg;
+
+#define ADD_VX_BORDERS_REMAP_FULL(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_BORDER_CONSTANT=1", __VA_ARGS__, { VX_BORDER_CONSTANT, {{ 1 }} })), \
+    CT_EXPAND(nextmacro(testArgName "/VX_BORDER_CONSTANT=127", __VA_ARGS__, { VX_BORDER_CONSTANT, {{ 127 }} }))
+
+#define ADD_VX_BORDERS_REMAP_SMALL(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_BORDER_REPLICATE", __VA_ARGS__, { VX_BORDER_REPLICATE, {{ 0 }} }))
+
+#define ADD_VX_BORDERS_NO_POLICY(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "", __VA_ARGS__, (vx_enum)0))
+
+#define ADD_VX_INTERP_TYPE_REMAP(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_INTERPOLATION_NEAREST_NEIGHBOR", __VA_ARGS__, VX_INTERPOLATION_NEAREST_NEIGHBOR))
+
+#define ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_INTERPOLATION_NEAREST_NEIGHBOR", __VA_ARGS__, VX_INTERPOLATION_NEAREST_NEIGHBOR))
+
+#define ADD_VX_MAP_PARAM_REMAP_FULL(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_MAP_RANDOM", __VA_ARGS__,       VX_MAP_RANDOM))
+
+#define REMAP_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
+
+TEST_WITH_ARG(Remap, testGraphProcessing, Arg,
+    REMAP_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_image input_image = 0, output_image = 0;
+    vx_remap map = 0;
+
+    CT_Image input = NULL, output = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, SRC_WIDTH, SRC_HEIGHT));
+    ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output_image = ct_image_to_vx_image(output, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(map = remap_generate_map(context, input->width, input->height, arg_->width, arg_->height, arg_->map_type), VX_TYPE_REMAP);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = vxRemapNode(graph, input_image, map, arg_->interp_type, output_image), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    ASSERT_NO_FAILURE(output = ct_image_from_vx_image(output_image));
+    ASSERT_NO_FAILURE(remap_check(input, output, arg_->interp_type, arg_->border, map));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseRemap(&map));
+    VX_CALL(vxReleaseImage(&output_image));
+    VX_CALL(vxReleaseImage(&input_image));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+    ASSERT(map == 0);
+    ASSERT(output_image == 0);
+    ASSERT(input_image == 0);
+}
+
+TESTCASE_TESTS(Remap,
+        testGraphProcessing
+)

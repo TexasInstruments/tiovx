@@ -135,14 +135,10 @@ static vx_status VX_CALLBACK tivxAddKernelBitwiseValidate(vx_node node,
     for (i = 0U; i < TIVX_KERNEL_BITWISE_MAX_PARAMS; i ++)
     {
         img[i] = (vx_image)parameters[i];
-
-        /* Check for NULL */
-        if (NULL == img[i])
-        {
-            status = VX_ERROR_NO_MEMORY;
-            break;
-        }
     }
+
+    status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_BITWISE_MAX_PARAMS);
+
     if (VX_SUCCESS == status)
     {
         /* Get the image width/heigh and format */
@@ -169,9 +165,7 @@ static vx_status VX_CALLBACK tivxAddKernelBitwiseValidate(vx_node node,
             VX_IMAGE_HEIGHT, &h[TIVX_KERNEL_BITWISE_IN1_IMG_IDX],
             sizeof(h[TIVX_KERNEL_BITWISE_IN1_IMG_IDX]));
     }
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual(
-            parameters[TIVX_KERNEL_BITWISE_OUT_IMG_IDX])))
+    if ((VX_SUCCESS == status) )
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[TIVX_KERNEL_BITWISE_OUT_IMG_IDX],
@@ -187,62 +181,31 @@ static vx_status VX_CALLBACK tivxAddKernelBitwiseValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        /* Check for validity of data format */
-        if ((VX_DF_IMAGE_U8 != fmt[TIVX_KERNEL_BITWISE_IN0_IMG_IDX]) ||
-            (VX_DF_IMAGE_U8 != fmt[TIVX_KERNEL_BITWISE_IN1_IMG_IDX]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);
+    }
 
-        /* Check for frame sizes */
-        if ((w[TIVX_KERNEL_BITWISE_IN0_IMG_IDX] !=
-                w[TIVX_KERNEL_BITWISE_IN1_IMG_IDX]) ||
-            (h[TIVX_KERNEL_BITWISE_IN0_IMG_IDX] !=
-                h[TIVX_KERNEL_BITWISE_IN1_IMG_IDX]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-        if (vx_false_e == tivxIsReferenceVirtual(
-            parameters[TIVX_KERNEL_BITWISE_OUT_IMG_IDX]))
-        {
-            if ((w[TIVX_KERNEL_BITWISE_IN0_IMG_IDX] !=
-                    w[TIVX_KERNEL_BITWISE_OUT_IMG_IDX]) ||
-                (h[TIVX_KERNEL_BITWISE_IN0_IMG_IDX] !=
-                    h[TIVX_KERNEL_BITWISE_OUT_IMG_IDX]))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
-        }
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidateOutputSize(w[0U], w[2U], h[0U], h[2U], img[2U]);
     }
 
     if (VX_SUCCESS == status)
     {
         out_fmt = VX_DF_IMAGE_U8;
-
-        /* If the output format is explicitely set to U8, Set it in
-           metadata also */
-        status = vxQueryImage(img[TIVX_KERNEL_BITWISE_OUT_IMG_IDX],
-            VX_IMAGE_FORMAT,
-            &fmt[TIVX_KERNEL_BITWISE_IN1_IMG_IDX],
-            sizeof(fmt[TIVX_KERNEL_BITWISE_IN1_IMG_IDX]));
-        if ((VX_SUCCESS == status) &&
-            (VX_DF_IMAGE_U8 == fmt[TIVX_KERNEL_BITWISE_IN1_IMG_IDX]))
-        {
-            out_fmt = VX_DF_IMAGE_U8;
-        }
-
         out_w = w[TIVX_KERNEL_BITWISE_IN0_IMG_IDX];
         out_h = h[TIVX_KERNEL_BITWISE_IN0_IMG_IDX];
 
-        for (i = 0U; i < TIVX_KERNEL_BITWISE_MAX_PARAMS; i ++)
-        {
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                sizeof(out_fmt));
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
-                sizeof(out_w));
-            vxSetMetaFormatAttribute(metas[1], VX_IMAGE_HEIGHT, &out_h,
-                sizeof(out_h));
-        }
+        tivxKernelSetMetas(metas, TIVX_KERNEL_BITWISE_MAX_PARAMS, out_fmt, out_w, out_h);
     }
 
     return status;

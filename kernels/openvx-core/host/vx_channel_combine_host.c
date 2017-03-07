@@ -176,6 +176,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
     {
         i = TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX;
 
+        vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
+            sizeof(out_fmt));
         vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
             sizeof(w[0U]));
         vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,

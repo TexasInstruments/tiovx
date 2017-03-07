@@ -85,8 +85,7 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
     /* Output is in S16 format unless it is explicitely set to U8 */
     fmt[1U] = VX_DF_IMAGE_S16;
 
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    if (VX_SUCCESS == status)
     {
         /* Get the image width/heigh and format */
         status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
@@ -94,14 +93,18 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
 
-        /* Check for frame sizes */
-        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
+        /* Check for format */
+        if ((VX_DF_IMAGE_U8 != fmt[1U]) && (VX_DF_IMAGE_S16 != fmt[1U]))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
+    }
 
-        /* Check for format */
-        if ((VX_DF_IMAGE_U8 != fmt[1U]) && (VX_DF_IMAGE_S16 != fmt[1U]))
+    if ((VX_SUCCESS == status) &&
+        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
+    {
+        /* Check for frame sizes */
+        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }

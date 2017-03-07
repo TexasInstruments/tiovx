@@ -89,15 +89,6 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        /* Output image cannot be virtual in this case */
-        if (vx_true_e == tivxIsReferenceVirtual((vx_reference)img[1U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
-
-    if (VX_SUCCESS == status)
-    {
         /* Get the image width/height and format */
         status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
             sizeof(fmt[1U]));

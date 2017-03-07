@@ -24,17 +24,9 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
     vx_scalar scalar;
     vx_df_image fmt[3U], out_fmt;
     vx_enum type;
-    vx_uint32 i, w[3U], h[3U];
+    vx_uint32 w[3U], h[3U];
 
-    for (i = 0U; i < TIVX_KERNEL_ADDSUB_MAX_PARAMS; i ++)
-    {
-        /* Check for NULL */
-        if (NULL == parameters[i])
-        {
-            status = VX_ERROR_NO_MEMORY;
-            break;
-        }
-    }
+    status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_ADDSUB_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -43,7 +35,7 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
         img[2U] = (vx_image)parameters[TIVX_KERNEL_ADDSUB_OUT_IMG_IDX];
         scalar = (vx_scalar)parameters[TIVX_KERNEL_ADDSUB_IN_SCALAR_IDX];
 
-        /* Get the image width/heigh and format */
+        /* Get the image width/height and format */
         status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
             sizeof(fmt[0U]));
 
@@ -54,19 +46,11 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &type, sizeof(type));
-
-        if (VX_SUCCESS == status)
-        {
-            if (type != VX_TYPE_ENUM)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
-        }
     }
 
     if (VX_SUCCESS == status)
     {
-        /* Get the image width/heigh and format */
+        /* Get the image width/height and format */
         status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
             sizeof(fmt[1U]));
 
@@ -76,63 +60,74 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        /* Check for frame sizes */
-        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-
-        if (((fmt[0U] != VX_DF_IMAGE_U8) && (VX_DF_IMAGE_S16 != fmt[0U])) ||
-            ((fmt[1U] != VX_DF_IMAGE_U8) && (VX_DF_IMAGE_S16 != fmt[1U])))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
-
-    out_fmt = VX_DF_IMAGE_S16;
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[2U])))
-    {
-        /* Get the image width/heigh and format */
+        /* Get the image width/height and format */
         status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
             sizeof(fmt[2U]));
         status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
         status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
+    }
 
-        /* Check for frame sizes */
-        if ((w[0U] != w[2U]) || (h[0U] != h[2U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidateScalarType(type, VX_TYPE_ENUM);
+    }
 
-        /* Output format is U8 only if both source images are
-           VX_DF_IMAGE_U8 and the output image is explicitly set
-           to VX_DF_IMAGE_U8 */
-        if ((fmt[2U] == VX_DF_IMAGE_U8) &&
-            (fmt[1U] != VX_DF_IMAGE_U8) && (fmt[0U] != VX_DF_IMAGE_U8))
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8) &
+                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_S16);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
+                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_S16);
+    }
+
+    out_fmt = VX_DF_IMAGE_S16;
+    if (VX_SUCCESS == status)
+    {
+        if (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[2U]))
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            /* Output format is U8 only if both source images are
+               VX_DF_IMAGE_U8 and the output image is explicitly set
+               to VX_DF_IMAGE_U8 */
+            if ((fmt[2U] == VX_DF_IMAGE_U8) &&
+                (fmt[1U] != VX_DF_IMAGE_U8) && (fmt[0U] != VX_DF_IMAGE_U8))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+            else
+            {
+                out_fmt = VX_DF_IMAGE_U8;
+            }
         }
         else
         {
-            out_fmt = VX_DF_IMAGE_U8;
+            /* Only in the case that the virtual image is set to VX_DF_IMAGE_U8
+               will the output be set to VX_DF_IMAGE_U8. Otherwise it will be 
+               set to VX_DF_IMAGE_S16 */
+            if ((fmt[0U] == VX_DF_IMAGE_U8) && (fmt[1U] == VX_DF_IMAGE_U8) &&
+                (fmt[2U] == VX_DF_IMAGE_U8))
+            {
+                out_fmt = VX_DF_IMAGE_U8;
+            }
         }
     }
 
     if (VX_SUCCESS == status)
     {
-        for (i = 0U; i < TIVX_KERNEL_ADDSUB_MAX_PARAMS; i ++)
-        {
-            if (NULL != metas[i])
-            {
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                    sizeof(out_fmt));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                    sizeof(w[0U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                    sizeof(h[0U]));
-            }
-        }
+        status = tivxKernelValidateOutputSize(w[0U], w[2U], h[0U], h[2U], img[2U]);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelSetMetas(metas, TIVX_KERNEL_ADDSUB_MAX_PARAMS, out_fmt, w[0U], h[0U]);
     }
 
     return status;

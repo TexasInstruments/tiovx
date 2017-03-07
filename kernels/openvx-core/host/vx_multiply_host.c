@@ -54,10 +54,8 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if ((VX_DF_IMAGE_U8 != fmt[0U]) && (VX_DF_IMAGE_S16 != fmt[0U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8) &
+                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_S16);
     }
 
     if (VX_SUCCESS == status)
@@ -68,21 +66,21 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+    }
 
-        if (VX_SUCCESS == status)
-        {
-            /* Check for validity of data format */
-            if ((VX_DF_IMAGE_U8 != fmt[1U]) && (VX_DF_IMAGE_S16 != fmt[1U]))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
+                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_S16);
+    }
 
-            /* Check for frame sizes */
-            if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
-        }
+    if (VX_SUCCESS == status)
+    {
+        /* Get the image width/height and format */
+        status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
+            sizeof(fmt[2U]));
+        status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
+        status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
     }
 
     if (VX_SUCCESS == status)
@@ -171,35 +169,14 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
         }
     }
 
-    out_fmt = VX_DF_IMAGE_S16;
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[2U])))
+    if (VX_SUCCESS == status)
     {
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
-            sizeof(fmt[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
+        status = tivxKernelValidateOutputSize(w[0U], w[2U], h[0U], h[2U], img[2U]);
+    }
 
-        /* Check for frame sizes */
-        if ((w[0U] != w[2U]) || (h[0U] != h[2U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-
-        /* Check for format */
-        if ((VX_DF_IMAGE_U8 != fmt[2U]) && (VX_DF_IMAGE_S16 != fmt[2U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-
-        if ((VX_DF_IMAGE_U8 == fmt[2U]) &&
-            ((VX_DF_IMAGE_S16 == fmt[0U]) ||
-             (VX_DF_IMAGE_S16 == fmt[1U])))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-
+    out_fmt = VX_DF_IMAGE_S16;
+    if (VX_SUCCESS == status)
+    {
         if ((VX_DF_IMAGE_U8 == fmt[0U]) &&
             (VX_DF_IMAGE_U8 == fmt[1U]) &&
             (VX_DF_IMAGE_U8 == fmt[2U]))
@@ -210,22 +187,30 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
         {
             out_fmt = VX_DF_IMAGE_S16;
         }
+
+        if ((VX_DF_IMAGE_U8 == fmt[2U]) &&
+            ((VX_DF_IMAGE_S16 == fmt[0U]) ||
+            (VX_DF_IMAGE_S16 == fmt[1U])))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
     }
 
     if (VX_SUCCESS == status)
     {
-        for (i = 0U; i < TIVX_KERNEL_MULT_MAX_PARAMS; i ++)
+        if (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[2U]))
         {
-            if (NULL != metas[i])
+            /* Check for format */
+            if ((VX_DF_IMAGE_U8 != fmt[2U]) && (VX_DF_IMAGE_S16 != fmt[2U]))
             {
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                    sizeof(out_fmt));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                    sizeof(w[0U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                    sizeof(h[0U]));
+                status = VX_ERROR_INVALID_PARAMETERS;
             }
         }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelSetMetas(metas, TIVX_KERNEL_MULT_MAX_PARAMS, out_fmt, w[0U], h[0U]);
     }
     return status;
 }
