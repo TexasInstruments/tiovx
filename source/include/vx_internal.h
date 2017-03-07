@@ -47,6 +47,7 @@
 #include <TI/tivx_mem.h>
 #include <TI/tivx_obj_desc.h>
 #include <TI/tivx_target_kernel.h>
+#include <TI/tivx_debug.h>
 #include <tivx_platform.h>
 #include <tivx_ipc.h>
 #include <tivx_mutex.h>
@@ -59,7 +60,6 @@
 #include <tivx_target_kernel_priv.h>
 #include <tivx_target_kernel_instance.h>
 
-#include <vx_debug.h>
 #include <vx_reference.h>
 #include <vx_context.h>
 #include <vx_error.h>

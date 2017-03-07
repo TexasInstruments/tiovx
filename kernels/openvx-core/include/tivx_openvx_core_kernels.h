@@ -11,6 +11,7 @@
 #ifndef VX_CORE_KERNEL_H_
 #define VX_CORE_KERNEL_H_
 
+#include <tivx_kernel_common.h>
 
 #ifdef __cplusplus
 extern "C" {
