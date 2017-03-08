@@ -26,6 +26,22 @@ static tivx_target_kernel vx_histogram_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelHistogramCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelHistogramDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelHistogramControl(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelHistogramProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
@@ -91,7 +107,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst->mem_ptr.target_ptr;
-        tivxBamUpdatePointers(prms->graph_handle, 1, 1, img_ptrs);
+        tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 

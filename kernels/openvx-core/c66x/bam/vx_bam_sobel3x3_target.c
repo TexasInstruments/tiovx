@@ -26,6 +26,22 @@ static tivx_target_kernel vx_sobel_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelSobelProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelSobelCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelSobelDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelSobelControl(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelSobelProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
@@ -119,7 +135,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             img_ptrs[0] = src_addr;
             img_ptrs[1] = (uint8_t*)dstx_addr;
             img_ptrs[2] = (uint8_t*)dsty_addr;
-            tivxBamUpdatePointers(prms->graph_handle, 1, 2, img_ptrs);
+            tivxBamUpdatePointers(prms->graph_handle, 1U, 2U, img_ptrs);
 
             status  = tivxBamProcessGraph(prms->graph_handle);
 
@@ -128,7 +144,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         {
             img_ptrs[0] = src_addr;
             img_ptrs[1] = (uint8_t*)dstx_addr;
-            tivxBamUpdatePointers(prms->graph_handle, 1, 1, img_ptrs);
+            tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
             status  = tivxBamProcessGraph(prms->graph_handle);
         }
@@ -136,7 +152,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         {
             img_ptrs[0] = src_addr;
             img_ptrs[1] = (uint8_t*)dsty_addr;
-            tivxBamUpdatePointers(prms->graph_handle, 1, 1, img_ptrs);
+            tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
             status  = tivxBamProcessGraph(prms->graph_handle);
         }

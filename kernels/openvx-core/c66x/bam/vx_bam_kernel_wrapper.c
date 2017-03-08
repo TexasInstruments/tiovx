@@ -19,9 +19,9 @@ extern CSL_EdmaccRegs dummyEDMAreg;
 extern uint32_t edmaBase[1];
 #endif
 
-#define SOURCE_NODE  0
-#define COMPUTE_NODE 1
-#define SINK_NODE    2
+#define SOURCE_NODE  0U
+#define COMPUTE_NODE 1U
+#define SINK_NODE    2U
 
 /**
  *  PRIVATE STRUCTS
@@ -56,6 +56,29 @@ typedef struct _tivx_bam_graph_handle
 /**
  *  PRIVATE FUNCTIONS
  */
+
+static inline void assignDMAautoIncrementParams(
+    EDMA_UTILS_autoIncrement_transferProperties * param,
+    uint16_t    roiWidth,
+    uint16_t    roiHeight,
+    uint16_t    blkWidth,
+    uint16_t    blkHeight,
+    uint16_t    extBlkIncrementX,
+    uint16_t    extBlkIncrementY,
+    uint16_t    intBlkIncrementX,
+    uint16_t    intBlkIncrementY,
+    uint32_t    roiOffset,
+    uint32_t    blockOffset,
+    uint8_t     *extMemPtr,
+    uint16_t    extMemPtrStride,
+    uint8_t     *interMemPtr,
+    uint16_t    interMemPtrStride,
+    uint8_t     dmaQueNo
+);
+
+static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDimParams);
+
+static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle);
  
 static inline void assignDMAautoIncrementParams(
     EDMA_UTILS_autoIncrement_transferProperties * param,
@@ -117,14 +140,14 @@ static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDim
     uint16_t out_block_height = blockDimParams->blockHeight;
 
     if(frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_NEIGHBORHOOD_OP) {
-        out_block_width -= ((frame_params->kernel_info.kernelExtraInfo.metaInfo >> 16) - 1);
-        out_block_height -= ((frame_params->kernel_info.kernelExtraInfo.metaInfo & 0xFFFF) - 1);
+        out_block_width -= (uint16_t)((frame_params->kernel_info.kernelExtraInfo.metaInfo >> 16) - 1);
+        out_block_height -= (uint16_t)((frame_params->kernel_info.kernelExtraInfo.metaInfo & 0xFFFFU) - 1U);
 
         /* Some kernels are optimized if input width == output width.  With this enabled, we want to
          * increase the stride of the output buffer to match the input buffer, and make this output
          * width equal to the stride for the kernel processing */
         if(frame_params->kernel_info.kernelExtraInfo.optimizationInfo == 1) {
-            optimize_x = (frame_params->kernel_info.kernelExtraInfo.metaInfo >> 16) - 1;
+            optimize_x = (uint16_t)((frame_params->kernel_info.kernelExtraInfo.metaInfo >> 16) - 1);
         }
     }
 
@@ -134,7 +157,7 @@ static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDim
 
     for(i=0; i<frame_params->kernel_info.numInputDataBlocks; i++)
     {
-        num_bytes = VXLIB_sizeof(frame_params->buf_params[i]->data_type);
+        num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[i]->data_type);
 
         compute_kernel_args[i].data_type = frame_params->buf_params[i]->data_type;
         compute_kernel_args[i].dim_x     = blockDimParams->blockWidth;
@@ -148,15 +171,15 @@ static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDim
             blockDimParams->blockHeight,/*blkHeight*/
             out_block_width*num_bytes,/* extBlkIncrementX */
             out_block_height,/* extBlkIncrementY */
-            0,/* intBlkIncrementX */
-            0,/* intBlkIncrementY */
-            0,/* roiOffset */
-            0,/* blkOffset */
+            0U,/* intBlkIncrementX */
+            0U,/* intBlkIncrementY */
+            0U,/* roiOffset */
+            0U,/* blkOffset */
             NULL,/* extMemPtr : This will come during process call */
             frame_params->buf_params[i]->stride_y,/* extMemPtrStride */
             NULL,/* DMA node will be populating this field */
             compute_kernel_args[i].stride_y,/* interMemPtrStride */
-            0 /* dmaQueNo */
+            0U /* dmaQueNo */
             );
     }
     j = i;
@@ -164,8 +187,8 @@ static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDim
     if((frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_FRAME_STATS_OP) ||
        (frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_MAP_TO_LIST_OP))
     {
-        uint16_t numBlksHorz = ((frame_params->buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1;
-        uint16_t numBlksVert = ((frame_params->buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1;
+        uint16_t numBlksHorz = (uint16_t)(((frame_params->buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
+        uint16_t numBlksVert = (uint16_t)(((frame_params->buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
 
         /* Configure dma_write_autoinc_args for SINK_NODE */
         dma_write_oneshot_args->numOutTransfers        = frame_params->kernel_info.numOutputDataBlocks;
@@ -175,7 +198,7 @@ static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDim
 
         for(i=0; i<frame_params->kernel_info.numOutputDataBlocks; i++)
         {
-            num_bytes = VXLIB_sizeof(frame_params->buf_params[j]->data_type);
+            num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[j]->data_type);
 
             compute_kernel_args[j].data_type = frame_params->buf_params[j]->data_type;
             compute_kernel_args[j].dim_x     = frame_params->buf_params[j]->dim_x;
@@ -200,12 +223,12 @@ static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDim
 
         for(i=0; i<frame_params->kernel_info.numOutputDataBlocks; i++)
         {
-            num_bytes = VXLIB_sizeof(frame_params->buf_params[j]->data_type);
+            num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[j]->data_type);
 
             compute_kernel_args[j].data_type = frame_params->buf_params[j]->data_type;
             compute_kernel_args[j].dim_x     = out_block_width + optimize_x;
             compute_kernel_args[j].dim_y     = out_block_height;
-            compute_kernel_args[j].stride_y  = (out_block_width + optimize_x)*num_bytes;
+            compute_kernel_args[j].stride_y  = (int32_t)(((uint32_t)(out_block_width + optimize_x))*num_bytes);
 
             assignDMAautoIncrementParams(&dma_write_autoinc_args->transferProp[i],
                 frame_params->buf_params[j]->dim_x*num_bytes,/* roiWidth */
@@ -277,7 +300,7 @@ vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
 
     vx_status status_v = VX_SUCCESS;
     int32_t status = BAM_S_SUCCESS;
-    int32_t i, j;
+    uint32_t i, j;
 
     tivx_bam_graph_handle_t *p_handle = (tivx_bam_graph_handle_t *)graph_handle;
 
@@ -419,7 +442,7 @@ vx_status tivxBamCreateHandle(BAM_TI_KernelID kernel_id,
             int32_t offset = frame_params->kernel_info.numInputDataBlocks + frame_params->kernel_info.numOutputDataBlocks;
             int32_t paramsSize = frame_params->kernel_info.kernelArgSize - (offset*sizeof(VXLIB_bufParams2D_t));
 
-            memcpy(&startPtr[offset], compute_kernel_params, paramsSize);
+            memcpy(&startPtr[offset], compute_kernel_params, (size_t)paramsSize);
         }
 
         /* Finish initializing node_list */

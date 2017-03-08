@@ -22,6 +22,13 @@ extern "C" {
  */
 
 static inline vx_uint32 ownComputePatchOffset(
+    vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr);
+
+static inline void* ownFormatImagePatchAddress2d(
+    void *ptr, vx_uint32 x, vx_uint32 y,
+    const vx_imagepatch_addressing_t *addr);
+
+static inline vx_uint32 ownComputePatchOffset(
     vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
 {
     return (addr->stride_y * (y / addr->step_y)) +

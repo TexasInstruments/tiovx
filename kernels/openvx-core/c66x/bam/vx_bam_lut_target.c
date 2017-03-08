@@ -25,6 +25,22 @@ static tivx_target_kernel vx_lut_target_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxKernelLutProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLutCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLutDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLutControl(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelLutProcess(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
@@ -100,7 +116,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
-        tivxBamUpdatePointers(prms->graph_handle, 1, 1, img_ptrs);
+        tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 

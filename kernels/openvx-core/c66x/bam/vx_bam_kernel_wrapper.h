@@ -107,7 +107,7 @@ vx_status tivxBamCreateHandle(BAM_TI_KernelID kernel_id,
 vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
                                 uint32_t num_inputs,
                                 uint32_t num_outputs,
-                                void     *addr_ptrs[]);
+                                void  *ptrs[]);
 
 /*!
  * \brief BAM Process Graph
