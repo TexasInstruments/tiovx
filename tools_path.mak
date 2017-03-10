@@ -53,7 +53,7 @@ GCC_LINUX_ROOT := /usr/
 endif
 
 BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
-VXLIB_PATH := $(VSDK_INSTALL_PATH)/ti_components/algorithms_codecs/vxlib_c66x_1_0_0_0
+VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_src_1_0_0_0 
 XDIAS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/xdais_7_24_00_04
 EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
 
