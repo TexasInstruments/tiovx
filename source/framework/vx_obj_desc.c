@@ -106,7 +106,7 @@ vx_status tivxObjDescFree(tivx_obj_desc_t **obj_desc)
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
-    if(obj_desc && *obj_desc)
+    if((NULL != obj_desc) && (NULL != *obj_desc))
     {
         if((*obj_desc)->obj_desc_id < g_obj_desc_table.num_entries)
         {
@@ -138,7 +138,7 @@ vx_bool tivxObjDescIsValidType(tivx_obj_desc_t *obj_desc, tivx_obj_desc_type_e t
 {
     vx_bool is_valid = vx_false_e;
 
-    if(    obj_desc
+    if(    (NULL != obj_desc)
         && (obj_desc->type == type)
         && (obj_desc->obj_desc_id < g_obj_desc_table.num_entries))
     {

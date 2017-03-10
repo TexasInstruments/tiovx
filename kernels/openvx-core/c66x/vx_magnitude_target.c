@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_magnitude.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -139,7 +140,7 @@ vx_status VX_CALLBACK tivxMagnitudeControl(tivx_target_kernel_instance kernel, t
 }
 
 
-void tivxAddTargetKernelMagnitude()
+void tivxAddTargetKernelMagnitude(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -170,7 +171,7 @@ void tivxAddTargetKernelMagnitude()
     }
 }
 
-void tivxRemoveTargetKernelMagnitude()
+void tivxRemoveTargetKernelMagnitude(void)
 {
     vx_status status = VX_SUCCESS;
 

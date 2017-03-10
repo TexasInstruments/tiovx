@@ -41,16 +41,16 @@ static vx_status ownDestructThreshold(vx_reference ref);
 static vx_status ownAllocThresholdBuffer(vx_reference ref);
 
 
-VX_API_ENTRY vx_status VX_API_CALL vxReleaseThreshold(vx_threshold *thr)
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseThreshold(vx_threshold *thresh)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)thr, VX_TYPE_THRESHOLD, VX_EXTERNAL, NULL));
+        (vx_reference*)thresh, VX_TYPE_THRESHOLD, VX_EXTERNAL, NULL));
 }
 
 vx_threshold VX_API_CALL vxCreateThreshold(
     vx_context context, vx_enum thr_type, vx_enum data_type)
 {
-    vx_threshold thr = NULL;
+    vx_threshold thresh = NULL;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
     if(ownIsValidContext(context) == vx_true_e)
@@ -60,58 +60,58 @@ vx_threshold VX_API_CALL vxCreateThreshold(
             ((VX_TYPE_INT64 != data_type) &&
              (VX_TYPE_UINT64 != data_type)))
         {
-            thr = (vx_threshold)ownCreateReference(context, VX_TYPE_THRESHOLD,
+            thresh = (vx_threshold)ownCreateReference(context, VX_TYPE_THRESHOLD,
                 VX_EXTERNAL, &context->base);
 
-            if ((vxGetStatus((vx_reference)thr) == VX_SUCCESS) &&
-                (thr->base.type == VX_TYPE_THRESHOLD))
+            if ((vxGetStatus((vx_reference)thresh) == VX_SUCCESS) &&
+                (thresh->base.type == VX_TYPE_THRESHOLD))
             {
                 /* assign refernce type specific callback's */
-                thr->base.destructor_callback = &ownDestructThreshold;
-                thr->base.mem_alloc_callback = &ownAllocThresholdBuffer;
-                thr->base.release_callback =
+                thresh->base.destructor_callback = &ownDestructThreshold;
+                thresh->base.mem_alloc_callback = &ownAllocThresholdBuffer;
+                thresh->base.release_callback =
                     (tivx_reference_release_callback_f)&vxReleaseThreshold;
 
                 obj_desc = (tivx_obj_desc_threshold_t*)tivxObjDescAlloc(
                     TIVX_OBJ_DESC_THRESHOLD);
                 if(obj_desc==NULL)
                 {
-                    vxReleaseThreshold(&thr);
+                    vxReleaseThreshold(&thresh);
 
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
-                        "Could not allocate thr object descriptor\n");
-                    thr = (vx_threshold)ownGetErrorObject(
+                        "Could not allocate thresh object descriptor\n");
+                    thresh = (vx_threshold)ownGetErrorObject(
                         context, VX_ERROR_NO_RESOURCES);
                 }
                 else
                 {
                     obj_desc->type = thr_type;
                     obj_desc->data_type = data_type;
-                    thr->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
+                    thresh->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
         }
     }
 
-    return (thr);
+    return (thresh);
 }
 
 vx_status VX_API_CALL vxQueryThreshold(
-    vx_threshold thr, vx_enum attribute, void *ptr, vx_size size)
+    vx_threshold thresh, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e)
+    if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == vx_false_e)
         ||
-        (thr->base.obj_desc == NULL)
+        (thresh->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        obj_desc = (tivx_obj_desc_threshold_t *)thr->base.obj_desc;
+        obj_desc = (tivx_obj_desc_threshold_t *)thresh->base.obj_desc;
         switch (attribute)
         {
             case VX_THRESHOLD_TYPE:
@@ -125,7 +125,7 @@ vx_status VX_API_CALL vxQueryThreshold(
                 }
                 break;
             case VX_THRESHOLD_THRESHOLD_VALUE:
-                /* Value is used only for Binary thr */
+                /* Value is used only for Binary thresh */
                 if (VX_CHECK_PARAM(ptr, size, vx_int32, 0x3U) &&
                     (obj_desc->type == VX_THRESHOLD_TYPE_BINARY))
                 {
@@ -197,21 +197,21 @@ vx_status VX_API_CALL vxQueryThreshold(
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxSetThresholdAttribute(
-    vx_threshold thr, vx_enum attribute, const void *ptr, vx_size size)
+    vx_threshold thresh, vx_enum attribute, const void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_threshold_t *obj_desc = NULL;
 
-    if ((ownIsValidSpecificReference(&thr->base, VX_TYPE_THRESHOLD) == vx_false_e)
+    if ((ownIsValidSpecificReference(&thresh->base, VX_TYPE_THRESHOLD) == vx_false_e)
         ||
-        (thr->base.obj_desc == NULL)
+        (thresh->base.obj_desc == NULL)
         )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        obj_desc = (tivx_obj_desc_threshold_t *)thr->base.obj_desc;
+        obj_desc = (tivx_obj_desc_threshold_t *)thresh->base.obj_desc;
         switch (attribute)
         {
             case VX_THRESHOLD_THRESHOLD_VALUE:

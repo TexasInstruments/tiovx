@@ -6,6 +6,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_non_linear_filter.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -250,7 +251,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterControl(
     return status;
 }
 
-void tivxAddTargetKernelNonLinearFilter()
+void tivxAddTargetKernelNonLinearFilter(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -287,7 +288,7 @@ void tivxAddTargetKernelNonLinearFilter()
     }
 }
 
-void tivxRemoveTargetKernelNonLinearFilter()
+void tivxRemoveTargetKernelNonLinearFilter(void)
 {
     vx_status status = VX_SUCCESS;
 

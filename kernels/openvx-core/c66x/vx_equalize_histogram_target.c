@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_equalize_histogram.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -208,7 +209,7 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelEqualizeHistogram()
+void tivxAddTargetKernelEqualizeHistogram(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -240,7 +241,7 @@ void tivxAddTargetKernelEqualizeHistogram()
 }
 
 
-void tivxRemoveTargetKernelEqualizeHistogram()
+void tivxRemoveTargetKernelEqualizeHistogram(void)
 {
     tivxRemoveTargetKernel(vx_equalize_histogram_target_kernel);
 }

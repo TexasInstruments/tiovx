@@ -167,7 +167,7 @@ vx_status VX_CALLBACK tivxAbsDiffControl(tivx_target_kernel_instance kernel, tiv
 }
 
 
-void tivxAddTargetKernelAbsDiff()
+void tivxAddTargetKernelAbsDiff(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -198,7 +198,7 @@ void tivxAddTargetKernelAbsDiff()
     }
 }
 
-void tivxRemoveTargetKernelAbsDiff()
+void tivxRemoveTargetKernelAbsDiff(void)
 {
     vx_status status = VX_SUCCESS;
 

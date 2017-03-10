@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_filter_3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -201,7 +202,7 @@ vx_status VX_CALLBACK tivxFilter3x3Control(
     return status;
 }
 
-void tivxAddTargetKernelErode3x3()
+void tivxAddTargetKernelErode3x3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -241,7 +242,7 @@ void tivxAddTargetKernelErode3x3()
     }
 }
 
-void tivxRemoveTargetKernelErode3x3()
+void tivxRemoveTargetKernelErode3x3(void)
 {
     vx_status status = VX_SUCCESS;
     vx_uint32 i;

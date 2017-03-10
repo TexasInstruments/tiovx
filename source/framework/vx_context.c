@@ -321,7 +321,9 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if((kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
+            if((NULL != kernel) &&
+                (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL) ==
+                    vx_true_e)
                 &&
                 ( (strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0)
                     ||
@@ -529,21 +531,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
                 vx_reference ref = context->reftable[r];
 
                 /* Warnings should only come when users have not released all external references */
-                if (ref && (ref->external_count > 0) ) {
+                if ((NULL != ref) && (ref->external_count > 0) ) {
                     VX_PRINT(VX_ZONE_WARNING,"Stale reference "VX_FMT_REF" of type %08x at external count %u, internal count %u\n",
                              ref, ref->type, ref->external_count, ref->internal_count);
                 }
 
                 /* These were internally opened during creation, so should internally close ERRORs */
-                if(ref && (ref->type == VX_TYPE_ERROR) ) {
+                if((NULL != ref) && (ref->type == VX_TYPE_ERROR) ) {
                     ownReleaseReferenceInt(&ref, ref->type, VX_INTERNAL, NULL);
                 }
 
                 /* Warning above so user can fix release external objects, but close here anyway */
-                while (ref && (ref->external_count > 1) ) {
+                while ((NULL != ref)&& (ref->external_count > 1) ) {
                     ownDecrementReference(ref, VX_EXTERNAL);
                 }
-                if (ref && (ref->external_count > 0) ) {
+                if ((NULL != ref) && (ref->external_count > 0) ) {
                     ownReleaseReferenceInt(&ref, ref->type, VX_EXTERNAL, NULL);
                 }
             }
@@ -632,7 +634,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                 }
                 break;
             case VX_CONTEXT_IMPLEMENTATION:
-                if ( (size <= VX_MAX_IMPLEMENTATION_NAME) && ptr)
+                if ((size <= VX_MAX_IMPLEMENTATION_NAME) && (NULL != ptr))
                 {
                     strncpy(ptr, g_context_implmentation_name, VX_MAX_IMPLEMENTATION_NAME);
                 }
@@ -865,7 +867,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
 VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx_enum * pKernelEnumId)
 {
     vx_status status = VX_ERROR_INVALID_REFERENCE;
-    if ((ownIsValidContext(context) == vx_true_e) && pKernelEnumId)
+    if ((ownIsValidContext(context) == vx_true_e) && (NULL != pKernelEnumId))
     {
         ownContextLock(context);
 
@@ -884,7 +886,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelId(vx_context context, vx
 VX_API_ENTRY vx_status VX_API_CALL vxAllocateUserKernelLibraryId(vx_context context, vx_enum * pLibraryId)
 {
     vx_status status = VX_ERROR_INVALID_REFERENCE;
-    if ((ownIsValidContext(context) == vx_true_e) && pLibraryId)
+    if ((ownIsValidContext(context) == vx_true_e) && (NULL != pLibraryId))
     {
         ownContextLock(context);
 
@@ -957,7 +959,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByName(vx_context context, const v
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if( (kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
+            if( (NULL != kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
                 &&
                 ( strncmp(kernel->name, string, VX_MAX_KERNEL_NAME) == 0 )
                 )
@@ -995,7 +997,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxGetKernelByEnum(vx_context context, vx_enum
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-            if((kernel) && (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
+            if((NULL != kernel) &&
+               (ownIsValidSpecificReference( &kernel->base, VX_TYPE_KERNEL))
                 &&
                 ( kernel->enumeration == kernelenum )
                 )

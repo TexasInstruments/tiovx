@@ -250,7 +250,8 @@ vx_status ownReleaseReferenceInt(vx_reference *pref,
 {
     vx_status status = VX_SUCCESS;
     vx_reference ref = (pref ? *pref : NULL);
-    if (ref && (ownIsValidSpecificReference(ref, type) == vx_true_e))
+    if ((NULL != ref) &&
+        (ownIsValidSpecificReference(ref, type) == vx_true_e))
     {
         if (ownDecrementReference(ref, reftype) == 0)
         {
@@ -450,10 +451,10 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
     if(ref)
     {
         ref->scope = scope;
-        if(ref->obj_desc)
+        if(NULL != ref->obj_desc)
         {
             ref->obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
-            if((scope) && (scope->obj_desc))
+            if((NULL != scope) && (NULL != scope->obj_desc))
             {
                 ref->obj_desc->scope_obj_desc_id = scope->obj_desc->obj_desc_id;
             }

@@ -6,6 +6,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_optical_flow_pyr_lk.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -529,7 +530,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkControl(
     return status;
 }
 
-void tivxAddTargetKernelOpticalFlowPyrLk()
+void tivxAddTargetKernelOpticalFlowPyrLk(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -566,7 +567,7 @@ void tivxAddTargetKernelOpticalFlowPyrLk()
     }
 }
 
-void tivxRemoveTargetKernelOpticalFlowPyrLk()
+void tivxRemoveTargetKernelOpticalFlowPyrLk(void)
 {
     vx_status status = VX_SUCCESS;
 

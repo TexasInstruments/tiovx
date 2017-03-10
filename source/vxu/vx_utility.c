@@ -1219,13 +1219,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxuHarrisCorners(vx_context context, vx_image
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxuFastCorners(vx_context context, vx_image input, vx_scalar sens, vx_bool nonmax, vx_array corners, vx_scalar num_corners)
+VX_API_ENTRY vx_status VX_API_CALL vxuFastCorners(vx_context context, vx_image input, vx_scalar strength_thresh, vx_bool nonmax_suppression, vx_array corners, vx_scalar num_corners)
 {
     vx_status status = VX_FAILURE;
     vx_graph graph = vxCreateGraph(context);
     if (vxGetStatus((vx_reference)graph) == VX_SUCCESS)
     {
-        vx_node node = vxFastCornersNode(graph, input, sens, nonmax, corners, num_corners);
+        vx_node node = vxFastCornersNode(graph, input, strength_thresh, nonmax_suppression, corners, num_corners);
         if (vxGetStatus((vx_reference)node)==VX_SUCCESS)
         {
             status = setNodeTarget(node);

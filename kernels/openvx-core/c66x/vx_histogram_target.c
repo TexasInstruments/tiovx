@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_histogram.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -201,7 +202,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelHistogram()
+void tivxAddTargetKernelHistogram(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -233,7 +234,7 @@ void tivxAddTargetKernelHistogram()
 }
 
 
-void tivxRemoveTargetKernelHistogram()
+void tivxRemoveTargetKernelHistogram(void)
 {
     tivxRemoveTargetKernel(vx_histogram_target_kernel);
 }

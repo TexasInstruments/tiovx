@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_addsub.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -343,7 +344,7 @@ static vx_status VX_CALLBACK tivxKernelSubProcess(
     return (status);
 }
 
-void tivxAddTargetKernelSub()
+void tivxAddTargetKernelSub(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
 
@@ -376,7 +377,7 @@ void tivxAddTargetKernelSub()
 }
 
 
-void tivxRemoveTargetKernelSub()
+void tivxRemoveTargetKernelSub(void)
 {
     tivxRemoveTargetKernel(vx_sub_target_kernel);
 }

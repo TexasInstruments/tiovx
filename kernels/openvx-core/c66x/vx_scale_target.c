@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_scale.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -157,7 +158,7 @@ static vx_status VX_CALLBACK tivxKernelScaleControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelScale()
+void tivxAddTargetKernelScale(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -189,7 +190,7 @@ void tivxAddTargetKernelScale()
 }
 
 
-void tivxRemoveTargetKernelScale()
+void tivxRemoveTargetKernelScale(void)
 {
     tivxRemoveTargetKernel(vx_scale_target_kernel);
 }

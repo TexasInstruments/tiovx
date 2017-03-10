@@ -48,7 +48,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
 
     if (NULL != mutex)
     {
-        handle = BspOsal_semCreate(1, FALSE);
+        handle = BspOsal_semCreate(1U, FALSE);
 
         if (NULL == handle)
         {

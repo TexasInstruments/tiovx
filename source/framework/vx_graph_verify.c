@@ -44,7 +44,7 @@ static vx_status ownGraphValidRectCallback(
 
         if( (node->kernel->signature.directions[i] == VX_INPUT)
             &&
-            ref
+            (NULL != ref)
             &&
             (ref->type == VX_TYPE_IMAGE)
             )
@@ -66,11 +66,11 @@ static vx_status ownGraphValidRectCallback(
 
             if( (node->kernel->signature.directions[i] == VX_OUTPUT)
                 &&
-                ref
+                (NULL != ref)
                 &&
-                mf
+                (NULL != mf)
                 &&
-                (mf->valid_rect_callback)
+                (NULL != mf->valid_rect_callback)
                 )
             {
                 if(ref->type == VX_TYPE_IMAGE)
@@ -291,7 +291,7 @@ static vx_status ownGraphNodeKernelDeinit(vx_graph graph)
         node = graph->nodes[i];
 
         status = ownNodeKernelDeinit(node);
-        if(status != VX_SUCCESS )
+        if(status != VX_SUCCESS)
         {
             break;
         }
@@ -304,7 +304,7 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
 {
     vx_bool is_match = vx_false_e;
 
-    if(ref1 && ref2)
+    if((NULL != ref1) && (NULL != ref2))
     {
         if(ref1 == ref2)
         {

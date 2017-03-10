@@ -6,6 +6,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_halfscale_gaussian.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -86,7 +87,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
                                                       dst_addr, &vxlib_dst,
                                                       2, 2, 0, 0, 0, 0);
         }
-        else if (gsize_value == 3 || gsize_value == 5)
+        else if ((gsize_value == 3) || (gsize_value == 5))
         {
 
             VXLIB_bufParams2D_t gauss_params;
@@ -263,7 +264,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianControl(
     return status;
 }
 
-void tivxAddTargetKernelHalfscaleGaussian()
+void tivxAddTargetKernelHalfscaleGaussian(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -300,7 +301,7 @@ void tivxAddTargetKernelHalfscaleGaussian()
     }
 }
 
-void tivxRemoveTargetKernelHalfscaleGaussian()
+void tivxRemoveTargetKernelHalfscaleGaussian(void)
 {
     vx_status status = VX_SUCCESS;
 

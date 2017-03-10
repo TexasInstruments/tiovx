@@ -64,7 +64,7 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
 
 static void tivxTargetFreeHandle(tivx_target *target_handle)
 {
-    if(target_handle && (*target_handle!=NULL))
+    if((NULL != target_handle) && (*target_handle!=NULL))
     {
         /* mark target handle as free */
         (*target_handle)->target_id = TIVX_TARGET_ID_INVALID;

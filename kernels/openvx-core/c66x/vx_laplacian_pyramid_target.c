@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_laplacian_pyramid.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -392,7 +393,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelLaplacianPyramid()
+void tivxAddTargetKernelLaplacianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -424,7 +425,7 @@ void tivxAddTargetKernelLaplacianPyramid()
 }
 
 
-void tivxRemoveTargetKernelLaplacianPyramid()
+void tivxRemoveTargetKernelLaplacianPyramid(void)
 {
     tivxRemoveTargetKernel(vx_laplacian_pyramid_target_kernel);
 }

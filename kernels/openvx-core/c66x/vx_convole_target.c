@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_convolve.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -149,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelConvolve()
+void tivxAddTargetKernelConvolve(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -181,7 +182,7 @@ void tivxAddTargetKernelConvolve()
 }
 
 
-void tivxRemoveTargetKernelConvolve()
+void tivxRemoveTargetKernelConvolve(void)
 {
     if (NULL != vx_convolve_target_kernel)
     {
