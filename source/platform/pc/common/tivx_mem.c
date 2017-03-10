@@ -50,7 +50,7 @@ vx_status tivxMemBufferAlloc(
 
     mem_ptr->mem_type = mem_type;
 
-    mem_ptr->host_ptr = tivxMemAlloc(size);
+    mem_ptr->host_ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
 
     mem_ptr->shared_ptr = mem_ptr->host_ptr;
     mem_ptr->target_ptr = mem_ptr->host_ptr;
@@ -63,7 +63,7 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
-void *tivxMemAlloc(vx_uint32 size)
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
 {
     void *ptr = NULL;
 
@@ -72,7 +72,7 @@ void *tivxMemAlloc(vx_uint32 size)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size)
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
 {
     if(ptr)
     {
@@ -86,7 +86,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 
     if(mem_ptr->host_ptr)
     {
-        tivxMemFree(mem_ptr->host_ptr, size);
+        tivxMemFree(mem_ptr->host_ptr, size, TIVX_MEM_EXTERNAL);
     }
 
     return (status);

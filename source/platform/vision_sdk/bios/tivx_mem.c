@@ -99,22 +99,65 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
-void *tivxMemAlloc(vx_uint32 size)
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
 {
+    vx_status status = VX_SUCCESS;
+    Utils_HeapId heap_id;
     void *ptr = NULL;
 
-    ptr = Utils_memAlloc(
-        UTILS_HEAPID_DDR_CACHED_SR, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
+    switch (mem_type)
+    {
+        case TIVX_MEM_EXTERNAL:
+            heap_id = UTILS_HEAPID_DDR_CACHED_SR;
+            break;
+        case TIVX_MEM_INTERNAL_L3:
+            /* Since there is no L3 memory, so using OCMC memory */
+            heap_id = UTILS_HEAPID_OCMC_SR;
+            break;
+        case TIVX_MEM_INTERNAL_L2:
+            heap_id = UTILS_HEAPID_L2_LOCAL;
+            break;
+        default:
+            status = VX_FAILURE;
+            break;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        ptr = Utils_memAlloc(heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
+    }
 
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size)
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
 {
+    vx_status status = VX_SUCCESS;
+    Utils_HeapId heap_id;
+
     if ((NULL != ptr) && (0U != size))
     {
-        Utils_memFree(
-            UTILS_HEAPID_DDR_CACHED_SR, ptr, size);
+        switch (mem_type)
+        {
+            case TIVX_MEM_EXTERNAL:
+                heap_id = UTILS_HEAPID_DDR_CACHED_SR;
+                break;
+            case TIVX_MEM_INTERNAL_L3:
+                /* Since there is no L3 memory, so using OCMC memory */
+                heap_id = UTILS_HEAPID_OCMC_SR;
+                break;
+            case TIVX_MEM_INTERNAL_L2:
+                heap_id = UTILS_HEAPID_L2_LOCAL;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            Utils_memFree(heap_id, ptr, size);
+        }
     }
 }
 
@@ -182,7 +225,7 @@ void tivxMemBufferMap(
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0U != size) && 
+    if ((NULL != host_ptr) && (0U != size) &&
         ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
         BspOsal_cacheWb(

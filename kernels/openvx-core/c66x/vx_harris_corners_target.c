@@ -256,7 +256,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
         sc_dist = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_HARRISC_IN_SC_DIST_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxHarrisCornersParams));
+        prms = tivxMemAlloc(sizeof(tivxHarrisCornersParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxHarrisCornersParams));
@@ -292,7 +292,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
             prms->sobel_size = prms->vxlib_sobx.stride_y *
                 img->imagepatch_addr[0].dim_y;
 
-            prms->sobel_x = tivxMemAlloc(prms->sobel_size);
+            prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->sobel_x)
             {
                 status = VX_ERROR_NO_MEMORY;
@@ -300,7 +300,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->sobel_y = tivxMemAlloc(prms->sobel_size);
+                prms->sobel_y = tivxMemAlloc(prms->sobel_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->sobel_y)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -318,7 +319,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 prms->hcs_score_size = prms->vxlib_score.stride_y *
                     img->imagepatch_addr[0].dim_y;
 
-                prms->hcs_score = tivxMemAlloc(prms->hcs_score_size);
+                prms->hcs_score = tivxMemAlloc(prms->hcs_score_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcs_score)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -330,7 +332,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 prms->hcs_scratch_size = 12u * prms->vxlib_sobx.dim_x *
                     (1 + sc_bs->data.s32);
 
-                prms->hcs_scratch = tivxMemAlloc(prms->hcs_scratch_size);
+                prms->hcs_scratch = tivxMemAlloc(prms->hcs_scratch_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcs_scratch)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -342,7 +345,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 prms->hcd_sprs_size = prms->vxlib_score.stride_y *
                     img->imagepatch_addr[0].dim_y;
 
-                prms->hcd_sprs = tivxMemAlloc(prms->hcd_sprs_size);
+                prms->hcd_sprs = tivxMemAlloc(prms->hcd_sprs_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcd_sprs)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -354,7 +358,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 prms->hcd_corners_size = img->imagepatch_addr[0].dim_x *
                     img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
 
-                prms->hcd_corners = tivxMemAlloc(prms->hcd_corners_size);
+                prms->hcd_corners = tivxMemAlloc(prms->hcd_corners_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcd_corners)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -366,7 +371,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                 prms->hcd_strength_size = img->imagepatch_addr[0].dim_x *
                     img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
 
-                prms->hcd_strength = tivxMemAlloc(prms->hcd_strength_size);
+                prms->hcd_strength = tivxMemAlloc(prms->hcd_strength_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcd_strength)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -387,7 +393,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                             ((((uintptr_t)prms->rad+1)*2)*
                             (((uintptr_t)prms->rad+1)*2)*2);
 
-                    prms->nms_scratch = tivxMemAlloc(prms->nms_scratch_size);
+                    prms->nms_scratch = tivxMemAlloc(prms->nms_scratch_size,
+                        TIVX_MEM_EXTERNAL);
                     if (NULL == prms->nms_scratch)
                     {
                         status = VX_ERROR_NO_MEMORY;
@@ -398,7 +405,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                         prms->nms_corners_size = img->imagepatch_addr[0].dim_x *
                             img->imagepatch_addr[0].dim_y * sizeof(uint32_t);
 
-                        prms->nms_corners = tivxMemAlloc(prms->nms_corners_size);
+                        prms->nms_corners = tivxMemAlloc(prms->nms_corners_size,
+                            TIVX_MEM_EXTERNAL);
                         if (NULL == prms->nms_corners)
                         {
                             status = VX_ERROR_NO_MEMORY;
@@ -410,7 +418,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                         prms->nms_strength_size = img->imagepatch_addr[0].dim_x *
                             img->imagepatch_addr[0].dim_y * sizeof(vx_float32);
 
-                        prms->nms_strength = tivxMemAlloc(prms->nms_strength_size);
+                        prms->nms_strength = tivxMemAlloc(prms->nms_strength_size,
+                            TIVX_MEM_EXTERNAL);
                         if (NULL == prms->nms_strength)
                         {
                             status = VX_ERROR_NO_MEMORY;
@@ -540,59 +549,66 @@ static void tivxHarrisCFreeMem(tivxHarrisCornersParams *prms)
     {
         if (NULL != prms->sobel_x)
         {
-            tivxMemFree(prms->sobel_x, prms->sobel_size);
+            tivxMemFree(prms->sobel_x, prms->sobel_size, TIVX_MEM_EXTERNAL);
             prms->sobel_x = NULL;
         }
         if (NULL != prms->sobel_y)
         {
-            tivxMemFree(prms->sobel_y, prms->sobel_size);
+            tivxMemFree(prms->sobel_y, prms->sobel_size, TIVX_MEM_EXTERNAL);
             prms->sobel_y = NULL;
         }
         if (NULL != prms->hcs_score)
         {
-            tivxMemFree(prms->hcs_score, prms->hcs_score_size);
+            tivxMemFree(prms->hcs_score, prms->hcs_score_size,
+                TIVX_MEM_EXTERNAL);
             prms->hcs_score = NULL;
         }
         if (NULL != prms->hcs_scratch)
         {
-            tivxMemFree(prms->hcs_scratch, prms->hcs_scratch_size);
+            tivxMemFree(prms->hcs_scratch, prms->hcs_scratch_size,
+                TIVX_MEM_EXTERNAL);
             prms->hcs_scratch = NULL;
         }
         if (NULL != prms->hcd_sprs)
         {
-            tivxMemFree(prms->hcd_sprs, prms->hcd_sprs_size);
+            tivxMemFree(prms->hcd_sprs, prms->hcd_sprs_size, TIVX_MEM_EXTERNAL);
             prms->hcd_sprs = NULL;
         }
         if (NULL != prms->hcd_corners)
         {
-            tivxMemFree(prms->hcd_corners, prms->hcd_corners_size);
+            tivxMemFree(prms->hcd_corners, prms->hcd_corners_size,
+                TIVX_MEM_EXTERNAL);
             prms->hcd_corners = NULL;
         }
         if (NULL != prms->hcd_strength)
         {
-            tivxMemFree(prms->hcd_strength, prms->hcd_strength_size);
+            tivxMemFree(prms->hcd_strength, prms->hcd_strength_size,
+                TIVX_MEM_EXTERNAL);
             prms->hcd_strength = NULL;
         }
         if(prms->rad >= 2.0f)
         {
             if (NULL != prms->nms_corners)
             {
-                tivxMemFree(prms->nms_corners, prms->nms_corners_size);
+                tivxMemFree(prms->nms_corners, prms->nms_corners_size,
+                    TIVX_MEM_EXTERNAL);
                 prms->nms_corners = NULL;
             }
             if (NULL != prms->nms_strength)
             {
-                tivxMemFree(prms->nms_strength, prms->nms_strength_size);
+                tivxMemFree(prms->nms_strength, prms->nms_strength_size,
+                    TIVX_MEM_EXTERNAL);
                 prms->nms_strength = NULL;
             }
             if (NULL != prms->nms_scratch)
             {
-                tivxMemFree(prms->nms_scratch, prms->nms_scratch_size);
+                tivxMemFree(prms->nms_scratch, prms->nms_scratch_size,
+                    TIVX_MEM_EXTERNAL);
                 prms->nms_scratch = NULL;
             }
         }
 
-        tivxMemFree(prms, sizeof(tivxHarrisCornersParams));
+        tivxMemFree(prms, sizeof(tivxHarrisCornersParams), TIVX_MEM_EXTERNAL);
     }
 }
 

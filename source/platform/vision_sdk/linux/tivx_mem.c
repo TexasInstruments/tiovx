@@ -94,7 +94,7 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
-void *tivxMemAlloc(vx_uint32 size)
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
 {
     void *ptr = NULL;
     CMEM_AllocParams prms;
@@ -108,7 +108,7 @@ void *tivxMemAlloc(vx_uint32 size)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size)
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
 {
     CMEM_AllocParams prms;
 

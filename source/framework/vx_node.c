@@ -211,7 +211,8 @@ vx_status ownNodeKernelInit(vx_node node)
                 {
                     /* allocate memory for user kernel */
                     node->local_data_size = node->kernel->local_data_size;
-                    node->local_data_ptr = tivxMemAlloc(node->local_data_size);
+                    node->local_data_ptr = tivxMemAlloc(node->local_data_size,
+                        TIVX_MEM_EXTERNAL);
                     if(node->local_data_ptr==NULL)
                     {
                         status = VX_ERROR_NO_MEMORY;
@@ -245,7 +246,8 @@ vx_status ownNodeKernelInit(vx_node node)
                         (node->local_data_ptr == NULL)
                         )
                     {
-                        node->local_data_ptr = tivxMemAlloc(node->local_data_size);
+                        node->local_data_ptr = tivxMemAlloc(
+                            node->local_data_size, TIVX_MEM_EXTERNAL);
                         if(node->local_data_ptr==NULL)
                         {
                             status = VX_ERROR_NO_MEMORY;
@@ -298,7 +300,8 @@ vx_status ownNodeKernelDeinit(vx_node node)
                 (0 != node->local_data_size)
                 )
             {
-                tivxMemFree(node->local_data_ptr, node->local_data_size);
+                tivxMemFree(node->local_data_ptr, node->local_data_size,
+                    TIVX_MEM_EXTERNAL);
                 node->local_data_ptr = NULL;
                 node->local_data_size = 0;
                 node->local_data_ptr_is_alloc = vx_false_e;

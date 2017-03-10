@@ -177,7 +177,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
             src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
 
             temp_ptr = tivxMemAlloc(src_desc->imagepatch_addr[0].stride_y *
-                src_desc->imagepatch_addr[0].dim_y);
+                src_desc->imagepatch_addr[0].dim_y, TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
             {
@@ -246,7 +246,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
             }
             else
             {
-                tivxMemFree(temp_ptr, temp_ptr_size);
+                tivxMemFree(temp_ptr, temp_ptr_size, TIVX_MEM_EXTERNAL);
             }
         }
     }

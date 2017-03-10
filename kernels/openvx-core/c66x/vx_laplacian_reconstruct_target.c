@@ -255,7 +255,8 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctCreate(
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
             TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxLaplacianReconstructParams));
+        prms = tivxMemAlloc(sizeof(tivxLaplacianReconstructParams),
+            TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -263,7 +264,8 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctCreate(
 
             prms->buff_size = (pmd->width * pmd->height * 2u);
 
-            prms->add_output = tivxMemAlloc(prms->buff_size);
+            prms->add_output = tivxMemAlloc(prms->buff_size,
+                TIVX_MEM_EXTERNAL);
 
             if (NULL == prms->add_output)
             {
@@ -272,24 +274,29 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->upsample_output = tivxMemAlloc(prms->buff_size/2u);
+                prms->upsample_output = tivxMemAlloc(prms->buff_size/2u,
+                    TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->upsample_output)
                 {
                     status = VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->add_output, prms->buff_size);
+                    tivxMemFree(prms->add_output, prms->buff_size,
+                        TIVX_MEM_EXTERNAL);
                 }
             }
 
             if (VX_SUCCESS == status)
             {
-                prms->gauss_output = tivxMemAlloc(prms->buff_size/2u);
+                prms->gauss_output = tivxMemAlloc(prms->buff_size/2u,
+                    TIVX_MEM_EXTERNAL);
 
                 if (NULL == prms->gauss_output)
                 {
                     status = VX_ERROR_NO_MEMORY;
-                    tivxMemFree(prms->add_output, prms->buff_size);
-                    tivxMemFree(prms->upsample_output, prms->buff_size/2u);
+                    tivxMemFree(prms->add_output, prms->buff_size,
+                        TIVX_MEM_EXTERNAL);
+                    tivxMemFree(prms->upsample_output, prms->buff_size/2u,
+                        TIVX_MEM_EXTERNAL);
                 }
                 else
                 {
@@ -347,17 +354,20 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctDelete(
         {
             if (NULL != prms->add_output)
             {
-                tivxMemFree(prms->add_output, prms->buff_size);
+                tivxMemFree(prms->add_output, prms->buff_size,
+                    TIVX_MEM_EXTERNAL);
             }
             if (NULL != prms->upsample_output)
             {
-                tivxMemFree(prms->upsample_output, prms->buff_size/2u);
+                tivxMemFree(prms->upsample_output, prms->buff_size/2u,
+                    TIVX_MEM_EXTERNAL);
             }
             if (NULL != prms->gauss_output)
             {
-                tivxMemFree(prms->gauss_output, prms->buff_size/2u);
+                tivxMemFree(prms->gauss_output, prms->buff_size/2u,
+                    TIVX_MEM_EXTERNAL);
             }
-            tivxMemFree(prms, size);
+            tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);
         }
     }
 

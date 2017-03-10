@@ -236,7 +236,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
             TIVX_KERNEL_G_PYD_OUT_PYT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxGassPyrmdParams));
+        prms = tivxMemAlloc(sizeof(tivxGassPyrmdParams), TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -247,7 +247,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
                 size = img->imagepatch_addr[0].stride_y *
                     img->imagepatch_addr[0].dim_y;
 
-                temp_ptr = tivxMemAlloc(size);
+                temp_ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
 
                 if (NULL == temp_ptr)
                 {
@@ -319,13 +319,13 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
                 else
                 {
                     tivxMemFree(prms->interm_output,
-                        prms->interm_output_size);
+                        prms->interm_output_size, TIVX_MEM_EXTERNAL);
                     prms->interm_output = NULL;
                     prms->interm_output_size = 0U;
                 }
             }
 
-            tivxMemFree(prms, size);
+            tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);
         }
     }
 

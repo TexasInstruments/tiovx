@@ -141,7 +141,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
             TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
 
         temp_ptr = tivxMemAlloc(dst->imagepatch_addr[0].dim_x *
-            sizeof(uint32_t));
+            sizeof(uint32_t), TIVX_MEM_EXTERNAL);
 
         if (NULL == temp_ptr)
         {
@@ -198,7 +198,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
         else
         {
             tivxMemFree(temp_ptr , (dst->imagepatch_addr[0].dim_x *
-                sizeof(uint32_t)));
+                sizeof(uint32_t)), TIVX_MEM_EXTERNAL);
         }
     }
 

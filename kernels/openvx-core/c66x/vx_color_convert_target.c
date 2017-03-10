@@ -395,7 +395,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
 
             temp_ptr_size = 4 * dst->imagepatch_addr[0].dim_x * sizeof(uint8_t);
 
-            temp_ptr = tivxMemAlloc(temp_ptr_size);
+            temp_ptr = tivxMemAlloc(temp_ptr_size, TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
             {
@@ -459,7 +459,7 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
             }
             else
             {
-                tivxMemFree(temp_ptr, temp_ptr_size);
+                tivxMemFree(temp_ptr, temp_ptr_size, TIVX_MEM_EXTERNAL);
             }
         }
     }

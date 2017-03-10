@@ -173,7 +173,8 @@ vx_status VX_CALLBACK tivxNonLinearFilterCreate(
         {
             mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
 
-            temp_ptr = tivxMemAlloc(mask_desc->columns*mask_desc->rows*2*sizeof(int64_t));
+            temp_ptr = tivxMemAlloc(mask_desc->columns*mask_desc->rows*2*
+                sizeof(int64_t), TIVX_MEM_EXTERNAL);
 
             if (NULL == temp_ptr)
             {
@@ -233,7 +234,7 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
             }
             else
             {
-                tivxMemFree(temp_ptr, temp_ptr_size);
+                tivxMemFree(temp_ptr, temp_ptr_size, TIVX_MEM_EXTERNAL);
             }
         }
     }

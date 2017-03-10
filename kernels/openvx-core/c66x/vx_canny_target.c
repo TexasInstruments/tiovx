@@ -213,7 +213,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
         sc_gs = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_CNED_IN_SC_GS_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxCannyParams));
+        prms = tivxMemAlloc(sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxCannyParams));
@@ -243,7 +243,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             prms->sobel_size = prms->vxlib_sobx.stride_y *
                 src->imagepatch_addr[0].dim_y;
 
-            prms->sobel_x = tivxMemAlloc(prms->sobel_size);
+            prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->sobel_x)
             {
                 status = VX_ERROR_NO_MEMORY;
@@ -251,7 +251,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->sobel_y = tivxMemAlloc(prms->sobel_size);
+                prms->sobel_y = tivxMemAlloc(prms->sobel_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->sobel_y)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -270,7 +271,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->norm_size = prms->vxlib_norm.stride_y *
                     src->imagepatch_addr[0].dim_y;
 
-                prms->norm = tivxMemAlloc(prms->norm_size);
+                prms->norm = tivxMemAlloc(prms->norm_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->norm)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -288,7 +289,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->nms_edge_size = prms->vxlib_edge.stride_y *
                     src->imagepatch_addr[0].dim_y;
 
-                prms->nms_edge = tivxMemAlloc(prms->nms_edge_size);
+                prms->nms_edge = tivxMemAlloc(prms->nms_edge_size,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->nms_edge)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -300,7 +302,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->edge_list_size = ((prms->vxlib_edge.stride_y / 2) *
                     prms->vxlib_edge.dim_y);
 
-                prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u);
+                prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u,
+                    TIVX_MEM_EXTERNAL);
                 if (NULL == prms->edge_list)
                 {
                     status = VX_ERROR_NO_MEMORY;
@@ -419,31 +422,32 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
     {
         if (NULL != prms->sobel_x)
         {
-            tivxMemFree(prms->sobel_x, prms->sobel_size);
+            tivxMemFree(prms->sobel_x, prms->sobel_size, TIVX_MEM_EXTERNAL);
             prms->sobel_x = NULL;
         }
         if (NULL != prms->sobel_y)
         {
-            tivxMemFree(prms->sobel_y, prms->sobel_size);
+            tivxMemFree(prms->sobel_y, prms->sobel_size, TIVX_MEM_EXTERNAL);
             prms->sobel_y = NULL;
         }
         if (NULL != prms->norm)
         {
-            tivxMemFree(prms->norm, prms->norm_size);
+            tivxMemFree(prms->norm, prms->norm_size, TIVX_MEM_EXTERNAL);
             prms->norm = NULL;
         }
         if (NULL != prms->nms_edge)
         {
-            tivxMemFree(prms->nms_edge, prms->nms_edge_size);
+            tivxMemFree(prms->nms_edge, prms->nms_edge_size, TIVX_MEM_EXTERNAL);
             prms->nms_edge = NULL;
         }
         if (NULL != prms->edge_list)
         {
-            tivxMemFree(prms->edge_list, prms->edge_list_size * 4u);
+            tivxMemFree(prms->edge_list, prms->edge_list_size * 4u,
+                TIVX_MEM_EXTERNAL);
             prms->edge_list = NULL;
         }
 
-        tivxMemFree(prms, sizeof(tivxCannyParams));
+        tivxMemFree(prms, sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
     }
 }
 

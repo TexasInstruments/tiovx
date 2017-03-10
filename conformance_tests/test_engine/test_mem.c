@@ -42,7 +42,7 @@ void *ct_alloc_mem(size_t size)
     {
         size = (size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
             ~(CT_MEM_ALLOC_ALIGN);
-        ptr = tivxMemAlloc(size);
+        ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
 
         if (NULL != ptr)
         {
@@ -63,7 +63,7 @@ void ct_free_mem(void *ptr)
     {
         ptr = (void *)((uintptr_t)ptr - CT_MEM_HEADER_SIZE);
         size = *(uint32_t*)ptr;
-        tivxMemFree(ptr, size);
+        tivxMemFree(ptr, size, TIVX_MEM_EXTERNAL);
     }
 }
 
@@ -85,7 +85,7 @@ void *ct_calloc(size_t nmemb, size_t size)
         new_size = size * nmemb;
         new_size = (new_size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
             ~(CT_MEM_ALLOC_ALIGN);
-        ptr = tivxMemAlloc(new_size);
+        ptr = tivxMemAlloc(new_size, TIVX_MEM_EXTERNAL);
 
         if (NULL != ptr)
         {
