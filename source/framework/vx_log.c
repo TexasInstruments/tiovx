@@ -111,7 +111,7 @@ VX_API_ENTRY void VX_API_CALL vxAddLogEntry(vx_reference ref, vx_status status, 
 
             va_start(ap, message);
             vsnprintf(string, VX_MAX_LOG_MESSAGE_LEN, message, ap);
-            string[VX_MAX_LOG_MESSAGE_LEN-1] = 0; /* for MSVC which is not C99 compliant */
+            string[VX_MAX_LOG_MESSAGE_LEN-1] = '\0'; /* for MSVC which is not C99 compliant */
             va_end(ap);
 
             context->log_callback(context, ref, status, string);

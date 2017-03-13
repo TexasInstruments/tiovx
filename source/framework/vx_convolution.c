@@ -50,9 +50,9 @@ vx_convolution VX_API_CALL vxCreateConvolution(
 
     if(ownIsValidContext(context) == vx_true_e)
     {
-        if ((isodd(columns)) && (columns >= 3) &&
+        if ((isodd(columns) == 1) && (columns >= 3) &&
             (columns < VX_CONTEXT_CONVOLUTION_MAX_DIMENSION) &&
-            (isodd(rows)) && (rows >= 3) &&
+            (isodd(rows) == 1) && (rows >= 3) &&
             (rows < VX_CONTEXT_CONVOLUTION_MAX_DIMENSION))
         {
             cnvl = (vx_convolution)ownCreateReference(context,

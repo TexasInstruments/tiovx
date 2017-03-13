@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2012-2016 The Khronos Group Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -33,9 +33,10 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
 IDIRS       += $(VXLIB_PATH)/packages
+IDIRS       += $(HOST_ROOT)/kernels/openvx-core/c66x
 
 ifeq ($(TARGET_CPU),X86)
-CFLAGS		+= -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
+CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 endif
 
 ifeq ($(TARGET_CPU),C66)

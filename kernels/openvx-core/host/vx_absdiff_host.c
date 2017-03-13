@@ -12,6 +12,7 @@
 #include <VX/vx_types.h>
 #include <tivx_kernel_absdiff.h>
 
+
 static vx_kernel vx_absdiff_kernel = NULL;
 
 

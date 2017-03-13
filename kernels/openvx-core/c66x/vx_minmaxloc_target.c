@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_minmaxloc.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -197,7 +198,7 @@ static vx_status VX_CALLBACK tivxKernelMmlControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelMinMaxLoc()
+void tivxAddTargetKernelMinMaxLoc(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -229,7 +230,7 @@ void tivxAddTargetKernelMinMaxLoc()
 }
 
 
-void tivxRemoveTargetKernelMinMaxLoc()
+void tivxRemoveTargetKernelMinMaxLoc(void)
 {
     tivxRemoveTargetKernel(vx_mml_target_kernel);
 }

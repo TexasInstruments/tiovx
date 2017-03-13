@@ -79,7 +79,7 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
-    if(target_kernel_instance && *target_kernel_instance)
+    if((NULL != target_kernel_instance) && (NULL != *target_kernel_instance))
     {
         (*target_kernel_instance)->kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
         *target_kernel_instance = NULL;
@@ -94,8 +94,8 @@ uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_ker
 {
     uint32_t index = TIVX_TARGET_KERNEL_INSTANCE_MAX;
 
-    if(target_kernel_instance &&
-        (target_kernel_instance->index < TIVX_TARGET_KERNEL_INSTANCE_MAX))
+    if((NULL != target_kernel_instance) &&
+       (target_kernel_instance->index < TIVX_TARGET_KERNEL_INSTANCE_MAX))
     {
         index = target_kernel_instance->index;
     }
@@ -107,7 +107,7 @@ tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance
 {
     tivx_target_kernel kernel = NULL;
 
-    if(target_kernel_instance
+    if((NULL != target_kernel_instance)
         && (target_kernel_instance->kernel_id != TIVX_TARGET_KERNEL_ID_INVALID))
     {
         kernel = target_kernel_instance->kernel;
@@ -139,7 +139,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
-    if(target_kernel_instance)
+    if(NULL != target_kernel_instance)
     {
         target_kernel_instance->kernel_context = kernel_context;
         target_kernel_instance->kernel_context_size = kernel_context_size;
@@ -156,7 +156,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
-    if(target_kernel_instance)
+    if(NULL != target_kernel_instance)
     {
         *kernel_context = target_kernel_instance->kernel_context;
         *kernel_context_size = target_kernel_instance->kernel_context_size;

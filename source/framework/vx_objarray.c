@@ -68,10 +68,10 @@ static vx_bool ownIsValidObject(vx_enum type)
 }
 
 
-VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *objarr)
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseObjectArray(vx_object_array *arr)
 {
     return (ownReleaseReferenceInt(
-        (vx_reference*)objarr, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, NULL));
+        (vx_reference*)arr, VX_TYPE_OBJECT_ARRAY, VX_EXTERNAL, NULL));
 }
 
 vx_object_array VX_API_CALL vxCreateObjectArray(

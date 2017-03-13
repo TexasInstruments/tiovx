@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_bitwise.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -268,7 +269,7 @@ static vx_status VX_CALLBACK tivxKernelBitwiseControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelBitwise()
+void tivxAddTargetKernelBitwise(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -324,7 +325,7 @@ void tivxAddTargetKernelBitwise()
 }
 
 
-void tivxRemoveTargetKernelBitwise()
+void tivxRemoveTargetKernelBitwise(void)
 {
     vx_status status;
     vx_uint32 i;

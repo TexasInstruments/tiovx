@@ -9,6 +9,7 @@
 
 
 #include <TI/tivx_target_kernel.h>
+#include <tivx_target_kernels_priv.h>
 
 typedef void (*tivxTargetKernel_Fxn) ();
 
@@ -16,82 +17,6 @@ typedef struct  {
     tivxTargetKernel_Fxn    add_kernel;
     tivxTargetKernel_Fxn    remove_kernel;
 } Tivx_Target_Kernel_List;
-
-void tivxAddTargetKernelAbsDiff();
-void tivxAddTargetKernelAccumulate();
-void tivxAddTargetKernelAccumulateSquare();
-void tivxAddTargetKernelAccumulateWeighted();
-void tivxAddTargetKernelAdd();
-void tivxAddTargetKernelBitwise();
-void tivxAddTargetKernelCannyEd();
-void tivxAddTargetKernelChannelCombine();
-void tivxAddTargetKernelChannelExtract();
-void tivxAddTargetKernelColorConvert();
-void tivxAddTargetKernelConvertDepth();
-void tivxAddTargetKernelConvolve();
-void tivxAddTargetKernelEqualizeHistogram();
-void tivxAddTargetKernelErode3x3();
-void tivxAddTargetKernelFastCorners();
-void tivxAddTargetKernelGaussianPyramid();
-void tivxAddTargetKernelHarrisCorners();
-void tivxAddTargetKernelHalfscaleGaussian();
-void tivxAddTargetKernelHistogram();
-void tivxAddTargetKernelIntegralImage();
-void tivxAddTargetKernelLaplacianPyramid();
-void tivxAddTargetKernelLaplacianReconstruct();
-void tivxAddTargetKernelLut();
-void tivxAddTargetKernelMagnitude();
-void tivxAddTargetKernelMeanStdDev();
-void tivxAddTargetKernelMinMaxLoc();
-void tivxAddTargetKernelMultiply();
-void tivxAddTargetKernelNonLinearFilter();
-void tivxAddTargetKernelOpticalFlowPyrLk();
-void tivxAddTargetKernelPhase();
-void tivxAddTargetKernelRemap();
-void tivxAddTargetKernelScale();
-void tivxAddTargetKernelSobel3x3();
-void tivxAddTargetKernelSub();
-void tivxAddTargetKernelThreshold();
-void tivxAddTargetKernelWarpAffine();
-void tivxAddTargetKernelWarpPerspective();
-
-void tivxRemoveTargetKernelAbsDiff();
-void tivxRemoveTargetKernelAccumulate();
-void tivxRemoveTargetKernelAccumulateSquare();
-void tivxRemoveTargetKernelAccumulateWeighted();
-void tivxRemoveTargetKernelAdd();
-void tivxRemoveTargetKernelBitwise();
-void tivxRemoveTargetKernelCannyEd();
-void tivxRemoveTargetKernelChannelCombine();
-void tivxRemoveTargetKernelChannelExtract();
-void tivxRemoveTargetKernelColorConvert();
-void tivxRemoveTargetKernelConvertDepth();
-void tivxRemoveTargetKernelConvolve();
-void tivxRemoveTargetKernelEqualizeHistogram();
-void tivxRemoveTargetKernelErode3x3();
-void tivxRemoveTargetKernelFastCorners();
-void tivxRemoveTargetKernelGaussianPyramid();
-void tivxRemoveTargetKernelHarrisCorners();
-void tivxRemoveTargetKernelHalfscaleGaussian();
-void tivxRemoveTargetKernelHistogram();
-void tivxRemoveTargetKernelIntegralImage();
-void tivxRemoveTargetKernelLaplacianPyramid();
-void tivxRemoveTargetKernelLaplacianReconstruct();
-void tivxRemoveTargetKernelLut();
-void tivxRemoveTargetKernelMagnitude();
-void tivxRemoveTargetKernelMeanStdDev();
-void tivxRemoveTargetKernelMinMaxLoc();
-void tivxRemoveTargetKernelMultiply();
-void tivxRemoveTargetKernelNonLinearFilter();
-void tivxRemoveTargetKernelOpticalFlowPyrLk();
-void tivxRemoveTargetKernelPhase();
-void tivxRemoveTargetKernelRemap();
-void tivxRemoveTargetKernelScale();
-void tivxRemoveTargetKernelSobel3x3();
-void tivxRemoveTargetKernelSub();
-void tivxRemoveTargetKernelThreshold();
-void tivxRemoveTargetKernelWarpAffine();
-void tivxRemoveTargetKernelWarpPerspective();
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},

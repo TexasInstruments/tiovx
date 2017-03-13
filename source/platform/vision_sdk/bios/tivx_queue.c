@@ -48,7 +48,7 @@ vx_status tivxQueueCreate(
 {
     vx_status status = VX_FAILURE;
 
-    if ((NULL != queue) && (NULL != queue_memory) && (0U != max_elements))
+    if ((NULL != queue) && (NULL != queue_memory) && (0 != max_elements))
     {
         /*
          * init queue to 0's
@@ -107,12 +107,14 @@ vx_status tivxQueueDelete(tivx_queue *queue)
 
     if (NULL != queue)
     {
-        if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) &&
+        if (((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) ==
+                TIVX_QUEUE_FLAG_BLOCK_ON_GET) &&
             (NULL != queue->mutex_rd))
         {
             tivxMutexDelete(&queue->mutex_rd);
         }
-        if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
+        if (((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) ==
+                TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
             (NULL != queue->mutex_wr))
         {
             tivxMutexDelete(&queue->mutex_wr);

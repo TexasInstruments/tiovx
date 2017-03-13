@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_phase.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -136,7 +137,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelPhase()
+void tivxAddTargetKernelPhase(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -168,7 +169,7 @@ void tivxAddTargetKernelPhase()
 }
 
 
-void tivxRemoveTargetKernelPhase()
+void tivxRemoveTargetKernelPhase(void)
 {
     tivxRemoveTargetKernel(vx_phase_target_kernel);
 }

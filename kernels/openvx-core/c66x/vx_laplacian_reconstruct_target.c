@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_laplacian_reconstruct.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -370,7 +371,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelLaplacianReconstruct()
+void tivxAddTargetKernelLaplacianReconstruct(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -402,7 +403,7 @@ void tivxAddTargetKernelLaplacianReconstruct()
 }
 
 
-void tivxRemoveTargetKernelLaplacianReconstruct()
+void tivxRemoveTargetKernelLaplacianReconstruct(void)
 {
     tivxRemoveTargetKernel(vx_laplacian_reconstruct_target_kernel);
 }

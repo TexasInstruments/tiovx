@@ -167,9 +167,9 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
     return remap;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxReleaseRemap(vx_remap *r)
+VX_API_ENTRY vx_status VX_API_CALL vxReleaseRemap(vx_remap *table)
 {
-    return ownReleaseReferenceInt( (vx_reference*)r, VX_TYPE_REMAP, VX_EXTERNAL, NULL);
+    return ownReleaseReferenceInt( (vx_reference*)table, VX_TYPE_REMAP, VX_EXTERNAL, NULL);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribute, void *ptr, vx_size size)

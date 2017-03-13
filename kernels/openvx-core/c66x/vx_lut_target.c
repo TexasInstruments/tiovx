@@ -9,6 +9,7 @@
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_lut.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -142,7 +143,7 @@ static vx_status VX_CALLBACK tivxKernelLutControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelLut()
+void tivxAddTargetKernelLut(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -174,7 +175,7 @@ void tivxAddTargetKernelLut()
 }
 
 
-void tivxRemoveTargetKernelLut()
+void tivxRemoveTargetKernelLut(void)
 {
     tivxRemoveTargetKernel(vx_lut_target_kernel);
 }

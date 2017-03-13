@@ -6,6 +6,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_channel_extract.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -427,8 +428,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
             vxlib_dst.stride_y = out_desc->imagepatch_addr[0U].stride_y;
             vxlib_dst.data_type = VXLIB_UINT8;
 
-            if (   in_desc->format == VX_DF_IMAGE_RGB
-                || in_desc->format == VX_DF_IMAGE_RGBX
+            if (   (in_desc->format == VX_DF_IMAGE_RGB)
+                || (in_desc->format == VX_DF_IMAGE_RGBX)
                 )
             {
                 status = tivxChannelExtractRgbRgbxInput(
@@ -437,8 +438,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
                                 dst_addr, &vxlib_dst);
             }
             else
-            if(    in_desc->format == VX_DF_IMAGE_YUYV
-                || in_desc->format == VX_DF_IMAGE_UYVY
+            if(    (in_desc->format == VX_DF_IMAGE_YUYV)
+                || (in_desc->format == VX_DF_IMAGE_UYVY)
                 )
             {
                 status = tivxChannelExtractYuyvUyvyInput(
@@ -447,8 +448,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
                                 dst_addr, &vxlib_dst);
             }
             else
-            if(    in_desc->format == VX_DF_IMAGE_NV12
-                || in_desc->format == VX_DF_IMAGE_NV21
+            if(    (in_desc->format == VX_DF_IMAGE_NV12)
+                || (in_desc->format == VX_DF_IMAGE_NV21)
                 )
             {
                 status = tivxChannelExtractNv12Nv21Input(
@@ -457,8 +458,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
                                 dst_addr, &vxlib_dst);
             }
             else
-            if(    in_desc->format == VX_DF_IMAGE_IYUV
-                || in_desc->format == VX_DF_IMAGE_YUV4
+            if(    (in_desc->format == VX_DF_IMAGE_IYUV)
+                || (in_desc->format == VX_DF_IMAGE_YUV4)
                 )
             {
                 status = tivxChannelExtractIyuvYuv4Input(
@@ -518,7 +519,7 @@ vx_status VX_CALLBACK tivxChannelExtractControl(
     return status;
 }
 
-void tivxAddTargetKernelChannelExtract()
+void tivxAddTargetKernelChannelExtract(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -555,7 +556,7 @@ void tivxAddTargetKernelChannelExtract()
     }
 }
 
-void tivxRemoveTargetKernelChannelExtract()
+void tivxRemoveTargetKernelChannelExtract(void)
 {
     vx_status status = VX_SUCCESS;
 

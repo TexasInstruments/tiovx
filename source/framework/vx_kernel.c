@@ -40,7 +40,8 @@
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 {
     vx_status status = VX_SUCCESS;
-    if (kernel && (ownIsValidSpecificReference(&((*kernel)->base), VX_TYPE_KERNEL) == vx_true_e) )
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&((*kernel)->base), VX_TYPE_KERNEL) == vx_true_e) )
     {
         ownReleaseReferenceInt((vx_reference *)kernel, VX_TYPE_KERNEL, VX_EXTERNAL, NULL);
     }
@@ -54,7 +55,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseKernel(vx_kernel *kernel)
 VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribute, void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
-    if (kern && (ownIsValidSpecificReference(&kern->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kern) &&
+        (ownIsValidSpecificReference(&kern->base, VX_TYPE_KERNEL) == vx_true_e))
     {
         vx_kernel kernel = kern;
         switch (attribute)
@@ -111,17 +113,18 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kern, vx_enum attribute, const void * ptr, vx_size size)
+VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enum attribute, const void * ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
-    if (kern && (ownIsValidSpecificReference(&kern->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
     {
         switch (attribute)
         {
             case VX_KERNEL_LOCAL_DATA_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    kern->local_data_size = *(vx_size*)ptr;
+                    kernel->local_data_size = *(vx_size*)ptr;
                 }
                 else
                 {
@@ -143,7 +146,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kern, vx_enum 
 VX_API_ENTRY vx_status VX_API_CALL vxRemoveKernel(vx_kernel kernel)
 {
     vx_status status = VX_SUCCESS;
-    if (kernel && (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) ==
+            vx_true_e))
     {
         if((kernel->lock_kernel_remove == vx_true_e)
             &&
@@ -176,7 +181,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
-    if (kernel && (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
     {
         vx_kernel kern = kernel;
         if (index < kern->signature.num_parameters)
@@ -278,7 +284,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
 VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 {
     vx_status status = VX_SUCCESS;
-    if (kernel && (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
     {
         vx_uint32 p = 0;
 
@@ -321,7 +328,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxFinalizeKernel(vx_kernel kernel)
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *target_name)
 {
     vx_status status = VX_SUCCESS;
-    if (kernel && (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
     {
         if(kernel->num_targets < TIVX_MAX_TARGETS_PER_KERNEL)
         {
@@ -347,7 +355,8 @@ vx_enum ownKernelGetDefaultTarget(vx_kernel kernel)
 {
     vx_enum target_id = TIVX_TARGET_ID_INVALID;
 
-    if (kernel && (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
     {
         if(kernel->num_targets==0)
         {

@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_convert_depth.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -177,7 +178,7 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthProcess(
     return (status);
 }
 
-void tivxAddTargetKernelConvertDepth()
+void tivxAddTargetKernelConvertDepth(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
 
@@ -210,7 +211,7 @@ void tivxAddTargetKernelConvertDepth()
 }
 
 
-void tivxRemoveTargetKernelConvertDepth()
+void tivxRemoveTargetKernelConvertDepth(void)
 {
     tivxRemoveTargetKernel(vx_convert_depth_target_kernel);
 }

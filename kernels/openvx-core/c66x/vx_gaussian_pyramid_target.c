@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_gaussian_pyramid.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -338,7 +339,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelGaussianPyramid()
+void tivxAddTargetKernelGaussianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -370,7 +371,7 @@ void tivxAddTargetKernelGaussianPyramid()
 }
 
 
-void tivxRemoveTargetKernelGaussianPyramid()
+void tivxRemoveTargetKernelGaussianPyramid(void)
 {
     tivxRemoveTargetKernel(vx_gaussian_pyramid_target_kernel);
 }

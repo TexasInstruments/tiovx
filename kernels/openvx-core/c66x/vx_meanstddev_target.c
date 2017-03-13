@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_meanstddev.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -106,7 +107,7 @@ static vx_status VX_CALLBACK tivxKernelMsdControl(
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelMeanStdDev()
+void tivxAddTargetKernelMeanStdDev(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -138,7 +139,7 @@ void tivxAddTargetKernelMeanStdDev()
 }
 
 
-void tivxRemoveTargetKernelMeanStdDev()
+void tivxRemoveTargetKernelMeanStdDev(void)
 {
     tivxRemoveTargetKernel(vx_msd_target_kernel);
 }

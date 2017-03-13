@@ -10,6 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_accumulate.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -137,7 +138,7 @@ static vx_status VX_CALLBACK tivxKernelAccumulateProcess(
     return (status);
 }
 
-void tivxAddTargetKernelAccumulate()
+void tivxAddTargetKernelAccumulate(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
 
@@ -170,7 +171,7 @@ void tivxAddTargetKernelAccumulate()
 }
 
 
-void tivxRemoveTargetKernelAccumulate()
+void tivxRemoveTargetKernelAccumulate(void)
 {
     tivxRemoveTargetKernel(vx_accumulate_target_kernel);
 }

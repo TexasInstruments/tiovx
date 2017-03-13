@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2012-2016 The Khronos Group Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a

@@ -6,6 +6,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
+#include <tivx_target_kernels_priv.h>
 #include <tivx_kernel_channel_combine.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
@@ -234,8 +235,8 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 }
             }
             else
-            if (   dst_desc->format == VX_DF_IMAGE_IYUV
-                || dst_desc->format == VX_DF_IMAGE_YUV4
+            if ((dst_desc->format == VX_DF_IMAGE_IYUV)
+                || (dst_desc->format == VX_DF_IMAGE_YUV4)
                 )
             {
                 for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
@@ -257,8 +258,8 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 }
             }
             else
-            if (   dst_desc->format == VX_DF_IMAGE_NV12
-                || dst_desc->format == VX_DF_IMAGE_NV21
+            if ((dst_desc->format == VX_DF_IMAGE_NV12)
+                || (dst_desc->format == VX_DF_IMAGE_NV21)
                 )
             {
                 for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
@@ -381,7 +382,7 @@ vx_status VX_CALLBACK tivxChannelCombineControl(
     return status;
 }
 
-void tivxAddTargetKernelChannelCombine()
+void tivxAddTargetKernelChannelCombine(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -418,7 +419,7 @@ void tivxAddTargetKernelChannelCombine()
     }
 }
 
-void tivxRemoveTargetKernelChannelCombine()
+void tivxRemoveTargetKernelChannelCombine(void)
 {
     vx_status status = VX_SUCCESS;
 

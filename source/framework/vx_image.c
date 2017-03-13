@@ -894,7 +894,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
 
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
-        if (!rect ||
+        if ((NULL == rect) ||
             (rect->start_x > rect->end_x) ||
             (rect->start_y > rect->end_y) ||
             (rect->end_x > obj_desc->width) ||
@@ -924,7 +924,8 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                 {
                     subimage = (vx_image)ownCreateImageInt(context, width, height, format, TIVX_IMAGE_FROM_ROI);
 
-                    if ((vxGetStatus((vx_reference)subimage) == VX_SUCCESS) && (subimage->base.type == VX_TYPE_IMAGE))
+                    if ((vxGetStatus((vx_reference)subimage) == VX_SUCCESS) &&
+                        (subimage->base.type == VX_TYPE_IMAGE))
                     {
                         ownLinkParentSubimage(image, subimage);
 
@@ -1148,7 +1149,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
             vx_image parent = this_image->parent;
 
             /* clear this image from its parent' subimages list */
-            if (parent && (ownIsValidSpecificReference((vx_reference)parent, VX_TYPE_IMAGE) == vx_true_e) )
+            if ((NULL != parent) &&
+                (ownIsValidSpecificReference((vx_reference)parent, VX_TYPE_IMAGE) ==
+                    vx_true_e) )
             {
                 vx_uint32 subimage_idx;
 
@@ -1171,7 +1174,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseImage(vx_image* image)
 VX_API_ENTRY void* VX_API_CALL vxFormatImagePatchAddress1d(void *ptr, vx_uint32 index, const vx_imagepatch_addressing_t *addr)
 {
     vx_uint8 *new_ptr = NULL;
-    if (ptr && (index < (addr->dim_x*addr->dim_y) ) )
+    if ((NULL != ptr) && (index < (addr->dim_x*addr->dim_y) ) )
     {
         vx_uint32 x = index % addr->dim_x;
         vx_uint32 y = index / addr->dim_x;
@@ -1185,7 +1188,7 @@ VX_API_ENTRY void* VX_API_CALL vxFormatImagePatchAddress1d(void *ptr, vx_uint32 
 VX_API_ENTRY void* VX_API_CALL vxFormatImagePatchAddress2d(void *ptr, vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
 {
     vx_uint8 *new_ptr = NULL;
-    if (ptr && (x < addr->dim_x) && (y < addr->dim_y))
+    if ((NULL != ptr) && (x < addr->dim_x) && (y < addr->dim_y))
     {
         vx_uint32 offset = ownComputePatchOffset(x, y, addr);
         new_ptr = (vx_uint8 *)ptr;
@@ -1203,7 +1206,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rect
     {
         status = VX_ERROR_INVALID_PARAMETERS;
 
-        if (rect)
+        if (NULL != rect)
         {
             obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
@@ -1244,7 +1247,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
 
         if (NULL != obj_desc)
         {
-            if (rect)
+            if (NULL != rect)
             {
                 if ((rect->start_x <= rect->end_x) &&
                     (rect->start_y <= rect->end_y) &&
@@ -1285,7 +1288,7 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
     vx_imagepatch_addressing_t *imagepatch_addr;
     tivx_obj_desc_image_t *obj_desc = NULL;
 
-    if ((ownIsValidImage(image) == vx_true_e) && (rect))
+    if ((ownIsValidImage(image) == vx_true_e) && (NULL != rect))
     {
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
         if ((rect->start_x <= rect->end_x) && (rect->start_y <= rect->end_y) &&

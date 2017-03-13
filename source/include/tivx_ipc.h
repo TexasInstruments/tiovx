@@ -39,7 +39,7 @@ vx_status tivxIpcSendMsg(vx_enum cpu_id, uint32_t payload);
  *
  * \ingroup group_tivx_ipc
  */
-void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb);
+void tivxIpcRegisterHandler(tivx_ipc_handler_f ipc_handler_func);
 
 /*!
  * \brief Init IPC module
