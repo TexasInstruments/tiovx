@@ -163,8 +163,8 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
         if(dstx != NULL)
         {
-            tivxMemBufferUnmap(dsty->mem_ptr[0].target_ptr, dsty->mem_size[0],
-                dsty->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(dstx->mem_ptr[0].target_ptr, dstx->mem_size[0],
+                dstx->mem_ptr[0].mem_type, VX_WRITE_ONLY);
         }
 
         if(dsty != NULL)
