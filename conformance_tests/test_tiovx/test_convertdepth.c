@@ -171,7 +171,7 @@ static void fillSquence(CT_Image dst, uint32_t seq_init)
     }
 }
 
-TESTCASE(vxConvertDepth,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxConvertDepth,  CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -195,7 +195,7 @@ typedef struct {
     PREPEND_SIZE(CVT_ARG, S16, U8, SATURATE),   \
     PREPEND_SIZE(CVT_ARG, S16, U8, WRAP)
 
-TEST_WITH_ARG(vxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
+TEST_WITH_ARG(tivxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
 {
     vx_image src, dst, virt;
     CT_Image ref_src, refdst, vxdst, virt_ctimage;
@@ -256,4 +256,4 @@ TEST_WITH_ARG(vxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(vxConvertDepth, BitExact)
+TESTCASE_TESTS(tivxConvertDepth, BitExact)

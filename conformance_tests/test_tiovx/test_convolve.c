@@ -32,7 +32,7 @@
 
 #define MAX_CONV_SIZE 15
 
-TESTCASE(Convolve, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxConvolve, CT_VXContext, ct_setup_vx_context, 0)
 
 static vx_convolution convolution_create(vx_context context, int cols, int rows, vx_int16* data, vx_uint32 scale)
 {
@@ -241,7 +241,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_CONV_SIZE, ADD_CONV_SCALE, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, convolve_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_CONV_SIZE, ADD_CONV_SCALE, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, convolve_generate_random, NULL), \
 
-TEST_WITH_ARG(Convolve, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxConvolve, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -321,4 +321,4 @@ TEST_WITH_ARG(Convolve, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Convolve, testGraphProcessing)
+TESTCASE_TESTS(tivxConvolve, testGraphProcessing)

@@ -393,7 +393,7 @@ static int cmp_color_images(CT_Image img0, CT_Image img1, int ythresh, int cthre
     return 0;
 }
 
-TESTCASE(ColorConvert, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxColorConvert, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -454,7 +454,7 @@ static void ct_print_image(CT_Image img, const char* name)
 #define CVT_CASE(from, to, ythresh, cthresh) \
     CVT_CASE_(Graph, from, to, ythresh, cthresh)
 
-TEST_WITH_ARG(ColorConvert, testOnRandomAndNatural, format_arg,
+TEST_WITH_ARG(tivxColorConvert, testOnRandomAndNatural, format_arg,
               CVT_CASE(RGB, RGBX, 0, 0),
               CVT_CASE(RGB, NV12, 2, 2),
               CVT_CASE(RGB, IYUV, 1, 1),
@@ -620,4 +620,4 @@ TEST_WITH_ARG(ColorConvert, testOnRandomAndNatural, format_arg,
     }
 }
 
-TESTCASE_TESTS(ColorConvert, testOnRandomAndNatural)
+TESTCASE_TESTS(tivxColorConvert, testOnRandomAndNatural)

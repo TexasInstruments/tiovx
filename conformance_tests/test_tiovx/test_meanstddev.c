@@ -86,7 +86,7 @@ static void reference_mean_stddev(CT_Image src, vx_float32* _mean, vx_float32* _
 }
 
 
-TESTCASE(MeanStdDev, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxMeanStdDev, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -98,7 +98,7 @@ typedef struct {
 #define MEANSTDDEV_TEST_CASE(imm, tp) \
     {#imm "/" #tp, CT_##imm##_MODE, VX_DF_IMAGE_##tp}
 
-TEST_WITH_ARG(MeanStdDev, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxMeanStdDev, testOnRandom, format_arg,
               MEANSTDDEV_TEST_CASE(Graph, U8),
               )
 {
@@ -225,4 +225,4 @@ TEST_WITH_ARG(MeanStdDev, testOnRandom, format_arg,
     VX_CALL(vxReleaseScalar(&stddev1_s));
 }
 
-TESTCASE_TESTS(MeanStdDev, testOnRandom)
+TESTCASE_TESTS(tivxMeanStdDev, testOnRandom)

@@ -41,7 +41,7 @@
 #include "shared_functions.h"
 
 
-TESTCASE(Box3x3, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxBox3x3, CT_VXContext, ct_setup_vx_context, 0)
 
 // Generate input to cover these requirements:
 // The input data should contain a bi-level image with every possible
@@ -251,7 +251,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, box3x3_generate_bi_level, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, box3x3_generate_random, NULL)
 
-TEST_WITH_ARG(Box3x3, testGraphProcessing, Filter_Arg,
+TEST_WITH_ARG(tivxBox3x3, testGraphProcessing, Filter_Arg,
     BOX_PARAMETERS
 )
 {
@@ -314,4 +314,4 @@ TEST_WITH_ARG(Box3x3, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Box3x3, testGraphProcessing)
+TESTCASE_TESTS(tivxBox3x3, testGraphProcessing)

@@ -40,7 +40,7 @@
 #include <VX/vx.h>
 
 
-TESTCASE(Erode3x3, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxErode3x3, CT_VXContext, ct_setup_vx_context, 0)
 
 
 // VX_DF_IMAGE_8U Boolean image
@@ -238,7 +238,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, erode3x3_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, erode3x3_generate_random, NULL)
 
-TEST_WITH_ARG(Erode3x3, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxErode3x3, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -300,4 +300,4 @@ TEST_WITH_ARG(Erode3x3, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Erode3x3, testGraphProcessing)
+TESTCASE_TESTS(tivxErode3x3, testGraphProcessing)

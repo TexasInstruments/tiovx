@@ -40,7 +40,7 @@
 #include <VX/vx.h>
 
 
-TESTCASE(Gaussian3x3, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxGaussian3x3, CT_VXContext, ct_setup_vx_context, 0)
 
 
 // Generate input to cover these requirements:
@@ -235,7 +235,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, gaussian3x3_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, gaussian3x3_generate_random, NULL)
 
-TEST_WITH_ARG(Gaussian3x3, testGraphProcessing, Filter_Arg,
+TEST_WITH_ARG(tivxGaussian3x3, testGraphProcessing, Filter_Arg,
     GAUSSIAN_PARAMETERS
 )
 {
@@ -303,4 +303,4 @@ TEST_WITH_ARG(Gaussian3x3, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Gaussian3x3, testGraphProcessing)
+TESTCASE_TESTS(tivxGaussian3x3, testGraphProcessing)

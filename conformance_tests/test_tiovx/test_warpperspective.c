@@ -59,7 +59,7 @@ static CT_Image own_generate_random(const char* fileName, int width, int height)
 }
 
 
-TESTCASE(WarpPerspective, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxWarpPerspective, CT_VXContext, ct_setup_vx_context, 0)
 
 
 enum CT_PerspectiveMatrixType {
@@ -351,7 +351,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_VX_BORDERS_WARP_PERSPECTIVE, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MATRIX_PARAM_WARP_PERSPECTIVE, ARG, own_generate_random, NULL, 128, 128), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_VX_BORDERS_WARP_PERSPECTIVE, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MATRIX_PARAM_WARP_PERSPECTIVE, ARG, own_generate_random, NULL, 128, 128)
 
-TEST_WITH_ARG(WarpPerspective, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxWarpPerspective, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -461,6 +461,6 @@ TEST_WITH_ARG(WarpPerspective, testGraphProcessing, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
-TESTCASE_TESTS(WarpPerspective,
+TESTCASE_TESTS(tivxWarpPerspective,
         testGraphProcessing
 )

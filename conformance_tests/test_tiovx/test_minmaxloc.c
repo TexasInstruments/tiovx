@@ -149,7 +149,7 @@ static void ct_set_random_pixels(CT_Image image, uint64_t* rng, int where_count,
     }
 }
 
-TESTCASE(MinMaxLoc, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxMinMaxLoc, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -160,7 +160,7 @@ typedef struct {
 #define MINMAXLOC_TEST_CASE(imm, tp) \
     {#imm "/" #tp, CT_##imm##_MODE, VX_DF_IMAGE_##tp}
 
-TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxMinMaxLoc, testOnRandom, format_arg,
               MINMAXLOC_TEST_CASE(Graph, U8),
               MINMAXLOC_TEST_CASE(Graph, S16),
               )
@@ -427,7 +427,7 @@ TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
 }
 
 
-TEST_WITH_ARG(MinMaxLoc, testOptionalParams, format_arg,
+TEST_WITH_ARG(tivxMinMaxLoc, testOptionalParams, format_arg,
               MINMAXLOC_TEST_CASE(Graph, U8),
               MINMAXLOC_TEST_CASE(Graph, S16),
               )
@@ -603,4 +603,4 @@ TEST_WITH_ARG(MinMaxLoc, testOptionalParams, format_arg,
         ct_free_mem(ptbuf);
 }
 
-TESTCASE_TESTS(MinMaxLoc, testOnRandom, testOptionalParams)
+TESTCASE_TESTS(tivxMinMaxLoc, testOnRandom, testOptionalParams)

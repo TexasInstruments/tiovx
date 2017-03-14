@@ -185,10 +185,10 @@ typedef struct {
     APPEND_SCALE(FUZZY_ARG, owp, 644, 258, U8, U8, S16),    \
     APPEND_SCALE(FUZZY_ARG, owp, 1600, 1200, S16, S16, S16)
 
-TESTCASE(vxMultiply,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxMultiply,  CT_VXContext, ct_setup_vx_context, 0)
 
 
-TEST_WITH_ARG(vxMultiply, testFuzzy, fuzzy_arg, MUL_FUZZY_ARGS(SATURATE), MUL_FUZZY_ARGS(WRAP))
+TEST_WITH_ARG(tivxMultiply, testFuzzy, fuzzy_arg, MUL_FUZZY_ARGS(SATURATE), MUL_FUZZY_ARGS(WRAP))
 {
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_image dst_graph2, virt1_graph2, virt2_graph2;
@@ -344,4 +344,4 @@ TEST_WITH_ARG(vxMultiply, testFuzzy, fuzzy_arg, MUL_FUZZY_ARGS(SATURATE), MUL_FU
     printPerformance(perf_graph2, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(vxMultiply, testFuzzy)
+TESTCASE_TESTS(tivxMultiply, testFuzzy)

@@ -94,7 +94,7 @@ static void reverse_histogram(int nbins, int32_t hist[])
     }
 }
 
-TESTCASE(Histogram, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxHistogram, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -147,7 +147,7 @@ typedef struct {
         } \
     } while(0)
 
-TEST_WITH_ARG(Histogram, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
               HIST_TEST_CASE(Graph, U8),
               )
 {
@@ -432,4 +432,4 @@ TEST_WITH_ARG(Histogram, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(Histogram, testOnRandom)
+TESTCASE_TESTS(tivxHistogram, testOnRandom)

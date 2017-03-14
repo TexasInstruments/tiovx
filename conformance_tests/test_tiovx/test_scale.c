@@ -31,7 +31,7 @@
 
 #include <math.h> // floorf
 
-TESTCASE(Scale, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxScale, CT_VXContext, ct_setup_vx_context, 0)
 
 static CT_Image scale_generate_random(const char* fileName, int width, int height)
 {
@@ -411,7 +411,7 @@ void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_width, i
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 2, ADD_SIZE_644x258, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", 1_2, 2, ADD_SIZE_1600x1200, ADD_VX_BORDERS, ARG, 0), \
 
-TEST_WITH_ARG(Scale, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxScale, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -482,7 +482,7 @@ TEST_WITH_ARG(Scale, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(Scale, testSequentialNodes, Arg,
+TEST_WITH_ARG(tivxScale, testSequentialNodes, Arg,
     PARAMETERS
 )
 {
@@ -565,4 +565,4 @@ TEST_WITH_ARG(Scale, testSequentialNodes, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Scale, /*testGraphProcessing,*/ testSequentialNodes)
+TESTCASE_TESTS(tivxScale, /*testGraphProcessing,*/ testSequentialNodes)

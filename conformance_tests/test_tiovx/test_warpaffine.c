@@ -49,7 +49,7 @@
 #endif
 
 
-TESTCASE(WarpAffine, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxWarpAffine, CT_VXContext, ct_setup_vx_context, 0)
 
 enum CT_AffineMatrixType {
     VX_MATRIX_IDENT = 0,
@@ -325,7 +325,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ARG, warp_affine_generate_random, NULL, 128, 128), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ARG, warp_affine_generate_random, NULL, 128, 128)
 
-TEST_WITH_ARG(WarpAffine, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxWarpAffine, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -435,6 +435,6 @@ TEST_WITH_ARG(WarpAffine, testGraphProcessing, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
-TESTCASE_TESTS(WarpAffine,
+TESTCASE_TESTS(tivxWarpAffine,
         testGraphProcessing
 )

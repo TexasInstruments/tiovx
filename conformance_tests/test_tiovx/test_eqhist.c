@@ -167,7 +167,7 @@ static void referenceFunction(CT_Image src, CT_Image srcAdd, CT_Image virt, CT_I
 }
 
 
-TESTCASE(EqualizeHistogram, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxEqualizeHistogram, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -180,7 +180,7 @@ typedef struct {
 #define EQHIST_TEST_CASE(imm, tp) \
     {#imm "/" #tp, CT_##imm##_MODE, VX_DF_IMAGE_##tp}
 
-TEST_WITH_ARG(EqualizeHistogram, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxEqualizeHistogram, testOnRandom, format_arg,
               EQHIST_TEST_CASE(Graph, U8),
               )
 {
@@ -263,4 +263,4 @@ TEST_WITH_ARG(EqualizeHistogram, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(EqualizeHistogram, testOnRandom)
+TESTCASE_TESTS(tivxEqualizeHistogram, testOnRandom)

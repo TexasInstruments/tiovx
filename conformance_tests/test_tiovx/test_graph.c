@@ -40,7 +40,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 
-TESTCASE(Graph, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxGraph, CT_VXContext, ct_setup_vx_context, 0)
 
 static void referenceAddSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy)
 {
@@ -310,7 +310,7 @@ typedef struct {
     FUZZY_ARG(func, SATURATE, 644, 258, U8, U8, U8),   \
     FUZZY_ARG(func, SATURATE, 1600, 1200, U8, U8, U8)
 
-TEST_WITH_ARG(Graph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
+TEST_WITH_ARG(tivxGraph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
 {
     vx_image src1, src2, src3, src4, dst1, dst2, virt1, virt2;
     vx_graph graph;
@@ -408,7 +408,7 @@ TEST_WITH_ARG(Graph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZZY_A
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(Graph, testParallelNodesSameTarget, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
+TEST_WITH_ARG(tivxGraph, testParallelNodesSameTarget, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
 {
     vx_image src1, src2, src3, src4, dst1, dst2, virt1, virt2;
     vx_graph graph;
@@ -506,7 +506,7 @@ TEST_WITH_ARG(Graph, testParallelNodesSameTarget, fuzzy_arg, ARITHM_FUZZY_ARGS(A
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(Graph, testThreeParallelNodes, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
+TEST_WITH_ARG(tivxGraph, testThreeParallelNodes, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
 {
     vx_image src1, src2, src3, src4, src5, src6, dst1, dst2, dst3, virt1, virt2, virt3;
     vx_graph graph;
@@ -819,7 +819,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random/alpha0.33f/alphafinal0.67f", ADD_SIZE_644x258, ARG, 0.33f, 0.67f), \
     CT_GENERATE_PARAMETERS("random/alpha0.99f/alphafinal0.8f", ADD_SIZE_1600x1200, ARG, 0.99f, 0.8f)
 
-TEST_WITH_ARG(Graph, testVirtualDataObject, Arg,
+TEST_WITH_ARG(tivxGraph, testVirtualDataObject, Arg,
     PARAMETERS
 )
 {
@@ -912,7 +912,7 @@ TEST_WITH_ARG(Graph, testVirtualDataObject, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(Graph, testParallelGraphs, Arg,
+TEST_WITH_ARG(tivxGraph, testParallelGraphs, Arg,
     PARAMETERS
 )
 {
@@ -1010,7 +1010,7 @@ TEST_WITH_ARG(Graph, testParallelGraphs, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
-TEST_WITH_ARG(Graph, testParallelGraphsMultipleNodes, Arg,
+TEST_WITH_ARG(tivxGraph, testParallelGraphsMultipleNodes, Arg,
     PARAMETERS
 )
 {
@@ -1148,7 +1148,7 @@ TEST_WITH_ARG(Graph, testParallelGraphsMultipleNodes, Arg,
     printPerformance(perf_node2_graph2, widthHardCoded*heightHardCoded, "G2");
 }
 
-TEST_WITH_ARG(Graph, testThreeParallelGraphs, Arg,
+TEST_WITH_ARG(tivxGraph, testThreeParallelGraphs, Arg,
     PARAMETERS
 )
 {
@@ -1283,7 +1283,7 @@ TEST_WITH_ARG(Graph, testThreeParallelGraphs, Arg,
 
 // Testing alternating nodes
 // vxNot -> vxAccumulateSquare -> vxNot -> vxAccumulateSquare -> vxNot -> vxAccumulateSquare
-TEST_WITH_ARG(Graph, testAlternatingNodes, Arg,
+TEST_WITH_ARG(tivxGraph, testAlternatingNodes, Arg,
     PARAMETERS
 )
 {
@@ -1427,7 +1427,7 @@ TEST_WITH_ARG(Graph, testAlternatingNodes, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Graph,
+TESTCASE_TESTS(tivxGraph,
         testParallelNodesDifferentTarget,
         testParallelNodesSameTarget,
         testThreeParallelNodes,

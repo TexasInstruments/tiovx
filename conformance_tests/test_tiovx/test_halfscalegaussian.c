@@ -34,7 +34,7 @@
 
 #define HALFSCALEGAUSSIAN_TOLERANCE 1
 
-TESTCASE(HalfScaleGaussian, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxHalfScaleGaussian, CT_VXContext, ct_setup_vx_context, 0)
 
 static CT_Image halfScaleGaussian_generate_random(const char* fileName, int width, int height)
 {
@@ -213,7 +213,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
 
-TEST_WITH_ARG(HalfScaleGaussian, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -295,5 +295,5 @@ TEST_WITH_ARG(HalfScaleGaussian, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(HalfScaleGaussian,
+TESTCASE_TESTS(tivxHalfScaleGaussian,
         testGraphProcessing)

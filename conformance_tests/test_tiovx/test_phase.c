@@ -186,7 +186,7 @@ static void reference_sequential_phase(CT_Image dx0, CT_Image dy0, CT_Image dx1,
    reference_phase(virt3, virt4, phase);
 }
 
-TESTCASE(Phase, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxPhase, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -203,7 +203,7 @@ typedef struct {
 #define PHASE_TEST_CASE(imm, sob, tp) \
     {#imm "/" #sob "/" #tp, CT_##imm##_MODE, sob, VX_DF_IMAGE_##tp}
 
-TEST_WITH_ARG(Phase, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
               PHASE_TEST_CASE(Graph, Random, S16),
               )
 {
@@ -348,4 +348,4 @@ TEST_WITH_ARG(Phase, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(Phase, testOnRandom)
+TESTCASE_TESTS(tivxPhase, testOnRandom)

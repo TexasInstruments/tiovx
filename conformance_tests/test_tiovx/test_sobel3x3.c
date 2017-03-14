@@ -41,7 +41,7 @@
 #include "shared_functions.h"
 
 
-TESTCASE(Sobel3x3, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxSobel3x3, CT_VXContext, ct_setup_vx_context, 0)
 
 static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
 {
@@ -434,7 +434,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, sobel3x3_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, sobel3x3_generate_random, NULL)
 
-TEST_WITH_ARG(Sobel3x3, testGraphProcessing, Filter_Arg,
+TEST_WITH_ARG(tivxSobel3x3, testGraphProcessing, Filter_Arg,
     SOBEL_PARAMETERS
 )
 {
@@ -555,7 +555,7 @@ TEST_WITH_ARG(Sobel3x3, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(Sobel3x3, testOptionalParametersX, Filter_Arg,
+TEST_WITH_ARG(tivxSobel3x3, testOptionalParametersX, Filter_Arg,
     SOBEL_PARAMETERS
 )
 {
@@ -563,6 +563,7 @@ TEST_WITH_ARG(Sobel3x3, testOptionalParametersX, Filter_Arg,
     vx_image src_image = 0, dst_x_image = 0;
     vx_graph graph = 0;
     vx_node node = 0;
+    vx_perf_t perf_node1, perf_graph;
 
     CT_Image src = NULL, dst_x = NULL;
     vx_border_t border = arg_->border;
@@ -585,6 +586,9 @@ TEST_WITH_ARG(Sobel3x3, testOptionalParametersX, Filter_Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
     ASSERT_NO_FAILURE(dst_x = ct_image_from_vx_image(dst_x_image));
 
     ASSERT_NO_FAILURE(sobel3x3_check_x(src, dst_x, border));
@@ -600,9 +604,12 @@ TEST_WITH_ARG(Sobel3x3, testOptionalParametersX, Filter_Arg,
 
     ASSERT(dst_x_image == 0);
     ASSERT(src_image == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(Sobel3x3, testOptionalParametersY, Filter_Arg,
+TEST_WITH_ARG(tivxSobel3x3, testOptionalParametersY, Filter_Arg,
     SOBEL_PARAMETERS
 )
 {
@@ -610,6 +617,7 @@ TEST_WITH_ARG(Sobel3x3, testOptionalParametersY, Filter_Arg,
     vx_image src_image = 0, dst_y_image = 0;
     vx_graph graph = 0;
     vx_node node = 0;
+    vx_perf_t perf_node1, perf_graph;
 
     CT_Image src = NULL, dst_y = NULL;
     vx_border_t border = arg_->border;
@@ -632,6 +640,9 @@ TEST_WITH_ARG(Sobel3x3, testOptionalParametersY, Filter_Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
     ASSERT_NO_FAILURE(dst_y = ct_image_from_vx_image(dst_y_image));
 
     ASSERT_NO_FAILURE(sobel3x3_check_y(src, dst_y, border));
@@ -647,6 +658,9 @@ TEST_WITH_ARG(Sobel3x3, testOptionalParametersY, Filter_Arg,
 
     ASSERT(dst_y_image == 0);
     ASSERT(src_image == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Sobel3x3, testGraphProcessing, testOptionalParametersX, testOptionalParametersY)
+TESTCASE_TESTS(tivxSobel3x3, testGraphProcessing, testOptionalParametersX, testOptionalParametersY)

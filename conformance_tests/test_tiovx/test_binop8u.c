@@ -133,7 +133,7 @@ typedef vx_node   (VX_API_CALL *vxBinopFunction) (vx_graph, vx_image, vx_image, 
 typedef void      (*referenceFunction)(CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, CT_Image);
 
 
-TESTCASE(vxBinOp8u,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxBinOp8u,  CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -150,7 +150,8 @@ typedef struct {
     FUZZY_ARG(func, 644, 258),      \
     FUZZY_ARG(func, 1600, 1200)
 
-TEST_WITH_ARG(vxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP_SIZE_ARGS(And), BINOP_SIZE_ARGS(Or), BINOP_SIZE_ARGS(Xor))
+
+TEST_WITH_ARG(tivxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP_SIZE_ARGS(And), BINOP_SIZE_ARGS(Or), BINOP_SIZE_ARGS(Xor))
 {
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_graph graph;
@@ -229,4 +230,4 @@ TEST_WITH_ARG(vxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP_S
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(vxBinOp8u, testFuzzy)
+TESTCASE_TESTS(tivxBinOp8u, testFuzzy)

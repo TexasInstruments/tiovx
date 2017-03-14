@@ -26,12 +26,21 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include "shared_functions.h"
 
-TESTCASE(NonLinearFilter, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxNonLinearFilter, CT_VXContext, ct_setup_vx_context, 0)
 
 
 #define MASK_SIZE_MAX (5)
@@ -169,6 +178,56 @@ static void referenceNot(CT_Image src, CT_Image dst)
             dst->data.y[i * dst->stride + j] = ~src->data.y[i * src->stride + j];
 }
 
+
+static void filter_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Image dst, vx_border_t* border)
+{
+    CT_Image dst_ref = NULL;
+    ASSERT(src && dst && mask && border);
+
+    vx_size rows, cols;
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_ROWS, &rows, sizeof(rows)));
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_COLUMNS, &cols, sizeof(cols)));
+
+    vx_coordinates2d_t origin;
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_ORIGIN, &origin, sizeof(origin)));
+
+    vx_enum pattern = 0;
+    vx_uint8 m[MASK_SIZE_MAX * MASK_SIZE_MAX];
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
+    VX_CALL(vxCopyMatrix(mask, m, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+    ASSERT_NO_FAILURE(pattern_check(m, cols, rows, pattern));
+
+    ASSERT_NO_FAILURE(filter_create_reference_image(function, src, &origin, cols, rows, m, &dst_ref, border));
+
+    ASSERT_NO_FAILURE(
+    if (border->mode == VX_BORDER_UNDEFINED)
+    {
+        vx_int32 left = origin.x;
+        vx_int32 top = origin.y;
+        vx_int32 right = (vx_int32)(cols - origin.x - 1);
+        vx_int32 bottom = (vx_int32)(rows - origin.y - 1);
+
+        ct_adjust_roi(dst, left, top, right, bottom);
+        ct_adjust_roi(dst_ref, left, top, right, bottom);
+    }
+    );
+
+    EXPECT_EQ_CTIMAGE(dst_ref, dst);
+
+#if 0
+    if (CT_HasFailure())
+    {
+        printf("=== SRC ===\n");
+        ct_dump_image_info(src);
+        printf("=== DST ===\n");
+        ct_dump_image_info(dst);
+        printf("=== EXPECTED ===\n");
+        ct_dump_image_info(dst_ref);
+    }
+#endif
+}
+
 static void filter_not_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Image dst, vx_border_t* border)
 {
     CT_Image virt_ref = NULL, dst_ref = NULL;
@@ -256,7 +315,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput/mask=5x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, generate_random, NULL, 5)
 
 
-TEST_WITH_ARG(NonLinearFilter, testGraphProcessing, Filter_Arg,
+TEST_WITH_ARG(tivxNonLinearFilter, testVirtualImage, Filter_Arg,
     FILTER_PARAMETERS
     )
 {
@@ -273,7 +332,7 @@ TEST_WITH_ARG(NonLinearFilter, testGraphProcessing, Filter_Arg,
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
-    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(src = arg_->generator(NULL, arg_->width, arg_->height));
 
     ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
 
@@ -329,4 +388,89 @@ TEST_WITH_ARG(NonLinearFilter, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(NonLinearFilter, testGraphProcessing)
+TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
+    FILTER_PARAMETERS
+    )
+{
+    vx_context context = context_->vx_context_;
+    vx_image src0_image = 0, dst0_image = 0, src1_image = 0, dst1_image = 0;
+    vx_matrix mask = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_enum pattern = 0;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+
+    CT_Image src0 = NULL, dst0 = NULL, src1 = NULL, dst1 = NULL;
+    vx_border_t border = arg_->border;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_NO_FAILURE(src0 = arg_->generator(NULL, arg_->width, arg_->height));
+
+    ASSERT_NO_FAILURE(src1 = arg_->generator(NULL, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src0_image = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src1_image = ct_image_to_vx_image(src1, context), VX_TYPE_IMAGE);
+
+    dst0_image = ct_create_similar_image(src0_image);
+    ASSERT_VX_OBJECT(dst0_image, VX_TYPE_IMAGE);
+
+    dst1_image = ct_create_similar_image(src1_image);
+    ASSERT_VX_OBJECT(dst1_image, VX_TYPE_IMAGE);
+
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_size, arg_->mask_size);
+    ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
+    ASSERT_EQ_INT(arg_->pattern, pattern);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node1 = vxNonLinearFilterNode(graph, arg_->function, src0_image, mask, dst0_image);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    node2 = vxNonLinearFilterNode(graph, arg_->function, src1_image, mask, dst1_image);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    ASSERT_NO_FAILURE(dst0 = ct_image_from_vx_image(dst0_image));
+    ASSERT_NO_FAILURE(dst1 = ct_image_from_vx_image(dst1_image));
+
+    ASSERT_NO_FAILURE(filter_check(arg_->function, src0, mask, dst0, &border));
+    ASSERT_NO_FAILURE(filter_check(arg_->function, src1, mask, dst1, &border));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseMatrix(&mask));
+    VX_CALL(vxReleaseImage(&dst1_image));
+    VX_CALL(vxReleaseImage(&dst0_image));
+    VX_CALL(vxReleaseImage(&src1_image));
+    VX_CALL(vxReleaseImage(&src0_image));
+
+    ASSERT(mask == 0);
+    ASSERT(dst1_image == 0);
+    ASSERT(dst0_image == 0);
+    ASSERT(src1_image == 0);
+    ASSERT(src0_image == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
+}
+
+TESTCASE_TESTS(tivxNonLinearFilter, testVirtualImage, testGraphProcessing)

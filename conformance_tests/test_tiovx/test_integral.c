@@ -38,7 +38,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 
-TESTCASE(Integral, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxIntegral, CT_VXContext, ct_setup_vx_context, 0)
 
 static CT_Image integral_generate_random(const char* fileName, int width, int height)
 {
@@ -108,7 +108,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_644x258, ARG, integral_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_1600x1200, ARG, integral_generate_random, NULL)
 
-TEST_WITH_ARG(Integral, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -172,4 +172,4 @@ TEST_WITH_ARG(Integral, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(Integral, testGraphProcessing)
+TESTCASE_TESTS(tivxIntegral, testGraphProcessing)

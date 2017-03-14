@@ -41,7 +41,7 @@
 #include <string.h>
 
 
-TESTCASE(LUT, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxLUT, CT_VXContext, ct_setup_vx_context, 0)
 
 static vx_size lut_count(vx_enum data_type)
 {
@@ -256,7 +256,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_644x258, ADD_TYPE, ARG, lut_image_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_1600x1200, ADD_TYPE, ARG, lut_image_generate_random, NULL)
 
-TEST_WITH_ARG(LUT, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxLUT, testGraphProcessing, Arg,
     LUT_PARAMETERS
 )
 {
@@ -343,5 +343,5 @@ TEST_WITH_ARG(LUT, testGraphProcessing, Arg,
     ct_free_mem(lut1_data);
 }
 
-TESTCASE_TESTS(LUT,
+TESTCASE_TESTS(tivxLUT,
                testGraphProcessing)

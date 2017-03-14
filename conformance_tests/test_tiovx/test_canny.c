@@ -26,6 +26,14 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
 
 #include "test_tiovx.h"
 #include <stdint.h>
@@ -189,7 +197,7 @@ static void reference_canny(CT_Image src, CT_Image dst, int32_t low_thresh, int3
 #endif
 
 // computes count(disttransform(src) >= 2, where dst != 0)
-static uint32_t disttransform2_metric(CT_Image src, CT_Image dst, CT_Image dist, uint32_t* total_edge_pixels)
+static uint32_t disttransform2_metric(CT_Image src, CT_Image dst, CT_Image dist, uint32_t* total_edge_pixels, uint8_t value)
 {
     uint32_t i, j, k, count, total;
 
@@ -243,7 +251,7 @@ static uint32_t disttransform2_metric(CT_Image src, CT_Image dst, CT_Image dist,
     {
         for (i = 0; i < dst->width; ++i)
         {
-            if (dst->data.y[j * dst->stride + i] != 255) // Modified to 255 b/c of vxNot
+            if (dst->data.y[j * dst->stride + i] != value) // Must be 255 when using vxNot
             {
                 total += 1;
                 count += (dist->data.y[j * dist->stride + i] < 2) ? 1 : 0;
@@ -305,7 +313,23 @@ static CT_Image get_source_image(const char* filename)
         return ct_read_image(filename, 1);
 }
 
-static CT_Image get_reference_result(const char* src_name, CT_Image src, CT_Image virt_ctimage, int32_t low_thresh, int32_t high_thresh, uint32_t gsz, vx_enum norm)
+static CT_Image get_reference_result(const char* src_name, CT_Image src, int32_t low_thresh, int32_t high_thresh, uint32_t gsz, vx_enum norm)
+{
+#ifdef USE_OPENCV_GENERATED_REFERENCE
+    char buff[1024];
+    sprintf(buff, "canny_%ux%u_%d_%d_%s_%s", gsz, gsz, low_thresh, high_thresh, norm == VX_NORM_L1 ? "L1" : "L2", src_name);
+    // printf("reading: %s\n", buff);
+    return ct_read_image(buff, 1);
+#else
+    CT_Image dst;
+    ASSERT_(return 0, src);
+    if (dst = ct_allocate_image(src->width, src->height, VX_DF_IMAGE_U8))
+        reference_canny(src, dst, low_thresh, high_thresh, gsz, norm);
+    return dst;
+#endif
+}
+
+static CT_Image get_reference_result_virtual(const char* src_name, CT_Image src, CT_Image virt_ctimage, int32_t low_thresh, int32_t high_thresh, uint32_t gsz, vx_enum norm)
 {
 #ifdef USE_OPENCV_GENERATED_REFERENCE
     char buff[1024];
@@ -322,7 +346,7 @@ static CT_Image get_reference_result(const char* src_name, CT_Image src, CT_Imag
 #endif
 }
 
-TESTCASE(vxCanny,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxCanny,  CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -333,18 +357,10 @@ typedef struct {
     int32_t high_thresh;
 } canny_arg;
 
-#define BIT_EXACT_ARG(grad, thresh) ARG(#grad "x" #grad " thresh=" #thresh, "lena_gray.bmp", grad, VX_NORM_L1, thresh, thresh)
-#define DIS_BIT_EXACT_ARG(grad, thresh) ARG("DISABLED_" #grad "x" #grad " thresh=" #thresh, "lena_gray.bmp", grad, VX_NORM_L1, thresh, thresh)
-
-TEST_WITH_ARG(vxCanny, BitExactL1, canny_arg, BIT_EXACT_ARG(3, 120), BIT_EXACT_ARG(5, 100), /* DIS_BIT_EXACT_ARG(7, 80 do not enable this argument) */)
-{
-
-}
-
 #define CANNY_ARG(grad, norm, lo, hi, file) ARG(#file "/" #norm " " #grad "x" #grad " thresh=(" #lo ", " #hi ")", #file ".bmp", grad, VX_NORM_##norm, lo, hi)
 #define DISABLED_CANNY_ARG(grad, norm, lo, hi, file) ARG("DISABLED_" #file "/" #norm " " #grad "x" #grad " thresh=(" #lo ", " #hi ")", #file ".bmp", grad, VX_NORM_##norm, lo, hi)
 
-TEST_WITH_ARG(vxCanny, Lena, canny_arg,
+TEST_WITH_ARG(tivxCanny, virtImage, canny_arg,
     CANNY_ARG(3, L1, 100, 120, lena_gray),
     CANNY_ARG(3, L2, 100, 120, lena_gray),
     CANNY_ARG(3, L1, 90,  130, lena_gray),
@@ -428,7 +444,7 @@ TEST_WITH_ARG(vxCanny, Lena, canny_arg,
 
     ASSERT_NO_FAILURE(vxdst = ct_image_from_vx_image(dst));
     virt_ctimage = ct_allocate_image(lena->width, lena->height, VX_DF_IMAGE_U8);
-    ASSERT_NO_FAILURE(refdst = get_reference_result(arg_->filename, lena, virt_ctimage, low_thresh, high_thresh, arg_->grad_size, arg_->norm_type));
+    ASSERT_NO_FAILURE(refdst = get_reference_result_virtual(arg_->filename, lena, virt_ctimage, low_thresh, high_thresh, arg_->grad_size, arg_->norm_type));
 
     ASSERT_NO_FAILURE(ct_adjust_roi(vxdst,  border_width, border_width, border_width, border_width));
     ASSERT_NO_FAILURE(ct_adjust_roi(refdst, border_width, border_width, border_width, border_width));
@@ -439,7 +455,7 @@ TEST_WITH_ARG(vxCanny, Lena, canny_arg,
     // where disttransform is the distance transform image with Euclidean distance
     // of the reference(x,y) (canny edge ground truth). This condition should be
     // satisfied by 98% of output edge pixels, tolerance = 2.
-    ASSERT_NO_FAILURE(count = disttransform2_metric(refdst, vxdst, dist, &total));
+    ASSERT_NO_FAILURE(count = disttransform2_metric(refdst, vxdst, dist, &total, 255));
     if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
     {
         CT_RecordFailureAtFormat("disttransform(reference) < 2 only for %u of %u pixels of output edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
@@ -453,7 +469,7 @@ TEST_WITH_ARG(vxCanny, Lena, canny_arg,
     // reference(x,y) = 255, where disttransform is the distance transform image
     // with Euclidean distance of the output(x,y) (canny edge ground truth). This
     // condition should be satisfied by 98% of reference edge pixels, tolerance = 2.
-    ASSERT_NO_FAILURE(count = disttransform2_metric(vxdst, refdst, dist, &total));
+    ASSERT_NO_FAILURE(count = disttransform2_metric(vxdst, refdst, dist, &total, 255));
     if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
     {
         CT_RecordFailureAtFormat("disttransform(output) < 2 only for %u of %u pixels of reference edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
@@ -473,4 +489,152 @@ TEST_WITH_ARG(vxCanny, Lena, canny_arg,
     printPerformance(perf_graph, lena->width*lena->height, "G1");
 }
 
-TESTCASE_TESTS(vxCanny,  DISABLED_BitExactL1, Lena)
+TEST_WITH_ARG(tivxCanny, multipleNode, canny_arg,
+    CANNY_ARG(3, L1, 100, 120, lena_gray),
+    CANNY_ARG(3, L2, 100, 120, lena_gray),
+    CANNY_ARG(3, L2, 90,  130, lena_gray),
+    CANNY_ARG(3, L1, 70,  71 , lena_gray),
+    CANNY_ARG(3, L2, 70,  71 , lena_gray),
+    CANNY_ARG(3, L1, 150, 220, lena_gray),
+    CANNY_ARG(3, L2, 150, 220, lena_gray),
+    CANNY_ARG(5, L1, 100, 120, lena_gray),
+    CANNY_ARG(5, L2, 100, 120, lena_gray),
+    CANNY_ARG(7, L1, 100, 120, lena_gray),
+    CANNY_ARG(7, L2, 100, 120, lena_gray),
+)
+{
+    uint32_t total, count;
+    vx_image src0, src1, dst0, dst1;
+    vx_threshold hyst;
+    vx_graph graph;
+    vx_node node1, node2;
+    CT_Image lena, blurred_lena, vxdst0, vxdst1, refdst0, refdst1, dist0, dist1;
+    vx_int32 low_thresh  = arg_->low_thresh;
+    vx_int32 high_thresh = arg_->high_thresh;
+    vx_border_t border = { VX_BORDER_UNDEFINED, {{ 0 }} };
+    vx_int32 border_width = arg_->grad_size/2 + 1;
+    vx_context context = context_->vx_context_;
+    vx_enum thresh_data_type = VX_TYPE_UINT8;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+    if (low_thresh > 255)
+        thresh_data_type = VX_TYPE_INT16;
+
+    ASSERT_NO_FAILURE(lena = get_source_image("lena_gray.bmp"));
+    ASSERT_NO_FAILURE(blurred_lena = get_source_image("blurred_lena_gray.bmp"));
+    ASSERT_NO_FAILURE(src0 = ct_image_to_vx_image(lena, context));
+    ASSERT_NO_FAILURE(src1 = ct_image_to_vx_image(blurred_lena, context));
+    ASSERT_VX_OBJECT(dst0 = vxCreateImage(context, lena->width, lena->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst1 = vxCreateImage(context, blurred_lena->width, blurred_lena->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(hyst = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, thresh_data_type), VX_TYPE_THRESHOLD);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(hyst, VX_THRESHOLD_THRESHOLD_LOWER, &low_thresh,  sizeof(low_thresh)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(hyst, VX_THRESHOLD_THRESHOLD_UPPER, &high_thresh, sizeof(high_thresh)));
+    /* FALSE_VALUE and TRUE_VALUE of hyst parameter are set to their default values (0, 255) by vxCreateThreshold */
+    /* test reference data are computed with assumption that FALSE_VALUE and TRUE_VALUE set to 0 and 255 */
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxCannyEdgeDetectorNode(graph, src0, hyst, arg_->grad_size, arg_->norm_type, dst0), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxCannyEdgeDetectorNode(graph, src1, hyst, arg_->grad_size, arg_->norm_type, dst1), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    // run graph
+#ifdef EXECUTE_ASYNC
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+#else
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+#endif
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseGraph(&graph));
+
+    ASSERT_NO_FAILURE(vxdst0 = ct_image_from_vx_image(dst0));
+    ASSERT_NO_FAILURE(refdst0 = get_reference_result("lena_gray.bmp", lena, low_thresh, high_thresh, arg_->grad_size, arg_->norm_type));
+
+    ASSERT_NO_FAILURE(vxdst1 = ct_image_from_vx_image(dst1));
+    ASSERT_NO_FAILURE(refdst1 = get_reference_result("blurred_lena_gray.bmp", blurred_lena, low_thresh, high_thresh, arg_->grad_size, arg_->norm_type));
+
+    ASSERT_NO_FAILURE(ct_adjust_roi(vxdst0,  border_width, border_width, border_width, border_width));
+    ASSERT_NO_FAILURE(ct_adjust_roi(refdst0, border_width, border_width, border_width, border_width));
+
+    ASSERT_NO_FAILURE(ct_adjust_roi(vxdst1,  border_width, border_width, border_width, border_width));
+    ASSERT_NO_FAILURE(ct_adjust_roi(refdst1, border_width, border_width, border_width, border_width));
+
+    ASSERT_NO_FAILURE(dist0 = ct_allocate_image(refdst0->width, refdst0->height, VX_DF_IMAGE_U8));
+
+    ASSERT_NO_FAILURE(dist1 = ct_allocate_image(refdst1->width, refdst1->height, VX_DF_IMAGE_U8));
+
+    // disttransform(x,y) < tolerance for all (x,y) such that output(x,y) = 255,
+    // where disttransform is the distance transform image with Euclidean distance
+    // of the reference(x,y) (canny edge ground truth). This condition should be
+    // satisfied by 98% of output edge pixels, tolerance = 2.
+    ASSERT_NO_FAILURE(count = disttransform2_metric(refdst0, vxdst0, dist0, &total, 0));
+    if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
+    {
+        CT_RecordFailureAtFormat("disttransform(reference) < 2 only for %u of %u pixels of output edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+            count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
+
+        // ct_write_image("canny_vx.bmp", vxdst);
+        // ct_write_image("canny_ref.bmp", refdst);
+    }
+
+    // And the inverse: disttransform(x,y) < tolerance for all (x,y) such that
+    // reference(x,y) = 255, where disttransform is the distance transform image
+    // with Euclidean distance of the output(x,y) (canny edge ground truth). This
+    // condition should be satisfied by 98% of reference edge pixels, tolerance = 2.
+    ASSERT_NO_FAILURE(count = disttransform2_metric(vxdst0, refdst0, dist0, &total, 0));
+    if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
+    {
+        CT_RecordFailureAtFormat("disttransform(output) < 2 only for %u of %u pixels of reference edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+            count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
+
+        // ct_write_image("canny_vx.bmp", vxdst);
+        // ct_write_image("canny_ref.bmp", refdst);
+    }
+
+    // disttransform(x,y) < tolerance for all (x,y) such that output(x,y) = 255,
+    // where disttransform is the distance transform image with Euclidean distance
+    // of the reference(x,y) (canny edge ground truth). This condition should be
+    // satisfied by 98% of output edge pixels, tolerance = 2.
+    ASSERT_NO_FAILURE(count = disttransform2_metric(refdst1, vxdst1, dist1, &total, 0));
+    if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
+    {
+        CT_RecordFailureAtFormat("disttransform(reference) < 2 only for %u of %u pixels of output edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+            count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
+
+        // ct_write_image("canny_vx.bmp", vxdst);
+        // ct_write_image("canny_ref.bmp", refdst);
+    }
+
+    // And the inverse: disttransform(x,y) < tolerance for all (x,y) such that
+    // reference(x,y) = 255, where disttransform is the distance transform image
+    // with Euclidean distance of the output(x,y) (canny edge ground truth). This
+    // condition should be satisfied by 98% of reference edge pixels, tolerance = 2.
+    ASSERT_NO_FAILURE(count = disttransform2_metric(vxdst1, refdst1, dist1, &total, 0));
+    if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
+    {
+        CT_RecordFailureAtFormat("disttransform(output) < 2 only for %u of %u pixels of reference edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+            count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
+
+        // ct_write_image("canny_vx.bmp", vxdst);
+        // ct_write_image("canny_ref.bmp", refdst);
+    }
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseThreshold(&hyst));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&src0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&src1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&dst0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&dst1));
+
+    printPerformance(perf_node1, lena->width*lena->height, "N1");
+    printPerformance(perf_node2, lena->width*lena->height, "N2");
+    printPerformance(perf_graph, lena->width*lena->height, "G1");
+}
+
+TESTCASE_TESTS(tivxCanny, virtImage, multipleNode)

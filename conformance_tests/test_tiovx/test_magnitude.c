@@ -83,7 +83,7 @@ static void reference_sequential_mag(CT_Image dx0, CT_Image dy0, CT_Image dx1, C
 }
 
 
-TESTCASE(Magnitude, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxMagnitude, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -100,7 +100,7 @@ typedef struct {
 #define MAG_TEST_CASE(imm, sob, tp) \
     {#imm "/" #sob "/" #tp, CT_##imm##_MODE, sob, VX_DF_IMAGE_##tp}
 
-TEST_WITH_ARG(Magnitude, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxMagnitude, testOnRandom, format_arg,
               MAG_TEST_CASE(Graph, Random, S16),
               )
 {
@@ -219,4 +219,4 @@ TEST_WITH_ARG(Magnitude, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(Magnitude, testOnRandom)
+TESTCASE_TESTS(tivxMagnitude, testOnRandom)

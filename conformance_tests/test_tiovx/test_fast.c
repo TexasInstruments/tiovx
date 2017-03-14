@@ -1,0 +1,646 @@
+/*
+ * Copyright (c) 2012-2016 The Khronos Group Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and/or associated documentation files (the
+ * "Materials"), to deal in the Materials without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Materials, and to
+ * permit persons to whom the Materials are furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Materials.
+ *
+ * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS
+ * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS
+ * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT
+ *    https://www.khronos.org/registry/
+ *
+ * THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+ * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+ * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+ * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+ */
+
+#include "test_tiovx.h"
+#include <VX/vx.h>
+#include <VX/vxu.h>
+#include <stdlib.h>
+#include <string.h>
+#include <limits.h>
+#include <math.h>
+#include "shared_functions.h"
+
+#define MAX_POINTS 100
+#define LEVELS_COUNT_MAX    7
+
+static vx_size gaussian_pyramid_calc_max_levels_count(int width, int height, vx_float32 scale)
+{
+    vx_size level = 1;
+    while ((16 <= width) && (16 <= height) && level < LEVELS_COUNT_MAX)
+    {
+        level++;
+        width = (int)ceil((vx_float64)width * scale);
+        height = (int)ceil((vx_float64)height * scale);
+    }
+    return level;
+}
+
+static vx_array own_create_keypoint_array(vx_context context, vx_size count, vx_keypoint_t* keypoints)
+{
+    vx_array arr = 0;
+
+    ASSERT_VX_OBJECT_(return 0, arr = vxCreateArray(context, VX_TYPE_KEYPOINT, count), VX_TYPE_ARRAY);
+
+#if 0
+    {
+    vx_size i;
+    vx_size stride = 0;
+    void* ptr = 0;
+
+    VX_CALL_(return 0, vxAccessArrayRange(arr, 0, count, &stride, &ptr, VX_WRITE_ONLY));
+
+    for (i = 0; i < count; i++)
+    {
+        vx_keypoint_t* k = (vx_keypoint_t*)(((char*)ptr) + i * stride);
+        memcpy(k, &keypoints[i], sizeof(vx_keypoint_t));
+    }
+
+    VX_CALL_(return 0, vxCommitArrayRange(arr, 0, count, ptr));
+    }
+#else
+    VX_CALL_(return 0, vxAddArrayItems(arr, count, keypoints, sizeof(vx_keypoint_t)));
+#endif
+
+    return arr;
+}
+
+static CT_Image optflow_pyrlk_read_image(const char* fileName, int width, int height)
+{
+    CT_Image image = NULL;
+    ASSERT_(return 0, width == 0 && height == 0);
+    image = ct_read_image(fileName, 1);
+    ASSERT_(return 0, image);
+    ASSERT_(return 0, image->format == VX_DF_IMAGE_U8);
+    return image;
+}
+
+static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_points, vx_keypoint_t** p_new_points)
+{
+    size_t sz = 0;
+    void* buf = 0;
+    char file[MAXPATHLENGTH];
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+#if 1
+    FILE* f = fopen(file, "rb");
+    ASSERT_(return 0, f);
+    fseek(f, 0, SEEK_END);
+
+    sz = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    ASSERT_(return 0, buf = ct_alloc_mem(sz + 1));
+    ASSERT_(return 0, sz == fread(buf, 1, sz, f));
+    fclose(f); f = NULL;
+    ((char*)buf)[sz] = 0;
+#else
+    sz = ...
+    buf = ...
+#endif
+
+    ASSERT_(return 0, *p_old_points = ct_alloc_mem(sizeof(vx_keypoint_t) * MAX_POINTS));
+    ASSERT_(return 0, *p_new_points = ct_alloc_mem(sizeof(vx_keypoint_t) * MAX_POINTS));
+
+    {
+        int num = 0;
+        char* pos = buf;
+        char* next = 0;
+        while(pos && (next = strchr(pos, '\n')))
+        {
+            int id = 0, status = 0;
+            float x1, y1, x2, y2;
+
+            int res;
+
+            *next = 0;
+            res = sscanf(pos, "%d %d %g %g %g %g", &id, &status, &x1, &y1, &x2, &y2);
+            pos = next + 1;
+            if (res == 6)
+            {
+                (*p_old_points)[num].x = (vx_int32)x1;
+                (*p_old_points)[num].y = (vx_int32)y1;
+                (*p_old_points)[num].strength = 1;
+                (*p_old_points)[num].scale = 0;
+                (*p_old_points)[num].orientation = 0;
+                (*p_old_points)[num].tracking_status = 1;
+                (*p_old_points)[num].error = 0;
+
+                (*p_new_points)[num].x = (vx_int32)x2;
+                (*p_new_points)[num].y = (vx_int32)y2;
+                (*p_new_points)[num].strength = 1;
+                (*p_new_points)[num].scale = 0;
+                (*p_new_points)[num].orientation = 0;
+                (*p_new_points)[num].tracking_status = status;
+                (*p_new_points)[num].error = 0;
+
+                num++;
+            }
+            else
+                break;
+        }
+
+        ct_free_mem(buf);
+
+        return num;
+    }
+}
+
+static void own_keypoints_check(vx_size num_points,
+        vx_keypoint_t* old_points, vx_keypoint_t* new_points_ref, vx_keypoint_t* new_points)
+{
+    vx_size i;
+    int num_valid_points = 0;
+    int num_lost = 0;
+    int num_errors = 0;
+    int num_tracked_points = 0;
+
+    for (i = 0; i < num_points; i++)
+    {
+        vx_int32 dx, dy;
+        if (new_points_ref[i].tracking_status == 0)
+            continue;
+        num_valid_points++;
+        if (new_points[i].tracking_status == 0)
+        {
+            num_lost++;
+            continue;
+        }
+        num_tracked_points++;
+        dx = new_points_ref[i].x - new_points[i].x;
+        dy = new_points_ref[i].y - new_points[i].y;
+        if ((dx * dx + dy * dy) > 2 * 2)
+        {
+            num_errors++;
+        }
+    }
+
+    if (num_lost > (int)(num_valid_points * 0.05f))
+        CT_ADD_FAILURE("Too many lost points: %d (threshold %d)\n",
+                num_lost, (int)(num_valid_points * 0.05f));
+    if (num_errors > (int)(num_tracked_points * 0.10f))
+        CT_ADD_FAILURE("Too many bad points: %d (threshold %d, both tracked points %d)\n",
+                num_errors, (int)(num_tracked_points * 0.10f), num_tracked_points);
+
+#if 0
+    if (CT_HasFailure())
+    {
+        for (i = 0; i < num_points; i++)
+        {
+            printf("i=%d status = %d->%d  x =  %d -> %d ? %d    y = %d -> %d ? %d\n", (int)i,
+                    new_points_ref[i].tracking_status, new_points[i].tracking_status,
+                    old_points[i].x, new_points_ref[i].x, new_points[i].x,
+                    old_points[i].y, new_points_ref[i].y, new_points[i].y);
+        }
+    }
+#endif
+}
+
+static const int circle[][2] =
+{
+    {3, 0}, {3, -1}, {2, -2}, {1, -3}, {0, -3}, {-1, -3}, {-2, -2}, {-3, -1},
+    {-3, 0}, {-3, 1}, {-2, 2}, {-1, 3}, {0, 3}, {1, 3}, {2, 2}, {3, 1},
+    {3, 0}, {3, -1}, {2, -2}, {1, -3}, {0, -3}, {-1, -3}, {-2, -2}, {-3, -1},
+    {-3, 0}, {-3, 1}, {-2, 2}, {-1, 3}, {0, 3}, {1, 3}, {2, 2}, {3, 1},
+};
+
+static int check_pt(const uint8_t* ptr, int32_t stride, int t)
+{
+    int cval = ptr[0];
+    int max_up_count = 0, max_lo_count = 0;
+    int i, up_count = 0, lo_count = 0;
+
+    for( i = 0; i < 16+9; i++ )
+    {
+        int val = ptr[circle[i][0] + circle[i][1]*stride];
+        if( val > cval + t )
+            up_count++;
+        else
+        {
+            max_up_count = CT_MAX(max_up_count, up_count);
+            up_count = 0;
+        }
+        if( val < cval - t )
+            lo_count++;
+        else
+        {
+            max_lo_count = CT_MAX(max_lo_count, lo_count);
+            lo_count = 0;
+        }
+    }
+    max_up_count = CT_MAX(max_up_count, up_count);
+    max_lo_count = CT_MAX(max_lo_count, lo_count);
+    return max_up_count >= 9 || max_lo_count >= 9;
+}
+
+static uint32_t reference_fast(CT_Image src, CT_Image dst, CT_Image mask, int threshold, int nonmax_suppression)
+{
+    const int r = 3;
+    int x, y, width, height;
+    int32_t srcstride, dststride;
+    uint32_t ncorners = 0;
+
+    ASSERT_(return 0, src && dst);
+    ASSERT_(return 0, src->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_U8);
+    ASSERT_(return 0, src->width > 0 && src->height > 0 &&
+           src->width == dst->width && src->height == dst->height);
+    width = src->width;
+    height = src->height;
+    srcstride = (int32_t)ct_stride_bytes(src);
+    dststride = (int32_t)ct_stride_bytes(dst);
+    ct_memset( dst->data.y, 0, (vx_size)dststride*height );
+
+    for( y = r; y < height - r; y++ )
+    {
+        const uint8_t* srcptr = src->data.y + y*srcstride;
+        uint8_t* dstptr = dst->data.y + y*dststride;
+        for( x = r; x < width - r; x++ )
+        {
+            int is_corner = check_pt(srcptr + x, srcstride, threshold);
+            int strength = 0;
+
+            if( is_corner )
+            {
+                // determine the corner strength using binary search
+                int a = threshold;
+                int b = 255;
+                // loop invariant:
+                //    1. point is corner with threshold=a
+                //    2. point is not a corner with threshold=b
+                while( b - a > 1 )
+                {
+                    int c = (b + a)/2;
+                    is_corner = check_pt(srcptr + x, srcstride, c);
+                    if( is_corner )
+                        a = c;
+                    else
+                        b = c;
+                }
+                strength = a;
+                ncorners++;
+            }
+            dstptr[x] = CT_CAST_U8(strength);
+        }
+    }
+
+    if( nonmax_suppression )
+    {
+        int32_t maskstride = (int32_t)ct_stride_bytes(mask);
+
+        for( y = r; y < height - r; y++ )
+        {
+            const uint8_t* dstptr = dst->data.y + y*dststride;
+            uint8_t* mptr = mask->data.y + y*maskstride;
+            for( x = r; x < width - r; x++ )
+            {
+                const uint8_t* ptr = dstptr + x;
+                int cval = ptr[0];
+                mptr[x] = cval >= ptr[-1-dststride] && cval >= ptr[-dststride] && cval >= ptr[-dststride+1] && cval >= ptr[-1] &&
+                          cval >  ptr[-1+dststride] && cval >  ptr[ dststride] && cval >  ptr[ dststride+1] && cval >  ptr[ 1];
+            }
+        }
+
+        ncorners = 0;
+        for( y = r; y < height - r; y++ )
+        {
+            uint8_t* dstptr = dst->data.y + y*dststride;
+            const uint8_t* mptr = mask->data.y + y*maskstride;
+            for( x = r; x < width - r; x++ )
+            {
+                if( mptr[x] )
+                    ncorners++;
+                else
+                    dstptr[x] = 0;
+            }
+        }
+    }
+    return ncorners;
+}
+
+TESTCASE(tivxFastCorners, CT_VXContext, ct_setup_vx_context, 0)
+
+typedef struct {
+    const char* name;
+    const char* imgname;
+    int threshold;
+    int nonmax;
+    int mode;
+} format_arg;
+
+#define MAX_BINS 256
+
+#define FAST_TEST_CASE(imm, imgname, t, nm) \
+    {#imm "/" "image=" #imgname "/" "threshold=" #t "/" "nonmax_suppression=" #nm, #imgname ".bmp", t, nm, CT_##imm##_MODE}
+
+TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
+              FAST_TEST_CASE(Graph, baboon, 10, 0),
+              FAST_TEST_CASE(Graph, baboon, 10, 1),
+              FAST_TEST_CASE(Graph, baboon, 80, 0),
+              FAST_TEST_CASE(Graph, baboon, 80, 1),
+              FAST_TEST_CASE(Graph, optflow_00, 10, 0),
+              FAST_TEST_CASE(Graph, optflow_00, 10, 1),
+              FAST_TEST_CASE(Graph, optflow_00, 80, 0),
+              FAST_TEST_CASE(Graph, optflow_00, 80, 1),
+              )
+{
+    int mode = arg_->mode;
+    const char* imgname = arg_->imgname;
+    int threshold = arg_->threshold;
+    int nonmax = arg_->nonmax;
+    vx_image src = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_graph graph = 0;
+    vx_context context = context_->vx_context_;
+    vx_scalar sthresh;
+    vx_array corners, new_points_arr = 0;
+    uint32_t width, height;
+    vx_float32 threshold_f = (vx_float32)threshold;
+    uint32_t ncorners0, ncorners;
+    vx_size corners_data_size = 0;
+    vx_keypoint_t* corners_data = 0;
+    uint32_t i, dst1stride;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+
+    vx_pyramid pyr = 0, src_pyr   = 0;
+    vx_float32 eps_val      = 0.001f;
+    vx_uint32  num_iter_val = 100;
+    vx_bool   use_estimations_val = vx_true_e;
+    vx_scalar eps                 = 0;
+    vx_scalar num_iter            = 0;
+    vx_scalar use_estimations     = 0;
+    vx_size   winSize             = 5; // hardcoded from optflow test case
+    vx_border_t border = { VX_BORDER_REPLICATE };
+    vx_size levels;
+    vx_keypoint_t* old_points = 0;
+    vx_keypoint_t* new_points_ref = 0;
+    vx_keypoint_t* new_points = 0;
+    vx_size new_points_size = 0;
+
+    CT_Image src_ct_image = NULL;
+    CT_Image src0, dst0, mask0, dst1;
+
+    ASSERT_NO_FAILURE(src0 = ct_read_image(imgname, 1));
+    ASSERT(src0->format == VX_DF_IMAGE_U8);
+
+    width = src0->width;
+    height = src0->height;
+
+    levels = gaussian_pyramid_calc_max_levels_count(width, height, VX_SCALE_PYRAMID_HALF);
+
+    ASSERT_NO_FAILURE(src_ct_image = optflow_pyrlk_read_image( "optflow_01.bmp", 0, 0));
+
+    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_VX_OBJECT(new_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(use_estimations = vxCreateScalar(context, VX_TYPE_BOOL, &use_estimations_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    dst1stride = ct_stride_bytes(dst1);
+    ct_memset(dst1->data.y, 0, (vx_size)dst1stride*height);
+
+    ncorners0 = reference_fast(src0, dst0, mask0, threshold, nonmax);
+
+    src = ct_image_to_vx_image(src0, context);
+    sthresh = vxCreateScalar(context, VX_TYPE_FLOAT32, &threshold_f);
+    corners = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    node1 = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, 0);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxOpticalFlowPyrLKNode(
+        graph,
+        pyr, src_pyr,
+        corners, corners, new_points_arr,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node2));
+    ASSERT(node2 == 0);
+    VX_CALL(vxReleaseScalar(&eps));
+    ASSERT(eps == 0);
+    VX_CALL(vxReleaseScalar(&num_iter));
+    ASSERT(num_iter == 0);
+    VX_CALL(vxReleaseScalar(&use_estimations));
+    ASSERT(use_estimations == 0);
+    VX_CALL(vxReleaseArray(&new_points_arr));
+    ASSERT(new_points_arr == 0);
+    VX_CALL(vxReleasePyramid(&src_pyr));
+    ASSERT(src_pyr == 0);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleasePyramid(&pyr));
+    ASSERT(pyr == 0);
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node1 == 0);
+    ASSERT(graph == 0);
+    VX_CALL(vxReleaseImage(&src));
+    ASSERT(src == 0);
+    VX_CALL(vxReleaseScalar(&sthresh));
+    ASSERT(sthresh == 0);
+    ct_read_array(corners, (void**)&corners_data, 0, &corners_data_size, 0);
+    VX_CALL(vxReleaseArray(&corners));
+    ASSERT(corners == 0);
+    ncorners = (uint32_t)corners_data_size;
+
+    for( i = 0; i < ncorners; i++ )
+    {
+        vx_keypoint_t* pt = &corners_data[i];
+        int ix, iy;
+        ASSERT( 0.f <= pt->x && pt->x < (float)width &&
+                0.f <= pt->y && pt->y < (float)height );
+        ASSERT(pt->tracking_status == 1);
+        ix = (int)(pt->x + 0.5f);
+        iy = (int)(pt->y + 0.5f);
+        ix = CT_MIN(ix, (int)width-1);
+        iy = CT_MIN(iy, (int)height-1);
+        ASSERT( !nonmax || (0 < pt->strength && pt->strength <= 255) );
+        dst1->data.y[dst1stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
+    }
+
+    ct_free_mem(corners_data);
+    ct_free_mem(new_points);
+    ct_free_mem(new_points_ref);
+    ct_free_mem(old_points);
+
+    {
+    const uint32_t border = 3;
+    int32_t stride0 = (int32_t)ct_stride_bytes(dst0), stride1 = (int32_t)ct_stride_bytes(dst1);
+    uint32_t x, y;
+    uint32_t missing0 = 0, missing1 = 0;
+
+    for( y = border; y < height - border; y++ )
+    {
+        const uint8_t* ptr0 = dst0->data.y + stride0*y;
+        const uint8_t* ptr1 = dst1->data.y + stride1*y;
+
+        for( x = border; x < width - border; x++ )
+        {
+            if( ptr0[x] > 0 && ptr1[x] == 0 )
+                missing0++;
+            else if( ptr0[x] == 0 && ptr1[x] > 0 )
+                missing1++;
+            else if( nonmax && ptr0[x] > 0 && ptr1[x] > 0 && fabs(log10((double)ptr0[x]/ptr1[x])) >= 1 )
+            {
+                missing0++;
+                missing1++;
+            }
+        }
+    }
+
+    ASSERT( missing0 <= 0.02*ncorners0 );
+    ASSERT( missing1 <= 0.02*ncorners );
+    }
+
+    printPerformance(perf_node1, width*height, "N1");
+    printPerformance(perf_node2, width*height, "N2");
+    printPerformance(perf_graph, width*height, "G1");
+}
+
+TEST_WITH_ARG(tivxFastCorners, testMultipleNodes, format_arg,
+              FAST_TEST_CASE(Graph, lena, 10, 0),
+              FAST_TEST_CASE(Graph, lena, 10, 1),
+              FAST_TEST_CASE(Graph, lena, 80, 0),
+              FAST_TEST_CASE(Graph, lena, 80, 1),
+              FAST_TEST_CASE(Graph, baboon, 10, 0),
+              FAST_TEST_CASE(Graph, baboon, 10, 1),
+              FAST_TEST_CASE(Graph, baboon, 80, 0),
+              FAST_TEST_CASE(Graph, baboon, 80, 1),
+              FAST_TEST_CASE(Graph, optflow_00, 10, 0),
+              FAST_TEST_CASE(Graph, optflow_00, 10, 1),
+              FAST_TEST_CASE(Graph, optflow_00, 80, 0),
+              FAST_TEST_CASE(Graph, optflow_00, 80, 1),
+              )
+{
+    int mode = arg_->mode;
+    const char* imgname = arg_->imgname;
+    int threshold = arg_->threshold;
+    int nonmax = arg_->nonmax;
+    vx_image src;
+    vx_node node = 0;
+    vx_graph graph = 0;
+    CT_Image src0, dst0, mask0, dst1;
+    vx_context context = context_->vx_context_;
+    vx_scalar sthresh;
+    vx_array corners;
+    uint32_t width, height;
+    vx_float32 threshold_f = (vx_float32)threshold;
+    uint32_t ncorners0, ncorners;
+    vx_size corners_data_size = 0;
+    vx_keypoint_t* corners_data = 0;
+    uint32_t i, dst1stride;
+
+    ASSERT_NO_FAILURE(src0 = ct_read_image(imgname, 1));
+    ASSERT(src0->format == VX_DF_IMAGE_U8);
+
+    width = src0->width;
+    height = src0->height;
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    dst1stride = ct_stride_bytes(dst1);
+    ct_memset(dst1->data.y, 0, (vx_size)dst1stride*height);
+
+    ncorners0 = reference_fast(src0, dst0, mask0, threshold, nonmax);
+
+    src = ct_image_to_vx_image(src0, context);
+    sthresh = vxCreateScalar(context, VX_TYPE_FLOAT32, &threshold_f);
+    corners = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    node = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, 0);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0 && graph == 0);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseScalar(&sthresh));
+    ct_read_array(corners, (void**)&corners_data, 0, &corners_data_size, 0);
+    VX_CALL(vxReleaseArray(&corners));
+    ncorners = (uint32_t)corners_data_size;
+
+    for( i = 0; i < ncorners; i++ )
+    {
+        vx_keypoint_t* pt = &corners_data[i];
+        int ix, iy;
+        ASSERT( 0.f <= pt->x && pt->x < (float)width &&
+                0.f <= pt->y && pt->y < (float)height );
+        ASSERT(pt->tracking_status == 1);
+        ix = (int)(pt->x + 0.5f);
+        iy = (int)(pt->y + 0.5f);
+        ix = CT_MIN(ix, (int)width-1);
+        iy = CT_MIN(iy, (int)height-1);
+        ASSERT( !nonmax || (0 < pt->strength && pt->strength <= 255) );
+        dst1->data.y[dst1stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
+    }
+
+    ct_free_mem(corners_data);
+
+    //ASSERT_EQ_CTIMAGE(dst0, dst1);
+
+    {
+    const uint32_t border = 3;
+    int32_t stride0 = (int32_t)ct_stride_bytes(dst0), stride1 = (int32_t)ct_stride_bytes(dst1);
+    uint32_t x, y;
+    uint32_t missing0 = 0, missing1 = 0;
+
+    for( y = border; y < height - border; y++ )
+    {
+        const uint8_t* ptr0 = dst0->data.y + stride0*y;
+        const uint8_t* ptr1 = dst1->data.y + stride1*y;
+
+        for( x = border; x < width - border; x++ )
+        {
+            if( ptr0[x] > 0 && ptr1[x] == 0 )
+                missing0++;
+            else if( ptr0[x] == 0 && ptr1[x] > 0 )
+                missing1++;
+            else if( nonmax && ptr0[x] > 0 && ptr1[x] > 0 && fabs(log10((double)ptr0[x]/ptr1[x])) >= 1 )
+            {
+                missing0++;
+                missing1++;
+            }
+        }
+    }
+
+    ASSERT( missing0 <= 0.02*ncorners0 );
+    ASSERT( missing1 <= 0.02*ncorners );
+    }
+}
+
+TESTCASE_TESTS(tivxFastCorners, testOnNaturalImages, testMultipleNodes)

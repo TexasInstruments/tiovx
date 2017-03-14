@@ -41,7 +41,7 @@
 #include <VX/vx.h>
 
 
-TESTCASE(ChannelExtractCombine, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxChannelExtractCombine, CT_VXContext, ct_setup_vx_context, 0)
 
 static CT_Image channel_extract_image_generate_random(int width, int height, vx_df_image format)
 {
@@ -124,7 +124,7 @@ typedef struct {
 #define ChannelExtractCombine_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_CASES, ADD_SIZE, ARG)
 
-TEST_WITH_ARG(ChannelExtractCombine, testExtractCombine, Arg,
+TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombine, Arg,
     ChannelExtractCombine_PARAMETERS
 )
 {
@@ -205,7 +205,7 @@ TEST_WITH_ARG(ChannelExtractCombine, testExtractCombine, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(ChannelExtractCombine, testCombineExtract, Arg,
+TEST_WITH_ARG(tivxChannelExtractCombine, testCombineExtract, Arg,
     ChannelExtractCombine_PARAMETERS
 )
 {
@@ -297,7 +297,7 @@ TEST_WITH_ARG(ChannelExtractCombine, testCombineExtract, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(ChannelExtractCombine,
+TESTCASE_TESTS(tivxChannelExtractCombine,
         testExtractCombine,
         testCombineExtract
 )

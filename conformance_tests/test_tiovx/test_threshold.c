@@ -139,7 +139,7 @@ static void referenceFunction(CT_Image src, CT_Image srcAdd, CT_Image virt, CT_I
 }
 
 
-TESTCASE(Threshold, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxThreshold, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -152,7 +152,7 @@ typedef struct {
 #define CT_THRESHOLD_TRUE_VALUE  255
 #define CT_THRESHOLD_FALSE_VALUE 0
 
-TEST_WITH_ARG(Threshold, testOnRandom, format_arg,
+TEST_WITH_ARG(tivxThreshold, testOnRandom, format_arg,
               THRESHOLD_CASE(Graph, BINARY),
               THRESHOLD_CASE(Graph, RANGE),
               )
@@ -275,4 +275,4 @@ TEST_WITH_ARG(Threshold, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(Threshold, testOnRandom)
+TESTCASE_TESTS(tivxThreshold, testOnRandom)

@@ -26,6 +26,15 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
@@ -36,7 +45,7 @@
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
 #define MAX_POINTS 100
 
-TESTCASE(GaussianPyramid, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxGaussianPyramid, CT_VXContext, ct_setup_vx_context, 0)
 
 #define LEVELS_COUNT_MAX    7
 
@@ -636,7 +645,7 @@ typedef struct {
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL)
 
-TEST_WITH_ARG(GaussianPyramid, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -681,7 +690,7 @@ TEST_WITH_ARG(GaussianPyramid, testGraphProcessing, Arg,
 
     ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(num_points = own_read_keypoints("optflow_pyrlk_5x5.txt", &old_points, &new_points_ref)); // create a new pts file
+    ASSERT_NO_FAILURE(num_points = own_read_keypoints("optflow_pyrlk_5x5.txt", &old_points, &new_points_ref));
 
     ASSERT_VX_OBJECT(old_points_arr = own_create_keypoint_array(context, num_points, old_points), VX_TYPE_ARRAY);
     ASSERT_VX_OBJECT(new_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
@@ -743,7 +752,7 @@ TEST_WITH_ARG(GaussianPyramid, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(GaussianPyramid, testVirtualPyramid, Arg,
+TEST_WITH_ARG(tivxGaussianPyramid, testVirtualPyramid, Arg,
     PARAMETERS
 )
 {
@@ -848,7 +857,7 @@ TEST_WITH_ARG(GaussianPyramid, testVirtualPyramid, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(GaussianPyramid,
+TESTCASE_TESTS(tivxGaussianPyramid,
         testGraphProcessing,
         testVirtualPyramid
 )

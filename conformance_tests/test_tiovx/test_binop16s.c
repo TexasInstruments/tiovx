@@ -88,7 +88,7 @@ static void referenceAbsDiff(CT_Image src0, CT_Image src1, CT_Image src2, CT_Ima
 typedef vx_node   (VX_API_CALL *vxBinopFunction) (vx_graph, vx_image, vx_image, vx_image);
 typedef void      (*referenceFunction)(CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, CT_Image, CT_Image);
 
-TESTCASE(vxBinOp16s,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxBinOp16s,  CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -113,7 +113,7 @@ typedef struct {
     FUZZY_ARG(func, 1920, 1080),    \
     ARG_EXTENDED_END()
 
-TEST_WITH_ARG(vxBinOp16s, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff))
+TEST_WITH_ARG(tivxBinOp16s, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff))
 {
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_graph graph;
@@ -192,4 +192,4 @@ TEST_WITH_ARG(vxBinOp16s, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff))
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(vxBinOp16s, testFuzzy)
+TESTCASE_TESTS(tivxBinOp16s, testFuzzy)

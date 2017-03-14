@@ -40,7 +40,7 @@
 #include <VX/vx.h>
 
 
-TESTCASE(ChannelCombine, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxChannelCombine, CT_VXContext, ct_setup_vx_context, 0)
 
 static CT_Image channel_combine_image_generate_random(int width, int height, vx_df_image format)
 {
@@ -183,7 +183,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("randomInput", ADD_CASES, ADD_SIZE, ARG)
 
 /* Also tests optional parameter */
-TEST_WITH_ARG(ChannelCombine, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
     ChannelCombine_PARAMETERS
 )
 {
@@ -274,6 +274,6 @@ TEST_WITH_ARG(ChannelCombine, testGraphProcessing, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
-TESTCASE_TESTS(ChannelCombine,
+TESTCASE_TESTS(tivxChannelCombine,
         testGraphProcessing
 )

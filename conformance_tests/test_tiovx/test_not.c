@@ -70,7 +70,7 @@ static void fillSquence(CT_Image dst, uint32_t seq_init)
             dst->data.y[i * dst->stride + j] = ++val;
 }
 
-TESTCASE(vxNot,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxNot,  CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* name;
@@ -93,7 +93,7 @@ typedef struct {
     SIZE_ARG(1920, 1080),   \
     ARG_EXTENDED_END()
 
-TEST_WITH_ARG(vxNot, testSizes, size_arg, NOT_SIZE_ARGS)
+TEST_WITH_ARG(tivxNot, testSizes, size_arg, NOT_SIZE_ARGS)
 {
     vx_image src, dst, virt;
     CT_Image ref_src, refdst, vxdst, virt_ctimage;
@@ -153,5 +153,5 @@ TEST_WITH_ARG(vxNot, testSizes, size_arg, NOT_SIZE_ARGS)
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(vxNot, testSizes)
+TESTCASE_TESTS(tivxNot, testSizes)
 

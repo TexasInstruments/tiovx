@@ -49,7 +49,7 @@
 #endif
 
 
-TESTCASE(Remap, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxRemap, CT_VXContext, ct_setup_vx_context, 0)
 
 #define SRC_WIDTH       128
 #define SRC_HEIGHT      128
@@ -353,7 +353,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
 
-TEST_WITH_ARG(Remap, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxRemap, testGraphProcessing, Arg,
     REMAP_PARAMETERS
 )
 {
@@ -399,6 +399,6 @@ TEST_WITH_ARG(Remap, testGraphProcessing, Arg,
     ASSERT(input_image == 0);
 }
 
-TESTCASE_TESTS(Remap,
+TESTCASE_TESTS(tivxRemap,
         testGraphProcessing
 )

@@ -41,7 +41,7 @@
 #include <VX/vxu.h>
 
 
-TESTCASE(AccumulateSquare, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxAccumulateSquare, CT_VXContext, ct_setup_vx_context, 0)
 
 static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
 {
@@ -247,7 +247,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random/shift1", ADD_SIZE_644x258, ARG, 1, 3), \
     CT_GENERATE_PARAMETERS("random/shift8", ADD_SIZE_1600x1200, ARG, 8, 5)
 
-TEST_WITH_ARG(AccumulateSquare, testParallelNodes, Arg,
+TEST_WITH_ARG(tivxAccumulateSquare, testParallelNodes, Arg,
     PARAMETERS
 )
 {
@@ -330,7 +330,7 @@ TEST_WITH_ARG(AccumulateSquare, testParallelNodes, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TEST_WITH_ARG(AccumulateSquare, testSequentialNodes, Arg,
+TEST_WITH_ARG(tivxAccumulateSquare, testSequentialNodes, Arg,
     PARAMETERS
 )
 {
@@ -419,7 +419,7 @@ TEST_WITH_ARG(AccumulateSquare, testSequentialNodes, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(AccumulateSquare,
+TESTCASE_TESTS(tivxAccumulateSquare,
         testParallelNodes,
         testSequentialNodes
 )
