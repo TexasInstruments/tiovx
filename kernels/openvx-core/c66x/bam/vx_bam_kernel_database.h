@@ -16,6 +16,8 @@
 
 #include "algframework.h"
 #include "ti/vxlib/src/common/VXLIB_bufParams.h"
+#include "ti/vxlib/src/vx/VXLIB_absDiff_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_absDiff_i8u_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_absDiff_i16s_i16s_o16s/bam_plugin/BAM_VXLIB_absDiff_i16s_i16s_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_histogram_i8u_o32u/bam_plugin/BAM_VXLIB_histogram_i8u_o32u.h"
 #include "ti/vxlib/src/vx/VXLIB_sobel_3x3_i8u_o16s_o16s/bam_plugin/BAM_VXLIB_sobel_3x3_i8u_o16s_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_sobelX_3x3_i8u_o16s/bam_plugin/BAM_VXLIB_sobelX_3x3_i8u_o16s.h"
@@ -39,6 +41,8 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S = 7,
     BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S = 8,
     BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U = 9,
+    BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U = 10,
+    BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S = 11,
     BAM_KERNELID_MAX =                           0X7FFFFFFF
 } BAM_TI_KernelID;
 

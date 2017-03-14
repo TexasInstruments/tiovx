@@ -31,6 +31,8 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_sobelY_3x3_i8u_o16s_kernel, &gBAM_VXLIB_sobelY_3x3_i8u_o16s_helperFunc, "vxlib_sobelY_3x3_i8u_o16s", BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S },
     { &gBAM_VXLIB_tableLookup_i16s_o16s_kernel, &gBAM_VXLIB_tableLookup_i16s_o16s_helperFunc, "vxlib_tableLookup_i16s_o16s", BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S },
     { &gBAM_VXLIB_tableLookup_i8u_o8u_kernel, &gBAM_VXLIB_tableLookup_i8u_o8u_helperFunc, "vxlib_tableLookup_i8u_o8u", BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U },
+    { &gBAM_VXLIB_absDiff_i8u_i8u_o8u_kernel, &gBAM_VXLIB_absDiff_i8u_i8u_o8u_helperFunc, "vxlib_absDiff_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U },
+    { &gBAM_VXLIB_absDiff_i16s_i16s_o16s_kernel, &gBAM_VXLIB_absDiff_i16s_i16s_o16s_helperFunc, "vxlib_absDiff_i16s_i16s_o16s", BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S },
 };
 
 /**
@@ -51,6 +53,8 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_sobelY_3x3_i8u_o16s_kernel, &gBAM_VXLIB_sobelY_3x3_i8u_o16s_execFunc, "vxlib_sobelY_3x3_i8u_o16s", BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S },
     { &gBAM_VXLIB_tableLookup_i16s_o16s_kernel, &gBAM_VXLIB_tableLookup_i16s_o16s_execFunc, "vxlib_tableLookup_i16s_o16s", BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S },
     { &gBAM_VXLIB_tableLookup_i8u_o8u_kernel, &gBAM_VXLIB_tableLookup_i8u_o8u_execFunc, "vxlib_tableLookup_i8u_o8u", BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U },
+    { &gBAM_VXLIB_absDiff_i8u_i8u_o8u_kernel, &gBAM_VXLIB_absDiff_i8u_i8u_o8u_execFunc, "vxlib_absDiff_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U },
+    { &gBAM_VXLIB_absDiff_i16s_i16s_o16s_kernel, &gBAM_VXLIB_absDiff_i16s_i16s_o16s_execFunc, "vxlib_absDiff_i16s_i16s_o16s", BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S },
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =

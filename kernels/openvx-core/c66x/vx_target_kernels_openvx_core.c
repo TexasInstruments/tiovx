@@ -21,7 +21,7 @@ typedef struct  {
 #ifdef USE_BAM
 
 Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
-    {tivxAddTargetKernelAbsDiff, tivxRemoveTargetKernelAbsDiff},
+    {tivxAddTargetKernelBamAbsDiff, tivxRemoveTargetKernelBamAbsDiff},
     {tivxAddTargetKernelAccumulate, tivxRemoveTargetKernelAccumulate},
     {tivxAddTargetKernelAccumulateSquare, tivxRemoveTargetKernelAccumulateSquare},
     {tivxAddTargetKernelAccumulateWeighted, tivxRemoveTargetKernelAccumulateWeighted},

@@ -23,7 +23,7 @@ extern "C" {
 
 #ifdef USE_BAM
 
-void tivxAddTargetKernelAbsDiff(void);
+void tivxAddTargetKernelBamAbsDiff(void);
 void tivxAddTargetKernelAccumulate(void);
 void tivxAddTargetKernelAccumulateSquare(void);
 void tivxAddTargetKernelAccumulateWeighted(void);
@@ -61,7 +61,7 @@ void tivxAddTargetKernelThreshold(void);
 void tivxAddTargetKernelWarpAffine(void);
 void tivxAddTargetKernelWarpPerspective(void);
 
-void tivxRemoveTargetKernelAbsDiff(void);
+void tivxRemoveTargetKernelBamAbsDiff(void);
 void tivxRemoveTargetKernelAccumulate(void);
 void tivxRemoveTargetKernelAccumulateSquare(void);
 void tivxRemoveTargetKernelAccumulateWeighted(void);
