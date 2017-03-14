@@ -119,6 +119,10 @@ static inline void assignDMAautoIncrementParams(
 /*-------------------------------------------------------------------------*/
 /* Function to initialize kernel arguments                                 */
 /*-------------------------------------------------------------------------*/
+/* MISRA.PPARAM.NEEDS.CONST
+ * MISRAC_WAIVER:
+ * BAM_BlockDimParams not const due to BAM requirements
+ */
 static int32_t VXLIB_TI_initKernelsArgs(void *args, BAM_BlockDimParams *blockDimParams)
 {
     int32_t status = BAM_S_SUCCESS;
@@ -383,7 +387,10 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle)
     return status_v;
 }
 
-                          
+/* MISRA.PPARAM.NEEDS.CONST
+ * MISRAC_WAIVER:
+ * compute_kernel_params not const due to BAM requirements
+ */
 vx_status tivxBamCreateHandle(BAM_TI_KernelID kernel_id,
                               tivx_bam_frame_params_t *frame_params,
                               void *compute_kernel_params,
