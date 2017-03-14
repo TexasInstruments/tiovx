@@ -498,6 +498,13 @@ TEST_WITH_ARG(Sobel3x3, testGraphProcessing, Filter_Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryNode(node3, VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
+    vxQueryNode(node4, VX_NODE_PERFORMANCE, &perf_node4, sizeof(perf_node4));
+    vxQueryNode(node5, VX_NODE_PERFORMANCE, &perf_node5, sizeof(perf_node5));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
     ASSERT_NO_FAILURE(dst1_x = ct_image_from_vx_image(dst1_x_image));
     ASSERT_NO_FAILURE(dst1_y = ct_image_from_vx_image(dst1_y_image));
 
@@ -515,13 +522,6 @@ TEST_WITH_ARG(Sobel3x3, testGraphProcessing, Filter_Arg,
     VX_CALL(vxReleaseNode(&node4));
     VX_CALL(vxReleaseNode(&node5));
     VX_CALL(vxReleaseGraph(&graph));
-
-    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
-    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
-    vxQueryNode(node3, VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
-    vxQueryNode(node4, VX_NODE_PERFORMANCE, &perf_node4, sizeof(perf_node4));
-    vxQueryNode(node5, VX_NODE_PERFORMANCE, &perf_node5, sizeof(perf_node5));
-    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
     ASSERT(node1 == 0);
     ASSERT(node2 == 0);

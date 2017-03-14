@@ -26,6 +26,15 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
+
 #include "test_tiovx_engine/test.h"
 #include <VX/vx.h>
 
