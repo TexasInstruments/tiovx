@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 
@@ -48,7 +48,7 @@ static CT_Image channel_extract_image_generate_random(int width, int height, vx_
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, format, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, format, &CT()->seed_, 0, 256));
 
     return image;
 }

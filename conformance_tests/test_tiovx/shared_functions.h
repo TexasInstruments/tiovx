@@ -26,7 +26,7 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 

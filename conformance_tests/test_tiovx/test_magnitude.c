@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 #include <stdlib.h>
@@ -120,7 +120,7 @@ TEST_WITH_ARG(Magnitude, testOnRandom, format_arg,
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_graph;
 
     ASSERT( srcformat != -1 && magformat != -1 );
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
     border.mode = VX_BORDER_REPLICATE;
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS,
@@ -210,7 +210,7 @@ TEST_WITH_ARG(Magnitude, testOnRandom, format_arg,
         VX_CALL(vxReleaseNode(&node3));
         VX_CALL(vxReleaseGraph(&graph));
         ASSERT(node1 == 0 && node2 == 0 && node3 == 0 && graph == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
         printPerformance(perf_node2, width*height, "N2");

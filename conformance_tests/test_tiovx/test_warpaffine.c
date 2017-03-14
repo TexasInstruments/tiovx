@@ -40,7 +40,7 @@
 #include <string.h>
 #include <VX/vx.h>
 #include <VX/vxu.h>
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #ifndef M_PI
 #define M_PIF   3.14159265358979323846f
@@ -67,12 +67,12 @@ static CT_Image warp_affine_generate_random(const char* fileName, int width, int
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }
 
-#define RND_FLT(low, high)      (vx_float32)CT_RNG_NEXT_REAL(tiovx()->seed_, low, high);
+#define RND_FLT(low, high)      (vx_float32)CT_RNG_NEXT_REAL(CT()->seed_, low, high);
 static void warp_affine_generate_matrix(vx_float32* m, int src_width, int src_height, int dst_width, int dst_height, int type)
 {
     vx_float32 mat[3][2];
@@ -257,7 +257,7 @@ static void warp_affine_check(CT_Image input, CT_Image output, vx_enum interp_ty
             (border.mode == VX_BORDER_CONSTANT));
 
     warp_affine_validate(input, output, interp_type, border, m);
-    if (tiovx_HasFailure())
+    if (CT_HasFailure())
     {
         printf("=== INPUT ===\n");
         ct_dump_image_info(input);
@@ -281,7 +281,7 @@ static void warp_affine_sequential_check(CT_Image input, CT_Image virt, CT_Image
 
     warp_affine_validate(input, virt, interp_type, border, m_node1);
     warp_affine_validate(virt, output, interp_type, border, m_node2);
-    if (tiovx_HasFailure())
+    if (CT_HasFailure())
     {
         printf("=== INPUT ===\n");
         ct_dump_image_info(input);

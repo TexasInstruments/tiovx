@@ -26,17 +26,7 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
-
-#include "test_tiovx_engine/test.h"
-
+#include "test_tiovx.h"
 #include <VX/vx.h>
 
 #include <math.h> // floorf
@@ -48,7 +38,7 @@ static CT_Image scale_generate_random(const char* fileName, int width, int heigh
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }

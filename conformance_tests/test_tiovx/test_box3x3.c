@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 #include "shared_functions.h"
 
@@ -53,7 +53,7 @@ static CT_Image box3x3_generate_bi_level(const char* fileName, int width, int he
     uint64_t rng;
     int total = width * height;
 
-    CT_RNG_INIT(rng, CT_RNG_NEXT(tiovx()->seed_));
+    CT_RNG_INIT(rng, CT_RNG_NEXT(CT()->seed_));
 
     ASSERT_NO_FAILURE_(return 0,
             image = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
@@ -78,7 +78,7 @@ static CT_Image box3x3_generate_random(const char* fileName, int width, int heig
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }

@@ -38,7 +38,7 @@
 
 #include <VX/vx.h>
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #define VALID_SHIFT_MIN 0
 // #define VALID_SHIFT_MIN -64
@@ -209,7 +209,7 @@ TEST_WITH_ARG(vxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
 
     ASSERT_NO_FAILURE({
         ref_src = ct_allocate_image(arg_->width, arg_->height, arg_->format_from);
-        fillSquence(ref_src, (uint32_t)tiovx()->seed_);
+        fillSquence(ref_src, (uint32_t)CT()->seed_);
         src = ct_image_to_vx_image(ref_src, context);
     });
 

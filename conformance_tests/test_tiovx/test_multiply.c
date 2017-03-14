@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 
@@ -218,10 +218,10 @@ TEST_WITH_ARG(vxMultiply, testFuzzy, fuzzy_arg, MUL_FUZZY_ARGS(SATURATE), MUL_FU
     ASSERT_VX_OBJECT(src3 = vxCreateImage(context, arg_->width, arg_->height, arg_->arg1_format),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(src4 = vxCreateImage(context, arg_->width, arg_->height, arg_->arg2_format),   VX_TYPE_IMAGE);
 
-    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &tiovx()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &CT()->seed_));
 
     // build one-node graph
     ASSERT_VX_OBJECT(node1 = vxMultiplyNode(graph1, src1, src2, scale, arg_->overflow_policy, arg_->round_policy, virt1), VX_TYPE_NODE);

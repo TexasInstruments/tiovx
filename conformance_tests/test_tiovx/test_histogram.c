@@ -35,7 +35,7 @@
  *******************************************************************************
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 #include <VX/vxu.h>
@@ -116,7 +116,7 @@ typedef struct {
             if( _hist0[_i] != _hist1[_i] ) \
             { \
                 _equal = 0; \
-                tiovx_RecordFailureAtFormat("Test case %d. width=%d, height=%d, nbins=%d, offset=%d, range=%d\n" \
+                CT_RecordFailureAtFormat("Test case %d. width=%d, height=%d, nbins=%d, offset=%d, range=%d\n" \
                                          "\tExpected: %s[%d]=%d\n" \
                                          "\tActual:   %s[%d]=%d\n", \
                                          __FUNCTION__, __FILE__, __LINE__, \
@@ -136,7 +136,7 @@ typedef struct {
             if( _hist0[_i] != _hist1[_i] ) \
             { \
                 _equal = 0; \
-                tiovx_RecordFailureAtFormat("Test case %d. width=%d, height=%d, nbins=%d, offset=%d, range=%d\n" \
+                CT_RecordFailureAtFormat("Test case %d. width=%d, height=%d, nbins=%d, offset=%d, range=%d\n" \
                                          "\tExpected: %s[%d]=%d\n" \
                                          "\tActual:   %s[%d]=%d\n", \
                                          __FUNCTION__, __FILE__, __LINE__, \
@@ -171,7 +171,7 @@ TEST_WITH_ARG(Histogram, testOnRandom, format_arg,
     const vx_enum mem_type = VX_MEMORY_TYPE_HOST;
     const vx_bitfield flags = 0;
 
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
 
     for( iter = 0; iter < niters; iter++ )
     {
@@ -422,7 +422,7 @@ TEST_WITH_ARG(Histogram, testOnRandom, format_arg,
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseGraph(&graph));
         ASSERT(node1 == 0 && node2 == 0 && graph == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printf("Test case %d\n", iter);
         printPerformance(perf_node1, width_src0*height_src0, "N1");

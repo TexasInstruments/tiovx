@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 
 
@@ -48,7 +48,7 @@ static CT_Image dilate3x3_generate_random(const char* fileName, int width, int h
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 2));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 2));
 
     // convert 0/1 values to 0/255
     CT_FILL_IMAGE_8U(return 0, image,

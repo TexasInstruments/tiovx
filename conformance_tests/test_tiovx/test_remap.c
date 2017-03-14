@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -35,7 +35,7 @@
  *******************************************************************************
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 
@@ -78,12 +78,12 @@ static CT_Image remap_generate_random(const char* fileName, int width, int heigh
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }
 
-#define RND_FLT(low, high)      (vx_float32)CT_RNG_NEXT_REAL(tiovx()->seed_, low, high);
+#define RND_FLT(low, high)      (vx_float32)CT_RNG_NEXT_REAL(CT()->seed_, low, high);
 
 static vx_remap remap_generate_map(vx_context context, int src_width, int src_height, int dst_width, int dst_height, int type)
 {
@@ -298,7 +298,7 @@ static void remap_check(CT_Image input, CT_Image output, vx_enum interp_type, vx
             (border.mode == VX_BORDER_CONSTANT) );
 
     remap_validate(input, output, interp_type, border, map);
-    if (tiovx_HasFailure())
+    if (CT_HasFailure())
     {
         printf("=== INPUT ===\n");
         ct_dump_image_info(input);

@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 
@@ -132,10 +132,10 @@ TEST_WITH_ARG(vxBinOp16s, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff))
     ASSERT_VX_OBJECT(src3 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_S16),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(src4 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_S16),   VX_TYPE_IMAGE);
 
-    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &tiovx()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &CT()->seed_));
 
     virt_ctimage1 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_S16);
     virt_ctimage2 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_S16);

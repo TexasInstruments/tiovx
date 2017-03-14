@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 #include <VX/vxu.h>
@@ -105,7 +105,7 @@ TEST_WITH_ARG(vxNot, testSizes, size_arg, NOT_SIZE_ARGS)
     ASSERT_NO_FAILURE({
         ref_src = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
         virt_ctimage = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
-        fillSquence(ref_src, (uint32_t)tiovx()->seed_);
+        fillSquence(ref_src, (uint32_t)CT()->seed_);
         src = ct_image_to_vx_image(ref_src, context);
     });
 

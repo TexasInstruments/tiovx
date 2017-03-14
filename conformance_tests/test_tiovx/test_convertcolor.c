@@ -35,7 +35,7 @@
  *******************************************************************************
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 #include <stdlib.h>
@@ -485,7 +485,7 @@ TEST_WITH_ARG(ColorConvert, testOnRandomAndNatural, format_arg,
     int iter, niters = 3;
     uint64_t rng;
 
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
 
     for( iter = 0; iter < niters; iter++ )
     {
@@ -609,7 +609,7 @@ TEST_WITH_ARG(ColorConvert, testOnRandomAndNatural, format_arg,
 
         ASSERT(node1 == 0 && node2 == 0 && graph1 == 0);
         ASSERT(node1_graph2 == 0 && node2_graph2 == 0 && graph2 == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
         printPerformance(perf_node2, width*height, "N2");

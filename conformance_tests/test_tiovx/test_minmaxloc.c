@@ -35,7 +35,7 @@
  *******************************************************************************
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 #include <stdlib.h>
@@ -215,7 +215,7 @@ TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
     maxloc1_ = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
     ASSERT(vxGetStatus((vx_reference)minloc1_) == VX_SUCCESS && vxGetStatus((vx_reference)maxloc1_) == VX_SUCCESS);
 
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
 
     for( iter = 0; iter < niters; iter++ )
     {
@@ -289,7 +289,7 @@ TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
 
         if( minval0_test != minval0 || maxval0_test != maxval0 || mincount0_test != mincount0 || maxcount0_test != maxcount0 )
         {
-            tiovx_RecordFailureAtFormat("Test case %d, first image. width=%d, height=%d,\n"
+            CT_RecordFailureAtFormat("Test case %d, first image. width=%d, height=%d,\n"
                                      "\tExpected: minval=%d, maxval=%d, mincount=%d, maxcount=%d\n"
                                      "\tActual:   minval=%d, maxval=%d, mincount=%d, maxcount=%d\n",
                                      __FUNCTION__, __FILE__, __LINE__,
@@ -301,7 +301,7 @@ TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
 
         if( minval1_test != minval1 || maxval1_test != maxval1 || mincount1_test != mincount1 || maxcount1_test != maxcount1 )
         {
-            tiovx_RecordFailureAtFormat("Test case %d, second image. width=%d, height=%d,\n"
+            CT_RecordFailureAtFormat("Test case %d, second image. width=%d, height=%d,\n"
                                      "\tExpected: minval=%d, maxval=%d, mincount=%d, maxcount=%d\n"
                                      "\tActual:   minval=%d, maxval=%d, mincount=%d, maxcount=%d\n",
                                      __FUNCTION__, __FILE__, __LINE__,
@@ -401,7 +401,7 @@ TEST_WITH_ARG(MinMaxLoc, testOnRandom, format_arg,
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseGraph(&graph));
         ASSERT(node1 == 0 && node2 == 0 && graph == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
         printPerformance(perf_node2, width*height, "N2");
@@ -482,7 +482,7 @@ TEST_WITH_ARG(MinMaxLoc, testOptionalParams, format_arg,
     maxloc1_ = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
     ASSERT(vxGetStatus((vx_reference)minloc1_) == VX_SUCCESS && vxGetStatus((vx_reference)maxloc1_) == VX_SUCCESS);
 
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
 
     for( iter = 0; iter < niters; iter++ )
     {
@@ -550,7 +550,7 @@ TEST_WITH_ARG(MinMaxLoc, testOptionalParams, format_arg,
 
         if( minval0_test != minval0 || maxval0_test != maxval0 )
         {
-            tiovx_RecordFailureAtFormat("Test case %d, first image. width=%d, height=%d,\n"
+            CT_RecordFailureAtFormat("Test case %d, first image. width=%d, height=%d,\n"
                                      "\tExpected: minval=%d, maxval=%d"
                                      "\tActual:   minval=%d, maxval=%d",
                                      __FUNCTION__, __FILE__, __LINE__,
@@ -562,7 +562,7 @@ TEST_WITH_ARG(MinMaxLoc, testOptionalParams, format_arg,
 
         if( minval1_test != minval1 || maxval1_test != maxval1 || mincount1_test != mincount1 || maxcount1_test != maxcount1 )
         {
-            tiovx_RecordFailureAtFormat("Test case %d, second image. width=%d, height=%d,\n"
+            CT_RecordFailureAtFormat("Test case %d, second image. width=%d, height=%d,\n"
                                      "\tExpected: minval=%d, maxval=%d, mincount=%d, maxcount=%d\n"
                                      "\tActual:   minval=%d, maxval=%d, mincount=%d, maxcount=%d\n",
                                      __FUNCTION__, __FILE__, __LINE__,
@@ -578,7 +578,7 @@ TEST_WITH_ARG(MinMaxLoc, testOptionalParams, format_arg,
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseGraph(&graph));
         ASSERT(node1 == 0 && node2 == 0 && graph == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
         printPerformance(perf_node2, width*height, "N2");

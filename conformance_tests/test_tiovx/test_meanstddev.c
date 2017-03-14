@@ -41,7 +41,7 @@
 
 #include <VX/vx.h>
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 static void reference_mean_stddev(CT_Image src, vx_float32* _mean, vx_float32* _stddev)
 {
@@ -118,7 +118,7 @@ TEST_WITH_ARG(MeanStdDev, testOnRandom, format_arg,
     vx_float32 mean0 = 0.f, stddev0 = 0.f, mean1 = 0.f, stddev1 = 0.f, mean0_orig = 0.f, stddev0_orig = 0.f, mean1_orig = 0.f, stddev1_orig = 0.f;
     int a = 0, b = 256;
 
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
     mean_tolerance *= b;
     stddev_tolerance *= b;
 
@@ -181,7 +181,7 @@ TEST_WITH_ARG(MeanStdDev, testOnRandom, format_arg,
         if( mean0_diff > mean_tolerance ||
             stddev0_diff > stddev_tolerance )
         {
-            tiovx_RecordFailureAtFormat("Test case %d, image 0. width=%d, height=%d,\n"
+            CT_RecordFailureAtFormat("Test case %d, image 0. width=%d, height=%d,\n"
                                      "\tExpected: mean=%.5g, stddev=%.5g\n"
                                      "\tActual:   mean=%.5g (diff=%.5g %s %.5g), stddev=%.5f (diff=%.5g %s %.5g)\n",
                                      __FUNCTION__, __FILE__, __LINE__,
@@ -195,7 +195,7 @@ TEST_WITH_ARG(MeanStdDev, testOnRandom, format_arg,
         if( mean1_diff > mean_tolerance ||
             stddev1_diff > stddev_tolerance )
         {
-            tiovx_RecordFailureAtFormat("Test case %d, image 1. width=%d, height=%d,\n"
+            CT_RecordFailureAtFormat("Test case %d, image 1. width=%d, height=%d,\n"
                                      "\tExpected: mean=%.5g, stddev=%.5g\n"
                                      "\tActual:   mean=%.5g (diff=%.5g %s %.5g), stddev=%.5f (diff=%.5g %s %.5g)\n",
                                      __FUNCTION__, __FILE__, __LINE__,
@@ -212,7 +212,7 @@ TEST_WITH_ARG(MeanStdDev, testOnRandom, format_arg,
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseGraph(&graph));
         ASSERT(node1 == 0 && node2 == 0 && graph == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
         printPerformance(perf_node2, width*height, "N2");

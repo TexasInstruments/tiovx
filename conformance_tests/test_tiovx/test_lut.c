@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 #include <string.h>
 
@@ -97,7 +97,7 @@ static vx_lut lut_create(vx_context context, void* data, vx_enum data_type)
 
 static void lut_data_fill_random(void* data, vx_enum data_type)
 {
-    uint64_t* seed = &tiovx()->seed_;
+    uint64_t* seed = &CT()->seed_;
     int i;
 
     switch (data_type)
@@ -128,10 +128,10 @@ static CT_Image lut_image_generate_random(const char* fileName, int width, int h
     switch (data_type)
     {
     case VX_TYPE_UINT8:
-        image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256);
+        image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256);
         break;
     case VX_TYPE_INT16:
-        image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_S16, &tiovx()->seed_, -32768, 32768);
+        image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_S16, &CT()->seed_, -32768, 32768);
         break;
     }
     ASSERT_(return 0, image != 0);

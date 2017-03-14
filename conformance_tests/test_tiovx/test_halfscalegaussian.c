@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,16 +26,8 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
+#include "test_tiovx.h"
 
-#include "test_tiovx_engine/test.h"
 #include <VX/vx.h>
 
 #include <math.h> // floor
@@ -49,7 +41,7 @@ static CT_Image halfScaleGaussian_generate_random(const char* fileName, int widt
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }

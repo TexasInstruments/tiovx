@@ -35,7 +35,7 @@
  *******************************************************************************
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 
 #include <VX/vx.h>
 #include <stdlib.h>
@@ -173,7 +173,7 @@ TEST_WITH_ARG(Threshold, testOnRandom, format_arg,
     int false_val = CT_THRESHOLD_FALSE_VALUE;
     vx_perf_t perf_node1, perf_node2, perf_graph;
 
-    rng = tiovx()->seed_;
+    rng = CT()->seed_;
 
     for( iter = 0; iter < niters; iter++ )
     {
@@ -267,7 +267,7 @@ TEST_WITH_ARG(Threshold, testOnRandom, format_arg,
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseGraph(&graph));
         ASSERT(node1 == 0 && node2 == 0 && graph == 0);
-        tiovx_CollectGarbage(CT_GC_IMAGE);
+        CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
         printPerformance(perf_node2, width*height, "N2");

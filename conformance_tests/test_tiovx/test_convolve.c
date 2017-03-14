@@ -26,7 +26,7 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 #include <string.h>
 
@@ -52,7 +52,7 @@ static vx_convolution convolution_create(vx_context context, int cols, int rows,
 
 static void convolution_data_fill_random_128(int cols, int rows, vx_int16* data)
 {
-    uint64_t* seed = &tiovx()->seed_;
+    uint64_t* seed = &CT()->seed_;
     int i;
 
     for (i = 0; i < cols * rows; i++)
@@ -64,7 +64,7 @@ static CT_Image convolve_generate_random(const char* fileName, int width, int he
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }
