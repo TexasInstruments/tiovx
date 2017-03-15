@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,7 +36,7 @@
  */
 
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 
@@ -106,7 +106,7 @@ static CT_Image median3x3_generate_random(const char* fileName, int width, int h
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }
@@ -216,7 +216,7 @@ static CT_Image median3x3_create_reference_image(CT_Image src, vx_border_t borde
     return dst;
 }
 
-static void referenceAdd(CT_Image src0, CT_Image src1, CT_Image src2, CT_Image src3, CT_Image virt1, CT_Image virt2, 
+static void referenceAdd(CT_Image src0, CT_Image src1, CT_Image src2, CT_Image src3, CT_Image virt1, CT_Image virt2,
                          CT_Image dst1, CT_Image dst2, enum vx_convert_policy_e policy, vx_border_t border)
 {
     CT_Image dst1_ref = NULL, dst2_ref = NULL;
@@ -332,10 +332,10 @@ TEST_WITH_ARG(Graph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZZY_A
     ASSERT_VX_OBJECT(src3 = vxCreateImage(context, widthHardCoded, heightHardCoded, arg_->arg1_format),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(src4 = vxCreateImage(context, widthHardCoded, heightHardCoded, arg_->arg2_format),   VX_TYPE_IMAGE);
 
-    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &tiovx()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &CT()->seed_));
 
     virt_ctimage1 = ct_allocate_image(arg_->width, arg_->height, arg_->result_format);
     virt_ctimage2 = ct_allocate_image(widthHardCoded, heightHardCoded, arg_->result_format);
@@ -430,10 +430,10 @@ TEST_WITH_ARG(Graph, testParallelNodesSameTarget, fuzzy_arg, ARITHM_FUZZY_ARGS(A
     ASSERT_VX_OBJECT(src3 = vxCreateImage(context, widthHardCoded, heightHardCoded, arg_->arg1_format),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(src4 = vxCreateImage(context, widthHardCoded, heightHardCoded, arg_->arg2_format),   VX_TYPE_IMAGE);
 
-    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &tiovx()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &CT()->seed_));
 
     virt_ctimage1 = ct_allocate_image(arg_->width, arg_->height, arg_->result_format);
     virt_ctimage2 = ct_allocate_image(widthHardCoded, heightHardCoded, arg_->result_format);
@@ -533,12 +533,12 @@ TEST_WITH_ARG(Graph, testThreeParallelNodes, fuzzy_arg, ARITHM_FUZZY_ARGS(Add))
     ASSERT_VX_OBJECT(src5 = vxCreateImage(context, widthHardCoded2, heightHardCoded2, arg_->arg1_format),   VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(src6 = vxCreateImage(context, widthHardCoded2, heightHardCoded2, arg_->arg2_format),   VX_TYPE_IMAGE);
 
-    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src5, &tiovx()->seed_));
-    ASSERT_NO_FAILURE(ct_fill_image_random(src6, &tiovx()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src5, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src6, &CT()->seed_));
 
     virt_ctimage1 = ct_allocate_image(arg_->width, arg_->height, arg_->result_format);
     virt_ctimage2 = ct_allocate_image(widthHardCoded1, heightHardCoded1, arg_->result_format);
@@ -659,7 +659,7 @@ static CT_Image accumulate_weighted_generate_random_8u(int width, int height)
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }
@@ -732,7 +732,7 @@ static void accumulate_multiple_weighted_check(CT_Image input, vx_float32 alpha_
 #endif
 }
 
-static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image input_acc, CT_Image virtual_dummy, 
+static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image input_acc, CT_Image virtual_dummy,
             vx_float32 alpha_intermediate, vx_float32 alpha_final, CT_Image accum_final, CT_Image accum_dst)
 {
     CT_Image accum_ref = NULL, accum_intermediate = NULL;
@@ -766,7 +766,7 @@ static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image 
 }
 
 static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Image input_acc_2, CT_Image virtual_dummy_1,
-            CT_Image virtual_dummy_2, CT_Image virtual_dummy_3, vx_float32 alpha_intermediate1, vx_float32 alpha_intermediate2, 
+            CT_Image virtual_dummy_2, CT_Image virtual_dummy_3, vx_float32 alpha_intermediate1, vx_float32 alpha_intermediate2,
             vx_float32 alpha_final, CT_Image accum_final, CT_Image accum_dst)
 {
     CT_Image accum_ref = NULL, accum_intermediate_1 = NULL, accum_intermediate_2 = NULL;
@@ -1281,7 +1281,7 @@ TEST_WITH_ARG(Graph, testThreeParallelGraphs, Arg,
     printPerformance(perf_graph3, arg_->width*arg_->height, "G3");
 }
 
-// Testing alternating nodes 
+// Testing alternating nodes
 // vxNot -> vxAccumulateSquare -> vxNot -> vxAccumulateSquare -> vxNot -> vxAccumulateSquare
 TEST_WITH_ARG(Graph, testAlternatingNodes, Arg,
     PARAMETERS
@@ -1377,7 +1377,7 @@ TEST_WITH_ARG(Graph, testAlternatingNodes, Arg,
 
     ASSERT_NO_FAILURE(accum_dst = ct_image_from_vx_image(accum_image_final));
 
-    ASSERT_NO_FAILURE(alternate_node_check(input_not, input_acc_1, input_acc_2, virtual_dummy_1, virtual_dummy_2, 
+    ASSERT_NO_FAILURE(alternate_node_check(input_not, input_acc_1, input_acc_2, virtual_dummy_1, virtual_dummy_2,
                         virtual_dummy_3, arg_->alpha_intermediate, sh, arg_->alpha_final, accum_final, accum_dst));
 
     VX_CALL(vxReleaseNode(&node6));

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,7 +26,7 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-#include "test_tiovx_engine/test.h"
+#include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <math.h>
@@ -206,7 +206,7 @@ static CT_Image gaussian_pyramid_generate_random(const char* fileName, int width
     CT_Image image;
 
     ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &tiovx()->seed_, 0, 256));
+            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
 
     return image;
 }
@@ -427,7 +427,7 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
     ASSERT(output_image == 0);
 
     gaussian_pyramid_check_image(input, output_prev, border, 0);
-    if (tiovx_HasFailure())
+    if (CT_HasFailure())
     {
         printf("=== Input ===\n");
         ct_dump_image_info(input);
@@ -462,7 +462,7 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
         }
 
         gaussian_pyramid_check_image(output_prev, output_cur, border, level);
-        if (tiovx_HasFailure())
+        if (CT_HasFailure())
         {
             printf("=== Input ===\n");
             ct_dump_image_info(output_prev);

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -26,8 +26,8 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-#include "test_tiovx_engine/test.h"
 
+#include "test_tiovx.h"
 #include <stdint.h>
 #include <VX/vx.h>
 #include <stdio.h>
@@ -442,7 +442,7 @@ TEST_WITH_ARG(vxCanny, Lena, canny_arg,
     ASSERT_NO_FAILURE(count = disttransform2_metric(refdst, vxdst, dist, &total));
     if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
     {
-        tiovx_RecordFailureAtFormat("disttransform(reference) < 2 only for %u of %u pixels of output edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+        CT_RecordFailureAtFormat("disttransform(reference) < 2 only for %u of %u pixels of output edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
             count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
 
         // ct_write_image("canny_vx.bmp", vxdst);
@@ -456,7 +456,7 @@ TEST_WITH_ARG(vxCanny, Lena, canny_arg,
     ASSERT_NO_FAILURE(count = disttransform2_metric(vxdst, refdst, dist, &total));
     if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
     {
-        tiovx_RecordFailureAtFormat("disttransform(output) < 2 only for %u of %u pixels of reference edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+        CT_RecordFailureAtFormat("disttransform(output) < 2 only for %u of %u pixels of reference edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
             count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
 
         // ct_write_image("canny_vx.bmp", vxdst);
