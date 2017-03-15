@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -198,9 +198,9 @@ typedef struct {
     FUZZY_ARG(func, SATURATE, 644, 258, U8, U8, S16),   \
     FUZZY_ARG(func, SATURATE, 1600, 1200, U8, S16, S16)
 
-TESTCASE(vxAddSub,  CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxAddSub,  CT_VXContext, ct_setup_vx_context, 0)
 
-TEST_WITH_ARG(vxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_FUZZY_ARGS(Subtract))
+TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_FUZZY_ARGS(Subtract))
 {
     vx_image src1, src2, src3, src4, dst, virt1, virt2;
     vx_graph graph;
@@ -278,4 +278,4 @@ TEST_WITH_ARG(vxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_FUZ
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(vxAddSub, testFuzzy)
+TESTCASE_TESTS(tivxAddSub, testFuzzy)

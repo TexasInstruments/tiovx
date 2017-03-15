@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -36,9 +36,10 @@
  */
 
 //TESTCASE(Graph)
-TESTCASE(AccumulateWeighted)
-/*TESTCASE(vxAddSub)
-TESTCASE(vxBinOp8u)  
+TESTCASE(tivxAccumulateWeighted)
+TESTCASE(tivxAddSub)
+/*
+TESTCASE(vxBinOp8u)
 TESTCASE(vxBinOp16s)
 TESTCASE(Box3x3)
 TESTCASE(ChannelCombine)
@@ -81,7 +82,7 @@ TESTCASE(GraphDelay)
 TESTCASE(GraphROI)
 
 TESTCASE(Array)
-TESTCASE(ObjectArray) 
+TESTCASE(ObjectArray)
 TESTCASE(Image)
 
 TESTCASE(vxCreateImageFromChannel)

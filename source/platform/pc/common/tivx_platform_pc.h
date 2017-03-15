@@ -42,15 +42,6 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for CPU1 */
     TIVX_TARGET_ID_CPU1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 0),
 
-    /*! \brief target ID for CPU2 */
-    TIVX_TARGET_ID_CPU2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 1),
-
-    /*! \brief target ID for CPU2 */
-    TIVX_TARGET_ID_CPU3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 2),
-
-    /*! \brief target ID for CPU2 */
-    TIVX_TARGET_ID_CPU4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 3),
-
 } tivx_target_id_e;
 
 
@@ -62,15 +53,15 @@ typedef enum _tivx_target_id_e {
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \
     {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU2},                                   \
+    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_EVE1, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_EVE2, TIVX_TARGET_ID_CPU2},                                   \
-    {TIVX_TARGET_EVE3, TIVX_TARGET_ID_CPU3},                                   \
-    {TIVX_TARGET_EVE4, TIVX_TARGET_ID_CPU4},                                   \
+    {TIVX_TARGET_EVE2, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_EVE3, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_EVE4, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU2},                                 \
-    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU3},                                   \
-    {TIVX_TARGET_A15_0, TIVX_TARGET_ID_CPU4},                                  \
+    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_CPU1},                                 \
+    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_A15_0, TIVX_TARGET_ID_CPU1},                                  \
     {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1}                                    \
 }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,7 +40,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 
-TESTCASE(AccumulateWeighted, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxAccumulateWeighted, CT_VXContext, ct_setup_vx_context, 0)
 
 static void referenceNot(CT_Image src, CT_Image dst)
 {
@@ -134,7 +134,7 @@ static void accumulate_multiple_weighted_check(CT_Image input, vx_float32 alpha_
 #endif
 }
 
-static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image input_acc, CT_Image virtual_dummy, 
+static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image input_acc, CT_Image virtual_dummy,
             vx_float32 alpha_intermediate, vx_float32 alpha_final, CT_Image accum_final, CT_Image accum_dst)
 {
     CT_Image accum_ref = NULL, accum_intermediate = NULL;
@@ -168,7 +168,7 @@ static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image 
 }
 
 static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Image input_acc_2, CT_Image virtual_dummy_1,
-            CT_Image virtual_dummy_2, CT_Image virtual_dummy_3, vx_float32 alpha_intermediate, vx_float32 alpha_final, 
+            CT_Image virtual_dummy_2, CT_Image virtual_dummy_3, vx_float32 alpha_intermediate, vx_float32 alpha_final,
             CT_Image accum_final, CT_Image accum_dst)
 {
     CT_Image accum_ref = NULL, accum_intermediate_1 = NULL, accum_intermediate_2 = NULL;
@@ -221,7 +221,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random/alpha0.33f/alphafinal0.67f", ADD_SIZE_644x258, ARG, 0.33f, 0.67f), \
     CT_GENERATE_PARAMETERS("random/alpha0.99f/alphafinal0.8f", ADD_SIZE_1600x1200, ARG, 0.99f, 0.8f)
 
-TEST_WITH_ARG(AccumulateWeighted, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxAccumulateWeighted, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
@@ -298,6 +298,6 @@ TEST_WITH_ARG(AccumulateWeighted, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(AccumulateWeighted,
+TESTCASE_TESTS(tivxAccumulateWeighted,
         testGraphProcessing
 )

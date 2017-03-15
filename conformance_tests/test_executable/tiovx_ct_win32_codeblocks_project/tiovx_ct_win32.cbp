@@ -2184,6 +2184,123 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="../../test_engine/test_utils.h" />
+		<Unit filename="../../test_tiovx/shared_functions.h" />
+		<Unit filename="../../test_tiovx/test_accumulate.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_accumulatesquare.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_accumulateweighted.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_addsub.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_binop16s.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_binop8u.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_box3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_canny.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_channelcombine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_channelextract_combine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_convertcolor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_convertdepth.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_convolve.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_dilate3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_eqhist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_erode3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_gaussian3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_gaussianpyramid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_graph.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_halfscalegaussian.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_histogram.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_integral.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_lut.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_magnitude.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_main.h" />
+		<Unit filename="../../test_tiovx/test_meanstddev.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_median3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_minmaxloc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_multiply.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_nonlinearfilter.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_not.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_phase.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_remap.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_scale.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_sobel3x3.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_threshold.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_tiovx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_tiovx.h" />
+		<Unit filename="../../test_tiovx/test_warpaffine.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../test_tiovx/test_warpperspective.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../concerto.mak" />
 		<Unit filename="../main.c">
 			<Option compilerVar="CC" />
