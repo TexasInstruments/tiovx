@@ -136,6 +136,22 @@ void tivxPlatformCreateTargets(void);
  */
 void tivxPlatformDeleteTargets(void);
 
+/*!
+ * \brief Utility function to enable Platform specific things
+ *        Currently Used for EVE algorithm to enable EDMA
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxPlatformActivate();
+
+/*!
+ * \brief Utility function to disable Platform specific things
+ *        Currently Used for EVE algorithm to disable EDMA
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxPlatformDeactivate();
+
 #ifdef __cplusplus
 }
 #endif

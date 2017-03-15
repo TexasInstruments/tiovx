@@ -49,3 +49,13 @@ void tivxPlatformPrintf(const char *format)
 {
     BspOsal_printf(format);
 }
+
+void tivxPlatformActivate()
+{
+    System_openvxActivate();
+}
+
+void tivxPlatformDeactivate()
+{
+    System_openvxDeactivate();
+}

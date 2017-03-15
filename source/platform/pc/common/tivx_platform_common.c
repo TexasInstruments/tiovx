@@ -204,3 +204,11 @@ void tivxPlatformPrintf(const char *format)
 {
     printf(format);
 }
+
+void tivxPlatformEnable()
+{
+}
+
+void tivxPlatformDisable()
+{
+}
