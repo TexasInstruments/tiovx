@@ -211,13 +211,17 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
     int mode = arg_->mode;
     int srcformat = dxformat == VX_DF_IMAGE_S16 ? VX_DF_IMAGE_U8 : -1;
     int phaseformat = dxformat == VX_DF_IMAGE_S16 ? VX_DF_IMAGE_U8 : -1;
-    vx_image dx_node1=0, dy_node1=0, dx_node2=0, dy_node2=0, phase=0, virt1, virt2, virt3, virt4;
-    CT_Image dx0, dy0, dx1, dy1, phase0, phase1, virt_ctimage1, virt_ctimage2, virt_ctimage3, virt_ctimage4;
+    vx_image dx_node1=0, dy_node1=0, dx_node2=0, dy_node2=0, phase=0;
+    vx_image dx_node6=0, dy_node6=0, dx_node7=0, dy_node7=0, phase_branch2=0;
+    vx_image virt1, virt2, virt3, virt4, intimage1, intimage2, intimage3, intimage4;
+    CT_Image dx0, dy0, dx1, dy1, phase0, phase1, phaseref, virt_ctimage1, virt_ctimage2, virt_ctimage3, virt_ctimage4;
+    CT_Image int_ref1, int_ref2, int_ref3, int_ref4;
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0, node5 = 0;
+    vx_node node6 = 0, node7 = 0, node8 = 0, node9 = 0, node10 = 0;
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_node4, perf_node5, perf_graph;
     vx_context context = context_->vx_context_;
-    int iter, niters = 3;
+    int iter, niters = 20;
     uint64_t rng;
     int dxmin = -32768, dxmax = 32768;
     vx_border_t border;
@@ -270,25 +274,29 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
 
         dx_node1 = ct_image_to_vx_image(dx0, context);
         ASSERT_VX_OBJECT(dx_node1, VX_TYPE_IMAGE);
+        dx_node6 = ct_image_to_vx_image(dx0, context);
+        ASSERT_VX_OBJECT(dx_node6, VX_TYPE_IMAGE);
         dy_node1 = ct_image_to_vx_image(dy0, context);
         ASSERT_VX_OBJECT(dy_node1, VX_TYPE_IMAGE);
+        dy_node6 = ct_image_to_vx_image(dy0, context);
+        ASSERT_VX_OBJECT(dy_node6, VX_TYPE_IMAGE);
+
         dx_node2 = ct_image_to_vx_image(dx1, context);
         ASSERT_VX_OBJECT(dx_node2, VX_TYPE_IMAGE);
+        dx_node7 = ct_image_to_vx_image(dx1, context);
+        ASSERT_VX_OBJECT(dx_node7, VX_TYPE_IMAGE);
         dy_node2 = ct_image_to_vx_image(dy1, context);
         ASSERT_VX_OBJECT(dy_node2, VX_TYPE_IMAGE);
+        dy_node7 = ct_image_to_vx_image(dy1, context);
+        ASSERT_VX_OBJECT(dy_node7, VX_TYPE_IMAGE);
 
         ASSERT_VX_OBJECT(shift_convertdepth = vxCreateScalar(context, VX_TYPE_INT32, &sh), VX_TYPE_SCALAR);
 
-        ASSERT_NO_FAILURE(phase0 = ct_allocate_image(width, height, phaseformat));
-        ASSERT_NO_FAILURE(virt_ctimage1 = ct_allocate_image(width, height, phaseformat));
-        ASSERT_NO_FAILURE(virt_ctimage2 = ct_allocate_image(width, height, phaseformat));
-        ASSERT_NO_FAILURE(virt_ctimage3 = ct_allocate_image(width, height, dxformat));
-        ASSERT_NO_FAILURE(virt_ctimage4 = ct_allocate_image(width, height, dxformat));
-
-        ASSERT_NO_FAILURE(reference_sequential_phase(dx0, dy0, dx1, dy1, virt_ctimage1, virt_ctimage2, 
-                          virt_ctimage3, virt_ctimage4, phase0));
         phase = vxCreateImage(context, width, height, phaseformat);
         ASSERT_VX_OBJECT(phase, VX_TYPE_IMAGE);
+
+        phase_branch2 = vxCreateImage(context, width, height, phaseformat);
+        ASSERT_VX_OBJECT(phase_branch2, VX_TYPE_IMAGE);
 
         graph = vxCreateGraph(context);
         ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
@@ -296,6 +304,11 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
         ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, 0, 0, phaseformat), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, 0, 0, dxformat), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(virt4   = vxCreateVirtualImage(graph, 0, 0, dxformat), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(intimage1   = vxCreateImage(context, width, height, phaseformat), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(intimage2   = vxCreateImage(context, width, height, phaseformat), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(intimage3   = vxCreateImage(context, width, height, dxformat), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(intimage4   = vxCreateImage(context, width, height, dxformat), VX_TYPE_IMAGE);
 
         node1 = vxPhaseNode(graph, dx_node1, dy_node1, virt1);
         ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
@@ -307,6 +320,17 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
         ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
         node5 = vxPhaseNode(graph, virt3, virt4, phase);
         ASSERT_VX_OBJECT(node5, VX_TYPE_NODE);
+
+        node6 = vxPhaseNode(graph, dx_node6, dy_node6, intimage1);
+        ASSERT_VX_OBJECT(node6, VX_TYPE_NODE);
+        node7 = vxPhaseNode(graph, dx_node7, dy_node7, intimage2);
+        ASSERT_VX_OBJECT(node7, VX_TYPE_NODE);
+        node8 = vxConvertDepthNode(graph, intimage1, intimage3, VX_CONVERT_POLICY_SATURATE, shift_convertdepth);
+        ASSERT_VX_OBJECT(node8, VX_TYPE_NODE);
+        node9 = vxConvertDepthNode(graph, intimage2, intimage4, VX_CONVERT_POLICY_SATURATE, shift_convertdepth);
+        ASSERT_VX_OBJECT(node9, VX_TYPE_NODE);
+        node10 = vxPhaseNode(graph, intimage3, intimage4, phase_branch2);
+        ASSERT_VX_OBJECT(node10, VX_TYPE_NODE);
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
 
@@ -317,26 +341,72 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
         vxQueryNode(node5, VX_NODE_PERFORMANCE, &perf_node5, sizeof(perf_node5));
         vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
+        ASSERT_NO_FAILURE(phase0 = ct_allocate_image(width, height, phaseformat));
+        ASSERT_NO_FAILURE(virt_ctimage1 = ct_allocate_image(width, height, phaseformat));
+        ASSERT_NO_FAILURE(virt_ctimage2 = ct_allocate_image(width, height, phaseformat));
+        ASSERT_NO_FAILURE(virt_ctimage3 = ct_allocate_image(width, height, dxformat));
+        ASSERT_NO_FAILURE(virt_ctimage4 = ct_allocate_image(width, height, dxformat));
+
+        reference_phase(dx0, dy0, virt_ctimage1);
+        reference_phase(dx1, dy1, virt_ctimage2);
+
+        int_ref1 = ct_image_from_vx_image(intimage1);
+        int_ref2 = ct_image_from_vx_image(intimage2);
+
+        // Verifying all intermediate images
+        ASSERT_CTIMAGE_NEARWRAP(int_ref1, virt_ctimage1, 1, 0);
+        ASSERT_CTIMAGE_NEARWRAP(int_ref2, virt_ctimage2, 1, 0);
+
+        referenceConvertDepth(int_ref1, virt_ctimage3, 0, VX_CONVERT_POLICY_SATURATE);
+        referenceConvertDepth(int_ref2, virt_ctimage4, 0, VX_CONVERT_POLICY_SATURATE);
+
+        int_ref3 = ct_image_from_vx_image(intimage3);
+        int_ref4 = ct_image_from_vx_image(intimage4);
+
+        // Verifying all intermediate images
+        ASSERT_CTIMAGE_NEARWRAP(int_ref3, virt_ctimage3, 1, 0);
+        ASSERT_CTIMAGE_NEARWRAP(int_ref4, virt_ctimage4, 1, 0);
+
+        reference_phase(int_ref3, int_ref4, phase0);
+
         phase1 = ct_image_from_vx_image(phase);
+        phaseref = ct_image_from_vx_image(phase_branch2); 
 
         ASSERT_CTIMAGE_NEARWRAP(phase0, phase1, 1, 0);
+        ASSERT_CTIMAGE_NEARWRAP(phaseref, phase1, 1, 0);
+
         VX_CALL(vxReleaseImage(&dx_node1));
         VX_CALL(vxReleaseImage(&dx_node2));
         VX_CALL(vxReleaseImage(&dy_node1));
         VX_CALL(vxReleaseImage(&dy_node2));
+        VX_CALL(vxReleaseImage(&dx_node6));
+        VX_CALL(vxReleaseImage(&dx_node7));
+        VX_CALL(vxReleaseImage(&dy_node6));
+        VX_CALL(vxReleaseImage(&dy_node7));
         VX_CALL(vxReleaseImage(&phase));
+        VX_CALL(vxReleaseImage(&phase_branch2));
         VX_CALL(vxReleaseImage(&virt1));
         VX_CALL(vxReleaseImage(&virt2));
         VX_CALL(vxReleaseImage(&virt3));
         VX_CALL(vxReleaseImage(&virt4));
+        VX_CALL(vxReleaseImage(&intimage1));
+        VX_CALL(vxReleaseImage(&intimage2));
+        VX_CALL(vxReleaseImage(&intimage3));
+        VX_CALL(vxReleaseImage(&intimage4));
         VX_CALL(vxReleaseNode(&node1));
         VX_CALL(vxReleaseNode(&node2));
         VX_CALL(vxReleaseNode(&node3));
         VX_CALL(vxReleaseNode(&node4));
         VX_CALL(vxReleaseNode(&node5));
+        VX_CALL(vxReleaseNode(&node6));
+        VX_CALL(vxReleaseNode(&node7));
+        VX_CALL(vxReleaseNode(&node8));
+        VX_CALL(vxReleaseNode(&node9));
+        VX_CALL(vxReleaseNode(&node10));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseScalar(&shift_convertdepth));
         ASSERT(node1 == 0 && node2 == 0 && node3 == 0 && node4 == 0 && node5 == 0 && graph == 0);
+        ASSERT(node6 == 0 && node7 == 0 && node8 == 0 && node9 == 0 && node10 == 0);
         CT_CollectGarbage(CT_GC_IMAGE);
 
         printPerformance(perf_node1, width*height, "N1");
