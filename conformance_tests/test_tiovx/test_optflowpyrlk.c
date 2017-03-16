@@ -233,7 +233,9 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     vx_pyramid src_pyr[2]   = { 0, 0 };
     vx_array old_points_arr = 0;
     vx_array virt_points_arr = 0;
-    vx_array new_points_arr = 0;
+    vx_array int_points_arr = 0;
+    vx_array new_points_arr0 = 0;
+    vx_array new_points_arr1 = 0;
     vx_float32 eps_val      = 0.001f;
     vx_uint32  num_iter_val = 100;
     vx_bool   use_estimations_val = vx_true_e;
@@ -243,14 +245,20 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     vx_size   winSize             = arg_->winSize;
     vx_graph graph = 0;
     vx_node src_pyr_node[2] = { 0, 0 };
-    vx_node node1 = 0, node2 = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
 
     vx_size num_points = 0;
     vx_keypoint_t* old_points = 0;
-    vx_keypoint_t* new_points_ref = 0;
-    vx_keypoint_t* new_points = 0;
-    vx_size new_points_size = 0;
+    vx_keypoint_t* new_points0_ref = 0;
+    vx_keypoint_t* new_points0 = 0;
+    vx_size new_points0_size = 0;
+    vx_keypoint_t* new_points1_ref = 0;
+    vx_keypoint_t* new_points1 = 0;
+    vx_size new_points1_size = 0;
+    vx_keypoint_t* int_points_ref = 0;
+    vx_keypoint_t* int_points = 0;
+    vx_size int_points_size = 0;
 
     vx_size max_window_dim = 0;
 
@@ -272,10 +280,11 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     ASSERT_VX_OBJECT(src_pyr[0] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     ASSERT_VX_OBJECT(src_pyr[1] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(num_points = own_read_keypoints(arg_->points_fileName, &old_points, &new_points_ref)); // create a new pts file
+    ASSERT_NO_FAILURE(num_points = own_read_keypoints(arg_->points_fileName, &old_points, &int_points_ref));
 
     ASSERT_VX_OBJECT(old_points_arr = own_create_keypoint_array(context, num_points, old_points), VX_TYPE_ARRAY);
-    ASSERT_VX_OBJECT(new_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr0 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr1 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
 
     ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
@@ -283,7 +292,8 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    ASSERT_VX_OBJECT(virt_points_arr = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 0), VX_TYPE_ARRAY); // virtual?
+    ASSERT_VX_OBJECT(int_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(virt_points_arr = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
 
     if (arg_->useReferencePyramid)
     {
@@ -311,7 +321,19 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     ASSERT_VX_OBJECT(node2 = vxOpticalFlowPyrLKNode(
         graph,
         src_pyr[0], src_pyr[1],
-        virt_points_arr, virt_points_arr, new_points_arr,
+        virt_points_arr, virt_points_arr, new_points_arr0,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node3 = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        old_points_arr, old_points_arr, int_points_arr,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node4 = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        virt_points_arr, virt_points_arr, new_points_arr1,
         VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
 
     VX_CALL(vxVerifyGraph(graph));
@@ -321,18 +343,29 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
-    ASSERT(VX_TYPE_KEYPOINT == ct_read_array(new_points_arr, (void**)&new_points, 0, &new_points_size, 0));
-    ASSERT(new_points_size == num_points);
+    ASSERT(VX_TYPE_KEYPOINT == ct_read_array(int_points_arr, (void**)&int_points, 0, &int_points_size, 0));
+    ASSERT(int_points_size == num_points);
 
-    // Fix here
-    ASSERT_NO_FAILURE(own_keypoints_check(num_points, old_points, new_points_ref, new_points));
+    ASSERT_NO_FAILURE(own_keypoints_check(num_points, old_points, int_points_ref, int_points));
 
-    ct_free_mem(new_points);
-    ct_free_mem(new_points_ref);
+    ASSERT(VX_TYPE_KEYPOINT == ct_read_array(new_points_arr0, (void**)&new_points0, 0, &new_points0_size, 0));
+    ASSERT(VX_TYPE_KEYPOINT == ct_read_array(new_points_arr1, (void**)&new_points1, 0, &new_points1_size, 0));
+    ASSERT(new_points0_size == new_points1_size);
+
+    ASSERT_NO_FAILURE(own_keypoints_check(new_points1_size, NULL, new_points0, new_points1));
+
+    ct_free_mem(new_points0);
+    ct_free_mem(new_points0_ref);
+    ct_free_mem(new_points1);
+    ct_free_mem(new_points1_ref);
+    ct_free_mem(int_points);
+    ct_free_mem(int_points_ref);
     ct_free_mem(old_points);
 
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
     if(src_pyr_node[0])
         VX_CALL(vxReleaseNode(&src_pyr_node[0]));
     if(src_pyr_node[1])
@@ -343,7 +376,9 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     VX_CALL(vxReleaseScalar(&use_estimations));
     VX_CALL(vxReleaseArray(&old_points_arr));
     VX_CALL(vxReleaseArray(&virt_points_arr));
-    VX_CALL(vxReleaseArray(&new_points_arr));
+    VX_CALL(vxReleaseArray(&int_points_arr));
+    VX_CALL(vxReleaseArray(&new_points_arr1));
+    VX_CALL(vxReleaseArray(&new_points_arr0));
     VX_CALL(vxReleasePyramid(&src_pyr[0]));
     VX_CALL(vxReleasePyramid(&src_pyr[1]));
     VX_CALL(vxReleaseImage(&src_image[0]));
