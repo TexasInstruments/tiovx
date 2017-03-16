@@ -347,7 +347,7 @@ typedef struct {
 #define FAST_TEST_CASE(imm, imgname, t, nm) \
     {#imm "/" "image=" #imgname "/" "threshold=" #t "/" "nonmax_suppression=" #nm, #imgname ".bmp", t, nm, CT_##imm##_MODE}
 
-TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
+TEST_WITH_ARG(tivxFastCorners, testVirtualImages, format_arg,
               FAST_TEST_CASE(Graph, baboon, 10, 0),
               FAST_TEST_CASE(Graph, baboon, 10, 1),
               FAST_TEST_CASE(Graph, baboon, 80, 0),
@@ -362,12 +362,12 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
     const char* imgname = arg_->imgname;
     int threshold = arg_->threshold;
     int nonmax = arg_->nonmax;
-    vx_image src = 0;
-    vx_node node1 = 0, node2 = 0;
+    vx_image src0_image = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     vx_graph graph = 0;
     vx_context context = context_->vx_context_;
     vx_scalar sthresh;
-    vx_array corners, new_points_arr = 0;
+    vx_array corners0, new_points_arr0 = 0, corners1, new_points_arr1 = 0;
     uint32_t width, height;
     vx_float32 threshold_f = (vx_float32)threshold;
     uint32_t ncorners0, ncorners;
@@ -388,8 +388,9 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
     vx_size levels;
     vx_keypoint_t* old_points = 0;
     vx_keypoint_t* new_points_ref = 0;
-    vx_keypoint_t* new_points = 0;
-    vx_size new_points_size = 0;
+    vx_keypoint_t* new_points0 = 0;
+    vx_keypoint_t* new_points1 = 0;
+    vx_size new_points_size0 = 0, new_points_size1 = 0;
 
     CT_Image src_ct_image = NULL;
     CT_Image src0, dst0, mask0, dst1;
@@ -406,7 +407,8 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
 
     ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_VX_OBJECT(new_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr0 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr1 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
 
     ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
     ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
@@ -424,19 +426,31 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
 
     ncorners0 = reference_fast(src0, dst0, mask0, threshold, nonmax);
 
-    src = ct_image_to_vx_image(src0, context);
+    src0_image = ct_image_to_vx_image(src0, context);
     sthresh = vxCreateScalar(context, VX_TYPE_FLOAT32, &threshold_f);
-    corners = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    node1 = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, 0);
+    ASSERT_VX_OBJECT(corners0 = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
+    corners1 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+    node1 = vxFastCornersNode(graph, src0_image, sthresh, nonmax ? vx_true_e : vx_false_e, corners0, 0);
     ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
 
     ASSERT_VX_OBJECT(node2 = vxOpticalFlowPyrLKNode(
         graph,
         pyr, src_pyr,
-        corners, corners, new_points_arr,
+        corners0, corners0, new_points_arr0,
         VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    node3 = vxFastCornersNode(graph, src0_image, sthresh, nonmax ? vx_true_e : vx_false_e, corners1, 0);
+    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node4 = vxOpticalFlowPyrLKNode(
+        graph,
+        pyr, src_pyr,
+        corners1, corners1, new_points_arr1,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
@@ -445,6 +459,10 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
+    VX_CALL(vxReleaseNode(&node4));
+    ASSERT(node4 == 0);
+    VX_CALL(vxReleaseNode(&node3));
+    ASSERT(node3 == 0);
     VX_CALL(vxReleaseNode(&node2));
     ASSERT(node2 == 0);
     VX_CALL(vxReleaseScalar(&eps));
@@ -453,8 +471,6 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
     ASSERT(num_iter == 0);
     VX_CALL(vxReleaseScalar(&use_estimations));
     ASSERT(use_estimations == 0);
-    VX_CALL(vxReleaseArray(&new_points_arr));
-    ASSERT(new_points_arr == 0);
     VX_CALL(vxReleasePyramid(&src_pyr));
     ASSERT(src_pyr == 0);
 
@@ -464,13 +480,14 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
     VX_CALL(vxReleaseGraph(&graph));
     ASSERT(node1 == 0);
     ASSERT(graph == 0);
-    VX_CALL(vxReleaseImage(&src));
-    ASSERT(src == 0);
+    VX_CALL(vxReleaseImage(&src0_image));
+    ASSERT(src0_image == 0);
     VX_CALL(vxReleaseScalar(&sthresh));
     ASSERT(sthresh == 0);
-    ct_read_array(corners, (void**)&corners_data, 0, &corners_data_size, 0);
-    VX_CALL(vxReleaseArray(&corners));
-    ASSERT(corners == 0);
+    ct_read_array(corners1, (void**)&corners_data, 0, &corners_data_size, 0);
+    VX_CALL(vxReleaseArray(&corners1));
+    VX_CALL(vxReleaseArray(&corners0));
+    ASSERT(corners0 == 0 && corners1 == 0);
     ncorners = (uint32_t)corners_data_size;
 
     for( i = 0; i < ncorners; i++ )
@@ -487,11 +504,6 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
         ASSERT( !nonmax || (0 < pt->strength && pt->strength <= 255) );
         dst1->data.y[dst1stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
     }
-
-    ct_free_mem(corners_data);
-    ct_free_mem(new_points);
-    ct_free_mem(new_points_ref);
-    ct_free_mem(old_points);
 
     {
     const uint32_t border = 3;
@@ -521,6 +533,25 @@ TEST_WITH_ARG(tivxFastCorners, testOnNaturalImages, format_arg,
     ASSERT( missing0 <= 0.02*ncorners0 );
     ASSERT( missing1 <= 0.02*ncorners );
     }
+
+    ASSERT(VX_TYPE_KEYPOINT == ct_read_array(new_points_arr1, (void**)&new_points1, 0, &new_points_size1, 0));
+    ASSERT(new_points_size1 == corners_data_size);
+
+    ASSERT(VX_TYPE_KEYPOINT == ct_read_array(new_points_arr0, (void**)&new_points0, 0, &new_points_size0, 0));
+    ASSERT(new_points_size0 == corners_data_size);
+
+    ASSERT_NO_FAILURE(own_keypoints_check(new_points_size0, NULL, new_points0, new_points1));
+
+    ct_free_mem(corners_data);
+    ct_free_mem(new_points1);
+    ct_free_mem(new_points0);
+    ct_free_mem(new_points_ref);
+    ct_free_mem(old_points);
+
+    VX_CALL(vxReleaseArray(&new_points_arr0));
+    ASSERT(new_points_arr0 == 0);
+    VX_CALL(vxReleaseArray(&new_points_arr1));
+    ASSERT(new_points_arr1 == 0);
 
     printPerformance(perf_node1, width*height, "N1");
     printPerformance(perf_node2, width*height, "N2");
@@ -532,99 +563,120 @@ TEST_WITH_ARG(tivxFastCorners, testMultipleNodes, format_arg,
               FAST_TEST_CASE(Graph, lena, 10, 1),
               FAST_TEST_CASE(Graph, lena, 80, 0),
               FAST_TEST_CASE(Graph, lena, 80, 1),
-              FAST_TEST_CASE(Graph, baboon, 10, 0),
-              FAST_TEST_CASE(Graph, baboon, 10, 1),
-              FAST_TEST_CASE(Graph, baboon, 80, 0),
-              FAST_TEST_CASE(Graph, baboon, 80, 1),
-              FAST_TEST_CASE(Graph, optflow_00, 10, 0),
-              FAST_TEST_CASE(Graph, optflow_00, 10, 1),
-              FAST_TEST_CASE(Graph, optflow_00, 80, 0),
-              FAST_TEST_CASE(Graph, optflow_00, 80, 1),
               )
 {
     int mode = arg_->mode;
     const char* imgname = arg_->imgname;
     int threshold = arg_->threshold;
     int nonmax = arg_->nonmax;
-    vx_image src;
-    vx_node node = 0;
+    vx_image src0_image, src1_image;
+    vx_node node1 = 0, node2 = 0;
     vx_graph graph = 0;
-    CT_Image src0, dst0, mask0, dst1;
+    CT_Image src0, src1, dst0, dst0_ref, mask0, dst1, dst1_ref, mask1;
     vx_context context = context_->vx_context_;
     vx_scalar sthresh;
-    vx_array corners;
-    uint32_t width, height;
+    vx_array corners0, corners1;
+    uint32_t width0, height0, width1, height1;
     vx_float32 threshold_f = (vx_float32)threshold;
-    uint32_t ncorners0, ncorners;
-    vx_size corners_data_size = 0;
-    vx_keypoint_t* corners_data = 0;
-    uint32_t i, dst1stride;
+    uint32_t ncorners0, ncorners1, ncorners0_ref, ncorners1_ref;
+    vx_size corners0_data_size = 0, corners1_data_size = 0;
+    vx_keypoint_t* corners0_data = 0;
+    vx_keypoint_t* corners1_data = 0;
+    uint32_t i, dst0stride, dst1stride;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
 
-    ASSERT_NO_FAILURE(src0 = ct_read_image(imgname, 1));
+    ASSERT_NO_FAILURE(src0 = ct_read_image("lena.bmp", 1));
     ASSERT(src0->format == VX_DF_IMAGE_U8);
 
-    width = src0->width;
-    height = src0->height;
+    width0 = src0->width;
+    height0 = src0->height;
 
-    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
-    ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
-    ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
-    dst1stride = ct_stride_bytes(dst1);
-    ct_memset(dst1->data.y, 0, (vx_size)dst1stride*height);
+    ASSERT_NO_FAILURE(src1 = ct_read_image("baboon.bmp", 1));
+    ASSERT(src1->format == VX_DF_IMAGE_U8);
+
+    width1 = src1->width;
+    height1 = src1->height;
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width0, height0, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width0, height0, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(dst0_ref = ct_allocate_image(width0, height0, VX_DF_IMAGE_U8));
+    dst0stride = ct_stride_bytes(dst0_ref);
+    ct_memset(dst0_ref->data.y, 0, (vx_size)dst0stride*height0);
+
+    ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width1, height1, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(mask1 = ct_allocate_image(width1, height1, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(dst1_ref = ct_allocate_image(width1, height1, VX_DF_IMAGE_U8));
+    dst1stride = ct_stride_bytes(dst1_ref);
+    ct_memset(dst1_ref->data.y, 0, (vx_size)dst1stride*height1);
 
     ncorners0 = reference_fast(src0, dst0, mask0, threshold, nonmax);
 
-    src = ct_image_to_vx_image(src0, context);
+    ncorners1 = reference_fast(src1, dst1, mask1, threshold, nonmax);
+
+    src0_image = ct_image_to_vx_image(src0, context);
+    src1_image = ct_image_to_vx_image(src1, context);
     sthresh = vxCreateScalar(context, VX_TYPE_FLOAT32, &threshold_f);
-    corners = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+    corners0 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+    corners1 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
 
     graph = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
-    node = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, 0);
-    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    node1 = vxFastCornersNode(graph, src0_image, sthresh, nonmax ? vx_true_e : vx_false_e, corners0, 0);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    node2 = vxFastCornersNode(graph, src1_image, sthresh, nonmax ? vx_true_e : vx_false_e, corners1, 0);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
-    VX_CALL(vxReleaseNode(&node));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseGraph(&graph));
-    ASSERT(node == 0 && graph == 0);
+    ASSERT(node1 == 0 && node2 == 0 && graph == 0);
 
-    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&src0_image));
+    VX_CALL(vxReleaseImage(&src1_image));
     VX_CALL(vxReleaseScalar(&sthresh));
-    ct_read_array(corners, (void**)&corners_data, 0, &corners_data_size, 0);
-    VX_CALL(vxReleaseArray(&corners));
-    ncorners = (uint32_t)corners_data_size;
 
-    for( i = 0; i < ncorners; i++ )
+    ct_read_array(corners0, (void**)&corners0_data, 0, &corners0_data_size, 0);
+    ct_read_array(corners1, (void**)&corners1_data, 0, &corners1_data_size, 0);
+    VX_CALL(vxReleaseArray(&corners0));
+    VX_CALL(vxReleaseArray(&corners1));
+    ncorners0_ref = (uint32_t)corners0_data_size;
+    ncorners1_ref = (uint32_t)corners1_data_size;
+
+    for( i = 0; i < ncorners0_ref; i++ )
     {
-        vx_keypoint_t* pt = &corners_data[i];
+        vx_keypoint_t* pt = &corners0_data[i];
         int ix, iy;
-        ASSERT( 0.f <= pt->x && pt->x < (float)width &&
-                0.f <= pt->y && pt->y < (float)height );
+        ASSERT( 0.f <= pt->x && pt->x < (float)width0 &&
+                0.f <= pt->y && pt->y < (float)height0 );
         ASSERT(pt->tracking_status == 1);
         ix = (int)(pt->x + 0.5f);
         iy = (int)(pt->y + 0.5f);
-        ix = CT_MIN(ix, (int)width-1);
-        iy = CT_MIN(iy, (int)height-1);
+        ix = CT_MIN(ix, (int)width0-1);
+        iy = CT_MIN(iy, (int)height0-1);
         ASSERT( !nonmax || (0 < pt->strength && pt->strength <= 255) );
-        dst1->data.y[dst1stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
+        dst0_ref->data.y[dst0stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
     }
 
-    ct_free_mem(corners_data);
-
-    //ASSERT_EQ_CTIMAGE(dst0, dst1);
+    ct_free_mem(corners0_data);
 
     {
     const uint32_t border = 3;
-    int32_t stride0 = (int32_t)ct_stride_bytes(dst0), stride1 = (int32_t)ct_stride_bytes(dst1);
+    int32_t stride0 = (int32_t)ct_stride_bytes(dst0), stride1 = (int32_t)ct_stride_bytes(dst0_ref);
     uint32_t x, y;
     uint32_t missing0 = 0, missing1 = 0;
 
-    for( y = border; y < height - border; y++ )
+    for( y = border; y < height0 - border; y++ )
     {
         const uint8_t* ptr0 = dst0->data.y + stride0*y;
-        const uint8_t* ptr1 = dst1->data.y + stride1*y;
+        const uint8_t* ptr1 = dst0_ref->data.y + stride1*y;
 
-        for( x = border; x < width - border; x++ )
+        for( x = border; x < width0 - border; x++ )
         {
             if( ptr0[x] > 0 && ptr1[x] == 0 )
                 missing0++;
@@ -639,8 +691,58 @@ TEST_WITH_ARG(tivxFastCorners, testMultipleNodes, format_arg,
     }
 
     ASSERT( missing0 <= 0.02*ncorners0 );
-    ASSERT( missing1 <= 0.02*ncorners );
+    ASSERT( missing1 <= 0.02*ncorners0_ref );
     }
+
+    for( i = 0; i < ncorners1_ref; i++ )
+    {
+        vx_keypoint_t* pt = &corners1_data[i];
+        int ix, iy;
+        ASSERT( 0.f <= pt->x && pt->x < (float)width1 &&
+                0.f <= pt->y && pt->y < (float)height1 );
+        ASSERT(pt->tracking_status == 1);
+        ix = (int)(pt->x + 0.5f);
+        iy = (int)(pt->y + 0.5f);
+        ix = CT_MIN(ix, (int)width1-1);
+        iy = CT_MIN(iy, (int)height1-1);
+        ASSERT( !nonmax || (0 < pt->strength && pt->strength <= 255) );
+        dst1_ref->data.y[dst1stride*iy + ix] = nonmax ? (uint8_t)(pt->strength + 0.5f) : 1;
+    }
+
+    ct_free_mem(corners1_data);
+
+    {
+    const uint32_t border = 3;
+    int32_t stride0 = (int32_t)ct_stride_bytes(dst1), stride1 = (int32_t)ct_stride_bytes(dst1_ref);
+    uint32_t x, y;
+    uint32_t missing0 = 0, missing1 = 0;
+
+    for( y = border; y < height1 - border; y++ )
+    {
+        const uint8_t* ptr0 = dst1->data.y + stride0*y;
+        const uint8_t* ptr1 = dst1_ref->data.y + stride1*y;
+
+        for( x = border; x < width1 - border; x++ )
+        {
+            if( ptr0[x] > 0 && ptr1[x] == 0 )
+                missing0++;
+            else if( ptr0[x] == 0 && ptr1[x] > 0 )
+                missing1++;
+            else if( nonmax && ptr0[x] > 0 && ptr1[x] > 0 && fabs(log10((double)ptr0[x]/ptr1[x])) >= 1 )
+            {
+                missing0++;
+                missing1++;
+            }
+        }
+    }
+
+    ASSERT( missing0 <= 0.02*ncorners1 );
+    ASSERT( missing1 <= 0.02*ncorners1_ref );
+    }
+
+    printPerformance(perf_node1, width0*height0, "N1");
+    printPerformance(perf_node2, width1*height1, "N2");
+    printPerformance(perf_graph, width0*height0, "G1");
 }
 
-TESTCASE_TESTS(tivxFastCorners, testOnNaturalImages, testMultipleNodes)
+TESTCASE_TESTS(tivxFastCorners, testVirtualImages, testMultipleNodes)
