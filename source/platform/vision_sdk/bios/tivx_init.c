@@ -12,6 +12,8 @@
 
 void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
+void tivxRegisterIVisionTargetKernels(void);
+void tivxUnRegisterIVisionTargetKernels(void);
 
 void tivxInit(void)
 {
@@ -22,8 +24,12 @@ void tivxInit(void)
     tivxTargetInit();
 
     /* Initialize Host */
-#if defined (C66) || defined (EVE)
+#if defined (C66)
     tivxRegisterOpenVXCoreTargetKernels();
+#endif
+
+#if defined (EVE)
+    tivxRegisterIVisionTargetKernels();
 #endif
 
 #if defined(HOST_CORE_IPU1_0)
@@ -42,8 +48,12 @@ void tivxDeInit(void)
     tivxPlatformDeleteTargets();
 
     /* DeInitialize Host */
-#if defined (C66) || defined (EVE)
+#if defined (C66)
     tivxUnRegisterOpenVXCoreTargetKernels();
+#endif
+
+#if defined (EVE)
+    tivxUnRegisterIVisionTargetKernels();
 #endif
 
 #if defined(HOST_CORE_IPU1_0)

@@ -93,7 +93,7 @@ vx_status tivxRemoveKernelThreshold(vx_context context);
 vx_status tivxRemoveKernelWarpAffine(vx_context context);
 vx_status tivxRemoveKernelWarpPerspective(vx_context context);
 
-Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
+static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsDiff, tivxRemoveKernelAbsDiff},
     {tivxAddKernelAccumulate, tivxRemoveKernelAccumulate},
     {tivxAddKernelAccumulateSquare, tivxRemoveKernelAccumulateSquare},
@@ -179,10 +179,10 @@ static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context)
 
 void tivxRegisterOpenVXCoreKernels(void)
 {
-    tivxRegisterModule(TIVX_MODULE_NAME, tivxPublishKernels, tivxUnPublishKernels);
+    tivxRegisterModule(TIVX_MODULE_NAME0, tivxPublishKernels, tivxUnPublishKernels);
 }
 
 void tivxUnRegisterOpenVXCoreKernels(void)
 {
-    tivxUnRegisterModule(TIVX_MODULE_NAME);
+    tivxUnRegisterModule(TIVX_MODULE_NAME0);
 }

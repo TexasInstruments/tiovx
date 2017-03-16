@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2012-2016 The Khronos Group Inc.
+# Copyright (c) 2012-2017 The Khronos Group Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and/or associated documentation files (the
@@ -28,28 +28,25 @@
 
 
 include $(PRELUDE)
-TARGET      := vx_target_kernels_openvx_core
+TARGET      := vx_target_kernels_ivision_common
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
-IDIRS       += $(HOST_ROOT)/kernels/include
-IDIRS       += $(VXLIB_PATH)/packages
-IDIRS       += $(HOST_ROOT)/kernels/openvx-core/c66x
 
-ifeq ($(USE_BAM),yes)
-DEFS += USE_BAM
-endif
+IDIRS       += $(HOST_ROOT)/kernels/ivision/include
+IDIRS       += $(XDIAS_PATH)/packages
+IDIRS       += $(EVE_SW_PATH)/
+IDIRS       += $(EVE_SW_PATH)/common
 
 ifeq ($(TARGET_CPU),X86)
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 endif
 
 ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=0
+SKIPBUILD=1
 endif
 
 ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
+SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),A15)

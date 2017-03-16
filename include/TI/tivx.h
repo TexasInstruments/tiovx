@@ -12,6 +12,8 @@
 #define VX_EXT_TI_H_
 
 #include <VX/vx.h>
+#include <TI/tivx_kernels.h>
+#include <TI/tivx_nodes.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,7 +28,16 @@ extern "C" {
 /*! \brief Name for TI OpenVX kernel module
  * \ingroup group_tivx_ext
  */
-#define TIVX_MODULE_NAME    "openvx-core"
+#define TIVX_MODULE_NAME0    "openvx-core"
+/*! \brief Name for TI OpenVX kernel module
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_MODULE_NAME1    "ivsion"
+
+/*! \brief Number of TI OpenVX Kernel Modules
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_MAX_MODULE      (2U)
 
 /*! \brief Name for DSP target class, instance 1
  * \ingroup group_tivx_ext

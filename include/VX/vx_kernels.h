@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -42,6 +42,8 @@ extern "C" {
 enum vx_library_e {
     /*! \brief The base set of kernels as defined by Khronos. */
     VX_LIBRARY_KHR_BASE = 0x0,
+    /*! \brief The set of kernels supported in ivision. */
+    VX_LIBRARY_IVISION_BASE = 0x1,
 };
 
 /*!
