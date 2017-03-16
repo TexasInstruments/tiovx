@@ -31,7 +31,8 @@ include $(PRELUDE)
 TARGET      := vx_target_kernels_openvx_core_bam
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
-IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include \
+IDIRS       += $(HOST_ROOT)/kernels/include \
+               $(HOST_ROOT)/kernels/openvx-core/include \
                $(HOST_ROOT)/kernels/openvx-core/c66x \
                $(VXLIB_PATH)/packages \
                $(VXLIB2_PATH) \
