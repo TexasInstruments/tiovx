@@ -35,10 +35,28 @@ extern "C" {
 
 
 /*! \brief Default buffer allocation alignment
- * \ingroup group_tivx_mem
+ * \ingroup group_tivx_platform
  */
 #define TIVX_MEM_BUFFER_ALLOC_ALIGN             (16U)
 
+/*! \brief Macro to check max shared mem entry size
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE        (216U)
+
+/*! \brief Macro to check the alignment of the size of
+ *         the shared memory entry
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN      (8U)
+
+/*! \brief Macros for build time check
+ * \ingroup group_tivx_platform
+ */
+#define ASSERT_CONCAT_(a, b) a##b
+#define ASSERT_CONCAT(a, b) ASSERT_CONCAT_(a, b)
+#define BUILD_ASSERT(e) \
+     enum { ASSERT_CONCAT(assert_line_, __LINE__) = 1/(!!(e)) }
 
 /*! \brief Target ID for supported targets
  * \ingroup group_tivx_platform

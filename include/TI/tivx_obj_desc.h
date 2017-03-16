@@ -341,6 +341,8 @@ typedef struct _tivx_obj_desc_image
     vx_imagepatch_addressing_t imagepatch_addr[TIVX_IMAGE_MAX_PLANES];
     /*! \brief valid region of image to use for processing */
     vx_rectangle_t valid_roi;
+    /*! \brief Added dummy variable to keep structure size 8byte aligned */
+    uint32_t dummy;
 } tivx_obj_desc_image_t;
 
 

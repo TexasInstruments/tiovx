@@ -78,6 +78,12 @@ vx_status tivxPlatformInit(void)
     vx_status status;
     uint32_t i = 0;
 
+    /* Build time check to see if the structure size is 8byte aligned and size of the elements is not more than  */
+    BUILD_ASSERT(
+    ((sizeof(tivx_obj_desc_shm_entry_t)) % (TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN))
+        == 0);
+    BUILD_ASSERT(
+    (sizeof(tivx_obj_desc_shm_entry_t)) <= TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE);
 
     for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
     {
