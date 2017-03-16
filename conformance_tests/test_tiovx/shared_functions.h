@@ -30,7 +30,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 
-CT_Image box3x3_create_reference_image(CT_Image src, vx_border_t border);
-void sobel3x3_create_reference_image(CT_Image src, vx_border_t border, CT_Image *p_dst_x, CT_Image *p_dst_y);
+CT_Image tivx_box3x3_create_reference_image(CT_Image src, vx_border_t border);
+void tivx_sobel3x3_create_reference_image(CT_Image src, vx_border_t border, CT_Image *p_dst_x, CT_Image *p_dst_y);
 
-void gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_size levels, vx_float32 scale, vx_border_t border);
+void tivx_gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_size levels, vx_float32 scale, vx_border_t border);

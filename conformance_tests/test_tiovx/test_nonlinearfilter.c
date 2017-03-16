@@ -106,7 +106,7 @@ static void filter_calculate(vx_enum function, CT_Image src, vx_coordinates2d_t*
     }
 }
 
-void filter_create_reference_image(vx_enum function, CT_Image src, vx_coordinates2d_t* origin, vx_size cols, vx_size rows, vx_uint8* mask, CT_Image* pdst, vx_border_t* border)
+void tivx_filter_create_reference_image(vx_enum function, CT_Image src, vx_coordinates2d_t* origin, vx_size cols, vx_size rows, vx_uint8* mask, CT_Image* pdst, vx_border_t* border)
 {
     CT_Image dst = NULL;
 
@@ -198,7 +198,7 @@ static void filter_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Imag
 
     ASSERT_NO_FAILURE(pattern_check(m, cols, rows, pattern));
 
-    ASSERT_NO_FAILURE(filter_create_reference_image(function, src, &origin, cols, rows, m, &dst_ref, border));
+    ASSERT_NO_FAILURE(tivx_filter_create_reference_image(function, src, &origin, cols, rows, m, &dst_ref, border));
 
     ASSERT_NO_FAILURE(
     if (border->mode == VX_BORDER_UNDEFINED)
@@ -249,7 +249,7 @@ static void filter_not_check(vx_enum function, CT_Image src, vx_matrix mask, CT_
 
     dst_ref = ct_allocate_image(src->width, src->height, VX_DF_IMAGE_U8);
 
-    ASSERT_NO_FAILURE(filter_create_reference_image(function, src, &origin, cols, rows, m, &virt_ref, border));
+    ASSERT_NO_FAILURE(tivx_filter_create_reference_image(function, src, &origin, cols, rows, m, &virt_ref, border));
 
     ASSERT_NO_FAILURE(referenceNot(virt_ref, dst_ref));
 

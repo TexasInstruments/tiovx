@@ -416,7 +416,7 @@ TEST_WITH_ARG(tivxFastCorners, testVirtualImages, format_arg,
 
     ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));
+    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));
 
     ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
     ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));

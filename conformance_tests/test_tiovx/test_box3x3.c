@@ -133,7 +133,7 @@ static uint8_t box3x3_calculate_constant(CT_Image src, uint32_t x_, uint32_t y_,
 }
 
 
-CT_Image box3x3_create_reference_image(CT_Image src, vx_border_t border)
+CT_Image tivx_box3x3_create_reference_image(CT_Image src, vx_border_t border)
 {
     CT_Image dst;
 
@@ -181,7 +181,7 @@ static void box3x3_check(CT_Image src, CT_Image dst, vx_border_t border)
 
     ASSERT(src && dst);
 
-    ASSERT_NO_FAILURE(dst_ref = box3x3_create_reference_image(src, border));
+    ASSERT_NO_FAILURE(dst_ref = tivx_box3x3_create_reference_image(src, border));
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)
@@ -211,9 +211,9 @@ static void sequential_box3x3_check(CT_Image src, CT_Image dst, vx_border_t bord
 
     ASSERT(src && dst);
 
-    ASSERT_NO_FAILURE(virt_ref = box3x3_create_reference_image(src, border));
+    ASSERT_NO_FAILURE(virt_ref = tivx_box3x3_create_reference_image(src, border));
 
-    ASSERT_NO_FAILURE(dst_ref = box3x3_create_reference_image(virt_ref, border));
+    ASSERT_NO_FAILURE(dst_ref = tivx_box3x3_create_reference_image(virt_ref, border));
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)

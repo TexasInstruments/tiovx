@@ -560,7 +560,7 @@ static CT_Image gaussian_pyramid_create_reference_image(CT_Image input, CT_Image
     return dst;
 }
 
-void gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_size levels, vx_float32 scale, vx_border_t border)
+void tivx_gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_size levels, vx_float32 scale, vx_border_t border)
 {
     vx_uint32 level = 0;
     vx_image  output_image = 0;
@@ -703,7 +703,7 @@ TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
 
     ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border));
+    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border));
 
     ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input_image, pyr), VX_TYPE_NODE);
 
@@ -810,7 +810,7 @@ TEST_WITH_ARG(tivxGaussianPyramid, testVirtualPyramid, Arg,
 
     ASSERT_VX_OBJECT(virt_pyr = vxCreateVirtualPyramid(graph, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border));
+    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border));
 
     ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input_image, virt_pyr), VX_TYPE_NODE);
 

@@ -40,8 +40,11 @@
 #include <VX/vxu.h>
 #include <float.h>
 #include <math.h>
+#include "shared_functions.h"
 
 #define PTS_SEARCH_RADIUS   5
+#define MAX_POINTS 100
+#define LEVELS_COUNT_MAX    7
 
 TESTCASE(tivxHarrisCorners, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -50,6 +53,28 @@ typedef struct {
     vx_float32      strength_thresh;
     vx_keypoint_t   *pts;
 } TruthData;
+
+static vx_size gaussian_pyramid_calc_max_levels_count(int width, int height, vx_float32 scale)
+{
+    vx_size level = 1;
+    while ((16 <= width) && (16 <= height) && level < LEVELS_COUNT_MAX)
+    {
+        level++;
+        width = (int)ceil((vx_float64)width * scale);
+        height = (int)ceil((vx_float64)height * scale);
+    }
+    return level;
+}
+
+static CT_Image optflow_pyrlk_read_image(const char* fileName, int width, int height)
+{
+    CT_Image image = NULL;
+    ASSERT_(return 0, width == 0 && height == 0);
+    image = ct_read_image(fileName, 1);
+    ASSERT_(return 0, image);
+    ASSERT_(return 0, image->format == VX_DF_IMAGE_U8);
+    return image;
+}
 
 static vx_size harris_corner_read_line(const char *data, char *line)
 {
@@ -212,36 +237,153 @@ typedef struct {
 } Arg;
 
 #define ADD_VX_MIN_DISTANCE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/MIN_DISTANCE=0.0", __VA_ARGS__, 0.0f)), \
-    CT_EXPAND(nextmacro(testArgName "/MIN_DISTANCE=3.0", __VA_ARGS__, 3.0f)), \
-    CT_EXPAND(nextmacro(testArgName "/MIN_DISTANCE=5.0", __VA_ARGS__, 5.0f)), \
-    CT_EXPAND(nextmacro(testArgName "/MIN_DISTANCE=30.0", __VA_ARGS__, 30.0f))
+    CT_EXPAND(nextmacro(testArgName "/MIN_DISTANCE=3.0", __VA_ARGS__, 3.0f))
 
 #define ADD_VX_SENSITIVITY(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/SENSITIVITY=0.04", __VA_ARGS__, 0.04f)), \
-    CT_EXPAND(nextmacro(testArgName "/SENSITIVITY=0.10", __VA_ARGS__, 0.10f)), \
-    CT_EXPAND(nextmacro(testArgName "/SENSITIVITY=0.15", __VA_ARGS__, 0.15f))
+    CT_EXPAND(nextmacro(testArgName "/SENSITIVITY=0.10", __VA_ARGS__, 0.10f))
 
 #define ADD_VX_GRADIENT_SIZE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/GRADIENT_SIZE=3", __VA_ARGS__, 3)), \
-    CT_EXPAND(nextmacro(testArgName "/GRADIENT_SIZE=5", __VA_ARGS__, 5)), \
-    CT_EXPAND(nextmacro(testArgName "/GRADIENT_SIZE=7", __VA_ARGS__, 7))
-
+    CT_EXPAND(nextmacro(testArgName "/GRADIENT_SIZE=3", __VA_ARGS__, 3))
 
 #define ADD_VX_BLOCK_SIZE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=3", __VA_ARGS__, 3)), \
-    CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=5", __VA_ARGS__, 5)), \
-    CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=7", __VA_ARGS__, 7))
+    CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=5", __VA_ARGS__, 5))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("few_strong_corners",  ADD_VX_MIN_DISTANCE, ADD_VX_SENSITIVITY, ADD_VX_GRADIENT_SIZE, ADD_VX_BLOCK_SIZE, ARG, "hc_fsc"), \
     CT_GENERATE_PARAMETERS("many_strong_corners", ADD_VX_MIN_DISTANCE, ADD_VX_SENSITIVITY, ADD_VX_GRADIENT_SIZE, ADD_VX_BLOCK_SIZE, ARG, "hc_msc")
 
-TEST_WITH_ARG(tivxHarrisCorners, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxHarrisCorners, testMultipleGraphs, Arg,
     PARAMETERS
 )
 {
     vx_context context = context_->vx_context_;
+
+    vx_image input_image0 = 0, input_image1 = 0;
+    vx_float32 strength_thresh0, strength_thresh1;
+    vx_float32 min_distance0 = arg_->min_distance + FLT_EPSILON;
+    vx_float32 min_distance1 = arg_->min_distance + 2 + FLT_EPSILON;
+    vx_float32 sensitivity0 = arg_->sensitivity;
+    vx_float32 sensitivity1 = arg_->sensitivity + 0.05f;
+    vx_size num_corners0, num_corners1;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    size_t sz0, sz1;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+
+    vx_scalar strength_thresh0_scalar, min_distance0_scalar, sensitivity0_scalar, num_corners0_scalar;
+    vx_scalar strength_thresh1_scalar, min_distance1_scalar, sensitivity1_scalar, num_corners1_scalar;
+    vx_array corners0, corners1;
+
+    char filepath0[MAXPATHLENGTH], filepath1[MAXPATHLENGTH];
+
+    CT_Image input0 = NULL, input1 = NULL;
+    TruthData truth_data0, truth_data1;
+
+    double scale = 1.0 / ((1 << (arg_->gradient_size - 1)) * arg_->block_size * 255.0);
+    scale = scale * scale * scale * scale;
+
+    sz0 = snprintf(filepath0, MAXPATHLENGTH, "%s/harriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
+    ASSERT(sz0 < MAXPATHLENGTH);
+    sz1 = snprintf(filepath1, MAXPATHLENGTH, "%s/harriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, (arg_->min_distance + 2), (arg_->sensitivity + 0.05f), arg_->gradient_size, arg_->block_size);
+    ASSERT(sz1 < MAXPATHLENGTH);
+    ASSERT_NO_FAILURE(harris_corner_read_truth_data(filepath0, &truth_data0, (float)scale));
+    ASSERT_NO_FAILURE(harris_corner_read_truth_data(filepath1, &truth_data1, (float)scale));
+
+    strength_thresh0 = truth_data0.strength_thresh;
+    strength_thresh1 = truth_data1.strength_thresh;
+
+    sprintf(filepath0, "harriscorners/%s.bmp", arg_->filePrefix);
+    sprintf(filepath1, "harriscorners/%s.bmp", arg_->filePrefix);
+
+    ASSERT_NO_FAILURE(input0 = ct_read_image(filepath0, 1));
+    ASSERT(input0 && (input0->format == VX_DF_IMAGE_U8));
+    ASSERT_VX_OBJECT(input_image0 = ct_image_to_vx_image(input0, context), VX_TYPE_IMAGE);
+
+    ASSERT_NO_FAILURE(input1 = ct_read_image(filepath1, 1));
+    ASSERT(input1 && (input1->format == VX_DF_IMAGE_U8));
+    ASSERT_VX_OBJECT(input_image1 = ct_image_to_vx_image(input1, context), VX_TYPE_IMAGE);
+
+    num_corners0 = input0->width * input0->height / 10;
+    num_corners1 = input1->width * input1->height / 10;
+
+    ASSERT_VX_OBJECT(strength_thresh0_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &strength_thresh0), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(min_distance0_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &min_distance0), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(sensitivity0_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &sensitivity0), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_corners0_scalar = vxCreateScalar(context, VX_TYPE_SIZE, &num_corners0), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(strength_thresh1_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &strength_thresh1), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(min_distance1_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &min_distance1), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(sensitivity1_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &sensitivity1), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_corners1_scalar = vxCreateScalar(context, VX_TYPE_SIZE, &num_corners1), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(corners0 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_corners0), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(corners1 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_corners1), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxHarrisCornersNode(graph, input_image0, strength_thresh0_scalar, min_distance0_scalar,
+                                                sensitivity0_scalar, arg_->gradient_size, arg_->block_size, corners0,
+                                                num_corners0_scalar), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxHarrisCornersNode(graph, input_image1, strength_thresh1_scalar, min_distance1_scalar,
+                                                sensitivity1_scalar, arg_->gradient_size, arg_->block_size, corners1,
+                                                num_corners1_scalar), VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    CT_ASSERT_NO_FAILURE_(, harris_corner_check(corners0, &truth_data0));
+    CT_ASSERT_NO_FAILURE_(, harris_corner_check(corners1, &truth_data1));
+
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node2 == 0);
+    ASSERT(node1 == 0);
+    ASSERT(graph == 0);
+
+    ct_free_mem(truth_data0.pts); truth_data0.pts = 0;
+    ct_free_mem(truth_data1.pts); truth_data1.pts = 0;
+    VX_CALL(vxReleaseArray(&corners1));
+    VX_CALL(vxReleaseArray(&corners0));
+    VX_CALL(vxReleaseScalar(&num_corners0_scalar));
+    VX_CALL(vxReleaseScalar(&sensitivity0_scalar));
+    VX_CALL(vxReleaseScalar(&min_distance0_scalar));
+    VX_CALL(vxReleaseScalar(&strength_thresh0_scalar));
+    VX_CALL(vxReleaseScalar(&num_corners1_scalar));
+    VX_CALL(vxReleaseScalar(&sensitivity1_scalar));
+    VX_CALL(vxReleaseScalar(&min_distance1_scalar));
+    VX_CALL(vxReleaseScalar(&strength_thresh1_scalar));
+    VX_CALL(vxReleaseImage(&input_image1));
+    VX_CALL(vxReleaseImage(&input_image0));
+
+    ASSERT(truth_data0.pts == 0);
+    ASSERT(truth_data1.pts == 0);
+    ASSERT(corners0 == 0);
+    ASSERT(corners1 == 0);
+    ASSERT(num_corners0_scalar == 0);
+    ASSERT(sensitivity0_scalar == 0);
+    ASSERT(min_distance0_scalar == 0);
+    ASSERT(strength_thresh0_scalar == 0);
+    ASSERT(num_corners1_scalar == 0);
+    ASSERT(sensitivity1_scalar == 0);
+    ASSERT(min_distance1_scalar == 0);
+    ASSERT(strength_thresh1_scalar == 0);
+    ASSERT(input_image0 == 0);
+    ASSERT(input_image1 == 0);
+
+    printPerformance(perf_node1, input0->width*input0->height, "N1");
+    printPerformance(perf_node2, input1->width*input1->height, "N2");
+    printPerformance(perf_graph, input0->width*input0->height, "G1");
+}
+
+TEST_WITH_ARG(tivxHarrisCorners, testVirtualImage, Arg,
+    PARAMETERS
+)
+{
+    /*vx_context context = context_->vx_context_;
 
     vx_image input_image = 0;
     vx_float32 strength_thresh;
@@ -249,13 +391,46 @@ TEST_WITH_ARG(tivxHarrisCorners, testGraphProcessing, Arg,
     vx_float32 sensitivity = arg_->sensitivity;
     vx_size num_corners;
     vx_graph graph = 0;
-    vx_node node = 0;
+    vx_node node1 = 0;
     size_t sz;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
 
     vx_scalar strength_thresh_scalar, min_distance_scalar, sensitivity_scalar, num_corners_scalar;
     vx_array corners;
 
-    char filepath[MAXPATHLENGTH];
+    vx_pyramid pyr = 0, src_pyr   = 0;
+    vx_float32 eps_val      = 0.001f;
+    vx_uint32  num_iter_val = 100;
+    vx_bool   use_estimations_val = vx_true_e;
+    vx_scalar eps                 = 0;
+    vx_scalar num_iter            = 0;
+    vx_scalar use_estimations     = 0;
+    vx_size   winSize             = 5; // hardcoded from optflow test case
+    vx_border_t border = { VX_BORDER_REPLICATE };
+    vx_keypoint_t* old_points = 0;
+    vx_keypoint_t* new_points_ref = 0;
+    vx_keypoint_t* new_points0 = 0;
+    vx_keypoint_t* new_points1 = 0;
+    vx_size new_points_size0 = 0, new_points_size1 = 0;*/
+
+    /* Optical flow */
+    /*ASSERT_NO_FAILURE(src_ct_image = optflow_pyrlk_read_image( "optflow_01.bmp", 0, 0));
+
+    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_VX_OBJECT(new_points_arr0 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr1 = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(use_estimations = vxCreateScalar(context, VX_TYPE_BOOL, &use_estimations_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, VX_SCALE_PYRAMID_HALF, border));*/
+    /* End of optical flow */
+
+    /*char filepath[MAXPATHLENGTH];
 
     CT_Image input = NULL;
     TruthData truth_data;
@@ -285,18 +460,22 @@ TEST_WITH_ARG(tivxHarrisCorners, testGraphProcessing, Arg,
     ASSERT_VX_OBJECT(corners = vxCreateArray(context, VX_TYPE_KEYPOINT, num_corners), VX_TYPE_ARRAY);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-    ASSERT_VX_OBJECT(node = vxHarrisCornersNode(graph, input_image, strength_thresh_scalar, min_distance_scalar,
+    ASSERT_VX_OBJECT(node1 = vxHarrisCornersNode(graph, input_image, strength_thresh_scalar, min_distance_scalar,
                                                 sensitivity_scalar, arg_->gradient_size, arg_->block_size, corners,
                                                 num_corners_scalar), VX_TYPE_NODE);
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    //vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
     CT_ASSERT_NO_FAILURE_(, harris_corner_check(corners, &truth_data));
 
-    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseGraph(&graph));
-    ASSERT(node == 0);
+    ASSERT(node1 == 0);
     ASSERT(graph == 0);
 
     ct_free_mem(truth_data.pts); truth_data.pts = 0;
@@ -314,8 +493,13 @@ TEST_WITH_ARG(tivxHarrisCorners, testGraphProcessing, Arg,
     ASSERT(min_distance_scalar == 0);
     ASSERT(strength_thresh_scalar == 0);
     ASSERT(input_image == 0);
+
+    printPerformance(perf_node1, input->width*input->height, "N1");
+    //printPerformance(perf_node2, input->width*input->height, "N2");
+    printPerformance(perf_graph, input->width*input->height, "G1");*/
 }
 
 TESTCASE_TESTS(tivxHarrisCorners,
-        testGraphProcessing
+        testMultipleGraphs,
+        testVirtualImage
 )

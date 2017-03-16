@@ -338,61 +338,61 @@ typedef struct {
 } Arg;
 
 
-void dst_size_generator_1_1(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_1_1(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width;
     *dst_height = height;
 }
 
-void dst_size_generator_1_2(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_1_2(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width * 2;
     *dst_height = height * 2;
 }
 
-void dst_size_generator_1_3(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_1_3(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width * 3;
     *dst_height = height * 3;
 }
 
-void dst_size_generator_2_1(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_2_1(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = (width + 1) / 2;
     *dst_height = (height + 1) / 2;
 }
 
-void dst_size_generator_3_1(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_3_1(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = (width + 2) / 3;
     *dst_height = (height + 2) / 3;
 }
 
-void dst_size_generator_4_1(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_4_1(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = (width + 3) / 4;
     *dst_height = (height + 3) / 4;
 }
 
-void dst_size_generator_5_1(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_5_1(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = (width + 4) / 5;
     *dst_height = (height + 4) / 5;
 }
 
-void dst_size_generator_SCALE_PYRAMID_ORB(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_SCALE_PYRAMID_ORB(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = (int)(width * VX_SCALE_PYRAMID_ORB);
     *dst_height = (int)(height * VX_SCALE_PYRAMID_ORB);
 }
 
-void dst_size_generator_SCALE_NEAR_UP(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_SCALE_NEAR_UP(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width + 1;
     *dst_height = height + 1;
 }
 
-void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_width, int* dst_height)
+void tivx_dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width - 1;
     *dst_height = height - 1;
@@ -404,7 +404,7 @@ void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_width, i
 
 #define SCALE_TEST(interpolation, inputDataGenerator, inputDataFile, scale, exact, nextmacro, ...) \
     CT_EXPAND(nextmacro(STR_##interpolation "/" inputDataFile "/" #scale, __VA_ARGS__, \
-            interpolation, inputDataGenerator, inputDataFile, dst_size_generator_ ## scale, exact))
+            interpolation, inputDataGenerator, inputDataFile, tivx_dst_size_generator_ ## scale, exact))
 
 #define PARAMETERS \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_2, 2, ADD_SIZE_18x18, ADD_VX_BORDERS, ARG, 0), \

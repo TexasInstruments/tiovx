@@ -288,8 +288,8 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     if (arg_->useReferencePyramid)
     {
         vx_border_t border = { VX_BORDER_REPLICATE };
-        ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(src_ct_image[0], src_pyr[0], 4, VX_SCALE_PYRAMID_HALF, border));
-        ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(src_ct_image[1], src_pyr[1], 4, VX_SCALE_PYRAMID_HALF, border));
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image[0], src_pyr[0], 4, VX_SCALE_PYRAMID_HALF, border));
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image[1], src_pyr[1], 4, VX_SCALE_PYRAMID_HALF, border));
     }
     else
     {

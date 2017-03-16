@@ -224,7 +224,7 @@ static void sobel3x3_calculate_constant(CT_Image src, uint32_t x_, uint32_t y_, 
 }
 
 
-void sobel3x3_create_reference_image(CT_Image src, vx_border_t border, CT_Image *p_dst_x, CT_Image *p_dst_y)
+void tivx_sobel3x3_create_reference_image(CT_Image src, vx_border_t border, CT_Image *p_dst_x, CT_Image *p_dst_y)
 {
     CT_Image dst_x = NULL, dst_y = NULL;
 
@@ -275,7 +275,7 @@ static void sobel3x3_check(CT_Image src, CT_Image dst_x, CT_Image dst_y, vx_bord
 
     ASSERT(src && dst_x && dst_y);
 
-    ASSERT_NO_FAILURE(sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)
@@ -312,11 +312,11 @@ static void sobel3x3_sequential_check(CT_Image src, CT_Image virt1, CT_Image vir
 
     ASSERT(src && virt1 && virt2 && dst1_x && dst1_y && dst2_x && dst2_y);
 
-    ASSERT_NO_FAILURE(sobel3x3_create_reference_image(src, border, &dst0_x_ref, &dst0_y_ref));
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(src, border, &dst0_x_ref, &dst0_y_ref));
     ASSERT_NO_FAILURE(referenceConvertDepth(dst0_x_ref, virt1, 0, VX_CONVERT_POLICY_SATURATE));
     ASSERT_NO_FAILURE(referenceConvertDepth(dst0_y_ref, virt2, 0, VX_CONVERT_POLICY_SATURATE));
-    ASSERT_NO_FAILURE(sobel3x3_create_reference_image(virt1, border, &dst1_x_ref, &dst1_y_ref));
-    ASSERT_NO_FAILURE(sobel3x3_create_reference_image(virt2, border, &dst2_x_ref, &dst2_y_ref));
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(virt1, border, &dst1_x_ref, &dst1_y_ref));
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(virt2, border, &dst2_x_ref, &dst2_y_ref));
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)
@@ -359,7 +359,7 @@ static void sobel3x3_check_y(CT_Image src, CT_Image dst_y, vx_border_t border)
 
     ASSERT(src && dst_y);
 
-    ASSERT_NO_FAILURE(sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)
@@ -393,7 +393,7 @@ static void sobel3x3_check_x(CT_Image src, CT_Image dst_x, vx_border_t border)
 
     ASSERT(src && dst_x);
 
-    ASSERT_NO_FAILURE(sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
 
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)
