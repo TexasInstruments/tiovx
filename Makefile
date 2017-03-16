@@ -29,6 +29,7 @@ ifeq ($(BUILD_CONFORMANCE_TEST),yes)
   DIRECTORIES += conformance_tests/test_engine
   DIRECTORIES += conformance_tests/test_executable
   DIRECTORIES += conformance_tests/test_tiovx
+  DIRECTORIES += conformance_tests/test_ivision
 endif
 
 PROFILE?=all
