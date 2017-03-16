@@ -184,15 +184,21 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         }
     }
 
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual(
-            (vx_reference)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX])))
+    if (VX_SUCCESS == status)
     {
         arr = (vx_array)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX];
 
         status = vxQueryArray(arr, VX_ARRAY_ITEMTYPE, &arr_type,
             sizeof(arr_type));
 
+        status = vxQueryArray(arr, VX_ARRAY_CAPACITY, &arr_capacity,
+            sizeof(arr_capacity));
+    }
+
+    if ((VX_SUCCESS == status) &&
+        (vx_false_e == tivxIsReferenceVirtual(
+            (vx_reference)parameters[TIVX_KERNEL_HARRISC_OUT_ARR_IDX])))
+    {
         if (VX_SUCCESS == status)
         {
             if (VX_TYPE_KEYPOINT != arr_type)
@@ -200,9 +206,6 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
                 status = VX_ERROR_INVALID_PARAMETERS;
             }
         }
-
-        status = vxQueryArray(arr, VX_ARRAY_CAPACITY, &arr_capacity,
-            sizeof(arr_capacity));
     }
 
     if (VX_SUCCESS == status)
