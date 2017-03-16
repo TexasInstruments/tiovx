@@ -165,6 +165,9 @@ vx_image ct_image_to_vx_image_impl(CT_Image ctimg, vx_context context, const cha
 #define ct_image_copyto_vx_image(vximg, ctimg) ct_image_copyto_vx_image_impl(vximg, ctimg, __FUNCTION__, __FILE__, __LINE__)
 vx_image ct_image_copyto_vx_image_impl(vx_image vximg, CT_Image ctimg, const char* func, const char* file, int line);
 
+#define ct_image_copyfrom_vx_image(ctimg, vximg) ct_image_copyfrom_vx_image_impl(ctimg, vximg, __FUNCTION__, __FILE__, __LINE__)
+CT_Image ct_image_copyfrom_vx_image_impl(CT_Image ctimg, vx_image vximg, const char* func, const char* file, int line);
+
 #define EXPECT_EQ_CTIMAGE(expected, actual) ct_assert_eq_ctimage_impl(expected, actual, 0, (uint32_t)-1, #expected, #actual, __FUNCTION__, __FILE__, __LINE__)
 #define ASSERT_EQ_CTIMAGE(expected, actual)                                                                                     \
     do { if (ct_assert_eq_ctimage_impl(expected, actual, 0, (uint32_t)-1, #expected, #actual, __FUNCTION__, __FILE__, __LINE__))\

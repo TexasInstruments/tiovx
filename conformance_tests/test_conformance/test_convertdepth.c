@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -278,14 +278,15 @@ TEST_WITH_ARG(vxuConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
 
     ASSERT_VX_OBJECT(dst = vxCreateImage(context, arg_->width, arg_->height, arg_->format_to), VX_TYPE_IMAGE);
 
+    refdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
+    vxdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
     for (shift_val = VALID_SHIFT_MIN; shift_val <= VALID_SHIFT_MAX; ++shift_val)
     {
         ct_update_progress(shift_val - VALID_SHIFT_MIN, VALID_SHIFT_MAX - VALID_SHIFT_MIN + 1);
         EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxuConvertDepth(context, src, dst, arg_->policy, shift_val));
 
         ASSERT_NO_FAILURE({
-            vxdst = ct_image_from_vx_image(dst);
-            refdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
+            ct_image_copyfrom_vx_image(vxdst, dst);
             referenceConvertDepth(ref_src, refdst, shift_val, arg_->policy);
         });
 
@@ -326,6 +327,8 @@ TEST_WITH_ARG(vxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(node = vxConvertDepthNode(graph, src, dst, arg_->policy, scalar_shift), VX_TYPE_NODE);
 
+    refdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
+    vxdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
     for (shift = VALID_SHIFT_MIN; shift <= VALID_SHIFT_MAX; ++shift)
     {
         ct_update_progress(shift - VALID_SHIFT_MIN, VALID_SHIFT_MAX - VALID_SHIFT_MIN + 1);
@@ -340,8 +343,7 @@ TEST_WITH_ARG(vxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
 #endif
 
         ASSERT_NO_FAILURE({
-            vxdst = ct_image_from_vx_image(dst);
-            refdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
+            ct_image_copyfrom_vx_image(vxdst, dst);
             referenceConvertDepth(ref_src, refdst, shift, arg_->policy);
         });
 

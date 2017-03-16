@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -837,6 +837,187 @@ vx_image ct_image_copyto_vx_image_impl(vx_image vximg, CT_Image ctimg, const cha
     return vximg;
 }
 
+CT_Image ct_image_copyfrom_vx_image_impl(CT_Image ctimg, vx_image vximg, const char* func, const char* file, int line)
+{
+    vx_uint32      x;
+    vx_uint32      y;
+    vx_uint32      plane;
+    vx_uint32      ct_nplanes;
+    vx_uint32      ct_elem_size;
+    vx_uint32      ct_width;
+    vx_uint32      ct_height;
+    vx_df_image    ct_format;
+    vx_uint32      vx_width;
+    vx_uint32      vx_height;
+    vx_df_image    vx_format;
+    vx_rectangle_t rect;
+
+    ASSERT_VX_OBJECT_AT_(return 0, vximg, VX_TYPE_IMAGE, func, file, line);
+    ASSERT_AT_(return 0, NULL != ctimg, func, file, line);
+
+    ASSERT_EQ_VX_STATUS_AT_(return 0, VX_SUCCESS, vxQueryImage(vximg, VX_IMAGE_WIDTH,  &vx_width,  sizeof(vx_width)),  func, file, line);
+    ASSERT_EQ_VX_STATUS_AT_(return 0, VX_SUCCESS, vxQueryImage(vximg, VX_IMAGE_HEIGHT, &vx_height, sizeof(vx_height)), func, file, line);
+    ASSERT_EQ_VX_STATUS_AT_(return 0, VX_SUCCESS, vxQueryImage(vximg, VX_IMAGE_FORMAT, &vx_format, sizeof(vx_format)), func, file, line);
+
+    ct_width   = ctimg->width;
+    ct_height  = ctimg->height;
+    ct_format  = ctimg->format;
+    ct_nplanes = ct_get_num_planes(ct_format);
+
+    ASSERT_AT_(return 0, ct_width  == vx_width,  func, file, line);
+    ASSERT_AT_(return 0, ct_height == vx_height, func, file, line);
+    ASSERT_AT_(return 0, ct_format == vx_format, func, file, line);
+
+    rect.start_x = 0;
+    rect.start_y = 0;
+    rect.end_x   = ct_width;
+    rect.end_y   = ct_height;
+
+    for (plane = 0; plane < ct_nplanes; plane++)
+    {
+        vx_imagepatch_addressing_t addr = VX_IMAGEPATCH_ADDR_INIT;
+        vx_bitfield flags = VX_NOGAP_X;
+        vx_map_id map_id;
+        void* p_ct_base = ct_image_get_plane_base(ctimg, plane);
+        void* p_vx_base = 0;
+
+        ct_elem_size = own_elem_size(ct_format, plane);
+
+        ASSERT_EQ_VX_STATUS_AT_(return 0, VX_SUCCESS, vxMapImagePatch(vximg, &rect, plane, &map_id, &addr, &p_vx_base, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, flags), func, file, line);
+
+        for (y = 0; y < addr.dim_y; y += addr.step_y)
+        {
+            for (x = 0; x < addr.dim_x; x += addr.step_x)
+            {
+                switch (ct_format)
+                {
+                case VX_DF_IMAGE_U8:
+                {
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                case VX_DF_IMAGE_U16:
+                {
+                    vx_uint16* ct_ptr = (vx_uint16*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint16* vx_ptr = (vx_uint16*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                case VX_DF_IMAGE_S16:
+                {
+                    vx_int16* ct_ptr = (vx_int16*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_int16* vx_ptr = (vx_int16*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                case VX_DF_IMAGE_U32:
+                {
+                    vx_uint32* ct_ptr = (vx_uint32*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint32* vx_ptr = (vx_uint32*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                case VX_DF_IMAGE_S32:
+                {
+                    vx_int32* ct_ptr = (vx_int32*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_int32* vx_ptr = (vx_int32*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                case VX_DF_IMAGE_RGB:
+                {
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                    ct_ptr[1] = vx_ptr[1];
+                    ct_ptr[2] = vx_ptr[2];
+                }
+                break;
+
+                case VX_DF_IMAGE_RGBX:
+                {
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                    ct_ptr[1] = vx_ptr[1];
+                    ct_ptr[2] = vx_ptr[2];
+                    ct_ptr[3] = vx_ptr[3];
+                }
+                break;
+
+                case VX_DF_IMAGE_YUYV:
+                {
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+
+                    ct_ptr[0] = vx_ptr[0];
+                    ct_ptr[1] = vx_ptr[1];
+                }
+                break;
+
+                case VX_DF_IMAGE_UYVY:
+                {
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+
+                    ct_ptr[0] = vx_ptr[0];
+                    ct_ptr[1] = vx_ptr[1];
+                }
+                break;
+
+                case VX_DF_IMAGE_NV12:
+                case VX_DF_IMAGE_NV21:
+                {
+                    vx_uint32 stride = (0 == plane) ? ctimg->stride : ctimg->width / 2;
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * stride + x);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+
+                    if (0 == plane)
+                        ct_ptr[0] = vx_ptr[0];
+                    else
+                    {
+                        ct_ptr[0] = vx_ptr[0];
+                        ct_ptr[1] = vx_ptr[1];
+                    }
+                }
+                break;
+
+                case VX_DF_IMAGE_IYUV:
+                {
+                    vx_uint32 stride = (0 == plane) ? ctimg->stride : ctimg->width / 2;
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * stride / addr.step_y + x / addr.step_x);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                case VX_DF_IMAGE_YUV4:
+                {
+                    vx_uint8* ct_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * ctimg->stride * ct_elem_size + x * ct_elem_size);
+                    vx_uint8* vx_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, x, y, &addr);
+                    ct_ptr[0] = vx_ptr[0];
+                }
+                break;
+
+                default:
+                    FAIL_(return 0, "unexpected image format: (%.4s)", ct_format);
+                    break;
+                } /* switch format */
+            } /* for tst_addr.dim_x */
+        } /* for tst_addr.dim_y */
+
+        ASSERT_EQ_VX_STATUS_AT_(return 0, VX_SUCCESS, vxUnmapImagePatch(vximg, map_id), func, file, line);
+    } /* for nplanes */
+
+    return ctimg;
+}
 
 /*
     wrap_half_modulo: specifies if the smallest value follows the biggest (e.g. 255 + 1 == 0 or not)
