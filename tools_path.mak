@@ -17,7 +17,7 @@ TIOVX_PATH := $(abspath .)
 VSDK_INSTALL_PATH := $(abspath ../../../)
 VSDK_TOOLS_PATH := /datalocal1/ti_components
 
-ifeq ($(A15_TARGET_OS),Linux)
+ifeq ($(TARGET_OS),Linux)
 CROSS_COMPILE := arm-linux-gnueabihf-
 else
 CROSS_COMPILE := arm-none-eabi-

@@ -69,13 +69,13 @@ SKIPBUILD=1
 endif
 
 ifeq ($(TARGET_CPU),A15)
-ifeq ($(A15_TARGET_OS),Bios)
+ifeq ($(TARGET_OS),Bios)
 SKIPBUILD=1
 endif
 endif
 
 ifeq ($(TARGET_CPU),A15)
-ifeq ($(A15_TARGET_OS),Linux)
+ifeq ($(TARGET_OS),Linux)
 CSOURCES += tivx_target_config_a15.c
 SKIPBUILD=0
 endif
