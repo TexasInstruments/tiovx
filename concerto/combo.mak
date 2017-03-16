@@ -85,10 +85,10 @@ else ifeq ($(TARGET_BUILD),debug)
 $(TARGET_COMBO_NAME)_DEFS += TARGET_BUILD=2
 endif
 
-ifeq ($(HOST_CORE),IPU1_0)
-$(TARGET_COMBO_NAME)_DEFS += HOST_CORE_IPU1_0
-else ifeq ($(HOST_CORE),A15_0)
+ifeq ($(A15_TARGET_OS),Linux)
 $(TARGET_COMBO_NAME)_DEFS += HOST_CORE_A15_0
+else
+$(TARGET_COMBO_NAME)_DEFS += HOST_CORE_IPU1_0
 endif
 
 # Include platform definition
