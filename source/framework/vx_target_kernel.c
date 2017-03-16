@@ -110,7 +110,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                     break;
                 }
             }
-            
+
             tivxMutexUnlock(g_target_kernel_lock);
         }
     }
@@ -159,7 +159,7 @@ vx_status tivxTargetKernelCreate(
         if ((NULL != knl) && (NULL != knl->create_func))
         {
             status = knl->create_func(
-                target_kernel_instance, obj_desc, num_params, 
+                target_kernel_instance, obj_desc, num_params,
                 knl->caller_priv_arg);
         }
         else
@@ -212,9 +212,11 @@ vx_status tivxTargetKernelExecute(
 
         if ((NULL != knl) && (NULL != knl->process_func))
         {
+            tivxPlatformActivate();
             status = knl->process_func(
                 target_kernel_instance, obj_desc, num_params,
                 knl->caller_priv_arg);
+            tivxPlatformDeactivate();
         }
         else
         {
