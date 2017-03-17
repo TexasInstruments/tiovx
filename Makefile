@@ -38,7 +38,9 @@ ifeq ($(BUILD_TARGET_MODE),yes)
   TARGET_COMBOS += TDAX:SYSBIOS:C66:1:debug:CGT6X
   TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:debug:ARP32CGT
   TARGET_COMBOS += TDAX:SYSBIOS:A15:1:debug:GCC
-  TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC
+    ifneq ($(OS),Windows_NT)
+    TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC
+    endif
   endif
 
   ifeq ($(PROFILE), $(filter $(PROFILE), release all))
@@ -46,7 +48,9 @@ ifeq ($(BUILD_TARGET_MODE),yes)
   TARGET_COMBOS += TDAX:SYSBIOS:C66:1:release:CGT6X
   TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:release:ARP32CGT
   TARGET_COMBOS += TDAX:SYSBIOS:A15:1:release:GCC
-  TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC
+    ifneq ($(OS),Windows_NT)
+    TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC
+    endif
   endif
 endif
 

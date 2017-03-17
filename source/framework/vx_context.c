@@ -45,7 +45,7 @@ static vx_status ownContextDeleteCmdObj(vx_context context);
 
 static const vx_char g_context_implmentation_name[VX_MAX_IMPLEMENTATION_NAME] = "tiovx";
 
-static const vx_char g_context_default_load_module[][TIVX_MODULE_MAX_NAME] = {TIVX_MODULE_NAME0, TIVX_MODULE_NAME1};
+static const vx_char g_context_default_load_module[][TIVX_MODULE_MAX_NAME] = {TIVX_MODULE_NAME0};
 
 static const vx_char g_context_extensions[] = " ";
 
@@ -466,15 +466,17 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
                  */
                 ownContextSetKernelRemoveLock(context, vx_true_e);
 
-                for (idx = 0; idx < TIVX_MAX_MODULE; idx ++)
+                for (idx = 0;
+                     idx < sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]);
+                     idx ++)
                 {
-                /* this loads default module kernels
-                 * Any additional modules should be loaded by the user using
-                 * vxLoadKernels()
-                 * Error's are not checked here,
-                 * User can check kernels that are added using vxQueryContext()
-                 */
-                vxLoadKernels(context, g_context_default_load_module[idx]);
+                    /* this loads default module kernels
+                     * Any additional modules should be loaded by the user using
+                     * vxLoadKernels()
+                     * Error's are not checked here,
+                     * User can check kernels that are added using vxQueryContext()
+                     */
+                    vxLoadKernels(context, g_context_default_load_module[idx]);
                 }
 
                 /* set flag to allow removal additional kernels
