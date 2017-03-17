@@ -16,9 +16,7 @@ typedef struct IM_Fxns
 }IM_Fxns;
 
 /* Local Functions */
-Void *tivxAlgiVisionCreateUseLinkMem(
-    const IVISION_Fxns *fxns, IALG_Params *pAlgPrms);
-vx_int32 tivxAlgiVisionDeleteUseLinkMem(Void *algHandle);
+vx_int32 tivxAlgiVisionDeleteAlg(Void *algHandle);
 vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec);
 vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 
@@ -139,8 +137,37 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
     return status;
 }
 
-Void *tivxAlgiVisionCreateUseLinkMem(
-    const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
+vx_int32 tivxAlgiVisionDeleteAlg(Void *algHandle)
+{
+    vx_uint32 numMemRec;
+    IALG_MemRec   *memRec;
+    IM_Fxns *ivision = (IM_Fxns *)algHandle;
+    vx_status status = 0;
+
+    numMemRec = ivision->fxns->ialg.algNumAlloc();
+
+    /*
+     * Allocate memory for the records. These are NOT the actual memory of
+     * tha algorithm
+     */
+    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+
+    if(memRec != NULL)
+    {
+        status = ivision->fxns->ialg.algFree(algHandle, memRec);
+
+        if(status==IALG_EOK)
+        {
+            status = tivxAlgiVisionFreeMem(numMemRec, memRec);
+        }
+
+        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
+    }
+
+    return status;
+}
+
+Void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
 {
     vx_uint32 numMemRec;
     IALG_MemRec *memRec;
@@ -173,7 +200,7 @@ Void *tivxAlgiVisionCreateUseLinkMem(
 
                 if(status != IALG_EOK)
                 {
-                    tivxAlgiVisionDeleteUseLinkMem(algHandle);
+                    tivxAlgiVisionDeleteAlg(algHandle);
                     algHandle = NULL;
                 }
             }
@@ -185,44 +212,9 @@ Void *tivxAlgiVisionCreateUseLinkMem(
     return algHandle;
 }
 
-vx_int32 tivxAlgiVisionDeleteUseLinkMem(Void *algHandle)
-{
-    vx_uint32 numMemRec;
-    IALG_MemRec   *memRec;
-    IM_Fxns *ivision = (IM_Fxns *)algHandle;
-    vx_status status = 0;
-
-    numMemRec = ivision->fxns->ialg.algNumAlloc();
-
-    /*
-     * Allocate memory for the records. These are NOT the actual memory of
-     * tha algorithm
-     */
-    memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
-
-    if(memRec != NULL)
-    {
-        status = ivision->fxns->ialg.algFree(algHandle, memRec);
-
-        if(status==IALG_EOK)
-        {
-            status = tivxAlgiVisionFreeMem(numMemRec, memRec);
-        }
-
-        tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
-    }
-
-    return status;
-}
-
-Void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
-{
-    return tivxAlgiVisionCreateUseLinkMem(fxns, pAlgPrms);
-}
-
 vx_int32 tivxAlgiVisionDelete(Void *algHandle)
 {
-    return tivxAlgiVisionDeleteUseLinkMem(algHandle);
+    return tivxAlgiVisionDeleteAlg(algHandle);
 }
 
 vx_int32 tivxAlgiVisionProcess(Void *algHandle,

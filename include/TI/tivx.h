@@ -34,11 +34,6 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME1    "ivsion"
 
-/*! \brief Number of TI OpenVX Kernel Modules
- * \ingroup group_tivx_ext
- */
-#define TIVX_MAX_MODULE      (2U)
-
 /*! \brief Name for DSP target class, instance 1
  * \ingroup group_tivx_ext
  */

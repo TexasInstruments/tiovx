@@ -26,21 +26,13 @@
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
 
-#include "test.h"
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
 
-#undef CT_TESTCASE
-#define CT_TESTCASE(testcase) struct CT_TestCaseEntry* testcase##_register();
-#include "test_main.h"
-#include "test_ivision/test_main.h"
-#include "test_tiovx/test_main.h"
-
-#undef CT_TESTCASE
-#define CT_TESTCASE(testcase) testcase##_register,
-CT_RegisterTestCaseFN g_testcase_register_fns[] = {
-    #include "test_ivision/test_main.h"
-    #include "test_main.h"
-    #include "test_tiovx/test_main.h"
-    NULL
-};
-
-int CT_main(int argc, char* argv[], const char* version_str);
+TESTCASE(tivxHarrisCorners)

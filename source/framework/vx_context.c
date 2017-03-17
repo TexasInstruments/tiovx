@@ -514,7 +514,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
         {
             ownContextSetKernelRemoveLock(context, vx_true_e);
 
-	    for (idx = 0; idx < TIVX_MAX_MODULE; idx ++)
+            for (idx = 0;
+                 idx < sizeof(g_context_default_load_module)/sizeof(g_context_default_load_module[0]);
+                 idx ++)
             {
             /* Unload kernels */
             vxUnloadKernels(context, g_context_default_load_module[idx]);

@@ -1,4 +1,3 @@
-#include "test_engine/test.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx.h>
@@ -8,6 +7,10 @@
 
 #include "tivx_harris_corners_test_data.h"
 
+#include "test_tiovx_ivision.h"
+
+TESTCASE(tivxHarrisCorners, CT_VXContext, ct_setup_vx_context, 0)
+
 #define GRADIENT_SIZE       (7u)
 #define BLOCK_SIZE          (7u)
 
@@ -15,6 +18,9 @@
 #define IMG_HEIGHT          (400u)
 
 #define STRENGTH_THRESHOLD  (286870912)
+
+#define MAX_CORNERS         (1023U)
+
 
 vx_uint8 gTivxHcTestInput[TIVX_HC_TEST_INPUT_NUM_ELEM] = TIVX_HC_TEST_INPUT_CFG;
 
@@ -34,56 +40,64 @@ static void CheckOutput(vx_array arr)
     status = vxQueryArray (arr, VX_ARRAY_NUMITEMS, &num_items, sizeof(num_items));
     if (VX_SUCCESS == status)
     {
-        if (num_items != TIVX_HC_NUM_REF_KEY_POINTS)
+        ASSERT(num_items == TIVX_HC_NUM_REF_KEY_POINTS);
+
+        status = vxMapArrayRange(arr, 0, num_items, &map_id,
+            &stride, &base, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        if (VX_SUCCESS == status)
         {
-            printf(
-                "HarrisCorners: incorrect number of detected corners!!!\n");
-        }
-        else
-        {
-            status = vxMapArrayRange(arr, 0, num_items, &map_id,
-                &stride, &base, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
-            if (VX_SUCCESS == status)
+
+            for (cnt = 0u; cnt < num_items; cnt ++)
             {
+                x = vxArrayItem(vx_keypoint_t, base, cnt, stride).x;
+                y = vxArrayItem(vx_keypoint_t, base, cnt, stride).y;
 
-                for (cnt = 0u; cnt < num_items; cnt ++)
-                {
-                    x = vxArrayItem(vx_keypoint_t, base, cnt, stride).x;
-                    y = vxArrayItem(vx_keypoint_t, base, cnt, stride).y;
-
-                    if (x != ReferenceOutput[cnt][0] ||
-                        y != ReferenceOutput[cnt][1])
-                    {
-                        printf(
-                            "HarrisCorners: Output does not match\n");
-                        printf(
-                            "HarrisCorners: x = %d y = %d\n",
-                            ReferenceOutput[cnt][0],
-                            ReferenceOutput[cnt][1]);
-                        num_missmatch ++;
-                    }
-                }
-
-                vxUnmapArrayRange(arr, map_id);
+                ASSERT(x == ReferenceOutput[cnt][0u]);
+                ASSERT(y == ReferenceOutput[cnt][1u]);
             }
+
+            vxUnmapArrayRange(arr, map_id);
         }
+
     }
     else
     {
-        printf( "HarrisCorners: Cannot get array size !!!\n");
-    }
-
-    if (0 == num_missmatch)
-    {
-        printf( "HarrisCorners: Output matches with the reference output \n");
-        printf( "HarrisCorners: Test Success !!!\n");
+        ASSERT(0);
     }
 }
 
-void test_harriscorners()
-{
-    vx_context context = vxCreateContext();;
+typedef struct {
+    const char* testName;
+    vx_uint32 scaling_factor;
+    vx_int32  nms_threshold;
+    vx_uint8  q_shift;
+    vx_uint8  win_size;
+    vx_uint8  score_method;
+    vx_uint8  suppression_method;
+} Arg;
 
+#define ADD_SCALE_FACTOR(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/SCALING_FACTOR=1310", __VA_ARGS__, 1310))
+#define ADD_NMS_THR(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/NMS_THRESHOLD=286870912", __VA_ARGS__, 286870912))
+#define ADD_Q_SHIFT(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/Q_SHIFT=2", __VA_ARGS__, 2))
+#define ADD_WIN_SIZE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/WIN_SIZE=7", __VA_ARGS__, 7))
+#define ADD_SCORE_METHOD(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/SCORE_METHOD=0", __VA_ARGS__, 0))
+#define ADD_SUPPR_METHOD(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/SUPPRESSION_METHOD=7", __VA_ARGS__, 7))
+
+
+#define PARAMETERS \
+    CT_GENERATE_PARAMETERS("Test_HD_ON_EVE", ADD_SCALE_FACTOR, ADD_NMS_THR, ADD_Q_SHIFT, ADD_WIN_SIZE, ADD_SCORE_METHOD, ADD_SUPPR_METHOD, ARG)
+
+TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornerOnEve, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
     vx_image input_image = 0;
     vx_size num_corners;
     vx_graph graph = 0;
@@ -92,6 +106,9 @@ void test_harriscorners()
     void *image = 0;
     vx_scalar num_corners_scalar;
     vx_array corners;
+    vx_perf_t perf_node;
+
+    IVisionLoadKernels(context);
 
     image = tivxMemAlloc(IMG_WIDTH*IMG_HEIGHT, TIVX_MEM_EXTERNAL);
     if(image)
@@ -114,7 +131,7 @@ void test_harriscorners()
     ASSERT_VX_OBJECT(input_image = vxCreateImageFromHandle(context,
         VX_DF_IMAGE_U8, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
-    num_corners = 1023;
+    num_corners = MAX_CORNERS;
 
     ASSERT_VX_OBJECT(num_corners_scalar = vxCreateScalar(context,
         VX_TYPE_SIZE, &num_corners), VX_TYPE_SCALAR);
@@ -125,12 +142,16 @@ void test_harriscorners()
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(node = tivxHarrisCornersNode(graph,
-        input_image, 1310, STRENGTH_THRESHOLD, 2, 7, 0, 7,
+        input_image, arg_->scaling_factor, arg_->nms_threshold,
+        arg_->q_shift, arg_->win_size, arg_->score_method,
+        arg_->suppression_method,
         corners, num_corners_scalar), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
 
     CheckOutput(corners);
 
@@ -152,5 +173,12 @@ void test_harriscorners()
     ASSERT(corners == 0);
     ASSERT(num_corners_scalar == 0);
     ASSERT(input_image == 0);
+
+    IVisionUnLoadKernels(context);
+
+    printPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N1");
 }
 
+
+
+TESTCASE_TESTS(tivxHarrisCorners, testHarrisCornerOnEve)

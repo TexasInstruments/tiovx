@@ -23,6 +23,13 @@ extern "C" {
  * \brief The list of supported kernels in the TIOVX.
  */
 
+
+/*! \brief The list of available libraries in tivx */
+enum tivx_library_e {
+    /*! \brief The set of kernels supported in ivision. */
+   TIVX_LIBRARY_IVISION_BASE = 0
+};
+
 /*!
  * \brief The list of kernels supported in ivision.
  *
@@ -40,7 +47,7 @@ enum tivx_kernel_ivision_e {
     /*! \brief The Harris Corners Kernel.
      * \see group_vision_function_harris
      */
-    TIVX_KERNEL_IVISION_HARRIS_CORNERS = VX_KERNEL_BASE(VX_ID_TI, VX_LIBRARY_IVISION_BASE) + 0x0,
+    TIVX_KERNEL_IVISION_HARRIS_CORNERS = VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x0,
 
     /* insert new kernels here */
     TIVX_KERNEL_IVISION_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
