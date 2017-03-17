@@ -237,3 +237,10 @@ uint64_t tivxPlatformGetTimeInUsecs(void)
     return timeInUsecs;
 }
 
+void tivxPlatformActivate()
+{
+}
+
+void tivxPlatformDeactivate()
+{
+}
