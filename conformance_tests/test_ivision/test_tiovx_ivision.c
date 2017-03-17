@@ -15,7 +15,7 @@ void tivxUnRegisterIVisionCoreKernels(void);
 
 static uint32_t gIsIVisionKernelsLoad = 0u;
 
-void printPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName)
+void IVisionPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName)
 {
     printf("[ %c%c ] Execution time for %9d pixels (avg = %4d.%-6d ms, min = %4d.%-6d ms, max = %4d.%-6d ms)\n",
         testName[0], testName[1],

@@ -95,6 +95,9 @@ else
 $(TARGET_COMBO_NAME)_DEFS += HOST_CORE_IPU1_0
 endif
 
+ifeq ($(BUILD_IVISION_KERNELS),yes)
+$(TARGET_COMBO_NAME)_DEFS += BUILD_IVISION_KERNELS
+endif
 
 # Include platform definition
 include $(BUILD_PLATFORM)

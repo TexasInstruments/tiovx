@@ -9,7 +9,7 @@
 
 #include "test_tiovx_ivision.h"
 
-TESTCASE(tivxHarrisCorners, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxIVisionHarrisCorners, CT_VXContext, ct_setup_vx_context, 0)
 
 #define GRADIENT_SIZE       (7u)
 #define BLOCK_SIZE          (7u)
@@ -93,7 +93,7 @@ typedef struct {
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("Test_HD_ON_EVE", ADD_SCALE_FACTOR, ADD_NMS_THR, ADD_Q_SHIFT, ADD_WIN_SIZE, ADD_SCORE_METHOD, ADD_SUPPR_METHOD, ARG)
 
-TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornerOnEve, Arg,
+TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
     PARAMETERS
 )
 {
@@ -176,9 +176,9 @@ TEST_WITH_ARG(tivxHarrisCorners, testHarrisCornerOnEve, Arg,
 
     IVisionUnLoadKernels(context);
 
-    printPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N1");
+    IVisionPrintPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N1");
 }
 
 
 
-TESTCASE_TESTS(tivxHarrisCorners, testHarrisCornerOnEve)
+TESTCASE_TESTS(tivxIVisionHarrisCorners, testHarrisCornerOnEve)

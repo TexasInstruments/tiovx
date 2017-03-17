@@ -20,7 +20,7 @@ typedef struct  {
 void tivxAddTargetKernelHarrisCorners();
 void tivxRemoveTargetKernelHarrisCorners();
 
-Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
+static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelHarrisCorners, tivxRemoveTargetKernelHarrisCorners}
 };
 

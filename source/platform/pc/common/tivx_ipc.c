@@ -41,6 +41,7 @@
  * \ingroup group_tivx_ipc
  */
 static tivx_ipc_handler_f g_ipc_handler = NULL;
+static vx_enum g_cpu_id = TIVX_CPU_ID_DSP1;
 
 void tivxIpcRegisterHandler(tivx_ipc_handler_f notifyCb)
 {
@@ -64,11 +65,14 @@ vx_status tivxIpcSendMsg(
     return status;
 }
 
+void tivxSetSelfCpuId(vx_enum cpu_id)
+{
+    g_cpu_id = cpu_id;
+}
+
 vx_enum tivxGetSelfCpuId(void)
 {
-    vx_enum cpu_id = TIVX_CPU_ID_DSP1;
-
-    return (cpu_id);
+    return (g_cpu_id);
 }
 
 void tivxIpcInit(void)

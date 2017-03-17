@@ -31,13 +31,17 @@
 #undef CT_TESTCASE
 #define CT_TESTCASE(testcase) struct CT_TestCaseEntry* testcase##_register();
 #include "test_main.h"
+#ifdef BUILD_IVISION_KERNELS
 #include "test_ivision/test_main.h"
+#endif
 #include "test_tiovx/test_main.h"
 
 #undef CT_TESTCASE
 #define CT_TESTCASE(testcase) testcase##_register,
 CT_RegisterTestCaseFN g_testcase_register_fns[] = {
+    #ifdef BUILD_IVISION_KERNELS
     #include "test_ivision/test_main.h"
+    #endif
     #include "test_main.h"
     #include "test_tiovx/test_main.h"
     NULL

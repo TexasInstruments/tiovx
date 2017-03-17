@@ -36,9 +36,21 @@ CSOURCES    := $(call all-c-files)
 
 LDIRS       := $(TIOVX_PATH)/lib/PC/X86/$(TARGET_OS)/$(TARGET_BUILD)
 
-STATIC_LIBS := vx_conformance_tests vx_tiovx_tests vx_conformance_engine vx_conformance_tests_testmodule
+STATIC_LIBS := vx_conformance_tests 
+STATIC_LIBS += vx_tiovx_tests 
+
+ifeq ($(BUILD_IVISION_KERNELS),yes)
+STATIC_LIBS += vx_tiovx_ivision_tests 
+endif
+
+STATIC_LIBS += vx_conformance_engine vx_conformance_tests_testmodule
 STATIC_LIBS += vx_vxu vx_framework
 STATIC_LIBS += vx_platform_pc vx_framework 
+
+ifeq ($(BUILD_IVISION_KERNELS),yes)
+STATIC_LIBS += vx_kernels_ivision vx_target_kernels_ivision vx_target_kernels_ivision_common
+endif
+
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
 
 ifeq ($(USE_BAM),yes)
@@ -52,6 +64,13 @@ STATIC_LIBS += algframework_X86 dmautils_X86 vxlib_bamplugin_X86
 endif
 
 STATIC_LIBS += vxlib_X86 c6xsim_X86_C66
+
+ifeq ($(BUILD_IVISION_KERNELS),yes)
+STATIC_LIBS += eveHarrisCornerDetection32.eve 
+STATIC_LIBS += evekernels.eve eveprivkernels.eve 
+STATIC_LIBS += evenatckernels.eve eveprivnatckernels.eve
+STATIC_LIBS += evealgframework.eve eveextmem.eve evestarterware_eve
+endif
 
 
 

@@ -1,36 +1,35 @@
 
 include tools_path.mak
 
-CONCERTO_ROOT ?= concerto
-BUILD_MULTI_PROJECT := 1
-BUILD_TARGET := target.mak
-BUILD_PLATFORM :=
+BUILD_EMULATION_MODE?=yes
+BUILD_TARGET_MODE?=yes
 
+BUILD_CONFORMANCE_TEST?=yes
+BUILD_IVISION_KERNELS?=yes
+
+PROFILE?=all
 
 DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels/openvx-core
+ifeq ($(BUILD_IVISION_KERNELS),yes)
 DIRECTORIES += kernels/ivision
+endif
 DIRECTORIES += tools/sample_use_cases
-
-TARGET_COMBOS :=
-
-BUILD_EMULATION_MODE?=yes
-BUILD_TARGET_MODE?=yes
-
-BUILD_CONFORMANCE_TEST?=yes
 
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
   DIRECTORIES += conformance_tests/test_conformance
   DIRECTORIES += conformance_tests/test_engine
   DIRECTORIES += conformance_tests/test_executable
   DIRECTORIES += conformance_tests/test_tiovx
+  ifeq ($(BUILD_IVISION_KERNELS),yes)
   DIRECTORIES += conformance_tests/test_ivision
+  endif
 endif
 
-PROFILE?=all
+TARGET_COMBOS :=
 
 ifeq ($(BUILD_TARGET_MODE),yes)
   ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
@@ -73,5 +72,10 @@ ifeq ($(BUILD_EMULATION_MODE),yes)
     endif
   endif
 endif
+
+CONCERTO_ROOT ?= concerto
+BUILD_MULTI_PROJECT := 1
+BUILD_TARGET := target.mak
+BUILD_PLATFORM :=
 
 include $(CONCERTO_ROOT)/rules.mak
