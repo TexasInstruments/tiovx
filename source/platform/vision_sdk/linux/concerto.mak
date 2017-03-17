@@ -41,7 +41,7 @@ CSOURCES    := \
     $(COMMON_FILES_REL_PATH)/tivx_mutex.c \
     tivx_platform_common.c                \
     $(COMMON_FILES_REL_PATH)/tivx_queue.c \
-    $(COMMON_FILES_REL_PATH)/tivx_task.c
+    $(COMMON_FILES_REL_PATH)/tivx_task.c tivx_target_config_a15.c
 
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
@@ -76,7 +76,6 @@ endif
 
 ifeq ($(TARGET_CPU),A15)
 ifeq ($(TARGET_OS),Linux)
-CSOURCES += tivx_target_config_a15.c
 SKIPBUILD=0
 endif
 endif
