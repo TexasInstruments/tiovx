@@ -438,12 +438,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestGraphBoundary, Arg,
     vx_graph   src_graph[9];
     int i;
 
-    for (i = 0; i < 9; i++)
+    for (i = 0; i < 8; i++)
     {
         ASSERT_VX_OBJECT(src_graph[i] = vxCreateGraph(context), VX_TYPE_GRAPH);
     }
 
-    for (i = 0; i < 9; i++)
+    EXPECT_VX_ERROR(src_graph[8] = vxCreateGraph(context), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 8; i++)
     {
         VX_CALL(vxReleaseGraph(&src_graph[i]));
     }
@@ -463,12 +465,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestNodeBoundary, Arg,
 
     ASSERT_VX_OBJECT(src_kernel = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
 
-    for (i = 0; i < 33; i++)
+    for (i = 0; i < 32; i++)
     {
         ASSERT_VX_OBJECT(src_node[i] = vxCreateGenericNode(graph, src_kernel), VX_TYPE_NODE);
     }
 
-    for (i = 0; i < 33; i++)
+    EXPECT_VX_ERROR(src_node[32] = vxCreateGenericNode(graph, src_kernel), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 32; i++)
     {
         VX_CALL(vxReleaseNode(&src_node[i]));
     }
@@ -483,15 +487,17 @@ TEST_WITH_ARG(tivxBoundary, negativeTestKernelBoundary, Arg,
 )
 {
     vx_context context = context_->vx_context_;
-    vx_kernel   src_kernel[1000];
+    vx_kernel   src_kernel[65];
     int i;
 
-    for (i = 0; i < 1000; i++)
+    for (i = 0; i < 64; i++)
     {
         ASSERT_VX_OBJECT(src_kernel[i] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
     }
 
-    for (i = 0; i < 1000; i++)
+    EXPECT_VX_ERROR(src_kernel[64] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 64; i++)
     {
         VX_CALL(vxReleaseKernel(&src_kernel[i]));
     }
@@ -505,12 +511,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestThresholdBoundary, Arg,
     vx_threshold   src_threshold[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_threshold[i] = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_TYPE_THRESHOLD);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_threshold[48] = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, VX_TYPE_UINT8), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseThreshold(&src_threshold[i]));
     }
@@ -525,12 +533,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestScalarBoundary, Arg,
     vx_int32 tmp;
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_scalar[i] = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_scalar[48] = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseScalar(&src_scalar[i]));
     }
@@ -544,12 +554,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestRemapBoundary, Arg,
     vx_remap   src_remap[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_remap[i] = vxCreateRemap(context, 32, 24, 16, 12), VX_TYPE_REMAP);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_remap[48] = vxCreateRemap(context, 32, 24, 16, 12), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseRemap(&src_remap[i]));
     }
@@ -563,12 +575,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestMatrixBoundary, Arg,
     vx_matrix   src_matrix[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_matrix[i] = vxCreateMatrix(context, VX_TYPE_FLOAT32, 3, 3), VX_TYPE_MATRIX);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_matrix[48] = vxCreateMatrix(context, VX_TYPE_FLOAT32, 3, 3), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseMatrix(&src_matrix[i]));
     }
@@ -585,12 +599,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestDelayBoundary, Arg,
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_delay[i] = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_delay[48] = vxCreateDelay(context, (vx_reference)image, 2), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseDelay(&src_delay[i]));
     }
@@ -606,12 +622,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestLUTBoundary, Arg,
     vx_lut   src_lut[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_lut[i] = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_lut[48] = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseLUT(&src_lut[i]));
     }
@@ -625,12 +643,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestDistributionBoundary, Arg,
     vx_distribution   src_dist[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_dist[i] = vxCreateDistribution(context, 100, 5, 200), VX_TYPE_DISTRIBUTION);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_dist[48] = vxCreateDistribution(context, 100, 5, 200), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseDistribution(&src_dist[i]));
     }
@@ -644,12 +664,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestArrayBoundary, Arg,
     vx_array   src_array[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_array[i] = vxCreateArray(context, VX_TYPE_KEYPOINT, 4), VX_TYPE_ARRAY);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_array[48] = vxCreateArray(context, VX_TYPE_KEYPOINT, 4), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseArray(&src_array[i]));
     }
@@ -663,12 +685,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestConvolutionBoundary, Arg,
     vx_convolution   src_conv[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_conv[i] = vxCreateConvolution(context, 3, 3), VX_TYPE_CONVOLUTION);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_conv[48] = vxCreateConvolution(context, 3, 3), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleaseConvolution(&src_conv[i]));
     }
@@ -682,12 +706,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestPyramidBoundary, Arg,
     vx_pyramid   src_pyr[49];
     int i;
 
-    for (i = 0; i < 49; i++)
+    for (i = 0; i < 48; i++)
     {
         ASSERT_VX_OBJECT(src_pyr[i] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     }
 
-    for (i = 0; i < 49; i++)
+    EXPECT_VX_ERROR(src_pyr[48] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
     {
         VX_CALL(vxReleasePyramid(&src_pyr[i]));
     }
@@ -701,12 +727,14 @@ TEST_WITH_ARG(tivxBoundary, negativeTestImageBoundary, Arg,
     vx_image   src_image[385];
     int i;
 
-    for (i = 0; i < 384+1; i++)
+    for (i = 0; i < 384; i++)
     {
         ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
 
-    for (i = 0; i < 384+1; i++)
+     EXPECT_VX_ERROR(src_image[384] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 384; i++)
     {
         VX_CALL(vxReleaseImage(&src_image[i]));
     }
@@ -719,8 +747,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestPyramidLevelBoundary, Arg,
     vx_context context = context_->vx_context_;
     vx_pyramid   src_pyr;
 
-    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, 33, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-    VX_CALL(vxReleasePyramid(&src_pyr));
+    EXPECT_VX_ERROR(src_pyr = vxCreatePyramid(context, 33, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
 }
 
 TESTCASE_TESTS(tivxBoundary,
