@@ -216,9 +216,9 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
 
                 if (VX_SUCCESS == status)
                 {
-                    status = tivxBamCreateHandle(BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U,
-                                                &frame_params, (void*)&kernel_params,
-                                                &prms->graph_handle);
+                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U,
+                                                           &frame_params, (void*)&kernel_params,
+                                                           &prms->graph_handle);
                 }
             }
             else
@@ -233,9 +233,9 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
 
                 if (VX_SUCCESS == status)
                 {
-                    status = tivxBamCreateHandle(BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S,
-                                                &frame_params, (void*)&kernel_params,
-                                                &prms->graph_handle);
+                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S,
+                                                           &frame_params, (void*)&kernel_params,
+                                                           &prms->graph_handle);
                 }
             }
         }

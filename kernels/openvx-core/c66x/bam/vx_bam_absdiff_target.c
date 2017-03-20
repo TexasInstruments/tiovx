@@ -234,9 +234,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
                 if (VX_SUCCESS == status)
                 {
-                    status = tivxBamCreateHandle(BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U,
-                                                &frame_params, NULL,
-                                                &prms->graph_handle);
+                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U,
+                                                           &frame_params, NULL,
+                                                           &prms->graph_handle);
                 }
             }
             else
@@ -246,9 +246,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
                 if (VX_SUCCESS == status)
                 {
-                    status = tivxBamCreateHandle(BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S,
-                                                &frame_params, NULL,
-                                                &prms->graph_handle);
+                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S,
+                                                           &frame_params, NULL,
+                                                           &prms->graph_handle);
                 }
             }
         }

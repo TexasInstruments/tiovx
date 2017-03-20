@@ -62,7 +62,7 @@ typedef struct _tivx_bam_frame_params
 }tivx_bam_frame_params_t;
 
 /*!
- * \brief BAM Create Graph Handle
+ * \brief BAM Create Graph Handle for Single Node
  *
  *        This function will create a BAM graph of 1 node, given the
  *        kernel_id, frame_params, and computation kernel parameters
@@ -84,10 +84,10 @@ typedef struct _tivx_bam_frame_params
  *
  * \ingroup group_tivx_ext
  */
-vx_status tivxBamCreateHandle(BAM_TI_KernelID kernel_id,
-                              tivx_bam_frame_params_t *frame_params,
-                              void *compute_kernel_params,
-                              tivx_bam_graph_handle *graph_handle);
+vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
+                                        tivx_bam_frame_params_t *frame_params,
+                                        void *compute_kernel_params,
+                                        tivx_bam_graph_handle *graph_handle);
 
 /*!
  * \brief BAM Update Pointers

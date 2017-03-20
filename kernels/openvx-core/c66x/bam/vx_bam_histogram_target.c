@@ -187,9 +187,9 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
 
             if (VX_SUCCESS == status)
             {
-                status = tivxBamCreateHandle(BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U,
-                                            &frame_params, (void*)&kernel_params,
-                                            &prms->graph_handle);
+                status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U,
+                                                       &frame_params, (void*)&kernel_params,
+                                                       &prms->graph_handle);
             }
         }
         else

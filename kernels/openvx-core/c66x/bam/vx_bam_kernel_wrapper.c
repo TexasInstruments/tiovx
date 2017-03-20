@@ -391,7 +391,7 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle)
  * MISRAC_WAIVER:
  * compute_kernel_params not const due to BAM requirements
  */
-vx_status tivxBamCreateHandle(BAM_TI_KernelID kernel_id,
+vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
                               tivx_bam_frame_params_t *frame_params,
                               void *compute_kernel_params,
                               tivx_bam_graph_handle *graph_handle)
