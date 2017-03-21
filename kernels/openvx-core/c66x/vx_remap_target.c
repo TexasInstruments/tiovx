@@ -94,7 +94,7 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
 
         vxlib_remap.dim_x = dst->imagepatch_addr[0].dim_x * 2U;
         vxlib_remap.dim_y = dst->imagepatch_addr[0].dim_y;
-        vxlib_remap.stride_y = dst->imagepatch_addr[0].stride_y * 8U;
+        vxlib_remap.stride_y = dst->imagepatch_addr[0].dim_x * 8U;
         vxlib_remap.data_type = VXLIB_FLOAT32;
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
