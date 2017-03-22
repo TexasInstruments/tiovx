@@ -36,8 +36,8 @@ IDIRS       += $(HOST_ROOT)/kernels/include \
                $(HOST_ROOT)/kernels/openvx-core/c66x \
                $(VXLIB_PATH)/packages \
                $(VXLIB2_PATH) \
-               $(BAM_PATH)/algframework/inc \
-               $(BAM_PATH)/algframework/src/bam_dma_nodes \
+               $(ALGFRAMEWORK_PATH)/inc \
+               $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes \
                $(EDMA3_LLD_ROOT)/inc $(EDMA3_LLD_ROOT)/inc/baseaddress/vayu/dsp \
                $(EDMA3_LLD_ROOT)/inc/edma_csl $(EDMA3_LLD_ROOT)/inc/edma_utils \
                $(DMAUTILS_PATH)/inc \
@@ -50,7 +50,7 @@ IDIRS       += $(HOST_ROOT)/kernels/include \
                $(EDMA3_LLD_PATH)/packages/ti/sdo/edma3/rm \
                $(EDMA3_LLD_PATH)/packages
 
-DEFS += CORE_C6X
+DEFS += CORE_C6XX
 
 ifeq ($(USE_BAM),yes)
 SKIPBUILD=0

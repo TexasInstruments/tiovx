@@ -10,13 +10,24 @@
 #include "vx_bam_kernel_wrapper.h"
 #include <TI/tivx_target_kernel.h>
 #include "bam_dma_one_shot_node.h"
-#include "edma_utils_autoincrement.h"
+#include "edma_utils_autoincrement_v2.h"
 #include "edma_utils.h"
 #include <ti/vxlib/vxlib.h>
 
 #ifdef HOST_EMULATION
 extern CSL_EdmaccRegs dummyEDMAreg;
 extern uint32_t edmaBase[1];
+#endif
+
+#define IMGBUFL_SIZE (0x8000)
+#define IMGBUFH_SIZE (0x8000)
+#define WBUF_SIZE    (0x8000)
+#define ALIAS_OFFSET (IMGBUFL_SIZE + IMGBUFH_SIZE)
+
+#ifdef HOST_EMULATION
+uint8_t  L2MEM_BASE[(2*ALIAS_OFFSET) + WBUF_SIZE];
+#else
+#define  L2MEM_BASE ((uint8_t*) 0x00800000)
 #endif
 
 #define SOURCE_NODE  0U
@@ -30,8 +41,8 @@ extern uint32_t edmaBase[1];
 /* Contains arguments to configure DMA and compute nodes */
 typedef struct _tivx_bam_graph_args
 {
-    EDMA_UTILS_autoIncrement_initParam  dma_read_autoinc_args;
-    EDMA_UTILS_autoIncrement_initParam  dma_write_autoinc_args;
+    EDMA_UTILS_autoIncrement_initParam_v2  dma_read_autoinc_args;
+    EDMA_UTILS_autoIncrement_initParam_v2  dma_write_autoinc_args;
     BAM_DMA_OneShot_Args                  dma_read_oneshot_args;
     BAM_DMA_OneShot_Args                  dma_write_oneshot_args;
     tivx_bam_frame_params_t              *frame_params;
@@ -63,8 +74,8 @@ typedef struct _tivx_edge_params
 /* Contains arguments to configure DMA and compute nodes */
 typedef struct _tivx_bam_graph_args_multi
 {
-    EDMA_UTILS_autoIncrement_initParam  dma_read_autoinc_args;
-    EDMA_UTILS_autoIncrement_initParam  dma_write_autoinc_args;
+    EDMA_UTILS_autoIncrement_initParam_v2  dma_read_autoinc_args;
+    EDMA_UTILS_autoIncrement_initParam_v2  dma_write_autoinc_args;
     BAM_DMA_OneShot_Args                  dma_read_oneshot_args;
     BAM_DMA_OneShot_Args                  dma_write_oneshot_args;
     tivx_bam_frame_params2_t              *frame_params;
@@ -199,8 +210,8 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     int32_t i, j;
 
     tivx_bam_graph_args_t                 *graph_args          = (tivx_bam_graph_args_t*)args;
-    EDMA_UTILS_autoIncrement_initParam  *dma_read_autoinc_args  = &(graph_args->dma_read_autoinc_args);
-    EDMA_UTILS_autoIncrement_initParam  *dma_write_autoinc_args = &(graph_args->dma_write_autoinc_args);
+    EDMA_UTILS_autoIncrement_initParam_v2  *dma_read_autoinc_args  = &(graph_args->dma_read_autoinc_args);
+    EDMA_UTILS_autoIncrement_initParam_v2  *dma_write_autoinc_args = &(graph_args->dma_write_autoinc_args);
     BAM_DMA_OneShot_Args                  *dma_write_oneshot_args = &(graph_args->dma_write_oneshot_args);
 
     tivx_bam_frame_params_t               *frame_params = graph_args->frame_params;
@@ -226,8 +237,10 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     }
 
     /* Configure dma_read_autoinc_args for SOURCE_NODE */
-    dma_read_autoinc_args->numInTransfers   = frame_params->kernel_info.numInputDataBlocks;
-    dma_read_autoinc_args->transferType     = EDMA_UTILS_TRANSFER_IN;
+    dma_read_autoinc_args->initParams.numInTransfers   = frame_params->kernel_info.numInputDataBlocks;
+    dma_read_autoinc_args->initParams.numOutTransfers  = 0;
+    dma_read_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_IN;
+    dma_read_autoinc_args->pingPongOffset = ALIAS_OFFSET;
 
     for(i=0; i<frame_params->kernel_info.numInputDataBlocks; i++)
     {
@@ -238,7 +251,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
         compute_kernel_args[i].dim_y     = blockDimParams->blockHeight;
         compute_kernel_args[i].stride_y  = blockDimParams->blockWidth*num_bytes;
 
-        assignDMAautoIncrementParams(&dma_read_autoinc_args->transferProp[i],
+        assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
             frame_params->buf_params[i]->dim_x*num_bytes,/* roiWidth */
             frame_params->buf_params[i]->dim_y,/* roiHeight */
             blockDimParams->blockWidth*num_bytes,/*blkWidth */
@@ -292,8 +305,10 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     else
     {
         /* Configure dma_write_autoinc_args for SINK_NODE */
-        dma_write_autoinc_args->numOutTransfers  = frame_params->kernel_info.numOutputDataBlocks;
-        dma_write_autoinc_args->transferType     = EDMA_UTILS_TRANSFER_OUT;
+        dma_write_autoinc_args->initParams.numInTransfers   = 0;
+        dma_write_autoinc_args->initParams.numOutTransfers  = frame_params->kernel_info.numOutputDataBlocks;
+        dma_write_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_OUT;
+        dma_write_autoinc_args->pingPongOffset = ALIAS_OFFSET;
 
         for(i=0; i<frame_params->kernel_info.numOutputDataBlocks; i++)
         {
@@ -304,7 +319,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
             compute_kernel_args[j].dim_y     = out_block_height;
             compute_kernel_args[j].stride_y  = (int32_t)(((uint32_t)(out_block_width + optimize_x))*num_bytes);
 
-            assignDMAautoIncrementParams(&dma_write_autoinc_args->transferProp[i],
+            assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
                 frame_params->buf_params[j]->dim_x*num_bytes,/* roiWidth */
                 frame_params->buf_params[j]->dim_y,/* roiHeight */
                 out_block_width*num_bytes,/*blkWidth */
@@ -446,8 +461,8 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     uint8_t node_index;
 
     tivx_bam_graph_args_multi_t                 *graph_args          = (tivx_bam_graph_args_multi_t*)args;
-    EDMA_UTILS_autoIncrement_initParam  *dma_read_autoinc_args  = &(graph_args->dma_read_autoinc_args);
-    EDMA_UTILS_autoIncrement_initParam  *dma_write_autoinc_args = &(graph_args->dma_write_autoinc_args);
+    EDMA_UTILS_autoIncrement_initParam_v2  *dma_read_autoinc_args  = &(graph_args->dma_read_autoinc_args);
+    EDMA_UTILS_autoIncrement_initParam_v2  *dma_write_autoinc_args = &(graph_args->dma_write_autoinc_args);
     BAM_DMA_OneShot_Args                  *dma_write_oneshot_args = &(graph_args->dma_write_oneshot_args);
 
     tivx_bam_frame_params2_t               *frame_params = graph_args->frame_params;
@@ -484,8 +499,9 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         uint8_t num_transfers;
         if(getNumDownstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, &num_transfers) != 0)
         {
-            dma_read_autoinc_args->numInTransfers   = num_transfers;
-            dma_read_autoinc_args->transferType     = EDMA_UTILS_TRANSFER_IN;
+            dma_read_autoinc_args->initParams.numInTransfers   = num_transfers;
+            dma_read_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_IN;
+            dma_read_autoinc_args->pingPongOffset = ALIAS_OFFSET;
 
             for(i=0; i<num_transfers; i++)
             {
@@ -497,7 +513,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
                 data_blocks[i].block_params.stride_y  = blockDimParams->blockWidth*num_bytes;
                 data_blocks[i].set_flag = 1;
 
-                assignDMAautoIncrementParams(&dma_read_autoinc_args->transferProp[i],
+                assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
                     frame_params->buf_params[i]->dim_x*num_bytes,/* roiWidth */
                     frame_params->buf_params[i]->dim_y,/* roiHeight */
                     blockDimParams->blockWidth*num_bytes,/*blkWidth */
@@ -590,14 +606,15 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         uint8_t num_transfers;
         if(getNumUpstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, &num_transfers) != 0)
         {
-            dma_write_autoinc_args->numOutTransfers  = num_transfers;
-            dma_write_autoinc_args->transferType     = EDMA_UTILS_TRANSFER_OUT;
+            dma_write_autoinc_args->initParams.numOutTransfers  = num_transfers;
+            dma_write_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_OUT;
+            dma_write_autoinc_args->pingPongOffset = ALIAS_OFFSET;
 
             for(i=0; i<num_transfers; i++)
             {
                 num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[j]->data_type);
 
-                assignDMAautoIncrementParams(&dma_write_autoinc_args->transferProp[i],
+                assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
                     frame_params->buf_params[j]->dim_x*num_bytes,/* roiWidth */
                     frame_params->buf_params[j]->dim_y,/* roiHeight */
                     out_block_width*num_bytes,/*blkWidth */
@@ -997,6 +1014,14 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         graph_create_params.extMemSize           = p_graph_sizes->graphcontextSize;
         graph_create_params.useSmartMemAlloc     = (BOOL)true;
         graph_create_params.optimizeBlockDim     = (BOOL)false;
+
+        graph_create_params.intMemParams.ibuflMem  = L2MEM_BASE;
+        graph_create_params.intMemParams.ibufhMem  = L2MEM_BASE + IMGBUFL_SIZE;
+        graph_create_params.intMemParams.wbufMem   = L2MEM_BASE + 2*ALIAS_OFFSET;
+        graph_create_params.intMemParams.ibuflSize = IMGBUFL_SIZE;
+        graph_create_params.intMemParams.ibufhSize = IMGBUFH_SIZE;
+        graph_create_params.intMemParams.wbufSize  = WBUF_SIZE;
+        graph_create_params.intMemParams.aliasBufOffset  = ALIAS_OFFSET;
 
         /*---------------------------------------------------------------*/
         /* Initialize the members related to the  kernels init function  */
@@ -1415,6 +1440,14 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         graph_create_params.extMemSize           = p_graph_sizes->graphcontextSize;
         graph_create_params.useSmartMemAlloc     = (BOOL)true;
         graph_create_params.optimizeBlockDim     = (BOOL)false;
+
+        graph_create_params.intMemParams.ibuflMem  = L2MEM_BASE;
+        graph_create_params.intMemParams.ibufhMem  = L2MEM_BASE + IMGBUFL_SIZE;
+        graph_create_params.intMemParams.wbufMem   = L2MEM_BASE + 2*ALIAS_OFFSET;
+        graph_create_params.intMemParams.ibuflSize = IMGBUFL_SIZE;
+        graph_create_params.intMemParams.ibufhSize = IMGBUFH_SIZE;
+        graph_create_params.intMemParams.wbufSize  = WBUF_SIZE;
+        graph_create_params.intMemParams.aliasBufOffset  = ALIAS_OFFSET;
 
         /*---------------------------------------------------------------*/
         /* Initialize the members related to the  kernels init function  */

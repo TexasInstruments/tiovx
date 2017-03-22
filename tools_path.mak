@@ -59,7 +59,7 @@ EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
 
 # This path is temporary for our development since the above release doesn't have bam_plugins yet
 VXLIB2_PATH := /home/a0323847local/gitrepo/vxlib
-BAM_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/bam
+ALGFRAMEWORK_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/algframework
 DMAUTILS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/dmautils
 EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
 
