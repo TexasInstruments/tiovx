@@ -98,6 +98,8 @@ ifeq ($(NEEDS_COMPILER),1)
 # which compiler does this need?
 ifeq ($(HOST_COMPILER),GCC)
 	include $(CONCERTO_ROOT)/compilers/gcc.mak
+else ifeq ($(HOST_COMPILER),GCC_LINARO)
+	include $(CONCERTO_ROOT)/compilers/gcc_linaro.mak
 else ifeq ($(HOST_COMPILER),GCC_WINDOWS)
 	include $(CONCERTO_ROOT)/compilers/gcc_windows.mak
 else ifeq ($(HOST_COMPILER),GCC_LINUX)

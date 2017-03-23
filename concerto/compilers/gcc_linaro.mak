@@ -13,19 +13,19 @@
 # limitations under the License.
 
 ifeq ($(TARGET_CPU),$(HOST_CPU))
-	CROSS_COMPILE:=
+	CROSS_COMPILE_LINARO:=
 endif
 
 ifeq ($(TARGET_CPU),X86)
-	CROSS_COMPILE:=
+	CROSS_COMPILE_LINARO:=
 endif
 
 ifneq ($(HOST_FAMILY),$(TARGET_FAMILY))
-#$(if $(CROSS_COMPILE),,$(error Cross Compiling is not enabled! TARGET_FAMILY != HOST_FAMILY))
+#$(if $(CROSS_COMPILE_LINARO),,$(error Cross Compiling is not enabled! TARGET_FAMILY != HOST_FAMILY))
 endif
 
 ifeq ($(HOST_OS),Windows_NT)
-$(if $(GCC_ROOT),,$(error GCC_ROOT must be defined!))
+$(if $(GCC_ROOT_LINARO),,$(error GCC_ROOT_LINARO must be defined!))
 endif
 
 # check for the supported CPU types for this compiler 
@@ -38,18 +38,18 @@ ifeq ($(filter $(TARGET_OS),LINUX CYGWIN DARWIN NO_OS SYSBIOS),)
 $(error TARGET_OS $(TARGET_OS) is not supported by this compiler)
 endif
 
-ifneq ($(GCC_ROOT),)
-CC = $(GCC_ROOT)/bin/$(CROSS_COMPILE)gcc
-CP = $(GCC_ROOT)/bin/$(CROSS_COMPILE)g++
-AS = $(GCC_ROOT)/bin/$(CROSS_COMPILE)as
-AR = $(GCC_ROOT)/bin/$(CROSS_COMPILE)ar
-LD = $(GCC_ROOT)/bin/$(CROSS_COMPILE)g++
+ifneq ($(GCC_ROOT_LINARO),)
+CC = $(GCC_ROOT_LINARO)/bin/$(CROSS_COMPILE_LINARO)gcc
+CP = $(GCC_ROOT_LINARO)/bin/$(CROSS_COMPILE_LINARO)g++
+AS = $(GCC_ROOT_LINARO)/bin/$(CROSS_COMPILE_LINARO)as
+AR = $(GCC_ROOT_LINARO)/bin/$(CROSS_COMPILE_LINARO)ar
+LD = $(GCC_ROOT_LINARO)/bin/$(CROSS_COMPILE_LINARO)g++
 else
-CC = $(CROSS_COMPILE)gcc
-CP = $(CROSS_COMPILE)g++
-AS = $(CROSS_COMPILE)as
-AR = $(CROSS_COMPILE)ar
-LD = $(CROSS_COMPILE)g++
+CC = $(CROSS_COMPILE_LINARO)gcc
+CP = $(CROSS_COMPILE_LINARO)g++
+AS = $(CROSS_COMPILE_LINARO)as
+AR = $(CROSS_COMPILE_LINARO)ar
+LD = $(CROSS_COMPILE_LINARO)g++
 endif
 
 ifdef LOGFILE

@@ -111,21 +111,25 @@ $(_MODULE)_LINK_EXE   = $(call PATH_CONV,$(LD) $($(_MODULE)_LDFLAGS) $($(_MODULE
 ###################################################
 
 define $(_MODULE)_COMPILE_TOOLS
-$(ODIR)$(PATH_SEP)%.$(OBJ_EXT): $(SDIR)/%.c $(GENHEADERS)
+$(call PATH_CONV,$(ODIR)$(PATH_SEP)%.$(OBJ_EXT)): $(SDIR)/%.c $(GENHEADERS)
 	@echo [ARP32] Compiling C $$(notdir $$<)
-	$(Q)$$(call PATH_CONV,$(CC) $($(_MODULE)_CFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fc=$$< $(LOGGING)) $($(_MODULE)_MISRA)
+	$(Q)$(CC) $($(_MODULE)_CFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fc=$$< $(LOGGING)
+#	$(Q)$$(call PATH_CONV,$(CC) $($(_MODULE)_CFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fc=$$< $(LOGGING)) $($(_MODULE)_MISRA)
 
-$(ODIR)$(PATH_SEP)%.$(OBJ_EXT): $(SDIR)/%.cpp $(GENHEADERS)
+$(call PATH_CONV,$(ODIR)$(PATH_SEP)%.$(OBJ_EXT)): $(SDIR)/%.cpp $(GENHEADERS)
 	@echo [ARP32] Compiling C++ $$(notdir $$<)
-	$(Q)$$(call PATH_CONV,$(CP) $($(_MODULE)_CFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fp=$$< $(LOGGING))
+	$(Q)$(CP) $($(_MODULE)_CFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fp=$$< $(LOGGING)
+#	$(Q)$$(call PATH_CONV,$(CP) $($(_MODULE)_CFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fp=$$< $(LOGGING))
 
-$(ODIR)$(PATH_SEP)%.$(OBJ_EXT): $(SDIR)/%.asm $(GENHEADERS)
+$(call PATH_CONV,$(ODIR)$(PATH_SEP)%.$(OBJ_EXT)): $(SDIR)/%.asm $(GENHEADERS)
 	@echo [ARP32] Assembling $$(notdir $$<)
-	$(Q)$$(call PATH_CONV,$(AS) $($(_MODULE)_AFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fa=$$< $(LOGGING))
+	$(Q)$(AS) $($(_MODULE)_AFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fa=$$< $(LOGGING)
+#	$(Q)$$(call PATH_CONV,$(AS) $($(_MODULE)_AFLAGS) --preproc_dependency=$(ODIR)/$$*.dep --preproc_with_compile -fr=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) -fa=$$< $(LOGGING))
 
-$(ODIR)$(PATH_SEP)%.$(OBJ_EXT): $(SDIR)/%.k
+$(call PATH_CONV,$(ODIR)$(PATH_SEP)%.$(OBJ_EXT)): $(SDIR)/%.k 
 	@echo [ARP32] Compiling KernelC $$(notdir $$<)
-	$(Q)$$(call PATH_CONV,$(CC) $($(_MODULE)_CFLAGS) -kh --compile_only -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) $$< $(LOGGING))
+	$(Q)$(CC) $($(_MODULE)_CFLAGS) -kh --compile_only -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) $$< $(LOGGING)
+#	$(Q)$$(call PATH_CONV,$(CC) $($(_MODULE)_CFLAGS) -kh --compile_only -fr=$$(dir $$@) -fs=$$(dir $$@) -ft=$$(dir $$@) -eo=.$(OBJ_EXT) $$< $(LOGGING))
 
 $(ODIR)$(PATH_SEP)%.h: $(ODIR)$(PATH_SEPD)%.$(OBJ_EXT) ;
 .PRECIOUS: $(ODIR)$(PATH_SEPD)%.h
