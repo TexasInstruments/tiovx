@@ -596,8 +596,8 @@ static vx_status tivxCannyCalcDblThr(tivxCannyParams *prms,
         vxlib_prms.data_type = prms->vxlib_edge.data_type;
 
         status = VXLIB_doubleThreshold_i16u_i8u(norm, &prms->vxlib_norm,
-            edge, &vxlib_prms, prms->edge_list, prms->edge_list_size,
-            num_items, start_pos, lower, upper);
+            edge, &vxlib_prms, prms->vxlib_edge.stride_y, prms->edge_list,
+            prms->edge_list_size, num_items, start_pos, lower, upper);
     }
     if (status != VXLIB_SUCCESS)
     {

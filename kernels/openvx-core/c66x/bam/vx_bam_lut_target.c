@@ -211,15 +211,12 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
                 kernel_params.lut    = lut->mem_ptr.target_ptr;
                 kernel_params.count  = lut->num_items;
 
-                status = BAM_VXLIB_tableLookup_i8u_o8u_getKernelInfo( &kernel_params,
-                                                                     &frame_params.kernel_info);
+                BAM_VXLIB_tableLookup_i8u_o8u_getKernelInfo( &kernel_params,
+                                                             &frame_params.kernel_info);
 
-                if (VX_SUCCESS == status)
-                {
-                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U,
+                status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U,
                                                            &frame_params, (void*)&kernel_params,
                                                            &prms->graph_handle);
-                }
             }
             else
             {
@@ -228,15 +225,12 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
                 kernel_params.count  = lut->num_items;
                 kernel_params.offset = 32768U;
 
-                status = BAM_VXLIB_tableLookup_i16s_o16s_getKernelInfo( &kernel_params,
-                                                                     &frame_params.kernel_info);
+                BAM_VXLIB_tableLookup_i16s_o16s_getKernelInfo( &kernel_params,
+                                                               &frame_params.kernel_info);
 
-                if (VX_SUCCESS == status)
-                {
-                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S,
-                                                           &frame_params, (void*)&kernel_params,
-                                                           &prms->graph_handle);
-                }
+                status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S,
+                                                       &frame_params, (void*)&kernel_params,
+                                                       &prms->graph_handle);
             }
         }
         else
