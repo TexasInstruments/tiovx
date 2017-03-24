@@ -28,7 +28,7 @@ void tivxInit(void)
     tivxRegisterOpenVXCoreTargetKernels();
 #endif
 
-#if defined (EVE)
+#if defined (EVE) && defined (BUILD_IVISION_KERNELS)
     tivxRegisterIVisionTargetKernels();
 #endif
 
@@ -52,7 +52,7 @@ void tivxDeInit(void)
     tivxUnRegisterOpenVXCoreTargetKernels();
 #endif
 
-#if defined (EVE)
+#if defined (EVE) && defined (BUILD_IVISION_KERNELS)
     tivxUnRegisterIVisionTargetKernels();
 #endif
 
