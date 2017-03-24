@@ -1,5 +1,5 @@
-/* 
- * Copyright (c) 2012-2016 The Khronos Group Inc.
+/*
+ * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -30,6 +30,11 @@
 #define __VX_CT_IMAGE_H__
 
 #include <VX/vx.h>
+
+typedef enum CT_ImageCopyDirection_ {
+    COPY_CT_IMAGE_TO_VX_IMAGE = 0,
+    COPY_VX_IMAGE_TO_CT_IMAGE
+} CT_ImageCopyDirection;
 
 typedef struct CT_Rect_ {
     uint32_t x;
@@ -162,11 +167,10 @@ CT_Image ct_image_from_vx_image_impl(vx_image vximg, const char* func, const cha
 #define ct_image_to_vx_image(ctimg, context) ct_image_to_vx_image_impl(ctimg, context, __FUNCTION__, __FILE__, __LINE__)
 vx_image ct_image_to_vx_image_impl(CT_Image ctimg, vx_context context, const char* func, const char* file, int line);
 
-#define ct_image_copyto_vx_image(vximg, ctimg) ct_image_copyto_vx_image_impl(vximg, ctimg, __FUNCTION__, __FILE__, __LINE__)
-vx_image ct_image_copyto_vx_image_impl(vx_image vximg, CT_Image ctimg, const char* func, const char* file, int line);
+vx_image ct_image_copy_impl(CT_Image ctimg, vx_image vximg, CT_ImageCopyDirection dir, const char* func, const char* file, int line);
 
-#define ct_image_copyfrom_vx_image(ctimg, vximg) ct_image_copyfrom_vx_image_impl(ctimg, vximg, __FUNCTION__, __FILE__, __LINE__)
-CT_Image ct_image_copyfrom_vx_image_impl(CT_Image ctimg, vx_image vximg, const char* func, const char* file, int line);
+#define ct_image_copyto_vx_image(vximg, ctimg) ct_image_copy_impl(ctimg, vximg, COPY_CT_IMAGE_TO_VX_IMAGE, __FUNCTION__, __FILE__, __LINE__)
+#define ct_image_copyfrom_vx_image(ctimg, vximg) ct_image_copy_impl(ctimg, vximg, COPY_VX_IMAGE_TO_CT_IMAGE, __FUNCTION__, __FILE__, __LINE__)
 
 #define EXPECT_EQ_CTIMAGE(expected, actual) ct_assert_eq_ctimage_impl(expected, actual, 0, (uint32_t)-1, #expected, #actual, __FUNCTION__, __FILE__, __LINE__)
 #define ASSERT_EQ_CTIMAGE(expected, actual)                                                                                     \
