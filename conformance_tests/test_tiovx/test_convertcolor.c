@@ -404,50 +404,6 @@ typedef struct {
     int cthresh;
 } format_arg;
 
-#if 0
-static void ct_print_image(CT_Image img, const char* name)
-{
-    uint32_t p, x, y, nplanes=1, width[3] = {img->width, 0, 0}, height[3] = {img->height, 0, 0};
-    uint32_t stride[3] = {ct_stride_bytes(img), 0, 0};
-    const uint8_t* ptr = img->data.y;
-    int format = img->format;
-
-    if( format == VX_DF_IMAGE_RGB || format == VX_DF_IMAGE_RGBX || format == VX_DF_IMAGE_UYVY || format == VX_DF_IMAGE_YUYV )
-        width[0] *= format == VX_DF_IMAGE_RGB ? 3 : 4;
-    else if( format == VX_DF_IMAGE_YUV4 || format == VX_DF_IMAGE_IYUV )
-    {
-        int scale = format == VX_DF_IMAGE_YUV4 ? 1 : 2;
-        nplanes = 3;
-        width[1] = width[2] = width[0]/scale;
-        height[1] = height[2] = height[0]/scale;
-        stride[1] = stride[2] = stride[0]/scale;
-    }
-    else if( format == VX_DF_IMAGE_NV12 || format == VX_DF_IMAGE_NV21 )
-    {
-        nplanes = 2;
-        width[1] = width[0];
-        height[1] = height[0]/2;
-        stride[1] = stride[0];
-    }
-
-    printf("=========== %s =======\n", name);
-
-    for( p = 0; p < nplanes; p++ )
-    {
-        for( y = 0; y < height[p]; y++, ptr += stride[p] )
-        {
-            for( x = 0; x < width[p]; x++ )
-            {
-                printf("%4d", ptr[x]);
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
-    printf("---------------------------\n");
-}
-#endif
-
 #define CVT_CASE_(imm, from, to, ythresh, cthresh) \
     {#imm "/" #from "=>" #to, VX_DF_IMAGE_##from, VX_DF_IMAGE_##to, CT_##imm##_MODE, ythresh, cthresh}
 

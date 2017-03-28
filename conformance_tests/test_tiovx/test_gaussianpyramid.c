@@ -55,25 +55,7 @@ static vx_array own_create_keypoint_array(vx_context context, vx_size count, vx_
 
     ASSERT_VX_OBJECT_(return 0, arr = vxCreateArray(context, VX_TYPE_KEYPOINT, count), VX_TYPE_ARRAY);
 
-#if 0
-    {
-    vx_size i;
-    vx_size stride = 0;
-    void* ptr = 0;
-
-    VX_CALL_(return 0, vxAccessArrayRange(arr, 0, count, &stride, &ptr, VX_WRITE_ONLY));
-
-    for (i = 0; i < count; i++)
-    {
-        vx_keypoint_t* k = (vx_keypoint_t*)(((char*)ptr) + i * stride);
-        memcpy(k, &keypoints[i], sizeof(vx_keypoint_t));
-    }
-
-    VX_CALL_(return 0, vxCommitArrayRange(arr, 0, count, ptr));
-    }
-#else
     VX_CALL_(return 0, vxAddArrayItems(arr, count, keypoints, sizeof(vx_keypoint_t)));
-#endif
 
     return arr;
 }
@@ -195,19 +177,6 @@ static void own_keypoints_check(vx_size num_points,
     if (num_errors > (int)(num_tracked_points * 0.10f))
         CT_ADD_FAILURE("Too many bad points: %d (threshold %d, both tracked points %d)\n",
                 num_errors, (int)(num_tracked_points * 0.10f), num_tracked_points);
-
-#if 0
-    if (CT_HasFailure())
-    {
-        for (i = 0; i < num_points; i++)
-        {
-            printf("i=%d status = %d->%d  x =  %d -> %d ? %d    y = %d -> %d ? %d\n", (int)i,
-                    new_points_ref[i].tracking_status, new_points[i].tracking_status,
-                    old_points[i].x, new_points_ref[i].x, new_points[i].x,
-                    old_points[i].y, new_points_ref[i].y, new_points[i].y);
-        }
-    }
-#endif
 }
 
 static CT_Image gaussian_pyramid_generate_random(const char* fileName, int width, int height)
@@ -531,7 +500,7 @@ static CT_Image gaussian_pyramid_create_reference_image(CT_Image input, CT_Image
             dst_height = (vx_uint32)ceil(dst_height * scale);
         }
     }
-    else // if (VX_SCALE_PYRAMID_ORB == scale)
+    else
     {
         vx_float64 orb_scale = c_orbscale[target_level];
         dst_width = (vx_uint32)ceil(orb_scale * ref_width);

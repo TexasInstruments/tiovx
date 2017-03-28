@@ -52,25 +52,7 @@ static vx_array own_create_keypoint_array(vx_context context, vx_size count, vx_
 
     ASSERT_VX_OBJECT_(return 0, arr = vxCreateArray(context, VX_TYPE_KEYPOINT, count), VX_TYPE_ARRAY);
 
-#if 0
-    {
-    vx_size i;
-    vx_size stride = 0;
-    void* ptr = 0;
-
-    VX_CALL_(return 0, vxAccessArrayRange(arr, 0, count, &stride, &ptr, VX_WRITE_ONLY));
-
-    for (i = 0; i < count; i++)
-    {
-        vx_keypoint_t* k = (vx_keypoint_t*)(((char*)ptr) + i * stride);
-        memcpy(k, &keypoints[i], sizeof(vx_keypoint_t));
-    }
-
-    VX_CALL_(return 0, vxCommitArrayRange(arr, 0, count, ptr));
-    }
-#else
     VX_CALL_(return 0, vxAddArrayItems(arr, count, keypoints, sizeof(vx_keypoint_t)));
-#endif
 
     return arr;
 }
@@ -192,19 +174,6 @@ static void own_keypoints_check(vx_size num_points,
     if (num_errors > (int)(num_tracked_points * 0.10f))
         CT_ADD_FAILURE("Too many bad points: %d (threshold %d, both tracked points %d)\n",
                 num_errors, (int)(num_tracked_points * 0.10f), num_tracked_points);
-
-#if 0
-    if (CT_HasFailure())
-    {
-        for (i = 0; i < num_points; i++)
-        {
-            printf("i=%d status = %d->%d  x =  %d -> %d ? %d    y = %d -> %d ? %d\n", (int)i,
-                    new_points_ref[i].tracking_status, new_points[i].tracking_status,
-                    old_points[i].x, new_points_ref[i].x, new_points[i].x,
-                    old_points[i].y, new_points_ref[i].y, new_points[i].y);
-        }
-    }
-#endif
 }
 
 typedef struct {
@@ -303,13 +272,8 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     }
     else
     {
-#if 0
-        ASSERT_VX_OBJECT(src_pyr_node[0] = vxGaussianPyramidNode(graph, src_image[0], src_pyr[0]), VX_TYPE_NODE);
-        ASSERT_VX_OBJECT(src_pyr_node[1] = vxGaussianPyramidNode(graph, src_image[1], src_pyr[1]), VX_TYPE_NODE);
-#else
         VX_CALL(vxuGaussianPyramid(context, src_image[0], src_pyr[0]));
         VX_CALL(vxuGaussianPyramid(context, src_image[1], src_pyr[1]));
-#endif
     }
 
     ASSERT_VX_OBJECT(node1 = vxOpticalFlowPyrLKNode(

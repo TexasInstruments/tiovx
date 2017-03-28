@@ -184,11 +184,8 @@ TEST_WITH_ARG(tivxBinOp16s, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff))
     VX_CALL(vxReleaseGraph(&graph));
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 

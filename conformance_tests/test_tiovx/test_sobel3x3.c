@@ -58,43 +58,18 @@ static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum
 
     if (src->format == VX_DF_IMAGE_U8)
     {
-        // according to spec the policy is ignored
-        // if (policy == VX_CONVERT_POLICY_WRAP)
+        if (shift < 0)
         {
-            // up-conversion + wrap
-            if (shift < 0)
-            {
-                for (i = 0; i < dst->height; ++i)
-                    for (j = 0; j < dst->width; ++j)
-                        dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-            }
-            else
-            {
-                for (i = 0; i < dst->height; ++i)
-                    for (j = 0; j < dst->width; ++j)
-                        dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-            }
+            for (i = 0; i < dst->height; ++i)
+                for (j = 0; j < dst->width; ++j)
+                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
         }
-        // else if (VX_CONVERT_POLICY_SATURATE)
-        // {
-        //     // up-conversion + saturate
-        //     if (shift < 0)
-        //     {
-        //         for (i = 0; i < dst->height; ++i)
-        //             for (j = 0; j < dst->width; ++j)
-        //                 dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-        //     }
-        //     else
-        //     {
-        //         for (i = 0; i < dst->height; ++i)
-        //             for (j = 0; j < dst->width; ++j)
-        //             {
-        //                 unsigned v = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-        //                 if (v > 32767) v = 32767;
-        //                 dst->data.s16[i * dst->stride + j] = v;
-        //             }
-        //     }
-        // }
+        else
+        {
+            for (i = 0; i < dst->height; ++i)
+                for (j = 0; j < dst->width; ++j)
+                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
+        }
     }
     else if (policy == VX_CONVERT_POLICY_WRAP)
     {
@@ -289,21 +264,6 @@ static void sobel3x3_check(CT_Image src, CT_Image dst_x, CT_Image dst_y, vx_bord
 
     EXPECT_EQ_CTIMAGE(dst_x_ref, dst_x);
     EXPECT_EQ_CTIMAGE(dst_y_ref, dst_y);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST X ===\n");
-        ct_dump_image_info(dst_x);
-        printf("=== EXPECTED X ===\n");
-        ct_dump_image_info(dst_x_ref);
-        printf("=== DST Y ===\n");
-        ct_dump_image_info(dst_y);
-        printf("=== EXPECTED Y ===\n");
-        ct_dump_image_info(dst_y_ref);
-    }
-#endif
 }
 
 static void sobel3x3_sequential_check(CT_Image src, CT_Image virt1, CT_Image virt2, CT_Image dst1_x, CT_Image dst1_y, CT_Image dst2_x, CT_Image dst2_y, vx_border_t border)
@@ -336,21 +296,6 @@ static void sobel3x3_sequential_check(CT_Image src, CT_Image virt1, CT_Image vir
     EXPECT_EQ_CTIMAGE(dst1_y_ref, dst1_y);
     EXPECT_EQ_CTIMAGE(dst2_x_ref, dst2_x);
     EXPECT_EQ_CTIMAGE(dst2_y_ref, dst2_y);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST X ===\n");
-        ct_dump_image_info(dst_x);
-        printf("=== EXPECTED X ===\n");
-        ct_dump_image_info(dst_x_ref);
-        printf("=== DST Y ===\n");
-        ct_dump_image_info(dst_y);
-        printf("=== EXPECTED Y ===\n");
-        ct_dump_image_info(dst_y_ref);
-    }
-#endif
 }
 
 static void sobel3x3_check_y(CT_Image src, CT_Image dst_y, vx_border_t border)
@@ -370,21 +315,6 @@ static void sobel3x3_check_y(CT_Image src, CT_Image dst_y, vx_border_t border)
     );
 
     EXPECT_EQ_CTIMAGE(dst_y_ref, dst_y);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST X ===\n");
-        ct_dump_image_info(dst_x);
-        printf("=== EXPECTED X ===\n");
-        ct_dump_image_info(dst_x_ref);
-        printf("=== DST Y ===\n");
-        ct_dump_image_info(dst_y);
-        printf("=== EXPECTED Y ===\n");
-        ct_dump_image_info(dst_y_ref);
-    }
-#endif
 }
 
 static void sobel3x3_check_x(CT_Image src, CT_Image dst_x, vx_border_t border)
@@ -404,21 +334,6 @@ static void sobel3x3_check_x(CT_Image src, CT_Image dst_x, vx_border_t border)
     );
 
     EXPECT_EQ_CTIMAGE(dst_x_ref, dst_x);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST X ===\n");
-        ct_dump_image_info(dst_x);
-        printf("=== EXPECTED X ===\n");
-        ct_dump_image_info(dst_x_ref);
-        printf("=== DST Y ===\n");
-        ct_dump_image_info(dst_y);
-        printf("=== EXPECTED Y ===\n");
-        ct_dump_image_info(dst_y_ref);
-    }
-#endif
 }
 
 typedef struct {

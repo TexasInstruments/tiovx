@@ -192,17 +192,6 @@ static void box3x3_check(CT_Image src, CT_Image dst, vx_border_t border)
     );
 
     EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 static void sequential_box3x3_check(CT_Image src, CT_Image dst, vx_border_t border)
@@ -225,17 +214,6 @@ static void sequential_box3x3_check(CT_Image src, CT_Image dst, vx_border_t bord
     );
 
     EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 typedef struct {

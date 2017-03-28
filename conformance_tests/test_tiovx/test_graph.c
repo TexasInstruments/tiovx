@@ -241,17 +241,6 @@ static void referenceAdd(CT_Image src0, CT_Image src1, CT_Image src2, CT_Image s
 
     EXPECT_EQ_CTIMAGE(dst1_ref, dst1);
     EXPECT_EQ_CTIMAGE(dst2_ref, dst2);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 static void referenceThreeParallel(CT_Image src0, CT_Image src1, CT_Image virt, CT_Image dst, enum vx_convert_policy_e policy, vx_border_t border)
@@ -273,17 +262,6 @@ static void referenceThreeParallel(CT_Image src0, CT_Image src1, CT_Image virt, 
     );
 
     EXPECT_EQ_CTIMAGE(dst_ref, dst);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 typedef vx_node   (VX_API_CALL *vxArithmFunction) (vx_graph, vx_image, vx_image, vx_enum, vx_image);
@@ -398,13 +376,9 @@ TEST_WITH_ARG(tivxGraph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZ
     VX_CALL(vxReleaseGraph(&graph));
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, widthHardCoded*heightHardCoded, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_node4, widthHardCoded*heightHardCoded, "N4");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
@@ -496,13 +470,9 @@ TEST_WITH_ARG(tivxGraph, testParallelNodesSameTarget, fuzzy_arg, ARITHM_FUZZY_AR
     VX_CALL(vxReleaseGraph(&graph));
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, widthHardCoded*heightHardCoded, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_node4, widthHardCoded*heightHardCoded, "N4");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
@@ -625,17 +595,11 @@ TEST_WITH_ARG(tivxGraph, testThreeParallelNodes, fuzzy_arg, ARITHM_FUZZY_ARGS(Ad
     VX_CALL(vxReleaseGraph(&graph));
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, widthHardCoded1*heightHardCoded1, "N2");
-
     printPerformance(perf_node3, widthHardCoded2*heightHardCoded2, "N3");
-
     printPerformance(perf_node4, arg_->width*arg_->height, "N4");
-
     printPerformance(perf_node5, widthHardCoded1*heightHardCoded1, "N5");
-
     printPerformance(perf_node6, widthHardCoded2*heightHardCoded2, "N6");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
@@ -687,19 +651,6 @@ static void accumulate_weighted_check(CT_Image input, vx_float32 alpha, CT_Image
     ASSERT_NO_FAILURE(accumulate_weighted_reference(input, alpha, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void accumulate_multiple_weighted_check(CT_Image input, vx_float32 alpha_intermediate, vx_float32 alpha_final, CT_Image accum_src, CT_Image accum_final, CT_Image accum_dst)
@@ -717,19 +668,6 @@ static void accumulate_multiple_weighted_check(CT_Image input, vx_float32 alpha_
     ASSERT_NO_FAILURE(accumulate_weighted_reference(accum_intermediate, alpha_final, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2 for the amount of nodes
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image input_acc, CT_Image virtual_dummy,
@@ -750,19 +688,6 @@ static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image 
     ASSERT_NO_FAILURE(accumulate_weighted_reference(accum_intermediate, alpha_final, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Image input_acc_2, CT_Image virtual_dummy_1,
@@ -792,19 +717,6 @@ static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Im
     ASSERT_NO_FAILURE(accumulate_weighted_reference(virtual_dummy_3, alpha_final, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 typedef struct {
@@ -904,11 +816,8 @@ TEST_WITH_ARG(tivxGraph, testVirtualDataObject, Arg,
     ASSERT(input_image_not == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
@@ -1002,11 +911,8 @@ TEST_WITH_ARG(tivxGraph, testParallelGraphs, Arg,
     ASSERT(input_image2 == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
-
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
@@ -1136,15 +1042,10 @@ TEST_WITH_ARG(tivxGraph, testParallelGraphsMultipleNodes, Arg,
     ASSERT(input_image_graph2 == 0);
 
     printPerformance(perf_node1_graph1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2_graph1, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
-
     printPerformance(perf_node1_graph2, widthHardCoded*heightHardCoded, "N1");
-
     printPerformance(perf_node1_graph2, widthHardCoded*heightHardCoded, "N2");
-
     printPerformance(perf_node2_graph2, widthHardCoded*heightHardCoded, "G2");
 }
 
@@ -1269,15 +1170,10 @@ TEST_WITH_ARG(tivxGraph, testThreeParallelGraphs, Arg,
     ASSERT(input_image3 == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
-
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
-
     printPerformance(perf_graph3, arg_->width*arg_->height, "G3");
 }
 
@@ -1413,17 +1309,11 @@ TEST_WITH_ARG(tivxGraph, testAlternatingNodes, Arg,
     ASSERT(input_image_not == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_node4, arg_->width*arg_->height, "N4");
-
     printPerformance(perf_node5, arg_->width*arg_->height, "N5");
-
     printPerformance(perf_node6, arg_->width*arg_->height, "N6");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 

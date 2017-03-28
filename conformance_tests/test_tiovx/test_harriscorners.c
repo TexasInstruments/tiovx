@@ -262,19 +262,6 @@ static void own_keypoints_check(vx_size num_points,
     if (num_errors > (int)(num_tracked_points * 0.10f))
         CT_ADD_FAILURE("Too many bad points: %d (threshold %d, both tracked points %d)\n",
                 num_errors, (int)(num_tracked_points * 0.10f), num_tracked_points);
-
-#if 0
-    if (CT_HasFailure())
-    {
-        for (i = 0; i < num_points; i++)
-        {
-            printf("i=%d status = %d->%d  x =  %d -> %d ? %d    y = %d -> %d ? %d\n", (int)i,
-                    new_points_ref[i].tracking_status, new_points[i].tracking_status,
-                    old_points[i].x, new_points_ref[i].x, new_points[i].x,
-                    old_points[i].y, new_points_ref[i].y, new_points[i].y);
-        }
-    }
-#endif
 }
 
 typedef struct {

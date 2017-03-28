@@ -314,15 +314,6 @@ static void scale_check(CT_Image src, CT_Image dst, vx_enum interpolation, vx_bo
 {
     ASSERT(src && dst);
     scale_validate(src, dst, interpolation, border, exact);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info_ex(src, 16, 8);
-        printf("=== DST ===\n");
-        ct_dump_image_info_ex(dst, 16, 8);
-    }
-#endif
 }
 
 typedef struct {
@@ -565,4 +556,4 @@ TEST_WITH_ARG(tivxScale, testSequentialNodes, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxScale, /*testGraphProcessing,*/ testSequentialNodes)
+TESTCASE_TESTS(tivxScale, testGraphProcessing, testSequentialNodes)

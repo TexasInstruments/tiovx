@@ -214,18 +214,6 @@ static void filter_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Imag
     );
 
     EXPECT_EQ_CTIMAGE(dst_ref, dst);
-
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 static void filter_not_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Image dst, vx_border_t* border)
@@ -268,18 +256,6 @@ static void filter_not_check(vx_enum function, CT_Image src, vx_matrix mask, CT_
     );
 
     EXPECT_EQ_CTIMAGE(dst_ref, dst);
-
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 

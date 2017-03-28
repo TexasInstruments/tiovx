@@ -140,23 +140,6 @@ static void channel_combine_check(CT_Image src1, CT_Image src2, CT_Image src3, C
     ASSERT_NO_FAILURE(dst_ref = channel_combine_create_reference_image(src1, src2, src3, src4, dst->format));
 
     EXPECT_EQ_CTIMAGE(dst_ref, dst);
-#if 0
-    if (CT_HasFailure())
-    {
-#define DUMP_SRC(i) \
-        if (src##i) \
-        { \
-            printf("=== SRC" #i " ===\n"); \
-            ct_dump_image_info(src##i); \
-        }
-        DUMP_SRC(1) DUMP_SRC(2) DUMP_SRC(3) DUMP_SRC(4)
-#undef DUMP_SRC
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 typedef struct {

@@ -89,19 +89,6 @@ static void accumulate_weighted_check(CT_Image input, vx_float32 alpha, CT_Image
     ASSERT_NO_FAILURE(accumulate_weighted_reference(input, alpha, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void accumulate_multiple_weighted_check(CT_Image input, vx_float32 alpha_intermediate, vx_float32 alpha_final, CT_Image accum_src, CT_Image accum_final, CT_Image accum_dst)
@@ -119,19 +106,6 @@ static void accumulate_multiple_weighted_check(CT_Image input, vx_float32 alpha_
     ASSERT_NO_FAILURE(accumulate_weighted_reference(accum_intermediate, alpha_final, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2 for the amount of nodes
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image input_acc, CT_Image virtual_dummy,
@@ -152,19 +126,6 @@ static void accumulate_not_multiple_weighted_check(CT_Image input_not, CT_Image 
     ASSERT_NO_FAILURE(accumulate_weighted_reference(accum_intermediate, alpha_final, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Image input_acc_2, CT_Image virtual_dummy_1,
@@ -194,19 +155,6 @@ static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Im
     ASSERT_NO_FAILURE(accumulate_weighted_reference(virtual_dummy_3, alpha_final, accum_ref));
 
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 typedef struct {
@@ -292,9 +240,7 @@ TEST_WITH_ARG(tivxAccumulateWeighted, testGraphProcessing, Arg,
     ASSERT(input_image == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 

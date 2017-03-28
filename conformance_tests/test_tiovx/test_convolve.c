@@ -163,17 +163,6 @@ static void convolve_check(CT_Image src, CT_Image dst, vx_border_t border,
     );
 
     EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info_ex(src, 16, 4);
-        printf("=== DST ===\n");
-        ct_dump_image_info_ex(dst, 16, 4);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info_ex(dst_ref, 16, 4);
-    }
-#endif
 }
 
 static void convolve_sequential_check(CT_Image src, CT_Image dst, vx_border_t border,
@@ -195,17 +184,6 @@ static void convolve_sequential_check(CT_Image src, CT_Image dst, vx_border_t bo
     );
 
     EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info_ex(src, 16, 4);
-        printf("=== DST ===\n");
-        ct_dump_image_info_ex(dst, 16, 4);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info_ex(dst_ref, 16, 4);
-    }
-#endif
 }
 
 

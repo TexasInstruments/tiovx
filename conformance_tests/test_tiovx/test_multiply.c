@@ -157,8 +157,6 @@ static void referenceSequentialMultiply(CT_Image src0, CT_Image src1, CT_Image s
     ASSERT_NO_FAILURE(referenceMultiply(src0, src1, virt1, virt1_plus1, scale, policy));
     ASSERT_NO_FAILURE(referenceMultiply(src2, src3, virt2, virt2_plus1, scale, policy));
     ASSERT_NO_FAILURE(referenceMultiply(virt1_converted, virt2_converted, dst, dst_plus_1, scale, policy));
-
-//        referenceMultiply(ref1, ref2, refdst, refdst_plus_1, arg_->scale, arg_->overflow_policy);
 }
 
 typedef struct {

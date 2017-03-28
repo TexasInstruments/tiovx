@@ -179,17 +179,6 @@ static void erode3x3_check(CT_Image src, CT_Image dst, vx_border_t border)
     );
 
     EXPECT_EQ_CTIMAGE(dst_ref, dst);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 static void sequential_erode3x3_check(CT_Image src, CT_Image dst, vx_border_t border)
@@ -212,17 +201,6 @@ static void sequential_erode3x3_check(CT_Image src, CT_Image dst, vx_border_t bo
     );
 
     EXPECT_CTIMAGE_NEAR(dst_ref, dst, 1);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== SRC ===\n");
-        ct_dump_image_info(src);
-        printf("=== DST ===\n");
-        ct_dump_image_info(dst);
-        printf("=== EXPECTED ===\n");
-        ct_dump_image_info(dst_ref);
-    }
-#endif
 }
 
 typedef struct {
@@ -294,9 +272,7 @@ TEST_WITH_ARG(tivxErode3x3, testGraphProcessing, Arg,
     ASSERT(src_image == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 

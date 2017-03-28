@@ -130,7 +130,7 @@ static void warp_affine_generate_matrix(vx_float32* m, int src_width, int src_he
         mat[2][0] = 0.f;
         mat[2][1] = 0.f;
     }
-    else// if (VX_MATRIX_RANDOM == type)
+    else
     {
         angle = M_PIF / RND_FLT(3.f, 6.f);
         scale_x = src_width / (vx_float32)dst_width;

@@ -58,43 +58,19 @@ static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum
 
     if (src->format == VX_DF_IMAGE_U8)
     {
-        // according to spec the policy is ignored
-        // if (policy == VX_CONVERT_POLICY_WRAP)
+        // up-conversion + wrap
+        if (shift < 0)
         {
-            // up-conversion + wrap
-            if (shift < 0)
-            {
-                for (i = 0; i < dst->height; ++i)
-                    for (j = 0; j < dst->width; ++j)
-                        dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-            }
-            else
-            {
-                for (i = 0; i < dst->height; ++i)
-                    for (j = 0; j < dst->width; ++j)
-                        dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-            }
+            for (i = 0; i < dst->height; ++i)
+                for (j = 0; j < dst->width; ++j)
+                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
         }
-        // else if (VX_CONVERT_POLICY_SATURATE)
-        // {
-        //     // up-conversion + saturate
-        //     if (shift < 0)
-        //     {
-        //         for (i = 0; i < dst->height; ++i)
-        //             for (j = 0; j < dst->width; ++j)
-        //                 dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-        //     }
-        //     else
-        //     {
-        //         for (i = 0; i < dst->height; ++i)
-        //             for (j = 0; j < dst->width; ++j)
-        //             {
-        //                 unsigned v = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-        //                 if (v > 32767) v = 32767;
-        //                 dst->data.s16[i * dst->stride + j] = v;
-        //             }
-        //     }
-        // }
+        else
+        {
+            for (i = 0; i < dst->height; ++i)
+                for (j = 0; j < dst->width; ++j)
+                   dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
+        }
     }
     else if (policy == VX_CONVERT_POLICY_WRAP)
     {
@@ -186,19 +162,6 @@ static void accumulate_square_check(CT_Image input, vx_uint32 shift, CT_Image ac
     ASSERT_NO_FAILURE(accumulate_square_reference(input, shift, accum_ref));
 
     EXPECT_EQ_CTIMAGE(accum_ref, accum_dst);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 static void accumulate_square_chain_check(CT_Image input, CT_Image virtual_img, CT_Image accum_input1, 
@@ -220,19 +183,6 @@ static void accumulate_square_chain_check(CT_Image input, CT_Image virtual_img, 
     ASSERT_NO_FAILURE(accumulate_square_reference(virtual_img, shift2, accum_ref));
 
     EXPECT_EQ_CTIMAGE(accum_ref, accum_dst);
-#if 0
-    if (CT_HasFailure())
-    {
-        printf("=== Input ===\n");
-        ct_dump_image_info(input);
-        printf("=== Accum source ===\n");
-        ct_dump_image_info(accum_src);
-        printf("=== Accum RESULT ===\n");
-        ct_dump_image_info(accum_dst);
-        printf("=== EXPECTED RESULT ===\n");
-        ct_dump_image_info(accum_ref);
-    }
-#endif
 }
 
 typedef struct {
@@ -411,11 +361,8 @@ TEST_WITH_ARG(tivxAccumulateSquare, testSequentialNodes, Arg,
     ASSERT(input_image1 == 0);
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 

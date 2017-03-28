@@ -61,43 +61,19 @@ static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum
 
     if (src->format == VX_DF_IMAGE_U8)
     {
-        // according to spec the policy is ignored
-        // if (policy == VX_CONVERT_POLICY_WRAP)
-        {
             // up-conversion + wrap
-            if (shift < 0)
-            {
-                for (i = 0; i < dst->height; ++i)
-                    for (j = 0; j < dst->width; ++j)
-                        dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-            }
-            else
-            {
-                for (i = 0; i < dst->height; ++i)
-                    for (j = 0; j < dst->width; ++j)
-                        dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-            }
+        if (shift < 0)
+        {
+            for (i = 0; i < dst->height; ++i)
+                for (j = 0; j < dst->width; ++j)
+                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
         }
-        // else if (VX_CONVERT_POLICY_SATURATE)
-        // {
-        //     // up-conversion + saturate
-        //     if (shift < 0)
-        //     {
-        //         for (i = 0; i < dst->height; ++i)
-        //             for (j = 0; j < dst->width; ++j)
-        //                 dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-        //     }
-        //     else
-        //     {
-        //         for (i = 0; i < dst->height; ++i)
-        //             for (j = 0; j < dst->width; ++j)
-        //             {
-        //                 unsigned v = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-        //                 if (v > 32767) v = 32767;
-        //                 dst->data.s16[i * dst->stride + j] = v;
-        //             }
-        //     }
-        // }
+        else
+        {
+            for (i = 0; i < dst->height; ++i)
+                for (j = 0; j < dst->width; ++j)
+                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
+        }
     }
     else if (policy == VX_CONVERT_POLICY_WRAP)
     {

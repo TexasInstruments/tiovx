@@ -270,11 +270,8 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
     VX_CALL(vxReleaseGraph(&graph));
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
-
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
-
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
-
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
