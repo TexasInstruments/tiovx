@@ -1,4 +1,4 @@
-/*
+/* 
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -32,7 +32,7 @@
 #ifdef HAVE_VERSION_INC
 #include "openvx_cts_version.inc"
 #else
-#define VERSION_STR "v1.1"
+#define VERSION_STR "unknown"
 #endif
 
 int vx_conformance_test_main(int argc, char* argv[])

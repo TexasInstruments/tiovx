@@ -32,6 +32,7 @@ TARGET      := vx_conformance_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
+CFLAGS      += -DHAVE_VERSION_INC
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
