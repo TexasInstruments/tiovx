@@ -229,27 +229,21 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
             if (VXLIB_UINT8 == vxlib_dst.data_type)
             {
-                status = BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo( NULL,
-                                                                          &frame_params.kernel_info);
+                BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo( NULL,
+                                                             &frame_params.kernel_info);
 
-                if (VX_SUCCESS == status)
-                {
-                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U,
-                                                           &frame_params, NULL,
-                                                           &prms->graph_handle);
-                }
+                status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U,
+                                                       &frame_params, NULL,
+                                                       &prms->graph_handle);
             }
             else
             {
-                status = BAM_VXLIB_absDiff_i16s_i16s_o16s_getKernelInfo( NULL,
-                                                                          &frame_params.kernel_info);
+                BAM_VXLIB_absDiff_i16s_i16s_o16s_getKernelInfo( NULL,
+                                                                &frame_params.kernel_info);
 
-                if (VX_SUCCESS == status)
-                {
-                    status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S,
-                                                           &frame_params, NULL,
-                                                           &prms->graph_handle);
-                }
+                status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S,
+                                                       &frame_params, NULL,
+                                                       &prms->graph_handle);
             }
         }
         else

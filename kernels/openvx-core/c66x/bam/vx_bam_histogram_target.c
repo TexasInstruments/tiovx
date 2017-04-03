@@ -182,15 +182,12 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
             kernel_params.range           = dst->range;
             kernel_params.numBins         = dst->num_bins;
 
-            status = BAM_VXLIB_histogram_i8u_o32u_getKernelInfo( &kernel_params,
-                                                                 &frame_params.kernel_info);
+            BAM_VXLIB_histogram_i8u_o32u_getKernelInfo( &kernel_params,
+                                                        &frame_params.kernel_info);
 
-            if (VX_SUCCESS == status)
-            {
-                status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U,
-                                                       &frame_params, (void*)&kernel_params,
-                                                       &prms->graph_handle);
-            }
+            status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U,
+                                                   &frame_params, (void*)&kernel_params,
+                                                   &prms->graph_handle);
         }
         else
         {
