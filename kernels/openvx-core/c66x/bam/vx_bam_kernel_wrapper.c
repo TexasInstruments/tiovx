@@ -271,8 +271,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     }
     j = i;
 
-    if((frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_FRAME_STATS_OP) ||
-       (frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_MAP_TO_LIST_OP))
+    if(frame_params->kernel_info.numOutputDataBlocks == 0)
     {
         uint16_t numBlksHorz = (uint16_t)(((frame_params->buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
         uint16_t numBlksVert = (uint16_t)(((frame_params->buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
@@ -281,7 +280,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
         dma_write_oneshot_args->numOutTransfers        = frame_params->kernel_info.numOutputDataBlocks;
         dma_write_oneshot_args->transferType           = EDMA_UTILS_TRANSFER_OUT;
         dma_write_oneshot_args->numTotalBlocksInFrame  = numBlksHorz * numBlksVert;
-        dma_write_oneshot_args->triggerBlockId         = dma_write_oneshot_args->numTotalBlocksInFrame - 1;
+        dma_write_oneshot_args->triggerBlockId         = dma_write_oneshot_args->numTotalBlocksInFrame;
 
         for(i=0; i<frame_params->kernel_info.numOutputDataBlocks; i++)
         {
@@ -457,7 +456,7 @@ static int32_t getDataBlockOutput(BAM_EdgeParams edge_list[],
 static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *blockDimParams)
 {
     int32_t status = BAM_S_SUCCESS;
-    int32_t i, j = 0;
+    int32_t i, j = 0, k = 0;
     uint8_t node_index;
 
     tivx_bam_graph_args_multi_t                 *graph_args          = (tivx_bam_graph_args_multi_t*)args;
@@ -531,7 +530,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
                     0U /* dmaQueNo */
                     );
             }
-            j = i;
+            k = i;
         }
     }
     else if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAREAD_ONESHOT, &node_index) != 0)
@@ -612,11 +611,11 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
 
             for(i=0; i<num_transfers; i++)
             {
-                num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[j]->data_type);
+                num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[k]->data_type);
 
                 assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
-                    frame_params->buf_params[j]->dim_x*num_bytes,/* roiWidth */
-                    frame_params->buf_params[j]->dim_y,/* roiHeight */
+                    frame_params->buf_params[k]->dim_x*num_bytes,/* roiWidth */
+                    frame_params->buf_params[k]->dim_y,/* roiHeight */
                     out_block_width*num_bytes,/*blkWidth */
                     out_block_height,/*blkHeight*/
                     out_block_width*num_bytes,/* extBlkIncrementX */
@@ -626,13 +625,13 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
                     0,/* roiOffset */
                     0,/* blkOffset */
                     NULL,/* extMemPtr : This will come during process call */
-                    frame_params->buf_params[j]->stride_y,/* extMemPtrStride */
+                    frame_params->buf_params[k]->stride_y,/* extMemPtrStride */
                     NULL,/* DMA node will be populating this field */
                     (int32_t)(((uint32_t)(out_block_width + optimize_x))*num_bytes),/* interMemPtrStride */
                     1U /* dmaQueNo */
                     );
 
-                j++;
+                k++;
             }
         }
     }
@@ -652,16 +651,16 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
 
             for(i=0; i<num_transfers; i++)
             {
-                num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[j]->data_type);
+                num_bytes = (uint32_t)VXLIB_sizeof(frame_params->buf_params[k]->data_type);
 
-                dma_write_oneshot_args->transferProp[i].blkWidth = frame_params->buf_params[j]->dim_x*num_bytes;
-                dma_write_oneshot_args->transferProp[i].blkHeight = frame_params->buf_params[j]->dim_y;
+                dma_write_oneshot_args->transferProp[i].blkWidth = frame_params->buf_params[k]->dim_x*num_bytes;
+                dma_write_oneshot_args->transferProp[i].blkHeight = frame_params->buf_params[k]->dim_y;
                 dma_write_oneshot_args->transferProp[i].extMemPtr = 0;
                 dma_write_oneshot_args->transferProp[i].interMemPtr = 0;
-                dma_write_oneshot_args->transferProp[i].extMemPtrStride = frame_params->buf_params[j]->dim_x*num_bytes;
-                dma_write_oneshot_args->transferProp[i].interMemPtrStride = frame_params->buf_params[j]->dim_x*num_bytes;
+                dma_write_oneshot_args->transferProp[i].extMemPtrStride = frame_params->buf_params[k]->dim_x*num_bytes;
+                dma_write_oneshot_args->transferProp[i].interMemPtrStride = frame_params->buf_params[k]->dim_x*num_bytes;
 
-                j++;
+                k++;
             }
         }
     }
@@ -903,8 +902,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         node_list[SOURCE_NODE].kernelArgs = (void *)&graph_args.dma_read_autoinc_args;
         node_list[COMPUTE_NODE].kernelArgs = graph_args.compute_kernel_args;
 
-        if((frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_FRAME_STATS_OP) ||
-           (frame_params->kernel_info.nodeType == BAM_NODE_COMPUTE_MAP_TO_LIST_OP))
+        if(frame_params->kernel_info.numOutputDataBlocks == 0)
         {
             one_shot_flag = 1;
             node_list[SINK_NODE].kernelId = BAM_KERNELID_DMAWRITE_ONESHOT;

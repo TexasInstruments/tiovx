@@ -86,7 +86,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
     if (VX_SUCCESS == status)
     {
-        void *img_ptrs[2];
+        void *img_ptrs[1];
 
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
@@ -106,8 +106,11 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
             &src->imagepatch_addr[0U]));
 
         img_ptrs[0] = src_addr;
-        img_ptrs[1] = dst->mem_ptr.target_ptr;
-        tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
+        tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
+
+        tivxBamControlNode(prms->graph_handle, 0, 
+                           VXLIB_HISTOGRAM_I8U_O32U_CMD_SET_DIST_PTR,
+                           dst->mem_ptr.target_ptr);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 
@@ -159,7 +162,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
         {
             tivx_bam_frame_params_t frame_params;
             BAM_VXLIB_histogram_i8u_o32u_params kernel_params;
-            VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
+            VXLIB_bufParams2D_t vxlib_src;
 
             memset(prms, 0, sizeof(tivxHistogramParams));
 
@@ -168,15 +171,9 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
             vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
             vxlib_src.data_type = VXLIB_UINT8;
 
-            vxlib_dst.dim_x = dst->mem_size;
-            vxlib_dst.dim_y = 1;
-            vxlib_dst.stride_y = 0;
-            vxlib_dst.data_type = VXLIB_UINT8;
-
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
             frame_params.buf_params[0] = &vxlib_src;
-            frame_params.buf_params[1] = &vxlib_dst;
 
             kernel_params.offset          = dst->offset;
             kernel_params.range           = dst->range;
