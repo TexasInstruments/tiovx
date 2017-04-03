@@ -32,6 +32,7 @@ TARGET      := vx_tiovx_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
+IDIRS       += $(HOST_ROOT)/source/include
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

@@ -36,6 +36,7 @@
  */
 
 TESTCASE(tivxGraph)
+TESTCASE(tivxGraphMultiThreaded)
 TESTCASE(tivxAccumulateWeighted)
 TESTCASE(tivxAddSub)
 TESTCASE(tivxBinOp8u)
@@ -73,5 +74,5 @@ TESTCASE(tivxCanny)
 TESTCASE(tivxNonLinearFilter)
 TESTCASE(tivxGaussianPyramid)
 TESTCASE(tivxBoundary)
+TESTCASE(tivxRemap)
 
-//TESTCASE(tivxRemap)
