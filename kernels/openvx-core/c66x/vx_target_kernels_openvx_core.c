@@ -27,7 +27,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelAccumulateWeighted, tivxRemoveTargetKernelAccumulateWeighted},
     {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
     {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
-    {tivxAddTargetKernelCannyEd, tivxRemoveTargetKernelCannyEd},
+    {tivxAddTargetKernelBamCannyEd, tivxRemoveTargetKernelBamCannyEd},
     {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
     {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
     {tivxAddTargetKernelColorConvert, tivxRemoveTargetKernelColorConvert},

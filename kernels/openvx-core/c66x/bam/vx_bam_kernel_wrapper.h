@@ -61,6 +61,12 @@ typedef struct _tivx_bam_frame_params
     BAM_KernelInfo    kernel_info;
 }tivx_bam_frame_params_t;
 
+typedef struct _tivx_bam_frame_params2
+{
+    VXLIB_bufParams2D_t *buf_params[VXLIB_MAX_EDGES];
+    BAM_KernelInfo    kernel_info[VXLIB_MAX_EDGES];
+}tivx_bam_frame_params2_t;
+
 /*!
  * \brief BAM Create Graph Handle for Single Node
  *
@@ -90,6 +96,36 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
                                         tivx_bam_graph_handle *graph_handle);
 
 /*!
+ * \brief BAM Create Graph Handle for Multiple Nodes
+ *
+ *        This function will create a BAM graph of multiple nodes, given the
+ *        node list, edge list, frame_params, and list of computation kernel
+ *        parameters. compute_kernel_params may be set to NULL if there are
+ *        none for the graph, and each pointer in the list may be set to NULL
+ *        if there are no parameters for the particular node.
+ *
+ *        Upon success, a non-NULL graph_handle will be returned and
+ *        vx_status will be VX_SUCCESS.
+ *
+ *        If there is not enough memory to allocate the handle for
+ *        the given kernel and block size, then the VX_ERROR_NO_MEMORY
+ *        error will be returned and the graph_handle will be set to NULL.
+ *
+ *        Any other failure will return a VX_FAILURE and the graph_handle
+ *        will be set to NULL.
+ *
+ *        The user should pass the graph_handle to other functions in this
+ *        wrapper related to BAM graph wrappers.
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
+                                       BAM_EdgeParams edge_list[],
+                                       tivx_bam_frame_params2_t *frame_params,
+                                       void *compute_kernel_params[10],
+                                       tivx_bam_graph_handle *graph_handle);
+
+/*!
  * \brief BAM Update Pointers
  *
  *        This function will update the external memory pointers for the
@@ -108,6 +144,29 @@ vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
                                 uint32_t num_inputs,
                                 uint32_t num_outputs,
                                 void  *ptrs[]);
+
+/*!
+ * \brief BAM Node Control
+ *
+ *        Some kernel have a control interface to set information or
+ *        get information back from the kernel context.
+ *
+ *        This API allows the application to send control commands to a
+ *        specific node.  The commands and control interface is defined
+ *        in the bam_plugin for each kernel.
+ *
+ *        In the case of single node handle, node_id is ignored.
+ *
+ *        Upon success, vx_status will be VX_SUCCESS.
+ *        Upon failure, vx_status will be VX_FAILURE.
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
+                             uint32_t node_id,
+                             uint32_t cmd,
+                             void  *payload);
+
 
 /*!
  * \brief BAM Process Graph
