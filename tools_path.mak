@@ -65,5 +65,5 @@ EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
 
 STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
-TARGETFS := $(VSDK_INSTALL_PATH)/vision_sdk/hlos/linux/targetfs
+TARGETFS := $(VSDK_INSTALL_PATH)/../user/openvx-nightly/targetfs
 
