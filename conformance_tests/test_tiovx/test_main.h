@@ -74,5 +74,6 @@ TESTCASE(tivxCanny)
 TESTCASE(tivxNonLinearFilter)
 TESTCASE(tivxGaussianPyramid)
 TESTCASE(tivxBoundary)
+TESTCASE(tivxNegativeBoundary)
 TESTCASE(tivxRemap)
 

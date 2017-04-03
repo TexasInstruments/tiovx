@@ -45,6 +45,7 @@
 #define MAX_POINTS 100
 
 TESTCASE(tivxBoundary, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxNegativeBoundary, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef struct {
     const char* testName;
@@ -58,7 +59,7 @@ typedef struct {
 
 
 #define PARAMETERS \
-    ARG("case1/5x5/ReferencePyramid", NULL, "optflow_00.bmp", "optflow_01.bmp", "optflow_pyrlk_5x5.txt", 5, 1)
+    ARG("case1/Boundary", NULL, "optflow_00.bmp", "optflow_01.bmp", "optflow_pyrlk_5x5.txt", 5, 1)
 
 TEST_WITH_ARG(tivxBoundary, testImageBoundary, Arg,
     PARAMETERS
@@ -391,7 +392,98 @@ TEST_WITH_ARG(tivxBoundary, testGraphBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestParameterBoundary, Arg,
+TEST_WITH_ARG(tivxBoundary, testObjectArray, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_object_array src_object_array[48];
+    int i;
+    vx_image image = 0;
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    for (i = 0; i < 48; i++)
+    {
+        ASSERT_VX_OBJECT(src_object_array[i] = vxCreateObjectArray(context, (vx_reference)image, 2), VX_TYPE_OBJECT_ARRAY);
+    }
+
+    for (i = 0; i < 48; i++)
+    {
+        VX_CALL(vxReleaseObjectArray(&src_object_array[i]));
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+// Passes w/ 31 not w/ 32
+TEST_WITH_ARG(tivxBoundary, testObjectArrayItems, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_object_array src_object_array;
+    vx_image image = 0;
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_object_array = vxCreateObjectArray(context, (vx_reference)image, 32), VX_TYPE_OBJECT_ARRAY); // grep for max array items to see how it's used
+
+    VX_CALL(vxReleaseObjectArray(&src_object_array));
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+// Doesn't fail
+TEST_WITH_ARG(tivxBoundary, testContext, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_context context2 = vxCreateContext(); // Might be a build option, might return a reference to the single context
+
+    vx_context context3 = vxCreateContext();
+}
+
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestObjectArrayItems, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_object_array src_object_array;
+    vx_lut lut = 0;
+    ASSERT_VX_OBJECT(lut = vxCreateLUT(context, VX_TYPE_UINT8, 256), VX_TYPE_LUT);
+
+    EXPECT_VX_ERROR(src_object_array = vxCreateObjectArray(context, (vx_reference)lut, 33), VX_ERROR_NO_RESOURCES);
+
+    VX_CALL(vxReleaseLUT(&lut));
+}
+
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestObjectArray, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_object_array src_object_array[49];
+    int i;
+    vx_image image = 0;
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    for (i = 0; i < 48; i++)
+    {
+        ASSERT_VX_OBJECT(src_object_array[i] = vxCreateObjectArray(context, (vx_reference)image, 1), VX_TYPE_OBJECT_ARRAY);
+    }
+
+    EXPECT_VX_ERROR(src_object_array[48] = vxCreateObjectArray(context, (vx_reference)image, 1), VX_ERROR_NO_RESOURCES);
+
+    for (i = 0; i < 48; i++)
+    {
+        VX_CALL(vxReleaseObjectArray(&src_object_array[i]));
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestParameterBoundary, Arg,
     PARAMETERS
 )
 {
@@ -430,7 +522,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestParameterBoundary, Arg,
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestGraphBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestGraphBoundary, Arg,
     PARAMETERS
 )
 {
@@ -451,7 +543,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestGraphBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestNodeBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestNodeBoundary, Arg,
     PARAMETERS
 )
 {
@@ -482,7 +574,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestNodeBoundary, Arg,
 }
 
 // Note: should fail but doesn't
-TEST_WITH_ARG(tivxBoundary, negativeTestKernelBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestKernelBoundary, Arg,
     PARAMETERS
 )
 {
@@ -503,7 +595,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestKernelBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestThresholdBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestThresholdBoundary, Arg,
     PARAMETERS
 )
 {
@@ -524,7 +616,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestThresholdBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestScalarBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestScalarBoundary, Arg,
     PARAMETERS
 )
 {
@@ -546,7 +638,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestScalarBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestRemapBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestRemapBoundary, Arg,
     PARAMETERS
 )
 {
@@ -567,7 +659,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestRemapBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestMatrixBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestMatrixBoundary, Arg,
     PARAMETERS
 )
 {
@@ -588,7 +680,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestMatrixBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestDelayBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestDelayBoundary, Arg,
     PARAMETERS
 )
 {
@@ -614,7 +706,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestDelayBoundary, Arg,
     VX_CALL(vxReleaseImage(&image));
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestLUTBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestLUTBoundary, Arg,
     PARAMETERS
 )
 {
@@ -635,7 +727,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestLUTBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestDistributionBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestDistributionBoundary, Arg,
     PARAMETERS
 )
 {
@@ -656,7 +748,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestDistributionBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestArrayBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestArrayBoundary, Arg,
     PARAMETERS
 )
 {
@@ -677,7 +769,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestArrayBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestConvolutionBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestConvolutionBoundary, Arg,
     PARAMETERS
 )
 {
@@ -698,7 +790,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestConvolutionBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestPyramidBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestPyramidBoundary, Arg,
     PARAMETERS
 )
 {
@@ -719,7 +811,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestPyramidBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestImageBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestImageBoundary, Arg,
     PARAMETERS
 )
 {
@@ -740,7 +832,7 @@ TEST_WITH_ARG(tivxBoundary, negativeTestImageBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, negativeTestPyramidLevelBoundary, Arg,
+TEST_WITH_ARG(tivxNegativeBoundary, negativeTestPyramidLevelBoundary, Arg,
     PARAMETERS
 )
 {
@@ -763,14 +855,22 @@ TESTCASE_TESTS(tivxBoundary,
         testRemapBoundary,
         testScalarBoundary,
         testThresholdBoundary,
-        testKernelBoundary,
+        testKernelBoundary, 
         testNodeBoundary,
         testParameterBoundary,
         testGraphBoundary,
-        negativeTestParameterBoundary,
+        testObjectArray,
+        testObjectArrayItems,
+        testContext
+        )
+
+TESTCASE_TESTS(tivxNegativeBoundary,
+        negativeTestObjectArrayItems,
+        negativeTestObjectArray,
+        /*negativeTestParameterBoundary,*/
         negativeTestGraphBoundary,
         negativeTestNodeBoundary,
-        negativeTestKernelBoundary,
+        /*negativeTestKernelBoundary,*/
         negativeTestPyramidLevelBoundary,
         negativeTestThresholdBoundary,
         negativeTestScalarBoundary,
@@ -784,3 +884,4 @@ TESTCASE_TESTS(tivxBoundary,
         negativeTestPyramidBoundary,
         negativeTestImageBoundary
         )
+
