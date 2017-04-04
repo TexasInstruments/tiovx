@@ -160,9 +160,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_frame_params_t frame_params;
+            tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_histogram_i8u_o32u_params kernel_params;
             VXLIB_bufParams2D_t vxlib_src;
+            VXLIB_bufParams2D_t *buf_params[1];
 
             memset(prms, 0, sizeof(tivxHistogramParams));
 
@@ -173,17 +174,19 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
-            frame_params.buf_params[0] = &vxlib_src;
+            buf_params[0] = &vxlib_src;
 
             kernel_params.offset          = dst->offset;
             kernel_params.range           = dst->range;
             kernel_params.numBins         = dst->num_bins;
 
+            kernel_details.compute_kernel_params = (void*)&kernel_params;
+
             BAM_VXLIB_histogram_i8u_o32u_getKernelInfo( &kernel_params,
-                                                        &frame_params.kernel_info);
+                                                        &kernel_details.kernel_info);
 
             status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U,
-                                                   &frame_params, (void*)&kernel_params,
+                                                   buf_params, &kernel_details,
                                                    &prms->graph_handle);
         }
         else
