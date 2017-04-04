@@ -65,8 +65,10 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
+    uint8_t *border_addr_tl, *border_addr_tr, *border_addr_bl;
     vx_rectangle_t rect;
-    uint32_t size, num_dbl_thr_items = 0, num_edge_trace_out = 0;
+    uint32_t size, num_edge_trace_out = 0;
+    uint32_t num_dbl_thr_items = 0;
 
     if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
     {
@@ -119,8 +121,21 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
+
+        rect = dst->valid_roi;
+
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x + (prms->gs / 2) + 1, rect.start_y + (prms->gs / 2) + 1,
+            &dst->imagepatch_addr[0U]));
+
+        border_addr_tl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            &dst->imagepatch_addr[0U]));
+        border_addr_tr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            &dst->imagepatch_addr[0U]));
+        border_addr_bl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 
         img_ptrs[0] = src_addr;
@@ -132,6 +147,15 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         tivxBamControlNode(prms->graph_handle, DBTHRESHOLD_NODE, 
                            VXLIB_DOUBLETHRESHOLD_I16U_I8U_CMD_GET_NUM_EDGES,
                            &num_dbl_thr_items);
+
+        /* Edge Tracing requires 1 pixel border of zeros */
+        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2);
+        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2);
+        for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
+        {
+            border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
+        }
 
         if (VXLIB_SUCCESS == status)
         {
@@ -281,9 +305,6 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
                 {{NMS_NODE, BAM_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U_OUTPUT_PORT},
                     {SINK_NODE, 0}},\
-
-                {{DBTHRESHOLD_NODE, BAM_VXLIB_DOUBLETHRESHOLD_I16S_I8U_OUTPUT_PORT},
-                    {BAM_NULL_NODE, 0}},\
 
                 {{BAM_END_NODE_MARKER, 0},
                     {BAM_END_NODE_MARKER, 0}},\
