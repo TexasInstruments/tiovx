@@ -222,8 +222,9 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_frame_params_t frame_params;
+            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dstx, vxlib_dsty;
+            VXLIB_bufParams2D_t *buf_params[3];
 
             memset(prms, 0, sizeof(tivxSobelParams));
 
@@ -234,9 +235,11 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
-            frame_params.buf_params[0] = &vxlib_src;
-            frame_params.buf_params[1] = &vxlib_dstx;
-            frame_params.buf_params[2] = &vxlib_dsty;
+            buf_params[0] = &vxlib_src;
+            buf_params[1] = &vxlib_dstx;
+            buf_params[2] = &vxlib_dsty;
+
+            kernel_details.compute_kernel_params = NULL;
 
             if (dstx != NULL)
             {
@@ -257,34 +260,34 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
             if ((dstx != NULL) && (dsty != NULL))
             {
                 BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
-                                                                 &frame_params.kernel_info);
+                                                                 &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S,
-                                                       &frame_params, NULL,
+                                                       buf_params, &kernel_details,
                                                        &prms->graph_handle);
 
             }
             else if (dstx != NULL)
             {
-                frame_params.buf_params[2] = NULL;
+                buf_params[2] = NULL;
 
                 BAM_VXLIB_sobelX_3x3_i8u_o16s_getKernelInfo( NULL,
-                                                             &frame_params.kernel_info);
+                                                             &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_SOBELX_3X3_I8U_O16S,
-                                                       &frame_params, NULL,
+                                                       buf_params, &kernel_details,
                                                        &prms->graph_handle);
             }
             else
             {
-                frame_params.buf_params[1] = &vxlib_dsty;
-                frame_params.buf_params[2] = NULL;
+                buf_params[1] = &vxlib_dsty;
+                buf_params[2] = NULL;
 
                 BAM_VXLIB_sobelY_3x3_i8u_o16s_getKernelInfo( NULL,
-                                                             &frame_params.kernel_info);
+                                                             &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S,
-                                                       &frame_params, NULL,
+                                                       buf_params, &kernel_details,
                                                        &prms->graph_handle);
             }
         }

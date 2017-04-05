@@ -25,8 +25,6 @@
 #include "vx_bam_kernel_database.h"
 #include "bam_common.h"
 
-#define VXLIB_MAX_EDGES 10
-
 /*! \brief Graph handle
  *
  *         Handle associated with an instance of a BAM graph.
@@ -34,46 +32,48 @@
  *         The structure this handle represents is internally defined
  *         and not needed by the user.
  *
- *         The user is given this handle when calling \ref tivxBamCreateHandle,
- *         and can destroy it by calling \ref tivxBamDestroyHandle.
+ *         The user is given this handle when calling \ref tivxBamCreateHandleSingleNode,
+ *         or \ref tivxBamCreateHandleMultiNode, and can destroy it by
+ *         calling \ref tivxBamDestroyHandle.
  *
  * \ingroup group_tivx_ext
  */
 typedef void *tivx_bam_graph_handle;
 
 
-/*! \brief Frame Parameters structure
+/*! \brief Kernel Details  structure
  *
- *         Frame level parameters for each buffer in the kernel.
+ *         Kernel details for each kernel in the graph.
  *
- *         This includes frame level dimention properties for each buffer
- *         that the kernel needs, as well as kernel info that the user can
- *         obtain by calling the kernel sepecific getKernelInfo function.
+ *         This includes kernel info that the user can obtain from the
+ *         kernel by calling the kernel sepecific getKernelInfo function.
+ *
+ *         This also includes a pointer to the kernel specific parameter
+ *         list that the user should fill out.  If the kernel doesn't
+ *         have a parameter list, then compute_kernel_params should be
+ *         set to NULL.
  *
  *         This structure should be populated as an input to the
- *         \ref tivxBamCreateHandle function.
+ *         \ref tivxBamCreateHandleSingleNode function, or an array of
+ *         this structure should be filled as an input to the
+ *         \ref tivxBamCreateHandleMultiNode function.
  *
  * \ingroup group_tivx_ext
  */
-typedef struct _tivx_bam_frame_params
+typedef struct _tivx_bam_kernel_details
 {
-    VXLIB_bufParams2D_t *buf_params[VXLIB_MAX_EDGES];
     BAM_KernelInfo    kernel_info;
-}tivx_bam_frame_params_t;
+    void *compute_kernel_params;
 
-typedef struct _tivx_bam_frame_params2
-{
-    VXLIB_bufParams2D_t *buf_params[VXLIB_MAX_EDGES];
-    BAM_KernelInfo    kernel_info[VXLIB_MAX_EDGES];
-}tivx_bam_frame_params2_t;
+}tivx_bam_kernel_details_t;
+
 
 /*!
  * \brief BAM Create Graph Handle for Single Node
  *
  *        This function will create a BAM graph of 1 node, given the
- *        kernel_id, frame_params, and computation kernel parameters
- *        pointer. compute_kernel_params may be set to NULL if there are
- *        none for the kernel.
+ *        kernel_id, array of pointers to buf_params, and computation
+ *        kernel_details, containing kernel info and parameters.
  *
  *        Upon success, a non-NULL graph_handle will be returned and
  *        vx_status will be VX_SUCCESS.
@@ -91,18 +91,19 @@ typedef struct _tivx_bam_frame_params2
  * \ingroup group_tivx_ext
  */
 vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
-                                        tivx_bam_frame_params_t *frame_params,
-                                        void *compute_kernel_params,
+                                        VXLIB_bufParams2D_t *buf_params[],
+                                        tivx_bam_kernel_details_t *kernel_details,
                                         tivx_bam_graph_handle *graph_handle);
 
 /*!
  * \brief BAM Create Graph Handle for Multiple Nodes
  *
  *        This function will create a BAM graph of multiple nodes, given the
- *        node list, edge list, frame_params, and list of computation kernel
- *        parameters. compute_kernel_params may be set to NULL if there are
- *        none for the graph, and each pointer in the list may be set to NULL
- *        if there are no parameters for the particular node.
+ *        node list, edge list, array of pointers to buf_params, and array
+ *        of the computation kernel_details, containing kernel info and parameters.
+ *        This function expects the array size of kernel_details to be equal
+ *        to the full number of nodes in the node_list, including SOURCE and
+ *        SINK nodes.
  *
  *        Upon success, a non-NULL graph_handle will be returned and
  *        vx_status will be VX_SUCCESS.
@@ -121,8 +122,8 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
  */
 vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                                        BAM_EdgeParams edge_list[],
-                                       tivx_bam_frame_params2_t *frame_params,
-                                       void *compute_kernel_params[10],
+                                       VXLIB_bufParams2D_t *buf_params[],
+                                       tivx_bam_kernel_details_t kernel_details[],
                                        tivx_bam_graph_handle *graph_handle);
 
 /*!

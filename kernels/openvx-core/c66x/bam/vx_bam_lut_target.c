@@ -176,8 +176,9 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_frame_params_t frame_params;
+            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
+            VXLIB_bufParams2D_t *buf_params[2];
 
             memset(prms, 0, sizeof(tivxLutParams));
 
@@ -202,8 +203,8 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
-            frame_params.buf_params[0] = &vxlib_src;
-            frame_params.buf_params[1] = &vxlib_dst;
+            buf_params[0] = &vxlib_src;
+            buf_params[1] = &vxlib_dst;
 
             if (src->format == VX_DF_IMAGE_U8)
             {
@@ -211,11 +212,13 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
                 kernel_params.lut    = lut->mem_ptr.target_ptr;
                 kernel_params.count  = lut->num_items;
 
+                kernel_details.compute_kernel_params = (void*)&kernel_params;
+
                 BAM_VXLIB_tableLookup_i8u_o8u_getKernelInfo( &kernel_params,
-                                                             &frame_params.kernel_info);
+                                                             &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U,
-                                                           &frame_params, (void*)&kernel_params,
+                                                           buf_params, &kernel_details,
                                                            &prms->graph_handle);
             }
             else
@@ -225,11 +228,13 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
                 kernel_params.count  = lut->num_items;
                 kernel_params.offset = 32768U;
 
+                kernel_details.compute_kernel_params = (void*)&kernel_params;
+
                 BAM_VXLIB_tableLookup_i16s_o16s_getKernelInfo( &kernel_params,
-                                                               &frame_params.kernel_info);
+                                                               &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S,
-                                                       &frame_params, (void*)&kernel_params,
+                                                       buf_params, &kernel_details,
                                                        &prms->graph_handle);
             }
         }

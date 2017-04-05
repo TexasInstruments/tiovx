@@ -193,7 +193,6 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     tivx_obj_desc_threshold_t *thr;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_gs, *sc_norm;
-    void * kernel_params[10];
 
     if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
     {
@@ -228,9 +227,10 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_frame_params2_t frame_params;
+            tivx_bam_kernel_details_t kernel_details[6];
             BAM_VXLIB_doubleThreshold_i16u_i8u_params dbThreshold_kernel_params;
             VXLIB_bufParams2D_t vxlib_src;
+            VXLIB_bufParams2D_t *buf_params[2];
 
             memset(prms, 0, sizeof(tivxCannyParams));
 
@@ -251,18 +251,18 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             {
                 node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
-                                                                 &frame_params.kernel_info[SOBEL_NODE]);
+                                                                 &kernel_details[SOBEL_NODE].kernel_info);
             }
             else if(5 == prms->gs)
             {
                 node_list[SOBEL_NODE].kernelId = BAM_KERNELID_VXLIB_SOBEL_5X5_I8U_O16S_O16S;
                 BAM_VXLIB_sobel_5x5_i8u_o16s_o16s_getKernelInfo( NULL,
-                                                                 &frame_params.kernel_info[SOBEL_NODE]);
+                                                                 &kernel_details[SOBEL_NODE].kernel_info);
             }
             else
             {
                 BAM_VXLIB_sobel_7x7_i8u_o16s_o16s_getKernelInfo( NULL,
-                                                                 &frame_params.kernel_info[SOBEL_NODE]);
+                                                                 &kernel_details[SOBEL_NODE].kernel_info);
             }
 
             /* Update the Norm type accordingly */
@@ -270,12 +270,12 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             {
                 node_list[NORM_NODE].kernelId = BAM_KERNELID_VXLIB_NORML1_I16S_I16S_O16U;
                 BAM_VXLIB_normL1_i16s_i16s_o16u_getKernelInfo( NULL,
-                                                                 &frame_params.kernel_info[NORM_NODE]);
+                                                                 &kernel_details[NORM_NODE].kernel_info);
             }
             else
             {
                 BAM_VXLIB_normL2_i16s_i16s_o16u_getKernelInfo( NULL,
-                                                                 &frame_params.kernel_info[NORM_NODE]);
+                                                                 &kernel_details[NORM_NODE].kernel_info);
             }
 
             BAM_EdgeParams edge_list[]= {\
@@ -333,8 +333,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             {
                 /* Fill in the frame level sizes of buffers here. If the port
                  * is optionally disabled, put NULL */
-                frame_params.buf_params[0] = &vxlib_src;
-                frame_params.buf_params[1] = &prms->vxlib_dst;
+                buf_params[0] = &vxlib_src;
+                buf_params[1] = &prms->vxlib_dst;
 
                 dbThreshold_kernel_params.edgeMapLineOffset   = prms->vxlib_dst.stride_y;
                 dbThreshold_kernel_params.edgeList            = prms->edge_list;
@@ -343,19 +343,19 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 dbThreshold_kernel_params.hiThreshold         = thr->upper;
 
                 BAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_getKernelInfo( NULL,
-                                                                     &frame_params.kernel_info[NMS_NODE]);
+                                                                     &kernel_details[NMS_NODE].kernel_info);
                 BAM_VXLIB_doubleThreshold_i16u_i8u_getKernelInfo( &dbThreshold_kernel_params,
-                                                                  &frame_params.kernel_info[DBTHRESHOLD_NODE]);
+                                                                  &kernel_details[DBTHRESHOLD_NODE].kernel_info);
 
-                kernel_params[SOURCE_NODE] = NULL;
-                kernel_params[SOBEL_NODE] = NULL;
-                kernel_params[NORM_NODE] = NULL;
-                kernel_params[NMS_NODE] = NULL;
-                kernel_params[DBTHRESHOLD_NODE] = &dbThreshold_kernel_params;
-                kernel_params[SINK_NODE] = NULL;
+                kernel_details[SOURCE_NODE].compute_kernel_params = NULL;
+                kernel_details[SOBEL_NODE].compute_kernel_params = NULL;
+                kernel_details[NORM_NODE].compute_kernel_params = NULL;
+                kernel_details[NMS_NODE].compute_kernel_params = NULL;
+                kernel_details[DBTHRESHOLD_NODE].compute_kernel_params = &dbThreshold_kernel_params;
+                kernel_details[SINK_NODE].compute_kernel_params = NULL;
 
                 status = tivxBamCreateHandleMultiNode(node_list, edge_list,
-                                                      &frame_params, (void*)&kernel_params,
+                                                      buf_params, kernel_details,
                                                       &prms->graph_handle);
             }
         }

@@ -180,8 +180,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
         if (NULL != prms)
         {
-            tivx_bam_frame_params_t frame_params;
+            tivx_bam_kernel_details_t kernel_details;
             VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
+            VXLIB_bufParams2D_t *buf_params[3];
 
             memset(prms, 0, sizeof(tivxAbsDiffParams));
 
@@ -223,26 +224,28 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
-            frame_params.buf_params[0] = &vxlib_src0;
-            frame_params.buf_params[1] = &vxlib_src1;
-            frame_params.buf_params[2] = &vxlib_dst;
+            buf_params[0] = &vxlib_src0;
+            buf_params[1] = &vxlib_src1;
+            buf_params[2] = &vxlib_dst;
+
+            kernel_details.compute_kernel_params = NULL;
 
             if (VXLIB_UINT8 == vxlib_dst.data_type)
             {
                 BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo( NULL,
-                                                             &frame_params.kernel_info);
+                                                             &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U,
-                                                       &frame_params, NULL,
+                                                       buf_params, &kernel_details,
                                                        &prms->graph_handle);
             }
             else
             {
                 BAM_VXLIB_absDiff_i16s_i16s_o16s_getKernelInfo( NULL,
-                                                                &frame_params.kernel_info);
+                                                                &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S,
-                                                       &frame_params, NULL,
+                                                       buf_params, &kernel_details,
                                                        &prms->graph_handle);
             }
         }
