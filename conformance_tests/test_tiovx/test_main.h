@@ -36,6 +36,7 @@
  */
 
 TESTCASE(tivxGraph)
+TESTCASE(tivxGraphDelay)
 TESTCASE(tivxGraphMultiThreaded)
 TESTCASE(tivxAccumulateWeighted)
 TESTCASE(tivxAddSub)
