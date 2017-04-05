@@ -215,7 +215,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
         vx_reference ref=(vx_reference)delay;
         ownReleaseReferenceInt(&ref, VX_TYPE_DELAY, VX_INTERNAL, NULL);
     }
-    return vx_true_e;
+    return status;
 }
 
 static vx_status ownAddRefToDelay(vx_context context, vx_delay delay, vx_reference ref, uint32_t i)
