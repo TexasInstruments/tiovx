@@ -112,6 +112,128 @@ TEST(tivxGraphDelay, testSimple)
     printPerformance(perf_graph, w*h, "G1");
 }
 
+TEST(tivxGraphDelay, testTwoNodesOneDSP)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    int w = 128, h = 128;
+    vx_df_image f = VX_DF_IMAGE_U8;
+    vx_image images[2];
+    vx_node nodes[2];
+    vx_delay delay = 0;
+    int i;
+    vx_size delay_count = 0;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(images[0] = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(images[1] = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)images[0], 2), VX_TYPE_DELAY);
+
+    VX_CALL(vxQueryDelay(delay, VX_DELAY_SLOTS, &delay_count, sizeof(delay_count)));
+    ASSERT(delay_count == 2);
+
+    ASSERT_VX_OBJECT(nodes[0] = vxBox3x3Node(graph, images[0], (vx_image)vxGetReferenceFromDelay(delay, 0)), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(nodes[1] = vxMedian3x3Node(graph, (vx_image)vxGetReferenceFromDelay(delay, -1), images[1]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, "DSP-1"));
+
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-1"));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxAgeDelay(delay));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(nodes[0], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(nodes[1], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    for (i = 0; i < 2; i++)
+    {
+        VX_CALL(vxReleaseNode(&nodes[i]));
+    }
+    for (i = 0; i < 2; i++)
+    {
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseDelay(&delay));
+
+    ASSERT(graph == 0);
+    ASSERT(delay == 0);
+
+    printPerformance(perf_node1, w*h, "N1");
+    printPerformance(perf_node2, w*h, "N2");
+    printPerformance(perf_graph, w*h, "G1");
+}
+
+TEST(tivxGraphDelay, testTwoNodesTwoDSP)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    int w = 128, h = 128;
+    vx_df_image f = VX_DF_IMAGE_U8;
+    vx_image images[2];
+    vx_node nodes[2];
+    vx_delay delay = 0;
+    int i;
+    vx_size delay_count = 0;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(images[0] = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(images[1] = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)images[0], 2), VX_TYPE_DELAY);
+
+    VX_CALL(vxQueryDelay(delay, VX_DELAY_SLOTS, &delay_count, sizeof(delay_count)));
+    ASSERT(delay_count == 2);
+
+    ASSERT_VX_OBJECT(nodes[0] = vxBox3x3Node(graph, images[0], (vx_image)vxGetReferenceFromDelay(delay, 0)), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(nodes[1] = vxMedian3x3Node(graph, (vx_image)vxGetReferenceFromDelay(delay, -1), images[1]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, "DSP-1"));
+
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxAgeDelay(delay));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(nodes[0], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(nodes[1], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    for (i = 0; i < 2; i++)
+    {
+        VX_CALL(vxReleaseNode(&nodes[i]));
+    }
+    for (i = 0; i < 2; i++)
+    {
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseDelay(&delay));
+
+    ASSERT(graph == 0);
+    ASSERT(delay == 0);
+
+    printPerformance(perf_node1, w*h, "N1");
+    printPerformance(perf_node2, w*h, "N2");
+    printPerformance(perf_graph, w*h, "G1");
+}
+
 TEST(tivxGraphDelay, testPyramid)
 {
     int w = 128, h = 128;
@@ -472,6 +594,8 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
 TESTCASE_TESTS(
     tivxGraphDelay,
     testSimple,
+    testTwoNodesOneDSP,
+    testTwoNodesTwoDSP,
     testPyramid,
     testRegisterAutoAging
     )
