@@ -1177,6 +1177,254 @@ TEST_WITH_ARG(tivxGraph, testThreeParallelGraphs, Arg,
     printPerformance(perf_graph3, arg_->width*arg_->height, "G3");
 }
 
+TEST_WITH_ARG(tivxGraph, testMaxParallelGraphs, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image input_image1 = 0, input_image2 = 0, input_image3 = 0, input_image4 = 0;
+    vx_image input_image5 = 0, input_image6 = 0, input_image7 = 0, input_image8 = 0;
+    vx_image accum_image_final1 = 0, accum_image_final2 = 0, accum_image_final3 = 0, accum_image_final4 = 0;
+    vx_image accum_image_final5 = 0, accum_image_final6 = 0, accum_image_final7 = 0, accum_image_final8 = 0;
+    vx_scalar alpha_scalar1, alpha_scalar2 = 0, alpha_scalar3 = 0, alpha_scalar4 = 0;
+    vx_scalar alpha_scalar5, alpha_scalar6 = 0, alpha_scalar7 = 0, alpha_scalar8 = 0;
+    vx_graph graph1 = 0, graph2 = 0, graph3 = 0, graph4 = 0, graph5 = 0, graph6 = 0, graph7 = 0, graph8 = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0, node5 = 0, node6 = 0, node7 = 0, node8 = 0;
+    vx_perf_t perf_node1, perf_node2, perf_node3, perf_node4, perf_node5, perf_node6, perf_node7, perf_node8;
+    vx_perf_t perf_graph1, perf_graph2, perf_graph3, perf_graph4, perf_graph5, perf_graph6, perf_graph7, perf_graph8;
+
+    CT_Image input1 = NULL, input2 = NULL, input3 = NULL, input4 = NULL, input5 = NULL, input6 = NULL, input7 = NULL, input8 = NULL;
+    CT_Image accum_final1 = NULL, accum_final2 = NULL, accum_final3 = NULL, accum_final4 = NULL;
+    CT_Image accum_final5 = NULL, accum_final6 = NULL, accum_final7 = NULL, accum_final8 = NULL;
+    CT_Image accum_dst1 = NULL, accum_dst2 = NULL, accum_dst3 = NULL, accum_dst4 = NULL;
+    CT_Image accum_dst5 = NULL, accum_dst6 = NULL, accum_dst7 = NULL, accum_dst8 = NULL;
+    vx_float32 sh_node5 = 0.4;
+    vx_float32 sh_node6 = 0.2;
+    vx_float32 sh_node7 = 0.99;
+    vx_float32 sh_node8 = 0.56;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(alpha_scalar1 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_intermediate), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar2 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_final), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar3 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_final), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar4 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_intermediate), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar5 = vxCreateScalar(context, VX_TYPE_FLOAT32, &sh_node5), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar6 = vxCreateScalar(context, VX_TYPE_FLOAT32, &sh_node6), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar7 = vxCreateScalar(context, VX_TYPE_FLOAT32, &sh_node7), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(alpha_scalar8 = vxCreateScalar(context, VX_TYPE_FLOAT32, &sh_node8), VX_TYPE_SCALAR);
+
+    ASSERT_NO_FAILURE(input1 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input2 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input3 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input4 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input5 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input6 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input7 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input8 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+
+    ASSERT_NO_FAILURE(accum_final1 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final2 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final3 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final4 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final5 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final6 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final7 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(accum_final8 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(input_image1 = ct_image_to_vx_image(input1, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image2 = ct_image_to_vx_image(input2, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image3 = ct_image_to_vx_image(input3, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image4 = ct_image_to_vx_image(input4, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image5 = ct_image_to_vx_image(input5, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image6 = ct_image_to_vx_image(input6, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image7 = ct_image_to_vx_image(input7, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image8 = ct_image_to_vx_image(input8, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(accum_image_final1 = ct_image_to_vx_image(accum_final1, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final2 = ct_image_to_vx_image(accum_final2, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final3 = ct_image_to_vx_image(accum_final3, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final4 = ct_image_to_vx_image(accum_final4, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final5 = ct_image_to_vx_image(accum_final5, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final6 = ct_image_to_vx_image(accum_final6, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final7 = ct_image_to_vx_image(accum_final7, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(accum_image_final8 = ct_image_to_vx_image(accum_final8, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph2 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph3 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph4 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph5 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph6 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph7 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph8 = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node1 = vxAccumulateWeightedImageNode(graph1, input_image1, alpha_scalar1, accum_image_final1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxAccumulateWeightedImageNode(graph2, input_image2, alpha_scalar2, accum_image_final2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxAccumulateWeightedImageNode(graph3, input_image3, alpha_scalar3, accum_image_final3), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxAccumulateWeightedImageNode(graph4, input_image4, alpha_scalar4, accum_image_final4), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node5 = vxAccumulateWeightedImageNode(graph5, input_image5, alpha_scalar5, accum_image_final5), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node6 = vxAccumulateWeightedImageNode(graph6, input_image6, alpha_scalar6, accum_image_final6), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node7 = vxAccumulateWeightedImageNode(graph7, input_image7, alpha_scalar7, accum_image_final7), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node8 = vxAccumulateWeightedImageNode(graph8, input_image8, alpha_scalar8, accum_image_final8), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
+    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph3));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph4));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph5));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph6));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph7));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph8));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph3));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph4));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph5));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph6));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph7));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph8));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryNode(node3, VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
+    vxQueryNode(node4, VX_NODE_PERFORMANCE, &perf_node4, sizeof(perf_node4));
+    vxQueryNode(node5, VX_NODE_PERFORMANCE, &perf_node5, sizeof(perf_node5));
+    vxQueryNode(node6, VX_NODE_PERFORMANCE, &perf_node6, sizeof(perf_node6));
+    vxQueryNode(node7, VX_NODE_PERFORMANCE, &perf_node7, sizeof(perf_node7));
+    vxQueryNode(node8, VX_NODE_PERFORMANCE, &perf_node8, sizeof(perf_node8));
+
+    vxQueryGraph(graph1, VX_GRAPH_PERFORMANCE, &perf_graph1, sizeof(perf_graph1));
+    vxQueryGraph(graph2, VX_GRAPH_PERFORMANCE, &perf_graph2, sizeof(perf_graph2));
+    vxQueryGraph(graph3, VX_GRAPH_PERFORMANCE, &perf_graph3, sizeof(perf_graph3));
+    vxQueryGraph(graph4, VX_GRAPH_PERFORMANCE, &perf_graph4, sizeof(perf_graph4));
+    vxQueryGraph(graph5, VX_GRAPH_PERFORMANCE, &perf_graph5, sizeof(perf_graph5));
+    vxQueryGraph(graph6, VX_GRAPH_PERFORMANCE, &perf_graph6, sizeof(perf_graph6));
+    vxQueryGraph(graph7, VX_GRAPH_PERFORMANCE, &perf_graph7, sizeof(perf_graph7));
+    vxQueryGraph(graph8, VX_GRAPH_PERFORMANCE, &perf_graph8, sizeof(perf_graph8));
+
+    ASSERT_NO_FAILURE(accum_dst1 = ct_image_from_vx_image(accum_image_final1));
+    ASSERT_NO_FAILURE(accum_dst2 = ct_image_from_vx_image(accum_image_final2));
+    ASSERT_NO_FAILURE(accum_dst3 = ct_image_from_vx_image(accum_image_final3));
+    ASSERT_NO_FAILURE(accum_dst4 = ct_image_from_vx_image(accum_image_final4));
+    ASSERT_NO_FAILURE(accum_dst5 = ct_image_from_vx_image(accum_image_final5));
+    ASSERT_NO_FAILURE(accum_dst6 = ct_image_from_vx_image(accum_image_final6));
+    ASSERT_NO_FAILURE(accum_dst7 = ct_image_from_vx_image(accum_image_final7));
+    ASSERT_NO_FAILURE(accum_dst8 = ct_image_from_vx_image(accum_image_final8));
+
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input1, arg_->alpha_intermediate, accum_final1, accum_dst1));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input2, arg_->alpha_final, accum_final2, accum_dst2));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input3, arg_->alpha_final, accum_final3, accum_dst3));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input4, arg_->alpha_intermediate, accum_final4, accum_dst4));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input5, sh_node5, accum_final5, accum_dst5));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input6, sh_node6, accum_final6, accum_dst6));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input7, sh_node7, accum_final7, accum_dst7));
+    ASSERT_NO_FAILURE(accumulate_weighted_check(input8, sh_node8, accum_final8, accum_dst8));
+
+    VX_CALL(vxReleaseNode(&node8));
+    VX_CALL(vxReleaseNode(&node7));
+    VX_CALL(vxReleaseNode(&node6));
+    VX_CALL(vxReleaseNode(&node5));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1));
+
+    VX_CALL(vxReleaseGraph(&graph8));
+    VX_CALL(vxReleaseGraph(&graph7));
+    VX_CALL(vxReleaseGraph(&graph6));
+    VX_CALL(vxReleaseGraph(&graph5));
+    VX_CALL(vxReleaseGraph(&graph4));
+    VX_CALL(vxReleaseGraph(&graph3));
+    VX_CALL(vxReleaseGraph(&graph2));
+    VX_CALL(vxReleaseGraph(&graph1));
+
+    ASSERT(node8 == 0);
+    ASSERT(node7 == 0);
+    ASSERT(node6 == 0);
+    ASSERT(node5 == 0);
+    ASSERT(node4 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node1 == 0);
+
+    ASSERT(graph8 == 0);
+    ASSERT(graph7 == 0);
+    ASSERT(graph6 == 0);
+    ASSERT(graph5 == 0);
+    ASSERT(graph4 == 0);
+    ASSERT(graph3 == 0);
+    ASSERT(graph2 == 0);
+    ASSERT(graph1 == 0);
+
+    VX_CALL(vxReleaseImage(&accum_image_final8));
+    VX_CALL(vxReleaseImage(&accum_image_final7));
+    VX_CALL(vxReleaseImage(&accum_image_final6));
+    VX_CALL(vxReleaseImage(&accum_image_final5));
+    VX_CALL(vxReleaseImage(&accum_image_final4));
+    VX_CALL(vxReleaseImage(&accum_image_final3));
+    VX_CALL(vxReleaseImage(&accum_image_final2));
+    VX_CALL(vxReleaseImage(&accum_image_final1));
+
+    VX_CALL(vxReleaseImage(&input_image8));
+    VX_CALL(vxReleaseImage(&input_image7));
+    VX_CALL(vxReleaseImage(&input_image6));
+    VX_CALL(vxReleaseImage(&input_image5));
+    VX_CALL(vxReleaseImage(&input_image4));
+    VX_CALL(vxReleaseImage(&input_image3));
+    VX_CALL(vxReleaseImage(&input_image2));
+    VX_CALL(vxReleaseImage(&input_image1));
+
+    VX_CALL(vxReleaseScalar(&alpha_scalar8));
+    VX_CALL(vxReleaseScalar(&alpha_scalar7));
+    VX_CALL(vxReleaseScalar(&alpha_scalar6));
+    VX_CALL(vxReleaseScalar(&alpha_scalar5));
+    VX_CALL(vxReleaseScalar(&alpha_scalar4));
+    VX_CALL(vxReleaseScalar(&alpha_scalar3));
+    VX_CALL(vxReleaseScalar(&alpha_scalar2));
+    VX_CALL(vxReleaseScalar(&alpha_scalar1));
+
+    ASSERT(accum_image_final1 == 0);
+    ASSERT(accum_image_final2 == 0);
+    ASSERT(accum_image_final3 == 0);
+    ASSERT(accum_image_final4 == 0);
+    ASSERT(accum_image_final5 == 0);
+    ASSERT(accum_image_final6 == 0);
+    ASSERT(accum_image_final7 == 0);
+    ASSERT(accum_image_final8 == 0);
+
+    ASSERT(input_image1 == 0);
+    ASSERT(input_image2 == 0);
+    ASSERT(input_image3 == 0);
+    ASSERT(input_image4 == 0);
+    ASSERT(input_image5 == 0);
+    ASSERT(input_image6 == 0);
+    ASSERT(input_image7 == 0);
+    ASSERT(input_image8 == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_node3, arg_->width*arg_->height, "N3");
+    printPerformance(perf_node4, arg_->width*arg_->height, "N4");
+    printPerformance(perf_node5, arg_->width*arg_->height, "N5");
+    printPerformance(perf_node6, arg_->width*arg_->height, "N6");
+    printPerformance(perf_node7, arg_->width*arg_->height, "N7");
+    printPerformance(perf_node8, arg_->width*arg_->height, "N8");
+
+    printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
+    printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
+    printPerformance(perf_graph3, arg_->width*arg_->height, "G3");
+    printPerformance(perf_graph4, arg_->width*arg_->height, "G4");
+    printPerformance(perf_graph5, arg_->width*arg_->height, "G5");
+    printPerformance(perf_graph6, arg_->width*arg_->height, "G6");
+    printPerformance(perf_graph7, arg_->width*arg_->height, "G7");
+    printPerformance(perf_graph8, arg_->width*arg_->height, "G8");
+}
+
 // Testing alternating nodes
 // vxNot -> vxAccumulateSquare -> vxNot -> vxAccumulateSquare -> vxNot -> vxAccumulateSquare
 TEST_WITH_ARG(tivxGraph, testAlternatingNodes, Arg,
@@ -1325,5 +1573,6 @@ TESTCASE_TESTS(tivxGraph,
         testParallelGraphs,
         testParallelGraphsMultipleNodes,
         testThreeParallelGraphs,
+        testMaxParallelGraphs,
         testAlternatingNodes
 )
