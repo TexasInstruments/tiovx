@@ -22,8 +22,8 @@ extern uint32_t edmaBase[1];
 #define TIVX_BAM_MAX_EDGES 10
 #define TIVX_BAM_MAX_NODES 10
 
-#define IMGBUFL_SIZE (0x8000)
-#define IMGBUFH_SIZE (0x8000)
+#define IMGBUFL_SIZE (0x10000)
+#define IMGBUFH_SIZE (0x0000)
 #define WBUF_SIZE    (0x8000)
 #define ALIAS_OFFSET (IMGBUFL_SIZE + IMGBUFH_SIZE)
 
