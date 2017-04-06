@@ -375,25 +375,6 @@ TEST_WITH_ARG(tivxBoundary, testThresholdBoundary, Arg,
     }
 }
 
-TEST_WITH_ARG(tivxBoundary, testKernelBoundary, Arg,
-    PARAMETERS
-)
-{
-    vx_context context = context_->vx_context_;
-    vx_kernel   src_kernel[64];
-    int i;
-
-    for (i = 0; i < 64; i++)
-    {
-        ASSERT_VX_OBJECT(src_kernel[i] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
-    }
-
-    for (i = 0; i < 64; i++)
-    {
-        VX_CALL(vxReleaseKernel(&src_kernel[i]));
-    }
-}
-
 TEST_WITH_ARG(tivxBoundary, testNodeBoundary, Arg,
     PARAMETERS
 )
@@ -757,28 +738,6 @@ TEST_WITH_ARG(tivxNegativeBoundary, negativeTestNodeBoundary, Arg,
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-// Note: should fail but doesn't
-TEST_WITH_ARG(tivxNegativeBoundary, negativeTestKernelBoundary, Arg,
-    PARAMETERS
-)
-{
-    vx_context context = context_->vx_context_;
-    vx_kernel   src_kernel[65];
-    int i;
-
-    for (i = 0; i < 64; i++)
-    {
-        ASSERT_VX_OBJECT(src_kernel[i] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_TYPE_KERNEL);
-    }
-
-    EXPECT_VX_ERROR(src_kernel[64] = vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3), VX_ERROR_NO_RESOURCES);
-
-    for (i = 0; i < 64; i++)
-    {
-        VX_CALL(vxReleaseKernel(&src_kernel[i]));
-    }
-}
-
 TEST_WITH_ARG(tivxNegativeBoundary, negativeTestThresholdBoundary, Arg,
     PARAMETERS
 )
@@ -1136,7 +1095,6 @@ TESTCASE_TESTS(tivxBoundary,
         testRemapBoundary,
         testScalarBoundary,
         testThresholdBoundary,
-        testKernelBoundary, 
         testNodeBoundary,
         testParameterBoundary,
         testGraphBoundary,
@@ -1155,7 +1113,6 @@ TESTCASE_TESTS(tivxNegativeBoundary,
         negativeTestParameterBoundary,
         negativeTestGraphBoundary,
         negativeTestNodeBoundary,
-        /*negativeTestKernelBoundary,*/
         negativeTestPyramidLevelBoundary,
         negativeTestVirtualPyramidLevelBoundary,
         negativeTestThresholdBoundary,
