@@ -599,6 +599,9 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsMultipleNodes, Arg,
     ASSERT(input_image_graph1 == 0);
     ASSERT(input_image_graph2 == 0);
 
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle2));
+
     printPerformance(perf_node1_graph1, arg_->width*arg_->height, "N1");
     printPerformance(perf_node2_graph1, arg_->width*arg_->height, "N2");
     printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
@@ -758,6 +761,10 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testThreeParallelGraphs, Arg,
     ASSERT(input_image1 == 0);
     ASSERT(input_image2 == 0);
     ASSERT(input_image3 == 0);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle3));
 
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
@@ -1042,6 +1049,9 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
     ASSERT(input_image_acc_1 == 0);
     ASSERT(input_image_not == 0);
 
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskDelete(&taskHandle2));
+
     printPerformance(perf_node1, arg_->width*arg_->height, "N1");
     printPerformance(perf_node2, arg_->width*arg_->height, "N2");
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
@@ -1060,9 +1070,9 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
 }
 
 TESTCASE_TESTS(tivxGraphMultiThreaded,
-        /*testParallelGraphsSameTarget,*/
-        testParallelGraphsDifferentTarget/*,
+        testParallelGraphsSameTarget,
+        testParallelGraphsDifferentTarget,
         testParallelGraphsMultipleNodes,
         testThreeParallelGraphs,
-        testAlternatingNodes*/
+        testAlternatingNodes
 )
