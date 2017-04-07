@@ -116,7 +116,7 @@ vx_bool ownAddAssociationToDelay(vx_reference value,
     vx_int32 delay_index = value->delay_slot_index;
     vx_bool status = vx_true_e;
 
-    vx_int32 index = ((delay->index + delay->count) - abs(delay_index)) % (vx_int32)delay->count;
+    vx_int32 index = (delay->index + abs(delay_index)) % (vx_int32)delay->count;
 
 
     if (delay->set[index].node == NULL) /* head is empty */
@@ -167,7 +167,7 @@ vx_bool ownRemoveAssociationToDelay(vx_reference value,
     vx_int32 delay_index = value->delay_slot_index;
     vx_bool do_break;
 
-    vx_int32 index = ((delay->index + delay->count) - abs(delay_index)) % (vx_int32)delay->count;
+    vx_int32 index = delay_index;
     vx_bool status = vx_true_e;
 
     if ( (delay->set[index].node == n) && (delay->set[index].index == i) ) /* head is a match */
@@ -515,6 +515,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
                     ownNodeSetParameter(param->node,
                                        param->index,
                                        delay->refs[j]);
+
+                    ownInitReferenceForDelay(delay->refs[j], delay, i);
                 }
                 param = param->next;
             } while (param != NULL);
