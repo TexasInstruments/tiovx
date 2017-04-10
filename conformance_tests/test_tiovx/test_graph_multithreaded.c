@@ -345,8 +345,6 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
     taskFinished1 = 0;
     taskFinished2 = 0;
 
-    printf("Starting first test case\n");
-
     CT_Image input1 = NULL, input2 = NULL, accum_final1 = NULL, accum_final2 = NULL, accum_dst1 = NULL, accum_dst2 = NULL;
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
@@ -361,7 +359,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
 
     ASSERT_NO_FAILURE(accum_final1 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
 
-    ASSERT_NO_FAILURE(accum_final2 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height)); // Freezes here
+    ASSERT_NO_FAILURE(accum_final2 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
 
     ASSERT_VX_OBJECT(input_image1 = ct_image_to_vx_image(input1, context), VX_TYPE_IMAGE);
 

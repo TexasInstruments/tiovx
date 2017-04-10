@@ -259,17 +259,17 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
 
     ASSERT_NO_FAILURE(halfScaleGaussian_check(src, int_ctimage, dst0, dst1, arg_->kernel_size, arg_->border));
 
-    VX_CALL(vxReleaseNode(&node1));
-    VX_CALL(vxReleaseNode(&node2));
-    VX_CALL(vxReleaseNode(&node3));
-    VX_CALL(vxReleaseNode(&node4));
-    VX_CALL(vxReleaseGraph(&graph));
-
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
     vxQueryNode(node3, VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
     vxQueryNode(node4, VX_NODE_PERFORMANCE, &perf_node4, sizeof(perf_node4));
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT(node1 == 0);
     ASSERT(node2 == 0);

@@ -137,6 +137,10 @@ TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
     ASSERT_NO_FAILURE(dst0 = ct_image_from_vx_image(dst0_image));
     ASSERT_NO_FAILURE(dst1 = ct_image_from_vx_image(dst1_image));
 
@@ -146,10 +150,6 @@ TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseGraph(&graph));
-
-    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
-    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
-    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
     ASSERT(node1 == 0);
     ASSERT(node2 == 0);

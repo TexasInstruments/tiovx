@@ -55,7 +55,6 @@ TEST(tivxGraphDelay, testSimple)
     ASSERT_VX_OBJECT(images[1] = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
     ASSERT_VX_OBJECT(images[2] = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
 
-    // Additional ref here b/c of additional delay
     ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)images[0], 3), VX_TYPE_DELAY);
 
     VX_CALL(vxQueryDelay(delay, VX_DELAY_SLOTS, &delay_count, sizeof(delay_count)));
@@ -100,7 +99,6 @@ TEST(tivxGraphDelay, testSimple)
 
     VX_CALL(vxReleaseGraph(&graph));
 
-    // Delay references do not get released
     VX_CALL(vxReleaseDelay(&delay));
 
     ASSERT(graph == 0);

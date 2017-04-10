@@ -263,10 +263,9 @@ static void warp_affine_check(CT_Image input, CT_Image output, vx_enum interp_ty
         ct_dump_image_info(input);
         printf("=== OUTPUT ===\n");
         ct_dump_image_info(output);
-        printf("Matrix:\n%g %g %g\n%g %g %g\n%g %g %g\n",
-                m[0], m[3], m[6],
-                m[1], m[4], m[7],
-                m[2], m[5], m[8]);
+        printf("Matrix:\n%g %g %g\n%g %g %g\n",
+                m[0], m[2], m[4],
+                m[1], m[3], m[5]);
     }
 }
 
@@ -287,10 +286,9 @@ static void warp_affine_sequential_check(CT_Image input, CT_Image virt, CT_Image
         ct_dump_image_info(input);
         printf("=== OUTPUT ===\n");
         ct_dump_image_info(output);
-        printf("Matrix:\n%g %g %g\n%g %g %g\n%g %g %g\n",
-                m_node1[0], m_node1[3], m_node1[6],
-                m_node1[1], m_node1[4], m_node1[7],
-                m_node1[2], m_node1[5], m_node1[8]);
+        printf("Matrix:\n%g %g %g\n%g %g %g\n",
+                m_node1[0], m_node1[2], m_node1[4],
+                m_node1[1], m_node1[3], m_node1[5]);
     }
 }
 
