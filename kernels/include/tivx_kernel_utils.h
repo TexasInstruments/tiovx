@@ -50,6 +50,42 @@ static inline void* ownFormatImagePatchAddress2d(
 }
 
 
+/*!
+ * \brief Check number of parameters and NULL pointers
+ *
+ *          First checks that the num_params is equal to the max_params
+ *          defined by the OpenVX kernel.
+ *
+ *          Also checks that each of the obj_desc pointers are not NULL.
+ *
+ *          This function can be called if ALL of the parameters are
+ *          mandatory.  If there are any optional parameters, then
+ *          custom code should be used to check the parameters.
+ */
+static inline vx_status ownCheckNullParams(
+    tivx_obj_desc_t *obj_desc[], uint16_t num_params,
+    uint16_t max_params)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+
+    if (num_params != max_params)
+    {
+        status = VX_FAILURE;
+    }
+    else
+    {
+        for (i = 0U; i < max_params; i ++)
+        {
+            if (NULL == obj_desc[i])
+            {
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+    return status;
+}
 
 #ifdef __cplusplus
 }

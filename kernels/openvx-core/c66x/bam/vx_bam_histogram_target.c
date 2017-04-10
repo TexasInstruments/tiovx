@@ -46,28 +46,14 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 {
     vx_status status = VX_SUCCESS;
     tivxHistogramParams *prms = NULL;
-    uint32_t i;
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_distribution_t *dst;
     uint8_t *src_addr;
     vx_rectangle_t rect;
     uint32_t size;
 
-    if (num_params != TIVX_KERNEL_HISTOGRAM_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_HISTOGRAM_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -131,23 +117,9 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_distribution_t *dst;
     tivxHistogramParams *prms = NULL;
-    uint32_t i;
 
-    if (num_params != TIVX_KERNEL_HISTOGRAM_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_HISTOGRAM_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -218,23 +190,9 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     vx_status status = VX_SUCCESS;
     uint32_t size;
     tivxHistogramParams *prms = NULL;
-    uint32_t i;
 
-    if (num_params != TIVX_KERNEL_HISTOGRAM_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_HISTOGRAM_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

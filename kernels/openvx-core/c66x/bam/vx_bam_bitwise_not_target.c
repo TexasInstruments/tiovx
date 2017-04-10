@@ -50,19 +50,8 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
     vx_rectangle_t rect;
     uint32_t size;
 
-    if (num_params != TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        /* Check for NULL */
-        if ((NULL == obj_desc[TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX]))
-        {
-            status = VX_ERROR_NO_MEMORY;
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -137,18 +126,8 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotCreate(
     tivxBitwiseNotParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    if (num_params != TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        if ((NULL == obj_desc[TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX]))
-        {
-            status = VX_ERROR_NO_MEMORY;
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -222,18 +201,8 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotDelete(
     tivxBitwiseNotParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    if (num_params != TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        if ((NULL == obj_desc[TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX]))
-        {
-            status = VX_ERROR_NO_MEMORY;
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

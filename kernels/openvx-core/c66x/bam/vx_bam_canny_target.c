@@ -70,21 +70,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     uint32_t size, num_edge_trace_out = 0;
     uint32_t num_dbl_thr_items = 0;
 
-    if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_CNED_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -188,27 +175,13 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_gs, *sc_norm;
 
-    if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_CNED_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -386,25 +359,11 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     uint32_t size;
     tivxCannyParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_CNED_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

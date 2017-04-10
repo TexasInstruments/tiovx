@@ -59,7 +59,6 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
@@ -68,21 +67,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     vx_rectangle_t rect;
     uint32_t size, num_dbl_thr_items = 0, num_edge_trace_out = 0;
 
-    if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_CNED_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -183,26 +169,12 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_gs;
 
-    if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_CNED_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -337,25 +309,11 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     uint32_t size;
     tivxCannyParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_CNED_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_CNED_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

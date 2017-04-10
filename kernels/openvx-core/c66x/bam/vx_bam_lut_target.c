@@ -45,28 +45,14 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
 {
     vx_status status = VX_SUCCESS;
     tivxLutParams *prms = NULL;
-    vx_uint32 i;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_lut_t *lut;
     vx_uint8 *src_addr, *dst_addr;
     vx_rectangle_t rect;
     uint32_t size;
 
-    if (num_params != TIVX_KERNEL_LUT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0; i < TIVX_KERNEL_LUT_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_LUT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -139,23 +125,9 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_lut_t *lut;
     tivxLutParams *prms = NULL;
-    uint32_t i;
 
-    if (num_params != TIVX_KERNEL_LUT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_LUT_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_LUT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -267,23 +239,9 @@ static vx_status VX_CALLBACK tivxKernelLutDelete(
     vx_status status = VX_SUCCESS;
     uint32_t size;
     tivxLutParams *prms = NULL;
-    uint32_t i;
 
-    if (num_params != TIVX_KERNEL_LUT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_LUT_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_LUT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
