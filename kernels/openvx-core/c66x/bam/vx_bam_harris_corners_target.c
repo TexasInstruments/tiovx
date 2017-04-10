@@ -102,7 +102,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
     {
         for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
         {
-            if (NULL == obj_desc[i])
+            if ((NULL == obj_desc[i]) &&
+                (i != TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -248,7 +249,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
     {
         for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
         {
-            if (NULL == obj_desc[i])
+            if ((NULL == obj_desc[i]) &&
+                (i != TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -523,7 +525,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersDelete(
     {
         for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
         {
-            if (NULL == obj_desc[i])
+            if ((NULL == obj_desc[i]) &&
+                (i != TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX))
             {
                 status = VX_FAILURE;
                 break;
