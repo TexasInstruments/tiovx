@@ -33,6 +33,7 @@
 #include "ti/vxlib/src/vx/VXLIB_sobelY_3x3_i8u_o16s/bam_plugin/BAM_VXLIB_sobelY_3x3_i8u_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_tableLookup_i16s_o16s/bam_plugin/BAM_VXLIB_tableLookup_i16s_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_tableLookup_i8u_o8u/bam_plugin/BAM_VXLIB_tableLookup_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_not_i8u_o8u/bam_plugin/BAM_VXLIB_not_i8u_o8u.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -61,7 +62,8 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S = 18,
     BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S = 19,
     BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U = 20,
-    BAM_KERNELID_MAX =                           0X7FFFFFFF
+    BAM_KERNELID_VXLIB_NOT_I8U_O8U = 21,
+    BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 
 #endif

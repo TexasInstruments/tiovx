@@ -19,14 +19,13 @@ typedef struct  {
 } Tivx_Target_Kernel_List;
 
 #ifdef USE_BAM
-
 static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamAbsDiff, tivxRemoveTargetKernelBamAbsDiff},
     {tivxAddTargetKernelAccumulate, tivxRemoveTargetKernelAccumulate},
     {tivxAddTargetKernelAccumulateSquare, tivxRemoveTargetKernelAccumulateSquare},
     {tivxAddTargetKernelAccumulateWeighted, tivxRemoveTargetKernelAccumulateWeighted},
     {tivxAddTargetKernelAdd, tivxRemoveTargetKernelAdd},
-    {tivxAddTargetKernelBitwise, tivxRemoveTargetKernelBitwise},
+    {tivxAddTargetKernelBamBitwiseNot, tivxRemoveTargetKernelBamBitwiseNot},
     {tivxAddTargetKernelBamCannyEd, tivxRemoveTargetKernelBamCannyEd},
     {tivxAddTargetKernelChannelCombine, tivxRemoveTargetKernelChannelCombine},
     {tivxAddTargetKernelChannelExtract, tivxRemoveTargetKernelChannelExtract},
