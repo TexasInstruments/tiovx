@@ -541,9 +541,13 @@ TEST_WITH_ARG(tivxHarrisCorners, testVirtualImage, Arg,
 
     ASSERT_NO_FAILURE(own_keypoints_check(new_points_size0, NULL, new_points0, new_points1));
 
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseNode(&node3));
     VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node4 == 0);
+    ASSERT(node3 == 0);
     ASSERT(node2 == 0);
     ASSERT(node1 == 0);
     ASSERT(graph == 0);

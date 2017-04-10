@@ -77,4 +77,6 @@ TESTCASE(tivxGaussianPyramid)
 TESTCASE(tivxBoundary)
 TESTCASE(tivxNegativeBoundary)
 TESTCASE(tivxRemap)
+TESTCASE(tivxMaxNodes)
+
 
