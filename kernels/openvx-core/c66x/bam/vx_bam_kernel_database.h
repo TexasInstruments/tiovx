@@ -35,6 +35,9 @@
 #include "ti/vxlib/src/vx/VXLIB_tableLookup_i8u_o8u/bam_plugin/BAM_VXLIB_tableLookup_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_integralImage_i8u_o32u/bam_plugin/BAM_VXLIB_integralImage_i8u_o32u.h"
 #include "ti/vxlib/src/vx/VXLIB_not_i8u_o8u/bam_plugin/BAM_VXLIB_not_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_and_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_and_i8u_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_or_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_or_i8u_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_xor_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_xor_i8u_i8u_o8u.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -65,6 +68,9 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U = 20,
     BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U = 21,
     BAM_KERNELID_VXLIB_NOT_I8U_O8U = 22,
+    BAM_KERNELID_VXLIB_AND_I8U_I8U_O8U = 23,
+    BAM_KERNELID_VXLIB_OR_I8U_I8U_O8U = 24,
+    BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U = 25,
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 

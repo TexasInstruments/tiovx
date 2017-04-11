@@ -43,7 +43,10 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_tableLookup_i16s_o16s_kernel, &gBAM_VXLIB_tableLookup_i16s_o16s_helperFunc, "vxlib_tableLookup_i16s_o16s", BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S },
     { &gBAM_VXLIB_tableLookup_i8u_o8u_kernel, &gBAM_VXLIB_tableLookup_i8u_o8u_helperFunc, "vxlib_tableLookup_i8u_o8u", BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U },
     { &gBAM_VXLIB_integralImage_i8u_o32u_kernel, &gBAM_VXLIB_integralImage_i8u_o32u_helperFunc, "vxlib_integralImage_i8u_o32u", BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U },
-    { &gBAM_VXLIB_not_i8u_o8u_kernel, &gBAM_VXLIB_not_i8u_o8u_helperFunc, "vxlib_not_i8u_o8u", BAM_KERNELID_VXLIB_NOT_I8U_O8U }
+    { &gBAM_VXLIB_not_i8u_o8u_kernel, &gBAM_VXLIB_not_i8u_o8u_helperFunc, "vxlib_not_i8u_o8u", BAM_KERNELID_VXLIB_NOT_I8U_O8U },
+    { &gBAM_VXLIB_and_i8u_i8u_o8u_kernel, &gBAM_VXLIB_and_i8u_i8u_o8u_helperFunc, "vxlib_and_i8u_i8u_o8u", BAM_KERNELID_VXLIB_AND_I8U_I8U_O8U },
+    { &gBAM_VXLIB_or_i8u_i8u_o8u_kernel, &gBAM_VXLIB_or_i8u_i8u_o8u_helperFunc, "vxlib_or_i8u_i8u_o8u", BAM_KERNELID_VXLIB_OR_I8U_I8U_O8U },
+    { &gBAM_VXLIB_xor_i8u_i8u_o8u_kernel, &gBAM_VXLIB_xor_i8u_i8u_o8u_helperFunc, "vxlib_xor_i8u_i8u_o8u", BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U }
 };
 
 /**
@@ -77,6 +80,9 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_tableLookup_i8u_o8u_kernel, &gBAM_VXLIB_tableLookup_i8u_o8u_execFunc, "vxlib_tableLookup_i8u_o8u", BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U },
     { &gBAM_VXLIB_integralImage_i8u_o32u_kernel, &gBAM_VXLIB_integralImage_i8u_o32u_execFunc, "vxlib_integralImage_i8u_o32u", BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U },
     { &gBAM_VXLIB_not_i8u_o8u_kernel, &gBAM_VXLIB_not_i8u_o8u_execFunc, "vxlib_not_i8u_o8u", BAM_KERNELID_VXLIB_NOT_I8U_O8U },
+    { &gBAM_VXLIB_and_i8u_i8u_o8u_kernel, &gBAM_VXLIB_and_i8u_i8u_o8u_execFunc, "vxlib_and_i8u_i8u_o8u", BAM_KERNELID_VXLIB_AND_I8U_I8U_O8U },
+    { &gBAM_VXLIB_or_i8u_i8u_o8u_kernel, &gBAM_VXLIB_or_i8u_i8u_o8u_execFunc, "vxlib_or_i8u_i8u_o8u", BAM_KERNELID_VXLIB_OR_I8U_I8U_O8U },
+    { &gBAM_VXLIB_xor_i8u_i8u_o8u_kernel, &gBAM_VXLIB_xor_i8u_i8u_o8u_execFunc, "vxlib_xor_i8u_i8u_o8u", BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U }
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =

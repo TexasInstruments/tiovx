@@ -69,9 +69,10 @@ vx_status VX_CALLBACK tivxKernelBitwiseProcess(
     VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
     tivxBitwiseKernelInfo *kern_info;
 
-    if ((num_params != 3U) || (NULL == obj_desc[0U]) ||
-        (NULL == obj_desc[1U]) || (NULL == obj_desc[2U]) ||
-        (NULL == kernel) || (NULL == priv_arg))
+    status = ownCheckNullParams(obj_desc, num_params,
+            TIVX_KERNEL_BITWISE_MAX_PARAMS);
+
+    if ((VX_FAILURE == status) || (NULL == priv_arg))
     {
         status = VX_FAILURE;
     }
@@ -179,9 +180,10 @@ vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
 
-    if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
-        (NULL == obj_desc[1U]) || (NULL == kernel) ||
-        (NULL == priv_arg))
+    status = ownCheckNullParams(obj_desc, num_params,
+            TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
+
+    if ((VX_FAILURE == status) || (NULL == priv_arg))
     {
         status = VX_FAILURE;
     }
