@@ -23,7 +23,6 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     tivx_obj_desc_image_t *src0, *src1, *dst;
     tivx_obj_desc_scalar_t *sc[3U];
     uint8_t *src0_addr, *src1_addr;

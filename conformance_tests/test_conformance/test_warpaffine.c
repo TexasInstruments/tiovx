@@ -329,10 +329,9 @@ static void warp_affine_check(CT_Image input, CT_Image output, vx_enum interp_ty
         ct_dump_image_info(input);
         printf("=== OUTPUT ===\n");
         ct_dump_image_info(output);
-        printf("Matrix:\n%g %g %g\n%g %g %g\n%g %g %g\n",
-                m[0], m[3], m[6],
-                m[1], m[4], m[7],
-                m[2], m[5], m[8]);
+        printf("Matrix:\n%g %g %g\n%g %g %g\n",
+                m[0], m[2], m[4],
+                m[1], m[3], m[5]);
     }
 }
 

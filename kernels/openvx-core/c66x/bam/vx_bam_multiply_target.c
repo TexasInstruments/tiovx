@@ -320,8 +320,6 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyCreate(
                 status = tivxBamCreateHandleSingleNode(
                     BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S, buf_params,
                     &kernel_details, &prms->graph_handle);
-
-                printf ("Status = %d\n", status);
             }
         }
         else
