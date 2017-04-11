@@ -46,6 +46,10 @@
 #include "ti/vxlib/src/vx/VXLIB_subtract_i8u_i8u_o16s/bam_plugin/BAM_VXLIB_subtract_i8u_i8u_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_subtract_i8u_i16s_o16s/bam_plugin/BAM_VXLIB_subtract_i8u_i16s_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_subtract_i16s_i16s_o16s/bam_plugin/BAM_VXLIB_subtract_i16s_i16s_o16s.h"
+#include "ti/vxlib/src/vx/VXLIB_multiply_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_multiply_i8u_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_multiply_i8u_i8u_o16s/bam_plugin/BAM_VXLIB_multiply_i8u_i8u_o16s.h"
+#include "ti/vxlib/src/vx/VXLIB_multiply_i8u_i16s_o16s/bam_plugin/BAM_VXLIB_multiply_i8u_i16s_o16s.h"
+#include "ti/vxlib/src/vx/VXLIB_multiply_i16s_i16s_o16s/bam_plugin/BAM_VXLIB_multiply_i16s_i16s_o16s.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -87,6 +91,10 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_SUBTRACT_I8U_I8U_O16S = 31,
     BAM_KERNELID_VXLIB_SUBTRACT_I8U_I16S_O16S = 32,
     BAM_KERNELID_VXLIB_SUBTRACT_I16S_I16S_O16S = 33,
+    BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U = 34,
+    BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S = 35,
+    BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S = 36,
+    BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S = 37,
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 

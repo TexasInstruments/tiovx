@@ -32,22 +32,8 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
     vx_rectangle_t rect;
     uint16_t overflow_policy;
 
-    if (num_params != TIVX_KERNEL_MULT_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_MULT_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
-
+    status = ownCheckNullParams(obj_desc, num_params,
+            TIVX_KERNEL_MULT_MAX_PARAMS);
     if (VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN0_IMG_IDX];
