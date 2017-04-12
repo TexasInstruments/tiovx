@@ -60,7 +60,9 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_multiply_i8u_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i8u_i16s_o16s_helperFunc, "vxlib_multiply_i8u_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S },
     { &gBAM_VXLIB_multiply_i16s_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i16s_i16s_o16s_helperFunc, "vxlib_multiply_i16s_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S },
     { &gBAM_VXLIB_minMaxLoc_i8u_kernel, &gBAM_VXLIB_minMaxLoc_i8u_helperFunc, "vxlib_minMaxLoc_i8u", BAM_KERNELID_VXLIB_MINMAXLOC_I8U },
-    { &gBAM_VXLIB_minMaxLoc_i16s_kernel, &gBAM_VXLIB_minMaxLoc_i16s_helperFunc, "vxlib_minMaxLoc_i16s", BAM_KERNELID_VXLIB_MINMAXLOC_I16S }
+    { &gBAM_VXLIB_minMaxLoc_i16s_kernel, &gBAM_VXLIB_minMaxLoc_i16s_helperFunc, "vxlib_minMaxLoc_i16s", BAM_KERNELID_VXLIB_MINMAXLOC_I16S },
+    { &gBAM_VXLIB_thresholdBinary_i8u_o8u_kernel, &gBAM_VXLIB_thresholdBinary_i8u_o8u_helperFunc, "vxlib_thresholdBinary_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U },
+    { &gBAM_VXLIB_thresholdRange_i8u_o8u_kernel, &gBAM_VXLIB_thresholdRange_i8u_o8u_helperFunc, "vxlib_thresholdRange_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U }
 };
 
 /**
@@ -110,7 +112,9 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_multiply_i8u_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i8u_i16s_o16s_execFunc, "vxlib_multiply_i8u_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S },
     { &gBAM_VXLIB_multiply_i16s_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i16s_i16s_o16s_execFunc, "vxlib_multiply_i16s_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S },
     { &gBAM_VXLIB_minMaxLoc_i8u_kernel, &gBAM_VXLIB_minMaxLoc_i8u_execFunc, "vxlib_minMaxLoc_i8u", BAM_KERNELID_VXLIB_MINMAXLOC_I8U },
-    { &gBAM_VXLIB_minMaxLoc_i16s_kernel, &gBAM_VXLIB_minMaxLoc_i16s_execFunc, "vxlib_minMaxLoc_i16s", BAM_KERNELID_VXLIB_MINMAXLOC_I16S }
+    { &gBAM_VXLIB_minMaxLoc_i16s_kernel, &gBAM_VXLIB_minMaxLoc_i16s_execFunc, "vxlib_minMaxLoc_i16s", BAM_KERNELID_VXLIB_MINMAXLOC_I16S },
+    { &gBAM_VXLIB_thresholdBinary_i8u_o8u_kernel, &gBAM_VXLIB_thresholdBinary_i8u_o8u_execFunc, "vxlib_thresholdBinary_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U },
+    { &gBAM_VXLIB_thresholdRange_i8u_o8u_kernel, &gBAM_VXLIB_thresholdRange_i8u_o8u_execFunc, "vxlib_thresholdRange_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U }
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =

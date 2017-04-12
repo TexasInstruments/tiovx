@@ -52,6 +52,8 @@
 #include "ti/vxlib/src/vx/VXLIB_multiply_i16s_i16s_o16s/bam_plugin/BAM_VXLIB_multiply_i16s_i16s_o16s.h"
 #include "ti/vxlib/src/vx/VXLIB_minMaxLoc_i8u/bam_plugin/BAM_VXLIB_minMaxLoc_i8u.h"
 #include "ti/vxlib/src/vx/VXLIB_minMaxLoc_i16s/bam_plugin/BAM_VXLIB_minMaxLoc_i16s.h"
+#include "ti/vxlib/src/vx/VXLIB_thresholdBinary_i8u_o8u/bam_plugin/BAM_VXLIB_thresholdBinary_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_thresholdRange_i8u_o8u/bam_plugin/BAM_VXLIB_thresholdRange_i8u_o8u.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -99,6 +101,8 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S = 37,
     BAM_KERNELID_VXLIB_MINMAXLOC_I8U = 38,
     BAM_KERNELID_VXLIB_MINMAXLOC_I16S = 39,
+    BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U = 40,
+    BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U = 41,
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 

@@ -23,28 +23,14 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
     vx_uint8 *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     vx_rectangle_t rect;
 
-    if (num_params != TIVX_KERNEL_THRLD_MAX_PARAMS)
-    {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_THRLD_MAX_PARAMS; i ++)
-        {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
-        }
-    }
+    status = ownCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_THRLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

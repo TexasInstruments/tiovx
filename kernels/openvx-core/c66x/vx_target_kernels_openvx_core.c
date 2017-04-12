@@ -57,8 +57,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelRemap, tivxRemoveTargetKernelRemap},
     {tivxAddTargetKernelScale, tivxRemoveTargetKernelScale},
     {tivxAddTargetKernelBamSobel3x3, tivxRemoveTargetKernelBamSobel3x3},
-    {tivxAddTargetKernelSub, tivxRemoveTargetKernelSub},
-    {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
+    {tivxAddTargetKernelBamThreshold, tivxRemoveTargetKernelBamThreshold},
     {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
     {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
 };

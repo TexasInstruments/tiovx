@@ -60,8 +60,7 @@ void tivxAddTargetKernelPhase(void);
 void tivxAddTargetKernelRemap(void);
 void tivxAddTargetKernelScale(void);
 void tivxAddTargetKernelBamSobel3x3(void);
-void tivxAddTargetKernelSub(void);
-void tivxAddTargetKernelThreshold(void);
+void tivxAddTargetKernelBamThreshold(void);
 void tivxAddTargetKernelWarpAffine(void);
 void tivxAddTargetKernelWarpPerspective(void);
 
@@ -103,8 +102,7 @@ void tivxRemoveTargetKernelRemap(void);
 void tivxRemoveTargetKernelScale(void);
 void tivxRemoveTargetKernelSobel3x3(void);
 void tivxRemoveTargetKernelBamSobel3x3(void);
-void tivxRemoveTargetKernelSub(void);
-void tivxRemoveTargetKernelThreshold(void);
+void tivxRemoveTargetKernelBamThreshold(void);
 void tivxRemoveTargetKernelWarpAffine(void);
 void tivxRemoveTargetKernelWarpPerspective(void);
 
