@@ -1099,6 +1099,12 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
         graph_create_params.blockDimParams.blockWidth  = block_width;
         graph_create_params.blockDimParams.blockHeight = block_height;
+        graph_create_params.blockDimParams.blockWidthStep = 8;
+        graph_create_params.blockDimParams.blockHeightStep = 2;
+        graph_create_params.blockDimParams.blockWidthDivisorOf = 0;
+        graph_create_params.blockDimParams.blockHeightDivisorOf = 0;
+        graph_create_params.blockDimParams.blockWidthMax = buf_params[0]->dim_x;
+        graph_create_params.blockDimParams.blockHeightMax = VXLIB_max(8, buf_params[0]->dim_y/4);
 
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
@@ -1106,6 +1112,9 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         {
             status_v = VX_FAILURE;
         }
+
+        block_width = graph_create_params.blockDimParams.blockWidth;
+        block_height = graph_create_params.blockDimParams.blockHeight;
 
         tivxBamFreeContextPtrs((tivx_bam_graph_handle)p_graph_handle);
     }
@@ -1166,6 +1175,8 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
     if(VX_SUCCESS == status_v)
     {
+        graph_create_params.optimizeBlockDim     = (BOOL)false;
+
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
         if(BAM_S_SUCCESS != status_b)
@@ -1525,6 +1536,12 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
         graph_create_params.blockDimParams.blockWidth  = block_width;
         graph_create_params.blockDimParams.blockHeight = block_height;
+        graph_create_params.blockDimParams.blockWidthStep = 8;
+        graph_create_params.blockDimParams.blockHeightStep = 2;
+        graph_create_params.blockDimParams.blockWidthDivisorOf = 0;
+        graph_create_params.blockDimParams.blockHeightDivisorOf = 0;
+        graph_create_params.blockDimParams.blockWidthMax = buf_params[0]->dim_x;
+        graph_create_params.blockDimParams.blockHeightMax = VXLIB_max(8, buf_params[0]->dim_y/4);
 
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
@@ -1532,6 +1549,9 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         {
             status_v = VX_FAILURE;
         }
+
+        block_width = graph_create_params.blockDimParams.blockWidth;
+        block_height = graph_create_params.blockDimParams.blockHeight;
 
         tivxBamFreeContextPtrs((tivx_bam_graph_handle)p_graph_handle);
     }
@@ -1592,6 +1612,8 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(VX_SUCCESS == status_v)
     {
+        graph_create_params.optimizeBlockDim     = (BOOL)false;
+
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
         if(BAM_S_SUCCESS != status_b)
