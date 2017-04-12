@@ -47,8 +47,10 @@ static void referenceAddSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum 
     int32_t min_bound, max_bound;
     uint32_t i, j;
     ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
+    ASSERT(src0->width = src1->width);
+    ASSERT(src0->width == dst->width);
+    ASSERT(src0->height = src1->height);
+    ASSERT(src0->height == dst->height);
 
     switch (policy)
     {
@@ -719,6 +721,13 @@ static void alternate_node_check(CT_Image input_not, CT_Image input_acc_1, CT_Im
     EXPECT_CTIMAGE_NEAR(accum_ref, accum_dst, 2); // Changed tolerance to 2
 }
 
+static void referenceAddThree(CT_Image src0, CT_Image src1, CT_Image src2, CT_Image src3, CT_Image virt1, CT_Image virt2, CT_Image dst, enum vx_convert_policy_e policy)
+{
+    ASSERT_NO_FAILURE(referenceAddSingle(src0, src1, virt1, policy));
+    ASSERT_NO_FAILURE(referenceAddSingle(src2, src3, virt2, policy));
+    ASSERT_NO_FAILURE(referenceAddSingle(virt1, virt2, dst, policy));
+}
+
 typedef struct {
     const char* testName;
     vx_float32 alpha_intermediate, alpha_final;
@@ -920,133 +929,167 @@ TEST_WITH_ARG(tivxGraph, testParallelGraphsMultipleNodes, Arg,
     PARAMETERS
 )
 {
+    vx_image src1_graph1, src2_graph1, src3_graph1, src4_graph1, dst_graph1, virt1_graph1, virt2_graph1;
+    vx_image src1_graph2, src2_graph2, src3_graph2, src4_graph2, dst_graph2, virt1_graph2, virt2_graph2;
+    vx_graph graph1, graph2;
+    CT_Image ref1_graph1, ref2_graph1, ref3_graph1, ref4_graph1, refdst_graph1, vxdst_graph1, virt_ctimage1_graph1, virt_ctimage2_graph1;
+    CT_Image ref1_graph2, ref2_graph2, ref3_graph2, ref4_graph2, refdst_graph2, vxdst_graph2, virt_ctimage1_graph2, virt_ctimage2_graph2;
     vx_context context = context_->vx_context_;
-    vx_image input_image_graph1 = 0, accum_image_intermediate_graph1 = 0, accum_image_final_graph1 = 0;
-    vx_image input_image_graph2 = 0, accum_image_intermediate_graph2 = 0, accum_image_final_graph2 = 0;
-    vx_scalar alpha_scalar_graph1, alpha_scalar_final_graph1 = 0;
-    vx_scalar alpha_scalar_graph2, alpha_scalar_final_graph2 = 0;
-    vx_graph graph1 = 0, graph2 = 0;
-    vx_node node1_graph1 = 0, node2_graph1 = 0, node1_graph2 = 0, node2_graph2 = 0;
-    vx_perf_t perf_node1_graph1, perf_node2_graph1, perf_node1_graph2, perf_node2_graph2, perf_graph1, perf_graph2;
-    int widthHardCoded = 640, heightHardCoded = 480;
-
-    CT_Image input_graph1 = NULL, accum_src_graph1 = NULL, accum_final_graph1 = NULL, accum_dst_graph1 = NULL;
-    CT_Image input_graph2 = NULL, accum_src_graph2 = NULL, accum_final_graph2 = NULL, accum_dst_graph2 = NULL;
-
-    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
-
-    ASSERT_VX_OBJECT(alpha_scalar_graph1 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_intermediate), VX_TYPE_SCALAR);
-
-    ASSERT_VX_OBJECT(alpha_scalar_graph2 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_intermediate), VX_TYPE_SCALAR);
-
-    ASSERT_VX_OBJECT(alpha_scalar_final_graph1 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_final), VX_TYPE_SCALAR);
-
-    ASSERT_VX_OBJECT(alpha_scalar_final_graph2 = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_final), VX_TYPE_SCALAR);
-
-    ASSERT_NO_FAILURE(input_graph1 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
-
-    ASSERT_NO_FAILURE(input_graph2 = accumulate_weighted_generate_random_8u(widthHardCoded, heightHardCoded));
-
-    ASSERT_NO_FAILURE(accum_src_graph1 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
-
-    ASSERT_NO_FAILURE(accum_src_graph2 = accumulate_weighted_generate_random_8u(widthHardCoded, heightHardCoded));
-
-    ASSERT_NO_FAILURE(accum_final_graph1 = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
-
-    ASSERT_NO_FAILURE(accum_final_graph2 = accumulate_weighted_generate_random_8u(widthHardCoded, heightHardCoded));
-
-    ASSERT_VX_OBJECT(input_image_graph1 = ct_image_to_vx_image(input_graph1, context), VX_TYPE_IMAGE);
-
-    ASSERT_VX_OBJECT(input_image_graph2 = ct_image_to_vx_image(input_graph2, context), VX_TYPE_IMAGE);
-
-    ASSERT_VX_OBJECT(accum_image_intermediate_graph1 = ct_image_to_vx_image(accum_src_graph1, context), VX_TYPE_IMAGE);
-
-    ASSERT_VX_OBJECT(accum_image_intermediate_graph2 = ct_image_to_vx_image(accum_src_graph2, context), VX_TYPE_IMAGE);
-
-    ASSERT_VX_OBJECT(accum_image_final_graph1 = ct_image_to_vx_image(accum_final_graph1, context), VX_TYPE_IMAGE);
-
-    ASSERT_VX_OBJECT(accum_image_final_graph2 = ct_image_to_vx_image(accum_final_graph2, context), VX_TYPE_IMAGE);
+    vx_node node1_graph1 = 0, node2_graph1 = 0, node3_graph1 = 0;
+    vx_node node1_graph2 = 0, node2_graph2 = 0, node3_graph2 = 0;
+    vx_perf_t perf_node1_graph1, perf_node2_graph1, perf_node3_graph1, perf_graph1;
+    vx_perf_t perf_node1_graph2, perf_node2_graph2, perf_node3_graph2, perf_graph2;
 
     ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
-
     ASSERT_VX_OBJECT(graph2 = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt1_graph1   = vxCreateVirtualImage(graph1, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt2_graph1   = vxCreateVirtualImage(graph1, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt1_graph2   = vxCreateVirtualImage(graph2, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt2_graph2   = vxCreateVirtualImage(graph2, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_graph1   = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_graph2   = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
 
-    ASSERT_VX_OBJECT(node1_graph1 = vxAccumulateWeightedImageNode(graph1, input_image_graph1, alpha_scalar_graph1, accum_image_intermediate_graph1), VX_TYPE_NODE);
+    refdst_graph1 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_S16);
+    refdst_graph2 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_S16);
 
-    ASSERT_VX_OBJECT(node2_graph1 = vxAccumulateWeightedImageNode(graph1, accum_image_intermediate_graph1, alpha_scalar_final_graph1, accum_image_final_graph1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(src1_graph1 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2_graph1 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src3_graph1 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src4_graph1 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
 
-    ASSERT_VX_OBJECT(node1_graph2 = vxAccumulateWeightedImageNode(graph2, input_image_graph2, alpha_scalar_graph2, accum_image_intermediate_graph2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(src1_graph2 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2_graph2 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src3_graph2 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src4_graph2 = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
 
-    ASSERT_VX_OBJECT(node2_graph2 = vxAccumulateWeightedImageNode(graph2, accum_image_intermediate_graph2, alpha_scalar_final_graph2, accum_image_final_graph2), VX_TYPE_NODE);
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1_graph1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2_graph1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3_graph1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4_graph1, &CT()->seed_));
 
-    VX_CALL(vxSetNodeTarget(node1_graph1, VX_TARGET_STRING, "DSP-1"));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1_graph2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2_graph2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src3_graph2, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src4_graph2, &CT()->seed_));
 
-    VX_CALL(vxSetNodeTarget(node2_graph1, VX_TARGET_STRING, "DSP-1"));
+    virt_ctimage1_graph1 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+    virt_ctimage2_graph1 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+    virt_ctimage1_graph2 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+    virt_ctimage2_graph2 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
 
-    VX_CALL(vxSetNodeTarget(node1_graph2, VX_TARGET_STRING, "DSP-2"));
+    ASSERT_VX_OBJECT(node1_graph1 = vxAddNode(graph1, src1_graph1, src2_graph1, VX_CONVERT_POLICY_SATURATE, virt1_graph1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2_graph1 = vxAddNode(graph1, src3_graph1, src4_graph1, VX_CONVERT_POLICY_SATURATE, virt2_graph1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3_graph1 = vxAddNode(graph1, virt1_graph1, virt2_graph1, VX_CONVERT_POLICY_SATURATE, dst_graph1), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node2_graph2, VX_TARGET_STRING, "DSP-2"));
+    ASSERT_VX_OBJECT(node1_graph2 = vxAddNode(graph2, src1_graph2, src2_graph2, VX_CONVERT_POLICY_SATURATE, virt1_graph2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2_graph2 = vxAddNode(graph2, src3_graph2, src4_graph2, VX_CONVERT_POLICY_SATURATE, virt2_graph2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3_graph2 = vxAddNode(graph2, virt1_graph2, virt2_graph2, VX_CONVERT_POLICY_SATURATE, dst_graph2), VX_TYPE_NODE);
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph1));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph1));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph1));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph2));
 
     vxQueryNode(node1_graph1, VX_NODE_PERFORMANCE, &perf_node1_graph1, sizeof(perf_node1_graph1));
     vxQueryNode(node2_graph1, VX_NODE_PERFORMANCE, &perf_node2_graph1, sizeof(perf_node2_graph1));
+    vxQueryNode(node3_graph1, VX_NODE_PERFORMANCE, &perf_node3_graph1, sizeof(perf_node3_graph1));
     vxQueryGraph(graph1, VX_GRAPH_PERFORMANCE, &perf_graph1, sizeof(perf_graph1));
-
     vxQueryNode(node1_graph2, VX_NODE_PERFORMANCE, &perf_node1_graph2, sizeof(perf_node1_graph2));
     vxQueryNode(node2_graph2, VX_NODE_PERFORMANCE, &perf_node2_graph2, sizeof(perf_node2_graph2));
+    vxQueryNode(node3_graph2, VX_NODE_PERFORMANCE, &perf_node3_graph2, sizeof(perf_node3_graph2));
     vxQueryGraph(graph2, VX_GRAPH_PERFORMANCE, &perf_graph2, sizeof(perf_graph2));
 
-    ASSERT_NO_FAILURE(accum_dst_graph1 = ct_image_from_vx_image(accum_image_final_graph1));
+    ref1_graph1  = ct_image_from_vx_image(src1_graph1);
+    ref2_graph1  = ct_image_from_vx_image(src2_graph1);
+    ref3_graph1  = ct_image_from_vx_image(src3_graph1);
+    ref4_graph1  = ct_image_from_vx_image(src4_graph1);
+    vxdst_graph1 = ct_image_from_vx_image(dst_graph1);
+    ref1_graph2  = ct_image_from_vx_image(src1_graph2);
+    ref2_graph2  = ct_image_from_vx_image(src2_graph2);
+    ref3_graph2  = ct_image_from_vx_image(src3_graph2);
+    ref4_graph2  = ct_image_from_vx_image(src4_graph2);
+    vxdst_graph2 = ct_image_from_vx_image(dst_graph2);
 
-    ASSERT_NO_FAILURE(accum_dst_graph2 = ct_image_from_vx_image(accum_image_final_graph2));
+    referenceAddThree(ref1_graph1, ref2_graph1, ref3_graph1, ref4_graph1, virt_ctimage1_graph1, virt_ctimage2_graph1, refdst_graph1, VX_CONVERT_POLICY_SATURATE);
+    referenceAddThree(ref1_graph2, ref2_graph2, ref3_graph2, ref4_graph2, virt_ctimage1_graph2, virt_ctimage2_graph2, refdst_graph2, VX_CONVERT_POLICY_SATURATE);
 
-    ASSERT_NO_FAILURE(accumulate_multiple_weighted_check(input_graph1, arg_->alpha_intermediate, arg_->alpha_final, accum_src_graph1, accum_final_graph1, accum_dst_graph1));
+    ASSERT_EQ_CTIMAGE(refdst_graph1, vxdst_graph1);
+    ASSERT_EQ_CTIMAGE(refdst_graph2, vxdst_graph2);
 
-    ASSERT_NO_FAILURE(accumulate_multiple_weighted_check(input_graph2, arg_->alpha_intermediate, arg_->alpha_final, accum_src_graph2, accum_final_graph2, accum_dst_graph2));
-
-    VX_CALL(vxReleaseNode(&node2_graph2));
-    VX_CALL(vxReleaseNode(&node1_graph2));
-    VX_CALL(vxReleaseNode(&node2_graph1));
-    VX_CALL(vxReleaseNode(&node1_graph1));
-    VX_CALL(vxReleaseGraph(&graph2));
-    VX_CALL(vxReleaseGraph(&graph1));
-
-    ASSERT(node2_graph2 == 0);
-    ASSERT(node1_graph2 == 0);
-    ASSERT(node2_graph1 == 0);
-    ASSERT(node1_graph1 == 0);
-    ASSERT(graph2 == 0);
-    ASSERT(graph1 == 0);
-
-    VX_CALL(vxReleaseImage(&accum_image_final_graph1));
-    VX_CALL(vxReleaseImage(&accum_image_final_graph2));
-    VX_CALL(vxReleaseImage(&accum_image_intermediate_graph1));
-    VX_CALL(vxReleaseImage(&accum_image_intermediate_graph2));
-    VX_CALL(vxReleaseImage(&input_image_graph1));
-    VX_CALL(vxReleaseImage(&input_image_graph2));
-    VX_CALL(vxReleaseScalar(&alpha_scalar_final_graph1));
-    VX_CALL(vxReleaseScalar(&alpha_scalar_final_graph2));
-    VX_CALL(vxReleaseScalar(&alpha_scalar_graph1));
-    VX_CALL(vxReleaseScalar(&alpha_scalar_graph2));
-
-    ASSERT(accum_image_final_graph1 == 0);
-    ASSERT(accum_image_final_graph2 == 0);
-    ASSERT(accum_image_intermediate_graph1 == 0);
-    ASSERT(accum_image_intermediate_graph2 == 0);
-    ASSERT(input_image_graph1 == 0);
-    ASSERT(input_image_graph2 == 0);
-
+    printf("First execution performance:\n");
     printPerformance(perf_node1_graph1, arg_->width*arg_->height, "N1");
     printPerformance(perf_node2_graph1, arg_->width*arg_->height, "N2");
+    printPerformance(perf_node3_graph1, arg_->width*arg_->height, "N3");
     printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
-    printPerformance(perf_node1_graph2, widthHardCoded*heightHardCoded, "N1");
-    printPerformance(perf_node1_graph2, widthHardCoded*heightHardCoded, "N2");
-    printPerformance(perf_node2_graph2, widthHardCoded*heightHardCoded, "G2");
+    printPerformance(perf_node1_graph2, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2_graph2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_node3_graph2, arg_->width*arg_->height, "N3");
+    printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph2));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph1));
+
+    vxQueryNode(node1_graph1, VX_NODE_PERFORMANCE, &perf_node1_graph1, sizeof(perf_node1_graph1));
+    vxQueryNode(node2_graph1, VX_NODE_PERFORMANCE, &perf_node2_graph1, sizeof(perf_node2_graph1));
+    vxQueryNode(node3_graph1, VX_NODE_PERFORMANCE, &perf_node3_graph1, sizeof(perf_node3_graph1));
+    vxQueryGraph(graph1, VX_GRAPH_PERFORMANCE, &perf_graph1, sizeof(perf_graph1));
+    vxQueryNode(node1_graph2, VX_NODE_PERFORMANCE, &perf_node1_graph2, sizeof(perf_node1_graph2));
+    vxQueryNode(node2_graph2, VX_NODE_PERFORMANCE, &perf_node2_graph2, sizeof(perf_node2_graph2));
+    vxQueryNode(node3_graph2, VX_NODE_PERFORMANCE, &perf_node3_graph2, sizeof(perf_node3_graph2));
+    vxQueryGraph(graph2, VX_GRAPH_PERFORMANCE, &perf_graph2, sizeof(perf_graph2));
+
+    ref1_graph1  = ct_image_from_vx_image(src1_graph1);
+    ref2_graph1  = ct_image_from_vx_image(src2_graph1);
+    ref3_graph1  = ct_image_from_vx_image(src3_graph1);
+    ref4_graph1  = ct_image_from_vx_image(src4_graph1);
+    vxdst_graph1 = ct_image_from_vx_image(dst_graph1);
+    ref1_graph2  = ct_image_from_vx_image(src1_graph2);
+    ref2_graph2  = ct_image_from_vx_image(src2_graph2);
+    ref3_graph2  = ct_image_from_vx_image(src3_graph2);
+    ref4_graph2  = ct_image_from_vx_image(src4_graph2);
+    vxdst_graph2 = ct_image_from_vx_image(dst_graph2);
+
+    referenceAddThree(ref1_graph1, ref2_graph1, ref3_graph1, ref4_graph1, virt_ctimage1_graph1, virt_ctimage2_graph1, refdst_graph1, VX_CONVERT_POLICY_SATURATE);
+    referenceAddThree(ref1_graph2, ref2_graph2, ref3_graph2, ref4_graph2, virt_ctimage1_graph2, virt_ctimage2_graph2, refdst_graph2, VX_CONVERT_POLICY_SATURATE);
+
+    ASSERT_EQ_CTIMAGE(refdst_graph1, vxdst_graph1);
+    ASSERT_EQ_CTIMAGE(refdst_graph2, vxdst_graph2);
+
+    printf("Second execution performance:\n");
+    printPerformance(perf_node1_graph1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2_graph1, arg_->width*arg_->height, "N2");
+    printPerformance(perf_node3_graph1, arg_->width*arg_->height, "N3");
+    printPerformance(perf_graph1, arg_->width*arg_->height, "G1");
+    printPerformance(perf_node1_graph2, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2_graph2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_node3_graph2, arg_->width*arg_->height, "N3");
+    printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
+
+    VX_CALL(vxReleaseImage(&src1_graph1));
+    VX_CALL(vxReleaseImage(&src2_graph1));
+    VX_CALL(vxReleaseImage(&src3_graph1));
+    VX_CALL(vxReleaseImage(&src4_graph1));
+    VX_CALL(vxReleaseImage(&virt1_graph1));
+    VX_CALL(vxReleaseImage(&virt2_graph1));
+    VX_CALL(vxReleaseImage(&dst_graph1));
+    VX_CALL(vxReleaseNode(&node1_graph1));
+    VX_CALL(vxReleaseNode(&node2_graph1));
+    VX_CALL(vxReleaseNode(&node3_graph1));
+    VX_CALL(vxReleaseGraph(&graph1));
+
+    VX_CALL(vxReleaseImage(&src1_graph2));
+    VX_CALL(vxReleaseImage(&src2_graph2));
+    VX_CALL(vxReleaseImage(&src3_graph2));
+    VX_CALL(vxReleaseImage(&src4_graph2));
+    VX_CALL(vxReleaseImage(&virt1_graph2));
+    VX_CALL(vxReleaseImage(&virt2_graph2));
+    VX_CALL(vxReleaseImage(&dst_graph2));
+    VX_CALL(vxReleaseNode(&node1_graph2));
+    VX_CALL(vxReleaseNode(&node2_graph2));
+    VX_CALL(vxReleaseNode(&node3_graph2));
+    VX_CALL(vxReleaseGraph(&graph2));
 }
 
 TEST_WITH_ARG(tivxGraph, testThreeParallelGraphs, Arg,
