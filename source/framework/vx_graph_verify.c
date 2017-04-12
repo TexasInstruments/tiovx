@@ -366,10 +366,13 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                 if(ownGraphIsRefMatch(graph, ref1, ref2))
                                 {
                                     /* add node_next as output node for current node if not already added */
-                                    ownNodeAddOutNode(node_cur, node_next);
+                                    status = ownNodeAddOutNode(node_cur, node_next);
 
-                                    /* add node_current as input node for next node if not already added */
-                                    ownNodeAddInNode(node_next, node_cur);
+                                    if(status == VX_SUCCESS)
+                                    {
+                                        /* add node_current as input node for next node if not already added */
+                                        status = ownNodeAddInNode(node_next, node_cur);
+                                    }
                                 }
                             }
                             else
