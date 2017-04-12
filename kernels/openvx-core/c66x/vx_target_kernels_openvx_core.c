@@ -49,7 +49,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamLut, tivxRemoveTargetKernelBamLut},
     {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
-    {tivxAddTargetKernelMinMaxLoc, tivxRemoveTargetKernelMinMaxLoc},
+    {tivxAddTargetKernelBamMinMaxLoc, tivxRemoveTargetKernelBamMinMaxLoc},
     {tivxAddTargetKernelBamMultiply, tivxRemoveTargetKernelBamMultiply},
     {tivxAddTargetKernelNonLinearFilter, tivxRemoveTargetKernelNonLinearFilter},
     {tivxAddTargetKernelOpticalFlowPyrLk, tivxRemoveTargetKernelOpticalFlowPyrLk},

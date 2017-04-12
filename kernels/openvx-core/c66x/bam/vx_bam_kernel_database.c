@@ -58,7 +58,9 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_multiply_i8u_i8u_o8u_kernel, &gBAM_VXLIB_multiply_i8u_i8u_o8u_helperFunc, "vxlib_multiply_i8u_i8u_o8u", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U },
     { &gBAM_VXLIB_multiply_i8u_i8u_o16s_kernel, &gBAM_VXLIB_multiply_i8u_i8u_o16s_helperFunc, "vxlib_multiply_i8u_i8u_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S },
     { &gBAM_VXLIB_multiply_i8u_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i8u_i16s_o16s_helperFunc, "vxlib_multiply_i8u_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S },
-    { &gBAM_VXLIB_multiply_i16s_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i16s_i16s_o16s_helperFunc, "vxlib_multiply_i16s_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S }
+    { &gBAM_VXLIB_multiply_i16s_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i16s_i16s_o16s_helperFunc, "vxlib_multiply_i16s_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S },
+    { &gBAM_VXLIB_minMaxLoc_i8u_kernel, &gBAM_VXLIB_minMaxLoc_i8u_helperFunc, "vxlib_minMaxLoc_i8u", BAM_KERNELID_VXLIB_MINMAXLOC_I8U },
+    { &gBAM_VXLIB_minMaxLoc_i16s_kernel, &gBAM_VXLIB_minMaxLoc_i16s_helperFunc, "vxlib_minMaxLoc_i16s", BAM_KERNELID_VXLIB_MINMAXLOC_I16S }
 };
 
 /**
@@ -106,7 +108,9 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_multiply_i8u_i8u_o8u_kernel, &gBAM_VXLIB_multiply_i8u_i8u_o8u_execFunc, "vxlib_multiply_i8u_i8u_o8u", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U },
     { &gBAM_VXLIB_multiply_i8u_i8u_o16s_kernel, &gBAM_VXLIB_multiply_i8u_i8u_o16s_execFunc, "vxlib_multiply_i8u_i8u_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S },
     { &gBAM_VXLIB_multiply_i8u_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i8u_i16s_o16s_execFunc, "vxlib_multiply_i8u_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S },
-    { &gBAM_VXLIB_multiply_i16s_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i16s_i16s_o16s_execFunc, "vxlib_multiply_i16s_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S }
+    { &gBAM_VXLIB_multiply_i16s_i16s_o16s_kernel, &gBAM_VXLIB_multiply_i16s_i16s_o16s_execFunc, "vxlib_multiply_i16s_i16s_o16s", BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S },
+    { &gBAM_VXLIB_minMaxLoc_i8u_kernel, &gBAM_VXLIB_minMaxLoc_i8u_execFunc, "vxlib_minMaxLoc_i8u", BAM_KERNELID_VXLIB_MINMAXLOC_I8U },
+    { &gBAM_VXLIB_minMaxLoc_i16s_kernel, &gBAM_VXLIB_minMaxLoc_i16s_execFunc, "vxlib_minMaxLoc_i16s", BAM_KERNELID_VXLIB_MINMAXLOC_I16S }
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =
