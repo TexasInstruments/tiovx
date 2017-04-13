@@ -67,7 +67,9 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_dilate_3x3_i8u_o8u_kernel, &gBAM_VXLIB_dilate_3x3_i8u_o8u_helperFunc, "vxlib_dilate_3x3_i8u_o8u", BAM_KERNELID_VXLIB_DILATE_3X3_I8U_O8U },
     { &gBAM_VXLIB_erode_3x3_i8u_o8u_kernel, &gBAM_VXLIB_erode_3x3_i8u_o8u_helperFunc, "vxlib_erode_3x3_i8u_o8u", BAM_KERNELID_VXLIB_ERODE_3X3_I8U_O8U },
     { &gBAM_VXLIB_gaussian_3x3_i8u_o8u_kernel, &gBAM_VXLIB_gaussian_3x3_i8u_o8u_helperFunc, "vxlib_gaussian_3x3_i8u_o8u", BAM_KERNELID_VXLIB_GAUSSIAN_3X3_I8U_O8U },
-    { &gBAM_VXLIB_median_3x3_i8u_o8u_kernel, &gBAM_VXLIB_median_3x3_i8u_o8u_helperFunc, "vxlib_median_3x3_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_3X3_I8U_O8U }
+    { &gBAM_VXLIB_median_3x3_i8u_o8u_kernel, &gBAM_VXLIB_median_3x3_i8u_o8u_helperFunc, "vxlib_median_3x3_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_3X3_I8U_O8U },
+    { &gBAM_VXLIB_addSquare_i8u_i16s_o16s_kernel, &gBAM_VXLIB_addSquare_i8u_i16s_o16s_helperFunc, "vxlib_addSquare_i8u_i16s_o16s", BAM_KERNELID_VXLIB_ADDSQUARE_I8U_I16S_O16S },
+    { &gBAM_VXLIB_addWeight_i8u_i8u_o8u_kernel, &gBAM_VXLIB_addWeight_i8u_i8u_o8u_helperFunc, "vxlib_addWeight_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ADDWEIGHT_I8U_I8U_O8U }
 };
 
 /**
@@ -124,7 +126,9 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_dilate_3x3_i8u_o8u_kernel, &gBAM_VXLIB_dilate_3x3_i8u_o8u_execFunc, "vxlib_dilate_3x3_i8u_o8u", BAM_KERNELID_VXLIB_DILATE_3X3_I8U_O8U },
     { &gBAM_VXLIB_erode_3x3_i8u_o8u_kernel, &gBAM_VXLIB_erode_3x3_i8u_o8u_execFunc, "vxlib_erode_3x3_i8u_o8u", BAM_KERNELID_VXLIB_ERODE_3X3_I8U_O8U },
     { &gBAM_VXLIB_gaussian_3x3_i8u_o8u_kernel, &gBAM_VXLIB_gaussian_3x3_i8u_o8u_execFunc, "vxlib_gaussian_3x3_i8u_o8u", BAM_KERNELID_VXLIB_GAUSSIAN_3X3_I8U_O8U },
-    { &gBAM_VXLIB_median_3x3_i8u_o8u_kernel, &gBAM_VXLIB_median_3x3_i8u_o8u_execFunc, "vxlib_median_3x3_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_3X3_I8U_O8U }
+    { &gBAM_VXLIB_median_3x3_i8u_o8u_kernel, &gBAM_VXLIB_median_3x3_i8u_o8u_execFunc, "vxlib_median_3x3_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_3X3_I8U_O8U },
+    { &gBAM_VXLIB_addSquare_i8u_i16s_o16s_kernel, &gBAM_VXLIB_addSquare_i8u_i16s_o16s_execFunc, "vxlib_addSquare_i8u_i16s_o16s", BAM_KERNELID_VXLIB_ADDSQUARE_I8U_I16S_O16S },
+    { &gBAM_VXLIB_addWeight_i8u_i8u_o8u_kernel, &gBAM_VXLIB_addWeight_i8u_i8u_o8u_execFunc, "vxlib_addWeight_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ADDWEIGHT_I8U_I8U_O8U }
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =

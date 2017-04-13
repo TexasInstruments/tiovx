@@ -24,9 +24,9 @@ extern "C" {
 #ifdef USE_BAM
 
 void tivxAddTargetKernelBamAbsDiff(void);
-void tivxAddTargetKernelAccumulate(void);
-void tivxAddTargetKernelAccumulateSquare(void);
-void tivxAddTargetKernelAccumulateWeighted(void);
+void tivxAddTargetKernelBamAccumulate(void);
+void tivxAddTargetKernelBamAccumulateSquare(void);
+void tivxAddTargetKernelBamAccumulateWeighted(void);
 void tivxAddTargetKernelBamAdd(void);
 void tivxAddTargetKernelBamSubtract(void);
 void tivxAddTargetKernelBamBitwiseNot(void);
@@ -69,9 +69,9 @@ void tivxAddTargetKernelWarpAffine(void);
 void tivxAddTargetKernelWarpPerspective(void);
 
 void tivxRemoveTargetKernelBamAbsDiff(void);
-void tivxRemoveTargetKernelAccumulate(void);
-void tivxRemoveTargetKernelAccumulateSquare(void);
-void tivxRemoveTargetKernelAccumulateWeighted(void);
+void tivxRemoveTargetKernelBamAccumulate(void);
+void tivxRemoveTargetKernelBamAccumulateSquare(void);
+void tivxRemoveTargetKernelBamAccumulateWeighted(void);
 void tivxRemoveTargetKernelBamAdd(void);
 void tivxRemoveTargetKernelBamSubtract(void);
 void tivxRemoveTargetKernelBamBitwiseNot(void);

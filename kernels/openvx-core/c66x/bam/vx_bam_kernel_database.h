@@ -59,6 +59,8 @@
 #include "ti/vxlib/src/vx/VXLIB_erode_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_erode_3x3_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_gaussian_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_gaussian_3x3_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_median_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_median_3x3_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_addSquare_i8u_i16s_o16s/bam_plugin/BAM_VXLIB_addSquare_i8u_i16s_o16s.h"
+#include "ti/vxlib/src/vx/VXLIB_addWeight_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_addWeight_i8u_i8u_o8u.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -113,6 +115,8 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_ERODE_3X3_I8U_O8U = 44,
     BAM_KERNELID_VXLIB_GAUSSIAN_3X3_I8U_O8U = 45,
     BAM_KERNELID_VXLIB_MEDIAN_3X3_I8U_O8U = 46,
+    BAM_KERNELID_VXLIB_ADDSQUARE_I8U_I16S_O16S = 47,
+    BAM_KERNELID_VXLIB_ADDWEIGHT_I8U_I8U_O8U = 48,
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 
