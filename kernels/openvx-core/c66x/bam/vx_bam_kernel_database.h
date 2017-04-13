@@ -54,6 +54,11 @@
 #include "ti/vxlib/src/vx/VXLIB_minMaxLoc_i16s/bam_plugin/BAM_VXLIB_minMaxLoc_i16s.h"
 #include "ti/vxlib/src/vx/VXLIB_thresholdBinary_i8u_o8u/bam_plugin/BAM_VXLIB_thresholdBinary_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_thresholdRange_i8u_o8u/bam_plugin/BAM_VXLIB_thresholdRange_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_box_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_box_3x3_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_dilate_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_dilate_3x3_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_erode_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_erode_3x3_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_gaussian_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_gaussian_3x3_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_median_3x3_i8u_o8u/bam_plugin/BAM_VXLIB_median_3x3_i8u_o8u.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -103,6 +108,11 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_MINMAXLOC_I16S = 39,
     BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U = 40,
     BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U = 41,
+    BAM_KERNELID_VXLIB_BOX_3X3_I8U_O8U = 42,
+    BAM_KERNELID_VXLIB_DILATE_3X3_I8U_O8U = 43,
+    BAM_KERNELID_VXLIB_ERODE_3X3_I8U_O8U = 44,
+    BAM_KERNELID_VXLIB_GAUSSIAN_3X3_I8U_O8U = 45,
+    BAM_KERNELID_VXLIB_MEDIAN_3X3_I8U_O8U = 46,
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 
