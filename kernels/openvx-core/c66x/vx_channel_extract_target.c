@@ -383,15 +383,11 @@ vx_status VX_CALLBACK tivxChannelExtract(
     tivx_obj_desc_scalar_t *channel_desc;
     tivx_obj_desc_image_t *out_desc;
 
-    if ( num_params != TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_IN_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX])
-    )
-    {
-        status = VX_FAILURE;
-    }
-    else
+    /* Check number of buffers and NULL pointers */
+    status = ownCheckNullParams(obj_desc, num_params,
+            TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
     {
         vx_enum channel_value;
 
