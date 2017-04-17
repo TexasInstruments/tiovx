@@ -372,6 +372,8 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
 
         if(src->format == VX_DF_IMAGE_RGB)
         {
+            vxlib_src.data_type = VXLIB_UINT24;
+
             BAM_VXLIB_channelExtract_1of3_i8u_o8u_params params;
 
             params.channel_offset = channel_offset;
