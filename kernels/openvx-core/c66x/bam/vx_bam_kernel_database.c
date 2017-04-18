@@ -37,6 +37,10 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_box_3x3_i8u_o8u_kernel, &gBAM_VXLIB_box_3x3_i8u_o8u_helperFunc, "vxlib_box_3x3_i8u_o8u", BAM_KERNELID_VXLIB_BOX_3X3_I8U_O8U },
     { &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_kernel, &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_helperFunc, "vxlib_cannyNMS_i16s_i16s_i16u_o8u", BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U },
     { &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_helperFunc, "vxlib_channelCopy_1to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_2to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_2to1_i8u_o8u_helperFunc, "vxlib_channelCombine_2to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_2TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_3to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_3to1_i8u_o8u_helperFunc, "vxlib_channelCombine_3to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_3TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_4to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_4to1_i8u_o8u_helperFunc, "vxlib_channelCombine_4to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_4TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_yuyv_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_yuyv_i8u_o8u_helperFunc, "vxlib_channelCombine_yuyv_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_YUYV_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_helperFunc, "vxlib_channelExtract_1of2_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_helperFunc, "vxlib_channelExtract_1of3_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_helperFunc, "vxlib_channelExtract_1of4_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U },
@@ -106,7 +110,6 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_thresholdBinary_i8u_o8u_kernel, &gBAM_VXLIB_thresholdBinary_i8u_o8u_helperFunc, "vxlib_thresholdBinary_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U },
     { &gBAM_VXLIB_thresholdRange_i8u_o8u_kernel, &gBAM_VXLIB_thresholdRange_i8u_o8u_helperFunc, "vxlib_thresholdRange_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U },
     { &gBAM_VXLIB_xor_i8u_i8u_o8u_kernel, &gBAM_VXLIB_xor_i8u_i8u_o8u_helperFunc, "vxlib_xor_i8u_i8u_o8u", BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U }
-
 };
 
 /**
@@ -133,6 +136,10 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_box_3x3_i8u_o8u_kernel, &gBAM_VXLIB_box_3x3_i8u_o8u_execFunc, "vxlib_box_3x3_i8u_o8u", BAM_KERNELID_VXLIB_BOX_3X3_I8U_O8U },
     { &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_kernel, &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_execFunc, "vxlib_cannyNMS_i16s_i16s_i16u_o8u", BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U },
     { &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_execFunc, "vxlib_channelCopy_1to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_2to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_2to1_i8u_o8u_execFunc, "vxlib_channelCombine_2to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_2TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_3to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_3to1_i8u_o8u_execFunc, "vxlib_channelCombine_3to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_3TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_4to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_4to1_i8u_o8u_execFunc, "vxlib_channelCombine_4to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_4TO1_I8U_O8U },
+    { &gBAM_VXLIB_channelCombine_yuyv_i8u_o8u_kernel, &gBAM_VXLIB_channelCombine_yuyv_i8u_o8u_execFunc, "vxlib_channelCombine_yuyv_i8u_o8u", BAM_KERNELID_VXLIB_CHANNEL_COMBINE_YUYV_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_execFunc, "vxlib_channelExtract_1of2_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_execFunc, "vxlib_channelExtract_1of3_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_execFunc, "vxlib_channelExtract_1of4_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U },
@@ -202,7 +209,6 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_thresholdBinary_i8u_o8u_kernel, &gBAM_VXLIB_thresholdBinary_i8u_o8u_execFunc, "vxlib_thresholdBinary_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U },
     { &gBAM_VXLIB_thresholdRange_i8u_o8u_kernel, &gBAM_VXLIB_thresholdRange_i8u_o8u_execFunc, "vxlib_thresholdRange_i8u_o8u", BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U },
     { &gBAM_VXLIB_xor_i8u_i8u_o8u_kernel, &gBAM_VXLIB_xor_i8u_i8u_o8u_execFunc, "vxlib_xor_i8u_i8u_o8u", BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U }
-
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =
