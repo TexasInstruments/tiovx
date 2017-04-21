@@ -87,6 +87,9 @@
 #include "ti/vxlib/src/vx/VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_colorConvert_YUVXtoNV12_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u.h"
 
+#include "ti/vxlib/src/vx/VXLIB_convolve_i8u_c16s_o8u/bam_plugin/BAM_VXLIB_convolve_i8u_c16s_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_convolve_i8u_c16s_o16s/bam_plugin/BAM_VXLIB_convolve_i8u_c16s_o16s.h"
+
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
 typedef enum _bam_ti_kernelid
@@ -168,6 +171,9 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGBX_I8U_O8U = 68,
     BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoNV12_I8U_O8U = 69,
     BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoIYUV_I8U_O8U = 70,
+
+    BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O8U = 71,
+    BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S = 72,
 
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
