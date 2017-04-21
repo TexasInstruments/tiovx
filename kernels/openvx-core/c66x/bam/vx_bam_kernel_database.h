@@ -67,6 +67,25 @@
 #include "ti/vxlib/src/vx/VXLIB_channelExtract_1of3_i8u_o8u/bam_plugin/BAM_VXLIB_channelExtract_1of3_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_channelExtract_1of4_i8u_o8u/bam_plugin/BAM_VXLIB_channelExtract_1of4_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_channelCopy_1to1_i8u_o8u/bam_plugin/BAM_VXLIB_channelCopy_1to1_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_RGBtoYUV4_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_RGBtoRGBX_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_RGBXtoRGB_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u.h"
+
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_NVXXtoRGB_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u.h"
+
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_IYUVtoRGB_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_IYUVtoNV12_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_IYUVtoNV12_i8u_o8u.h"
+
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_YUVXtoRGB_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_colorConvert_YUVXtoNV12_i8u_o8u/bam_plugin/BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u.h"
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
@@ -129,6 +148,27 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U = 52,
     BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U = 53,
     BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U = 54,
+
+    BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoYUV4_I8U_O8U = 55,
+    BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoRGBX_I8U_O8U = 56,
+    BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoYUV4_I8U_O8U = 57,
+    BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoRGB_I8U_O8U = 58,
+
+    BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGB_I8U_O8U = 59,
+    BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGBX_I8U_O8U = 60,
+    BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoYUV4_I8U_O8U = 61,
+    BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoIYUV_I8U_O8U = 62,
+
+    BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGB_I8U_O8U = 63,
+    BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGBX_I8U_O8U = 64,
+    BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoYUV4_I8U_O8U = 65,
+    BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoNV12_I8U_O8U = 66,
+
+    BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGB_I8U_O8U = 67,
+    BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGBX_I8U_O8U = 68,
+    BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoNV12_I8U_O8U = 69,
+    BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoIYUV_I8U_O8U = 70,
+
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
 

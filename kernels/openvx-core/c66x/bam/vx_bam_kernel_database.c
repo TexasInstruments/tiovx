@@ -75,7 +75,23 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_helperFunc, "vxlib_channelExtract_1of2_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_helperFunc, "vxlib_channelExtract_1of3_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_helperFunc, "vxlib_channelExtract_1of4_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U },
-    { &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_helperFunc, "vxlib_channelCopy_1to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U }
+    { &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_helperFunc, "vxlib_channelCopy_1to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u_helperFunc, "vxlib_colorConvert_RGBtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u_helperFunc, "vxlib_colorConvert_RGBtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_helperFunc, "vxlib_colorConvert_RGBXtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u_helperFunc, "vxlib_colorConvert_RGBXtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_helperFunc, "vxlib_colorConvert_NVXXtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_helperFunc, "vxlib_colorConvert_NVXXtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_helperFunc, "vxlib_colorConvert_NVXXtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_helperFunc, "vxlib_colorConvert_NVXXtoIYUV_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoIYUV_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_helperFunc, "vxlib_colorConvert_IYUVtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_helperFunc, "vxlib_colorConvert_IYUVtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u_helperFunc, "vxlib_colorConvert_IYUVtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoNV12_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoNV12_i8u_o8u_helperFunc, "vxlib_colorConvert_IYUVtoNV12_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoNV12_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_helperFunc, "vxlib_colorConvert_YUVXtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_helperFunc, "vxlib_colorConvert_YUVXtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_helperFunc, "vxlib_colorConvert_YUVXtoNV12_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoNV12_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_helperFunc, "vxlib_colorConvert_YUVXtoIYUV_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoIYUV_I8U_O8U }
 };
 
 /**
@@ -140,7 +156,23 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of2_i8u_o8u_execFunc, "vxlib_channelExtract_1of2_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF2_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of3_i8u_o8u_execFunc, "vxlib_channelExtract_1of3_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF3_I8U_O8U },
     { &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_kernel, &gBAM_VXLIB_channelExtract_1of4_i8u_o8u_execFunc, "vxlib_channelExtract_1of4_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELEXTRACT_1OF4_I8U_O8U },
-    { &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_execFunc, "vxlib_channelCopy_1to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U }
+    { &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_kernel, &gBAM_VXLIB_channelCopy_1to1_i8u_o8u_execFunc, "vxlib_channelCopy_1to1_i8u_o8u", BAM_KERNELID_VXLIB_CHANNELCOPY_1TO1_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u_execFunc, "vxlib_colorConvert_RGBtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u_execFunc, "vxlib_colorConvert_RGBtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_execFunc, "vxlib_colorConvert_RGBXtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u_execFunc, "vxlib_colorConvert_RGBXtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_execFunc, "vxlib_colorConvert_NVXXtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_execFunc, "vxlib_colorConvert_NVXXtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_execFunc, "vxlib_colorConvert_NVXXtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_execFunc, "vxlib_colorConvert_NVXXtoIYUV_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoIYUV_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_execFunc, "vxlib_colorConvert_IYUVtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_execFunc, "vxlib_colorConvert_IYUVtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u_execFunc, "vxlib_colorConvert_IYUVtoYUV4_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoYUV4_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_IYUVtoNV12_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_IYUVtoNV12_i8u_o8u_execFunc, "vxlib_colorConvert_IYUVtoNV12_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoNV12_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_execFunc, "vxlib_colorConvert_YUVXtoRGB_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGB_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_execFunc, "vxlib_colorConvert_YUVXtoRGBX_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGBX_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_execFunc, "vxlib_colorConvert_YUVXtoNV12_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoNV12_I8U_O8U },
+    { &gBAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_kernel, &gBAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_execFunc, "vxlib_colorConvert_YUVXtoIYUV_i8u_o8u", BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoIYUV_I8U_O8U }
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =
