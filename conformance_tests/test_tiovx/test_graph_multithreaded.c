@@ -179,7 +179,7 @@ static int taskFinished1 = 0;
 static int taskFinished2 = 0;
 static int taskFinished3 = 0;
 
-static void tivxTask1(void *app_var)
+static void VX_CALLBACK tivxTask1(void *app_var)
 {
     vx_graph graph1 = (vx_graph)app_var;
 
@@ -189,7 +189,7 @@ static void tivxTask1(void *app_var)
     taskFinished1 = 1;
 }
 
-static void tivxTask2(void *app_var)
+static void VX_CALLBACK tivxTask2(void *app_var)
 {
     vx_graph graph2 = (vx_graph)app_var;
 
@@ -199,7 +199,7 @@ static void tivxTask2(void *app_var)
     taskFinished2 = 1;
 }
 
-static void tivxTask3(void *app_var)
+static void VX_CALLBACK tivxTask3(void *app_var)
 {
     vx_graph graph3 = (vx_graph)app_var;
 

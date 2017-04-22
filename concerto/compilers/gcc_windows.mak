@@ -75,8 +75,9 @@ $(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings
 
 ifeq ($(TARGET_OS),SYSBIOS)
 $(_MODULE)_COPT += -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A15F -DCGT_GCC -c -mcpu=cortex-a15 -g -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame  -ffunction-sections -fdata-sections 
-$(_MODULE)_COPT += -Wno-unknown-pragmas -Wno-missing-braces -Wno-format -Wno-unused-variable
 endif
+
+$(_MODULE)_COPT += -Wno-unknown-pragmas -Wno-missing-braces -Wno-format -Wno-unused-variable
 
 ifeq ($(TARGET_BUILD),debug)
 $(_MODULE)_COPT += -ggdb -ggdb3 -gdwarf-2 -DDEBUG
