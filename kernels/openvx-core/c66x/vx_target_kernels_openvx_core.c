@@ -50,7 +50,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelLaplacianPyramid, tivxRemoveTargetKernelLaplacianPyramid},
     {tivxAddTargetKernelLaplacianReconstruct, tivxRemoveTargetKernelLaplacianReconstruct},
     {tivxAddTargetKernelBamLut, tivxRemoveTargetKernelBamLut},
-    {tivxAddTargetKernelMagnitude, tivxRemoveTargetKernelMagnitude},
+    {tivxAddTargetKernelBamMagnitude, tivxRemoveTargetKernelBamMagnitude},
     {tivxAddTargetKernelMeanStdDev, tivxRemoveTargetKernelMeanStdDev},
     {tivxAddTargetKernelBamMedian3x3, tivxRemoveTargetKernelBamMedian3x3},
     {tivxAddTargetKernelBamMinMaxLoc, tivxRemoveTargetKernelBamMinMaxLoc},

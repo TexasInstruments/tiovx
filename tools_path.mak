@@ -15,7 +15,7 @@
 TIOVX_PATH := $(abspath .)
 
 VSDK_INSTALL_PATH := $(abspath ../../../)
-VSDK_TOOLS_PATH := /datalocal1/ti_components
+VSDK_TOOLS_PATH := $(VSDK_INSTALL_PATH)/ti_components
 
 CROSS_COMPILE_LINARO := arm-linux-gnueabihf-
 CROSS_COMPILE := arm-none-eabi-
@@ -52,7 +52,7 @@ XDIAS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/xdais_7_24_00_04
 EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
 
 # This path is temporary for our development since the above release doesn't have bam_plugins yet
-VXLIB2_PATH := /home/a0323847local/gitrepo/vxlib
+VXLIB2_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib
 ALGFRAMEWORK_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/algframework
 DMAUTILS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/dmautils
 EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20

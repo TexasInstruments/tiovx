@@ -99,7 +99,119 @@
 		<Unit filename="../../../internal_docs/doxy_cfg/layout.xml" />
 		<Unit filename="../../../internal_docs/doxy_cfg/ti_disclaim.htm" />
 		<Unit filename="../../../internal_docs/doxy_cfg/ti_logo.gif" />
+		<Unit filename="../../../kernels/include/tivx_kernel_utils.h" />
+		<Unit filename="../../../kernels/ivision/common/concerto.mak" />
+		<Unit filename="../../../kernels/ivision/common/tivx_alg_vision.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/ivision/eve/concerto.mak" />
+		<Unit filename="../../../kernels/ivision/eve/vx_harris_corners_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/ivision/eve/vx_target_kernels_ivision.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/ivision/host/concerto.mak" />
+		<Unit filename="../../../kernels/ivision/host/vx_harris_corners_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/ivision/host/vx_kerners_ivision_host.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/ivision/include/tivx_alg_ivision_if.h" />
+		<Unit filename="../../../kernels/ivision/include/tivx_kernel_harris_corners.h" />
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/concerto.mak" />
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_absdiff_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_accumulate_square_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_accumulate_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_accumulate_weighted_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_add_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_bitwise_and_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_bitwise_not_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_bitwise_or_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_bitwise_xor_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_box3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_canny_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_channel_extract_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_convert_depth_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_dilate3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_erode3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_gaussian3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_harris_corners_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_histogram_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_intgimg_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_kernel_database.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_kernel_database.h" />
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_kernel_wrapper.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_kernel_wrapper.h" />
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_lut_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_magnitude_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_median3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_minmaxloc_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_multiply_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_sobel3x3_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_subtract_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="../../../kernels/openvx-core/c66x/bam/vx_bam_threshold_target.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../kernels/openvx-core/c66x/concerto.mak" />
+		<Unit filename="../../../kernels/openvx-core/c66x/tivx_target_kernels_priv.h" />
 		<Unit filename="../../../kernels/openvx-core/c66x/vx_absdiff_target.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -272,6 +384,9 @@
 		<Unit filename="../../../kernels/openvx-core/host/vx_intgimg_host.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="../../../kernels/openvx-core/host/vx_kernel_common.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="../../../kernels/openvx-core/host/vx_kernels_openvx_core_host.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -333,6 +448,7 @@
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_channel_combine.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_channel_extract.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_color_convert.h" />
+		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_common.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_convert_depth.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_convolve.h" />
 		<Unit filename="../../../kernels/openvx-core/include/tivx_kernel_equalize_histogram.h" />
