@@ -60,10 +60,10 @@ typedef struct _tivx_queue_t {
   uint32_t *queue;
   /**< Address of data area of the queue elements */
 
-  tivx_mutex mutex_rd;
+  tivx_event block_rd;
   /**< Read semaphore */
 
-  tivx_mutex mutex_wr;
+  tivx_event block_wr;
   /**< Write semaphore  */
 
   tivx_mutex lock;

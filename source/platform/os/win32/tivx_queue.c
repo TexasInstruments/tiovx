@@ -70,7 +70,7 @@ vx_status tivxQueueCreate(
             /*
              * create semaphore for it
              */
-            status = tivxMutexCreate(&queue->mutex_rd);
+            status = tivxEventCreate(&queue->block_rd);
         }
 
         if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT)
@@ -82,7 +82,7 @@ vx_status tivxQueueCreate(
             /*
              * create semaphore for it
              */
-            status = tivxMutexCreate(&queue->mutex_wr);
+            status = tivxEventCreate(&queue->block_wr);
         }
 
         if (VX_SUCCESS == status)
@@ -111,14 +111,14 @@ vx_status tivxQueueDelete(tivx_queue *queue)
     if (NULL != queue)
     {
         if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET) &&
-            (NULL != queue->mutex_rd))
+            (NULL != queue->block_rd))
         {
-            tivxMutexDelete(&queue->mutex_rd);
+            tivxEventDelete(&queue->block_rd);
         }
         if ((queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_PUT) &&
-            (NULL != queue->mutex_wr))
+            (NULL != queue->block_wr))
         {
-            tivxMutexDelete(&queue->mutex_wr);
+            tivxEventDelete(&queue->block_wr);
         }
         if ((NULL != queue->lock))
         {
@@ -163,7 +163,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout)
                 /* blocking on que get enabled */
 
                 /* post semaphore to unblock, blocked tasks */
-                tivxMutexUnlock(queue->mutex_rd);
+                tivxEventPost(queue->block_rd);
             }
 
             /* exit, with success */
@@ -183,16 +183,16 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout)
             }
             else if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
             {
-                vx_status mutex_status;
+                vx_status wait_status;
 
                 /* blocking on que put enabled */
 
                 /* take semaphore and block until timeout occurs or
                  * semaphore is posted */
                 queue->blockedOnPut = vx_true_e;
-                mutex_status = tivxMutexLock(queue->mutex_wr);
+                wait_status = tivxEventWait(queue->block_wr, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnPut = vx_false_e;
-                if (VX_SUCCESS != mutex_status)
+                if (VX_SUCCESS != wait_status)
                 {
                     do_break = vx_true_e;
                     /* error, exit with error */
@@ -254,7 +254,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
                 /* blocking on que put enabled,
                  * post semaphore to unblock, blocked tasks
                  */
-                tivxMutexUnlock(queue->mutex_wr);
+                tivxEventPost(queue->block_wr);
             }
 
             /* exit with success */
@@ -274,7 +274,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
             else
             if (queue->flags & TIVX_QUEUE_FLAG_BLOCK_ON_GET)
             {
-                vx_status mutex_status;
+                vx_status wait_status;
 
                 /* blocking on que get enabled */
 
@@ -283,9 +283,9 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
                  */
 
                 queue->blockedOnGet = vx_true_e;
-                mutex_status = tivxMutexLock(queue->mutex_rd);
+                wait_status = tivxEventWait(queue->block_rd, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
                 queue->blockedOnGet = vx_false_e;
-                if (VX_SUCCESS != mutex_status)
+                if (VX_SUCCESS != wait_status)
                 {
                     do_break = vx_true_e; /* exit with error */
                 }
