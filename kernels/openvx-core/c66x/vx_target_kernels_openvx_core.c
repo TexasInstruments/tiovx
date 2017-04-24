@@ -57,7 +57,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamMultiply, tivxRemoveTargetKernelBamMultiply},
     {tivxAddTargetKernelNonLinearFilter, tivxRemoveTargetKernelNonLinearFilter},
     {tivxAddTargetKernelOpticalFlowPyrLk, tivxRemoveTargetKernelOpticalFlowPyrLk},
-    {tivxAddTargetKernelPhase, tivxRemoveTargetKernelPhase},
+    {tivxAddTargetKernelBamPhase, tivxRemoveTargetKernelBamPhase},
     {tivxAddTargetKernelRemap, tivxRemoveTargetKernelRemap},
     {tivxAddTargetKernelScale, tivxRemoveTargetKernelScale},
     {tivxAddTargetKernelBamSobel3x3, tivxRemoveTargetKernelBamSobel3x3},

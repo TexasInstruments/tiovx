@@ -10,7 +10,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
-#include <tivx_kernel_magnitude.h>
+#include <tivx_kernel_phase.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernel_utils.h>
@@ -19,51 +19,51 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
-} tivxMagnitudeParams;
+} tivxPhaseParams;
 
-static tivx_target_kernel vx_bam_magnitude_target_kernel = NULL;
+static tivx_target_kernel vx_bam_phase_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeProcess(
+static vx_status VX_CALLBACK tivxBamKernelPhaseProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
+static vx_status VX_CALLBACK tivxBamKernelPhaseCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeDelete(
+static vx_status VX_CALLBACK tivxBamKernelPhaseDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeControl(
+static vx_status VX_CALLBACK tivxBamKernelPhaseControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeProcess(
+static vx_status VX_CALLBACK tivxBamKernelPhaseProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivxMagnitudeParams *prms = NULL;
+    tivxPhaseParams *prms = NULL;
     tivx_obj_desc_image_t *src0, *src1, *dst;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
     vx_rectangle_t rect;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MAGNITUDE_MAX_PARAMS);
+            TIVX_KERNEL_PHASE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MAGNITUDE_IN0_IMG_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MAGNITUDE_IN1_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MAGNITUDE_OUT_IMG_IDX];
+        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_IN0_IMG_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_IN1_IMG_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_OUT_IMG_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
         if ((VX_SUCCESS != status) || (NULL == prms) ||
-            (sizeof(tivxMagnitudeParams) != size))
+            (sizeof(tivxPhaseParams) != size))
         {
             status = VX_FAILURE;
         }
@@ -131,29 +131,29 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeProcess(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
+static vx_status VX_CALLBACK tivxBamKernelPhaseCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
 
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src0, *src1, *dst;
-    tivxMagnitudeParams *prms = NULL;
+    tivxPhaseParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = ownCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MAGNITUDE_MAX_PARAMS);
+            TIVX_KERNEL_PHASE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MAGNITUDE_IN0_IMG_IDX];
+            TIVX_KERNEL_PHASE_IN0_IMG_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MAGNITUDE_IN1_IMG_IDX];
+            TIVX_KERNEL_PHASE_IN1_IMG_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MAGNITUDE_OUT_IMG_IDX];
+            TIVX_KERNEL_PHASE_OUT_IMG_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxMagnitudeParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxPhaseParams), TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -161,7 +161,7 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
             VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[3];
 
-            memset(prms, 0, sizeof(tivxMagnitudeParams));
+            memset(prms, 0, sizeof(tivxPhaseParams));
 
             vxlib_src0.dim_x = src0->imagepatch_addr[0U].dim_x;
             vxlib_src0.dim_y = src0->imagepatch_addr[0U].dim_y;
@@ -176,7 +176,7 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
             vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
             vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
             vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-            vxlib_dst.data_type = VXLIB_INT16;
+            vxlib_dst.data_type = VXLIB_UINT8;
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -186,11 +186,11 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
 
             kernel_details.compute_kernel_params = NULL;
 
-            BAM_VXLIB_magnitude_i16s_i16s_o16s_getKernelInfo(
+            BAM_VXLIB_phase_i16s_i16s_o8u_getKernelInfo(
                 NULL, &kernel_details.kernel_info);
 
             status = tivxBamCreateHandleSingleNode(
-                BAM_KERNELID_VXLIB_MAGNITUDE_I16S_I16S_O16S,
+                BAM_KERNELID_VXLIB_PHASE_I16S_I16S_O8U,
                 buf_params, &kernel_details,
                 &prms->graph_handle);
         }
@@ -202,13 +202,13 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
         if (VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
-                sizeof(tivxMagnitudeParams));
+                sizeof(tivxPhaseParams));
         }
         else
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxMagnitudeParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxPhaseParams), TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -216,17 +216,17 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeDelete(
+static vx_status VX_CALLBACK tivxBamKernelPhaseDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
     uint32_t size;
-    tivxMagnitudeParams *prms = NULL;
+    tivxPhaseParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = ownCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MAGNITUDE_MAX_PARAMS);
+            TIVX_KERNEL_PHASE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -234,24 +234,24 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeDelete(
             (void **)&prms, &size);
 
         if ((VX_SUCCESS == status) && (NULL != prms) &&
-            (sizeof(tivxMagnitudeParams) == size))
+            (sizeof(tivxPhaseParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);
-            tivxMemFree(prms, sizeof(tivxMagnitudeParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxPhaseParams), TIVX_MEM_EXTERNAL);
         }
     }
 
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxBamKernelMagnitudeControl(
+static vx_status VX_CALLBACK tivxBamKernelPhaseControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelBamMagnitude(void)
+void tivxAddTargetKernelBamPhase(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -271,20 +271,19 @@ void tivxAddTargetKernelBamMagnitude(void)
                 TIVX_TARGET_MAX_NAME);
         }
 
-        vx_bam_magnitude_target_kernel = tivxAddTargetKernel(
-            VX_KERNEL_MAGNITUDE,
+        vx_bam_phase_target_kernel = tivxAddTargetKernel(
+            VX_KERNEL_PHASE,
             target_name,
-            tivxBamKernelMagnitudeProcess,
-            tivxBamKernelMagnitudeCreate,
-            tivxBamKernelMagnitudeDelete,
-            tivxBamKernelMagnitudeControl,
+            tivxBamKernelPhaseProcess,
+            tivxBamKernelPhaseCreate,
+            tivxBamKernelPhaseDelete,
+            tivxBamKernelPhaseControl,
             NULL);
     }
 }
 
 
-void tivxRemoveTargetKernelBamMagnitude(void)
+void tivxRemoveTargetKernelBamPhase(void)
 {
-    tivxRemoveTargetKernel(vx_bam_magnitude_target_kernel);
+    tivxRemoveTargetKernel(vx_bam_phase_target_kernel);
 }
-

@@ -90,6 +90,9 @@
 #include "ti/vxlib/src/vx/VXLIB_convolve_i8u_c16s_o8u/bam_plugin/BAM_VXLIB_convolve_i8u_c16s_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_convolve_i8u_c16s_o16s/bam_plugin/BAM_VXLIB_convolve_i8u_c16s_o16s.h"
 
+#include "ti/vxlib/src/vx/VXLIB_magnitude_i16s_i16s_o16s/bam_plugin/BAM_VXLIB_magnitude_i16s_i16s_o16s.h"
+#include "ti/vxlib/src/vx/VXLIB_phase_i16s_i16s_o8u/bam_plugin/BAM_VXLIB_phase_i16s_i16s_o8u.h"
+
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
 typedef enum _bam_ti_kernelid
@@ -174,6 +177,9 @@ typedef enum _bam_ti_kernelid
 
     BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O8U = 71,
     BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S = 72,
+
+    BAM_KERNELID_VXLIB_MAGNITUDE_I16S_I16S_O16S = 73,
+    BAM_KERNELID_VXLIB_PHASE_I16S_I16S_O8U = 74,
 
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
