@@ -41,6 +41,13 @@ extern "C" {
  */
 #define TIVX_TASK_AFFINITY_ANY      (0xFFFFu)
 
+/*!
+ * \brief Max Task Name Size
+ *
+ * \ingroup group_tivx_task
+ */
+#define TIVX_MAX_TASK_NAME         (20)
+
 /*! \brief Entry point of task
  *
  *  \param target [in] target handle
@@ -126,6 +133,10 @@ typedef struct _tivx_task_create_params
 
     /*! \brief private app object */
     void *app_var;
+
+    
+    /*! \brief Task Name */
+    char task_name[TIVX_MAX_TASK_NAME];
 } tivx_task_create_params_t;
 
 

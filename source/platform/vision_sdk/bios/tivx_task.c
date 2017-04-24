@@ -80,6 +80,7 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
 
         tskHndl = (void *)BspOsal_taskCreate(
             tivxTaskDefHandle,
+            params->task_name,
             params->priority,
             params->stack_ptr,
             params->stack_size,
