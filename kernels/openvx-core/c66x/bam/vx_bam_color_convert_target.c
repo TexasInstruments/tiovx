@@ -18,8 +18,10 @@
 
 typedef struct
 {
+    uint8_t *scratch_buf;
+    uint32_t scratch_size;
     tivx_bam_graph_handle graph_handle;
-} tivxConvertDepthParams;
+} tivxColorConvertParams;
 
 static tivx_target_kernel vx_color_convert_target_kernel = NULL;
 
@@ -45,7 +47,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
 {
     vx_status status = VX_SUCCESS;
     uint32_t i;
-    tivxConvertDepthParams *prms = NULL;
+    tivxColorConvertParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr[4], *dst_addr[4];
     vx_rectangle_t rect;
@@ -67,7 +69,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
             (void **)&prms, &size);
 
         if ((VX_SUCCESS != status) || (NULL == prms) ||
-            (sizeof(tivxConvertDepthParams) != size))
+            (sizeof(tivxColorConvertParams) != size))
         {
             status = VX_FAILURE;
         }
@@ -108,6 +110,31 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
              (VX_DF_IMAGE_YUV4 == dst->format)) ||
             ((VX_DF_IMAGE_RGBX == src->format) &&
              (VX_DF_IMAGE_YUV4 == dst->format)))
+        {
+            img_ptrs[0] = src_addr[0];
+            img_ptrs[1] = dst_addr[0];
+            img_ptrs[2] = dst_addr[1];
+            img_ptrs[3] = dst_addr[2];
+            tivxBamUpdatePointers(prms->graph_handle, 1U, 3U, img_ptrs);
+
+            status  = tivxBamProcessGraph(prms->graph_handle);
+        }
+        else if (((VX_DF_IMAGE_RGB == src->format) &&
+             (VX_DF_IMAGE_NV12 == dst->format)) ||
+            ((VX_DF_IMAGE_RGBX == src->format) &&
+             (VX_DF_IMAGE_NV12 == dst->format)))
+        {
+            img_ptrs[0] = src_addr[0];
+            img_ptrs[1] = dst_addr[0];
+            img_ptrs[2] = dst_addr[1];
+            tivxBamUpdatePointers(prms->graph_handle, 1U, 2U, img_ptrs);
+
+            status  = tivxBamProcessGraph(prms->graph_handle);
+        }
+        else if (((VX_DF_IMAGE_RGB == src->format) &&
+             (VX_DF_IMAGE_IYUV == dst->format)) ||
+            ((VX_DF_IMAGE_RGBX == src->format) &&
+             (VX_DF_IMAGE_IYUV == dst->format)))
         {
             img_ptrs[0] = src_addr[0];
             img_ptrs[1] = dst_addr[0];
@@ -262,7 +289,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
     vx_status status = VX_SUCCESS;
     uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
-    tivxConvertDepthParams *prms = NULL;
+    tivxColorConvertParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
     VXLIB_bufParams2D_t vxlib_src[4], vxlib_dst[4];
     VXLIB_bufParams2D_t *buf_params[6];
@@ -278,12 +305,44 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
         dst = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+
+        /* Allocate Scratch memory */
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxColorConvertParams));
+
+            if (((VX_DF_IMAGE_RGB == src->format) &&
+                 (VX_DF_IMAGE_NV12 == dst->format)) ||
+                ((VX_DF_IMAGE_RGB == src->format) &&
+                 (VX_DF_IMAGE_IYUV == dst->format)) ||
+                ((VX_DF_IMAGE_RGBX == src->format) &&
+                 (VX_DF_IMAGE_NV12 == dst->format)) ||
+                ((VX_DF_IMAGE_RGBX == src->format) &&
+                 (VX_DF_IMAGE_IYUV == dst->format)))
+            {
+                prms->scratch_size = 4 * dst->imagepatch_addr[0].dim_x *
+                    sizeof(uint8_t);
+
+                prms->scratch_buf = tivxMemAlloc(prms->scratch_size,
+                    TIVX_MEM_EXTERNAL);
+
+                if (NULL == prms->scratch_buf)
+                {
+                    status = VX_ERROR_NO_MEMORY;
+                    tivxMemFree(prms, sizeof(tivxColorConvertParams),
+                        TIVX_MEM_EXTERNAL);
+                    prms = NULL;
+                }
+                else
+                {
+                    memset(prms->scratch_buf, 0, prms->scratch_size);
+                }
+            }
+        }
 
         if (NULL != prms)
         {
-            memset(prms, 0, sizeof(tivxConvertDepthParams));
-
             for (i = 0; i < src->planes; i++)
             {
                 vxlib_src[i].dim_x = src->imagepatch_addr[i].dim_x;
@@ -376,6 +435,67 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                     buf_params, &kernel_details, &prms->graph_handle);
             }
             else if ((VX_DF_IMAGE_RGB == src->format) &&
+                     (VX_DF_IMAGE_NV12 == dst->format))
+            {
+                BAM_VXLIB_colorConvert_RGBtoNV12_i8u_o8u_params params;
+
+                vxlib_src[0].data_type = VXLIB_UINT24;
+                vxlib_dst[0].data_type = VXLIB_UINT8;
+                vxlib_dst[1].data_type = VXLIB_UINT8;
+
+                buf_params[0] = &vxlib_src[0];
+                buf_params[1] = &vxlib_dst[0];
+                buf_params[2] = &vxlib_dst[1];
+
+                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
+                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
+
+                params.scratch_buf = prms->scratch_buf;
+                params.scratch_size = prms->scratch_size;
+
+                kernel_details.compute_kernel_params = (void *)&params;
+
+                BAM_VXLIB_colorConvert_RGBtoNV12_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details.kernel_info);
+
+                status = tivxBamCreateHandleSingleNode(
+                    BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoNV12_I8U_O8U,
+                    buf_params, &kernel_details, &prms->graph_handle);
+            }
+            else if ((VX_DF_IMAGE_RGB == src->format) &&
+                     (VX_DF_IMAGE_IYUV == dst->format))
+            {
+                BAM_VXLIB_colorConvert_RGBtoIYUV_i8u_o8u_params params;
+
+                vxlib_src[0].data_type = VXLIB_UINT24;
+                vxlib_dst[0].data_type = VXLIB_UINT8;
+                vxlib_dst[1].data_type = VXLIB_UINT8;
+                vxlib_dst[2].data_type = VXLIB_UINT8;
+
+                buf_params[0] = &vxlib_src[0];
+                buf_params[1] = &vxlib_dst[0];
+                buf_params[2] = &vxlib_dst[1];
+                buf_params[3] = &vxlib_dst[2];
+
+                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
+                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
+                vxlib_dst[2].dim_x = dst->imagepatch_addr[2].dim_x;
+                vxlib_dst[2].dim_y = dst->imagepatch_addr[2].dim_y;
+
+
+                params.scratch_buf = prms->scratch_buf;
+                params.scratch_size = prms->scratch_size;
+
+                kernel_details.compute_kernel_params = (void *)&params;
+
+                BAM_VXLIB_colorConvert_RGBtoIYUV_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details.kernel_info);
+
+                status = tivxBamCreateHandleSingleNode(
+                    BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoIYUV_I8U_O8U,
+                    buf_params, &kernel_details, &prms->graph_handle);
+            }
+            else if ((VX_DF_IMAGE_RGB == src->format) &&
                      (VX_DF_IMAGE_RGBX == dst->format))
             {
                 vxlib_src[0].data_type = VXLIB_UINT24;
@@ -431,6 +551,58 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
                 status = tivxBamCreateHandleSingleNode(
                     BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoYUV4_I8U_O8U,
+                    buf_params, &kernel_details, &prms->graph_handle);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_NV12 == dst->format))
+            {
+                BAM_VXLIB_colorConvert_RGBXtoNV12_i8u_o8u_params params;
+
+                vxlib_src[0].data_type = VXLIB_UINT32;
+                vxlib_dst[0].data_type = VXLIB_UINT8;
+                vxlib_dst[1].data_type = VXLIB_UINT8;
+
+                buf_params[0] = &vxlib_src[0];
+                buf_params[1] = &vxlib_dst[0];
+                buf_params[2] = &vxlib_dst[1];
+
+                params.scratch_buf = prms->scratch_buf;
+                params.scratch_size = prms->scratch_size;
+
+                kernel_details.compute_kernel_params = (void *)&params;
+
+                BAM_VXLIB_colorConvert_RGBXtoNV12_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details.kernel_info);
+
+                status = tivxBamCreateHandleSingleNode(
+                    BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoNV12_I8U_O8U,
+                    buf_params, &kernel_details, &prms->graph_handle);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_IYUV == dst->format))
+            {
+                BAM_VXLIB_colorConvert_RGBXtoIYUV_i8u_o8u_params params;
+
+                vxlib_src[0].data_type = VXLIB_UINT32;
+                vxlib_dst[0].data_type = VXLIB_UINT8;
+                vxlib_dst[1].data_type = VXLIB_UINT8;
+                vxlib_dst[2].data_type = VXLIB_UINT8;
+
+                buf_params[0] = &vxlib_src[0];
+                buf_params[1] = &vxlib_dst[0];
+                buf_params[2] = &vxlib_dst[1];
+                buf_params[3] = &vxlib_dst[2];
+
+                params.scratch_buf = prms->scratch_buf;
+                params.scratch_size = prms->scratch_size;
+
+                kernel_details.compute_kernel_params = (void *)&params;
+
+                BAM_VXLIB_colorConvert_RGBXtoIYUV_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details.kernel_info);
+
+                status = tivxBamCreateHandleSingleNode(
+                    BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoIYUV_I8U_O8U,
                     buf_params, &kernel_details, &prms->graph_handle);
             }
             else if (((VX_DF_IMAGE_NV12 == src->format) ||
@@ -740,13 +912,21 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
         if (VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
-                sizeof(tivxConvertDepthParams));
+                sizeof(tivxColorConvertParams));
         }
         else
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+                if (prms->scratch_buf)
+                {
+                    tivxMemFree(prms->scratch_buf, prms->scratch_size,
+                        TIVX_MEM_EXTERNAL);
+                    prms->scratch_buf = NULL;
+                }
+
+                tivxMemFree(prms, sizeof(tivxColorConvertParams),
+                    TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -760,7 +940,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertDelete(
 {
     vx_status status = VX_SUCCESS;
     uint32_t size;
-    tivxConvertDepthParams *prms = NULL;
+    tivxColorConvertParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = ownCheckNullParams(obj_desc, num_params,
@@ -772,10 +952,18 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertDelete(
             (void **)&prms, &size);
 
         if ((VX_SUCCESS == status) && (NULL != prms) &&
-            (sizeof(tivxConvertDepthParams) == size))
+            (sizeof(tivxColorConvertParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);
-            tivxMemFree(prms, sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
+
+            if (prms->scratch_buf)
+            {
+                tivxMemFree(prms->scratch_buf, prms->scratch_size,
+                    TIVX_MEM_EXTERNAL);
+                prms->scratch_buf = NULL;
+            }
+
+            tivxMemFree(prms, sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
         }
     }
 
