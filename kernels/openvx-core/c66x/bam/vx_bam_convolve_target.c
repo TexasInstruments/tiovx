@@ -215,10 +215,6 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
                 BAM_VXLIB_convolve_i8u_c16s_o16s_getKernelInfo(
                     &kernel_params, &kernel_details.kernel_info);
 
-                kernel_details.kernel_info.kernelExtraInfo.metaInfo =
-                    BAM_METAINFO_NEIGHBORHOOD_OP(kernel_params.conv_width,
-                    kernel_params.conv_height);
-
                 status = tivxBamCreateHandleSingleNode(
                     BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S,
                     buf_params, &kernel_details,
