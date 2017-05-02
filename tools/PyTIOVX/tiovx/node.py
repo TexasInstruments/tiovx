@@ -10,6 +10,7 @@ class Node (Reference) :
         Reference.__init__(self, Type.NODE, "default")
         self.kernel = kernel
         self.ref = []
+        self.param_dir = []
         self.target = Target.DEFAULT
         for arg in args :
             self.ref.append(arg)
@@ -25,6 +26,10 @@ class Node (Reference) :
     def setParams(self, num_in, num_out, *param_type_args) :
         self.num_in = num_in
         self.num_out = num_out
+        for i in range(0, self.num_in) :
+            self.param_dir.append(Direction.INPUT)
+        for i in range(0, self.num_out) :
+            self.param_dir.append(Direction.OUTPUT)
         self.checkParams(*param_type_args)
 
     def setTarget(self, target):
@@ -259,8 +264,12 @@ class NodeColorConvert (Node) :
 class NodeConvertDepth (Node) :
     def __init__(self, image_in1, image_out2, policy3, shift4, name="default", target=Target.DEFAULT) :
         scalar3 = Scalar(Type.ENUM, policy3)
-        Node.__init__(self, "org.khronos.openvx.convertdepth", image_in1, scalar3, shift4, image_out2)
-        self.setParams(3, 1, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.IMAGE)
+        Node.__init__(self, "org.khronos.openvx.convertdepth", image_in1, image_out2, scalar3, shift4)
+        self.setParams(3, 1, Type.IMAGE, Type.IMAGE, Type.SCALAR, Type.SCALAR)
+        self.param_dir[0] = Direction.INPUT;
+        self.param_dir[1] = Direction.OUTPUT;
+        self.param_dir[2] = Direction.INPUT;
+        self.param_dir[3] = Direction.INPUT;
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_CONVERTDEPTH");
 

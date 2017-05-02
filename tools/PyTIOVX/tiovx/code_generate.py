@@ -4,7 +4,7 @@
 '''
 
 from . import *
-    
+
 class CodeGenerate :
     def __init__(self, filename) :
         self.indent_level = 0
@@ -35,23 +35,23 @@ class CodeGenerate :
             self.file.write(self.indent)
         self.file.write(text_line)
         self.file.write('\n')
-    
+
     def write_open_brace(self) :
         self.write_line('{')
         self.indent_level = self.indent_level+1
-        
+
     def write_close_brace(self, text="") :
         self.indent_level = self.indent_level-1
         self.write_line('}%s' % text)
 
     def write_include(self, include_file_name) :
-        self.write_line('#include <%s>' % include_file_name)
+        self.write_line('#include "%s"' % include_file_name)
 
     def write_ifndef_define(self, text) :
         self.write_line('#ifndef %s' % text)
         self.write_line('#define %s' % text)
         self.write_newline()
-    
+
     def write_endif(self, text) :
         self.write_line('#endif /* %s */' % text)
         self.write_newline()
@@ -63,6 +63,6 @@ class CodeGenerate :
         self.write_line("vx_status status = VX_SUCCESS;")
 
     def write_if_status(self) :
-        self.write_line("if (status == VX_SUCCESS)");            
+        self.write_line("if (status == VX_SUCCESS)");
 
-        
+

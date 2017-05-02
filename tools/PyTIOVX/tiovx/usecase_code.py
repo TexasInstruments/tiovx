@@ -64,6 +64,7 @@ class UsecaseCode :
         self.c_file.write_newline()
         GraphCode(graph).call_create(self.c_file)
         self.c_file.write_line("usecase->%s = graph;" % (graph.name))
+        GraphCode(graph).set_ref_name(self.c_file)
         self.c_file.write_newline()
         self.c_file.write_line("return status;")
         self.c_file.write_close_brace()
@@ -112,7 +113,8 @@ class UsecaseCode :
         self.c_file.write_open_brace()
         self.c_file.write_define_status();
         self.c_file.write_newline()
-
+        self.c_file.write_line("memset(usecase, 0, sizeof(%s_t));" % self.context.name);
+        self.c_file.write_newline();
         self.c_file.write_if_status();
         self.c_file.write_open_brace()
         self.c_file.write_line("usecase->context = vxCreateContext();")

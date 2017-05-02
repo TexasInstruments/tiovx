@@ -20,4 +20,5 @@ class ImageCode (ReferenceCode) :
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
         code_gen.write_close_brace()
+        self.set_ref_name(code_gen)
         code_gen.write_close_brace()

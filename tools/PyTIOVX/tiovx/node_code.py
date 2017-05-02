@@ -66,6 +66,8 @@ class NodeCode (ReferenceCode) :
             code_gen.write_line("    usecase->%s %s" % (ref.name, end_char))
             i = i+1
         code_gen.write_line("  );")
+        self.set_ref_name(code_gen)
+        code_gen.write_line("vxSetNodeTarget(usecase->%s, VX_TARGET_STRING, %s);" % (self.ref.name, Target.get_vx_enum_name(self.ref.target)))
         code_gen.write_close_brace();
 
     def call_delete(self, code_gen) :

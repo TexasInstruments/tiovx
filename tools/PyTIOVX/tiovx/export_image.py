@@ -84,13 +84,12 @@ class ExportImage (Export) :
         self.file.write('\n')
 
     def outputNodeConnection(self, node) :
-        i=0
         idx = 0
-        for i in range(0, node.num_in) :
-            self.file.write('  %s -> %s [taillabel=%d, labeldistance=3]\n' % (node.ref[idx].name, node.name, i))
-            idx = idx + 1
-        for i in range(0, node.num_out) :
-            self.file.write('  %s -> %s [headlabel=%d, labeldistance=3]\n' % (node.name, node.ref[idx].name, i))
+        for dir in node.param_dir :
+            if dir == Direction.INPUT :
+                self.file.write('  %s -> %s [taillabel=%d, labeldistance=3]\n' % (node.ref[idx].name, node.name, idx))
+            else :
+                self.file.write('  %s -> %s [headlabel=%d, labeldistance=3]\n' % (node.name, node.ref[idx].name, idx))
             idx = idx + 1
 
     def outputNodeConnectionList(self) :
