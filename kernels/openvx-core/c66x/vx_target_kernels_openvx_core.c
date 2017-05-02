@@ -44,7 +44,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamGaussian3x3, tivxRemoveTargetKernelBamGaussian3x3},
     {tivxAddTargetKernelGaussianPyramid, tivxAddTargetKernelGaussianPyramid},
     {tivxAddTargetKernelBamHarrisCorners, tivxRemoveTargetKernelBamHarrisCorners},
-    {tivxAddTargetKernelHalfscaleGaussian, tivxAddTargetKernelHalfscaleGaussian},
+    {tivxAddTargetKernelBamHalfscaleGaussian, tivxAddTargetKernelBamHalfscaleGaussian},
     {tivxAddTargetKernelBamHistogram, tivxRemoveTargetKernelBamHistogram},
     {tivxAddTargetKernelBamIntegralImage, tivxRemoveTargetKernelBamIntegralImage},
     {tivxAddTargetKernelLaplacianPyramid, tivxRemoveTargetKernelLaplacianPyramid},

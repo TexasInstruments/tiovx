@@ -102,6 +102,9 @@
 #include "ti/vxlib/src/vx/VXLIB_dilate_MxN_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_dilate_MxN_i8u_i8u_o8u.h"
 #include "ti/vxlib/src/vx/VXLIB_median_MxN_i8u_i8u_o8u/bam_plugin/BAM_VXLIB_median_MxN_i8u_i8u_o8u.h"
 
+#include "ti/vxlib/src/vx/VXLIB_scaleImageNearest_i8u_o8u/bam_plugin/BAM_VXLIB_scaleImageNearest_i8u_o8u.h"
+#include "ti/vxlib/src/vx/VXLIB_halfScaleGaussian_5x5_i8u_o8u/bam_plugin/BAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u.h"
+
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
 typedef enum _bam_ti_kernelid
@@ -198,6 +201,9 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_ERODE_MXN_I8U_I8U_O8U = 79,
     BAM_KERNELID_VXLIB_DILATE_MXN_I8U_I8U_O8U = 80,
     BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U = 81,
+
+    BAM_KERNELID_VXLIB_SCALEIMAGENEARES_I8U_O8U = 83,
+    BAM_KERNELID_VXLIB_HALFSCALEGAUSSIAN_5x5_I8U_O8U = 84,
 
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;

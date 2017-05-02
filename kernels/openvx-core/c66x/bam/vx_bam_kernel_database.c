@@ -102,7 +102,9 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
     { &gBAM_VXLIB_phase_i16s_i16s_o8u_kernel, &gBAM_VXLIB_phase_i16s_i16s_o8u_helperFunc, "vxlib_phase_i16s_i16s_o8u", BAM_KERNELID_VXLIB_PHASE_I16S_I16S_O8U }
     { &gBAM_VXLIB_erode_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_erode_MxN_i8u_i8u_o8u_helperFunc, "vxlib_erode_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ERODE_MXN_I8U_I8U_O8U },
     { &gBAM_VXLIB_dilate_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_dilate_MxN_i8u_i8u_o8u_helperFunc, "vxlib_dilate_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_DILATE_MXN_I8U_I8U_O8U },
-    { &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_helperFunc, "vxlib_median_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U }
+    { &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_helperFunc, "vxlib_median_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U },
+    { &gBAM_VXLIB_scaleImageNearest_i8u_o8u_kernel, &gBAM_VXLIB_scaleImageNearest_i8u_o8u_helperFunc, "vxlib_scaleImageNearest_i8u_o8u", BAM_KERNELID_VXLIB_SCALEIMAGENEARES_I8U_O8U },
+    { &gBAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u_kernel, &gBAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u_helperFunc, "vxlib_halfScaleGaussian_5x5_i8u_o8u", BAM_KERNELID_VXLIB_HALFSCALEGAUSSIAN_5x5_I8U_O8U }
 };
 
 /**
@@ -194,7 +196,9 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
     { &gBAM_VXLIB_phase_i16s_i16s_o8u_kernel, &gBAM_VXLIB_phase_i16s_i16s_o8u_execFunc, "vxlib_phase_i16s_i16s_o8u", BAM_KERNELID_VXLIB_PHASE_I16S_I16S_O8U }
     { &gBAM_VXLIB_erode_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_erode_MxN_i8u_i8u_o8u_execFunc, "vxlib_erode_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ERODE_MXN_I8U_I8U_O8U },
     { &gBAM_VXLIB_dilate_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_dilate_MxN_i8u_i8u_o8u_execFunc, "vxlib_dilate_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_DILATE_MXN_I8U_I8U_O8U },
-    { &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_execFunc, "vxlib_median_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U }
+    { &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_kernel, &gBAM_VXLIB_median_MxN_i8u_i8u_o8u_execFunc, "vxlib_median_MxN_i8u_i8u_o8u", BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U },
+    { &gBAM_VXLIB_scaleImageNearest_i8u_o8u_kernel, &gBAM_VXLIB_scaleImageNearest_i8u_o8u_execFunc, "vxlib_scaleImageNearest_i8u_o8u", BAM_KERNELID_VXLIB_SCALEIMAGENEARES_I8U_O8U },
+    { &gBAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u_kernel, &gBAM_VXLIB_halfScaleGaussian_5x5_i8u_o8u_execFunc, "vxlib_halfScaleGaussian_i8u_o8u", BAM_KERNELID_VXLIB_HALFSCALEGAUSSIAN_5x5_I8U_O8U }
 };
 
 BAM_KernelDBdef gBAM_TI_kernelDBdef =
