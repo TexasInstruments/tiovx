@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2016 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -206,6 +206,8 @@ typedef void (*CT_ObjectDestructor)(void **);
 typedef enum CT_GCType { CT_GC_ALL=0, CT_GC_OBJECT=1, CT_GC_IMAGE=2 } CT_GCType;
 void CT_RegisterForGarbageCollection(void *object, CT_ObjectDestructor collector, CT_GCType type);
 void CT_CollectGarbage(int type);
+void CT_FreeObject(void *object);
+void CT_SetHasRunningTest();
 
 #define CT_DO_FAIL /* TODO fail */ return
 #define CT_PASS() return

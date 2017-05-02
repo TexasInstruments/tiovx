@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
@@ -235,6 +235,39 @@ void CT_RegisterForGarbageCollection(void *object, CT_ObjectDestructor collector
     node->destructor_ = collector;
     node->next_ = bb->gc_chain_;
     bb->gc_chain_ = node;
+}
+
+void CT_SetHasRunningTest()
+{
+    g_has_running_test = 1;
+}
+
+void CT_FreeObject(void *object)
+{
+    struct CT_GlobalContextBlackBox* bb = CT()->internal_;
+    struct CT_GC_Node* node = bb->gc_chain_;
+    struct CT_GC_Node stub, *prev = &stub;
+    stub.next_ = node;
+
+    while(node)
+    {
+        struct CT_GC_Node* killme = node;
+        node = node->next_;
+
+        if(killme->object_ == object)
+        {
+            killme->destructor_(&killme->object_);
+            ct_free_mem(killme);
+            prev->next_ = node;
+            break;
+        }
+        else
+        {
+            prev = killme;
+        }
+    }
+
+    bb->gc_chain_ = stub.next_;
 }
 
 void CT_CollectGarbage(int type)
