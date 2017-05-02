@@ -1,0 +1,58 @@
+digraph vx_tutorial_graph_image_gradients_pytiovx_uc {
+
+  label = "vx_tutorial_graph_image_gradients_pytiovx_uc"
+  ColorScheme [shape=none, margin=0, label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        <TR><TD bgcolor="darkturquoise">DSP2</TD></TR>        </TABLE>>];
+
+
+
+  /* DATA OBJECTS */
+  input [color=GhostWhite, style=filled]
+  grad_x [color=GhostWhite, style=filled]
+  grad_y [color=GhostWhite, style=filled]
+  magnitude [color=GhostWhite, style=filled]
+  phase [color=GhostWhite, style=filled]
+  magnitude_img [color=GhostWhite, style=filled]
+  scalar_4 [color=GhostWhite, style=filled]
+  shift [color=GhostWhite, style=filled]
+  grad_x_img [color=GhostWhite, style=filled]
+  scalar_6 [color=GhostWhite, style=filled]
+  grad_y_img [color=GhostWhite, style=filled]
+  scalar_8 [color=GhostWhite, style=filled]
+
+
+  /* NODE OBJECTS */
+  node_1 [label="node_1 (org.khronos.openvx.sobel_3x3)", color=palegreen, style=filled]
+  node_2 [label="node_2 (org.khronos.openvx.magnitude)", color=darkturquoise, style=filled]
+  node_3 [label="node_3 (org.khronos.openvx.phase)", color=palegreen, style=filled]
+  node_5 [label="node_5 (org.khronos.openvx.convertdepth)", color=darkturquoise, style=filled]
+  node_7 [label="node_7 (org.khronos.openvx.convertdepth)", color=darkturquoise, style=filled]
+  node_9 [label="node_9 (org.khronos.openvx.convertdepth)", color=palegreen, style=filled]
+
+
+  /* NODE CONNECTIONS */
+  input -> node_1 [taillabel=0, labeldistance=3]
+  node_1 -> grad_x [headlabel=1, labeldistance=3]
+  node_1 -> grad_y [headlabel=2, labeldistance=3]
+  grad_x -> node_2 [taillabel=0, labeldistance=3]
+  grad_y -> node_2 [taillabel=1, labeldistance=3]
+  node_2 -> magnitude [headlabel=2, labeldistance=3]
+  grad_x -> node_3 [taillabel=0, labeldistance=3]
+  grad_y -> node_3 [taillabel=1, labeldistance=3]
+  node_3 -> phase [headlabel=2, labeldistance=3]
+  magnitude -> node_5 [taillabel=0, labeldistance=3]
+  node_5 -> magnitude_img [headlabel=1, labeldistance=3]
+  scalar_4 -> node_5 [taillabel=2, labeldistance=3]
+  shift -> node_5 [taillabel=3, labeldistance=3]
+  grad_x -> node_7 [taillabel=0, labeldistance=3]
+  node_7 -> grad_x_img [headlabel=1, labeldistance=3]
+  scalar_6 -> node_7 [taillabel=2, labeldistance=3]
+  shift -> node_7 [taillabel=3, labeldistance=3]
+  grad_y -> node_9 [taillabel=0, labeldistance=3]
+  node_9 -> grad_y_img [headlabel=1, labeldistance=3]
+  scalar_8 -> node_9 [taillabel=2, labeldistance=3]
+  shift -> node_9 [taillabel=3, labeldistance=3]
+
+
+}
