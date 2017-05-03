@@ -267,7 +267,6 @@ TEST_WITH_ARG(tivxBox3x3, testGraphProcessing, Filter_Arg,
 
     ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
 
-    /* Fix this check function */
     ASSERT_NO_FAILURE(sequential_box3x3_check(src, dst, border));
 
     VX_CALL(vxReleaseNode(&node1));
@@ -292,4 +291,54 @@ TEST_WITH_ARG(tivxBox3x3, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxBox3x3, testGraphProcessing)
+#define BOX_PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, box3x3_generate_bi_level, NULL), \
+    CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_1600x1200, ARG, box3x3_generate_bi_level, NULL)
+
+TEST_WITH_ARG(tivxBox3x3, negativeTestBorderMode, Filter_Arg,
+    BOX_PARAMETERS_NEGATIVE
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(dst_image = ct_create_similar_image(src_image), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxBox3x3Node(graph, src_image, virt), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxBox3x3Node(graph, virt, dst_image), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+}
+
+TESTCASE_TESTS(tivxBox3x3, testGraphProcessing, negativeTestBorderMode)

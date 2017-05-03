@@ -12,6 +12,7 @@
 #define VX_CORE_KERNEL_H_
 
 #include <tivx_kernel_common.h>
+#include <TI/tivx_debug.h>
 
 #ifdef __cplusplus
 extern "C" {
