@@ -351,7 +351,7 @@ typedef struct {
 #define REMAP_PARAMETERS \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_VX_BORDERS_REMAP_FULL, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL)
 
 TEST_WITH_ARG(tivxRemap, testGraphProcessing, Arg,
     REMAP_PARAMETERS
@@ -442,6 +442,82 @@ TEST_WITH_ARG(tivxRemap, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+#define NEGATIVE_REMAP_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_VX_BORDERS_NO_POLICY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MAP_PARAM_REMAP_FULL, ARG, remap_generate_random, NULL)
+;
+TEST_WITH_ARG(tivxRemap, negativeTestBorderMode, Arg,
+    NEGATIVE_REMAP_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_node node3 = 0, node4 = 0;
+    vx_image input_image = 0, output_image = 0, virt;
+    vx_image input_image2 = 0, output_image2 = 0, int_image;
+    vx_remap map1 = 0, map2 = 0;
+
+    CT_Image input = NULL, int_ctimage = NULL, output1 = NULL, output2 = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, SRC_WIDTH, SRC_HEIGHT));
+    ASSERT_NO_FAILURE(output1 = ct_allocate_image(16, 16, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(output2 = ct_allocate_image(16, 16, VX_DF_IMAGE_U8));
+
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image2 = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output_image = ct_image_to_vx_image(output1, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output_image2 = ct_image_to_vx_image(output2, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(map1 = remap_generate_map(context, input->width, input->height, arg_->width, arg_->height, arg_->map_type), VX_TYPE_REMAP);
+    ASSERT_VX_OBJECT(map2 = remap_generate_map(context, arg_->width, arg_->height, 16, 16, arg_->map_type), VX_TYPE_REMAP);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, arg_->width, arg_->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(int_image   = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxRemapNode(graph, input_image, map1, arg_->interp_type, virt), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxRemapNode(graph, virt, map2, arg_->interp_type, output_image), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node3 = vxRemapNode(graph, input_image2, map1, arg_->interp_type, int_image), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxRemapNode(graph, int_image, map2, arg_->interp_type, output_image2), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node4, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);;
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseRemap(&map1));
+    VX_CALL(vxReleaseRemap(&map2));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&int_image));
+    VX_CALL(vxReleaseImage(&output_image));
+    VX_CALL(vxReleaseImage(&output_image2));
+    VX_CALL(vxReleaseImage(&input_image));
+    VX_CALL(vxReleaseImage(&input_image2));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(node4 == 0);
+    ASSERT(graph == 0);
+    ASSERT(map1 == 0);
+    ASSERT(map2 == 0);
+    ASSERT(output_image == 0);
+    ASSERT(output_image2 == 0);
+    ASSERT(input_image == 0);
+    ASSERT(input_image2 == 0);
+}
+
 TESTCASE_TESTS(tivxRemap,
-        testGraphProcessing
+        testGraphProcessing,
+        negativeTestBorderMode
 )

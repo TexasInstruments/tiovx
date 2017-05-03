@@ -100,6 +100,7 @@ static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
                 (border.mode != VX_BORDER_CONSTANT))
             {
                 status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined and constant border mode is supported for remap\n");
             }
         }
     }

@@ -23,6 +23,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
     vx_image img[3U];
     vx_uint32 w[3U], h[3U], i;
     vx_df_image fmt[3U], out_fmt;
+    vx_border_t border;
 
     /* Check for NULL */
     if ((NULL == parameters[TIVX_KERNEL_SOBEL_IN_IMG_IDX]) ||
@@ -96,6 +97,19 @@ static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
         if (VX_DF_IMAGE_S16 != fmt[2U])
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for sobel\n");
+            }
         }
     }
 
