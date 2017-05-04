@@ -108,7 +108,10 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
     obj_desc->border_mode.mode = VX_BORDER_UNDEFINED;
     memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
 
-    obj_desc->target_kernel_index = 0;
+    memset(obj_desc->target_kernel_index, 0,
+        (TIVX_NODE_MAX_REPLICATE)*sizeof(uint32_t));
+
+    obj_desc->target_kernel_index[0] = 0;
     obj_desc->exe_status = 0;
     obj_desc->num_params = kernel->signature.num_parameters;
 
@@ -1239,6 +1242,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                             }
 
                             if ((num_of_replicas != 0) && (items != num_of_replicas))
+                            {
+                                status = VX_FAILURE;
+                            }
+                            if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
                             {
                                 status = VX_FAILURE;
                             }

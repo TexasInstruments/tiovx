@@ -42,7 +42,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE        (216U)
+#define TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE        (272U)
 
 /*! \brief Macro to check the alignment of the size of
  *         the shared memory entry

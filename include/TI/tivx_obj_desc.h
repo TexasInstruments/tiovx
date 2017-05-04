@@ -80,6 +80,11 @@ extern "C" {
  */
 #define TIVX_GRAPH_MAX_NODES               (32u)
 
+/*! \brief Max number of replicated nodes
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_MAX_REPLICATE            (32u)
+
 /*!
  * \brief Enum that list all possible object descriptor type's
  *
@@ -246,7 +251,7 @@ typedef struct _tivx_obj_desc_node
      *
      *         This is filled by target side during node create phase
      */
-    uint32_t target_kernel_index;
+    uint32_t target_kernel_index[TIVX_NODE_MAX_REPLICATE];
 
     /*! \brief node execution status */
     uint32_t exe_status;
@@ -297,6 +302,8 @@ typedef struct _tivx_obj_desc_node
     /*! \brief parameter object descriptors */
     uint16_t in_node_id[TIVX_NODE_MAX_IN_NODES];
 
+    /*! \brief Added dummy variable to keep structure size 8byte aligned */
+    uint32_t dummy;
 } tivx_obj_desc_node_t;
 
 /*!
@@ -341,8 +348,6 @@ typedef struct _tivx_obj_desc_image
     vx_imagepatch_addressing_t imagepatch_addr[TIVX_IMAGE_MAX_PLANES];
     /*! \brief valid region of image to use for processing */
     vx_rectangle_t valid_roi;
-    /*! \brief Added dummy variable to keep structure size 8byte aligned */
-    uint32_t dummy;
 } tivx_obj_desc_image_t;
 
 
