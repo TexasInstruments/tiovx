@@ -260,13 +260,16 @@ static vx_node usecase_node_create_node_1 (
   vx_image image_2 
   )
 {
+    vx_node node = NULL;
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_SOBEL_3x3, params, 3);
+    node = tivxCreateNodeByStructure(graph, VX_KERNEL_SOBEL_3x3, params, 3);
+    
+    return node;
 }
 
 static vx_node usecase_node_create_node_2 (
@@ -276,13 +279,16 @@ static vx_node usecase_node_create_node_2 (
   vx_image image_2 
   )
 {
+    vx_node node = NULL;
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_MAGNITUDE, params, 3);
+    node = tivxCreateNodeByStructure(graph, VX_KERNEL_MAGNITUDE, params, 3);
+    
+    return node;
 }
 
 static vx_node usecase_node_create_node_3 (
@@ -292,13 +298,16 @@ static vx_node usecase_node_create_node_3 (
   vx_image image_2 
   )
 {
+    vx_node node = NULL;
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_PHASE, params, 3);
+    node = tivxCreateNodeByStructure(graph, VX_KERNEL_PHASE, params, 3);
+    
+    return node;
 }
 
 static vx_node usecase_node_create_node_5 (
@@ -309,6 +318,7 @@ static vx_node usecase_node_create_node_5 (
   vx_scalar scalar_3 
   )
 {
+    vx_node node = NULL;
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
@@ -316,7 +326,9 @@ static vx_node usecase_node_create_node_5 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3 
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    node = tivxCreateNodeByStructure(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    
+    return node;
 }
 
 static vx_node usecase_node_create_node_7 (
@@ -327,6 +339,7 @@ static vx_node usecase_node_create_node_7 (
   vx_scalar scalar_3 
   )
 {
+    vx_node node = NULL;
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
@@ -334,7 +347,9 @@ static vx_node usecase_node_create_node_7 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3 
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    node = tivxCreateNodeByStructure(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    
+    return node;
 }
 
 static vx_node usecase_node_create_node_9 (
@@ -345,6 +360,7 @@ static vx_node usecase_node_create_node_9 (
   vx_scalar scalar_3 
   )
 {
+    vx_node node = NULL;
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
@@ -352,7 +368,9 @@ static vx_node usecase_node_create_node_9 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3 
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    node = tivxCreateNodeByStructure(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    
+    return node;
 }
 
 vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_create(vx_tutorial_graph_image_gradients_pytiovx_uc usecase)

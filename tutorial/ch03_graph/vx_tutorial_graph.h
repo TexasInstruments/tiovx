@@ -31,24 +31,32 @@
 void vx_tutorial_graph_image_gradients();
 
 /*
- * \brief User kernel usage
+ * \brief vxNodeSetTarget usage
  *
  *        Load a image from BMP file
- *        Compute gradients, magnitude, phase
+ *        Same graph as vx_tutorial_graph_image_gradients()
+ *        Save output to BMP file
+ */
+void vx_tutorial_graph_image_gradients_pytiovx();
+
+/*
+ * \brief User kernel usage
+ *
+ *        Load a 8b phase image from BMP file
  *        Add post processing user kernel to the graph
  *        Save output to BMP file
  */
-void vx_tutorial_graph_image_gradients_user_kernel();
+void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel);
 
 /*
  * \brief PyTIOVX usage
  *
  *        Load a image from BMP file
- *        Same graph as vx_tutorial_graph_image_gradients_user_kernel()
+ *        Compute gradients, magnitude, phase, user kernel
  *        Generate OpenVX graph code using PyTIOVX tool
  *        Save output to BMP file
  */
-void vx_tutorial_graph_image_gradients_pytiovx();
+void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel);
 
 /*
  * \brief Run all tutorials in this module

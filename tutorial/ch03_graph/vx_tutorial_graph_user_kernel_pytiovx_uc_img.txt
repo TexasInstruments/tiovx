@@ -1,0 +1,35 @@
+digraph vx_tutorial_graph_user_kernel_pytiovx_uc {
+
+  label = "vx_tutorial_graph_user_kernel_pytiovx_uc"
+  ColorScheme [shape=none, margin=0, label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        </TABLE>>];
+
+
+
+  /* DATA OBJECTS */
+  input [color=GhostWhite, style=filled]
+  grad_x [color=GhostWhite, style=filled]
+  grad_y [color=GhostWhite, style=filled]
+  phase [color=GhostWhite, style=filled]
+  phase_rgb [color=GhostWhite, style=filled]
+
+
+  /* NODE OBJECTS */
+  node_1 [label="node_1 (org.khronos.openvx.sobel_3x3)", color=palegreen, style=filled]
+  node_2 [label="node_2 (org.khronos.openvx.phase)", color=palegreen, style=filled]
+  node_3 [label="node_3 (vx_tutorial_graph.phase_rgb)", color=palegreen, style=filled]
+
+
+  /* NODE CONNECTIONS */
+  input -> node_1 [taillabel=0, labeldistance=3]
+  node_1 -> grad_x [headlabel=1, labeldistance=3]
+  node_1 -> grad_y [headlabel=2, labeldistance=3]
+  grad_x -> node_2 [taillabel=0, labeldistance=3]
+  grad_y -> node_2 [taillabel=1, labeldistance=3]
+  node_2 -> phase [headlabel=2, labeldistance=3]
+  phase -> node_3 [taillabel=0, labeldistance=3]
+  node_3 -> phase_rgb [headlabel=1, labeldistance=3]
+
+
+}

@@ -56,7 +56,6 @@ void vx_tutorial_graph_image_gradients_pytiovx()
         show_node_attributes(uc.node_1);
         show_node_attributes(uc.node_3);
         show_node_attributes(uc.node_5);
-        show_node_attributes(uc.node_6);
         show_node_attributes(uc.node_7);
         show_node_attributes(uc.node_9);
 
