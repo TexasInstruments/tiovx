@@ -31,7 +31,7 @@ class NodeCode (ReferenceCode) :
         code_gen.write_line("  )")
 
         code_gen.write_open_brace()
-
+        code_gen.write_line("vx_node node = NULL;")
         code_gen.write_line("vx_reference params[] =")
         code_gen.write_open_brace()
         i=0
@@ -43,8 +43,19 @@ class NodeCode (ReferenceCode) :
             i = i+1
         code_gen.write_close_brace(";")
 
-        code_gen.write_line("return tivxCreateNodeByStructure(graph, %s, params, %d);" % (self.ref.get_vx_kernel_enum(), num_params))
-
+        if self.ref.get_vx_kernel_enum() == "VX_USER_KERNEL" :
+            code_gen.write_open_brace()
+            code_gen.write_line("vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), \"%s\");" % self.ref.kernel)
+            code_gen.write_newline()
+            code_gen.write_line("if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)");
+            code_gen.write_open_brace();
+            code_gen.write_line("node = tivxCreateNodeByKernel(graph, kernel, params, %d);" % (num_params))
+            code_gen.write_close_brace()
+            code_gen.write_close_brace()
+        else :
+            code_gen.write_line("node = tivxCreateNodeByStructure(graph, %s, params, %d);" % (self.ref.get_vx_kernel_enum(), num_params))
+        code_gen.write_newline()
+        code_gen.write_line("return node;")
         code_gen.write_close_brace()
         code_gen.write_newline()
 

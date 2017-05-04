@@ -232,12 +232,22 @@ vx_enum tivxGetSelfCpuId(void);
 
 
 /*!
- * \brief Utility function to create a node given parameter references
+ * \brief Utility function to create a node given parameter references and kernel enum
  *
  * \ingroup group_tivx_ext
  */
 vx_node tivxCreateNodeByStructure(vx_graph graph,
                                 vx_enum kernelenum,
+                                vx_reference params[],
+                                vx_uint32 num);
+
+/*!
+ * \brief Utility function to create a node given parameter references and kernel reference
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_node tivxCreateNodeByKernel(vx_graph graph,
+                                vx_kernel kernel,
                                 vx_reference params[],
                                 vx_uint32 num);
 
