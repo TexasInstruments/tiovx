@@ -637,4 +637,55 @@ TEST_WITH_ARG(tivxCanny, multipleNode, canny_arg,
     printPerformance(perf_graph, lena->width*lena->height, "G1");
 }
 
-TESTCASE_TESTS(tivxCanny, virtImage, multipleNode)
+TEST_WITH_ARG(tivxCanny, negativeTestBorderMode, canny_arg,
+    CANNY_ARG(3, L1, 100, 120, lena_gray),
+    CANNY_ARG(3, L2, 90,  130, lena_gray)
+)
+{
+    uint32_t total, count;
+    vx_image src, dst, virt;
+    vx_threshold hyst;
+    vx_graph graph;
+    vx_node node1, node2;
+    CT_Image lena, vxdst, refdst, dist, virt_ctimage;
+    vx_int32 low_thresh  = arg_->low_thresh;
+    vx_int32 high_thresh = arg_->high_thresh;
+    vx_border_t border = { VX_BORDER_REPLICATE, {{ 0 }} };
+    vx_int32 border_width = arg_->grad_size/2 + 1;
+    vx_context context = context_->vx_context_;
+    vx_enum thresh_data_type = VX_TYPE_UINT8;
+    if (low_thresh > 255)
+        thresh_data_type = VX_TYPE_INT16;
+
+    if (90 == low_thresh)
+        border.mode = VX_BORDER_CONSTANT;
+
+    ASSERT_NO_FAILURE(lena = get_source_image(arg_->filename));
+    ASSERT_NO_FAILURE(src = ct_image_to_vx_image(lena, context));
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, lena->width, lena->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(hyst = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, thresh_data_type), VX_TYPE_THRESHOLD);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(hyst, VX_THRESHOLD_THRESHOLD_LOWER, &low_thresh,  sizeof(low_thresh)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(hyst, VX_THRESHOLD_THRESHOLD_UPPER, &high_thresh, sizeof(high_thresh)));
+    /* FALSE_VALUE and TRUE_VALUE of hyst parameter are set to their default values (0, 255) by vxCreateThreshold */
+    /* test reference data are computed with assumption that FALSE_VALUE and TRUE_VALUE set to 0 and 255 */
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node1 = vxCannyEdgeDetectorNode(graph, src, hyst, arg_->grad_size, arg_->norm_type, virt), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, virt, dst), VX_TYPE_NODE);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseGraph(&graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseThreshold(&hyst));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&src));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&virt));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&dst));
+}
+
+TESTCASE_TESTS(tivxCanny, virtImage, multipleNode, negativeTestBorderMode)

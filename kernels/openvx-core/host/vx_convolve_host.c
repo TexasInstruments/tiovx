@@ -25,6 +25,7 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
     vx_df_image fmt[2U];
     vx_convolution conv;
     vx_size size[2U];
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_CONVOLVE_MAX_PARAMS; i ++)
     {
@@ -107,6 +108,19 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
         if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for convolve\n");
+            }
         }
     }
 

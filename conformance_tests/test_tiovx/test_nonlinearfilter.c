@@ -449,4 +449,73 @@ TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxNonLinearFilter, testVirtualImage, testGraphProcessing)
+#define NEGATIVE_ADD_FUNCTIONS(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_NONLINEAR_FILTER_MEDIAN", __VA_ARGS__, VX_NONLINEAR_FILTER_MEDIAN))
+
+#define NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_PATTERN_BOX", __VA_ARGS__, VX_PATTERN_BOX))
+
+#define NEGATIVE_FILTER_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NEGATIVE_ADD_FUNCTIONS, NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_18x18, ARG, generate_random, NULL, 5), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NEGATIVE_ADD_FUNCTIONS, NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_644x258, ARG, generate_random, NULL, 5)
+
+TEST_WITH_ARG(tivxNonLinearFilter, negativeTestBorderMode, Filter_Arg,
+    NEGATIVE_FILTER_PARAMETERS
+    )
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt = 0;
+    vx_matrix mask = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_enum pattern = 0;
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_NO_FAILURE(src = arg_->generator(NULL, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    dst_image = ct_create_similar_image(src_image);
+    ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
+
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_size, arg_->mask_size);
+    ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
+    ASSERT_EQ_INT(arg_->pattern, pattern);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    node1 = vxNonLinearFilterNode(graph, arg_->function, src_image, mask, virt);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, virt, dst_image), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseMatrix(&mask));
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(mask == 0);
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+}
+
+TESTCASE_TESTS(tivxNonLinearFilter, testVirtualImage, testGraphProcessing, negativeTestBorderMode)

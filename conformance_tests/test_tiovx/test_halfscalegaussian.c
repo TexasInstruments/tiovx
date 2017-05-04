@@ -295,5 +295,72 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+#define NEGATIVE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
+
+TEST_WITH_ARG(tivxHalfScaleGaussian, negativeTestBorderMode, Arg,
+    NEGATIVE_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    int virt_width = 0, virt_height = 0, dst_width = 0, dst_height = 0;
+    vx_image src_image = 0, dst0_image = 0, dst1_image = 0, virt, int_image = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+
+    CT_Image src = NULL, dst0 = NULL, dst1 = NULL, int_ctimage = NULL;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    virt_width = (src->width + 1) / 2;
+    virt_height = (src->height + 1) / 2;
+    dst_width = (virt_width + 1) / 2;
+    dst_height = (virt_height + 1) / 2;
+
+    ASSERT_VX_OBJECT(int_image = vxCreateImage(context, virt_width, virt_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst0_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst1_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, virt_width, virt_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxHalfScaleGaussianNode(graph, src_image, virt, arg_->kernel_size), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxHalfScaleGaussianNode(graph, virt, dst0_image, arg_->kernel_size), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxHalfScaleGaussianNode(graph, src_image, int_image, arg_->kernel_size), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node4 = vxHalfScaleGaussianNode(graph, int_image, dst1_image, arg_->kernel_size), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(node4 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst1_image));
+    VX_CALL(vxReleaseImage(&dst0_image));
+    VX_CALL(vxReleaseImage(&int_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst1_image == 0);
+    ASSERT(dst0_image == 0);
+    ASSERT(int_image == 0);
+    ASSERT(src_image == 0);
+}
+
 TESTCASE_TESTS(tivxHalfScaleGaussian,
-        testGraphProcessing)
+        testGraphProcessing,
+        negativeTestBorderMode)

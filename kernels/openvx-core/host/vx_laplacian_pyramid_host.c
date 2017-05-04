@@ -27,6 +27,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
     vx_size num_levels;
     vx_df_image fmt, p_fmt;
     vx_float32 scale;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_LPL_PMD_MAX_PARAMS; i ++)
     {
@@ -111,6 +112,21 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if ((border.mode != VX_BORDER_UNDEFINED) &&
+                (border.mode != VX_BORDER_REPLICATE))
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined and replicate border mode is supported for laplacian pyramid\n");
+            }
+        }
+    }
+
     if (VX_SUCCESS == status)
     {
         p_fmt = VX_DF_IMAGE_S16;
