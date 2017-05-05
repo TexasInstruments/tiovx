@@ -97,6 +97,7 @@ static vx_status VX_CALLBACK tivxAddKernelFilt3x3Validate(vx_node node,
     vx_uint32 out_w, out_h, i;
     vx_df_image fmt[TIVX_KERNEL_FILT3x3_MAX_PARAMS], out_fmt;
     vx_image img[TIVX_KERNEL_FILT3x3_MAX_PARAMS];
+    vx_border_t border;
 
     if (num != TIVX_KERNEL_FILT3x3_MAX_PARAMS)
     {
@@ -165,6 +166,19 @@ static vx_status VX_CALLBACK tivxAddKernelFilt3x3Validate(vx_node node,
                 fmt[TIVX_KERNEL_FILT3x3_IN_IMG_IDX])
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for filtering kernels\n");
             }
         }
     }
