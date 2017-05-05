@@ -26,6 +26,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     vx_uint32 p_w, p_h;
     vx_df_image fmt, o_fmt, p_fmt;
     vx_float32 scale;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS; i ++)
     {
@@ -102,6 +103,20 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
         if (o_fmt != fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if ((border.mode != VX_BORDER_UNDEFINED) &&
+                (border.mode != VX_BORDER_REPLICATE))
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined and replicate border mode is supported for laplacian reconstruct\n");
+            }
         }
     }
 

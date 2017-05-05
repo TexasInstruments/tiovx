@@ -4,8 +4,9 @@
  */
 
 #include <TI/tivx.h>
-#include <VX/vx_types.h>
+#include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_halfscale_gaussian.h>
+#include <TI/tivx_target_kernel.h>
 
 static vx_kernel vx_halfscale_gaussian_kernel = NULL;
 
@@ -21,6 +22,7 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node
     vx_scalar scalar;
     vx_int32 gsize;
     vx_enum stype;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS; i ++)
     {
@@ -94,6 +96,19 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node
         if (fmt[0U] != fmt[1U])
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for halfscale gaussian\n");
+            }
         }
     }
 

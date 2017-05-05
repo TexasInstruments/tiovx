@@ -4,8 +4,9 @@
  */
 
 #include <TI/tivx.h>
-#include <VX/vx_types.h>
+#include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_non_linear_filter.h>
+#include <TI/tivx_target_kernel.h>
 
 static vx_kernel vx_non_linear_filter_kernel = NULL;
 
@@ -24,6 +25,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
     vx_df_image fmt[2U];
     vx_df_image out_fmt;
     vx_enum matrix_type = 0;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS; i ++)
     {
@@ -106,6 +108,19 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
         if ( fmt[1U] != fmt[0U] )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for nonlinear filter\n");
+            }
         }
     }
 
