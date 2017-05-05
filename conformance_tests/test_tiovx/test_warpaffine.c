@@ -433,6 +433,96 @@ TEST_WITH_ARG(tivxWarpAffine, testGraphProcessing, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
+
+#define NEGATIVE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_VX_INTERPOLATION_TYPE_NEAREST_NEIGHBOR, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ARG, warp_affine_generate_random, NULL, 128, 128)
+
+TEST_WITH_ARG(tivxWarpAffine, negativeTestBorderMode, Arg,
+    NEGATIVE_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph1 = 0, graph2 = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_node node1_graph2 = 0, node2_graph2 = 0;
+    vx_image input_image = 0, input_image_graph2 = 0, output_image = 0, output_image_graph2 = 0, virt = 0, int_image = 0;
+    vx_matrix matrix_node1 = 0, matrix_node2 = 0;
+    vx_float32 m_node1[6], m_node2[6];
+    vx_perf_t perf_node1, perf_node2, perf_graph1;
+    vx_perf_t perf_node1_graph2, perf_node2_graph2, perf_graph2;
+
+    CT_Image input = NULL, output = NULL, output_graph2 = NULL, int_cimage = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->src_width, arg_->src_height));
+    ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(output_graph2 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(int_cimage = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output_image = ct_image_to_vx_image(output, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(input_image_graph2 = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output_image_graph2 = ct_image_to_vx_image(output_graph2, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(int_image = ct_image_to_vx_image(int_cimage, context), VX_TYPE_IMAGE);
+    ASSERT_NO_FAILURE(warp_affine_generate_matrix(m_node1, input->width, input->height, arg_->width, arg_->height, arg_->matrix_type));
+    ASSERT_VX_OBJECT(matrix_node1 = warp_affine_create_matrix(context, m_node1), VX_TYPE_MATRIX);
+    ASSERT_NO_FAILURE(warp_affine_generate_matrix(m_node2, input->width, input->height, arg_->width, arg_->height, arg_->matrix_type));
+    ASSERT_VX_OBJECT(matrix_node2 = warp_affine_create_matrix(context, m_node2), VX_TYPE_MATRIX);
+
+    ASSERT_VX_OBJECT(graph1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(graph2 = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt = vxCreateVirtualImage(graph1, arg_->width, arg_->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxWarpAffineNode(graph1, input_image, matrix_node1, arg_->interp_type, virt), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxWarpAffineNode(graph1, virt, matrix_node2, arg_->interp_type, output_image), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node1_graph2 = vxWarpAffineNode(graph2, input_image_graph2, matrix_node1, arg_->interp_type, int_image), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2_graph2 = vxWarpAffineNode(graph2, int_image, matrix_node2, arg_->interp_type, output_image_graph2), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxSetNodeAttribute(node1_graph2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxSetNodeAttribute(node2_graph2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph1), VX_ERROR_NOT_SUPPORTED);
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph2), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1_graph2));
+    VX_CALL(vxReleaseNode(&node2_graph2));
+    VX_CALL(vxReleaseGraph(&graph1));
+    VX_CALL(vxReleaseGraph(&graph2));
+    VX_CALL(vxReleaseMatrix(&matrix_node1));
+    VX_CALL(vxReleaseMatrix(&matrix_node2));
+    VX_CALL(vxReleaseImage(&int_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&output_image));
+    VX_CALL(vxReleaseImage(&input_image));
+    VX_CALL(vxReleaseImage(&output_image_graph2));
+    VX_CALL(vxReleaseImage(&input_image_graph2));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node1_graph2 == 0);
+    ASSERT(node2_graph2 == 0);
+    ASSERT(graph1 == 0);
+    ASSERT(graph2 == 0);
+    ASSERT(matrix_node1 == 0);
+    ASSERT(matrix_node2 == 0);
+    ASSERT(output_image == 0);
+    ASSERT(input_image == 0);
+}
+
 TESTCASE_TESTS(tivxWarpAffine,
-        testGraphProcessing
+        testGraphProcessing,
+        negativeTestBorderMode
 )

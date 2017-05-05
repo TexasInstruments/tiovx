@@ -578,4 +578,50 @@ TEST_WITH_ARG(tivxSobel3x3, testOptionalParametersY, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxSobel3x3, testGraphProcessing, testOptionalParametersX, testOptionalParametersY)
+#define NEGATIVE_SOBEL_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, sobel3x3_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_18x18, ARG, sobel3x3_generate_random, NULL)
+
+TEST_WITH_ARG(tivxSobel3x3, negativeTestBorderMode, Filter_Arg,
+    NEGATIVE_SOBEL_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_y_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+
+    CT_Image src = NULL, dst_y = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    dst_y_image = ct_create_similar_image_with_format(src_image, VX_DF_IMAGE_S16);
+    ASSERT_VX_OBJECT(dst_y_image, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node = vxSobel3x3Node(graph, src_image, NULL, dst_y_image);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_y_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_y_image == 0);
+    ASSERT(src_image == 0);
+}
+
+TESTCASE_TESTS(tivxSobel3x3, testGraphProcessing, testOptionalParametersX, testOptionalParametersY, negativeTestBorderMode)

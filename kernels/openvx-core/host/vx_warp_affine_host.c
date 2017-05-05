@@ -28,6 +28,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
     vx_enum matrix_type = 0;
     vx_enum interpolation_type = 0;
     vx_df_image out_fmt;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_WARP_AFFINE_MAX_PARAMS; i ++)
     {
@@ -137,6 +138,20 @@ static vx_status VX_CALLBACK tivxAddKernelWarpAffineValidate(vx_node node,
         if (VX_DF_IMAGE_U8 != fmt[1U])
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if ((border.mode != VX_BORDER_UNDEFINED) &&
+                (border.mode != VX_BORDER_CONSTANT))
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined and constant border mode is supported for warp affine\n");
+            }
         }
     }
 
