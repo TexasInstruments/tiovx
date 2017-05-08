@@ -15,7 +15,7 @@
 TIOVX_PATH := $(abspath .)
 
 VSDK_INSTALL_PATH := $(abspath ../../../)
-VSDK_TOOLS_PATH := $(VSDK_INSTALL_PATH)/ti_components
+VSDK_TOOLS_PATH := /data/datalocal1_videoapps01/ti_components
 
 CROSS_COMPILE_LINARO := arm-linux-gnueabihf-
 CROSS_COMPILE := arm-none-eabi-
