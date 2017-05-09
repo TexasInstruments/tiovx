@@ -175,9 +175,9 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random/alpha0.33f/alphafinal0.67f", ADD_SIZE_644x258, ARG, 0.33f, 0.67f), \
     CT_GENERATE_PARAMETERS("random/alpha0.99f/alphafinal0.8f", ADD_SIZE_1600x1200, ARG, 0.99f, 0.8f)
 
-static int taskFinished1 = 0;
-static int taskFinished2 = 0;
-static int taskFinished3 = 0;
+volatile static int taskFinished1 = 0;
+volatile static int taskFinished2 = 0;
+volatile static int taskFinished3 = 0;
 
 static void VX_CALLBACK tivxTask1(void *app_var)
 {
