@@ -230,6 +230,9 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     uint16_t out_block_width  = blockDimParams->blockWidth;
     uint16_t out_block_height = blockDimParams->blockHeight;
 
+    uint16_t numBlksHorz = (uint16_t)(((buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
+    uint16_t numBlksVert = (uint16_t)(((buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
+
     if(kernel_info->nodeType == BAM_NODE_COMPUTE_NEIGHBORHOOD_OP) {
         out_block_width -= (uint16_t)((kernel_info->kernelExtraInfo.metaInfo >> 16) - 1);
         out_block_height -= (uint16_t)((kernel_info->kernelExtraInfo.metaInfo & 0xFFFFU) - 1U);
@@ -279,9 +282,6 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
 
     if(kernel_info->numOutputDataBlocks == 0)
     {
-        uint16_t numBlksHorz = (uint16_t)(((buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
-        uint16_t numBlksVert = (uint16_t)(((buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
-
         /* Configure dma_write_autoinc_args for SINK_NODE */
         dma_write_oneshot_args->numOutTransfers        = kernel_info->numOutputDataBlocks;
         dma_write_oneshot_args->transferType           = EDMA_UTILS_TRANSFER_OUT;
@@ -317,20 +317,27 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
 
         for(i=0; i<kernel_info->numOutputDataBlocks; i++)
         {
+            uint16_t block_width_out, block_height_out;
+            float xScale = kernel_info->kernelExtraInfo.outHorzSamplingFactor[i];
+            float yScale = kernel_info->kernelExtraInfo.outVertSamplingFactor[i];
+
             num_bytes = (uint32_t)VXLIB_sizeof(buf_params[j]->data_type);
 
+            block_width_out = blockDimParams->blockWidth*xScale;
+            block_height_out = blockDimParams->blockHeight*yScale;
+
             compute_kernel_args[j].data_type = buf_params[j]->data_type;
-            compute_kernel_args[j].dim_x     = out_block_width + optimize_x;
-            compute_kernel_args[j].dim_y     = out_block_height;
-            compute_kernel_args[j].stride_y  = (int32_t)(((uint32_t)(out_block_width + optimize_x))*num_bytes);
+            compute_kernel_args[j].dim_x     = block_width_out + optimize_x;
+            compute_kernel_args[j].dim_y     = block_height_out;
+            compute_kernel_args[j].stride_y  = (int32_t)(compute_kernel_args[j].dim_x*num_bytes);
 
             assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
-                buf_params[j]->dim_x*num_bytes,/* roiWidth */
-                buf_params[j]->dim_y,/* roiHeight */
-                out_block_width*num_bytes,/*blkWidth */
-                out_block_height,/*blkHeight*/
-                out_block_width*num_bytes,/* extBlkIncrementX */
-                out_block_height,/* extBlkIncrementY */
+                buf_params[j]->dim_x*xScale*num_bytes,/* roiWidth */
+                buf_params[j]->dim_y*yScale,/* roiHeight */
+                block_width_out*num_bytes,/*blkWidth */
+                block_height_out,/*blkHeight*/
+                block_width_out*num_bytes,/* extBlkIncrementX */
+                compute_kernel_args[j].dim_y,/* extBlkIncrementY */
                 0,/* intBlkIncrementX */
                 0,/* intBlkIncrementY */
                 0,/* roiOffset */
