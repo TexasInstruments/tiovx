@@ -608,7 +608,7 @@ TEST(Graph, testMultipleRun)
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0;
     CT_Image res1 = 0, res2 = 0;
-    vx_border_t border = { VX_BORDER_REPLICATE };
+    vx_border_t border = { VX_BORDER_UNDEFINED };
 
     ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_NO_FAILURE(ct_fill_image_random(src_image, &CT()->seed_));
@@ -629,6 +629,9 @@ TEST(Graph, testMultipleRun)
 
     VX_CALL(vxProcessGraph(graph));
     ASSERT_NO_FAILURE(res2 = ct_image_from_vx_image(dst_image));
+
+    ct_adjust_roi(res1, 1, 1, 1, 1);
+    ct_adjust_roi(res2, 1, 1, 1, 1);
 
     ASSERT_EQ_CTIMAGE(res1, res2);
 
@@ -652,7 +655,7 @@ TEST(Graph, testMultipleRunAsync)
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0;
     CT_Image res1 = 0, res2 = 0;
-    vx_border_t border = { VX_BORDER_REPLICATE };
+    vx_border_t border = { VX_BORDER_UNDEFINED };
 
     ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     ASSERT_NO_FAILURE(ct_fill_image_random(src_image, &CT()->seed_));
@@ -675,6 +678,9 @@ TEST(Graph, testMultipleRunAsync)
     VX_CALL(vxScheduleGraph(graph));
     VX_CALL(vxWaitGraph(graph));
     ASSERT_NO_FAILURE(res2 = ct_image_from_vx_image(dst_image));
+
+    ct_adjust_roi(res1, 1, 1, 1, 1);
+    ct_adjust_roi(res2, 1, 1, 1, 1);
 
     ASSERT_EQ_CTIMAGE(res1, res2);
 
