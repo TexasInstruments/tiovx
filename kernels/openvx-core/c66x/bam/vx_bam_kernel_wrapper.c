@@ -323,8 +323,8 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
 
             num_bytes = (uint32_t)VXLIB_sizeof(buf_params[j]->data_type);
 
-            block_width_out = blockDimParams->blockWidth*xScale;
-            block_height_out = blockDimParams->blockHeight*yScale;
+            block_width_out = out_block_width*xScale;
+            block_height_out = out_block_height*yScale;
 
             compute_kernel_args[j].data_type = buf_params[j]->data_type;
             compute_kernel_args[j].dim_x     = block_width_out + optimize_x;
