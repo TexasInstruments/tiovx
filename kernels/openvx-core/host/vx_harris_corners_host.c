@@ -29,6 +29,7 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     vx_enum stype;
     vx_size arr_capacity = 1;
     vx_int32 gs_bs_values;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
     {
@@ -204,6 +205,19 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
             if (VX_TYPE_KEYPOINT != arr_type)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for harris corners\n");
             }
         }
     }

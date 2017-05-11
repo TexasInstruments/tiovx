@@ -857,4 +857,66 @@ TEST_WITH_ARG(tivxFastCorners, testOptionalParameters, format_arg,
     printPerformance(perf_graph, width*height, "G1");
 }
 
-TESTCASE_TESTS(tivxFastCorners, testVirtualImages, testMultipleNodes, testOptionalParameters)
+TEST_WITH_ARG(tivxFastCorners, negativeTestBorderMode, format_arg,
+              FAST_TEST_CASE(Graph, lena, 10, 0),
+              FAST_TEST_CASE(Graph, lena, 10, 1),
+              )
+{
+    int mode = arg_->mode;
+    const char* imgname = arg_->imgname;
+    int threshold = arg_->threshold;
+    int nonmax = arg_->nonmax;
+    vx_image src;
+    vx_size num_corners = 0;
+    vx_node node = 0;
+    vx_graph graph = 0;
+    CT_Image src0, dst0, mask0, dst1;
+    vx_context context = context_->vx_context_;
+    vx_scalar sthresh;
+    vx_array corners;
+    uint32_t width, height;
+    vx_float32 threshold_f = (vx_float32)threshold;
+    uint32_t ncorners0, ncorners;
+    vx_size corners_data_size = 0;
+    vx_keypoint_t* corners_data = 0;
+    uint32_t i, dst1stride;
+    vx_border_t border = { VX_BORDER_REPLICATE };
+
+    if (nonmax == 1)
+        border.mode = VX_BORDER_CONSTANT;
+
+    ASSERT_NO_FAILURE(src0 = ct_read_image(imgname, 1));
+    ASSERT(src0->format == VX_DF_IMAGE_U8);
+
+    width = src0->width;
+    height = src0->height;
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    dst1stride = ct_stride_bytes(dst1);
+    ct_memset(dst1->data.y, 0, (vx_size)dst1stride*height);
+
+    ncorners0 = reference_fast(src0, dst0, mask0, threshold, nonmax);
+
+    src = ct_image_to_vx_image(src0, context);
+    sthresh = vxCreateScalar(context, VX_TYPE_FLOAT32, &threshold_f);
+    corners = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    node = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, NULL);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0 && graph == 0);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseScalar(&sthresh));
+    VX_CALL(vxReleaseArray(&corners));
+}
+
+TESTCASE_TESTS(tivxFastCorners, testVirtualImages, testMultipleNodes, testOptionalParameters, negativeTestBorderMode)

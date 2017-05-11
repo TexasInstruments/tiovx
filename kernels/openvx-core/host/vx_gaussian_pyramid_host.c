@@ -27,6 +27,7 @@ static vx_status VX_CALLBACK tivxAddKernelGassianPyramidValidate(vx_node node,
     vx_size num_levels;
     vx_df_image fmt, p_fmt;
     vx_float32 scale;
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_G_PYD_MAX_PARAMS; i ++)
     {
@@ -95,6 +96,19 @@ static vx_status VX_CALLBACK tivxAddKernelGassianPyramidValidate(vx_node node,
         if (fmt != p_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for gaussian pyramid\n");
+            }
         }
     }
 

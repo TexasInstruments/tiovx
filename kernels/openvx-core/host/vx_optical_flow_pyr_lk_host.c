@@ -4,8 +4,9 @@
  */
 
 #include <TI/tivx.h>
-#include <VX/vx_types.h>
+#include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_optical_flow_pyr_lk.h>
+#include <TI/tivx_target_kernel.h>
 
 static vx_kernel vx_optical_flow_pyr_lk_kernel = NULL;
 
@@ -24,6 +25,7 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
     vx_uint32 w[2U], h[2U];
     vx_float32 scale[2U];
     vx_df_image df_image[2U];
+    vx_border_t border;
 
     for (i = 0U; i < TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS; i ++)
     {
@@ -92,6 +94,20 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             }
         }
     }
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
+        if (VX_SUCCESS == status)
+        {
+            if (border.mode != VX_BORDER_UNDEFINED)
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for optical flow\n");
+            }
+        }
+    }
+
     if (VX_SUCCESS == status)
     {
         i = TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEXTPTS_IDX;

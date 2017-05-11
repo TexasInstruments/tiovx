@@ -636,7 +636,8 @@ TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
     vx_scalar num_iter            = 0;
     vx_scalar use_estimations     = 0;
     vx_size   winSize             = 5; // hardcoded from optflow test case
-    vx_border_t border = { VX_BORDER_REPLICATE };
+    vx_border_t border = arg_->border;
+    vx_border_t border_rep = { VX_BORDER_REPLICATE };
 
     vx_size num_points = 0;
     vx_keypoint_t* old_points = 0;
@@ -672,7 +673,7 @@ TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
 
     ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border));
+    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border_rep));
 
     ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input_image, pyr), VX_TYPE_NODE);
 
@@ -743,7 +744,8 @@ TEST_WITH_ARG(tivxGaussianPyramid, testVirtualPyramid, Arg,
     vx_scalar num_iter            = 0;
     vx_scalar use_estimations     = 0;
     vx_size   winSize             = 5; // hardcoded from optflow test case
-    vx_border_t border = { VX_BORDER_REPLICATE };
+    vx_border_t border = arg_->border;
+    vx_border_t border_rep = { VX_BORDER_REPLICATE };
 
     vx_size num_points = 0;
     vx_keypoint_t* old_points = 0;
@@ -779,7 +781,7 @@ TEST_WITH_ARG(tivxGaussianPyramid, testVirtualPyramid, Arg,
 
     ASSERT_VX_OBJECT(virt_pyr = vxCreateVirtualPyramid(graph, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
 
-    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border));
+    ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image, src_pyr, levels, arg_->scale, border_rep));
 
     ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input_image, virt_pyr), VX_TYPE_NODE);
 
@@ -826,7 +828,104 @@ TEST_WITH_ARG(tivxGaussianPyramid, testVirtualPyramid, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+#define NEG_VX_SCALE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF))
+
+#define NEGATIVE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_640x480, NEG_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_640x480, NEG_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL)
+
+TEST_WITH_ARG(tivxGaussianPyramid, negativeTestBorderMode, Arg,
+    NEGATIVE_PARAMETERS
+)
+{
+    vx_size levels;
+
+    vx_context context = context_->vx_context_;
+    vx_image input_image = 0;
+    vx_pyramid virt_pyr = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_pyramid src_pyr   = 0;
+    vx_array old_points_arr = 0;
+    vx_array new_points_arr = 0;
+    vx_float32 eps_val      = 0.001f;
+    vx_uint32  num_iter_val = 100;
+    vx_bool   use_estimations_val = vx_true_e;
+    vx_scalar eps                 = 0;
+    vx_scalar num_iter            = 0;
+    vx_scalar use_estimations     = 0;
+    vx_size   winSize             = 5; // hardcoded from optflow test case
+    vx_border_t border = arg_->border;
+    vx_border_t border_rep = { VX_BORDER_REPLICATE };
+
+    vx_size num_points = 0;
+    vx_keypoint_t* old_points = 0;
+    vx_keypoint_t* new_points_ref = 0;
+    vx_keypoint_t* new_points = 0;
+    vx_size new_points_size = 0;
+
+    vx_size max_window_dim = 0;
+
+    CT_Image input = NULL, src_ct_image = NULL;
+
+    ASSERT(arg_->scale < 1.0);
+
+    ASSERT_NO_FAILURE(input = optflow_pyrlk_read_image( "optflow_00.bmp", 0, 0));
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
+
+    ASSERT_NO_FAILURE(src_ct_image = optflow_pyrlk_read_image( "optflow_01.bmp", 0, 0));
+
+    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_NO_FAILURE(num_points = own_read_keypoints("optflow_pyrlk_5x5.txt", &old_points, &new_points_ref)); // create a new pts file
+
+    ASSERT_VX_OBJECT(old_points_arr = own_create_keypoint_array(context, num_points, old_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(use_estimations = vxCreateScalar(context, VX_TYPE_BOOL, &use_estimations_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt_pyr = vxCreateVirtualPyramid(graph, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input_image, virt_pyr), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxOpticalFlowPyrLKNode(
+        graph,
+        virt_pyr, src_pyr,
+        old_points_arr, old_points_arr, new_points_arr,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    if (border.mode != VX_BORDER_UNDEFINED)
+        VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseScalar(&eps));
+    VX_CALL(vxReleaseScalar(&num_iter));
+    VX_CALL(vxReleaseScalar(&use_estimations));
+    VX_CALL(vxReleaseArray(&old_points_arr));
+    VX_CALL(vxReleaseArray(&new_points_arr));
+    VX_CALL(vxReleasePyramid(&src_pyr));
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleasePyramid(&virt_pyr));
+    VX_CALL(vxReleaseImage(&input_image));
+    ASSERT(input_image == 0);
+}
+
 TESTCASE_TESTS(tivxGaussianPyramid,
         testGraphProcessing,
-        testVirtualPyramid
+        testVirtualPyramid,
+        negativeTestBorderMode
 )

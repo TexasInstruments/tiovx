@@ -353,6 +353,149 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     printPerformance(perf_graph, src_ct_image[0]->width*src_ct_image[0]->height, "G1");
 }
 
+#define NEG_PARAMETERS \
+    ARG("case1/5x5/ReferencePyramid", optflow_pyrlk_read_image, "optflow_00.bmp", "optflow_01.bmp", "optflow_pyrlk_5x5.txt", 5, 1), \
+    ARG("case1/9x9/ReferencePyramid", optflow_pyrlk_read_image, "optflow_00.bmp", "optflow_01.bmp", "optflow_pyrlk_9x9.txt", 9, 1)
+
+TEST_WITH_ARG(tivxOptFlowPyrLK, negativeTestBorderMode, Arg,
+    NEG_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image   src_image[2] = { 0, 0 };
+    vx_pyramid src_pyr[2]   = { 0, 0 };
+    vx_array old_points_arr = 0;
+    vx_array virt_points_arr = 0;
+    vx_array int_points_arr = 0;
+    vx_array new_points_arr0 = 0;
+    vx_array new_points_arr1 = 0;
+    vx_float32 eps_val      = 0.001f;
+    vx_uint32  num_iter_val = 100;
+    vx_bool   use_estimations_val = vx_true_e;
+    vx_scalar eps                 = 0;
+    vx_scalar num_iter            = 0;
+    vx_scalar use_estimations     = 0;
+    vx_size   winSize             = arg_->winSize;
+    vx_graph graph = 0;
+    vx_node src_pyr_node[2] = { 0, 0 };
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+
+    vx_size num_points = 0;
+    vx_keypoint_t* old_points = 0;
+    vx_keypoint_t* new_points0_ref = 0;
+    vx_keypoint_t* new_points0 = 0;
+    vx_size new_points0_size = 0;
+    vx_keypoint_t* new_points1_ref = 0;
+    vx_keypoint_t* new_points1 = 0;
+    vx_size new_points1_size = 0;
+    vx_keypoint_t* int_points_ref = 0;
+    vx_keypoint_t* int_points = 0;
+    vx_size int_points_size = 0;
+
+    vx_size max_window_dim = 0;
+
+    CT_Image src_ct_image[2] = {0, 0};
+
+    vx_border_t border = { VX_BORDER_REPLICATE };
+
+    if (arg_->winSize == 5)
+        border.mode = VX_BORDER_CONSTANT;
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION, &max_window_dim, sizeof(max_window_dim)));
+    if (winSize > max_window_dim)
+    {
+        printf("%d window dim is not supported. Skip test\n", (int)winSize);
+        return;
+    }
+
+    ASSERT_NO_FAILURE(src_ct_image[0] = arg_->generator(arg_->src1_fileName, 0, 0));
+    ASSERT_NO_FAILURE(src_ct_image[1] = arg_->generator(arg_->src2_fileName, 0, 0));
+
+    ASSERT_VX_OBJECT(src_image[0] = ct_image_to_vx_image(src_ct_image[0], context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src_image[1] = ct_image_to_vx_image(src_ct_image[1], context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_pyr[0] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(src_pyr[1] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_NO_FAILURE(num_points = own_read_keypoints(arg_->points_fileName, &old_points, &int_points_ref));
+
+    ASSERT_VX_OBJECT(old_points_arr = own_create_keypoint_array(context, num_points, old_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr0 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr1 = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(use_estimations = vxCreateScalar(context, VX_TYPE_BOOL, &use_estimations_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(int_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(virt_points_arr = vxCreateVirtualArray(graph, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+
+    if (arg_->useReferencePyramid)
+    {
+        vx_border_t border = { VX_BORDER_REPLICATE };
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image[0], src_pyr[0], 4, VX_SCALE_PYRAMID_HALF, border));
+        ASSERT_NO_FAILURE(tivx_gaussian_pyramid_fill_reference(src_ct_image[1], src_pyr[1], 4, VX_SCALE_PYRAMID_HALF, border));
+    }
+    else
+    {
+        VX_CALL(vxuGaussianPyramid(context, src_image[0], src_pyr[0]));
+        VX_CALL(vxuGaussianPyramid(context, src_image[1], src_pyr[1]));
+    }
+
+    ASSERT_VX_OBJECT(node1 = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        old_points_arr, old_points_arr, virt_points_arr,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        virt_points_arr, virt_points_arr, new_points_arr0,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node3 = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        old_points_arr, old_points_arr, int_points_arr,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node4 = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        virt_points_arr, virt_points_arr, new_points_arr1,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    if(src_pyr_node[0])
+        VX_CALL(vxReleaseNode(&src_pyr_node[0]));
+    if(src_pyr_node[1])
+        VX_CALL(vxReleaseNode(&src_pyr_node[1]));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseScalar(&eps));
+    VX_CALL(vxReleaseScalar(&num_iter));
+    VX_CALL(vxReleaseScalar(&use_estimations));
+    VX_CALL(vxReleaseArray(&old_points_arr));
+    VX_CALL(vxReleaseArray(&virt_points_arr));
+    VX_CALL(vxReleaseArray(&int_points_arr));
+    VX_CALL(vxReleaseArray(&new_points_arr1));
+    VX_CALL(vxReleaseArray(&new_points_arr0));
+    VX_CALL(vxReleasePyramid(&src_pyr[0]));
+    VX_CALL(vxReleasePyramid(&src_pyr[1]));
+    VX_CALL(vxReleaseImage(&src_image[0]));
+    VX_CALL(vxReleaseImage(&src_image[1]));
+}
+
 TESTCASE_TESTS(tivxOptFlowPyrLK,
-        testGraphProcessing
+        testGraphProcessing,
+        negativeTestBorderMode
         )

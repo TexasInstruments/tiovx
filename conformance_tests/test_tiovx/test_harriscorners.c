@@ -675,8 +675,96 @@ TEST_WITH_ARG(tivxHarrisCorners, testOptionalParameters, Arg,
     printPerformance(perf_graph, input->width*input->height, "G1");
 }
 
+#define NEG_VX_BLOCK_SIZE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=4", __VA_ARGS__, 4)), \
+    CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=5", __VA_ARGS__, 5))
+
+#define NEG_PARAMETERS \
+    CT_GENERATE_PARAMETERS("few_strong_corners",  ADD_VX_MIN_DISTANCE, ADD_VX_SENSITIVITY, ADD_VX_GRADIENT_SIZE, NEG_VX_BLOCK_SIZE, ARG, "hc_fsc")
+
+TEST_WITH_ARG(tivxHarrisCorners, negativeTestBorderMode, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+
+    vx_image input_image = 0;
+    vx_float32 strength_thresh;
+    vx_float32 min_distance = arg_->min_distance + FLT_EPSILON;
+    vx_float32 sensitivity = arg_->sensitivity;
+    vx_size num_corners;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    size_t sz;
+    vx_border_t border = { VX_BORDER_REPLICATE };
+
+    if (arg_->block_size == 4)
+        border.mode = VX_BORDER_CONSTANT;
+
+    vx_scalar strength_thresh_scalar, min_distance_scalar, sensitivity_scalar;
+    vx_array corners;
+
+    char filepath[MAXPATHLENGTH];
+
+    CT_Image input = NULL;
+    TIVX_TruthData truth_data;
+
+    double scale = 1.0 / ((1 << (arg_->gradient_size - 1)) * arg_->block_size * 255.0);
+    scale = scale * scale * scale * scale;
+
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/harriscorners/%s_%0.2f_%0.2f_%d_%d.txt", ct_get_test_file_path(), arg_->filePrefix, arg_->min_distance, arg_->sensitivity, arg_->gradient_size, arg_->block_size);
+    ASSERT(sz < MAXPATHLENGTH);
+    ASSERT_NO_FAILURE(harris_corner_read_truth_data(filepath, &truth_data, (float)scale));
+
+    strength_thresh = truth_data.strength_thresh;
+
+    sprintf(filepath, "harriscorners/%s.bmp", arg_->filePrefix);
+
+    ASSERT_NO_FAILURE(input = ct_read_image(filepath, 1));
+    ASSERT(input && (input->format == VX_DF_IMAGE_U8));
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    num_corners = input->width * input->height / 10;
+
+    ASSERT_VX_OBJECT(strength_thresh_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &strength_thresh), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(min_distance_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &min_distance), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(sensitivity_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &sensitivity), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(corners = vxCreateArray(context, VX_TYPE_KEYPOINT, num_corners), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node = vxHarrisCornersNode(graph, input_image, strength_thresh_scalar, min_distance_scalar,
+                                                sensitivity_scalar, arg_->gradient_size, arg_->block_size, corners,
+                                                NULL), VX_TYPE_NODE);
+
+    if (border.mode != VX_BORDER_UNDEFINED)
+        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    ct_free_mem(truth_data.pts); truth_data.pts = 0;
+    VX_CALL(vxReleaseArray(&corners));
+    VX_CALL(vxReleaseScalar(&sensitivity_scalar));
+    VX_CALL(vxReleaseScalar(&min_distance_scalar));
+    VX_CALL(vxReleaseScalar(&strength_thresh_scalar));
+    VX_CALL(vxReleaseImage(&input_image));
+
+    ASSERT(truth_data.pts == 0);
+    ASSERT(corners == 0);
+    ASSERT(sensitivity_scalar == 0);
+    ASSERT(min_distance_scalar == 0);
+    ASSERT(strength_thresh_scalar == 0);
+    ASSERT(input_image == 0);
+}
+
 TESTCASE_TESTS(tivxHarrisCorners,
         testMultipleGraphs,
         testVirtualImage,
-        testOptionalParameters
+        testOptionalParameters,
+        negativeTestBorderMode
 )
