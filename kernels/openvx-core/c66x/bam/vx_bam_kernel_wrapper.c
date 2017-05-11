@@ -213,6 +213,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
 {
     int32_t status = BAM_S_SUCCESS;
     int32_t i, j;
+    float xScale, yScale;
 
     tivx_bam_graph_args_single_t                 *graph_args          = (tivx_bam_graph_args_single_t*)args;
     EDMA_UTILS_autoIncrement_initParam_v2  *dma_read_autoinc_args  = &(graph_args->dma_read_autoinc_args);
@@ -226,16 +227,17 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     VXLIB_bufParams2D_t                      *compute_kernel_args = graph_args->compute_kernel_args;
 
     uint32_t num_bytes;
-    uint16_t optimize_x = 0;
-    uint16_t out_block_width  = blockDimParams->blockWidth;
-    uint16_t out_block_height = blockDimParams->blockHeight;
 
-    uint16_t numBlksHorz = (uint16_t)(((buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
-    uint16_t numBlksVert = (uint16_t)(((buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
+    uint16_t num_blks_horz = (uint16_t)(((buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
+    uint16_t num_blks_vert = (uint16_t)(((buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
+
+    uint16_t optimize_x = 0;
+    uint16_t width_reduction = 0;
+    uint16_t height_reduction = 0;
 
     if(kernel_info->nodeType == BAM_NODE_COMPUTE_NEIGHBORHOOD_OP) {
-        out_block_width -= (uint16_t)((kernel_info->kernelExtraInfo.metaInfo >> 16) - 1);
-        out_block_height -= (uint16_t)((kernel_info->kernelExtraInfo.metaInfo & 0xFFFFU) - 1U);
+        width_reduction = (uint16_t)((kernel_info->kernelExtraInfo.metaInfo >> 16) - 1);
+        height_reduction = (uint16_t)((kernel_info->kernelExtraInfo.metaInfo & 0xFFFFU) - 1U);
 
         /* Some kernels are optimized if input width == output width.  With this enabled, we want to
          * increase the stride of the output buffer to match the input buffer, and make this output
@@ -253,20 +255,23 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
 
     for(i=0; i<kernel_info->numInputDataBlocks; i++)
     {
+        xScale = kernel_info->kernelExtraInfo.horzSamplingFactor[i];
+        yScale = kernel_info->kernelExtraInfo.vertSamplingFactor[i];
+
         num_bytes = (uint32_t)VXLIB_sizeof(buf_params[i]->data_type);
 
         compute_kernel_args[i].data_type = buf_params[i]->data_type;
-        compute_kernel_args[i].dim_x     = blockDimParams->blockWidth;
-        compute_kernel_args[i].dim_y     = blockDimParams->blockHeight;
-        compute_kernel_args[i].stride_y  = blockDimParams->blockWidth*num_bytes;
+        compute_kernel_args[i].dim_x     = blockDimParams->blockWidth*xScale;
+        compute_kernel_args[i].dim_y     = blockDimParams->blockHeight*yScale;
+        compute_kernel_args[i].stride_y  = (int32_t)(compute_kernel_args[i].dim_x*num_bytes);
 
         assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
             buf_params[i]->dim_x*num_bytes,/* roiWidth */
             buf_params[i]->dim_y,/* roiHeight */
-            blockDimParams->blockWidth*num_bytes,/*blkWidth */
-            blockDimParams->blockHeight,/*blkHeight*/
-            out_block_width*num_bytes,/* extBlkIncrementX */
-            out_block_height,/* extBlkIncrementY */
+            (blockDimParams->blockWidth*xScale)*num_bytes,/*blkWidth */
+            blockDimParams->blockHeight*yScale,/*blkHeight*/
+            ((blockDimParams->blockWidth-width_reduction)*xScale)*num_bytes,/* extBlkIncrementX */
+            (blockDimParams->blockHeight-height_reduction)*yScale,/* extBlkIncrementY */
             0U,/* intBlkIncrementX */
             0U,/* intBlkIncrementY */
             0U,/* roiOffset */
@@ -285,7 +290,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
         /* Configure dma_write_autoinc_args for SINK_NODE */
         dma_write_oneshot_args->numOutTransfers        = kernel_info->numOutputDataBlocks;
         dma_write_oneshot_args->transferType           = EDMA_UTILS_TRANSFER_OUT;
-        dma_write_oneshot_args->numTotalBlocksInFrame  = numBlksHorz * numBlksVert;
+        dma_write_oneshot_args->numTotalBlocksInFrame  = num_blks_horz * num_blks_vert;
         dma_write_oneshot_args->triggerBlockId         = dma_write_oneshot_args->numTotalBlocksInFrame;
 
         for(i=0; i<kernel_info->numOutputDataBlocks; i++)
@@ -318,13 +323,13 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
         for(i=0; i<kernel_info->numOutputDataBlocks; i++)
         {
             uint16_t block_width_out, block_height_out;
-            float xScale = kernel_info->kernelExtraInfo.outHorzSamplingFactor[i];
-            float yScale = kernel_info->kernelExtraInfo.outVertSamplingFactor[i];
+            xScale = kernel_info->kernelExtraInfo.horzSamplingFactor[j];
+            yScale = kernel_info->kernelExtraInfo.vertSamplingFactor[j];
 
             num_bytes = (uint32_t)VXLIB_sizeof(buf_params[j]->data_type);
 
-            block_width_out = out_block_width*xScale;
-            block_height_out = out_block_height*yScale;
+            block_width_out = (blockDimParams->blockWidth-width_reduction)*xScale;
+            block_height_out = (blockDimParams->blockHeight-height_reduction)*yScale;
 
             compute_kernel_args[j].data_type = buf_params[j]->data_type;
             compute_kernel_args[j].dim_x     = block_width_out + optimize_x;
@@ -332,8 +337,8 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
             compute_kernel_args[j].stride_y  = (int32_t)(compute_kernel_args[j].dim_x*num_bytes);
 
             assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
-                buf_params[j]->dim_x*xScale*num_bytes,/* roiWidth */
-                buf_params[j]->dim_y*yScale,/* roiHeight */
+                buf_params[j]->dim_x*num_bytes,/* roiWidth */
+                buf_params[j]->dim_y,/* roiHeight */
                 block_width_out*num_bytes,/*blkWidth */
                 block_height_out,/*blkHeight*/
                 block_width_out*num_bytes,/* extBlkIncrementX */

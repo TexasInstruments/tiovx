@@ -319,11 +319,14 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 vxlib_src[i].dim_y = src->imagepatch_addr[i].dim_y;
                 vxlib_src[i].stride_y = src->imagepatch_addr[i].stride_y;
 
-
                 if (512 == src->imagepatch_addr[i].scale_x)
                 {
-                    vxlib_src[i].dim_x = src->imagepatch_addr[i].dim_x / 2;
                     vxlib_src[i].dim_y = src->imagepatch_addr[i].dim_y / 2;
+
+                    if (VX_DF_IMAGE_IYUV == src->format)
+                    {
+                        vxlib_src[i].dim_x = src->imagepatch_addr[i].dim_x / 2;
+                    }
                 }
 
                 switch(src->format)
@@ -419,9 +422,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
 
-                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
-                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
-
                 kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBtoNV12_i8u_o8u_getKernelInfo(NULL,
@@ -443,11 +443,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
-
-                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
-                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
-                vxlib_dst[2].dim_x = dst->imagepatch_addr[2].dim_x;
-                vxlib_dst[2].dim_y = dst->imagepatch_addr[2].dim_y;
 
                 kernel_details.compute_kernel_params = NULL;
 
@@ -527,9 +522,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
 
-                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
-                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
-
                 kernel_details.compute_kernel_params = NULL;
 
                 BAM_VXLIB_colorConvert_RGBXtoNV12_i8u_o8u_getKernelInfo(NULL,
@@ -551,11 +543,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
-
-                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
-                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
-                vxlib_dst[2].dim_x = dst->imagepatch_addr[2].dim_x;
-                vxlib_dst[2].dim_y = dst->imagepatch_addr[2].dim_y;
 
                 kernel_details.compute_kernel_params = NULL;
 
@@ -648,10 +635,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_params params;
 
                 params.u_pix = src->format == VX_DF_IMAGE_NV12 ? 0 : 1;
-
-                vxlib_src[1].dim_x = src->imagepatch_addr[1].dim_x;
-                vxlib_src[1].dim_y = src->imagepatch_addr[1].dim_y;
-                vxlib_src[1].stride_y = src->imagepatch_addr[1].stride_y/2;
 
                 buf_params[0] = &vxlib_src[0];
                 buf_params[1] = &vxlib_src[1];
@@ -747,9 +730,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
                 kernel_details.compute_kernel_params = &params;
 
-                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
-                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
-
                 BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_getKernelInfo(NULL,
                     &kernel_details.kernel_info);
 
@@ -776,11 +756,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
                 buf_params[1] = &vxlib_dst[0];
                 buf_params[2] = &vxlib_dst[1];
                 buf_params[3] = &vxlib_dst[2];
-
-                vxlib_dst[1].dim_x = dst->imagepatch_addr[1].dim_x;
-                vxlib_dst[1].dim_y = dst->imagepatch_addr[1].dim_y;
-                vxlib_dst[2].dim_x = dst->imagepatch_addr[2].dim_x;
-                vxlib_dst[2].dim_y = dst->imagepatch_addr[2].dim_y;
 
                 kernel_details.compute_kernel_params = &params;
 
