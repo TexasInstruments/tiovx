@@ -38,7 +38,7 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamConvertDepth, tivxRemoveTargetKernelBamConvertDepth},
     {tivxAddTargetKernelBamConvolve, tivxRemoveTargetKernelBamConvolve},
     {tivxAddTargetKernelBamDilate3x3, tivxRemoveTargetKernelBamDilate3x3},
-    {tivxAddTargetKernelEqualizeHistogram, tivxRemoveTargetKernelEqualizeHistogram},
+    {tivxAddTargetKernelBamEqHist, tivxRemoveTargetKernelBamEqHist},
     {tivxAddTargetKernelBamErode3x3, tivxRemoveTargetKernelBamErode3x3},
     {tivxAddTargetKernelFastCorners, tivxRemoveTargetKernelFastCorners},
     {tivxAddTargetKernelBamGaussian3x3, tivxRemoveTargetKernelBamGaussian3x3},
