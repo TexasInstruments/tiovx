@@ -14,12 +14,13 @@
 #include <tivx_kernel_intgimg.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
 } tivxIntgImgParams;
 
 static tivx_target_kernel vx_intgimg_target_kernel = NULL;
@@ -47,9 +48,6 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     vx_status status = VX_SUCCESS;
     tivxIntgImgParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
-    uint8_t *src_addr;
-    uint32_t *dst_addr;
-    vx_rectangle_t rect;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -84,21 +82,11 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
+        ownInitBufParams(src, &dst->valid_roi, &prms->vxlib_src,
+            (uint8_t **)&img_ptrs[0], 1, 1, 1, 1);
+        ownInitBufParams(dst, NULL, &prms->vxlib_dst,
+            (uint8_t **)&img_ptrs[1], 0, 0, 0, 0);
 
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-
-        rect = dst->valid_roi;
-
-        dst_addr = (uint32_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0]));
-
-        img_ptrs[0] = src_addr;
-        img_ptrs[1] = dst_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
@@ -118,6 +106,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
+    uint8_t *addr;
     tivxIntgImgParams *prms = NULL;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -136,28 +125,20 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
         {
             tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_integralImage_i8u_o32u_params kernel_params;
-            VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
             memset(prms, 0, sizeof(tivxIntgImgParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
-
-            vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-            vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-            vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            vxlib_dst.data_type = VXLIB_UINT32;
+            ownInitBufParams(src, NULL, &prms->vxlib_src, &addr, 0, 0, 0, 0);
+            ownInitBufParams(dst, NULL, &prms->vxlib_dst, &addr, 0, 0, 0, 0);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
-            buf_params[0] = &vxlib_src;
-            buf_params[1] = &vxlib_dst;
+            buf_params[0] = &prms->vxlib_src;
+            buf_params[1] = &prms->vxlib_dst;
 
-            kernel_params.frameWidth   = vxlib_dst.dim_x;
-            kernel_params.frameHeight  = vxlib_dst.dim_y;
+            kernel_params.frameWidth   = prms->vxlib_dst.dim_x;
+            kernel_params.frameHeight  = prms->vxlib_dst.dim_y;
 
             kernel_details.compute_kernel_params = (void*)&kernel_params;
 
