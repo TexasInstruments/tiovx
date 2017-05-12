@@ -235,7 +235,7 @@ static vx_status ownGraphNodeKernelValidate(
 {
     vx_node node;
     vx_status status = VX_SUCCESS;
-    uint32_t i;
+    uint32_t i, j;
 
     for(i=0; i<graph->num_nodes; i++)
     {
@@ -254,6 +254,11 @@ static vx_status ownGraphNodeKernelValidate(
         if(status != VX_SUCCESS)
         {
             break;
+        }
+
+        for (j = 0; j < TIVX_KERNEL_MAX_PARAMS; j ++)
+        {
+            meta[j]->valid_rect_callback = NULL;
         }
     }
 

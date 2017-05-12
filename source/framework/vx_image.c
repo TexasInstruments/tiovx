@@ -1636,7 +1636,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
     if(status == VX_SUCCESS)
     {
         vx_imagepatch_addressing_t *image_addr = NULL;
-        vx_uint8* map_addr = NULL, *end_addr = NULL;
+        vx_uint8* map_addr = NULL, *end_addr = NULL, *host_addr = NULL;
         uint32_t map_size = 0;
         uint32_t map_idx;
 
@@ -1648,11 +1648,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 
         if (NULL != map_addr)
         {
+            host_addr = map_addr;
+
+            /* Move Map Pointer as per Valid ROI */
+            map_addr = vxFormatImagePatchAddress2d(map_addr, rect->start_x,
+                rect->start_y, image_addr);
+
             for(map_idx=0; map_idx<TIVX_IMAGE_MAX_MAPS; map_idx++)
             {
                 if(image->maps[map_idx].map_addr==NULL)
                 {
-                    image->maps[map_idx].map_addr = map_addr;
+                    image->maps[map_idx].map_addr = host_addr;
                     image->maps[map_idx].map_size = map_size;
                     image->maps[map_idx].usage = usage;
                     break;
@@ -1664,10 +1670,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 *user_addr = *image_addr;
                 *user_ptr = map_addr;
 
-                end_addr = map_addr + map_size;
-                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)map_addr, 128U);
+                user_addr->dim_x = rect->end_x - rect->start_x;
+                user_addr->dim_y = rect->end_y - rect->start_y;
+
+                end_addr = host_addr + map_size;
+                map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
-                map_size = end_addr - map_addr;
+                map_size = end_addr - host_addr;
                 tivxMemBufferMap(map_addr, map_size,
                     obj_desc->mem_ptr[plane_index].mem_type, usage);
             }

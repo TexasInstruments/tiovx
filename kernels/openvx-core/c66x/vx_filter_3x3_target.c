@@ -14,7 +14,7 @@
 #include <tivx_kernel_filter_3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 typedef VXLIB_STATUS (*VxLib_Filt3x3_Fxn)(const uint8_t *,
     const VXLIB_bufParams2D_t *, uint8_t *, const VXLIB_bufParams2D_t *);
@@ -66,7 +66,6 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src_desc, *dst_desc;
-    vx_rectangle_t rect;
     uint8_t *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     tivxFilter3x3KernelInfo *kern_info;
@@ -127,32 +126,13 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        /* Initialize vxLib Parameters with the input/output frame parameters */
-        vxlib_src.dim_x = src_desc->imagepatch_addr[0U].dim_x;
-        vxlib_src.dim_y = src_desc->imagepatch_addr[0U].dim_y;
-        vxlib_src.stride_y = src_desc->imagepatch_addr[0U].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
+        ownInitBufParams(src_desc, &dst_desc->valid_roi, &vxlib_src,
+            &src_addr, 1, 1, 1, 1);
+        ownInitBufParams(dst_desc, NULL, &vxlib_dst, &dst_addr, 0, 0, 0, 0);
 
         /* All 3x3 filter reduces the output size, therefore reduce output
          * height, but leave output width the same (DSP optimization) */
-        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
-        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y - 2U;
-        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
-
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src_desc->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src_desc->imagepatch_addr[0U]));
-
-        /* TODO: Do we require to move pointer even for destination image */
-        /* Need to move destination start pointer by 1 line and 1 pixel */
-        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x + 1, rect.start_y + 1,
-            &dst_desc->imagepatch_addr[0]));
+        vxlib_dst.dim_x = vxlib_src.dim_x;
 
         if (kern_info->filter_func)
         {

@@ -14,7 +14,7 @@
 #include <tivx_kernel_intgimg.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_intgimg_target_kernel = NULL;
 
@@ -27,7 +27,6 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     uint8_t *src_addr;
     uint32_t *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
-    vx_rectangle_t rect;
     uint32_t *prev_row, size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -48,27 +47,9 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint32_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0]));
-
-        vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
-
-        vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-        vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT32;
+        ownInitBufParams(src, NULL, &vxlib_src, &src_addr, 0, 0, 0, 0);
+        ownInitBufParams(dst, NULL, &vxlib_dst, (uint8_t **)&dst_addr,
+            0, 0, 0, 0);
 
         tivxGetTargetKernelInstanceContext(kernel, (void **)&prev_row, &size);
 

@@ -40,7 +40,9 @@ static vx_status VX_CALLBACK tivxAddKernelFilt3x3Validate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[]);
-
+static vx_status VX_CALLBACK tivxAddKernelFilt3x3Initialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
 
 static tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
 {
@@ -195,6 +197,52 @@ static vx_status VX_CALLBACK tivxAddKernelFilt3x3Validate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelFilt3x3Initialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+    tivxKernelValidRectParams prms;
+
+    if (num_params != TIVX_KERNEL_FILT3x3_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0U; (i < TIVX_KERNEL_FILT3x3_MAX_PARAMS) &&
+            (VX_SUCCESS == status); i ++)
+    {
+        /* Check for NULL */
+        if (NULL == parameters[i])
+        {
+            status = VX_ERROR_NO_MEMORY;
+            break;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = 1;
+        prms.bot_pad = 1;
+        prms.left_pad = 1;
+        prms.right_pad = 1;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelErode3x3(vx_context context)
 {
     vx_kernel kernel;
@@ -212,7 +260,7 @@ vx_status tivxAddKernelErode3x3(vx_context context)
                                 NULL,
                                 2,
                                 gTivxFilt3x3KernelInfo[i].validate_func,
-                                NULL,
+                                tivxAddKernelFilt3x3Initialize,
                                 NULL);
 
         status = vxGetStatus((vx_reference)kernel);

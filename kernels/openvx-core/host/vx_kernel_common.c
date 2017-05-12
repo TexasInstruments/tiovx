@@ -136,3 +136,122 @@ void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image f
     }
 }
 
+vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
+{
+    vx_status status = VX_SUCCESS;
+    vx_rectangle_t out_rect, rect;
+    vx_uint32 i;
+
+    if (NULL == prms)
+    {
+        status = VX_FAILURE;
+    }
+    else
+    {
+        for (i = 0; i < prms->num_input_images; i ++)
+        {
+            if (NULL == prms->in_img[i])
+            {
+                status = VX_FAILURE;
+                break;
+            }
+        }
+        for (i = 0; i < prms->num_output_images; i ++)
+        {
+            if (NULL == prms->out_img[i])
+            {
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        out_rect.start_x = out_rect.start_y = 0;
+        out_rect.end_x = out_rect.end_y = 0xFFFFFFFF;
+
+        for (i = 0; i < prms->num_input_images; i ++)
+        {
+            status = vxGetValidRegionImage(prms->in_img[i], &rect);
+
+            if (VX_SUCCESS != status)
+            {
+                break;
+            }
+            else
+            {
+                if (rect.start_x > out_rect.start_x)
+                {
+                    out_rect.start_x = rect.start_x;
+                }
+                if (rect.start_y > out_rect.start_y)
+                {
+                    out_rect.start_y = rect.start_y;
+                }
+
+                if (rect.end_x < out_rect.end_x)
+                {
+                    out_rect.end_x = rect.end_x;
+                }
+                if (rect.end_y < out_rect.end_y)
+                {
+                    out_rect.end_y = rect.end_y;
+                }
+            }
+        }
+        for (i = 0; (i < prms->num_output_images) && (VX_SUCCESS == status); i ++)
+        {
+            status = vxGetValidRegionImage(prms->out_img[i], &rect);
+
+            if (VX_SUCCESS != status)
+            {
+                break;
+            }
+            else
+            {
+                if (rect.start_x > out_rect.start_x)
+                {
+                    out_rect.start_x = rect.start_x;
+                }
+                if (rect.start_y > out_rect.start_y)
+                {
+                    out_rect.start_y = rect.start_y;
+                }
+
+                if (rect.end_x < out_rect.end_x)
+                {
+                    out_rect.end_x = rect.end_x;
+                }
+                if (rect.end_y < out_rect.end_y)
+                {
+                    out_rect.end_y = rect.end_y;
+                }
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_BORDER_UNDEFINED == prms->border_mode)
+        {
+            out_rect.start_x += prms->left_pad;
+            out_rect.start_y += prms->top_pad;
+            out_rect.end_x -= prms->right_pad;
+            out_rect.end_y -= prms->bot_pad;
+        }
+
+        for (i = 0; i < prms->num_output_images; i ++)
+        {
+            status = vxSetImageValidRectangle(prms->out_img[i], &out_rect);
+
+            if (VX_SUCCESS != status)
+            {
+                break;
+            }
+        }
+
+    }
+    return (status);
+}
+
