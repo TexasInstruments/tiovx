@@ -221,6 +221,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsSameTarget, Arg,
     vx_perf_t perf_node1, perf_node2, perf_graph1, perf_graph2;
     tivx_task_create_params_t taskParams1, taskParams2;
     tivx_task taskHandle1, taskHandle2;
+    uint32_t wait_loop_cnt = 0;
 
     taskFinished1 = 0;
     taskFinished2 = 0;
@@ -282,7 +283,23 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsSameTarget, Arg,
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle1, &taskParams1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle2, &taskParams2));
 
-    while(taskFinished1 == 0 || taskFinished2 == 0);
+    wait_loop_cnt = 0;
+    do
+    {
+        tivxTaskWaitMsecs(1000);
+
+        if (taskFinished1 != 0 && taskFinished2 != 0)
+        {
+            break;
+        }
+        wait_loop_cnt ++;
+
+        /* Waiting for twenty seconds */
+        if (wait_loop_cnt > 20)
+        {
+            break;
+        }
+    } while (1);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
@@ -341,6 +358,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
     vx_perf_t perf_node1, perf_node2, perf_graph1, perf_graph2;
     tivx_task_create_params_t taskParams1, taskParams2;
     tivx_task taskHandle1, taskHandle2;
+    uint32_t wait_loop_cnt = 0;
 
     taskFinished1 = 0;
     taskFinished2 = 0;
@@ -402,7 +420,23 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsDifferentTarget, Arg,
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle1, &taskParams1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle2, &taskParams2));
 
-    while(taskFinished1 == 0 || taskFinished2 == 0);
+    wait_loop_cnt = 0;
+    do
+    {
+        tivxTaskWaitMsecs(1000);
+
+        if (taskFinished1 != 0 && taskFinished2 != 0)
+        {
+            break;
+        }
+        wait_loop_cnt ++;
+
+        /* Waiting for twenty seconds */
+        if (wait_loop_cnt > 20)
+        {
+            break;
+        }
+    } while (1);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
@@ -468,6 +502,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsMultipleNodes, Arg,
 
     tivx_task_create_params_t taskParams1, taskParams2;
     tivx_task taskHandle1, taskHandle2;
+    uint32_t wait_loop_cnt = 0;
 
     taskFinished1 = 0;
     taskFinished2 = 0;
@@ -547,7 +582,23 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testParallelGraphsMultipleNodes, Arg,
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle1, &taskParams1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle2, &taskParams2));
 
-    while(taskFinished1 == 0 || taskFinished2 == 0);
+    wait_loop_cnt = 0;
+    do
+    {
+        tivxTaskWaitMsecs(1000);
+
+        if (taskFinished1 != 0 && taskFinished2 != 0)
+        {
+            break;
+        }
+        wait_loop_cnt ++;
+
+        /* Waiting for twenty seconds */
+        if (wait_loop_cnt > 20)
+        {
+            break;
+        }
+    } while (1);
 
     vxQueryNode(node1_graph1, VX_NODE_PERFORMANCE, &perf_node1_graph1, sizeof(perf_node1_graph1));
     vxQueryNode(node2_graph1, VX_NODE_PERFORMANCE, &perf_node2_graph1, sizeof(perf_node2_graph1));
@@ -624,6 +675,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testThreeParallelGraphs, Arg,
 
     tivx_task_create_params_t taskParams1, taskParams2, taskParams3;
     tivx_task taskHandle1, taskHandle2, taskHandle3;
+    uint32_t wait_loop_cnt = 0;
 
     taskFinished1 = 0;
     taskFinished2 = 0;
@@ -708,7 +760,23 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testThreeParallelGraphs, Arg,
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle2, &taskParams2));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle3, &taskParams3));
 
-    while(taskFinished1 == 0 || taskFinished2 == 0 || taskFinished3 == 0);
+    wait_loop_cnt = 0;
+    do
+    {
+        tivxTaskWaitMsecs(1000);
+
+        if (taskFinished1 != 0 && taskFinished2 != 0 && taskFinished3 != 0)
+        {
+            break;
+        }
+        wait_loop_cnt ++;
+
+        /* Waiting for twenty seconds */
+        if (wait_loop_cnt > 20)
+        {
+            break;
+        }
+    } while (1);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
@@ -807,6 +875,7 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
 
     tivx_task_create_params_t taskParams1, taskParams2, taskParams3;
     tivx_task taskHandle1, taskHandle2, taskHandle3;
+    uint32_t wait_loop_cnt = 0;
 
     taskFinished1 = 0;
     taskFinished2 = 0;
@@ -955,7 +1024,23 @@ TEST_WITH_ARG(tivxGraphMultiThreaded, testAlternatingNodes, Arg,
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle1, &taskParams1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxTaskCreate(&taskHandle2, &taskParams2));
 
-    while(taskFinished1 == 0 || taskFinished2 == 0);
+    wait_loop_cnt = 0;
+    do
+    {
+        tivxTaskWaitMsecs(1000);
+
+        if (taskFinished1 != 0 && taskFinished2 != 0)
+        {
+            break;
+        }
+        wait_loop_cnt ++;
+
+        /* Waiting for twenty seconds */
+        if (wait_loop_cnt > 20)
+        {
+            break;
+        }
+    } while (1);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
