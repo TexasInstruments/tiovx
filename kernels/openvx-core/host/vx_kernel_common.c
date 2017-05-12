@@ -148,6 +148,14 @@ vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms)
     }
     else
     {
+        if ((prms->num_input_images >
+                TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE) ||
+            (prms->num_output_images >
+                TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE))
+        {
+                status = VX_FAILURE;
+        }
+
         for (i = 0; i < prms->num_input_images; i ++)
         {
             if (NULL == prms->in_img[i])
