@@ -287,30 +287,11 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
 
     if(kernel_info->numOutputDataBlocks == 0)
     {
-        /* Configure dma_write_autoinc_args for SINK_NODE */
-        dma_write_oneshot_args->numOutTransfers        = kernel_info->numOutputDataBlocks;
+        /* Configure dma_write_oneshot_args for SINK_NODE */
+        dma_write_oneshot_args->numOutTransfers        = 0;
         dma_write_oneshot_args->transferType           = EDMA_UTILS_TRANSFER_OUT;
         dma_write_oneshot_args->numTotalBlocksInFrame  = num_blks_horz * num_blks_vert;
         dma_write_oneshot_args->triggerBlockId         = dma_write_oneshot_args->numTotalBlocksInFrame;
-
-        for(i=0; i<kernel_info->numOutputDataBlocks; i++)
-        {
-            num_bytes = (uint32_t)VXLIB_sizeof(buf_params[j]->data_type);
-
-            compute_kernel_args[j].data_type = buf_params[j]->data_type;
-            compute_kernel_args[j].dim_x     = buf_params[j]->dim_x;
-            compute_kernel_args[j].dim_y     = buf_params[j]->dim_y;
-            compute_kernel_args[j].stride_y  = compute_kernel_args[j].dim_x*num_bytes;
-
-            dma_write_oneshot_args->transferProp[i].blkWidth = buf_params[j]->dim_x*num_bytes;
-            dma_write_oneshot_args->transferProp[i].blkHeight = buf_params[j]->dim_y;
-            dma_write_oneshot_args->transferProp[i].extMemPtr = 0;
-            dma_write_oneshot_args->transferProp[i].interMemPtr = 0;
-            dma_write_oneshot_args->transferProp[i].extMemPtrStride = buf_params[j]->dim_x*num_bytes;
-            dma_write_oneshot_args->transferProp[i].interMemPtrStride = buf_params[j]->dim_x*num_bytes;
-
-            j++;
-        }
     }
     else
     {
@@ -945,23 +926,34 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         }
         j = i;
         skip_port = 0;
-        for(i = 0; i < kernel_details->kernel_info.numOutputDataBlocks; i++)
+        if(kernel_details->kernel_info.numOutputDataBlocks == 0)
         {
             edge_list[j].upStreamNode.id     = COMPUTE_NODE;
-            edge_list[j].upStreamNode.port   = i;
-
-            if( buf_params[j] != NULL )
-            {
-                edge_list[j].downStreamNode.id   = SINK_NODE;
-                edge_list[j].downStreamNode.port = i-skip_port;
-            }
-            else
-            {
-                edge_list[j].downStreamNode.id   = BAM_NULL_NODE;
-                edge_list[j].downStreamNode.port = 0;
-                skip_port++;
-            }
+            edge_list[j].upStreamNode.port   = 0;
+            edge_list[j].downStreamNode.id   = BAM_NULL_NODE;
+            edge_list[j].downStreamNode.port = 0;
             j++;
+        }
+        else
+        {
+            for(i = 0; i < kernel_details->kernel_info.numOutputDataBlocks; i++)
+            {
+                edge_list[j].upStreamNode.id     = COMPUTE_NODE;
+                edge_list[j].upStreamNode.port   = i;
+
+                if( buf_params[j] != NULL )
+                {
+                    edge_list[j].downStreamNode.id   = SINK_NODE;
+                    edge_list[j].downStreamNode.port = i-skip_port;
+                }
+                else
+                {
+                    edge_list[j].downStreamNode.id   = BAM_NULL_NODE;
+                    edge_list[j].downStreamNode.port = 0;
+                    skip_port++;
+                }
+                j++;
+            }
         }
         edge_list[j].upStreamNode.id     = BAM_END_NODE_MARKER;
         edge_list[j].upStreamNode.port   = 0;
