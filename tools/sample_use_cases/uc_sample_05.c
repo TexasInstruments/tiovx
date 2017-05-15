@@ -8,7 +8,7 @@
 vx_status uc_sample_05_create(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     if (status == VX_SUCCESS)
     {
         usecase->context = vxCreateContext();
@@ -25,38 +25,38 @@ vx_status uc_sample_05_create(uc_sample_05 usecase)
     {
         status = uc_sample_05_graph_0_create(usecase);
     }
-    
+
     return status;
 }
 
 vx_status uc_sample_05_verify(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     if (status == VX_SUCCESS)
     {
         status = uc_sample_05_graph_0_verify(usecase);
     }
-    
+
     return status;
 }
 
 vx_status uc_sample_05_run(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     if (status == VX_SUCCESS)
     {
         status = uc_sample_05_graph_0_run(usecase);
     }
-    
+
     return status;
 }
 
 vx_status uc_sample_05_delete(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     if (status == VX_SUCCESS)
     {
         status = uc_sample_05_graph_0_delete(usecase);
@@ -69,16 +69,16 @@ vx_status uc_sample_05_delete(uc_sample_05 usecase)
     {
         status = vxReleaseContext(&usecase->context);
     }
-    
+
     return status;
 }
 
 vx_status uc_sample_05_data_create(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     vx_context context = usecase->context;
-    
+
     if (status == VX_SUCCESS)
     {
         usecase->image_1 = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8);
@@ -98,7 +98,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_uint8 value = 0;
-        
+
         usecase->scalar_5 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_5 == NULL)
         {
@@ -132,7 +132,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_uint8 value = 0;
-        
+
         usecase->scalar_10 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_10 == NULL)
         {
@@ -142,7 +142,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_uint8 value = 255;
-        
+
         usecase->scalar_11 = vxCreateScalar(context, VX_TYPE_UINT8, &value);
         if (usecase->scalar_11 == NULL)
         {
@@ -168,7 +168,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_uint32 value = 10;
-        
+
         usecase->scalar_14 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_14 == NULL)
         {
@@ -178,7 +178,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_uint32 value = 100;
-        
+
         usecase->scalar_15 = vxCreateScalar(context, VX_TYPE_UINT32, &value);
         if (usecase->scalar_15 == NULL)
         {
@@ -212,7 +212,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_enum value = VX_INTERPOLATION_BILINEAR;
-        
+
         usecase->scalar_26 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_26 == NULL)
         {
@@ -238,7 +238,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_int32 value = 100;
-        
+
         usecase->scalar_30 = vxCreateScalar(context, VX_TYPE_INT32, &value);
         if (usecase->scalar_30 == NULL)
         {
@@ -248,7 +248,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_enum value = VX_NORM_L1;
-        
+
         usecase->scalar_31 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_31 == NULL)
         {
@@ -266,7 +266,7 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     if (status == VX_SUCCESS)
     {
         vx_enum value = VX_NONLINEAR_FILTER_MIN;
-        
+
         usecase->scalar_35 = vxCreateScalar(context, VX_TYPE_ENUM, &value);
         if (usecase->scalar_35 == NULL)
         {
@@ -329,14 +329,14 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
             status = VX_ERROR_NO_RESOURCES;
         }
     }
-    
+
     return status;
 }
 
 vx_status uc_sample_05_data_delete(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     if (status == VX_SUCCESS)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_1);
@@ -453,7 +453,7 @@ vx_status uc_sample_05_data_delete(uc_sample_05 usecase)
     {
         status = vxReleaseReference((vx_reference*)&usecase->image_44);
     }
-    
+
     return status;
 }
 
@@ -461,16 +461,16 @@ static vx_node usecase_node_create_node_3 (
   vx_graph graph ,
   vx_image image_0 ,
   vx_image image_1 ,
-  vx_image image_2 
+  vx_image image_2
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)image_1 ,
-          (vx_reference)image_2 
+          (vx_reference)image_2
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_ACCUMULATE, params, 3);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ACCUMULATE, params, 3);
 }
 
 static vx_node usecase_node_create_node_6 (
@@ -478,7 +478,7 @@ static vx_node usecase_node_create_node_6 (
   vx_image image_0 ,
   vx_scalar scalar_1 ,
   vx_image image_2 ,
-  vx_image image_3 
+  vx_image image_3
   )
 {
     vx_reference params[] =
@@ -486,25 +486,25 @@ static vx_node usecase_node_create_node_6 (
           (vx_reference)image_0 ,
           (vx_reference)scalar_1 ,
           (vx_reference)image_2 ,
-          (vx_reference)image_3 
+          (vx_reference)image_3
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_ACCUMULATE_WEIGHTED, params, 4);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ACCUMULATE_WEIGHTED, params, 4);
 }
 
 static vx_node usecase_node_create_node_9 (
   vx_graph graph ,
   vx_image image_0 ,
   vx_convolution convolution_1 ,
-  vx_image image_2 
+  vx_image image_2
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)convolution_1 ,
-          (vx_reference)image_2 
+          (vx_reference)image_2
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_CUSTOM_CONVOLUTION, params, 3);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CUSTOM_CONVOLUTION, params, 3);
 }
 
 static vx_node usecase_node_create_node_16 (
@@ -515,7 +515,7 @@ static vx_node usecase_node_create_node_16 (
   vx_array array_3 ,
   vx_array array_4 ,
   vx_scalar scalar_5 ,
-  vx_scalar scalar_6 
+  vx_scalar scalar_6
   )
 {
     vx_reference params[] =
@@ -526,39 +526,39 @@ static vx_node usecase_node_create_node_16 (
           (vx_reference)array_3 ,
           (vx_reference)array_4 ,
           (vx_reference)scalar_5 ,
-          (vx_reference)scalar_6 
+          (vx_reference)scalar_6
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_MINMAXLOC, params, 7);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_MINMAXLOC, params, 7);
 }
 
 static vx_node usecase_node_create_node_18 (
   vx_graph graph ,
   vx_image image_0 ,
-  vx_pyramid pyramid_1 
+  vx_pyramid pyramid_1
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
-          (vx_reference)pyramid_1 
+          (vx_reference)pyramid_1
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_GAUSSIAN_PYRAMID, params, 2);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_GAUSSIAN_PYRAMID, params, 2);
 }
 
 static vx_node usecase_node_create_node_20 (
   vx_graph graph ,
   vx_image image_0 ,
   vx_image image_1 ,
-  vx_image image_2 
+  vx_image image_2
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)image_1 ,
-          (vx_reference)image_2 
+          (vx_reference)image_2
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_PHASE, params, 3);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_PHASE, params, 3);
 }
 
 static vx_node usecase_node_create_node_27 (
@@ -566,7 +566,7 @@ static vx_node usecase_node_create_node_27 (
   vx_image image_0 ,
   vx_remap remap_1 ,
   vx_scalar scalar_2 ,
-  vx_image image_3 
+  vx_image image_3
   )
 {
     vx_reference params[] =
@@ -574,9 +574,9 @@ static vx_node usecase_node_create_node_27 (
           (vx_reference)image_0 ,
           (vx_reference)remap_1 ,
           (vx_reference)scalar_2 ,
-          (vx_reference)image_3 
+          (vx_reference)image_3
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_REMAP, params, 4);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_REMAP, params, 4);
 }
 
 static vx_node usecase_node_create_node_32 (
@@ -585,7 +585,7 @@ static vx_node usecase_node_create_node_32 (
   vx_threshold threshold_1 ,
   vx_scalar scalar_2 ,
   vx_scalar scalar_3 ,
-  vx_image image_4 
+  vx_image image_4
   )
 {
     vx_reference params[] =
@@ -594,9 +594,9 @@ static vx_node usecase_node_create_node_32 (
           (vx_reference)threshold_1 ,
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3 ,
-          (vx_reference)image_4 
+          (vx_reference)image_4
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_CANNY_EDGE_DETECTOR, params, 5);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CANNY_EDGE_DETECTOR, params, 5);
 }
 
 static vx_node usecase_node_create_node_36 (
@@ -604,7 +604,7 @@ static vx_node usecase_node_create_node_36 (
   vx_scalar scalar_0 ,
   vx_image image_1 ,
   vx_matrix matrix_2 ,
-  vx_image image_3 
+  vx_image image_3
   )
 {
     vx_reference params[] =
@@ -612,9 +612,9 @@ static vx_node usecase_node_create_node_36 (
           (vx_reference)scalar_0 ,
           (vx_reference)image_1 ,
           (vx_reference)matrix_2 ,
-          (vx_reference)image_3 
+          (vx_reference)image_3
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_NON_LINEAR_FILTER, params, 4);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_NON_LINEAR_FILTER, params, 4);
 }
 
 static vx_node usecase_node_create_node_38 (
@@ -623,7 +623,7 @@ static vx_node usecase_node_create_node_38 (
   vx_image image_1 ,
   vx_image image_2 ,
   vx_image image_3 ,
-  vx_image image_4 
+  vx_image image_4
   )
 {
     vx_reference params[] =
@@ -632,64 +632,64 @@ static vx_node usecase_node_create_node_38 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 ,
           (vx_reference)image_3 ,
-          (vx_reference)image_4 
+          (vx_reference)image_4
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_CHANNEL_COMBINE, params, 5);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CHANNEL_COMBINE, params, 5);
 }
 
 static vx_node usecase_node_create_node_40 (
   vx_graph graph ,
   vx_image image_0 ,
-  vx_distribution distribution_1 
+  vx_distribution distribution_1
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
-          (vx_reference)distribution_1 
+          (vx_reference)distribution_1
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_HISTOGRAM, params, 2);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_HISTOGRAM, params, 2);
 }
 
 static vx_node usecase_node_create_node_43 (
   vx_graph graph ,
   vx_image image_0 ,
   vx_lut lut_1 ,
-  vx_image image_2 
+  vx_image image_2
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)lut_1 ,
-          (vx_reference)image_2 
+          (vx_reference)image_2
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_TABLE_LOOKUP, params, 3);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_TABLE_LOOKUP, params, 3);
 }
 
 static vx_node usecase_node_create_node_45 (
   vx_graph graph ,
   vx_image image_0 ,
   vx_image image_1 ,
-  vx_image image_2 
+  vx_image image_2
   )
 {
     vx_reference params[] =
     {
           (vx_reference)image_0 ,
           (vx_reference)image_1 ,
-          (vx_reference)image_2 
+          (vx_reference)image_2
     };
-    return tivxCreateNodeByStructure(graph, VX_KERNEL_AND, params, 3);
+    return tivxCreateNodeByKernelEnum(graph, VX_KERNEL_AND, params, 3);
 }
 
 vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     vx_context context = usecase->context;
     vx_graph graph = NULL;
-    
+
     if (status == VX_SUCCESS)
     {
         graph = vxCreateGraph(context);
@@ -704,7 +704,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             graph ,
             usecase->image_1 ,
             usecase->image_2 ,
-            usecase->image_2 
+            usecase->image_2
           );
     }
     if (status == VX_SUCCESS)
@@ -714,7 +714,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->image_1 ,
             usecase->scalar_5 ,
             usecase->image_4 ,
-            usecase->image_4 
+            usecase->image_4
           );
     }
     if (status == VX_SUCCESS)
@@ -723,7 +723,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             graph ,
             usecase->image_4 ,
             usecase->convolution_8 ,
-            usecase->image_7 
+            usecase->image_7
           );
     }
     if (status == VX_SUCCESS)
@@ -736,7 +736,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->array_12 ,
             usecase->array_13 ,
             usecase->scalar_14 ,
-            usecase->scalar_15 
+            usecase->scalar_15
           );
     }
     if (status == VX_SUCCESS)
@@ -744,7 +744,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
         usecase->node_18 = usecase_node_create_node_18 (
             graph ,
             usecase->image_4 ,
-            usecase->pyramid_17 
+            usecase->pyramid_17
           );
     }
     if (status == VX_SUCCESS)
@@ -753,7 +753,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             graph ,
             usecase->image_2 ,
             usecase->image_7 ,
-            usecase->image_19 
+            usecase->image_19
           );
     }
     if (status == VX_SUCCESS)
@@ -763,7 +763,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->image_19 ,
             usecase->remap_21 ,
             usecase->scalar_26 ,
-            usecase->image_22 
+            usecase->image_22
           );
     }
     if (status == VX_SUCCESS)
@@ -774,7 +774,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->threshold_28 ,
             usecase->scalar_30 ,
             usecase->scalar_31 ,
-            usecase->image_29 
+            usecase->image_29
           );
     }
     if (status == VX_SUCCESS)
@@ -784,7 +784,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->scalar_35 ,
             usecase->image_29 ,
             usecase->matrix_34 ,
-            usecase->image_33 
+            usecase->image_33
           );
     }
     if (status == VX_SUCCESS)
@@ -795,7 +795,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             usecase->image_22 ,
             usecase->image_29 ,
             usecase->image_33 ,
-            usecase->image_37 
+            usecase->image_37
           );
     }
     if (status == VX_SUCCESS)
@@ -803,7 +803,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
         usecase->node_40 = usecase_node_create_node_40 (
             graph ,
             usecase->image_37 ,
-            usecase->distribution_39 
+            usecase->distribution_39
           );
     }
     if (status == VX_SUCCESS)
@@ -812,7 +812,7 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             graph ,
             usecase->image_22 ,
             usecase->lut_42 ,
-            usecase->image_41 
+            usecase->image_41
           );
     }
     if (status == VX_SUCCESS)
@@ -821,21 +821,21 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
             graph ,
             usecase->image_41 ,
             usecase->image_33 ,
-            usecase->image_44 
+            usecase->image_44
           );
     }
-    
+
     usecase->graph_0 = graph;
-    
+
     return status;
 }
 
 vx_status uc_sample_05_graph_0_delete(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     vx_graph graph = usecase->graph_0;
-    
+
     if (status == VX_SUCCESS)
     {
         status = vxReleaseGraph(&graph);
@@ -892,37 +892,37 @@ vx_status uc_sample_05_graph_0_delete(uc_sample_05 usecase)
     {
         status = vxReleaseNode( &usecase->node_45 );
     }
-    
+
     usecase->graph_0 = graph;
-    
+
     return status;
 }
 
 vx_status uc_sample_05_graph_0_verify(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     vx_graph graph = usecase->graph_0;
-    
+
     if (status == VX_SUCCESS)
     {
         status = vxVerifyGraph(graph);
     }
-    
+
     return status;
 }
 
 vx_status uc_sample_05_graph_0_run(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
-    
+
     vx_graph graph = usecase->graph_0;
-    
+
     if (status == VX_SUCCESS)
     {
         status = vxProcessGraph(graph);
     }
-    
+
     return status;
 }
 

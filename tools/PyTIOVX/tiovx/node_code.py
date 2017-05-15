@@ -49,11 +49,11 @@ class NodeCode (ReferenceCode) :
             code_gen.write_newline()
             code_gen.write_line("if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)");
             code_gen.write_open_brace();
-            code_gen.write_line("node = tivxCreateNodeByKernel(graph, kernel, params, %d);" % (num_params))
+            code_gen.write_line("node = tivxCreateNodeByKernelRef(graph, kernel, params, %d);" % (num_params))
             code_gen.write_close_brace()
             code_gen.write_close_brace()
         else :
-            code_gen.write_line("node = tivxCreateNodeByStructure(graph, %s, params, %d);" % (self.ref.get_vx_kernel_enum(), num_params))
+            code_gen.write_line("node = tivxCreateNodeByKernelEnum(graph, %s, params, %d);" % (self.ref.get_vx_kernel_enum(), num_params))
         code_gen.write_newline()
         code_gen.write_line("return node;")
         code_gen.write_close_brace()

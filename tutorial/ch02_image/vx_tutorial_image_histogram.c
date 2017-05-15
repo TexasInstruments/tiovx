@@ -54,7 +54,7 @@ void vx_tutorial_image_histogram()
         /* below is equivalent of doing
          * node0 = vxHistogramNode(graph, in_image, histogram);
          */
-        node0 = tivxCreateNodeByStructure(graph,
+        node0 = tivxCreateNodeByKernelEnum(graph,
                     VX_KERNEL_HISTOGRAM,
                     refs, sizeof(refs)/sizeof(refs[0])
                     );

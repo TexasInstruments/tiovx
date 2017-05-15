@@ -403,7 +403,7 @@ vx_node phase_rgb_user_kernel_node(vx_graph graph, vx_image in, vx_image out)
     vx_node node;
     vx_reference refs[] = {(vx_reference)in, (vx_reference)out};
 
-    node = tivxCreateNodeByStructure(graph,
+    node = tivxCreateNodeByKernelEnum(graph,
                 phase_rgb_user_kernel_id,
                 refs, sizeof(refs)/sizeof(refs[0])
                 );

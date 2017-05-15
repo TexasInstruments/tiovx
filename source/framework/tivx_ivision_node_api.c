@@ -44,7 +44,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
             (vx_reference)corners,
             (vx_reference)num_corners,
     };
-    vx_node node = tivxCreateNodeByStructure(graph,
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
                                            TIVX_KERNEL_IVISION_HARRIS_CORNERS,
                                            params,
                                            dimof(params));

@@ -236,7 +236,7 @@ vx_enum tivxGetSelfCpuId(void);
  *
  * \ingroup group_tivx_ext
  */
-vx_node tivxCreateNodeByStructure(vx_graph graph,
+vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
                                 vx_enum kernelenum,
                                 vx_reference params[],
                                 vx_uint32 num);
@@ -246,7 +246,7 @@ vx_node tivxCreateNodeByStructure(vx_graph graph,
  *
  * \ingroup group_tivx_ext
  */
-vx_node tivxCreateNodeByKernel(vx_graph graph,
+vx_node tivxCreateNodeByKernelRef(vx_graph graph,
                                 vx_kernel kernel,
                                 vx_reference params[],
                                 vx_uint32 num);
