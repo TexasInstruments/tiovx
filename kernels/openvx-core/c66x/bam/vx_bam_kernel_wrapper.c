@@ -552,7 +552,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             k = i;
         }
     }
-    else if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAREAD_ONESHOT, &node_index) != 0)
+    else if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAREAD_NULL, &node_index) != 0)
     {
         // TODO
     }
@@ -654,7 +654,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             }
         }
     }
-    else if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAWRITE_ONESHOT, &node_index) != 0)
+    else if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAWRITE_NULL, &node_index) != 0)
     {
         uint16_t numBlksHorz = (uint16_t)(((buf_params[0]->dim_x-1) / blockDimParams->blockWidth) + 1);
         uint16_t numBlksVert = (uint16_t)(((buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
@@ -925,7 +925,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         if(kernel_details->kernel_info.numOutputDataBlocks == 0)
         {
             one_shot_flag = 1;
-            node_list[SINK_NODE].kernelId = BAM_KERNELID_DMAWRITE_ONESHOT;
+            node_list[SINK_NODE].kernelId = BAM_KERNELID_DMAWRITE_NULL;
             node_list[SINK_NODE].kernelArgs = (void *)&graph_args.dma_write_oneshot_args;
         }
         else
