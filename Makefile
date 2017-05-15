@@ -6,8 +6,18 @@ BUILD_TARGET_MODE?=yes
 
 BUILD_CONFORMANCE_TEST?=yes
 BUILD_IVISION_KERNELS?=no
+USE_BAM?=yes
 
 PROFILE?=all
+
+ifeq ($(OS),Windows_NT)
+    BUILD_IVISION_KERNELS?=yes
+else
+    OS=$(shell uname -s)
+    ifeq ($(OS),Linux)
+        BUILD_IVISION_KERNELS?=no
+    endif
+endif
 
 DIRECTORIES :=
 DIRECTORIES += source/platform
