@@ -1,3 +1,11 @@
+/*
+ *******************************************************************************
+ *
+ * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+ * ALL RIGHTS RESERVED
+ *
+ *******************************************************************************
+ */
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <TI/tivx.h>
