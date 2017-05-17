@@ -9,6 +9,11 @@
 #include <TI/tivx.h>
 #include <vx_tutorial.h>
 
+#include <test_engine/test.h>
+
+/* dummy definition to allow to link to CT test_engine */
+CT_RegisterTestCaseFN g_testcase_register_fns[1] = {0};
+
 static void show_usage(int argc, char* argv[])
 {
     printf(" \n");

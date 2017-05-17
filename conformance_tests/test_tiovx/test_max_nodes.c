@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -460,6 +460,8 @@ static void harris_corner_read_truth_data(const char *file_path, TIVX_TruthData 
     vx_keypoint_t *pt;
 
     ASSERT(truth_data && file_path);
+
+    memset(truth_data, 0, sizeof(*truth_data)); /* init it to zero */
 
     f = fopen(file_path, "rb");
     ASSERT(f);
@@ -4242,7 +4244,7 @@ TEST_WITH_ARG(tivxMaxNodes, testMaxNodes, Arg,
             CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_BINS failed\n");
 
         VX_CALL(vxQueryDistribution(dist, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
-        /*The attribute is specified as valid only when the range is a multiple of nbins, 
+        /*The attribute is specified as valid only when the range is a multiple of nbins,
 	 * in other cases, its value shouldn't be checked */
         if (((hist_range % nbins) == 0) && (attr_window != reference_window(hist_range, nbins)))
             CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");

@@ -37,6 +37,7 @@ CSOURCES    := $(call all-c-files)
 LDIRS       := $(TIOVX_PATH)/lib/PC/X86/$(TARGET_OS)/$(TARGET_BUILD)
 IDIRS       += $(TIOVX_PATH)/tutorial
 IDIRS       += $(TIOVX_PATH)/tutorial/ch01_common
+IDIRS       += $(TIOVX_PATH)/conformance_tests/
 
 STATIC_LIBS := vx_tutorial
 STATIC_LIBS += vx_conformance_engine

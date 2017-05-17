@@ -11,10 +11,6 @@
 #include <test_engine/test.h>
 #include <test_engine/test_image.h>
 
-
-/* dummy definition to allow to link to CT test_engine */
-CT_RegisterTestCaseFN g_testcase_register_fns[1] = {0};
-
 vx_status bmp_file_read(
             char *filename,
             vx_bool convert_to_gray_scale,

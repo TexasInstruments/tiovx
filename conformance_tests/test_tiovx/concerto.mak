@@ -34,17 +34,21 @@ ifeq ($(HOST_COMPILER),GCC)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-unused-but-set-variable
 endif
 
 ifeq ($(HOST_COMPILER),GCC_LINUX)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-unused-but-set-variable
 endif
 
 ifeq ($(HOST_COMPILER),GCC_WINDOWS)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
+CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-unused-but-set-variable
 endif
 
 ifeq ($(TARGET_CPU),C66)
