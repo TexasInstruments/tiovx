@@ -232,7 +232,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
                     &kernel_params, &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(
-                    BAM_KERNELID_VXLIB_SCALEIMAGENEARES_I8U_O8U,
+                    BAM_KERNELID_VXLIB_SCALEIMAGENEAREST_I8U_O8U,
                     buf_params, &kernel_details,
                     &prms->graph_handle);
             }
@@ -279,7 +279,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
                     &kernel_params, &kernel_details.kernel_info);
 
                 status = tivxBamCreateHandleSingleNode(
-                    BAM_KERNELID_VXLIB_SCALEIMAGENEARES_I8U_O8U,
+                    BAM_KERNELID_VXLIB_SCALEIMAGENEAREST_I8U_O8U,
                     buf_params, &kernel_details,
                     &prms->graph_handleScale);
 
