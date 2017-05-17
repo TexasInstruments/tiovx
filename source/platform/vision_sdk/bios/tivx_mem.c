@@ -182,6 +182,51 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     return (status);
 }
 
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
+{
+    int32_t ret_val;
+    vx_status status = VX_SUCCESS;
+    Utils_HeapId heap_id;
+    Utils_MemHeapStats heap_stats;
+
+    if (NULL == stats)
+    {
+
+    }
+    else
+    {
+        stats->mem_size = 0;
+        stats->free_size = 0;
+
+        switch (mem_type)
+        {
+            case TIVX_MEM_EXTERNAL:
+                heap_id = UTILS_HEAPID_DDR_CACHED_SR;
+                break;
+            case TIVX_MEM_INTERNAL_L3:
+                heap_id = UTILS_HEAPID_OCMC_SR;
+                break;
+            case TIVX_MEM_INTERNAL_L2:
+                heap_id = UTILS_HEAPID_L2_LOCAL;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            ret_val = Utils_memGetHeapStats(heap_id, &heap_stats);
+
+            if (0 == ret_val)
+            {
+                stats->mem_size = heap_stats.heapSize;
+                stats->free_size = heap_stats.freeSize;
+            }
+        }
+    }
+}
+
 void tivxMemBufferMap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {

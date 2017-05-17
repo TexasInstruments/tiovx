@@ -67,6 +67,32 @@ typedef struct _tivx_bam_kernel_details
 
 }tivx_bam_kernel_details_t;
 
+/*!
+ * \brief Initialize memory block for BAM usage
+ *
+ *        This function is used by the application to assign blocks of
+ *        internal memory for use by BAM.  This memory is typically
+ *        on-chip RAM (L2SRAM, L1DRAM, or OCM RAM).
+ *
+ *        BAM uses the ibuf memory to temporarily store the input block
+ *        buffers from the DMA source nodes, the intermediate block buffers
+ *        within kernels of the graph, and the output block buffers to the
+ *        DMA sink nodes.
+ *
+ *        BAM uses the wbuf memory to temporarily store internal scratch
+ *        memory requested by the kernels of the graph.
+ * 
+ *        All of this memory is considered scratch memory, meaning that the BAM
+ *        does not use it for persistent memory, and it can be overwritten
+ *        by the application when in between calls to tivxBamProcessGraph.
+ *
+ *        This function should be called before any calls to
+ *        tivxBamCreateHandleSingleNode or tivxBamCreateHandleMultiNode.
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
+                          void *wbuf_mem, uint32_t wbuf_size);
 
 /*!
  * \brief BAM Create Graph Handle for Single Node

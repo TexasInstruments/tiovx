@@ -7,10 +7,48 @@
  *******************************************************************************
  */
 #include <TI/tivx.h>
+#include <TI/tivx_debug.h>
 #include <VX/vx.h>
 #include <TI/tivx_obj_desc.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_target_kernels_utils.h>
+#include <bam/vx_bam_kernel_wrapper.h>
+
+#define WBUF_SIZE (0x8000u)
+#define IBUF_SIZE (0x20000u)
+
+void ownReserveC66xL2MEM(void)
+{
+#if defined(BUILD_BAM)
+    tivx_mem_stats mem_stats;
+    void *ibuf_ptr, *wbuf_ptr;
+    vx_uint32 ibuf_size, wbuf_size;
+
+    /* find L2MEM size */
+    tivxMemStats(&mem_stats, TIVX_MEM_INTERNAL_L2);
+
+    /* reserve L2MEM to BAM */
+    wbuf_size = WBUF_SIZE;
+    ibuf_size = IBUF_SIZE;
+
+    ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
+    wbuf_ptr = tivxMemAlloc(wbuf_size, TIVX_MEM_INTERNAL_L2);
+
+    VX_PRINT(VX_ZONE_INIT,
+        "BAM MEM Config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x,  \n",
+        ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
+
+    tivxBamMemInit(ibuf_ptr, ibuf_size, wbuf_ptr, wbuf_size);
+
+    /* memory is allocated only to get a base address, otherwise
+     * this L2 memory is used as scratch, hence we free immediately afterwards
+     * so that some other algorithm can reuse the memory as scratch
+     */
+    tivxMemFree(ibuf_ptr, ibuf_size, TIVX_MEM_INTERNAL_L2);
+    tivxMemFree(wbuf_ptr, wbuf_size, TIVX_MEM_INTERNAL_L2);
+#endif
+
+}
 
 void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
@@ -90,3 +128,4 @@ void ownInitBufParams(
             &obj_desc->imagepatch_addr[i]));
     }
 }
+

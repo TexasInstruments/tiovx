@@ -10,6 +10,8 @@
 
 #include <TI/tivx_target_kernel.h>
 #include <tivx_target_kernels_priv.h>
+#include <ti/vxlib/vxlib.h>
+#include <tivx_target_kernels_utils.h>
 
 typedef void (*tivxTargetKernel_Fxn) ();
 
@@ -122,6 +124,8 @@ void tivxRegisterOpenVXCoreTargetKernels()
             gTivx_target_kernel_list[i].add_kernel();
         }
     }
+
+    ownReserveC66xL2MEM();
 }
 
 void tivxUnRegisterOpenVXCoreTargetKernels()

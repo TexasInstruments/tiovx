@@ -18,15 +18,11 @@
 
 int vx_conformance_test_main(int argc, char* argv[]);
 void TestModuleRegister();
-void tivx_set_debug_zone(unsigned int zone);
-
 
 int main(int argc, char* argv[])
 {
     tivxInit();
     TestModuleRegister();
-    tivx_set_debug_zone(0);
-    tivx_set_debug_zone(1);
     vx_conformance_test_main(argc, argv);
     tivxDeInit();
 }

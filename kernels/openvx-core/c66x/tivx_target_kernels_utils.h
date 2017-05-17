@@ -43,6 +43,12 @@ void ownInitBufParams(
     uint8_t *addr[],
     uint32_t lpad, uint32_t tpad, uint32_t rpad, uint32_t bpad);
 
+/*!
+ * \brief Reserve L2MEM within C66x for usage with BAM framework
+ *
+ */
+void ownReserveC66xL2MEM(void);
+
 #ifdef __cplusplus
 }
 #endif

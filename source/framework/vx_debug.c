@@ -72,6 +72,7 @@ static struct vx_string_and_enum_e g_debug_enumnames[] = {
     _STR2(VX_ZONE_DELAY),
     _STR2(VX_ZONE_TARGET),
     _STR2(VX_ZONE_LOG),
+    _STR2(VX_ZONE_INIT),
     {"UNKNOWN", -1} /* if the zone is not found, this will be returned. */
 };
 
@@ -131,7 +132,7 @@ void tivx_print(vx_enum zone, char *format, ...)
 
         va_start(ap, format);
 
-        snprintf(string, sizeof(string), "%20s:", find_zone_name(zone));
+        snprintf(string, sizeof(string), " %s:", find_zone_name(zone));
         size = strlen(string);
         vsnprintf(&string[size], sizeof(string)-size, format, ap);
         tivxPlatformPrintf(string);

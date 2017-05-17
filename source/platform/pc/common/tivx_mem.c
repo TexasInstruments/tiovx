@@ -15,6 +15,20 @@
  */
 #define TIVX_MEM_BUFFER_ALLOC_ALIGN     (16U)
 
+/*! \brief Psuedo L2RAM size for DSP
+ * \ingroup group_tivx_mem
+ */
+#define TIVX_MEM_L2RAM_SIZE (256*1024)
+
+/*! \brief Psuedo L2RAM memory for DSP
+ * \ingroup group_tivx_mem
+ */
+static vx_uint8 gL2RAM_mem[TIVX_MEM_L2RAM_SIZE];
+
+/*! \brief Psuedo L2RAM memory allocation offset for DSP
+ * \ingroup group_tivx_mem
+ */
+static vx_uint32 gL2RAM_mem_offset = 0;
 
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_type)
@@ -40,7 +54,20 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
 {
     void *ptr = NULL;
 
-    ptr = malloc(size);
+    if(mem_type==TIVX_MEM_INTERNAL_L2)
+    {
+        /* L2RAM is used as scratch memory and allocation is linear offset based allocation */
+        if(size+gL2RAM_mem_offset <= TIVX_MEM_L2RAM_SIZE)
+        {
+            ptr = &gL2RAM_mem[gL2RAM_mem_offset];
+
+            gL2RAM_mem_offset += size;
+        }
+    }
+    else
+    {
+        ptr = malloc(size);
+    }
 
     return (ptr);
 }
@@ -49,7 +76,17 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
 {
     if(ptr)
     {
-        free(ptr);
+        if(mem_type==TIVX_MEM_INTERNAL_L2)
+        {
+            /* L2RAM is used as scratch memory and allocation is linear offset based allocation
+             * Free in this case resets the offset to 0
+             */
+            gL2RAM_mem_offset = 0;
+        }
+        else
+        {
+            free(ptr);
+        }
     }
 }
 
@@ -63,6 +100,28 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     }
 
     return (status);
+}
+
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
+{
+    if (NULL == stats)
+    {
+
+    }
+    else
+    {
+        /* when memory segment information is not known set it to
+         * 0
+         */
+        stats->mem_size = 0;
+        stats->free_size = 0;
+
+        if(mem_type==TIVX_MEM_INTERNAL_L2)
+        {
+            stats->mem_size = TIVX_MEM_L2RAM_SIZE;
+            stats->free_size = TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;
+        }
+    }
 }
 
 void tivxMemBufferMap(

@@ -31,18 +31,35 @@ extern "C" {
 typedef enum _tivx_mem_type_e
 {
     /*! \brief External memory.
+     *
      *  Typically large in size and can be used by kernels.
      *  as well as applications.
      */
     TIVX_MEM_EXTERNAL,
+
     /*! \brief Internal memory at L3 level.
+     *
      *  Typically visiable to all CPUs, limited in size.
      *  Typically used by kernels and in very rare cases by applications.
      */
     TIVX_MEM_INTERNAL_L3,
+
     /*! \brief Internal memory at L2 level.
+     *
      *  Typically local to CPU, very limited in size.
      *  Typically used by kernels.
+     *
+     *  This is used as scratch memory by kernels, i.e
+     *  memory contents are not preserved across kernel function calls
+     *
+     *  tivxMemAlloc() API will linearly allocate from this memory
+     *  segement. After each allocatation an internal
+     *  offset wil be incremented.
+     *
+     *  tivxMemFree() resets this offset to zero.
+     *  i.e tivxMemAlloc() and tivxMemFree() are not heap like memory
+     *  alloc and free functions.
+     *
      *  NOT to be used by applications.
      */
     TIVX_MEM_INTERNAL_L2
@@ -79,6 +96,20 @@ typedef struct _tivx_shared_mem_ptr_t {
 
 } tivx_shared_mem_ptr_t;
 
+
+typedef struct _tivx_mem_stats_t {
+
+    /*! \brief Total size of memory segment
+     *         Set to 0 when memory segment size cannot be determined.
+     */
+    vx_uint32 mem_size;
+
+    /*! \brief Max free block in memoru heap segment
+     *         Set to 0 when free size cannot be determined.
+     */
+    vx_uint32 free_size;
+
+} tivx_mem_stats;
 
 /*!
  * \brief Alloc buffer from shared memory
@@ -199,6 +230,16 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type);
  * \ingroup group_tivx_mem
  */
 void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type);
+
+/*!
+ * \brief Get memory segement information
+ *
+ * \param [out] stats Memory segment information
+ * \param [in] mem_type Memory segment ID
+ *
+ * \ingroup group_tivx_mem
+ */
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type);
 
 #ifdef __cplusplus
 }

@@ -143,6 +143,22 @@ void tivxMemBufferMap(
     }
 }
 
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
+{
+    if (NULL == stats)
+    {
+
+    }
+    else
+    {
+        /* when memory segment information is not known set it to
+         * 0
+         */
+        stats->mem_size = 0;
+        stats->free_size = 0;
+    }
+}
+
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
