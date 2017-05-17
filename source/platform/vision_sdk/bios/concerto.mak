@@ -37,7 +37,7 @@ CSOURCES    := tivx_event.c tivx_init.c tivx_ipc.c tivx_mem.c \
                tivx_queue.c tivx_task.c
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
-IDIRS       += $(STW_PATH)/include
+IDIRS       += $(PDK_PATH)/packages/ti/drv/vps/include
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 IDIRS       += $(VSDK_PATH)

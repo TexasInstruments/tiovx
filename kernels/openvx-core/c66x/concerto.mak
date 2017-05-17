@@ -36,8 +36,8 @@ IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(HOST_ROOT)/kernels/openvx-core/c66x
 
-ifeq ($(USE_BAM),yes)
-DEFS += USE_BAM
+ifeq ($(BUILD_BAM),yes)
+DEFS += BUILD_BAM
 endif
 
 ifeq ($(TARGET_CPU),X86)

@@ -208,16 +208,57 @@ vx_status ownNodeKernelInit(vx_node node)
 
     if(node->is_kernel_created == vx_false_e)
     {
-            if (vx_false_e == node->kernel->is_target_kernel)
+        if (vx_false_e == node->kernel->is_target_kernel)
+        {
+            if(node->kernel->local_data_size != 0)
             {
-                if(node->kernel->local_data_size != 0)
+                /* allocate memory for user kernel */
+                node->local_data_size = node->kernel->local_data_size;
+                node->local_data_ptr = tivxMemAlloc(node->local_data_size,
+                    TIVX_MEM_EXTERNAL);
+                if(node->local_data_ptr==NULL)
                 {
-                    /* allocate memory for user kernel */
-                    node->local_data_size = node->kernel->local_data_size;
-                    node->local_data_ptr = tivxMemAlloc(node->local_data_size,
-                        TIVX_MEM_EXTERNAL);
+                    VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
+                    status = VX_ERROR_NO_MEMORY;
+                }
+                else
+                {
+                    node->local_data_ptr_is_alloc = vx_true_e;
+                }
+            }
+            else
+            {
+                node->local_data_size = 0;
+                node->local_data_ptr = NULL;
+            }
+
+            if((NULL != node->kernel->initialize) &&
+                (status == VX_SUCCESS))
+            {
+                node->local_data_set_allow = vx_true_e;
+
+                /* user has given initialize function so call it */
+                status = node->kernel->initialize(node, node->parameters,
+                    node->kernel->signature.num_parameters);
+
+                if(status!=VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"User kernel, kernel init callback failed\n");
+                }
+                node->local_data_set_allow = vx_false_e;
+
+                if((node->kernel->local_data_size==0)
+                    &&
+                    (node->local_data_size != 0)
+                    &&
+                    (node->local_data_ptr == NULL)
+                    )
+                {
+                    node->local_data_ptr = tivxMemAlloc(
+                        node->local_data_size, TIVX_MEM_EXTERNAL);
                     if(node->local_data_ptr==NULL)
                     {
+                        VX_PRINT(VX_ZONE_ERROR,"User kernel, local data memory alloc failed\n");
                         status = VX_ERROR_NO_MEMORY;
                     }
                     else
@@ -225,66 +266,41 @@ vx_status ownNodeKernelInit(vx_node node)
                         node->local_data_ptr_is_alloc = vx_true_e;
                     }
                 }
-                else
-                {
-                    node->local_data_size = 0;
-                    node->local_data_ptr = NULL;
-                }
-
-                if((NULL != node->kernel->initialize) &&
-                    (status == VX_SUCCESS))
-                {
-                    node->local_data_set_allow = vx_true_e;
-
-                    /* user has given initialize function so call it */
-                    status = node->kernel->initialize(node, node->parameters,
-                        node->kernel->signature.num_parameters);
-
-                    node->local_data_set_allow = vx_false_e;
-
-                    if((node->kernel->local_data_size==0)
-                        &&
-                        (node->local_data_size != 0)
-                        &&
-                        (node->local_data_ptr == NULL)
-                        )
-                    {
-                        node->local_data_ptr = tivxMemAlloc(
-                            node->local_data_size, TIVX_MEM_EXTERNAL);
-                        if(node->local_data_ptr==NULL)
-                        {
-                            status = VX_ERROR_NO_MEMORY;
-                        }
-                        else
-                        {
-                            node->local_data_ptr_is_alloc = vx_true_e;
-                        }
-                    }
-                }
             }
-            else
+        }
+        else
+        {
+            uint16_t obj_desc_id[1];
+
+            if((NULL != node->kernel->initialize) &&
+                (status == VX_SUCCESS))
             {
-                uint16_t obj_desc_id[1];
+                node->local_data_set_allow = vx_true_e;
 
-                if((NULL != node->kernel->initialize) &&
-                    (status == VX_SUCCESS))
+                /* user has given initialize function so call it */
+                status = node->kernel->initialize(node, node->parameters,
+                    node->kernel->signature.num_parameters);
+
+                if(status!=VX_SUCCESS)
                 {
-                    node->local_data_set_allow = vx_true_e;
-
-                    /* user has given initialize function so call it */
-                    status = node->kernel->initialize(node, node->parameters,
-                        node->kernel->signature.num_parameters);
-                }
-
-                if (status == VX_SUCCESS)
-                {
-                    obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
-
-                    status = ownContextSendCmd(node->base.context,
-                        node->obj_desc->target_id, TIVX_CMD_NODE_CREATE,
-                        1, obj_desc_id);
+                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, kernel init callback failed\n");
                 }
             }
+
+            if (status == VX_SUCCESS)
+            {
+                obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+                status = ownContextSendCmd(node->base.context,
+                    node->obj_desc->target_id, TIVX_CMD_NODE_CREATE,
+                    1, obj_desc_id);
+
+                if(status!=VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
+                }
+            }
+        }
 
         if(status==VX_SUCCESS)
         {

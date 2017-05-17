@@ -15,7 +15,7 @@
 TIOVX_PATH := $(abspath .)
 
 VSDK_INSTALL_PATH := $(abspath ../../../)
-VSDK_TOOLS_PATH := /data/datalocal1_videoapps01/ti_components
+VSDK_TOOLS_PATH := $(VSDK_INSTALL_PATH)/ti_components
 
 CROSS_COMPILE_LINARO := arm-linux-gnueabihf-
 CROSS_COMPILE := arm-none-eabi-
@@ -57,7 +57,7 @@ ALGFRAMEWORK_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/algframework
 DMAUTILS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/dmautils
 EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
 
-STW_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/starterware/starterware_
+PDK_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
 TARGETFS := $(VSDK_TOOLS_PATH)/../user/openvx-nightly/targetfs
 

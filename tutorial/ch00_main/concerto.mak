@@ -43,30 +43,20 @@ STATIC_LIBS += vx_conformance_engine
 STATIC_LIBS += vx_vxu vx_framework
 STATIC_LIBS += vx_platform_pc vx_framework 
 
-ifeq ($(BUILD_IVISION_KERNELS),yes)
-STATIC_LIBS += vx_kernels_ivision vx_target_kernels_ivision vx_target_kernels_ivision_common
-endif
-
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
 
-ifeq ($(USE_BAM),yes)
-STATIC_LIBS += vx_target_kernels_openvx_core_bam
+ifeq ($(BUILD_BAM),yes)
+STATIC_LIBS += vx_target_kernels_openvx_core_bam vx_target_kernels_openvx_core
 endif
 
 STATIC_LIBS += vx_framework vx_platform_pc
 
-ifeq ($(USE_BAM),yes)
+ifeq ($(BUILD_BAM),yes)
 STATIC_LIBS += algframework_X86 dmautils_X86 vxlib_bamplugin_X86 
 endif
 
 STATIC_LIBS += vxlib_X86 c6xsim_X86_C66
 
-ifeq ($(BUILD_IVISION_KERNELS),yes)
-STATIC_LIBS += eveHarrisCornerDetection32.eve 
-STATIC_LIBS += evekernels.eve eveprivkernels.eve 
-STATIC_LIBS += evenatckernels.eve eveprivnatckernels.eve
-STATIC_LIBS += evealgframework.eve eveextmem.eve evestarterware_eve
-endif
 
 
 

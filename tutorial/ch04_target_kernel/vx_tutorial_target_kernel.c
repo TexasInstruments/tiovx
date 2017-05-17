@@ -57,3 +57,23 @@ void vx_tutorial_target_kernel_run_interactive()
         }
     }
 }
+
+/**
+ \page CH04_TARGET_KERNEL Chatper 4: Understanding TI OpenVX target kernels
+
+ In TI OpenVX implementation, extension APIs are provided which allow user
+ to execute kernels, on TI specific native targets like DSP. These tutorials
+ show examples of how to use the TI target kernel API.
+
+    <TABLE>
+        <TR bgcolor="lightgrey">
+            <TH> Tutorial file </TH>
+            <TH> Purpose </TH>
+        </TR>
+        <TR>
+            <TD>  </TD>
+            <TD>  </TD>
+        </TR>
+   </TABLE>
+
+ */

@@ -278,6 +278,7 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
         status = ownNodeKernelInit(node);
         if(status != VX_SUCCESS )
         {
+            VX_PRINT(VX_ZONE_ERROR,"Node kernel init for node at index %d failed\n", i);
             break;
         }
     }
@@ -548,6 +549,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid graph reference\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -558,6 +560,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
         /* This should not fail at all */
         if (vxGetStatus((vx_reference)meta[i]) != VX_SUCCESS)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Unable to create meta format object\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -580,7 +583,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * No resources are allcoated in this step
                  */
                 status = ownGraphCalcInAndOutNodes(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Unable to calculate out nodes and in nodes for each node\n");
+                }
             }
+
 
             if(status == VX_SUCCESS)
             {
@@ -600,6 +608,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
                 if(has_cycle)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"Topological sort failed, due to cycles in graph\n");
                     status = VX_FAILURE;
                 }
             }
@@ -611,6 +620,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * No resources are allcoated in this step
                  */
                 status = ownGraphNodeKernelValidate(graph, meta);
+
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
+                }
             }
 
             if(status == VX_SUCCESS)
@@ -620,6 +634,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * No resources are allcoated in this step
                  */
                 status = ownGraphCalcHeadAndLeafNodes(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Find head nodes and leaf nodes failed\n");
+                }
             }
 
             if(status == VX_SUCCESS)
@@ -630,6 +648,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * data object release
                  */
                 status = ownGraphAllocateDataObjects(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Memory alloc for data objects failed\n");
+                }
             }
 
             if(status == VX_SUCCESS)
@@ -639,6 +661,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * graph release
                  */
                 status = ownGraphNodeCreateCompletionEvents(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Create completion events for leaf nodes failed\n");
+                }
             }
 
             if(status == VX_SUCCESS)
@@ -648,6 +674,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * graph release
                  */
                 status = ownGraphCreateNodeCallbackCommands(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Create node callback commands failed\n");
+                }
             }
 
             if(status == VX_SUCCESS)
@@ -659,6 +689,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                  * kernel deinit called during node release
                  */
                 status = ownGraphNodeKernelInit(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
+                }
             }
 
             if(status == VX_SUCCESS)
@@ -671,6 +705,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(status != VX_SUCCESS)
             {
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Graph verify failed\n");
+                }
                 /* deinit kernel to recover resources */
                 ownGraphNodeKernelDeinit(graph);
             }
@@ -680,6 +718,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid graph reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 

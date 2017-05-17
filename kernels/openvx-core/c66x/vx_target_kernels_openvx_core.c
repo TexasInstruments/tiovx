@@ -18,7 +18,7 @@ typedef struct  {
     tivxTargetKernel_Fxn    remove_kernel;
 } Tivx_Target_Kernel_List;
 
-#ifdef USE_BAM
+#ifdef BUILD_BAM
 static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamAbsDiff, tivxRemoveTargetKernelBamAbsDiff},
     {tivxAddTargetKernelBamAccumulate, tivxRemoveTargetKernelBamAccumulate},

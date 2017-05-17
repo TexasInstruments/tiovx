@@ -309,7 +309,7 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
     vx_image in_image = (vx_image)parameters[PHASE_RGB_IN0_IMG_IDX];
     vx_image out_image = (vx_image)parameters[PHASE_RGB_OUT0_IMG_IDX];
     vx_rectangle_t rect = { 0 };
-    vx_map_id in_map_id = VX_ERROR_INVALID_PARAMETERS, out_map_id = VX_ERROR_INVALID_PARAMETERS;
+    vx_map_id in_map_id = (vx_map_id)VX_ERROR_INVALID_PARAMETERS, out_map_id = (vx_map_id)VX_ERROR_INVALID_PARAMETERS;
     vx_imagepatch_addressing_t in_image_addr, out_image_addr;
     vx_uint32 out_w=0, out_h=0;
     vx_status status=0;
@@ -374,11 +374,11 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
 
     }
 
-    if(in_map_id!=VX_ERROR_INVALID_PARAMETERS)
+    if(in_map_id!=(vx_map_id)VX_ERROR_INVALID_PARAMETERS)
     {
         vxUnmapImagePatch(in_image, in_map_id);
     }
-    if(out_map_id!=VX_ERROR_INVALID_PARAMETERS)
+    if(out_map_id!=(vx_map_id)VX_ERROR_INVALID_PARAMETERS)
     {
         vxUnmapImagePatch(out_image, out_map_id);
     }

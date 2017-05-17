@@ -52,7 +52,7 @@ IDIRS       += $(HOST_ROOT)/kernels/include \
 
 DEFS += CORE_C6XX
 
-ifeq ($(USE_BAM),yes)
+ifeq ($(BUILD_BAM),yes)
 SKIPBUILD=0
 else
 SKIPBUILD=1

@@ -45,7 +45,6 @@ CSOURCES    := \
 
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
-IDIRS       += $(STW_PATH)/include
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 IDIRS       += $(VSDK_PATH)

@@ -35,17 +35,6 @@ void tivxInit(void)
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
     tivxRegisterOpenVXCoreTargetKernels();
 
-    #ifdef BUILD_IVISION_KERNELS
-    /* trick target kernel used in EVE emulation mode to think
-     * they are being invoked from a EVE
-     */
-    tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
-    tivxRegisterIVisionTargetKernels();
-
-    tivxSetSelfCpuId(TIVX_CPU_ID_EVE2);
-    tivxRegisterIVisionTargetKernels();
-    #endif
-
     /* let rest of system think it is running on DSP1 */
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
 
@@ -62,9 +51,7 @@ void tivxDeInit(void)
 
     /* DeInitialize Host */
     tivxUnRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_IVISION_KERNELS
-    tivxUnRegisterIVisionTargetKernels();
-    #endif
+
     tivxHostDeInit();
 
     /* DeInitialize Target */

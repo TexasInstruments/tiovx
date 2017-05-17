@@ -21,7 +21,7 @@ extern "C" {
  * \brief Interface file for all target kernels
  */
 
-#ifdef USE_BAM
+#ifdef BUILD_BAM
 
 void tivxAddTargetKernelBamAbsDiff(void);
 void tivxAddTargetKernelBamAccumulate(void);
