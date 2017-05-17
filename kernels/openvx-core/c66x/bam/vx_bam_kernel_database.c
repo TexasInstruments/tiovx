@@ -23,8 +23,8 @@ static BAM_KernelHostDBdef bamKernelHostDB[] =
 {
     { &gBAM_TI_dmaAutoIncrementReadKernel, &gBAM_TI_dmaReadAutoIncrementKernelHelperFunc, "ti_dma_read_autoincrement", BAM_KERNELID_DMAREAD_AUTOINCREMENT},
     { &gBAM_TI_dmaAutoIncrementWriteKernel, &gBAM_TI_dmaWriteAutoIncrementKernelHelperFunc, "ti_dma_write_autoincrement", BAM_KERNELID_DMAWRITE_AUTOINCREMENT},
-    { &gBAM_TI_dmaOneShotReadKernel, &gBAM_TI_dmaReadOneShotKernelHelperFunc, "ti_dma_read_oneshot", BAM_KERNELID_DMAREAD_ONESHOT},
-    { &gBAM_TI_dmaOneShotWriteKernel, &gBAM_TI_dmaWriteOneShotKernelHelperFunc, "ti_dma_write_oneshot", BAM_KERNELID_DMAWRITE_ONESHOT},
+    { &gBAM_TI_dmaOneShotReadKernel, &gBAM_TI_dmaReadOneShotKernelHelperFunc, "ti_dma_read_oneshot", BAM_KERNELID_DMAREAD_NULL},
+    { &gBAM_TI_dmaOneShotWriteKernel, &gBAM_TI_dmaWriteOneShotKernelHelperFunc, "ti_dma_write_oneshot", BAM_KERNELID_DMAWRITE_NULL},
     { &gBAM_VXLIB_absDiff_i8u_i8u_o8u_kernel, &gBAM_VXLIB_absDiff_i8u_i8u_o8u_helperFunc, "vxlib_absDiff_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U },
     { &gBAM_VXLIB_absDiff_i16s_i16s_o16s_kernel, &gBAM_VXLIB_absDiff_i16s_i16s_o16s_helperFunc, "vxlib_absDiff_i16s_i16s_o16s", BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S },
     { &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_kernel, &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_helperFunc, "vxlib_cannyNMS_i16s_i16s_i16u_o8u", BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U },
@@ -118,8 +118,8 @@ static BAM_KernelExecFuncDBdef bamKernelExecFuncDB[] =
 {
     { &gBAM_TI_dmaAutoIncrementReadKernel, &gBAM_TI_dmaReadAutoIncrementKernelExecFunc, "ti_dma_read_autoincrement", BAM_KERNELID_DMAREAD_AUTOINCREMENT},
     { &gBAM_TI_dmaAutoIncrementWriteKernel, &gBAM_TI_dmaWriteAutoIncrementKernelExecFunc, "ti_dma_write_autoincrement", BAM_KERNELID_DMAWRITE_AUTOINCREMENT},
-    { &gBAM_TI_dmaOneShotReadKernel, &gBAM_TI_dmaReadOneShotKernelExecFunc, "ti_dma_read_oneshot", BAM_KERNELID_DMAREAD_ONESHOT},
-    { &gBAM_TI_dmaOneShotWriteKernel, &gBAM_TI_dmaWriteOneShotKernelExecFunc, "ti_dma_write_oneshot", BAM_KERNELID_DMAWRITE_ONESHOT},
+    { &gBAM_TI_dmaOneShotReadKernel, &gBAM_TI_dmaReadOneShotKernelExecFunc, "ti_dma_read_oneshot", BAM_KERNELID_DMAREAD_NULL},
+    { &gBAM_TI_dmaOneShotWriteKernel, &gBAM_TI_dmaWriteOneShotKernelExecFunc, "ti_dma_write_oneshot", BAM_KERNELID_DMAWRITE_NULL},
     { &gBAM_VXLIB_absDiff_i8u_i8u_o8u_kernel, &gBAM_VXLIB_absDiff_i8u_i8u_o8u_execFunc, "vxlib_absDiff_i8u_i8u_o8u", BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U },
     { &gBAM_VXLIB_absDiff_i16s_i16s_o16s_kernel, &gBAM_VXLIB_absDiff_i16s_i16s_o16s_execFunc, "vxlib_absDiff_i16s_i16s_o16s", BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S },
     { &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_kernel, &gBAM_VXLIB_cannyNMS_i16s_i16s_i16u_o8u_execFunc, "vxlib_cannyNMS_i16s_i16s_i16u_o8u", BAM_KERNELID_VXLIB_CANNYNMS_I16S_I16S_I16U_O8U },
