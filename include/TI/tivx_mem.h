@@ -54,7 +54,7 @@ typedef enum _tivx_mem_type_e
      *
      *  tivxMemAlloc() API will linearly allocate from this memory
      *  segement. After each allocatation an internal
-     *  offset wil be incremented.
+     *  offset will be incremented.
      *
      *  tivxMemFree() resets this offset to zero.
      *  i.e tivxMemAlloc() and tivxMemFree() are not heap like memory

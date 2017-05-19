@@ -14,9 +14,6 @@
 #include <tivx_target_kernels_utils.h>
 #include <bam/vx_bam_kernel_wrapper.h>
 
-#define WBUF_SIZE (0x8000u)
-#define IBUF_SIZE (0x20000u)
-
 void ownReserveC66xL2MEM(void)
 {
 #if defined(BUILD_BAM)
@@ -28,8 +25,8 @@ void ownReserveC66xL2MEM(void)
     tivxMemStats(&mem_stats, TIVX_MEM_INTERNAL_L2);
 
     /* reserve L2MEM to BAM */
-    wbuf_size = WBUF_SIZE;
-    ibuf_size = IBUF_SIZE;
+    wbuf_size = mem_stats.free_size / 5;
+    ibuf_size = wbuf_size * 4;
 
     ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
     wbuf_ptr = tivxMemAlloc(wbuf_size, TIVX_MEM_INTERNAL_L2);
