@@ -242,7 +242,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     dma_read_autoinc_args->initParams.numInTransfers   = kernel_info->numInputDataBlocks;
     dma_read_autoinc_args->initParams.numOutTransfers  = 0;
     dma_read_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_IN;
-    dma_read_autoinc_args->pingPongOffset = gIntMemParams.aliasBufOffset;
+    dma_read_autoinc_args->pingPongOffset = gIntMemParams.dataIoMemSize / 2;
 
     for(i=0; i<kernel_info->numInputDataBlocks; i++)
     {
@@ -290,7 +290,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
         dma_write_autoinc_args->initParams.numInTransfers   = 0;
         dma_write_autoinc_args->initParams.numOutTransfers  = kernel_info->numOutputDataBlocks;
         dma_write_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_OUT;
-        dma_write_autoinc_args->pingPongOffset = gIntMemParams.aliasBufOffset;
+        dma_write_autoinc_args->pingPongOffset = gIntMemParams.dataIoMemSize / 2;
 
         for(i=0; i<kernel_info->numOutputDataBlocks; i++)
         {
@@ -491,7 +491,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         {
             dma_read_autoinc_args->initParams.numInTransfers   = num_transfers;
             dma_read_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_IN;
-            dma_read_autoinc_args->pingPongOffset = gIntMemParams.aliasBufOffset;
+            dma_read_autoinc_args->pingPongOffset = gIntMemParams.dataIoMemSize / 2;
 
             for(i=0; i<num_transfers; i++)
             {
@@ -598,7 +598,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         {
             dma_write_autoinc_args->initParams.numOutTransfers  = num_transfers;
             dma_write_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_OUT;
-            dma_write_autoinc_args->pingPongOffset = gIntMemParams.aliasBufOffset;
+            dma_write_autoinc_args->pingPongOffset = gIntMemParams.dataIoMemSize / 2;
 
             for(i=0; i<num_transfers; i++)
             {
@@ -703,13 +703,10 @@ vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
 {
     vx_status status_v = VX_SUCCESS;
 
-    gIntMemParams.ibuflMem  = ibuf_mem;
-    gIntMemParams.ibufhMem  = 0; /* Not used */
-    gIntMemParams.wbufMem   = wbuf_mem;
-    gIntMemParams.ibuflSize = ibuf_size;
-    gIntMemParams.ibufhSize = 0; /* Not used */
-    gIntMemParams.wbufSize  = wbuf_size;
-    gIntMemParams.aliasBufOffset  = ibuf_size/2;
+    gIntMemParams.dataIoMem              = ibuf_mem;
+    gIntMemParams.scratchOrConstMem      = wbuf_mem;
+    gIntMemParams.dataIoMemSize          = ibuf_size;
+    gIntMemParams.scratchOrConstMemSize  = wbuf_size;
 
     return status_v;
 }
