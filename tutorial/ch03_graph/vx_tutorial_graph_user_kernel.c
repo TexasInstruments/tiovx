@@ -14,8 +14,8 @@
 #include <ch03_graph/phase_rgb_user_kernel.h>
 
 #define IN_FILE_NAME      "vx_tutorial_graph_image_gradients_phase_out.bmp"
-#define OUT_USER_KERNEL_FILE_NAME   "vx_tutorial_graph_user_kernel_pytiovx_out.bmp"
-#define OUT_TARGET_KERNEL_FILE_NAME "vx_tutorial_graph_target_kernel_pytiovx_out.bmp"
+#define OUT_USER_KERNEL_FILE_NAME   "vx_tutorial_graph_user_kernel_out.bmp"
+#define OUT_TARGET_KERNEL_FILE_NAME "vx_tutorial_graph_target_kernel_out.bmp"
 
 
 void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)

@@ -16,7 +16,6 @@ static char menu[] = {
     "\n"
     "\n 1: Image"
     "\n 2: Graph"
-    "\n 3: Target Kernel"
     "\n"
     "\n a: Run All"
     "\n"
@@ -29,7 +28,6 @@ void vx_tutorial_run_all()
 {
     vx_tutorial_image_run_all();
     vx_tutorial_graph_run_all();
-    vx_tutorial_target_kernel_run_all();
 }
 
 void vx_tutorial_run_interactive()
@@ -50,9 +48,6 @@ void vx_tutorial_run_interactive()
                 break;
             case '2':
                 vx_tutorial_graph_run_interactive();
-                break;
-            case '3':
-                vx_tutorial_target_kernel_run_interactive();
                 break;
             case 'a':
                 vx_tutorial_run_all();

@@ -14,6 +14,8 @@ void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
 void tivxRegisterIVisionTargetKernels(void);
 void tivxUnRegisterIVisionTargetKernels(void);
+void tivxRegisterTutorialTargetKernels(void);
+void tivxUnRegisterTutorialTargetKernels(void);
 
 void tivxInit(void)
 {
@@ -26,6 +28,9 @@ void tivxInit(void)
     /* Initialize Host */
 #if defined (C66)
     tivxRegisterOpenVXCoreTargetKernels();
+    #ifdef BUILD_TUTORIAL
+    tivxRegisterTutorialTargetKernels();
+    #endif
 #endif
 
 #if defined (EVE) && defined (BUILD_IVISION_KERNELS)
@@ -50,6 +55,9 @@ void tivxDeInit(void)
     /* DeInitialize Host */
 #if defined (C66)
     tivxUnRegisterOpenVXCoreTargetKernels();
+    #ifdef BUILD_TUTORIAL
+    tivxUnRegisterTutorialTargetKernels();
+    #endif
 #endif
 
 #if defined (EVE) && defined (BUILD_IVISION_KERNELS)

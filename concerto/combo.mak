@@ -99,6 +99,10 @@ ifeq ($(BUILD_IVISION_KERNELS),yes)
 $(TARGET_COMBO_NAME)_DEFS += BUILD_IVISION_KERNELS
 endif
 
+ifeq ($(BUILD_TUTORIAL),yes)
+$(TARGET_COMBO_NAME)_DEFS += BUILD_TUTORIAL
+endif
+
 # Include platform definition
 include $(BUILD_PLATFORM)
 

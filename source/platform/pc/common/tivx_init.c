@@ -13,8 +13,8 @@
 void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
 
-void tivxRegisterIVisionTargetKernels(void);
-void tivxUnRegisterIVisionTargetKernels(void);
+void tivxRegisterTutorialTargetKernels(void);
+void tivxUnRegisterTutorialTargetKernels(void);
 
 void tivxInit(void)
 {
@@ -35,9 +35,15 @@ void tivxInit(void)
      */
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
     tivxRegisterOpenVXCoreTargetKernels();
+    #ifdef BUILD_TUTORIAL
+    tivxRegisterTutorialTargetKernels();
+    #endif
 
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
     tivxRegisterOpenVXCoreTargetKernels();
+    #ifdef BUILD_TUTORIAL
+    tivxRegisterTutorialTargetKernels();
+    #endif
 
     /* let rest of system think it is running on DSP1 */
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
@@ -55,6 +61,10 @@ void tivxDeInit(void)
 
     /* DeInitialize Host */
     tivxUnRegisterOpenVXCoreTargetKernels();
+
+    #ifdef BUILD_TUTORIAL
+    tivxUnRegisterTutorialTargetKernels();
+    #endif
 
     tivxHostDeInit();
 

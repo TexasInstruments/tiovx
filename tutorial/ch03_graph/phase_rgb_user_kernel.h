@@ -10,7 +10,7 @@
 #ifndef PHASE_RGB_USER_KERNEL
 #define PHASE_RGB_USER_KERNEL
 
-#include <VX/vx.h>
+#include <vx_tutorial_kernels.h>
 
 vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_kernel);
 vx_status phase_rgb_user_kernel_remove(vx_context context);

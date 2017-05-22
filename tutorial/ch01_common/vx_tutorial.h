@@ -13,9 +13,10 @@
 #include <stdio.h>
 #include <VX/vx.h>
 
+
 #include <ch02_image/vx_tutorial_image.h>
 #include <ch03_graph/vx_tutorial_graph.h>
-#include <ch04_target_kernel/vx_tutorial_target_kernel.h>
+
 
 char vx_tutorial_get_char();
 

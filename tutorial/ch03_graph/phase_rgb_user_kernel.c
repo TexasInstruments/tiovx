@@ -134,7 +134,7 @@ static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context)
     vx_kernel kernel;
     vx_status status;
 
-    phase_rgb_user_kernel_id = 0;
+    phase_rgb_user_kernel_id = TIVX_TUTORIAL_KERNEL_PHASE_RGB;
 
     kernel = vxAddUserKernel(
                 context,
@@ -352,23 +352,39 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
     {
         vx_uint32 x, y;
 
-        for(x=0; x<out_image_addr.dim_x; x++)
+        for(y=0; y<out_image_addr.dim_y; y++)
         {
-            for(y=0; y<out_image_addr.dim_y; y++)
+            for(x=0; x<out_image_addr.dim_x; x++)
             {
                 vx_uint8 *in_pixel = (vx_uint8 *)vxFormatImagePatchAddress2d(in_data_ptr, x, y, &in_image_addr);
-                vx_uint32 *out_pixel = (vx_uint32 *)vxFormatImagePatchAddress2d(out_data_ptr, x, y, &out_image_addr);
+                vx_uint8 *out_pixel = (vx_uint8 *)vxFormatImagePatchAddress2d(out_data_ptr, x, y, &out_image_addr);
 
                 if(*in_pixel<64)
-                    *out_pixel = 0x00FF0000;
+                {
+                    out_pixel[0] = 0xFF;
+                    out_pixel[1] = 0x00;
+                    out_pixel[2] = 0x00;
+                }
                 else
                 if(*in_pixel<128)
-                    *out_pixel = 0x0000FF00;
+                {
+                    out_pixel[0] = 0x00;
+                    out_pixel[1] = 0xFF;
+                    out_pixel[2] = 0x00;
+                }
                 else
                 if(*in_pixel<192)
-                    *out_pixel = 0x000000FF;
+                {
+                    out_pixel[0] = 0x00;
+                    out_pixel[1] = 0x00;
+                    out_pixel[2] = 0xFF;
+                }
                 else
-                    *out_pixel = 0x00FFFFFF;
+                {
+                    out_pixel[0] = 0xFF;
+                    out_pixel[1] = 0xFF;
+                    out_pixel[2] = 0xFF;
+                }
             }
         }
 

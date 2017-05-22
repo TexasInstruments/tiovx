@@ -32,14 +32,10 @@ CH03_SOURCES := \
 	ch03_graph/vx_tutorial_graph_user_kernel_pytiovx.c \
 	ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.c \
 
-CH04_SOURCES := \
-	ch04_target_kernel/vx_tutorial_target_kernel.c \
-
 CSOURCES    := \
 	$(CH01_SOURCES) \
 	$(CH02_SOURCES) \
 	$(CH03_SOURCES) \
-	$(CH04_SOURCES) \
 
 ifeq ($(TARGET_CPU),C66)
 SKIPBUILD=1

@@ -27,7 +27,10 @@ extern "C" {
 /*! \brief The list of available libraries in tivx */
 enum tivx_library_e {
     /*! \brief The set of kernels supported in ivision. */
-   TIVX_LIBRARY_IVISION_BASE = 0
+   TIVX_LIBRARY_IVISION_BASE = 0,
+
+   /*! \brief The set of target kernels implemented as part of TI OpenVX tutorial */
+   TIVX_LIBRARY_TUTORIAL_BASE = 1
 };
 
 /*!
