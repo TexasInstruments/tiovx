@@ -27,6 +27,7 @@
 
 
 #include "test_engine/test.h"
+#include "test_tiovx.h"
 
 #define __STDC_FORMAT_MACROS
 #include <inttypes.h>
@@ -49,11 +50,24 @@
 #define M_PIF   (vx_float32)M_PI
 #endif
 
+#define ONE_2_0 1.0f
+
+#define VX_MAP_IDENT         0
+#define VX_MAP_SCALE         1
+#define VX_MAP_SCALE_ROTATE  2
+#define VX_MAP_RANDOM        3
+
+#define RND_FLT(low, high)      (vx_float32)CT_RNG_NEXT_REAL(CT()->seed_, low, high);
+
+#define LEVELS_COUNT_MAX    7
+
+#define MAX_POINTS 100
 
 static FILE *perf_file = NULL;
 static uint32_t gTiovxKernIdx;
 
 TESTCASE(tiovxPerformance, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tiovxPerformance2, CT_VXContext, ct_setup_vx_context, 0)
 
 TEST(tiovxPerformance, tiovxPerfOpenFile)
 {
@@ -93,7 +107,7 @@ TEST(tiovxPerformance, tiovxPerfOpenFile)
     }
 }
 
-TEST(tiovxPerformance, tiovxPerfCloseFile)
+TEST(tiovxPerformance2, tiovxPerfCloseFile)
 {
     if (perf_file)
     {
@@ -498,6 +512,277 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfCanny, canny_arg,
     PrintPerf(perf_graph, perf_node, lena->width, lena->height, "Canny");
 }
 
+static CT_Image image_generate_random(int width, int height, vx_df_image format)
+{
+    CT_Image image;
+
+    ASSERT_NO_FAILURE_(return 0,
+            image = ct_allocate_ct_image_random(width, height, format, &CT()->seed_, 0, 256));
+
+    return image;
+}
+
+TEST(tiovxPerformance, tiovxPerfChannelCombine)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image[4] = {0, 0, 0, 0};
+    vx_image dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    int channels = 0, i;
+    CT_Image src[4] = {NULL, NULL, NULL, NULL};
+    CT_Image dst = NULL, dst_dummy = NULL;
+    vx_enum channel_ref;
+
+    ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, VX_DF_IMAGE_RGB));
+
+    ASSERT_NO_FAILURE(channels = ct_get_num_channels(VX_DF_IMAGE_RGB));
+    channel_ref = VX_CHANNEL_R;
+    for (i = 0; i < channels; i++)
+    {
+        int w = WIDTH / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);
+        int h = HEIGHT / ct_image_get_channel_subsampling_y(dst_dummy, channel_ref + i);
+        ASSERT_NO_FAILURE(src[i] = image_generate_random(w, h, VX_DF_IMAGE_U8));
+        ASSERT_VX_OBJECT(src_image[i] = ct_image_to_vx_image(src[i], context), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    ASSERT(dst_image == 0);
+
+    for (i = 0; i < channels; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        ASSERT(src_image[i] == 0);
+    }
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Channel Combine");
+}
+
+
+TEST(tiovxPerformance, tiovxPerfChannelExtract)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    CT_Image src = NULL, dst = NULL;
+
+    ASSERT_NO_FAILURE(src = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_RGB));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, dst_image);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Channel Extract");
+}
+
+typedef struct {
+    const char* name;
+    vx_df_image srcformat;
+    vx_df_image dstformat;
+    int mode;
+    int ythresh;
+    int cthresh;
+} color_arg;
+
+#define CVT_CASE_(imm, from, to, ythresh, cthresh) \
+    {#imm "/" #from "=>" #to, VX_DF_IMAGE_##from, VX_DF_IMAGE_##to, CT_##imm##_MODE, ythresh, cthresh}
+
+#define CVT_CASE(from, to, ythresh, cthresh) \
+    CVT_CASE_(Immediate, from, to, ythresh, cthresh), \
+    CVT_CASE_(Graph, from, to, ythresh, cthresh)
+
+TEST_WITH_ARG(tiovxPerformance, tiovxPerfColorConvert, color_arg,
+              CVT_CASE(RGB, RGBX, 0, 0),
+              /*CVT_CASE(RGB, NV12, 1, 1),
+              CVT_CASE(RGB, IYUV, 1, 1),
+              CVT_CASE(RGB, YUV4, 1, 1),
+
+              CVT_CASE(RGBX, RGB, 0, 0),
+              CVT_CASE(RGBX, NV12, 1, 1),
+              CVT_CASE(RGBX, IYUV, 1, 1),
+              CVT_CASE(RGBX, YUV4, 1, 1),
+
+              CVT_CASE(NV12, RGB, 1, 1),
+              CVT_CASE(NV12, RGBX, 1, 1),
+//              CVT_CASE(NV12, NV21, 0, 0),
+              CVT_CASE(NV12, IYUV, 0, 0),
+              CVT_CASE(NV12, YUV4, 0, 0),
+
+              CVT_CASE(NV21, RGB, 1, 1),
+              CVT_CASE(NV21, RGBX, 1, 1),
+//              CVT_CASE(NV21, NV12, 0, 0),
+              CVT_CASE(NV21, IYUV, 0, 0),
+              CVT_CASE(NV21, YUV4, 0, 0),
+
+              CVT_CASE(UYVY, RGB, 1, 1),
+              CVT_CASE(UYVY, RGBX, 1, 1),
+              CVT_CASE(UYVY, NV12, 0, 0),
+              CVT_CASE(UYVY, IYUV, 0, 0),
+//              CVT_CASE(UYVY, YUV4, 0, 0),
+
+              CVT_CASE(YUYV, RGB, 1, 1),
+              CVT_CASE(YUYV, RGBX, 1, 1),
+              CVT_CASE(YUYV, NV12, 0, 0),
+              CVT_CASE(YUYV, IYUV, 0, 0),
+//              CVT_CASE(YUYV, YUV4, 0, 0),
+
+              CVT_CASE(IYUV, RGB, 1, 1),
+              CVT_CASE(IYUV, RGBX, 1, 1),
+              CVT_CASE(IYUV, NV12, 0, 0),
+              CVT_CASE(IYUV, YUV4, 0, 0),*/
+              )
+{
+    int srcformat = arg_->srcformat;
+    int dstformat = arg_->dstformat;
+    int ythresh = arg_->ythresh;
+    int cthresh = arg_->cthresh;
+    int mode = arg_->mode;
+    vx_image src=0, dst=0;
+    CT_Image src0, dst0, dst1;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    vx_perf_t perf_node, perf_graph;
+
+    rng = CT()->seed_;
+
+    int width = ct_roundf(ct_log_rng(&rng, 0, 10));
+    int height = ct_roundf(ct_log_rng(&rng, 0, 10));
+    vx_enum range = VX_CHANNEL_RANGE_FULL;
+    vx_enum space = VX_COLOR_SPACE_BT709;
+
+    width = WIDTH;
+    height = HEIGHT;
+
+    if( srcformat == VX_DF_IMAGE_RGB || srcformat == VX_DF_IMAGE_RGBX )
+    {
+        int scn = srcformat == VX_DF_IMAGE_RGB ? 3 : 4;
+        ASSERT_NO_FAILURE(src0 = ct_allocate_ct_image_random(width, height, srcformat, &rng, 0, 256));
+    }
+    else
+    {
+        ASSERT_NO_FAILURE(src0 = ct_allocate_ct_image_random(width, height, srcformat, &rng, 0, 256));
+    }
+    ASSERT_NO_FAILURE(src = ct_image_to_vx_image(src0, context));
+    ASSERT_VX_OBJECT(src, VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_SPACE, &space, sizeof(space)));
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, dstformat));
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, width, height, dstformat), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst, VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node = vxColorConvertNode(graph, src, dst), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    dst1 = ct_image_from_vx_image(dst);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&dst));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Color Convert");
+}
+
+TEST(tiovxPerformance, tiovxPerfConvertDepth)
+{
+    vx_image src, dst;
+    CT_Image ref_src, refdst, vxdst;
+    vx_graph graph;
+    vx_node node;
+    vx_scalar scalar_shift;
+    vx_int32 shift = 0;
+    vx_int32 tmp = 0;
+    vx_context context = context_->vx_context_;
+    vx_perf_t perf_node, perf_graph;
+
+    ASSERT_NO_FAILURE(ref_src = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+    src = ct_image_to_vx_image(ref_src, context);
+
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(scalar_shift = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node = vxConvertDepthNode(graph, src, dst, VX_CONVERT_POLICY_SATURATE, scalar_shift), VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseScalar(&scalar_shift));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Convert Depth");
+}
+
 static vx_convolution convolution_create(vx_context context, int cols, int rows, vx_int16* data, vx_uint32 scale)
 {
     vx_convolution convolution = vxCreateConvolution(context, cols, rows);
@@ -679,7 +964,7 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfDilate3x3, Filter3x3_Arg,
     ASSERT(dst_image == 0);
     ASSERT(src_image == 0);
 
-    PrintPerf(perf_graph, perf_node, src->width, src->height, "Dilate 3x3");
+    PrintPerf(perf_graph, perf_node, src->width, src->height, "Dilate (3x3)");
 }
 
 TEST(tiovxPerformance, tiovxPerfEqualizeHistogram)
@@ -765,6 +1050,80 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfErode3x3, Filter3x3_Arg,
 
     PrintPerf(perf_graph, perf_node, src->width, src->height, "Erode (3x3)");
 }
+
+typedef struct {
+    const char* name;
+    const char* imgname;
+    int threshold;
+    int nonmax;
+    int mode;
+} fast_arg;
+
+#define MAX_BINS 256
+
+#define FAST_TEST_CASE(imm, imgname, t, nm) \
+    {#imm "/" "image=" #imgname "/" "threshold=" #t "/" "nonmax_suppression=" #nm, #imgname ".bmp", t, nm, CT_##imm##_MODE}
+
+TEST_WITH_ARG(tiovxPerformance, tiovxPerfFastCorners, fast_arg,
+              FAST_TEST_CASE(Graph, lena, 10, 0),
+              )
+{
+    int mode = arg_->mode;
+    const char* imgname = arg_->imgname;
+    int threshold = arg_->threshold;
+    int nonmax = arg_->nonmax;
+    vx_image src;
+    vx_node node = 0;
+    vx_graph graph = 0;
+    CT_Image src0, dst0, mask0, dst1;
+    vx_context context = context_->vx_context_;
+    vx_scalar sthresh;
+    vx_array corners;
+    uint32_t width, height;
+    vx_float32 threshold_f = (vx_float32)threshold;
+    uint32_t ncorners0, ncorners;
+    vx_size corners_data_size = 0;
+    vx_keypoint_t* corners_data = 0;
+    uint32_t i, dst1stride;
+    vx_perf_t perf_node, perf_graph;
+
+    ASSERT_NO_FAILURE(src0 = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+    ASSERT(src0->format == VX_DF_IMAGE_U8);
+
+    width = src0->width;
+    height = src0->height;
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(mask0 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(dst1 = ct_allocate_image(width, height, VX_DF_IMAGE_U8));
+    dst1stride = ct_stride_bytes(dst1);
+    ct_memset(dst1->data.y, 0, (vx_size)dst1stride*height);
+
+    src = ct_image_to_vx_image(src0, context);
+    sthresh = vxCreateScalar(context, VX_TYPE_FLOAT32, &threshold_f);
+    corners = vxCreateArray(context, VX_TYPE_KEYPOINT, 80000);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    node = vxFastCornersNode(graph, src, sthresh, nonmax ? vx_true_e : vx_false_e, corners, 0);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0 && graph == 0);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseScalar(&sthresh));
+    VX_CALL(vxReleaseArray(&corners));
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Fast Corners");
+}
+
 
 TEST_WITH_ARG(tiovxPerformance, tiovxPerfGaussian3x3, Filter3x3_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, read_image, "lena.bmp")
@@ -1044,7 +1403,7 @@ static void harris_corner_read_truth_data(const char *file_path, HarrisC_TruthDa
 #define ADD_HC_VX_BLOCK_SIZE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/BLOCK_SIZE=7", __VA_ARGS__, 7))
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfHarrisCorners, HarrisC_Arg,
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfHarrisCorners, HarrisC_Arg,
     CT_GENERATE_PARAMETERS("many_strong_corners", ADD_HC_VX_MIN_DISTANCE, ADD_HC_VX_SENSITIVITY, ADD_HC_VX_GRADIENT_SIZE, ADD_HC_VX_BLOCK_SIZE, ARG, "hc_msc")
 )
 {
@@ -1127,7 +1486,7 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfHarrisCorners, HarrisC_Arg,
     PrintPerf(perf_graph, perf_node, input->width, input->height, "Harris Corners");
 }
 
-TEST(tiovxPerformance, tiovxPerfHistogram)
+TEST(tiovxPerformance2, tiovxPerfHistogram)
 {
     vx_image src;
     CT_Image src0;
@@ -1183,7 +1542,7 @@ typedef struct {
     int width, height;
 } Integral_Arg;
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfIntegralImg, Integral_Arg,
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfIntegralImg, Integral_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_SIZE_NONE, ARG, read_image, "lena.bmp")
 )
 {
@@ -1224,6 +1583,140 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfIntegralImg, Integral_Arg,
     ASSERT(src_image == 0);
 
     PrintPerf(perf_graph, perf_node, src->width, src->height, "Integral Image");
+}
+
+static vx_size own_pyramid_calc_max_levels_count(int width, int height, vx_float32 scale)
+{
+    vx_size level = 1;
+
+    while ((16 <= width) && (16 <= height) && level < LEVELS_COUNT_MAX)
+    {
+        level++;
+        width  = (int)ceil((vx_float64)width * scale);
+        height = (int)ceil((vx_float64)height * scale);
+    }
+
+    return level;
+}
+
+static void own_laplacian_pyramid_openvx(vx_context context, vx_border_t border, vx_image input, vx_pyramid laplacian, vx_image output)
+{
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = vxLaplacianPyramidNode(graph, input, laplacian, output), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Laplacian Pyramid");
+
+    return;
+}
+
+static void own_laplacian_reconstruct_openvx(vx_context context, vx_border_t border, vx_pyramid laplacian, vx_image input, vx_image output)
+{
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = vxLaplacianReconstructNode(graph, laplacian, input, output), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Laplacian Reconstruct");
+
+    return;
+}
+
+TEST(tiovxPerformance2, tiovxPerfLaplacianReconstruct)
+{
+    vx_uint32 i;
+    vx_context context = context_->vx_context_;
+    vx_size levels = 0;
+    vx_image src = 0;
+    vx_image ref_lowest_res = 0;
+    vx_image ref_dst = 0;
+    vx_image tst_dst = 0;
+    vx_pyramid ref_pyr = 0;
+
+    CT_Image input = NULL;
+
+    vx_border_t border = { VX_BORDER_UNDEFINED };
+    vx_border_t build_border = {VX_BORDER_REPLICATE};
+
+    ASSERT_NO_FAILURE(input = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+    ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = own_pyramid_calc_max_levels_count(input->width, input->height, VX_SCALE_PYRAMID_HALF);
+
+    {
+        vx_uint32 lowest_res_width  = input->width;
+        vx_uint32 lowest_res_height = input->height;
+
+        for (i = 1; i < levels; i++)
+        {
+            lowest_res_width  = (vx_uint32)ceilf(lowest_res_width * VX_SCALE_PYRAMID_HALF);
+            lowest_res_height = (vx_uint32)ceilf(lowest_res_height * VX_SCALE_PYRAMID_HALF);
+        }
+
+        ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+
+        ASSERT_VX_OBJECT(ref_lowest_res = vxCreateImage(context, lowest_res_width, lowest_res_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(ref_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(tst_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    own_laplacian_pyramid_openvx(context, build_border, src, ref_pyr, ref_lowest_res);
+    own_laplacian_reconstruct_openvx(context, border, ref_pyr, ref_lowest_res, tst_dst);
+
+    {
+        CT_Image ct_ref_dst = 0;
+        CT_Image ct_tst_dst = 0;
+
+        ASSERT_NO_FAILURE(ct_tst_dst = ct_image_from_vx_image(tst_dst));
+        EXPECT_CTIMAGE_NEAR(input, ct_tst_dst, 1);
+    }
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleasePyramid(&ref_pyr));
+    VX_CALL(vxReleaseImage(&ref_lowest_res));
+    VX_CALL(vxReleaseImage(&ref_dst));
+    VX_CALL(vxReleaseImage(&tst_dst));
+
+    ASSERT(src == 0);
+    ASSERT(ref_pyr == 0);
+    ASSERT(ref_lowest_res == 0);
+    ASSERT(ref_dst == 0);
+    ASSERT(tst_dst == 0);
 }
 
 typedef struct {
@@ -1370,7 +1863,7 @@ static CT_Image lut_image_read(const char* fileName, int width, int height, vx_e
 #define ADD_TYPE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/S16", __VA_ARGS__, VX_TYPE_INT16))
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfLUT, Lut_Arg,
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfLUT, Lut_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_LUT_GENERATOR, ADD_SIZE_NONE, ADD_TYPE, ARG, lut_image_read, "lena.bmp")
 )
 {
@@ -1432,7 +1925,7 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfLUT, Lut_Arg,
     PrintPerf(perf_graph, perf_node, src->width, src->height, "LookUpTable");
 }
 
-TEST(tiovxPerformance, tiovxPerfMagnitude)
+TEST(tiovxPerformance2, tiovxPerfMagnitude)
 {
     vx_context context = context_->vx_context_;
     vx_image dx = 0, dy = 0, mag;
@@ -1485,7 +1978,172 @@ TEST(tiovxPerformance, tiovxPerfMagnitude)
     PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Magnitude");
 }
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfMedian3x3, Filter3x3_Arg,
+TEST(tiovxPerformance2, tiovxPerfMeanStdDev)
+{
+    int format = VX_DF_IMAGE_U8;
+    vx_image src;
+    CT_Image src0;
+    vx_node node = 0;
+    vx_graph graph = 0;
+    vx_scalar mean_s, stddev_s;
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    vx_float32 mean0 = 0.f, stddev0 = 0.f, mean = 0.f, stddev = 0.f;
+    int a = 0, b = 256;
+    vx_perf_t perf_node, perf_graph;
+
+    rng = CT()->seed_;
+
+    mean_s = vxCreateScalar(context, VX_TYPE_FLOAT32, &mean);
+    ASSERT_VX_OBJECT(mean_s, VX_TYPE_SCALAR);
+    stddev_s = vxCreateScalar(context, VX_TYPE_FLOAT32, &stddev);
+    ASSERT_VX_OBJECT(stddev_s, VX_TYPE_SCALAR);
+
+    int width = WIDTH;
+    int height = HEIGHT;
+
+    src0 = ct_allocate_ct_image_random(width, height, format, &rng, a, b);
+    src = ct_image_to_vx_image(src0, context);
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    node = vxMeanStdDevNode(graph, src, mean_s, stddev_s);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxCopyScalar(mean_s, &mean, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+    VX_CALL(vxCopyScalar(stddev_s, &stddev, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    VX_CALL(vxReleaseScalar(&mean_s));
+    VX_CALL(vxReleaseScalar(&stddev_s));
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Mean/Standard Deviation");
+}
+
+TEST(tiovxPerformance2, tiovxPerfMinMaxLoc)
+{
+    const int MAX_CAP = 300;
+    int format = VX_DF_IMAGE_U8;
+    vx_image src;
+    CT_Image src0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    int a, b;
+    int minval0 = 0, maxval0 = 0, minval = 0, maxval = 0;
+    uint32_t mincount0 = 0, maxcount0 = 0, mincount = 0, maxcount = 0;
+    vx_scalar minval_, maxval_, mincount_, maxcount_;
+    vx_array minloc_ = 0, maxloc_ = 0;
+    vx_enum sctype = format == VX_DF_IMAGE_U8 ? VX_TYPE_UINT8 :
+                     format == VX_DF_IMAGE_S16 ? VX_TYPE_INT16 :
+                     VX_TYPE_INT32;
+    uint32_t pixsize = ct_image_bits_per_pixel(format)/8;
+    vx_size bufbytes = 0, npoints = 0, bufcap = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    a = 0, b = 256;
+
+    minval_ = ct_scalar_from_int(context, sctype, 0);
+    maxval_ = ct_scalar_from_int(context, sctype, 0);
+    mincount_ = ct_scalar_from_int(context, VX_TYPE_UINT32, 0);
+    maxcount_ = ct_scalar_from_int(context, VX_TYPE_UINT32, 0);
+    minloc_ = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
+    maxloc_ = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
+    ASSERT(vxGetStatus((vx_reference)minloc_) == VX_SUCCESS && vxGetStatus((vx_reference)maxloc_) == VX_SUCCESS);
+
+    rng = CT()->seed_;
+
+    int return_loc = CT_RNG_NEXT_INT(rng, 0, 2);
+    int return_count = CT_RNG_NEXT_INT(rng, 0, 2);
+    uint32_t stride;
+    int width, height;
+
+    width = WIDTH;
+    height = HEIGHT;
+
+    src0 = ct_allocate_ct_image_random(width, height, format, &rng, a, b);
+    stride = ct_stride_bytes(src0);
+    src = ct_image_to_vx_image(src0, context);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    node = vxMinMaxLocNode(graph, src, minval_, maxval_,
+                           return_loc ? minloc_ : 0,
+                           return_loc ? maxloc_ : 0,
+                           return_count ? mincount_ : 0,
+                           return_count ? maxcount_ : 0);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    VX_CALL(vxReleaseScalar(&minval_));
+    VX_CALL(vxReleaseScalar(&maxval_));
+    VX_CALL(vxReleaseScalar(&mincount_));
+    VX_CALL(vxReleaseScalar(&maxcount_));
+    VX_CALL(vxReleaseArray(&minloc_));
+    VX_CALL(vxReleaseArray(&maxloc_));
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Min Max Loc");
+}
+
+TEST(tiovxPerformance2, tiovxPerfMultiply)
+{
+    vx_image src1, src2, dst;
+    vx_graph graph;
+    vx_node node = 0;
+    vx_scalar scale = 0;
+    CT_Image ref1, ref2, refdst, refdst_plus_1, vxdst;
+    vx_context context = context_->vx_context_;
+    vx_perf_t perf_node, perf_graph;
+    vx_float32 scale_float = ONE_2_0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(dst   = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(scale = vxCreateScalar(context, VX_TYPE_FLOAT32, &scale_float), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(src1 = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2 = vxCreateImage(context, WIDTH, HEIGHT, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+
+    ASSERT_NO_FAILURE(ct_fill_image_random(src1, &CT()->seed_));
+    ASSERT_NO_FAILURE(ct_fill_image_random(src2, &CT()->seed_));
+
+    // build one-node graph
+    ASSERT_VX_OBJECT(node = vxMultiplyNode(graph, src1, src2, scale, VX_CONVERT_POLICY_WRAP, VX_ROUND_POLICY_TO_ZERO, dst), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseImage(&src1));
+    VX_CALL(vxReleaseImage(&src2));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(vxReleaseScalar(&scale));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Multiply");
+}
+
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfMedian3x3, Filter3x3_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, read_image, "lena.bmp")
 )
 {
@@ -1555,8 +2213,8 @@ typedef struct {
 #define NLF_ADD_PATTERNS_BOX_CROSS(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/VX_PATTERN_CROSS", __VA_ARGS__, VX_PATTERN_CROSS))
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfNonLinearFilter, NLFilter_Arg,
-    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NLF_ADD_FUNCTIONS, NLF_NLF_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_256x256, ARG, convolve_generate_random, NULL, 5)
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfNonLinearFilter, NLFilter_Arg,
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NLF_ADD_FUNCTIONS, NLF_NLF_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, convolve_generate_random, NULL, 5)
     )
 {
     vx_context context = context_->vx_context_;
@@ -1615,7 +2273,7 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfNonLinearFilter, NLFilter_Arg,
     PrintPerf(perf_graph, perf_node, src->width, src->height, "NonLinear Filter");
 }
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfSobel3x3, Filter3x3_Arg,
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfSobel3x3, Filter3x3_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, read_image, "lena.bmp")
 )
 {
@@ -1671,7 +2329,210 @@ TEST_WITH_ARG(tiovxPerformance, tiovxPerfSobel3x3, Filter3x3_Arg,
     PrintPerf(perf_graph, perf_node, src->width, src->height, "Sobel (3x3)");
 }
 
-TEST(tiovxPerformance, tiovxPerfPhase)
+static vx_array own_create_keypoint_array(vx_context context, vx_size count, vx_keypoint_t* keypoints)
+{
+    vx_array arr = 0;
+
+    ASSERT_VX_OBJECT_(return 0, arr = vxCreateArray(context, VX_TYPE_KEYPOINT, count), VX_TYPE_ARRAY);
+
+    VX_CALL_(return 0, vxAddArrayItems(arr, count, keypoints, sizeof(vx_keypoint_t)));
+
+    return arr;
+}
+
+static CT_Image optflow_pyrlk_read_image(const char* fileName, int width, int height)
+{
+    CT_Image image = NULL;
+    ASSERT_(return 0, width == 0 && height == 0);
+    image = ct_read_image(fileName, 1);
+    ASSERT_(return 0, image);
+    ASSERT_(return 0, image->format == VX_DF_IMAGE_U8);
+    return image;
+}
+
+static vx_size own_read_keypoints(const char* fileName, vx_keypoint_t** p_old_points, vx_keypoint_t** p_new_points)
+{
+    size_t sz = 0;
+    void* buf = 0;
+    char file[MAXPATHLENGTH];
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+#if 1
+    FILE* f = fopen(file, "rb");
+    ASSERT_(return 0, f);
+    fseek(f, 0, SEEK_END);
+
+    sz = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    ASSERT_(return 0, buf = ct_alloc_mem(sz + 1));
+    ASSERT_(return 0, sz == fread(buf, 1, sz, f));
+    fclose(f); f = NULL;
+    ((char*)buf)[sz] = 0;
+#else
+    sz = ...
+    buf = ...
+#endif
+
+    ASSERT_(return 0, *p_old_points = ct_alloc_mem(sizeof(vx_keypoint_t) * MAX_POINTS));
+    ASSERT_(return 0, *p_new_points = ct_alloc_mem(sizeof(vx_keypoint_t) * MAX_POINTS));
+
+    {
+        int num = 0;
+        char* pos = buf;
+        char* next = 0;
+        while(pos && (next = strchr(pos, '\n')))
+        {
+            int id = 0, status = 0;
+            float x1, y1, x2, y2;
+
+            int res;
+
+            *next = 0;
+            res = sscanf(pos, "%d %d %g %g %g %g", &id, &status, &x1, &y1, &x2, &y2);
+            pos = next + 1;
+            if (res == 6)
+            {
+                (*p_old_points)[num].x = (vx_int32)x1;
+                (*p_old_points)[num].y = (vx_int32)y1;
+                (*p_old_points)[num].strength = 1;
+                (*p_old_points)[num].scale = 0;
+                (*p_old_points)[num].orientation = 0;
+                (*p_old_points)[num].tracking_status = 1;
+                (*p_old_points)[num].error = 0;
+
+                (*p_new_points)[num].x = (vx_int32)x2;
+                (*p_new_points)[num].y = (vx_int32)y2;
+                (*p_new_points)[num].strength = 1;
+                (*p_new_points)[num].scale = 0;
+                (*p_new_points)[num].orientation = 0;
+                (*p_new_points)[num].tracking_status = status;
+                (*p_new_points)[num].error = 0;
+
+                num++;
+            }
+            else
+                break;
+        }
+
+        ct_free_mem(buf);
+
+        return num;
+    }
+}
+
+typedef struct {
+    const char* testName;
+    CT_Image (*generator)(const char* fileName, int width, int height);
+    const char* src1_fileName;
+    const char* src2_fileName;
+    const char* points_fileName;
+    vx_size winSize;
+    int useReferencePyramid;
+} Arg;
+
+
+#define PARAMETERS \
+    ARG("case1/5x5/ReferencePyramid", optflow_pyrlk_read_image, "optflow_00.bmp", "optflow_01.bmp", "optflow_pyrlk_5x5.txt", 5, 1), \
+
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfOptFlow, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image   src_image[2] = { 0, 0 };
+    vx_pyramid src_pyr[2]   = { 0, 0 };
+    vx_array old_points_arr = 0;
+    vx_array new_points_arr = 0;
+    vx_float32 eps_val      = 0.001f;
+    vx_uint32  num_iter_val = 100;
+    vx_bool   use_estimations_val = vx_true_e;
+    vx_scalar eps                 = 0;
+    vx_scalar num_iter            = 0;
+    vx_scalar use_estimations     = 0;
+    vx_size   winSize             = arg_->winSize;
+    vx_graph graph = 0;
+    vx_node src_pyr_node[2] = { 0, 0 };
+    vx_node node = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    vx_size num_points = 0;
+    vx_keypoint_t* old_points = 0;
+    vx_keypoint_t* new_points_ref = 0;
+    vx_keypoint_t* new_points = 0;
+    vx_size new_points_size = 0;
+
+    vx_size max_window_dim = 0;
+
+    CT_Image src_ct_image[2] = {0, 0};
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION, &max_window_dim, sizeof(max_window_dim)));
+    if (winSize > max_window_dim)
+    {
+        printf("%d window dim is not supported. Skip test\n", (int)winSize);
+        return;
+    }
+
+    ASSERT_NO_FAILURE(src_ct_image[0] = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(src_ct_image[1] = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+
+    ASSERT_VX_OBJECT(src_image[0] = ct_image_to_vx_image(src_ct_image[0], context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src_image[1] = ct_image_to_vx_image(src_ct_image[1], context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_pyr[0] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(src_pyr[1] = vxCreatePyramid(context, 4, VX_SCALE_PYRAMID_HALF, src_ct_image[0]->width, src_ct_image[0]->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    ASSERT_NO_FAILURE(num_points = own_read_keypoints(arg_->points_fileName, &old_points, &new_points_ref));
+
+    ASSERT_VX_OBJECT(old_points_arr = own_create_keypoint_array(context, num_points, old_points), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(new_points_arr = vxCreateArray(context, VX_TYPE_KEYPOINT, num_points), VX_TYPE_ARRAY);
+
+    ASSERT_VX_OBJECT(eps             = vxCreateScalar(context, VX_TYPE_FLOAT32, &eps_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(num_iter        = vxCreateScalar(context, VX_TYPE_UINT32, &num_iter_val), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(use_estimations = vxCreateScalar(context, VX_TYPE_BOOL, &use_estimations_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    VX_CALL(vxuGaussianPyramid(context, src_image[0], src_pyr[0]));
+    VX_CALL(vxuGaussianPyramid(context, src_image[1], src_pyr[1]));
+
+    ASSERT_VX_OBJECT(node = vxOpticalFlowPyrLKNode(
+        graph,
+        src_pyr[0], src_pyr[1],
+        old_points_arr, old_points_arr, new_points_arr,
+        VX_TERM_CRITERIA_BOTH, eps, num_iter, use_estimations, winSize), VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    ct_free_mem(new_points);
+    ct_free_mem(new_points_ref);
+    ct_free_mem(old_points);
+
+    VX_CALL(vxReleaseNode(&node));
+    if(src_pyr_node[0])
+        VX_CALL(vxReleaseNode(&src_pyr_node[0]));
+    if(src_pyr_node[1])
+        VX_CALL(vxReleaseNode(&src_pyr_node[1]));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseScalar(&eps));
+    VX_CALL(vxReleaseScalar(&num_iter));
+    VX_CALL(vxReleaseScalar(&use_estimations));
+    VX_CALL(vxReleaseArray(&old_points_arr));
+    VX_CALL(vxReleaseArray(&new_points_arr));
+    VX_CALL(vxReleasePyramid(&src_pyr[0]));
+    VX_CALL(vxReleasePyramid(&src_pyr[1]));
+    VX_CALL(vxReleaseImage(&src_image[0]));
+    VX_CALL(vxReleaseImage(&src_image[1]));
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Optical Flow");
+}
+
+TEST(tiovxPerformance2, tiovxPerfPhase)
 {
     vx_context context = context_->vx_context_;
     vx_image dx = 0, dy = 0, ph;
@@ -1723,6 +2584,143 @@ TEST(tiovxPerformance, tiovxPerfPhase)
     ASSERT(ph == 0);
 
     PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Phase");
+}
+
+static vx_remap remap_generate_map(vx_context context, int src_width, int src_height, int dst_width, int dst_height, int type)
+{
+    vx_uint32 i;
+    vx_uint32 j;
+    vx_float32 x;
+    vx_float32 y;
+    vx_remap map = 0;
+    vx_status status;
+
+    map = vxCreateRemap(context, src_width, src_height, dst_width, dst_height);
+    if (vxGetStatus((vx_reference)map) == VX_SUCCESS)
+    {
+        vx_float32 mat[3][2];
+        vx_float32 angle, scale_x, scale_y, cos_a, sin_a;
+        if (VX_MAP_IDENT == type)
+        {
+            mat[0][0] = 1.f;
+            mat[0][1] = 0.f;
+
+            mat[1][0] = 0.f;
+            mat[1][1] = 1.f;
+
+            mat[2][0] = 0.f;
+            mat[2][1] = 0.f;
+        }
+        else if (VX_MAP_SCALE == type)
+        {
+            scale_x = src_width  / (vx_float32)dst_width;
+            scale_y = src_height / (vx_float32)dst_height;
+
+            mat[0][0] = scale_x;
+            mat[0][1] = 0.f;
+
+            mat[1][0] = 0.f;
+            mat[1][1] = scale_y;
+
+            mat[2][0] = 0.f;
+            mat[2][1] = 0.f;
+        }
+        else if (VX_MAP_SCALE_ROTATE == type)
+        {
+            angle = M_PIF / RND_FLT(3.f, 6.f);
+            scale_x = src_width  / (vx_float32)dst_width;
+            scale_y = src_height / (vx_float32)dst_height;
+            cos_a = cosf(angle);
+            sin_a = sinf(angle);
+
+            mat[0][0] = cos_a * scale_x;
+            mat[0][1] = sin_a * scale_y;
+
+            mat[1][0] = -sin_a * scale_x;
+            mat[1][1] = cos_a  * scale_y;
+
+            mat[2][0] = 0.f;
+            mat[2][1] = 0.f;
+        }
+        else// if (VX_MATRIX_RANDOM == type)
+        {
+            angle = M_PIF / RND_FLT(3.f, 6.f);
+            scale_x = src_width / (vx_float32)dst_width;
+            scale_y = src_height / (vx_float32)dst_height;
+            cos_a = cosf(angle);
+            sin_a = sinf(angle);
+
+            mat[0][0] = cos_a * RND_FLT(scale_x / 2.f, scale_x);
+            mat[0][1] = sin_a * RND_FLT(scale_y / 2.f, scale_y);
+
+            mat[1][0] = -sin_a * RND_FLT(scale_y / 2.f, scale_y);
+            mat[1][1] = cos_a  * RND_FLT(scale_x / 2.f, scale_x);
+
+            mat[2][0] = src_width  / 5.f * RND_FLT(-1.f, 1.f);
+            mat[2][1] = src_height / 5.f * RND_FLT(-1.f, 1.f);
+        }
+
+        for (i = 0; i < (vx_uint32)dst_height; i++)
+        {
+            for (j = 0; j < (vx_uint32)dst_width; j++)
+            {
+                x = j * mat[0][0] + i * mat[1][0] + mat[2][0];
+                y = j * mat[0][1] + i * mat[1][1] + mat[2][1];
+                status = vxSetRemapPoint(map, j, i, x, y);
+                if (VX_SUCCESS != status)
+                    return 0;
+            }
+        }
+    }
+
+    return map;
+}
+
+TEST(tiovxPerformance2, tiovxPerfRemap)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_image input_image = 0, output_image = 0;
+    vx_remap map = 0;
+    vx_perf_t perf_node, perf_graph;
+
+    CT_Image input = NULL, output = NULL;
+
+    vx_border_t border = { VX_BORDER_UNDEFINED };
+
+    ASSERT_NO_FAILURE(input = image_generate_random(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(output = ct_allocate_image(WIDTH, HEIGHT, VX_DF_IMAGE_U8));
+
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output_image = ct_image_to_vx_image(output, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(map = remap_generate_map(context, input->width, input->height, WIDTH, HEIGHT, VX_MAP_RANDOM), VX_TYPE_REMAP);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = vxRemapNode(graph, input_image, map, VX_INTERPOLATION_BILINEAR, output_image), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+    VX_CALL(vxReleaseRemap(&map));
+    VX_CALL(vxReleaseImage(&output_image));
+    VX_CALL(vxReleaseImage(&input_image));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+    ASSERT(map == 0);
+    ASSERT(output_image == 0);
+    ASSERT(input_image == 0);
+
+    PrintPerf(perf_graph, perf_node, WIDTH, HEIGHT, "Remap");
 }
 
 enum CT_AffineMatrixType {
@@ -1845,7 +2843,7 @@ static vx_matrix warp_affine_create_matrix(vx_context context, vx_float32 *m)
     return matrix;
 }
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfWarpAffine, WarpAffine_Arg,
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfWarpAffine, WarpAffine_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_SIZE_256x256, ADD_VX_BORDERS_WARP_AFFINE, ADD_VX_INTERP_TYPE_WARP_AFFINE, ADD_VX_MATRIX_PARAM_WARP_AFFINE, ARG, read_image, "lena.bmp", 0, 0)
 )
 {
@@ -2012,7 +3010,7 @@ static vx_matrix warp_perspective_create_matrix(vx_context context, vx_float32 *
     return matrix;
 }
 
-TEST_WITH_ARG(tiovxPerformance, tiovxPerfWarpPerspective, WarpPerspective_Arg,
+TEST_WITH_ARG(tiovxPerformance2, tiovxPerfWarpPerspective, WarpPerspective_Arg,
     CT_GENERATE_PARAMETERS("lena", ADD_SIZE_256x256, ADD_VX_BORDERS_WARP_PERSPECTIVE, ADD_VX_INTERP_TYPE_WARP_PERSPECTIVE, ADD_VX_MATRIX_PARAM_WARP_PERSPECTIVE, ARG, read_image, "lena.bmp", 0, 0)
 )
 {
@@ -2074,22 +3072,36 @@ TESTCASE_TESTS(tiovxPerformance,
     tiovxPerfSubtract,
     tiovxPerfBinOp,
     tiovxPerfBox3x3,
-    tiovxPerfMedian3x3,
     tiovxPerfDilate3x3,
     tiovxPerfErode3x3,
-    tiovxPerfSobel3x3,
+    tiovxPerfFastCorners,
     tiovxPerfCanny,
+    tiovxPerfChannelCombine,
+    tiovxPerfChannelExtract,
+    tiovxPerfColorConvert,
+    tiovxPerfConvertDepth,
     tiovxPerfConvolve,
     tiovxPerfEqualizeHistogram,
     tiovxPerfGaussian3x3,
     tiovxPerfGaussianPyramid,
+    tiovxPerfHalfScaleGaussian)
+
+TESTCASE_TESTS(tiovxPerformance2,
     tiovxPerfHarrisCorners,
     tiovxPerfHistogram,
     tiovxPerfIntegralImg,
+    tiovxPerfLaplacianReconstruct,
     tiovxPerfLUT,
     tiovxPerfMagnitude,
+    tiovxPerfMeanStdDev,
+    tiovxPerfMedian3x3,
+    tiovxPerfMinMaxLoc,
+    tiovxPerfMultiply,
     tiovxPerfNonLinearFilter,
+    tiovxPerfOptFlow,
     tiovxPerfPhase,
+    tiovxPerfRemap,
+    tiovxPerfSobel3x3,
     tiovxPerfWarpAffine,
     tiovxPerfWarpPerspective,
     tiovxPerfCloseFile)
