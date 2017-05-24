@@ -225,6 +225,7 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
     uint16_t optimize_x = 0;
     uint16_t width_reduction = 0;
     uint16_t height_reduction = 0;
+    uint32_t dmaQue = 0U;
 
     if(kernel_info->nodeType == BAM_NODE_COMPUTE_NEIGHBORHOOD_OP) {
         width_reduction = (uint16_t)((kernel_info->kernelExtraInfo.metaInfo >> 16) - 1);
@@ -271,8 +272,9 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
             buf_params[i]->stride_y,/* extMemPtrStride */
             NULL,/* DMA node will be populating this field */
             compute_kernel_args[i].stride_y,/* interMemPtrStride */
-            0U /* dmaQueNo */
+            dmaQue /* dmaQueNo */
             );
+        dmaQue = dmaQue ^ 1;
     }
     j = i;
 
@@ -323,8 +325,9 @@ static int32_t tivxBam_initKernelsArgsSingle(void *args, BAM_BlockDimParams *blo
                 buf_params[j]->stride_y,/* extMemPtrStride */
                 NULL,/* DMA node will be populating this field */
                 compute_kernel_args[j].stride_y,/* interMemPtrStride */
-                1U /* dmaQueNo */
+                dmaQue /* dmaQueNo */
                 );
+            dmaQue = dmaQue ^ 1;
 
             j++;
         }
@@ -464,6 +467,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     uint16_t in_block_height = blockDimParams->blockHeight;
     uint16_t out_block_width  = in_block_width;
     uint16_t out_block_height = in_block_height;
+    uint32_t dmaQue = 0U;
 
     /* TODO: This may not work generically for different graphs ... perhaps need to reset output block of input DMA
      *       after below computation is done. */
@@ -518,8 +522,9 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
                     buf_params[i]->stride_y,/* extMemPtrStride */
                     NULL,/* DMA node will be populating this field */
                     blockDimParams->blockWidth*num_bytes,/* interMemPtrStride */
-                    0U /* dmaQueNo */
+                    dmaQue /* dmaQueNo */
                     );
+                dmaQue = dmaQue ^ 1;
             }
             k = i;
         }
@@ -619,9 +624,9 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
                     buf_params[k]->stride_y,/* extMemPtrStride */
                     NULL,/* DMA node will be populating this field */
                     (int32_t)(((uint32_t)(out_block_width + optimize_x))*num_bytes),/* interMemPtrStride */
-                    1U /* dmaQueNo */
+                    dmaQue /* dmaQueNo */
                     );
-
+                dmaQue = dmaQue ^ 1;
                 k++;
             }
         }
