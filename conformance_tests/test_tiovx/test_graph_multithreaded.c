@@ -28,7 +28,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
-#include <tivx_task.h>
+#include <TI/tivx_task.h>
 
 #define TIVX_TARGET_DEFAULT_STACK_SIZE      (64U * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY1   (8u)

@@ -50,10 +50,10 @@
 #include <TI/tivx_debug.h>
 #include <tivx_platform.h>
 #include <tivx_ipc.h>
-#include <tivx_mutex.h>
-#include <tivx_event.h>
-#include <tivx_task.h>
-#include <tivx_queue.h>
+#include <TI/tivx_mutex.h>
+#include <TI/tivx_event.h>
+#include <TI/tivx_task.h>
+#include <TI/tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
 #include <tivx_target.h>
 #include <tivx_host.h>
