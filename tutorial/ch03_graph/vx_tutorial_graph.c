@@ -35,6 +35,8 @@ void vx_tutorial_graph_run_all()
     vx_tutorial_graph_image_gradients_pytiovx();
     vx_tutorial_graph_user_kernel(vx_false_e);
     vx_tutorial_graph_user_kernel_pytiovx(vx_false_e);
+    vx_tutorial_graph_user_kernel(vx_true_e);
+    vx_tutorial_graph_user_kernel_pytiovx(vx_true_e);
 }
 
 void vx_tutorial_graph_run_interactive()
