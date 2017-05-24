@@ -94,13 +94,13 @@ TEST(tiovxPerformance, tiovxPerfOpenFile)
         fprintf(perf_file, "%s\n", "</head>");
 
         fprintf(perf_file, "%s\n", "<body>");
-        fprintf(perf_file, "%s\n", "  <table width=\"100%\" border=\"1\" bgcolor=\"#FFFFDD\">");
-        fprintf(perf_file, "%s\n", "    <tr bgcolor=\"#FFFFEE\">");
-        fprintf(perf_file, "%s\n", "<td width=\"5\" align=\"center\">Index</td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\">Kernel</td>");
-        fprintf(perf_file, "%s\n", "<td width=\"20%\" align=\"center\">Frame Size (Pixels)</td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\">Graph Performance (msec)</td>");
-        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\">Node Performance</td>");
+        fprintf(perf_file, "%s\n", "  <table frame=\"box\" rules=\"all\" cellspacing=\"0\" width=\"50%\" border=\"1\" cellpadding=\"3\">");
+        fprintf(perf_file, "%s\n", "    <tr bgcolor=\"lightgrey\">");
+        fprintf(perf_file, "%s\n", "<td width=\"5\" align=\"center\"><b>Index</b></td>");
+        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Kernel</b></td>");
+        fprintf(perf_file, "%s\n", "<td width=\"20%\" align=\"center\"><b>Frame Size (Pixels) </b></td>");
+        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Graph Performance (msec) </b></td>");
+        fprintf(perf_file, "%s\n", "<td width=\"25%\" align=\"center\"><b>Node Performance (msec) </b></td>");
         fprintf(perf_file, "%s\n", "</tr>");
 
         gTiovxKernIdx = 0;

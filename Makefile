@@ -80,7 +80,7 @@ endif
 
 CONCERTO_ROOT ?= concerto
 BUILD_MULTI_PROJECT := 1
-BUILD_TARGET := target.mak
+BUILD_TARGET := concerto/target.mak
 BUILD_PLATFORM :=
 
 include $(CONCERTO_ROOT)/rules.mak
