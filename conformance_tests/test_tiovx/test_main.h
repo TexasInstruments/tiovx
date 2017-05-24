@@ -24,6 +24,7 @@
  *******************************************************************************
  */
 TESTCASE(tiovxPerformance)
+TESTCASE(tiovxPerformance2)
 
 TESTCASE(tivxGraph)
 TESTCASE(tivxGraphDelay)
@@ -67,6 +68,8 @@ TESTCASE(tivxGaussianPyramid)
 TESTCASE(tivxBoundary)
 TESTCASE(tivxNegativeBoundary)
 TESTCASE(tivxRemap)
+TESTCASE(tivxLaplacianPyramid)
+TESTCASE(tivxLaplacianReconstruct)
 TESTCASE(tivxMaxNodes)
 
 
