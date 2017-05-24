@@ -15,6 +15,7 @@
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernel_utils.h>
 #include <vx_bam_kernel_wrapper.h>
+#include <edma_utils_memcpy.h>
 
 #define SOURCE_NODE1      0
 #define CHCOPY_NODE0      1
