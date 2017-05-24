@@ -9,13 +9,10 @@ IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(HOST_ROOT)/kernels/openvx-core/c66x
-IDIRS       += $(VXLIB2_PATH) \
-			   $(ALGFRAMEWORK_PATH)/inc \
+IDIRS       += $(ALGFRAMEWORK_PATH)/inc \
                $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes \
                $(ALGFRAMEWORK_PATH)/inc \
                $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes \
-               $(EDMA3_LLD_ROOT)/inc $(EDMA3_LLD_ROOT)/inc/baseaddress/vayu/dsp \
-               $(EDMA3_LLD_ROOT)/inc/edma_csl $(EDMA3_LLD_ROOT)/inc/edma_utils \
                $(DMAUTILS_PATH)/inc \
                $(DMAUTILS_PATH) \
                $(DMAUTILS_PATH)/inc \

@@ -37,27 +37,27 @@ endif
 ifeq ($(BUILD_OS),Linux)
 XDC_PATH := $(VSDK_TOOLS_PATH)/os_tools/linux/xdctools_3_32_00_06_core
 TIARMCGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-arm_5.2.5
-
 GCC_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/gcc-arm-none-eabi-4_9-2015q3
 GCC_ROOT_LINARO := $(VSDK_TOOLS_PATH)/os_tools/linux/linaro/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf
-
 CGT6X_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/C6000_7.4.2
 ARP32CGT_ROOT := $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 GCC_LINUX_ROOT := /usr/
 endif
 
-BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
-VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_src_1_0_0_0
+
+EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
+DMAUTILS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/dmautils
+ALGFRAMEWORK_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/algframework
+PDK_PATH := $(VSDK_TOOLS_PATH)/drivers/pdk
+VXLIB_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib_c66x_1_0_0_0
 XDIAS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/xdais_7_24_00_04
 EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
-
-# This path is temporary for our development since the above release doesn't have bam_plugins yet
-VXLIB2_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib
-ALGFRAMEWORK_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/algframework
-DMAUTILS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/dsp_apps/dmautils
-EDMA3_LLD_PATH := $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
-
-PDK_PATH := $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
+BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
-TARGETFS := $(VSDK_TOOLS_PATH)/../user/openvx-nightly/targetfs
+TARGETFS := $(VSDK_INSTALL_PATH)/vision_sdk/hlos/targetfs
+
+# Below are used for internal development only
+VXLIB2_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib
+
+
 
