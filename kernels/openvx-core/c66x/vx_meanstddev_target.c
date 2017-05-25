@@ -29,6 +29,11 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
     VXLIB_bufParams2D_t vxlib_src;
     vx_rectangle_t rect;
     tivx_obj_desc_scalar_t *sc[2U];
+    uint32_t pixelsProcessed;
+    VXLIB_F32 currentSum, currentSqSum;
+
+    pixelsProcessed = 0U;
+    currentSum = currentSqSum = 0.0f;
 
     if (num_params != TIVX_KERNEL_MSD_MAX_PARAMS)
     {
@@ -72,7 +77,8 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         vxlib_src.data_type = VXLIB_UINT8;
 
         status = VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
-            &sc[0U]->data.f32, &sc[1U]->data.f32);
+            &sc[0U]->data.f32, &sc[1U]->data.f32, &pixelsProcessed,
+            &currentSum, &currentSqSum);
 
         if (status != VXLIB_SUCCESS)
         {
