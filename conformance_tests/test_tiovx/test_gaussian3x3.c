@@ -313,7 +313,6 @@ TEST_WITH_ARG(tivxGaussian3x3, testValidRegion, Filter_Arg,
 
     vxGetValidRegionImage(dst_image, &rect);
 
-    // Fails due to valid region not adjusting after filtering
     ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
     ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
 

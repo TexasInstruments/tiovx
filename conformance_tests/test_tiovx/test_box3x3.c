@@ -280,6 +280,79 @@ TEST_WITH_ARG(tivxBox3x3, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+TEST_WITH_ARG(tivxBox3x3, testValidRegion, Filter_Arg,
+    BOX_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_rectangle_t rect;
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    dst_image = ct_create_similar_image(src_image);
+    ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    node1 = vxBox3x3Node(graph, src_image, virt);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    node2 = vxBox3x3Node(graph, virt, dst_image);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(sequential_box3x3_check(src, dst, border));
+
+    vxGetValidRegionImage(dst_image, &rect);
+
+    ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
+    ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
+}
+
+
 #define BOX_PARAMETERS_NEGATIVE \
     CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_18x18, ARG, box3x3_generate_bi_level, NULL), \
     CT_GENERATE_PARAMETERS("bi_level", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_1600x1200, ARG, box3x3_generate_bi_level, NULL)
@@ -330,4 +403,4 @@ TEST_WITH_ARG(tivxBox3x3, negativeTestBorderMode, Filter_Arg,
     ASSERT(src_image == 0);
 }
 
-TESTCASE_TESTS(tivxBox3x3, testGraphProcessing, negativeTestBorderMode)
+TESTCASE_TESTS(tivxBox3x3, testGraphProcessing, testValidRegion, negativeTestBorderMode)
