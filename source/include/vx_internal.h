@@ -206,7 +206,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
 #endif
 
 /*!
- * \defgroup group_tivx_api TIOVX Interface Modules
+ * \defgroup group_tivx_api 1: TIOVX Interface Modules
  */
 
 /*!
@@ -230,7 +230,32 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_framework TIOVX Implementation Modules
+ * \defgroup group_tivx_queue Queue APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_mutex Mutex APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_event Event APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_task Task APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_vx_debug Debug APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_vx_framework 3: TIOVX Implementation Modules
  */
 
 /*!
@@ -441,23 +466,14 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_debug Debug APIs
- * \ingroup group_vx_framework_utils
- */
-
-/*!
  * \defgroup group_vx_error Error APIs
  * \ingroup group_vx_framework_utils
  */
 
 /*!
- * \defgroup group_vx_platform TIOVX Platform Modules
+ * \defgroup group_vx_platform 2: TIOVX Platform Modules
  */
 
-/*!
- * \defgroup group_tivx_queue Queue APIs
- * \ingroup group_vx_platform
- */
 
 /*!
  * \defgroup group_tivx_ipc Inter-Processor Communication (IPC) APIs
@@ -469,18 +485,4 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  * \ingroup group_vx_platform
  */
 
-/*!
- * \defgroup group_tivx_mutex Mutex APIs
- * \ingroup group_vx_platform
- */
-
-/*!
- * \defgroup group_tivx_event Event APIs
- * \ingroup group_vx_platform
- */
-
-/*!
- * \defgroup group_tivx_task Task APIs
- * \ingroup group_vx_platform
- */
 
