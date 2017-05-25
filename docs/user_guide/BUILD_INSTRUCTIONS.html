@@ -28,92 +28,138 @@
 
 
 <h1><a class="anchor" id="BUILD_INSTRUCTIONS">TIOVX Build Instructions </a></h1><dl class="user"><dt><b>Contents</b></dt><dd><ul>
-<li><a class="el" href="BUILD_INSTRUCTIONS.html#A0">How to build for x86 Win32 Platform</a></li>
-<li><a class="el" href="BUILD_INSTRUCTIONS.html#A1">How to build for x86 Linux Platform</a></li>
-<li><a class="el" href="BUILD_INSTRUCTIONS.html#A2">How to build for Processor SDK Vision Platform</a></li>
+<li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_VSDK">Build instructions for Vision SDK Platform</a></li>
+<li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_LINUX">Build instructions for x86 Linux Platform (HOST Emulation Mode)</a></li>
+<li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_WINDOWS">Build instructions for x86 Win32 Platform (HOST Emulation Mode)</a></li>
 </ul>
 </dd></dl>
 <p><br/>
 <hr/>
-<h2><a class="anchor" id="A0">
-How to build for x86 Win32 Platform</a></h2>
+<h2><a class="anchor" id="BUILD_VSDK">
+Build instructions for Vision SDK Platform</a></h2>
 <dl class="user"><dt><b>Requirements</b></dt><dd><ul>
-<li>GCC and Windows<ul>
-<li>Currently the build is tested with "mingw" that is installed as part of CodeBlocks IDE</li>
-<li>Install "CodeBlocks IDE" 13.12 or higher [<a href="http://www.codeblocks.org/">http://www.codeblocks.org/</a>]</li>
-<li>Make sure GNU make is installed and visible in your system path<ul>
-<li>GNU make "gmake" is available as part of XDC package from TI</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>Install the source package for VXLIB<ul>
-<li>IMPORTANT: To run VXLib in HOST emulation mode source package of VXLIB is required</li>
+<li>Install Vision SDK vXX.XX.XX.XX as mentioned in the TIOVX release notes<ul>
+<li>This will install all packages needed to build Vision SDK</li>
+<li>This will also install TIOVX, VXLIB and other OpenVX related packages</li>
 </ul>
 </li>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Setup</b></dt><dd><ul>
-<li>Edit &lt;TIOVX_PATH&gt;/tools_path.mk<ul>
-<li>modify "GCC_WINDOWS_ROOT := C:/CodeBlocks/MinGW" to match your environment if needed</li>
-<li>modify "VXLIB_PATH" to match the path where VXLIB package is installed</li>
+<li>Edit &lt;TIOVX_PATH&gt;/tools_path.mk, modify paths for various dependant packages if required.<ul>
+<li>NOTE: When Vision SDK is installed, all paths in this file would be setup to point to correct locations within the Vision SDK installation.</li>
 </ul>
 </li>
+<li>Make sure xdctools_x_xx_xx_xx_core/bin/gmake available as part of XDC package (included in Vision SDK) is visible in the system path.</li>
 <li>Edit &lt;TIOVX_PATH&gt;/Makefile<ul>
-<li>set BUILD_EMULATION_MODE=yes and BUILD_TARGET_MODE=no</li>
+<li>set BUILD_EMULATION_MODE=no and BUILD_TARGET_MODE=yes</li>
 </ul>
 </li>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Build</b></dt><dd><ul>
 <li>Open a command prompt at &lt;TIOVX_PATH&gt;</li>
-<li>Type "gmake -s -j" to build TIOVX and associated libraries<ul>
-<li>This builds the TIOVX libaries and conformance test executable</li>
-<li>This uses pre-built library for VXLIB from "&lt;TIOVX_PATH&gt;\lib\PC\X86\WINDOWS\&lt;PROFILE&gt;\*.a"</li>
-<li>The VXLIB is compiled in host emulation mode for 32bit x86 windows systems<ul>
-<li>NOTE: MinGW GCC compiler supports only 32b compilation mode</li>
+<li>Type "(g)make -s -j" to build TIOVX and associated libraries<ul>
+<li>This builds the TIOVX libaries</li>
+<li>Conformance test and tutorial is built as a library</li>
+</ul>
+</li>
+<li>The final Vision SDK executable with the OpenVX conformance test, tutorial needs to be build from Vision SDK folder</li>
+<li>In Vision SDK<ul>
+<li>In vision_sdk/Rules.make<ul>
+<li>For BIOS ONLY config<ul>
+<li>set MAKECONFIG=tdaxxx_evm_bios_openvx</li>
+</ul>
+</li>
+<li>For LINUX+BIOS config<ul>
+<li>set MAKECONFIG=tdaxxx_evm_linux_openvx</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Conformance test executable is output at<ul>
-<li>"&lt;TIOVX_PATH&gt;\out\PC\X86\WINDOWS\debug\vx_conformance_tests_exe.exe"</li>
+<li>In vision_sdk/configs//cfg.mk<ul>
+<li>set VSDK_BOARD_TYPE to one of below based on your SoC/EVM<ul>
+<li>TDA3XX_EVM</li>
+<li>TDA2XX_EVM</li>
+<li>TDA2EX_EVM</li>
+</ul>
+</li>
+<li>set PROFILE to one of below<ul>
+<li>debug</li>
+<li>release</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Build Vision SDK and bootloader by following steps in appropiate SoC/EVM User Guide in Vision SDK</li>
+<li>When Vision SDK is built, it will link against the tiovx related libraries</li>
 </ul>
 </li>
 </ul>
 </dd></dl>
-<dl class="user"><dt><b>Running the conformance test</b></dt><dd><ul>
-<li>Open a command prompt at the folder "&lt;TIOVX_PATH&gt;\out\PC\X86\WINDOWS\&lt;PROFILE&gt;\"</li>
-<li>Execute "vx_conformance_tests_exe.exe" to run the conformance test</li>
-<li>The conformance test reads input files located in below folder<ul>
-<li>"&lt;TIOVX_PATH&gt;\conformance_tests\test_data"</li>
-<li>The path specified relative to the "&lt;TIOVX_PATH&gt;\out\PC\X86\WINDOWS\&lt;PROFILE&gt;\" within the executable itself</li>
+<dl class="user"><dt><b>Running the conformance test and tutorial (for BIOS ONLY config)</b></dt><dd><ul>
+<li>Flash/copy the Vision SDK bootloader, "AppImage" and setup the EVM as mentioned in SoC/EVM User Guide in Vision SDK</li>
+<li>Copy the test data used in conformance test to an SD card<ul>
+<li>Copy all files and folders from "&lt;TIOVX_PATH&gt;\conformance_tests\test_data" to "test_data" folder in SD card</li>
 </ul>
 </li>
+<li>Boot the EVM, with the SD card inserted and use the menu in UART terminal to navigate to the OpenVX use-cases and run the conformance test, tutorial</li>
+<li>NOTE: Output .bmp files generated by the tutorial will be present in SD card in the folder "test_data"</li>
+</ul>
+</dd></dl>
+<dl class="user"><dt><b>Running the Camera+Display with OpenVX use-case (for BIOS ONLY config)</b></dt><dd><ul>
+<li>Flash/copy the Vision SDK bootloader, "AppImage" and setup the EVM as mentioned in SoC/EVM User Guide in Vision SDK</li>
+<li>Connect a OV10635 sensor to the EVM as mentioned in SoC/EVM User Guide in Vision SDK</li>
+<li>Connect a HDMI Display to the EVM as mentioned in SoC/EVM User Guide in Vision SDK</li>
+<li>Boot the EVM, with the SD card inserted and use the menu in UART terminal to navigate to the OpenVX use-cases and run the "VIP Single Channel Capture + OpenVX + Display" option</li>
+</ul>
+</dd></dl>
+<dl class="user"><dt><b>Running the conformance test and tutorial (for LINUX+BIOS config)</b></dt><dd><ul>
+<li>Copy all files and folders from "&lt;TIOVX_PATH&gt;\conformance_tests\test_data" to Linux filesystem at /opt/openvx/test_data</li>
+<li>Flash the linux kernel, uboot, filesystem as mentioned in Vision SDK user guide</li>
+<li>Boot the EVM and run Vision SDK demo application as mentioned in Vision SDK user guide</li>
+<li>At the linux command prompt set path of test data as shown below<ul>
+<li>export VX_TEST_DATA_PATH=/opt/openvx/test_data</li>
+</ul>
+</li>
+<li>Use the menu in UART terminal to navigate to the OpenVX use-cases and run the conformance test, tutorial</li>
+<li>NOTE: Output .bmp files generated by the tutorial will be present in SD card in the folder </li>
 </ul>
 </dd></dl>
 <p><br/>
 <hr/>
-<h2><a class="anchor" id="A1">
-How to build for x86 Linux Platform</a></h2>
+<h2><a class="anchor" id="BUILD_LINUX">
+Build instructions for x86 Linux Platform (HOST Emulation Mode)</a></h2>
 <dl class="user"><dt><b>Requirements</b></dt><dd><ul>
 <li>GCC and Linux<ul>
 <li>Currently the build is tested with Ubuntu 14.04</li>
-<li>Linux machine needs to be a 64bit x86 machine</li>
 <li>Make sure GCC v4.8.4 or higer is installed and visible in your system path</li>
 <li>Make sure GNU make is installed and visible in your system path</li>
+<li>GCC compiler with 32b mode support is required for using TIOVX<ul>
+<li>Make sure below linux packages are installed. This is requiered to use GCC in 32b mode on 64b systems.<ul>
+<li>sudo apt-get install g++-multilib</li>
+<li>sudo apt-get install libc6 libc6-dev</li>
 </ul>
 </li>
-<li>Install the source package for VXLIB<ul>
-<li>IMPORTANT: To run VXLib in HOST emulation mode source package of VXLIB is required</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Setup</b></dt><dd><ul>
 <li>Edit &lt;TIOVX_PATH&gt;/tools_path.mk<ul>
-<li>modify "GCC_LINUX_ROOT := /usr/" to match your environment if needed</li>
-<li>modify "VXLIB_PATH" to match the path where VXLIB package is installed</li>
+<li>Modify "GCC_LINUX_ROOT := /usr/" to match your environment if needed</li>
+<li>Modify below paths to point to your environment<ul>
+<li>When TIOVX is installed as part of Vision SDK below paths dont need to be changed.<ul>
+<li>EDMA3_LLD_PATH</li>
+<li>DMAUTILS_PATH</li>
+<li>ALGFRAMEWORK_PATH</li>
+<li>VXLIB_PATH</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Edit &lt;TIOVX_PATH&gt;/Makefile<ul>
@@ -136,75 +182,80 @@ How to build for x86 Linux Platform</a></h2>
 </li>
 </ul>
 </dd></dl>
-<dl class="user"><dt><b>Running the conformance test</b></dt><dd><ul>
-<li>Open a command prompt at the folder "&lt;TIOVX_PATH&gt;\out\PC\X86\LINUX\&lt;PROFILE&gt;\"</li>
-<li>Execute "vx_conformance_tests_exe" to run the conformance test</li>
-<li>The conformance test reads input files located in below folder<ul>
-<li>"&lt;TIOVX_PATH&gt;\conformance_tests\test_data"</li>
-<li>The path specified relative to the "&lt;TIOVX_PATH&gt;\out\PC\X86\LINUX\&lt;PROFILE&gt;\" within the executable itself</li>
+<dl class="user"><dt><b>Running the conformance test and tutorial</b></dt><dd><ul>
+<li>Open a command prompt at the folder "&lt;TIOVX_PATH&gt;/out/PC/X86/WINDOWS/&lt;PROFILE&gt;/"</li>
+<li>Set environment variable below to specify the path of the test data. This is used by both the conformance test and tutorial executables<ul>
+<li>export VX_TEST_DATA_PATH=../../../../../conformance_tests/test_data</li>
 </ul>
 </li>
+<li>Execute "vx_conformance_tests_exe.exe" to run the conformance test</li>
+<li>Execute "vx_tutorial_exe.exe" to run the tutorial</li>
+<li>NOTE: Output .bmp files generated by the tutorial will be present in SD card in the folder </li>
 </ul>
 </dd></dl>
 <p><br/>
 <hr/>
-<h2><a class="anchor" id="A2">
-How to build for Processor SDK Vision Platform</a></h2>
+<h2><a class="anchor" id="BUILD_WINDOWS">
+Build instructions for x86 Win32 Platform (HOST Emulation Mode)</a></h2>
 <dl class="user"><dt><b>Requirements</b></dt><dd><ul>
-<li>Install Vision SDK v2.12 or higher, this installs all packages need to compile and run TIOVX on TI platform.</li>
+<li>GCC and Windows<ul>
+<li>Currently the build is tested with "mingw" that is installed as part of CodeBlocks IDE</li>
+<li>Install "CodeBlocks IDE" 16.01 or higher [<a href="http://www.codeblocks.org/">http://www.codeblocks.org/</a>]</li>
+<li>GCC compiler with 32b mode support is required for using TIOVX<ul>
+<li>GCC compiler included as part of Codeblocks is 32b compiler</li>
+</ul>
+</li>
+<li>Make sure xdctools_x_xx_xx_xx_core/bin/gmake available as part of XDC package (included in Vision SDK) is visible in the system path.</li>
+</ul>
+</li>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Setup</b></dt><dd><ul>
-<li>NOTE: if TIOVX is located at folder "&lt;VSDK_PATH&gt;/ti_components/algorithms_codecs/tiovx" then below variables need not be modified</li>
-<li>NOTE: Make sure to modify below variables under "Windows_NT" and/or "Linux" depending on the type pf machine that is used for build</li>
-<li>Edit &lt;TIOVX_PATH&gt;/tools_path.mk, modify path for below variables to match your install environment<ul>
-<li>XDC_PATH</li>
-<li>TIARMCGT_ROOT</li>
-<li>GCC_ROOT</li>
-<li>CGT6X_ROOT</li>
-<li>ARP32CGT_ROOT</li>
-<li>BIOS_PATH</li>
+<li>Edit &lt;TIOVX_PATH&gt;/tools_path.mk<ul>
+<li>Modify "GCC_WINDOWS_ROOT := C:/CodeBlocks/MinGW" to match your environment if needed</li>
+<li>Modify below paths to point to your environment<ul>
+<li>When TIOVX is installed as part of Vision SDK below paths dont need to be changed.<ul>
+<li>EDMA3_LLD_PATH</li>
+<li>DMAUTILS_PATH</li>
+<li>ALGFRAMEWORK_PATH</li>
 <li>VXLIB_PATH</li>
-<li>PDK_PATH</li>
-<li>VSDK_PATH</li>
 </ul>
 </li>
-<li>Edit &lt;VSDK_PATH&gt;/tools_path.mk and edit below variable to match your environment<ul>
-<li>"OpenVX_PATH ?= $(TI_SW_ROOT)/algorithms_codecs/tiovx"</li>
+</ul>
+</li>
 </ul>
 </li>
 <li>Edit &lt;TIOVX_PATH&gt;/Makefile<ul>
-<li>set BUILD_EMULATION_MODE=no and BUILD_TARGET_MODE=yes</li>
+<li>set BUILD_EMULATION_MODE=yes and BUILD_TARGET_MODE=no</li>
 </ul>
 </li>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Build</b></dt><dd><ul>
-<li>Open a command prompt at &lt;TIOVX_PATH&gt;</li>
-<li>Type "(g)make -s -j" to build TIOVX and associated libraries<ul>
-<li>This builds the TIOVX libaries</li>
-<li>Conformance test is built as a library</li>
+<li>Open a windows command prompt at &lt;TIOVX_PATH&gt;</li>
+<li>Type "gmake -s -j" to build TIOVX and associated libraries<ul>
+<li>This builds the TIOVX libaries, conformance test executable and tutorial executable</li>
 </ul>
 </li>
-<li>The Vision SDK executable with the conformance test needs to be build from Vision SDK folder<ul>
-<li>Follow the Vision SDK user guide to build Vision SDK.</li>
-<li>When Vision SDK is built, it will link against the tiovx and conformance test libraries.</li>
-<li>NOTE:<ul>
-<li>Use MAKECONFIG=tda3xx_evm_bios_openvx when building Vision SDK</li>
-<li>Only IPU1_0 and DSP1 are required to run the conformance test, other CPUs can be disabled from VSDK build if only conformance test will be run</li>
+<li>Conformance test executable is output at<ul>
+<li>"&lt;TIOVX_PATH&gt;\out\PC\X86\WINDOWS\debug\vx_conformance_tests_exe.exe"</li>
 </ul>
 </li>
+<li>Tutorial executable is output at<ul>
+<li>"&lt;TIOVX_PATH&gt;\out\PC\X86\WINDOWS\debug\vx_tutorial_exe.exe"</li>
 </ul>
 </li>
 </ul>
 </dd></dl>
-<dl class="user"><dt><b>Running the conformance test</b></dt><dd><ul>
-<li>Flash/copy the Vision SDK bootloader, "AppImage" and setup the EVM as mentioned in Vision SDK user guide</li>
-<li>Copy the test data used in conformance test to an SD card<ul>
-<li>Copy all files and folders from "&lt;TIOVX_PATH&gt;\conformance_tests\test_data" to root folder in SD card</li>
+<dl class="user"><dt><b>Running the conformance test and tutorial</b></dt><dd><ul>
+<li>Open a command prompt at the folder "&lt;TIOVX_PATH&gt;\out\PC\X86\WINDOWS\&lt;PROFILE&gt;\"</li>
+<li>Set environment variable below to specify the path of the test data. This is used by both the conformance test and tutorial executables<ul>
+<li>set VX_TEST_DATA_PATH=../../../../../conformance_tests/test_data</li>
 </ul>
 </li>
-<li>Boot the EVM, using the SD card and use the menu in UART terminal to navigate to the OpenVX use-cases and run the conformance test </li>
+<li>Execute "vx_conformance_tests_exe.exe" to run the conformance test</li>
+<li>Execute "vx_tutorial_exe.exe" to run the tutorial</li>
+<li>NOTE: Output .bmp files generated by the tutorial will be present in SD card in the folder  </li>
 </ul>
 </dd></dl>
 </div>
