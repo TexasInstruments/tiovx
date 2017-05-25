@@ -15,6 +15,10 @@ void tivxUnRegisterOpenVXCoreTargetKernels(void);
 
 void tivxInit(void)
 {
+    tivx_set_debug_zone(VX_ZONE_INIT);
+    tivx_set_debug_zone(VX_ZONE_ERROR);
+    tivx_set_debug_zone(VX_ZONE_WARNING);
+
     /* Initialize platform */
     tivxPlatformInit();
 

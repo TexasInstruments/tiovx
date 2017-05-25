@@ -26,13 +26,15 @@ void ownReserveC66xL2MEM(void)
 
     /* reserve L2MEM to BAM */
     wbuf_size = mem_stats.free_size / 5;
+    /* floor to 256 bytes */
+    wbuf_size = (wbuf_size/256)*256;
     ibuf_size = wbuf_size * 4;
 
     ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
     wbuf_ptr = tivxMemAlloc(wbuf_size, TIVX_MEM_INTERNAL_L2);
 
     VX_PRINT(VX_ZONE_INIT,
-        "BAM MEM Config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x,  \n",
+        "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
         ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
 
     tivxBamMemInit(ibuf_ptr, ibuf_size, wbuf_ptr, wbuf_size);

@@ -19,6 +19,10 @@ void tivxUnRegisterTutorialTargetKernels(void);
 
 void tivxInit(void)
 {
+    tivx_set_debug_zone(VX_ZONE_INIT);
+    tivx_set_debug_zone(VX_ZONE_ERROR);
+    tivx_set_debug_zone(VX_ZONE_WARNING);
+
     /* Initialize platform */
     tivxPlatformInit();
 
@@ -46,6 +50,8 @@ void tivxInit(void)
     tivxObjDescInit();
 
     tivxPlatformCreateTargets();
+
+    VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
 }
 
 void tivxDeInit(void)
@@ -75,4 +81,6 @@ void tivxDeInit(void)
 
     /* DeInitialize platform */
     tivxPlatformDeInit();
+
+    VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
 }

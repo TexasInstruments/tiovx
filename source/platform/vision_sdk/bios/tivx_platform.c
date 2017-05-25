@@ -20,7 +20,7 @@ uint64_t tivxPlatformGetTimeInUsecs(void)
 
 void tivxPlatformPrintf(const char *format)
 {
-    BspOsal_printf(format);
+    printf(format);
 }
 
 void tivxPlatformActivate()
