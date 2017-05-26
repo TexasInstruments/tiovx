@@ -2317,7 +2317,7 @@ typedef struct {
     vx_border_t border;
 } Scale_Arg;
 
-void dst_size_generator_1_2(int width, int height, int* dst_width, int* dst_height)
+static void dst_size_generator_1_2(int width, int height, int* dst_width, int* dst_height)
 {
     *dst_width = width * 2;
     *dst_height = height * 2;
