@@ -54,7 +54,7 @@ XDIAS_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/xdais_7_24_00_04
 EVE_SW_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/eve_sw_01_14_00_00
 BIOS_PATH := $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
 VSDK_PATH := $(VSDK_INSTALL_PATH)/vision_sdk
-TARGETFS := $(VSDK_INSTALL_PATH)/vision_sdk/hlos/targetfs
+TARGETFS := $(VSDK_INSTALL_PATH)/vision_sdk/hlos/linux/targetfs
 
 # Below are used for internal development only
 VXLIB2_PATH := $(VSDK_TOOLS_PATH)/algorithms_codecs/vxlib
