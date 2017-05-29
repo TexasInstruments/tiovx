@@ -64,11 +64,3 @@ void vx_tutorial_run_interactive()
     }
 }
 
-/**
- \page CH01_COMMON Chatper 1: Getting Started
-
- Here we understand how to install, build and run the tutorials
- on various platforms.
-
-
- */

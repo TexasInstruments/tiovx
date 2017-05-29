@@ -7,6 +7,9 @@
  *******************************************************************************
  */
 
+/**
+ * \file utility.h Utility APIs created as part of various tutorials
+ */
 #ifndef UTILITY_H
 #define UTILITY_H
 

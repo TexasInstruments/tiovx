@@ -85,22 +85,3 @@ void vx_tutorial_image_run_interactive()
     }
 }
 
-/**
- \page CH02_IMAGE Chatper 2: Understanding image data object
-
- In OpenVX, image data object is the most commonly used data object. In this
- tutorial chapter, we understand how to manipulate image data objects.
-
-    <TABLE>
-        <TR bgcolor="lightgrey">
-            <TH> Tutorial file </TH>
-            <TH> Purpose </TH>
-        </TR>
-        <TR>
-            <TD> \examples ch02_image/vx_tutorial_image_load_save.c </TD>
-            <TD> Load and save data from OpenVX image objects </TD>
-        </TR>
-   </TABLE>
-
- */
-

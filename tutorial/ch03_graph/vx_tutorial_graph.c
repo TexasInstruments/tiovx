@@ -85,22 +85,3 @@ void vx_tutorial_graph_run_interactive()
     }
 }
 
-/**
- \page CH03_GRAPH Chatper 3: Understanding OpenVX graphs
-
- In OpenVX, graph is the means by which computer vision functions are
- executed. These tutorials show how to create different types of graph and
- how to automate generation of graph application code.
-
-    <TABLE>
-        <TR bgcolor="lightgrey">
-            <TH> Tutorial file </TH>
-            <TH> Purpose </TH>
-        </TR>
-        <TR>
-            <TD>  </TD>
-            <TD>  </TD>
-        </TR>
-   </TABLE>
-
- */

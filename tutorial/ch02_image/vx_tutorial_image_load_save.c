@@ -18,15 +18,42 @@
  * - How to read pixel values from an image data object and save it as a BMP file
  * - How to cleanup all created resources and exit the OpenVX application
  *
- * vx_tutorial_image_load_save() is the entry point to the tutorial.
+ * To include OpenVX interfaces include below file
+ * \code
+ * #include <VX/vx.h>
+ * \endcode
  *
- * We create few utility functions as listed below as part of this tutorial.
+ * To include utility APIs to read and write BMP file include below file
+ * \code
+ * #include <bmp_rd_wr.h>
+ * \endcode
+ *
+ * Follow the comments in the function vx_tutorial_image_load_save()
+ * to understand this tutorial
+ *
+ * As part of this tutorial, we create few utility functions as listed below.
  * These functions will be used in subsequent tutorials to load and save images.
- * The utility functions are
- * - create_image_from_file()
- * - save_image_to_file()
- * - load_image_from_file(): this function though listed in this tutorial is
- *       used in a later tutorial
+ *  <TABLE frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+ *      <TR bgcolor="lightgrey">
+ *          <TH> Utility function </TH>
+ *          <TH> Description </TH>
+ *      </TR>
+ *      <TR>
+ *          <TD> create_image_from_file() </TD>
+ *          <TD> Reads a .bmp file and create a vx_image object with pixel values read from the BMP file </TD>
+ *      </TR>
+ *      <TR>
+ *          <TD> save_image_to_file() </TD>
+ *          <TD> Given a vx_image object, creates a BMP file with pixel values from the vx_image object</TD>
+ *      </TR>
+ *      <TR>
+ *          <TD> load_image_from_file() </TD>
+ *          <TD> Same as create_image_from_file(), only a created vx_image object is passed to this function.
+ *              <b>NOTE:</b> This function though listed in this tutorial is used in a later tutorials
+ *           </TD>
+ *      </TR>
+ *  </TABLE>
+ *
  */
 
 #include <stdio.h>
@@ -45,15 +72,25 @@
  */
 void vx_tutorial_image_load_save()
 {
+    /**
+     * - Define objects that we wish to create in the OpenVX application.
+     *
+     * A vx_context object is defined which is used as input parameter for all subesquent
+     * OpenVX object create APIs
+     * \code
+     */
     vx_context context;
     vx_image image;
+    /** \endcode */
     vx_uint32 width, height;
 
     printf(" vx_tutorial_image_load_save: Tutorial Started !!! \n");
 
     /**
-     * Step 1: Create OpenVX context, this MUST be done first before any OpenVX call
-     * the context that is returned is used as input for most OpenVX APIs
+     * - Create OpenVX context.
+     *
+     * This MUST be done first before any OpenVX API call.
+     * The context that is returned is used as input for subsequent OpenVX APIs
      * \code
      */
     context = vxCreateContext();
@@ -62,14 +99,19 @@ void vx_tutorial_image_load_save()
     printf(" Loading file %s ...\n", IN_FILE_NAME);
 
     /**
-     * Step 2: Create image object, load it with data from file \ref IN_FILE_NAME
+     * - Create image object.
+     *
+     * Follow the comments in create_image_from_file() to see
+     * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
      * \code
      */
     image = create_image_from_file(context, IN_FILE_NAME, vx_false_e);
     /** \endcode */
 
     /**
-     * Step 3: Query image object to print image dimensions for informational purposes
+     * - Query image object.
+     *
+     * Here we print the image dimensions.
      * \code
      */
     vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
@@ -81,21 +123,31 @@ void vx_tutorial_image_load_save()
     printf(" Saving to file %s ...\n", OUT_FILE_NAME);
 
     /**
-     * Step 3: Save image object to bitmap file \ref OUT_FILE_NAME
+     * - Save image object to bitmap file \ref OUT_FILE_NAME.
+     *
+     * Follow the comments in save_image_to_file() to see
+     * how data in vx_image object is accessed to store pixel values from the image object to
+     * BMP file \ref OUT_FILE_NAME
      * \code
      */
     save_image_to_file(OUT_FILE_NAME, image);
     /** \endcode */
 
     /**
-     * Step 4: Since we are done with using this image object, release it
+     * - Release image object.
+     *
+     * Since we are done with using this image object, release it
      * \code
      */
     vxReleaseImage(&image);
     /** \endcode */
 
     /**
-     * Step 5: Since we are done using OpenVX context, release it
+     * - Release context object.
+     *
+     * Since we are done using OpenVX context, release it.
+     * No further OpenVX API calls should be done, until a context is again created using
+     * vxCreateContext()
      * \code
      */
     vxReleaseContext(&context);
@@ -110,11 +162,12 @@ void vx_tutorial_image_load_save()
  *
  * \param context [in] OpenVX context within which the image object will get created
  * \param filename [in] BMP filename, MUST have extension of .bmp
- * \param convert_to_gray_scale [in] Converts RGB values in BMP file to 8b grayscale value
+ * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
  *
  * \return Image data object. \n
- *         Image data format is 24b RGB when \ref convert_to_gray_scale is vx_false_e \n
- *         Image data format is 8b Grayscale when \ref convert_to_gray_scale is vx_true_e
+ *         Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is vx_false_e \n
+ *         Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is vx_true_e
  */
 vx_image  create_image_from_file(vx_context context, char *filename, vx_bool convert_to_gray_scale)
 {
@@ -125,11 +178,13 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
     void *data_ptr, *bmp_file_context;
 
     /**
-     * Step 1: Read BMP file, the BMP file pixel values are stored at location
-     * data_ptr. The BMP file attributes are returned in variables 'width', 'hegith',
-     * 'df' (data format).
-     * 'bmp_file_context' holds the context of the BMP file which MUST be free'ed
-     * once the usage of this file is done.
+     * - Read BMP file.
+     *
+     * The BMP file pixel values are stored at location
+     * 'data_ptr'. The BMP file attributes are returned in variables
+     * 'width', 'heigth', 'df' (data format).
+     * 'bmp_file_context' holds the context of the BMP file which is free'ed
+     * after copying the pixel values from 'data_ptr' into a vx_image object.
      * \code
      */
     status = bmp_file_read(
@@ -141,9 +196,46 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
 
     if(status==VX_SUCCESS)
     {
+        /**
+         * - Create OpenVX image object.
+         *
+         * Creates a OpenVX image object of 'width' x 'height' and having
+         * data format 'df'.
+         *
+         * <b>TIP:</b> In OpenVX whenever an object is created use
+         * vxGetStatus() to find if the object creation was successful.
+         * The object must be typecasted to vx_reference type when calling
+         * vxGetStatus() API. If the reference is valid VX_SUCCESS should be
+         * returned by vxGetStatus().
+         * \code
+         */
         image = vxCreateImage(context, width, height, df);
-        if(vxGetStatus((vx_reference)image)==VX_SUCCESS)
+        status = vxGetStatus((vx_reference)image);
+        /** \endcode */
+        if(status==VX_SUCCESS)
         {
+
+            /**
+             * - Copy pixel values from 'data_ptr' into image object.
+             *
+             * 'image_addr' is used to describe arrangement of data within
+             * 'data_ptr'. The attributes 'wdith','height','stride' are used
+             * to set 'dim_x', 'dim_y', 'stride_y' fields in 'image_addr'.
+             * 'stride_x' is derived from data format 'df'. Other fields are set
+             * to unity.
+             *
+             * 'rect' is used to select ROI within 'data_ptr' from which
+             * data is to be copied to image object. Here 'rect' is set to copy
+             * all the pixels from 'data_ptr' into the image object.
+             *
+             * 'VX_WRITE_ONLY' indicates that application wants to write into the
+             * vx_image object.
+             *
+             * 'VX_MEMORY_TYPE_HOST' indicates the type of memory that is pointed to by
+             * 'data_ptr'. Use 'VX_MEMORY_TYPE_HOST' for TIVX applications.
+             * \code
+             */
+
             vx_imagepatch_addressing_t image_addr;
             vx_rectangle_t rect;
             uint32_t bpp;
@@ -181,12 +273,30 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
                 VX_WRITE_ONLY,
                 VX_MEMORY_TYPE_HOST
                 );
+
+            /** \endcode */
         }
+        /** - Release BMP file context.
+         *
+         *  Since pixel values are copied from 'data_ptr' to vx_image object
+         *  Now 'data_ptr' and any other resources allocted by bmp_file_read()
+         *  are free'ed by calling bmp_file_read_release()
+         *  \code
+         */
         bmp_file_read_release(bmp_file_context);
+        /** \endcode */
     }
     return image;
 }
 
+/**
+ * \brief Save data from image object to BMP file
+ *
+ * \param filename [in] BMP filename, MUST have extension of .bmp
+ * \param image [in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8
+ *
+ * \return VX_SUCCESS if BMP could be created and saved with data from image object
+ */
 vx_status save_image_to_file(char *filename, vx_image image)
 {
     vx_uint32 width, height;
@@ -197,13 +307,36 @@ vx_status save_image_to_file(char *filename, vx_image image)
     void *data_ptr;
     vx_status status;
 
+    /** - Check if image object is valid
+     *
+     * \code
+     */
     status = vxGetStatus((vx_reference)image);
+    /** \endcode */
     if(status==VX_SUCCESS)
     {
+        /** - Query image attributes.
+         *
+         *  These will be used to select ROI of data to be copied and
+         *  and to set attributes of the BMP file
+         * \code
+         */
+
         vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
+        /** \endcode */
 
+        /** - Map image data to user accessible memory space
+         *
+         * 'image_addr' describes the arrangement of the mapped image data. \n
+         * 'data_ptr' points to the first pixel of the mapped image data. \n
+         * 'map_id' holds the mapped context. This is used to unmapped the data once application is done with it. \n
+         * 'VX_READ_ONLY' indicates that application will read from the mapped memory. \n
+         * 'rect' holds the ROI of image object to map. In this example, 'rect' is set to map the whole image.
+         *
+         * \code
+         */
         rect.start_x = 0;
         rect.start_y = 0;
         rect.end_x = width;
@@ -219,17 +352,52 @@ vx_status save_image_to_file(char *filename, vx_image image)
             VX_MEMORY_TYPE_HOST,
             VX_NOGAP_X
             );
+        /** \endcode */
 
         if(status==VX_SUCCESS)
         {
+            /** - Write to BMP file using utility API
+             *
+             * 'image_addr.stride_y' is used to specify the offset in bytes between
+             * two consecutive lines in memory. This is returned by vxMapImagePatch()
+             * above
+             * \code
+             */
             bmp_file_write(filename, width, height, image_addr.stride_y, df, data_ptr);
+            /** \endcode */
 
+            /** - Unmapped a previously mapped image object
+             *
+             * Every vxMapImagePatch MUST have a corresponding unmap in OpenVX.
+             * The 'map_id' returned by vxMapImagePatch() is used as input by
+             * vxUnmapImagePatch()
+             * \code
+             */
             vxUnmapImagePatch(image, map_id);
+            /** \endcode */
         }
     }
     return status;
 }
 
+/**
+ * \brief Load data from BMP file into a previously created vx_image object
+ *
+ * This function is same as create_image_from_file(). Only difference is
+ * that the vx_image object is created outside this function. Some tutorials
+ * use this function instead of create_image_from_file()
+ *
+ * This function queries the vx_image object to make sure its attributes
+ * match the attributes of the BMP file from which data needs to be loaded
+ * into the image object. In case of mismatch data is not loaded and error is returned.
+ *
+ * \param image [in] Previouly created image object
+ * \param filename [in] BMP filename, MUST have extension of .bmp
+ * \param convert_to_gray_scale [in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object\n
+ *                                   vx_false_e: Retains RGB values from BMP file and copies them to image object\n
+ *
+ * \return VX_SUCCESS if BMP file data could be loaded into the vx_image object.
+ */
 vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_to_gray_scale)
 {
     uint32_t width, height, stride;

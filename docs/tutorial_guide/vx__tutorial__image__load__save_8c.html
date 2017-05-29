@@ -34,13 +34,34 @@
 <li>How to read pixel values from an image data object and save it as a BMP file</li>
 <li>How to cleanup all created resources and exit the OpenVX application</li>
 </ul>
-<p><a class="el" href="vx__tutorial__image__load__save_8c.html#a9de340eb905bd0b735ec6f0471314c85" title="Tutorial Entry Point.">vx_tutorial_image_load_save()</a> is the entry point to the tutorial.</p>
-<p>We create few utility functions as listed below as part of this tutorial. These functions will be used in subsequent tutorials to load and save images. The utility functions are</p>
-<ul>
-<li><a class="el" href="vx__tutorial__image__load__save_8c.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a></li>
-<li><a class="el" href="vx__tutorial__image__load__save_8c.html#a2ffb77a8e510c0236b07306d0eb47a30">save_image_to_file()</a></li>
-<li><a class="el" href="vx__tutorial__image__load__save_8c.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62">load_image_from_file()</a>: this function though listed in this tutorial is used in a later tutorial </li>
-</ul>
+<p>To include OpenVX interfaces include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;VX/vx.h&gt;</span>
+</pre></div><p>To include utility APIs to read and write BMP file include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;<a class="code" href="bmp__rd__wr_8h.html">bmp_rd_wr.h</a>&gt;</span>
+</pre></div><p>Follow the comments in the function <a class="el" href="vx__tutorial__image__load__save_8c.html#a9de340eb905bd0b735ec6f0471314c85" title="Tutorial Entry Point.">vx_tutorial_image_load_save()</a> to understand this tutorial</p>
+<p>As part of this tutorial, we create few utility functions as listed below. These functions will be used in subsequent tutorials to load and save images. </p>
+<table frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+<tr bgcolor="lightgrey">
+<th><p>Utility function  </p>
+</th><th><p>Description   </p>
+</th></tr>
+<tr>
+<td><p><a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a>  </p>
+</td><td><p>Reads a .bmp file and create a vx_image object with pixel values read from the BMP file   </p>
+</td></tr>
+<tr>
+<td><p><a class="el" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file()</a>  </p>
+</td><td><p>Given a vx_image object, creates a BMP file with pixel values from the vx_image object  </p>
+</td></tr>
+<tr>
+<td><p><a class="el" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file()</a>  </p>
+</td><td><p>Same as <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a>, only a created vx_image object is passed to this function. <b>NOTE:</b> This function though listed in this tutorial is used in a later tutorials   </p>
+</td></tr>
+</table>
+
+<p>Definition in file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
+
+<p><a href="vx__tutorial__image__load__save_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;colors.bmp&quot;</td></tr>
@@ -53,7 +74,9 @@
 <tr><td class="memItemLeft" align="right" valign="top">vx_image&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__load__save_8c.html#af8e9cbbd49ab0dec7850267224548cd6">create_image_from_file</a> (vx_context context, char *filename, vx_bool convert_to_gray_scale)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a image data object given BMP filename as input.  <a href="#af8e9cbbd49ab0dec7850267224548cd6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__load__save_8c.html#a2ffb77a8e510c0236b07306d0eb47a30">save_image_to_file</a> (char *filename, vx_image image)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Save data from image object to BMP file.  <a href="#a2ffb77a8e510c0236b07306d0eb47a30"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__load__save_8c.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62">load_image_from_file</a> (vx_image image, char *filename, vx_bool convert_to_gray_scale)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Load data from BMP file into a previously created vx_image object.  <a href="#abb1f44b0f70eb1480ce3ed7dc7bf4e62"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_image_load_save.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -69,6 +92,8 @@
 
 <p>Input file name. </p>
 
+<p>Definition at line <a class="el" href="vx__tutorial__image__load__save_8c_source.html#l00065">65</a> of file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
+
 </div>
 </div>
 <a class="anchor" id="a75506823f0db0ef3f4f022cf132dbbbb"></a><!-- doxytag: member="vx_tutorial_image_load_save.c::OUT_FILE_NAME" ref="a75506823f0db0ef3f4f022cf132dbbbb" args="" -->
@@ -83,6 +108,8 @@
 <div class="memdoc">
 
 <p>Output file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__load__save_8c_source.html#l00068">68</a> of file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
 
 </div>
 </div>
@@ -104,26 +131,53 @@
 
 <p>Tutorial Entry Point. </p>
 
-<p><p>Step 1: Create OpenVX context, this MUST be done first before any OpenVX call the context that is returned is used as input for most OpenVX APIs </p>
+<p><ul>
+<li>Define objects that we wish to create in the OpenVX application.</li>
+</ul>
+<p>A vx_context object is defined which is used as input parameter for all subesquent OpenVX object create APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_context context;
+    vx_image image;
+</pre></div><ul>
+<li>Create OpenVX context.</li>
+</ul>
+<p>This MUST be done first before any OpenVX API call. The context that is returned is used as input for subsequent OpenVX APIs </p>
 <div class="fragment"><pre class="fragment">     */
     context = vxCreateContext();
-</pre></div><p>Step 2: Create image object, load it with data from file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a> </p>
+</pre></div><ul>
+<li>Create image object.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a> to see how a vx_image object is created and filled with RGB data from BMP file <a class="el" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a> </p>
 <div class="fragment"><pre class="fragment">     */
-    image = <a class="code" href="vx__tutorial__image__load__save_8c.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__color__convert_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>, vx_false_e);
-</pre></div><p>Step 3: Query image object to print image dimensions for informational purposes </p>
+    image = <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_false_e);
+</pre></div><ul>
+<li>Query image object.</li>
+</ul>
+<p>Here we print the image dimensions. </p>
 <div class="fragment"><pre class="fragment">     */
     vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
     vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
-</pre></div><p>Step 3: Save image object to bitmap file <a class="el" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a> </p>
+</pre></div><ul>
+<li>Save image object to bitmap file <a class="el" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file()</a> to see how data in vx_image object is accessed to store pixel values from the image object to BMP file <a class="el" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a> </p>
 <div class="fragment"><pre class="fragment">     */
-    <a class="code" href="vx__tutorial__image__load__save_8c.html#a2ffb77a8e510c0236b07306d0eb47a30">save_image_to_file</a>(<a class="code" href="vx__tutorial__image__color__convert_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>, image);
-</pre></div><p>Step 4: Since we are done with using this image object, release it </p>
+    <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb" title="Output file name.">OUT_FILE_NAME</a>, image);
+</pre></div><ul>
+<li>Release image object.</li>
+</ul>
+<p>Since we are done with using this image object, release it </p>
 <div class="fragment"><pre class="fragment">     */
     vxReleaseImage(&amp;image);
-</pre></div><p>Step 5: Since we are done using OpenVX context, release it </p>
+</pre></div><ul>
+<li>Release context object.</li>
+</ul>
+<p>Since we are done using OpenVX context, release it. No further OpenVX API calls should be done, until a context is again created using vxCreateContext() </p>
 <div class="fragment"><pre class="fragment">     */
     vxReleaseContext(&amp;context);
 </pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__load__save_8c_source.html#l00073">73</a> of file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
 
 </div>
 </div>
@@ -163,22 +217,90 @@
   <table border="0" cellspacing="2" cellpadding="0">
     <tr><td valign="top"></td><td valign="top"><em>context</em>&nbsp;</td><td>[in] OpenVX context within which the image object will get created </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>filename</em>&nbsp;</td><td>[in] BMP filename, MUST have extension of .bmp </td></tr>
-    <tr><td valign="top"></td><td valign="top"><em>convert_to_gray_scale</em>&nbsp;</td><td>[in] Converts RGB values in BMP file to 8b grayscale value</td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>convert_to_gray_scale</em>&nbsp;</td><td>[in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object<br/>
+ vx_false_e: Retains RGB values from BMP file and copies them to image object<br/>
+</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>Image data object. <br/>
- Image data format is 24b RGB when convert_to_gray_scale is vx_false_e <br/>
- Image data format is 8b Grayscale when convert_to_gray_scale is vx_true_e </dd></dl>
+ Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is vx_false_e <br/>
+ Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is vx_true_e </dd></dl>
 
-<p><p>Step 1: Read BMP file, the BMP file pixel values are stored at location data_ptr. The BMP file attributes are returned in variables 'width', 'hegith', 'df' (data format). 'bmp_file_context' holds the context of the BMP file which MUST be free'ed once the usage of this file is done. </p>
+<p><ul>
+<li>Read BMP file.</li>
+</ul>
+<p>The BMP file pixel values are stored at location 'data_ptr'. The BMP file attributes are returned in variables 'width', 'heigth', 'df' (data format). 'bmp_file_context' holds the context of the BMP file which is free'ed after copying the pixel values from 'data_ptr' into a vx_image object. </p>
 <div class="fragment"><pre class="fragment">     */
-    status = <a class="code" href="bmp__rd__wr_8c.html#a9fd09ad0e348951c4af9dbb4c852cfd5">bmp_file_read</a>(
+    status = <a class="code" href="bmp__rd__wr_8h.html#a9fd09ad0e348951c4af9dbb4c852cfd5" title="Read data from BMP file.">bmp_file_read</a>(
                 filename,
                 convert_to_gray_scale,
                 &amp;width, &amp;height, &amp;stride, &amp;df, &amp;data_ptr,
                 &amp;bmp_file_context);
+</pre></div><ul>
+<li>Create OpenVX image object.</li>
+</ul>
+<p>Creates a OpenVX image object of 'width' x 'height' and having data format 'df'.</p>
+<p><b>TIP:</b> In OpenVX whenever an object is created use vxGetStatus() to find if the object creation was successful. The object must be typecasted to vx_reference type when calling vxGetStatus() API. If the reference is valid VX_SUCCESS should be returned by vxGetStatus(). </p>
+<div class="fragment"><pre class="fragment">         */
+        image = vxCreateImage(context, width, height, df);
+        status = vxGetStatus((vx_reference)image);
+</pre></div><ul>
+<li>Copy pixel values from 'data_ptr' into image object.</li>
+</ul>
+<p>'image_addr' is used to describe arrangement of data within 'data_ptr'. The attributes 'wdith','height','stride' are used to set 'dim_x', 'dim_y', 'stride_y' fields in 'image_addr'. 'stride_x' is derived from data format 'df'. Other fields are set to unity.</p>
+<p>'rect' is used to select ROI within 'data_ptr' from which data is to be copied to image object. Here 'rect' is set to copy all the pixels from 'data_ptr' into the image object.</p>
+<p>'VX_WRITE_ONLY' indicates that application wants to write into the vx_image object.</p>
+<p>'VX_MEMORY_TYPE_HOST' indicates the type of memory that is pointed to by 'data_ptr'. Use 'VX_MEMORY_TYPE_HOST' for TIVX applications. </p>
+<div class="fragment"><pre class="fragment">             */
+
+            vx_imagepatch_addressing_t image_addr;
+            vx_rectangle_t rect;
+            uint32_t bpp;
+
+            <span class="keywordflow">if</span>( df == VX_DF_IMAGE_U8 )
+                bpp = 1;
+            <span class="keywordflow">else</span>
+            <span class="keywordflow">if</span>( df == VX_DF_IMAGE_RGB )
+                bpp = 3;
+            <span class="keywordflow">else</span>
+            <span class="keywordflow">if</span>( df == VX_DF_IMAGE_RGBX )
+                bpp = 4;
+            <span class="keywordflow">else</span>
+                bpp = 1; <span class="comment">/* it should not reach here for BMP files */</span>
+
+            image_addr.dim_x = width;
+            image_addr.dim_y = height;
+            image_addr.stride_x = bpp;
+            image_addr.stride_y = stride;
+            image_addr.scale_x = VX_SCALE_UNITY;
+            image_addr.scale_y = VX_SCALE_UNITY;
+            image_addr.step_x = 1;
+            image_addr.step_y = 1;
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = width;
+            rect.end_y = height;
+
+            vxCopyImagePatch(image,
+                &amp;rect,
+                0,
+                &amp;image_addr,
+                data_ptr,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST
+                );
+
+</pre></div><ul>
+<li>Release BMP file context.</li>
+</ul>
+<p>Since pixel values are copied from 'data_ptr' to vx_image object Now 'data_ptr' and any other resources allocted by <a class="el" href="bmp__rd__wr_8h.html#a9fd09ad0e348951c4af9dbb4c852cfd5" title="Read data from BMP file.">bmp_file_read()</a> are free'ed by calling <a class="el" href="bmp__rd__wr_8h.html#a2a612b23e595a4ac11ba207c88c03be6" title="Free memory allocated during bmp_file_read.">bmp_file_read_release()</a> </p>
+<div class="fragment"><pre class="fragment">         */
+        <a class="code" href="bmp__rd__wr_8h.html#a2a612b23e595a4ac11ba207c88c03be6" title="Free memory allocated during bmp_file_read.">bmp_file_read_release</a>(bmp_file_context);
 </pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__load__save_8c_source.html#l00172">172</a> of file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
 
 </div>
 </div>
@@ -206,6 +328,70 @@
       </table>
 </div>
 <div class="memdoc">
+
+<p>Save data from image object to BMP file. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>filename</em>&nbsp;</td><td>[in] BMP filename, MUST have extension of .bmp </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>image</em>&nbsp;</td><td>[in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>VX_SUCCESS if BMP could be created and saved with data from image object </dd></dl>
+
+<p><ul>
+<li>Check if image object is valid</li>
+</ul>
+<div class="fragment"><pre class="fragment">     */
+    status = vxGetStatus((vx_reference)image);
+</pre></div><ul>
+<li>Query image attributes.</li>
+</ul>
+<p>These will be used to select ROI of data to be copied and and to set attributes of the BMP file </p>
+<div class="fragment"><pre class="fragment">         */
+
+        vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(image, VX_IMAGE_FORMAT, &amp;df, <span class="keyword">sizeof</span>(vx_df_image));
+</pre></div><ul>
+<li>Map image data to user accessible memory space</li>
+</ul>
+<p>'image_addr' describes the arrangement of the mapped image data. <br/>
+ 'data_ptr' points to the first pixel of the mapped image data. <br/>
+ 'map_id' holds the mapped context. This is used to unmapped the data once application is done with it. <br/>
+ 'VX_READ_ONLY' indicates that application will read from the mapped memory. <br/>
+ 'rect' holds the ROI of image object to map. In this example, 'rect' is set to map the whole image.</p>
+<div class="fragment"><pre class="fragment">         */
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = width;
+        rect.end_y = height;
+
+        status = vxMapImagePatch(image,
+            &amp;rect,
+            0,
+            &amp;map_id,
+            &amp;image_addr,
+            &amp;data_ptr,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+</pre></div><ul>
+<li>Write to BMP file using utility API</li>
+</ul>
+<p>'image_addr.stride_y' is used to specify the offset in bytes between two consecutive lines in memory. This is returned by vxMapImagePatch() above </p>
+<div class="fragment"><pre class="fragment">             */
+            <a class="code" href="bmp__rd__wr_8h.html#a34dec5bef3b7ecc629d59645b1c6306e" title="Write data into BMP file.">bmp_file_write</a>(filename, width, height, image_addr.stride_y, df, data_ptr);
+</pre></div><ul>
+<li>Unmapped a previously mapped image object</li>
+</ul>
+<p>Every vxMapImagePatch MUST have a corresponding unmap in OpenVX. The 'map_id' returned by vxMapImagePatch() is used as input by vxUnmapImagePatch() </p>
+<div class="fragment"><pre class="fragment">             */
+            vxUnmapImagePatch(image, map_id);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__load__save_8c_source.html#l00300">300</a> of file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
 
 </div>
 </div>
@@ -239,6 +425,23 @@
       </table>
 </div>
 <div class="memdoc">
+
+<p>Load data from BMP file into a previously created vx_image object. </p>
+<p>This function is same as <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a>. Only difference is that the vx_image object is created outside this function. Some tutorials use this function instead of <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a></p>
+<p>This function queries the vx_image object to make sure its attributes match the attributes of the BMP file from which data needs to be loaded into the image object. In case of mismatch data is not loaded and error is returned.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>image</em>&nbsp;</td><td>[in] Previouly created image object </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>filename</em>&nbsp;</td><td>[in] BMP filename, MUST have extension of .bmp </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>convert_to_gray_scale</em>&nbsp;</td><td>[in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object<br/>
+ vx_false_e: Retains RGB values from BMP file and copies them to image object<br/>
+</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>VX_SUCCESS if BMP file data could be loaded into the vx_image object. </dd></dl>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__load__save_8c_source.html#l00401">401</a> of file <a class="el" href="vx__tutorial__image__load__save_8c_source.html">vx_tutorial_image_load_save.c</a>.</p>
 
 </div>
 </div>
