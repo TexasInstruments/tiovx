@@ -10,7 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
 #include <include/link_api/system_procId.h>
-#include <hlos/src/system/system_priv_openvx.h>
+#include <src/hlos/system/system_priv_openvx.h>
 
 /*! \brief An array of vision sdk CPU Ids. This is used for mapping
  *   tivx_cpu_id_e to vision sdk cpu id. This mapping is required for

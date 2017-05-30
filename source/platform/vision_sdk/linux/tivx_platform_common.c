@@ -8,7 +8,7 @@
  */
 
 #include <vx_internal.h>
-#include <hlos/src/system/system_priv_openvx.h>
+#include <src/hlos/system/system_priv_openvx.h>
 #include <tivx_platform_vision_sdk.h>
 #include "tivx_platform_priv.h"
 

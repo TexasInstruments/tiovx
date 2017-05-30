@@ -13,7 +13,7 @@
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
 
-#include <src/utils_common/include/utils_mem_if.h>
+#include <src/rtos/utils_common/include/utils_mem_if.h>
 
 
 /*! \brief Default buffer allocation alignment

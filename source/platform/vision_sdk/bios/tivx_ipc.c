@@ -13,7 +13,7 @@
 #include <xdc/std.h>
 #include <include/link_api/system_if.h>
 #include <include/link_api/system_procId.h>
-#include <src/links_common/system/system_priv_openvx.h>
+#include <src/rtos/links_common/system/system_priv_openvx.h>
 
 static void tivxIpcHandler(uint32_t payload);
 

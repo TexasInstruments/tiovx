@@ -1,12 +1,7 @@
 
 include tools_path.mak
 
-ifeq ($(OS),Windows_NT)
 BUILD_EMULATION_MODE?=no
-else
-BUILD_EMULATION_MODE?=yes
-endif
-
 BUILD_TARGET_MODE?=yes
 
 BUILD_CONFORMANCE_TEST?=yes
