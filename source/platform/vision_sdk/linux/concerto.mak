@@ -20,7 +20,7 @@ IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
-IDIRS       += $(VSDK_PATH)
+IDIRS       += $(VSDK_PATH)/links_fw
 IDIRS       += $(TARGETFS)/usr/include
 IDIRS       += $(TARGETFS)/usr
 

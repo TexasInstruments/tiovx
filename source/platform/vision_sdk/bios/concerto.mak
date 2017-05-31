@@ -13,7 +13,7 @@ IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
 IDIRS       += $(PDK_PATH)/packages/ti/drv/vps/include
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
-IDIRS       += $(VSDK_PATH)
+IDIRS       += $(VSDK_PATH)/links_fw
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

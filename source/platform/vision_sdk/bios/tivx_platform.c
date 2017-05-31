@@ -11,7 +11,7 @@
 
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
-#include <src/links_common/system/system_priv_openvx.h>
+#include <src/rtos/links_common/system/system_priv_openvx.h>
 
 uint64_t tivxPlatformGetTimeInUsecs(void)
 {

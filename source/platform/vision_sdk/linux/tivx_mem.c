@@ -12,7 +12,7 @@
 #include <tivx_platform_vision_sdk.h>
 #include <sys/types.h>
 #include <cmem.h>
-#include <hlos/src/system/system_priv_openvx.h>
+#include <src/hlos/system/system_priv_openvx.h>
 
 #define MEM_ALLOC_ALIGN      (63U)
 #define MEM_BUFFER_ALLOC_ALIGN (64U)
