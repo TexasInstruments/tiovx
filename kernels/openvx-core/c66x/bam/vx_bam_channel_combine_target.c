@@ -53,7 +53,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
     vx_status status = VX_SUCCESS;
     tivxChannelCombineParams *prms = NULL;
     tivx_obj_desc_image_t *src0, *src1, *src2, *src3, *dst;
-    uint8_t *src0_addr, *src1_addr, *src2_addr, *src3_addr, *dst_addr[4U] = {NULL};
+    uint8_t *src0_addr = NULL, *src1_addr = NULL, *src2_addr = NULL, *src3_addr = NULL, *dst_addr[4U] = {NULL};
     vx_rectangle_t rect;
     uint32_t size;
     uint16_t plane_idx;
@@ -215,7 +215,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
                 status  = tivxBamProcessGraph(prms->graph_handle);
             }
         }
-        else 
+        else
         {
             img_ptrs[0] = src0_addr;
             img_ptrs[1] = src1_addr;

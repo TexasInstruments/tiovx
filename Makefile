@@ -8,6 +8,7 @@ BUILD_CONFORMANCE_TEST?=yes
 BUILD_IVISION_KERNELS?=yes
 BUILD_BAM?=yes
 BUILD_TUTORIAL?=yes
+BUILD_LINUX_A15?=no
 
 PROFILE?=all
 
@@ -43,7 +44,9 @@ ifeq ($(BUILD_TARGET_MODE),yes)
   TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:debug:ARP32CGT
   TARGET_COMBOS += TDAX:SYSBIOS:A15:1:debug:GCC
     ifneq ($(OS),Windows_NT)
+	ifeq ($(BUILD_LINUX_A15),yes)
     TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC_LINARO
+	endif
     endif
   endif
 
@@ -53,7 +56,9 @@ ifeq ($(BUILD_TARGET_MODE),yes)
   TARGET_COMBOS += TDAX:SYSBIOS:EVE:1:release:ARP32CGT
   TARGET_COMBOS += TDAX:SYSBIOS:A15:1:release:GCC
     ifneq ($(OS),Windows_NT)
+	ifeq ($(BUILD_LINUX_A15),yes)
     TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC_LINARO
+	endif
     endif
   endif
 endif
