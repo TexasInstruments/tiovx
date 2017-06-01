@@ -1,11 +1,31 @@
-'''
-* Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
-* ALL RIGHTS RESERVED
-'''
+#
+# Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
+# ALL RIGHTS RESERVED
+#
 
 from . import *
-   
+
+## Context object (OpenVX equivalent = vx_context)
+#
+#
+# \par Example Usage: Create a context
+#
+# \code
+#
+# from tiovx import *
+#
+# my_context = Context("my_context_name")
+# my_context.add(my_graph)
+# my_context.add(my_node)
+# my_context.add(my_data)
+# \endcode
+#
+# \ingroup FRAMEWORK
+
 class Context (Reference) :
+    ## Constructor used to create this object
+    #
+    # \param name [in] Name to assign to this context
     def __init__(self, name="default") :
         Reference.__init__(self, Type.CONTEXT, name)
         self.ref = []
@@ -23,6 +43,9 @@ class Context (Reference) :
                 return True
         return False
 
+    ## Add graph or node or data object to context
+    #
+    # \param ref [in] Object of type Graph, Node or Data Object
     def add(self,ref) :
         if self.isDuplicate(ref, self.ref) == False :
             self.ref.append(ref)
@@ -33,7 +56,7 @@ class Context (Reference) :
                 self.addNode(ref)
             else :
                 self.addData(ref)
-    
+
     def __str__(self):
         print_str = Reference.__str__(self)
         for ref in self.ref :

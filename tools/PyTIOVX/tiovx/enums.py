@@ -1,15 +1,24 @@
-'''
-* Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
-* ALL RIGHTS RESERVED
-'''
+#
+# Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
+# ALL RIGHTS RESERVED
+#
 
 from enum import Enum
 from . import *
 
+
+## Object/Data type (OpenVX equivalent = vx_type_e)
+#
+# \ingroup ENUMS
+#
 class Type(Enum):
+    ## OpenVX equivalent = VX_TYPE_INVALID
     INVALID = 1
+    ## OpenVX equivalent = VX_TYPE_CHAR
     CHAR    = 2
+    ## OpenVX equivalent = VX_TYPE_INT8
     INT8    = 3
+    ## OpenVX equivalent = VX_TYPE_UINT8
     UINT8   = 4
     INT16   = 5
     UINT16  = 6

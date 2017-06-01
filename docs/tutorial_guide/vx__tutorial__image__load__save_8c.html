@@ -147,7 +147,7 @@
 </pre></div><ul>
 <li>Create image object.</li>
 </ul>
-<p>Follow the comments in <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a> to see how a vx_image object is created and filled with RGB data from BMP file <a class="el" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a> </p>
+<p>Follow the comments in <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a> to see how a vx_image object is created and filled with RGB data from BMP file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a> </p>
 <div class="fragment"><pre class="fragment">     */
     image = <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_false_e);
 </pre></div><ul>
@@ -158,9 +158,9 @@
     vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
     vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
 </pre></div><ul>
-<li>Save image object to bitmap file <a class="el" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>.</li>
+<li>Save image object to bitmap file <a class="el" href="vx__tutorial__image__histogram_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>.</li>
 </ul>
-<p>Follow the comments in <a class="el" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file()</a> to see how data in vx_image object is accessed to store pixel values from the image object to BMP file <a class="el" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a> </p>
+<p>Follow the comments in <a class="el" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file()</a> to see how data in vx_image object is accessed to store pixel values from the image object to BMP file <a class="el" href="vx__tutorial__image__histogram_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a> </p>
 <div class="fragment"><pre class="fragment">     */
     <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb" title="Output file name.">OUT_FILE_NAME</a>, image);
 </pre></div><ul>
