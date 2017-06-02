@@ -38,8 +38,8 @@ XDIAS_PATH ?= $(VSDK_TOOLS_PATH)/codecs/xdais_7_24_00_04
 EDMA3_LLD_PATH ?= $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
 BIOS_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_00_23
 
-DMAUTILS_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/algorithms/dsp_apps/dmautils
-ALGFRAMEWORK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/algorithms/dsp_apps/algframework
+DMAUTILS_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.DMAUTILS.00.08.00.02/dmautils
+ALGFRAMEWORK_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.ALGFRAMEWORK.00.02.06.01/algframework
 PDK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
 VSDK_PATH ?= $(VSDK_INSTALL_PATH)/vision_sdk
 TARGETFS ?= $(VSDK_INSTALL_PATH)/vision_sdk/hlos/linux/targetfs
