@@ -49,7 +49,7 @@
  *      <TR>
  *          <TD> load_image_from_file() </TD>
  *          <TD> Same as create_image_from_file(), only a created vx_image object is passed to this function.
- *              <b>NOTE:</b> This function though listed in this tutorial is used in a later tutorials
+ *              <b>NOTE:</b> This function though listed in this tutorial is used in later tutorials
  *           </TD>
  *      </TR>
  *  </TABLE>

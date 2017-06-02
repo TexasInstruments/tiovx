@@ -24,15 +24,42 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_image_query.c File Reference</h1>
+<h1>vx_tutorial_image_query.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Query image for attributes such as width, height and format</p>
+<p>In this tutorial we learn the below concepts,</p>
+<ul>
+<li>How to create OpenVX context and OpenVX image data object</li>
+<li>How to read a BMP file and load the pixel values into the image data object</li>
+<li>How to query the image data object for attributes like width, height</li>
+<li>How to cleanup all created resources and exit the OpenVX application</li>
+</ul>
+<p>To include OpenVX interfaces include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;VX/vx.h&gt;</span>
+</pre></div><p>Follow the comments in the function <a class="el" href="vx__tutorial__image__query_8c.html#a399d33511e4fca5b42322b28f85d93f7" title="Tutorial Entry Point.">vx_tutorial_image_query()</a> to understand this tutorial</p>
+<p>As part of this tutorial, we create few utility functions as listed below. These functions will be used in subsequent tutorials to display node and graph attributes. </p>
+<table frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+<tr bgcolor="lightgrey">
+<th><p>Utility function  </p>
+</th><th><p>Description   </p>
+</th></tr>
+<tr>
+<td><p><a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a>  </p>
+</td><td><p>Displays attributes of a previously created image. <b>NOTE:</b> This function though listed in this tutorial is used in later tutorials   </p>
+</td></tr>
+</table>
+
+<p>Definition in file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
+
 <p><a href="vx__tutorial__image__query_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__query_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;colors.bmp&quot;</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__query_8c.html#af661be673a2d1062f5a7c13c7aeb5e41">MAX_ATTRIBUTE_NAME</a>&nbsp;&nbsp;&nbsp;(32u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Input file name.  <a href="#a8118656bb5a60090a1dbffa402168438"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__query_8c.html#a399d33511e4fca5b42322b28f85d93f7">vx_tutorial_image_query</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tutorial Entry Point.  <a href="#a399d33511e4fca5b42322b28f85d93f7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__query_8c.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a> (vx_image image)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Show attributes of previously created image.  <a href="#ade45042efce712b30cf8254a6c90b3bc"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_image_query.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -46,22 +73,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00015">15</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
+<p>Input file name. </p>
 
-</div>
-</div>
-<a class="anchor" id="af661be673a2d1062f5a7c13c7aeb5e41"></a><!-- doxytag: member="vx_tutorial_image_query.c::MAX_ATTRIBUTE_NAME" ref="af661be673a2d1062f5a7c13c7aeb5e41" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define MAX_ATTRIBUTE_NAME&nbsp;&nbsp;&nbsp;(32u)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00041">41</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
+<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00051">51</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
 
 </div>
 </div>
@@ -81,7 +95,48 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00017">17</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
+<p>Tutorial Entry Point. </p>
+
+<p><ul>
+<li>Define objects that we wish to create in the OpenVX application.</li>
+</ul>
+<p>A vx_context object is defined which is used as input parameter for all subesquent OpenVX object create APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_context context;
+    vx_image image;
+</pre></div><ul>
+<li>Create OpenVX context.</li>
+</ul>
+<p>This MUST be done first before any OpenVX API call. The context that is returned is used as input for subsequent OpenVX APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    context = vxCreateContext();
+</pre></div><ul>
+<li>Create image object.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a> to see how a vx_image object is created and filled with RGB data from BMP file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a> </p>
+<div class="fragment"><pre class="fragment">     */
+    image = <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_false_e);
+</pre></div><ul>
+<li>Show image attributes.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a> to see how image attributes are queried and displayed. </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(image);
+</pre></div><ul>
+<li>Release image object.</li>
+</ul>
+<p>Since we are done with using this image object, release it </p>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseImage(&amp;image);
+</pre></div><ul>
+<li>Release context object.</li>
+</ul>
+<p>Since we are done using OpenVX context, release it. No further OpenVX API calls should be done, until a context is again created using vxCreateContext() </p>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseContext(&amp;context);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00056">56</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
 
 </div>
 </div>
@@ -101,7 +156,31 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00043">43</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
+<p>Show attributes of previously created image. </p>
+<p>This function queries the vx_image image for its number of nodes, number of parameters, state, performance, reference name and reference count then prints this information.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>image</em>&nbsp;</td><td>[in] Previouly created image object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Query image attributes.</li>
+</ul>
+<p>Queries image for width, height, format, planes, size, space, range, range and memory type.</p>
+<div class="fragment"><pre class="fragment">     */
+    vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryImage(image, VX_IMAGE_FORMAT, &amp;df, <span class="keyword">sizeof</span>(vx_df_image));
+    vxQueryImage(image, VX_IMAGE_PLANES, &amp;num_planes, <span class="keyword">sizeof</span>(vx_size));
+    vxQueryImage(image, VX_IMAGE_SIZE, &amp;size, <span class="keyword">sizeof</span>(vx_size));
+    vxQueryImage(image, VX_IMAGE_SPACE, &amp;color_space, <span class="keyword">sizeof</span>(vx_enum));
+    vxQueryImage(image, VX_IMAGE_RANGE, &amp;channel_range, <span class="keyword">sizeof</span>(vx_enum));
+    vxQueryImage(image, VX_IMAGE_MEMORY_TYPE, &amp;memory_type, <span class="keyword">sizeof</span>(vx_enum));
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00140">140</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
 
 </div>
 </div>

@@ -24,15 +24,48 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_image_crop_roi.c File Reference</h1>
+<h1>vx_tutorial_image_crop_roi.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Crop a rectangular region from an image</p>
+<p>In this tutorial we learn the below concepts,</p>
+<ul>
+<li>How to create OpenVX context and OpenVX image data object</li>
+<li>How to read a BMP from handle from file and load the pixel values into the image data object</li>
+<li>How to query the image data object for attributes like width, height</li>
+<li>How to create an image from a rectangular region of another image</li>
+<li>How to read pixel values from an image data object and save it as a BMP file</li>
+<li>How to cleanup all created resources and exit the OpenVX application</li>
+</ul>
+<p>To include OpenVX interfaces include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;VX/vx.h&gt;</span>
+</pre></div><p>To include utility APIs to read and write BMP file include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;<a class="code" href="bmp__rd__wr_8h.html">bmp_rd_wr.h</a>&gt;</span>
+</pre></div><p>Follow the comments in the function <a class="el" href="vx__tutorial__image__crop__roi_8c.html#a2e40fa229aa1f3c5666a2c8f36de0e1d" title="Tutorial Entry Point.">vx_tutorial_image_crop_roi()</a> to understand this tutorial</p>
+<p>As part of this tutorial, we create few utility functions as listed below. These functions will be used in subsequent tutorials to load and save images. </p>
+<table frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+<tr bgcolor="lightgrey">
+<th><p>Utility function  </p>
+</th><th><p>Description   </p>
+</th></tr>
+<tr>
+<td><p><a class="el" href="vx__tutorial__image__crop__roi_8c.html#a4295a6029fd44a53594f2886c414902d" title="Load image from handle from file.">load_image_from_handle_from_file()</a>  </p>
+</td><td><p>Loads an image data object from handle from file   </p>
+</td></tr>
+</table>
+
+<p>Definition in file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
+
 <p><a href="vx__tutorial__image__crop__roi_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__crop__roi_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;colors.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Input file name.  <a href="#a8118656bb5a60090a1dbffa402168438"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__crop__roi_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_image_crop_roi.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Output file name.  <a href="#a75506823f0db0ef3f4f022cf132dbbbb"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_image&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__crop__roi_8c.html#a4295a6029fd44a53594f2886c414902d">load_image_from_handle_from_file</a> (vx_context context, char *filename, vx_bool convert_to_gray_scale, void **bmp_file_context)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Load image from handle from file.  <a href="#a4295a6029fd44a53594f2886c414902d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__crop__roi_8c.html#a2e40fa229aa1f3c5666a2c8f36de0e1d">vx_tutorial_image_crop_roi</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tutorial Entry Point.  <a href="#a2e40fa229aa1f3c5666a2c8f36de0e1d"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_image_crop_roi.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -46,7 +79,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00015">15</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
+<p>Input file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00056">56</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
 
 </div>
 </div>
@@ -61,7 +96,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00016">16</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
+<p>Output file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00059">59</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
 
 </div>
 </div>
@@ -103,7 +140,30 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00077">77</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
+<p>Load image from handle from file. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>context</em>&nbsp;</td><td>[in] Context </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>filename</em>&nbsp;</td><td>[in] BMP filename, MUST have extension of .bmp </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>convert_to_gray_scale</em>&nbsp;</td><td>[in] vx_true_e: Converts RGB values in BMP file to 8b grayscale value and copies them to image object<br/>
+ vx_false_e: Retains RGB values from BMP file and copies them to image object<br/>
+ </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>bmp_file_context</em>&nbsp;</td><td>[in] BMP file context</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>Image data object from file. <br/>
+ </dd></dl>
+
+<p><ul>
+<li>Create image from handle.</li>
+</ul>
+<p>Creates a reference to image object that was externally allocated </p>
+<div class="fragment"><pre class="fragment">         */
+        image = vxCreateImageFromHandle(context, df, image_addr, ptrs, VX_MEMORY_TYPE_HOST);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00199">199</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
 
 </div>
 </div>
@@ -122,7 +182,61 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00024">24</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
+<p>Tutorial Entry Point. </p>
+
+<p><ul>
+<li>Define objects that we wish to create in the OpenVX application.</li>
+</ul>
+<p>A vx_context object is defined which is used as input parameter for all subesquent OpenVX object create APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_context context;
+    vx_image image, roi_image;
+    vx_uint32 width, height;
+    vx_rectangle_t rect;
+</pre></div><ul>
+<li>Create OpenVX context.</li>
+</ul>
+<p>This MUST be done first before any OpenVX API call. The context that is returned is used as input for subsequent OpenVX APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    context = vxCreateContext();
+</pre></div><ul>
+<li>Show image attributes.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a> to see how image attributes are queried and displayed. </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(image);
+</pre></div><ul>
+<li>Create image from region of interest.</li>
+</ul>
+<p>Creates an image from another image given a rectangle </p>
+<div class="fragment"><pre class="fragment">     */
+    roi_image = vxCreateImageFromROI(image, &amp;rect);
+
+    vxSetReferenceName((vx_reference)roi_image, <span class="stringliteral">&quot;CROP_ROI&quot;</span>);
+
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(roi_image);
+</pre></div><ul>
+<li>Save image object to bitmap file <a class="el" href="vx__tutorial__image__histogram_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file()</a> to see how data in vx_image object is accessed to store pixel values from the image object to BMP file <a class="el" href="vx__tutorial__image__histogram_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a> </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb" title="Output file name.">OUT_FILE_NAME</a>, roi_image);
+</pre></div><ul>
+<li>Release image object.</li>
+</ul>
+<p>Since we are done with using this image object, release it </p>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseImage(&amp;roi_image);
+    vxReleaseImage(&amp;image);
+</pre></div><ul>
+<li>Release context object.</li>
+</ul>
+<p>Since we are done using OpenVX context, release it. No further OpenVX API calls should be done, until a context is again created using vxCreateContext() </p>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseContext(&amp;context);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html#l00070">70</a> of file <a class="el" href="vx__tutorial__image__crop__roi_8c_source.html">vx_tutorial_image_crop_roi.c</a>.</p>
 
 </div>
 </div>

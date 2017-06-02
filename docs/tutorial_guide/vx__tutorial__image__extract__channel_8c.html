@@ -24,14 +24,35 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_image_extract_channel.c File Reference</h1>
+<h1>vx_tutorial_image_extract_channel.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Extract channels from RGB image using immediate mode then combine them in opposite order.</p>
+<p>In this tutorial we learn the below concepts,</p>
+<ul>
+<li>How to create OpenVX context and OpenVX image data object</li>
+<li>How to read a BMP file and load the pixel values into the image data object</li>
+<li>How to query the image data object for attributes like width, height</li>
+<li>How to use the immediate mode for image processing</li>
+<li>How to read pixel values from an image data object and save it as a BMP file</li>
+<li>How to cleanup all created resources and exit the OpenVX application</li>
+</ul>
+<p>To include OpenVX interfaces include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;VX/vx.h&gt;</span>
+</pre></div><p>To include OpenVX interfaces for immediate mode include below file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;VX/vxu.h&gt;</span>
+</pre></div><p>Follow the comments in the function <a class="el" href="vx__tutorial__image__extract__channel_8c.html#a60cb60cf502b64d0cc7332e95ff625bd" title="Tutorial Entry Point.">vx_tutorial_image_extract_channel()</a> to understand this tutorial </p>
+
+<p>Definition in file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
+
 <p><a href="vx__tutorial__image__extract__channel_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__extract__channel_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;colors.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Input file name.  <a href="#a8118656bb5a60090a1dbffa402168438"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__extract__channel_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_image_extract_channel_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Output file name.  <a href="#a75506823f0db0ef3f4f022cf132dbbbb"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__image__extract__channel_8c.html#a60cb60cf502b64d0cc7332e95ff625bd">vx_tutorial_image_extract_channel</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tutorial Entry Point.  <a href="#a60cb60cf502b64d0cc7332e95ff625bd"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_image_extract_channel.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -45,7 +66,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html#l00015">15</a> of file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
+<p>Input file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html#l00045">45</a> of file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
 
 </div>
 </div>
@@ -60,7 +83,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html#l00016">16</a> of file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
+<p>Output file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html#l00048">48</a> of file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
 
 </div>
 </div>
@@ -80,7 +105,118 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html#l00018">18</a> of file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
+<p>Tutorial Entry Point. </p>
+
+<p><ul>
+<li>Define objects that we wish to create in the OpenVX application.</li>
+</ul>
+<p>A vx_context object is defined which is used as input parameter for all subesquent OpenVX object create APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_context context;
+    vx_image in_image = NULL;
+    vx_image r_channel = NULL;
+    vx_image g_channel = NULL;
+    vx_image b_channel = NULL;
+    vx_image out_image = NULL;
+</pre></div><ul>
+<li>Create OpenVX context.</li>
+</ul>
+<p>This MUST be done first before any OpenVX API call. The context that is returned is used as input for subsequent OpenVX APIs </p>
+<div class="fragment"><pre class="fragment">     */
+    context = vxCreateContext();
+</pre></div><ul>
+<li>Create image object.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file()</a> to see how a vx_image object is created and filled with RGB data from BMP file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a> </p>
+<div class="fragment"><pre class="fragment">     */
+    in_image = <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_false_e);
+</pre></div><ul>
+<li>Show image attributes.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a> to see how image attributes are queried and displayed. </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(in_image);
+</pre></div><ul>
+<li>Create OpenVX image object.</li>
+</ul>
+<p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
+<div class="fragment"><pre class="fragment">     */
+    r_channel = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+</pre></div><ul>
+<li>Show image attributes.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a> to see how image attributes are queried and displayed. </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(r_channel);
+</pre></div><ul>
+<li>Create OpenVX image object.</li>
+</ul>
+<p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
+<div class="fragment"><pre class="fragment">     */
+    g_channel = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+</pre></div><ul>
+<li>Create OpenVX image object.</li>
+</ul>
+<p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
+<div class="fragment"><pre class="fragment">     */
+    b_channel = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
+</pre></div><ul>
+<li>Show image attributes.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a> to see how image attributes are queried and displayed. </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(b_channel);
+</pre></div><ul>
+<li>Create OpenVX image object.</li>
+</ul>
+<p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
+<div class="fragment"><pre class="fragment">     */
+    out_image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB);
+</pre></div><ul>
+<li>Show image attributes.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes()</a> to see how image attributes are queried and displayed. </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(out_image);
+</pre></div><ul>
+<li>Performs immediate mode channel extract.</li>
+</ul>
+<p>The second argument gives the input image, the third argument gives the channel to extract and the final argument gives the output image.</p>
+<div class="fragment"><pre class="fragment">     */
+    vxuChannelExtract(context, in_image, VX_CHANNEL_R, r_channel);
+    vxuChannelExtract(context, in_image, VX_CHANNEL_G, g_channel);
+    vxuChannelExtract(context, in_image, VX_CHANNEL_B, b_channel);
+</pre></div><ul>
+<li>Performs immediate mode channel combine.</li>
+</ul>
+<p>The second, third and fourth arguments give channels to combine with the last argument being the output image.</p>
+<div class="fragment"><pre class="fragment">     */
+    vxuChannelCombine(context, b_channel, g_channel, r_channel, NULL, out_image);
+</pre></div><ul>
+<li>Save image object to bitmap file <a class="el" href="vx__tutorial__image__histogram_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a>.</li>
+</ul>
+<p>Follow the comments in <a class="el" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file()</a> to see how data in vx_image object is accessed to store pixel values from the image object to BMP file <a class="el" href="vx__tutorial__image__histogram_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">OUT_FILE_NAME</a> </p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__image__load__save_8c.html#a75506823f0db0ef3f4f022cf132dbbbb" title="Output file name.">OUT_FILE_NAME</a>, out_image);
+</pre></div><ul>
+<li>Release image object.</li>
+</ul>
+<p>Since we are done with using this image object, release it </p>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseImage(&amp;in_image);
+    vxReleaseImage(&amp;r_channel);
+    vxReleaseImage(&amp;g_channel);
+    vxReleaseImage(&amp;b_channel);
+    vxReleaseImage(&amp;out_image);
+</pre></div><ul>
+<li>Release context object.</li>
+</ul>
+<p>Since we are done using OpenVX context, release it. No further OpenVX API calls should be done, until a context is again created using vxCreateContext() </p>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseContext(&amp;context);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html#l00053">53</a> of file <a class="el" href="vx__tutorial__image__extract__channel_8c_source.html">vx_tutorial_image_extract_channel.c</a>.</p>
 
 </div>
 </div>

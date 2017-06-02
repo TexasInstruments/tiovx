@@ -75,14 +75,14 @@
 <a name="l00051"></a>00051         in_image = <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
 <a name="l00052"></a>00052 
 <a name="l00053"></a>00053         vxSetReferenceName((vx_reference)in_image, <span class="stringliteral">&quot;INPUT&quot;</span>);
-<a name="l00054"></a>00054         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(in_image);
+<a name="l00054"></a>00054         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(in_image);
 <a name="l00055"></a>00055 
 <a name="l00056"></a>00056         vxQueryImage(in_image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
 <a name="l00057"></a>00057         vxQueryImage(in_image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
 <a name="l00058"></a>00058 
 <a name="l00059"></a>00059         out_image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB);
 <a name="l00060"></a>00060         vxSetReferenceName((vx_reference)out_image, <span class="stringliteral">&quot;GRAD_X&quot;</span>);
-<a name="l00061"></a>00061         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(out_image);
+<a name="l00061"></a>00061         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(out_image);
 <a name="l00062"></a>00062 
 <a name="l00063"></a>00063         graph = vxCreateGraph(context);
 <a name="l00064"></a>00064 
@@ -90,8 +90,8 @@
 <a name="l00066"></a>00066 
 <a name="l00067"></a>00067         status = vxVerifyGraph(graph);
 <a name="l00068"></a>00068 
-<a name="l00069"></a>00069         <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d">show_graph_attributes</a>(graph);
-<a name="l00070"></a>00070         <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff">show_node_attributes</a>(node);
+<a name="l00069"></a>00069         <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(graph);
+<a name="l00070"></a>00070         <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(node);
 <a name="l00071"></a>00071 
 <a name="l00072"></a>00072         <span class="keywordflow">if</span>(status==VX_SUCCESS)
 <a name="l00073"></a>00073         {
@@ -102,8 +102,8 @@
 <a name="l00078"></a>00078 
 <a name="l00079"></a>00079             printf(<span class="stringliteral">&quot; Executing graph ... Done !!!\n&quot;</span>);
 <a name="l00080"></a>00080 
-<a name="l00081"></a>00081             <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d">show_graph_attributes</a>(graph);
-<a name="l00082"></a>00082             <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff">show_node_attributes</a>(node);
+<a name="l00081"></a>00081             <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(graph);
+<a name="l00082"></a>00082             <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(node);
 <a name="l00083"></a>00083 
 <a name="l00084"></a>00084             printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, out_file);
 <a name="l00085"></a>00085             <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(out_file, out_image);

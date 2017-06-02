@@ -69,14 +69,14 @@
 <a name="l00045"></a>00045         printf(<span class="stringliteral">&quot; Loading file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>);
 <a name="l00046"></a>00046         status = <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(uc.input, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
 <a name="l00047"></a>00047 
-<a name="l00048"></a>00048         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(uc.input);
-<a name="l00049"></a>00049         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(uc.grad_x);
-<a name="l00050"></a>00050         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(uc.grad_y);
-<a name="l00051"></a>00051         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(uc.phase);
-<a name="l00052"></a>00052         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a>(uc.phase_rgb);
+<a name="l00048"></a>00048         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.input);
+<a name="l00049"></a>00049         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x);
+<a name="l00050"></a>00050         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_y);
+<a name="l00051"></a>00051         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase);
+<a name="l00052"></a>00052         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase_rgb);
 <a name="l00053"></a>00053 
 <a name="l00054"></a>00054         vx_tutorial_graph_user_kernel_pytiovx_uc_verify(&amp;uc);
-<a name="l00055"></a>00055         <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d">show_graph_attributes</a>(uc.graph_0);
+<a name="l00055"></a>00055         <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
 <a name="l00056"></a>00056 
 <a name="l00057"></a>00057         <span class="keywordflow">if</span>(status==VX_SUCCESS)
 <a name="l00058"></a>00058         {
@@ -85,7 +85,7 @@
 <a name="l00061"></a>00061             vx_tutorial_graph_user_kernel_pytiovx_uc_run(&amp;uc);
 <a name="l00062"></a>00062 
 <a name="l00063"></a>00063             printf(<span class="stringliteral">&quot; Executing graph ... Done !!!\n&quot;</span>);
-<a name="l00064"></a>00064             <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d">show_graph_attributes</a>(uc.graph_0);
+<a name="l00064"></a>00064             <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
 <a name="l00065"></a>00065 
 <a name="l00066"></a>00066             printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, out_file);
 <a name="l00067"></a>00067             <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(out_file, uc.phase_rgb);
