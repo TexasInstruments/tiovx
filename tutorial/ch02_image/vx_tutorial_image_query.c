@@ -7,32 +7,120 @@
  *******************************************************************************
  */
 
+/**
+ * \file vx_tutorial_image_query.c Query image for attributes such as width, height and format
+ *
+ * In this tutorial we learn the below concepts,
+ *
+ * - How to create OpenVX context and OpenVX image data object
+ * - How to read a BMP file and load the pixel values into the image data object
+ * - How to query the image data object for attributes like width, height
+ * - How to cleanup all created resources and exit the OpenVX application
+ *
+ * To include OpenVX interfaces include below file
+ * \code
+ * #include <VX/vx.h>
+ * \endcode
+ *
+ * Follow the comments in the function vx_tutorial_image_query()
+ * to understand this tutorial
+ *
+ * As part of this tutorial, we create few utility functions as listed below.
+ * These functions will be used in subsequent tutorials to display node and graph attributes.
+ *  <TABLE frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+ *      <TR bgcolor="lightgrey">
+ *          <TH> Utility function </TH>
+ *          <TH> Description </TH>
+ *      </TR>
+ *      <TR>
+ *          <TD> show_image_attributes() </TD>
+ *          <TD> Displays attributes of a previously created image.
+ *              <b>NOTE:</b> This function though listed in this tutorial is used in later tutorials
+ *           </TD>
+ *      </TR>
+ *  </TABLE>
+ *
+ */
+
 #include <stdio.h>
 #include <VX/vx.h>
 #include <bmp_rd_wr.h>
 #include <utility.h>
 
+/** \brief Input file name */
 #define IN_FILE_NAME       "colors.bmp"
 
+/**
+ * \brief Tutorial Entry Point
+ */
 void vx_tutorial_image_query()
 {
+    /**
+     * - Define objects that we wish to create in the OpenVX application.
+     *
+     * A vx_context object is defined which is used as input parameter for all subesquent
+     * OpenVX object create APIs
+     * \code
+     */
     vx_context context;
     vx_image image;
+    /** \endcode */
 
     printf(" vx_tutorial_image_query: Tutorial Started !!! \n");
 
+    /**
+     * - Create OpenVX context.
+     *
+     * This MUST be done first before any OpenVX API call.
+     * The context that is returned is used as input for subsequent OpenVX APIs
+     * \code
+     */
     context = vxCreateContext();
+    /** \endcode */
 
     printf(" Loading file %s ...\n", IN_FILE_NAME);
 
+    /**
+     * - Create image object.
+     *
+     * Follow the comments in create_image_from_file() to see
+     * how a vx_image object is created and filled with RGB data from BMP file \ref IN_FILE_NAME
+     * \code
+     */
     image = create_image_from_file(context, IN_FILE_NAME, vx_false_e);
+    /** \endcode */
 
     vxSetReferenceName((vx_reference)image, "MY_IMAGE");
 
+    /**
+     * - Show image attributes.
+     *
+     * Follow the comments in show_image_attributes() to see
+     * how image attributes are queried and displayed.
+     * \code
+     */
     show_image_attributes(image);
+    /** \endcode */
 
+    /**
+     * - Release image object.
+     *
+     * Since we are done with using this image object, release it
+     * \code
+     */
     vxReleaseImage(&image);
+    /** \endcode */
+
+    /**
+     * - Release context object.
+     *
+     * Since we are done using OpenVX context, release it.
+     * No further OpenVX API calls should be done, until a context is again created using
+     * vxCreateContext()
+     * \code
+     */
     vxReleaseContext(&context);
+    /** \endcode */
 
     printf(" vx_tutorial_image_query: Tutorial Done !!! \n");
     printf(" \n");
@@ -40,6 +128,15 @@ void vx_tutorial_image_query()
 
 #define MAX_ATTRIBUTE_NAME (32u)
 
+/**
+ * \brief Show attributes of previously created image
+ *
+ * This function queries the vx_image image for its number of nodes, number of parameters,
+ * state, performance, reference name and reference count then prints this information. 
+ *
+ * \param image [in] Previouly created image object
+ *
+ */
 void show_image_attributes(vx_image image)
 {
     vx_uint32 width=0, height=0, ref_count=0;
@@ -53,6 +150,13 @@ void show_image_attributes(vx_image image)
     char memory_type_name[MAX_ATTRIBUTE_NAME];
     char ref_name_invalid[MAX_ATTRIBUTE_NAME];
 
+    /** - Query image attributes.
+     *
+     *  Queries image for width, height, format, planes, size, space, range,
+     *  range and memory type.
+     *
+     * \code
+     */
     vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
     vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
     vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
@@ -61,6 +165,7 @@ void show_image_attributes(vx_image image)
     vxQueryImage(image, VX_IMAGE_SPACE, &color_space, sizeof(vx_enum));
     vxQueryImage(image, VX_IMAGE_RANGE, &channel_range, sizeof(vx_enum));
     vxQueryImage(image, VX_IMAGE_MEMORY_TYPE, &memory_type, sizeof(vx_enum));
+    /** \endcode */
 
     vxQueryReference((vx_reference)image, VX_REFERENCE_NAME, &ref_name, sizeof(vx_char*));
     vxQueryReference((vx_reference)image, VX_REFERENCE_COUNT, &ref_count, sizeof(vx_uint32));

@@ -40,8 +40,11 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Save data from image object to BMP file.  <a href="#a2ffb77a8e510c0236b07306d0eb47a30"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_node&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8h.html#a36ad9bddac69149adf86bef3855e8ecc">create_generic_node</a> (vx_graph graph, vx_enum kernelenum, vx_reference params[], vx_uint32 num)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc">show_image_attributes</a> (vx_image image)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Show attributes of previously created image.  <a href="#ade45042efce712b30cf8254a6c90b3bc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d">show_graph_attributes</a> (vx_graph graph)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Show attributes of previously created graph.  <a href="#a86ae0d04d187710cc2d10f85bccb6e5d"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="utility_8h.html#a4576aae15198e9645228f21be4290cff">show_node_attributes</a> (vx_node node)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Show attributes of previously created node.  <a href="#a4576aae15198e9645228f21be4290cff"></a><br/></td></tr>
 </table>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="af8e9cbbd49ab0dec7850267224548cd6"></a><!-- doxytag: member="utility.h::create_image_from_file" ref="af8e9cbbd49ab0dec7850267224548cd6" args="(vx_context context, char *filename, vx_bool convert_to_gray_scale)" -->
@@ -363,7 +366,31 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00043">43</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
+<p>Show attributes of previously created image. </p>
+<p>This function queries the vx_image image for its number of nodes, number of parameters, state, performance, reference name and reference count then prints this information.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>image</em>&nbsp;</td><td>[in] Previouly created image object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Query image attributes.</li>
+</ul>
+<p>Queries image for width, height, format, planes, size, space, range, range and memory type.</p>
+<div class="fragment"><pre class="fragment">     */
+    vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryImage(image, VX_IMAGE_FORMAT, &amp;df, <span class="keyword">sizeof</span>(vx_df_image));
+    vxQueryImage(image, VX_IMAGE_PLANES, &amp;num_planes, <span class="keyword">sizeof</span>(vx_size));
+    vxQueryImage(image, VX_IMAGE_SIZE, &amp;size, <span class="keyword">sizeof</span>(vx_size));
+    vxQueryImage(image, VX_IMAGE_SPACE, &amp;color_space, <span class="keyword">sizeof</span>(vx_enum));
+    vxQueryImage(image, VX_IMAGE_RANGE, &amp;channel_range, <span class="keyword">sizeof</span>(vx_enum));
+    vxQueryImage(image, VX_IMAGE_MEMORY_TYPE, &amp;memory_type, <span class="keyword">sizeof</span>(vx_enum));
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__query_8c_source.html#l00140">140</a> of file <a class="el" href="vx__tutorial__image__query_8c_source.html">vx_tutorial_image_query.c</a>.</p>
 
 </div>
 </div>
@@ -383,7 +410,27 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__color__convert_8c_source.html#l00097">97</a> of file <a class="el" href="vx__tutorial__image__color__convert_8c_source.html">vx_tutorial_image_color_convert.c</a>.</p>
+<p>Show attributes of previously created graph. </p>
+<p>This function queries the vx_graph graph for its number of nodes, number of parameters, state, performance, reference name and reference count then prints this information.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>graph</em>&nbsp;</td><td>[in] Previouly created graph object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Query graph attributes.</li>
+</ul>
+<p>Queries graph for number of nodes, number of parameters, state and performance</p>
+<div class="fragment"><pre class="fragment">     */
+    vxQueryGraph(graph, VX_GRAPH_NUMNODES, &amp;num_nodes, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &amp;num_params, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryGraph(graph, VX_GRAPH_STATE, &amp;state, <span class="keyword">sizeof</span>(vx_enum));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &amp;perf, <span class="keyword">sizeof</span>(vx_perf_t));
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__color__convert_8c_source.html#l00344">344</a> of file <a class="el" href="vx__tutorial__image__color__convert_8c_source.html">vx_tutorial_image_color_convert.c</a>.</p>
 
 </div>
 </div>
@@ -403,7 +450,26 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__image__color__convert_8c_source.html#l00152">152</a> of file <a class="el" href="vx__tutorial__image__color__convert_8c_source.html">vx_tutorial_image_color_convert.c</a>.</p>
+<p>Show attributes of previously created node. </p>
+<p>This function queries the vx_node node for its status, number of parameters, performance, reference name and reference count then prints this information.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>node</em>&nbsp;</td><td>[in] Previouly created graph object </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Query node attributes.</li>
+</ul>
+<p>Queries node for number of status, number of parameters and performance</p>
+<div class="fragment"><pre class="fragment">     */
+    vxQueryNode(node, VX_NODE_STATUS, &amp;status, <span class="keyword">sizeof</span>(vx_status));
+    vxQueryNode(node, VX_NODE_PARAMETERS, &amp;num_params, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryNode(node, VX_NODE_PERFORMANCE, &amp;perf, <span class="keyword">sizeof</span>(vx_perf_t));
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__image__color__convert_8c_source.html#l00415">415</a> of file <a class="el" href="vx__tutorial__image__color__convert_8c_source.html">vx_tutorial_image_color_convert.c</a>.</p>
 
 </div>
 </div>
