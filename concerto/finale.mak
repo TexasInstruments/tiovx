@@ -164,6 +164,7 @@ ifeq ($($(_MODULE)_TYPE),library)
 define $(_MODULE)_BUILD_LIB
 $($(_MODULE)_BIN): $($(_MODULE)_OBJS) $($(_MODULE)_STATIC_LIBS)
 	$(PRINT) Linking $$@
+	-$(Q)$(MKDIR) $($(_MODULE)_TDIR)
 	-$(Q)$(call $(_MODULE)_LINK_LIB) $(LOGGING)
 endef
 
@@ -177,6 +178,7 @@ else ifeq ($($(_MODULE)_TYPE),exe)
 define $(_MODULE)_BUILD_EXE
 $($(_MODULE)_BIN): $($(_MODULE)_OBJS) $($(_MODULE)_STATIC_LIBS) $($(_MODULE)_SHARED_LIBS) $($(_MODULE)_DEPS)
 	$(PRINT) Linking $$@
+	$(MKDIR) $($(_MODULE)_EXE_DIR)
 	-$(Q)$(call $(_MODULE)_LINK_EXE) $(LOGGING)
 endef
 
@@ -190,6 +192,7 @@ else ifeq ($($(_MODULE)_TYPE),dsmo)
 define $(_MODULE)_BUILD_DSO
 $($(_MODULE)_BIN): $($(_MODULE)_OBJS) $($(_MODULE)_STATIC_LIBS) $($(_MODULE)_SHARED_LIBS) $($(_MODULE)_DEPS)
 	$(PRINT) Linking $$@
+	-$(Q)$(MKDIR) $($(_MODULE)_TDIR)
 	$(Q)$(call $(_MODULE)_LINK_DSO) $(LOGGING)
 	-$(Q)$(call $(_MODULE)_LN_DSO)
 endef

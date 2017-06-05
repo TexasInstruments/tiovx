@@ -33,7 +33,9 @@ all::
 HOST_ROOT ?= $(abspath .)
 BUILD_FOLDER ?= concerto
 CONCERTO_ROOT ?= $(HOST_ROOT)/$(BUILD_FOLDER)
-BUILD_OUTPUT ?= out
+BUILD_OUTPUT ?= lib
+BUILD_OBJ_OUTPUT ?= out
+BUILD_EXE_OUTPUT ?= bin
 BUILD_PROJECT ?= $(CONCERTO_ROOT)/project.mak
 DIRECTORIES ?= source
 ifeq ($(NO_OPTIMIZE),1)
@@ -81,6 +83,8 @@ TESTABLE_MODULES :=
 
 # Define a macro to make the output target path
 MAKE_OUT = $(1)/$(BUILD_OUTPUT)/$(TARGET_PLATFORM)/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+MAKE_OBJ_OUT = $(1)/$(BUILD_OBJ_OUTPUT)/$(TARGET_PLATFORM)/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+MAKE_EXE_OUT = $(1)/$(BUILD_EXE_OUTPUT)/$(TARGET_PLATFORM)/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 
 # Define a macro to remove a combo from the combos list if it matches a value
 FILTER_COMBO = $(foreach combo,$(TARGET_COMBOS),$(if $(filter $(1),$(subst :, ,$(combo))),$(combo)))
