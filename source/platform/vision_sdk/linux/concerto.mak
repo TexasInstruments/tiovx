@@ -13,6 +13,7 @@ CSOURCES    := \
     tivx_ipc.c tivx_mem.c tivx_init.c     \
     $(COMMON_FILES_REL_PATH)/tivx_mutex.c \
     tivx_platform_common.c                \
+	tivx_host.c                           \
     $(COMMON_FILES_REL_PATH)/tivx_queue.c \
     $(COMMON_FILES_REL_PATH)/tivx_task.c tivx_target_config_a15.c
 
@@ -21,8 +22,10 @@ IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
 IDIRS       += $(XDC_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 IDIRS       += $(VSDK_PATH)/links_fw
+IDIRS       += $(VSDK_PATH)/links_fw/src/hlos/osa/include
 IDIRS       += $(TARGETFS)/usr/include
 IDIRS       += $(TARGETFS)/usr
+IDIRS       += $(CMEM_PATH)/ludev/include/ti
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

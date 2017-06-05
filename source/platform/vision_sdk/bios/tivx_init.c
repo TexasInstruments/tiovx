@@ -41,12 +41,6 @@ void tivxInit(void)
     tivxRegisterIVisionTargetKernels();
 #endif
 
-#if defined(HOST_CORE_IPU1_0)
-#if defined (M4)
-    tivxHostInit();
-#endif
-#endif
-
     tivxObjDescInit();
 
     tivxPlatformCreateTargets();
@@ -68,12 +62,6 @@ void tivxDeInit(void)
 
 #if defined (EVE) && defined (BUILD_IVISION_KERNELS)
     tivxUnRegisterIVisionTargetKernels();
-#endif
-
-#if defined(HOST_CORE_IPU1_0)
-#if defined (M4)
-    tivxHostDeInit();
-#endif
 #endif
 
     /* DeInitialize Target */

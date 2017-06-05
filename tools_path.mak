@@ -42,7 +42,8 @@ DMAUTILS_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.DMAUTILS.00.08.00.02/dmautils
 ALGFRAMEWORK_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.ALGFRAMEWORK.00.02.06.01/algframework
 PDK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
 VSDK_PATH ?= $(VSDK_INSTALL_PATH)/vision_sdk
-TARGETFS ?= $(VSDK_INSTALL_PATH)/vision_sdk/hlos/linux/targetfs
+CMEM_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/kernel/cmem
+TARGETFS ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/targetfs
 
 
 

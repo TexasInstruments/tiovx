@@ -56,7 +56,6 @@
 #include <TI/tivx_queue.h>
 #include <tivx_obj_desc_priv.h>
 #include <tivx_target.h>
-#include <tivx_host.h>
 #include <tivx_target_kernel_priv.h>
 #include <tivx_target_kernel_instance.h>
 
@@ -324,12 +323,6 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_tivx_host Host APIs
- * \ingroup group_vx_framework_object
- */
-
-
-/*!
  * \defgroup group_vx_module Module APIs
  * \ingroup group_vx_framework_object
  */
@@ -484,5 +477,4 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  * \defgroup group_tivx_platform Platform APIs
  * \ingroup group_vx_platform
  */
-
 

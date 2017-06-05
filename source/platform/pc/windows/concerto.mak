@@ -20,6 +20,7 @@ CSOURCES    := \
 	$(COMMON_FILES_REL_PATH)/tivx_mem.c \
 	$(COMMON_FILES_REL_PATH)/tivx_ipc.c \
 	$(COMMON_FILES_REL_PATH)/tivx_init.c \
+	$(COMMON_FILES_REL_PATH)/tivx_host.c \
 	$(COMMON_FILES_REL_PATH)/tivx_target_config_pc.c \
 	$(COMMON_FILES_REL_PATH)/tivx_platform_common.c \
     tivx_platform.c

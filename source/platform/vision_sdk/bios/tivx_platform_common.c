@@ -184,3 +184,21 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 #endif
 
 }
+
+void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
+{
+    uint32_t i;
+
+    for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+    {
+        if (0 == strncmp(
+                g_tivx_platform_info.target_info[i].target_name,
+                TIVX_TARGET_HOST,
+                TIVX_TARGET_MAX_NAME))
+        {
+            /* update target_id for TIVX_TARGET_HOST */
+            g_tivx_platform_info.target_info[i].target_id = host_target_id;
+            break;
+        }
+    }
+}

@@ -37,6 +37,13 @@ CFLAGS += -Wno-format-security
 CFLAGS += -Wno-unused-but-set-variable
 endif
 
+ifeq ($(HOST_COMPILER),GCC_LINARO)
+CFLAGS += -Wno-unused-function
+CFLAGS += -Wno-unused-variable
+CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-unused-but-set-variable
+endif
+
 ifeq ($(HOST_COMPILER),GCC_LINUX)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable

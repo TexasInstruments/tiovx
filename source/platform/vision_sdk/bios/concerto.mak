@@ -7,7 +7,7 @@ TARGET      := vx_platform_vision_sdk_bios
 TARGETTYPE  := library
 CSOURCES    := tivx_event.c tivx_init.c tivx_ipc.c tivx_mem.c \
                tivx_mutex.c tivx_platform.c tivx_platform_common.c \
-               tivx_queue.c tivx_task.c
+               tivx_queue.c tivx_task.c tivx_host.c
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(HOST_ROOT)/source/platform/vision_sdk/common
 IDIRS       += $(PDK_PATH)/packages/ti/drv/vps/include

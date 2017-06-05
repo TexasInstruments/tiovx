@@ -9,6 +9,9 @@
 
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
+
+#include <osa_types.h>
+#include <include/link_api/system_if.h>
 #include <include/link_api/system_procId.h>
 #include <src/hlos/system/system_priv_openvx.h>
 

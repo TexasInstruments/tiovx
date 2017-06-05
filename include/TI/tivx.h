@@ -162,18 +162,56 @@ typedef enum _tivx_cpu_id_e {
 
 
 /*!
- * \brief Function to initialize host
+ * \brief Function to initialize OpenVX framework
+ *
+ *        Should be called during system init on all OpenVX HOST
+ *        as well as OpenVX target CPUs
+ *
+ *        NOTE: In Vision SDK, this function is called during VIsion SDK
+ *              system init so user need not call this explicitly
  *
  * \ingroup group_tivx_ext
  */
 void tivxInit(void);
 
 /*!
- * \brief Function to de-initialize host
+ * \brief Function to de-initialize OpenVX framework
+ *
+ *        Should be called during system init on all OpenVX HOST
+ *        as well as OpenVX target CPUs
+ *
+ *        NOTE: In Vision SDK, this function is called during VIsion SDK
+ *              system init so user need not call this explicitly
  *
  * \ingroup group_tivx_ext
  */
 void tivxDeInit(void);
+
+/*!
+ * \brief Function to initialize OpenVX HOST side functionality
+ *
+ *        Should be called during system init after tivxInit()
+ *        on HOST CPUs only
+ *
+ *        NOTE: In Vision SDK, this function is called during VIsion SDK
+ *              system init so user need not call this explicitly
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxHostInit(void);
+
+/*!
+ * \brief Function to de-initialize OpenVX HOST side functionality
+ *
+ *        Should be called during system init before tivxDeInit()
+ *        on HOST CPUs only
+ *
+ *        NOTE: In Vision SDK, this function is called during VIsion SDK
+ *              system init so user need not call this explicitly
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxHostDeInit(void);
 
 /*!
  * \brief Associate a target with a kernel

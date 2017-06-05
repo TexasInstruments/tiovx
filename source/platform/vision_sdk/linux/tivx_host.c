@@ -8,6 +8,7 @@
  */
 
 #include <vx_internal.h>
+#include <tivx_platform_vision_sdk.h>
 
 void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
@@ -15,8 +16,8 @@ void tivxUnRegisterOpenVXCoreKernels(void);
 void tivxHostInit(void)
 {
     tivxObjectInit();
-    tivxObjDescInit();
     tivxRegisterOpenVXCoreKernels();
+    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A15_0);
 }
 
 void tivxHostDeInit(void)
