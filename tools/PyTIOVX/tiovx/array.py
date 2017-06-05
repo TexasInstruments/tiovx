@@ -11,7 +11,6 @@ from . import *
 # \par Example Usage: Create a array object
 #
 # \code
-#
 # from tiovx import *
 #
 # my_array1 = Array(Type.UINT8, 10, name="myarray")
@@ -22,9 +21,9 @@ from . import *
 class Array (Reference) :
     ## Constructor used to create this object
     #
-    # \param item_type [in] Data type tiovx::enums::Type
+    # \param item_type [in] Data type. tiovx::enums::Type
     # \param capacity [in] Number of elements that can be stored in the Array
-    # \param name [in] Name of the array object
+    # \param name [in] [optional] Name of the object
     def __init__(self, item_type, capacity, name="default") :
         Reference.__init__(self, Type.ARRAY, name)
         self.item_type = item_type

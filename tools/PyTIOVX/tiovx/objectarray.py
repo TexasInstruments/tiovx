@@ -5,6 +5,11 @@
 
 from . import *
 
+## Object Array object (OpenVX equivalent = vx_object_array)
+#
+# <b> NOT SUPPORTED in tool </b>
+#
+# \ingroup DATA
 class ObjectArray (Reference) :
     def __init__(self, type, count, name="default") :
         Reference.__init__(self, Type.OBJECTARRAY, name)

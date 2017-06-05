@@ -25,7 +25,39 @@
   </div>
 </div>
 <div class="contents">
-<h1>PyTIOVX User Guide</h1><p>PyTIOVX Tool allows user to specific a OpenVX graph as Python code and use the PyTIOVX tool to generate C code with OpenVX APIs.</p>
+<h1>PyTIOVX User Guide</h1><p>PyTIOVX Tool allows user to specific a OpenVX graph as Python code and use the PyTIOVX tool to generate C code with OpenVX APIs. <br/>
+<br/>
+ 'tiovx' is the python module that is used to specify OpenVX graph in a compact manner using predefined classes and objects. After specification of OpenVX graph using PyTIOVX APIs, it can be exported in various formats including C code, JPG image</p>
+<dl class="user"><dt><b>Installation</b></dt><dd><ul>
+<li>Install Python 3.5.2 or later (<a href="https://www.python.org/">https://www.python.org/</a>)<ul>
+<li>To confirm "python" and "pip" are in your install path, type below <div class="fragment"><pre class="fragment">        python --version
+        pip --version
+</pre></div></li>
+</ul>
+</li>
+<li>Install 'dot' tool provided as part of 'graphviz' (<a href="http://www.graphviz.org/">http://www.graphviz.org/</a>) <br/>
+ 'dot' is required to generated .JPG file for a OpenVX graph specification<ul>
+<li>To confirm "dot" tool is in your install path, type <div class="fragment"><pre class="fragment">        dot -V
+</pre></div></li>
+</ul>
+</li>
+<li>Install 'tiovx' python module by executing below command at folder "&lt;tiovx install path&gt;/tools/PyTIOVX" <div class="fragment"><pre class="fragment">      pip install -e .
+</pre></div> Expected output, <div class="fragment"><pre class="fragment">      Obtaining file:///&lt;tiovx install path&gt;/tiovx/tools/PyTIOVX
+      Installing collected packages: tiovx
+        Running setup.py develop <span class="keywordflow">for</span> tiovx
+      Successfully installed tiovx-0.1
+</pre></div></li>
+<li>Now tiovx python module can be imported and used in your python script by doing below, <div class="fragment"><pre class="fragment">      <span class="keyword">from</span> tiovx <span class="keyword">import</span> *
+</pre></div></li>
+</ul>
+</dd></dl>
+<dl class="user"><dt><b>Usage</b></dt><dd></dd></dl>
+<ul>
+<li>Describe your application graph using PyTIOVX APIs in a .py file. Execute the .py file by invoking python <div class="fragment"><pre class="fragment">      python my_use_case.py
+</pre></div></li>
+<li>See also examples in TIOVX tutorial <a href="../tutorial_guide/index.html" target="_blank">[HTML]</a> for making OpenVX usecases using PyTIOVX tool</li>
+<li>See also sample python scripts (*.py) @ "&lt;tiovx install path&gt;/tools/sample_use_cases" for additional examples</li>
+</ul>
 <p><br/>
  <hr/>
 <dl class="user"><dt><b>Disclaimer</b></dt><dd></dd></dl>
