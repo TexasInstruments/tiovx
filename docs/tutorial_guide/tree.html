@@ -1,12 +1,9 @@
-<!-- This comment will put IE 6, 7 and 8 in quirks mode -->
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
     <meta http-equiv="Content-Style-Type" content="text/css" />
     <meta http-equiv="Content-Language" content="en" />
-    <link href="search/search.css" rel="stylesheet" type="text/css"/>
-    <script type="text/javaScript" src="search/search.js"></script>
     <link rel="stylesheet" href="doxygen.css"/>
     <title>TreeView</title>
     <script type="text/javascript">
@@ -63,38 +60,7 @@
     </script>
   </head>
 
-  <body class="ftvtree" onload='searchBox.OnSelectItem(0);'>
-      <script type="text/javascript"><!--
-      var searchBox = new SearchBox("searchBox", "search", true, 'Search');
-      --></script>
-      <div id="MSearchBox" class="MSearchBoxInactive">
-      <div class="MSearchBoxRow"><span class="MSearchBoxLeft">
-      <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-      <input type="text" id="MSearchField" value="Search" accesskey="S"
-           onfocus="searchBox.OnSearchFieldFocus(true)" 
-           onblur="searchBox.OnSearchFieldFocus(false)" 
-           onkeyup="searchBox.OnSearchFieldChange(event)"/>
-      </span><span class="MSearchBoxRight">
-      <img id="MSearchSelect" src="search/search.png"
-           onmouseover="return searchBox.OnSearchSelectShow()"
-           onmouseout="return searchBox.OnSearchSelectHide()"
-           alt=""/>
-      </span></div><div class="MSearchBoxSpacer">&nbsp;</div>
-      </div>
-<!--- window showing the filter options -->
-<div id="MSearchSelectWindow"
-     onmouseover="return searchBox.OnSearchSelectShow()"
-     onmouseout="return searchBox.OnSearchSelectHide()"
-     onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&nbsp;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&nbsp;</span>Files</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&nbsp;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&nbsp;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&nbsp;</span>Defines</a></div>
-
-<!-- iframe showing the search results (closed by default) -->
-<div id="MSearchResultsWindow">
-<iframe src="" frameborder="0" 
-        name="MSearchResults" id="MSearchResults">
-</iframe>
-</div>
-
+  <body class="ftvtree">
     <div class="directory">
       <h3 class="swap"><span>TIOVX Tutorials</span></h3>
       <div style="display: block;">
