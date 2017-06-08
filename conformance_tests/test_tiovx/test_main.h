@@ -23,6 +23,7 @@
  *
  *******************************************************************************
  */
+#if 1
 TESTCASE(tiovxPerformance)
 TESTCASE(tiovxPerformance2)
 
@@ -71,5 +72,5 @@ TESTCASE(tivxRemap)
 //TESTCASE(tivxLaplacianPyramid)
 //TESTCASE(tivxLaplacianReconstruct)
 TESTCASE(tivxMaxNodes)
-
+#endif
 

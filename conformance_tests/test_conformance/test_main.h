@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#if 1
 TESTCASE(Graph)
 TESTCASE(GraphCallback)
 TESTCASE(GraphDelay)
@@ -106,4 +106,7 @@ TESTCASE(Target)
 
 TESTCASE(Convolution)
 TESTCASE(Matrix)
+
+#endif
+
 
