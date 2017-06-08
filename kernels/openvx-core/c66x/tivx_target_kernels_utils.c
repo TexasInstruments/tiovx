@@ -20,14 +20,20 @@ void ownReserveC66xL2MEM(void)
     tivx_mem_stats mem_stats;
     void *ibuf_ptr, *wbuf_ptr;
     vx_uint32 ibuf_size, wbuf_size;
+    vx_uint32 buf_align = 4*1024;
 
     /* find L2MEM size */
     tivxMemStats(&mem_stats, TIVX_MEM_INTERNAL_L2);
 
     /* reserve L2MEM to BAM */
+    #if 1
     wbuf_size = mem_stats.free_size / 5;
-    /* floor to 256 bytes */
-    wbuf_size = (wbuf_size/256)*256;
+    #else
+    wbuf_size = 32*1024;
+    #endif
+
+    /* floor to 'buf_align' bytes */
+    wbuf_size = (wbuf_size/buf_align)*buf_align;
     ibuf_size = wbuf_size * 4;
 
     ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
