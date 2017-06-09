@@ -260,12 +260,10 @@ class Cpu(Enum) :
     EVE2    = 5
     EVE3    = 6
     EVE4    = 7
-    MPU_0   = 8
-    MPU_1   = 9
-    IPU1_0  = 10
-    IPU1_1  = 11
-    IPU2_0  = 12
-    IPU2_1  = 13
+    A15_0   = 8
+    IPU1_0  = 9
+    IPU1_1  = 10
+    IPU2    = 11
 
     def get_vx_enum_name(type) :
         return "TIVX_CPU_ID_" + type.name
@@ -298,17 +296,13 @@ class Target(Enum) :
     ## TIOVX equivalent = TIVX_TARGET_EVE4
     EVE4    = 7
     ## TIOVX equivalent = TIVX_TARGET_A15_0
-    MPU_0   = 8
-    ## NOT used
-    MPU_1   = 9
+    A15_0   = 8
     ## TIOVX equivalent = TIVX_TARGET_IPU1_0
-    IPU1_0  = 10
+    IPU1_0  = 9
     ## TIOVX equivalent = TIVX_TARGET_IPU1_1
-    IPU1_1  = 11
+    IPU1_1  = 10
     ## TIOVX equivalent = TIVX_TARGET_IPU2
-    IPU2_0  = 12
-    ## Not used
-    IPU2_1  = 13
+    IPU2    = 11
     ## Used internally by the tool
     DEFAULT = DSP1
 
@@ -328,18 +322,14 @@ class Target(Enum) :
             return Cpu.EVE3
         if target == Target.EVE4 :
             return Cpu.EVE4
-        if target == Target.MPU_0 :
-            return Cpu.MPU_0
-        if target == Target.MPU_1 :
-            return Cpu.MPU_1
+        if target == Target.A15_0 :
+            return Cpu.A15_0
         if target == Target.IPU1_0 :
             return Cpu.IPU1_0
         if target == Target.IPU1_1 :
             return Cpu.IPU1_1
-        if target == Target.IPU2_0 :
-            return Cpu.IPU2_0
-        if target == Target.IPU2_1 :
-            return Cpu.IPU2_1
+        if target == Target.IPU2 :
+            return Cpu.IPU2
 
         return Cpu.INVALID
 

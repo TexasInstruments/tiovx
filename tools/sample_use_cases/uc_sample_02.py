@@ -16,7 +16,7 @@ out3 = Image(640, 480, DfImage.U8)
 
 graph.add ( NodeAbsDiff(in1, in2, out1, target=Target.DSP1) )
 graph.add ( NodeAbsDiff(in1, in2, out2, target=Target.EVE1) )
-graph.add ( NodeAbsDiff(in1, in2, out3, target=Target.MPU_0) )
+graph.add ( NodeAbsDiff(in1, in2, out3, target=Target.A15_0) )
 
 context.add ( graph )
 

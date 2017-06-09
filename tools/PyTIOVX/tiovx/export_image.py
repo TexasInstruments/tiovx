@@ -30,17 +30,13 @@ class ExportImage (Export) :
             return "orange"
         if target == Target.EVE4 :
             return "goldenrod4"
-        if target == Target.MPU_0 :
-            return "lightblue"
-        if target == Target.MPU_1 :
+        if target == Target.A15_0 :
             return "lightblue"
         if target == Target.IPU1_0 :
             return "grey"
         if target == Target.IPU1_1 :
             return "LightSalmon"
-        if target == Target.IPU2_0 :
-            return "MediumOrchid"
-        if target == Target.IPU2_1 :
+        if target == Target.IPU2 :
             return "MediumOrchid"
         return "white"
 
