@@ -15,15 +15,6 @@
  * limitations under the License.
  */
 
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
-
 
 #include "test_tiovx.h"
 #include <VX/vx.h>
@@ -151,7 +142,7 @@ static void accumulate_check(CT_Image input, CT_Image accum_src, CT_Image accum_
     EXPECT_EQ_CTIMAGE(accum_ref, accum_dst);
 }
 
-static void accumulate_chain_check(CT_Image input, CT_Image virtual_img, CT_Image accum_input1, 
+static void accumulate_chain_check(CT_Image input, CT_Image virtual_img, CT_Image accum_input1,
                                           CT_Image accum_input2, CT_Image accum_dst)
 {
     CT_Image accum_ref = NULL, accum_intermediate = NULL;

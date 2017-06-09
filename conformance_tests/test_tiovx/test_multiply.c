@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -13,15 +13,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
-
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
  */
 
 
@@ -139,7 +130,7 @@ static void referenceMultiply(CT_Image src0, CT_Image src1, CT_Image dst, CT_Ima
 #undef MULTIPLY_LOOP
 }
 
-static void referenceSequentialMultiply(CT_Image src0, CT_Image src1, CT_Image src2, 
+static void referenceSequentialMultiply(CT_Image src0, CT_Image src1, CT_Image src2,
                 CT_Image src3, CT_Image virt1, CT_Image virt2, CT_Image virt1_converted, CT_Image virt2_converted, CT_Image virt1_plus1, CT_Image virt2_plus1,
                 CT_Image dst, CT_Image dst_plus_1, vx_float32 scale, enum vx_convert_policy_e policy)
 {

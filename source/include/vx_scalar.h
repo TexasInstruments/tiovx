@@ -25,14 +25,7 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
  */
-/*
- *******************************************************************************
- *
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
+
 
 
 #ifndef VX_SCALAR_H_

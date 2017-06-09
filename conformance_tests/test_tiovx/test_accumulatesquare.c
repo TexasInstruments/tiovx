@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -14,16 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
-
 
 #include "test_tiovx.h"
 #include <VX/vx.h>
@@ -153,8 +143,8 @@ static void accumulate_square_check(CT_Image input, vx_uint32 shift, CT_Image ac
     EXPECT_EQ_CTIMAGE(accum_ref, accum_dst);
 }
 
-static void accumulate_square_chain_check(CT_Image input, CT_Image virtual_img, CT_Image accum_input1, 
-                                          vx_uint32 shift1, vx_uint32 shift2, CT_Image accum_input2, 
+static void accumulate_square_chain_check(CT_Image input, CT_Image virtual_img, CT_Image accum_input1,
+                                          vx_uint32 shift1, vx_uint32 shift2, CT_Image accum_input2,
                                           CT_Image accum_dst)
 {
     CT_Image accum_ref = NULL, accum_intermediate = NULL;

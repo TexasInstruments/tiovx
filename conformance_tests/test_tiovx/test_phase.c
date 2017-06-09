@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
 
 
 #include "test_tiovx.h"
@@ -141,7 +133,7 @@ static void reference_phase(CT_Image dx, CT_Image dy, CT_Image phase)
     }
 }
 
-static void reference_sequential_phase(CT_Image dx0, CT_Image dy0, CT_Image dx1, CT_Image dy1, 
+static void reference_sequential_phase(CT_Image dx0, CT_Image dy0, CT_Image dx1, CT_Image dy1,
                             CT_Image virt1, CT_Image virt2, CT_Image virt3, CT_Image virt4, CT_Image phase)
 {
    reference_phase(dx0, dy0, virt1);
@@ -335,7 +327,7 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
         reference_phase(int_ref3, int_ref4, phase0);
 
         phase1 = ct_image_from_vx_image(phase);
-        phaseref = ct_image_from_vx_image(phase_branch2); 
+        phaseref = ct_image_from_vx_image(phase_branch2);
 
         ASSERT_CTIMAGE_NEARWRAP(phase0, phase1, 1, 0);
         ASSERT_CTIMAGE_NEARWRAP(phaseref, phase1, 1, 0);

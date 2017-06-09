@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -14,16 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
-
 
 #include "test_tiovx.h"
 

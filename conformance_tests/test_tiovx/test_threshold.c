@@ -15,14 +15,6 @@
  * limitations under the License.
  */
 
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
 
 #include "test_tiovx.h"
 
@@ -120,7 +112,7 @@ static void reference_threshold(CT_Image src, CT_Image dst, vx_enum ttype, int t
     }
 }
 
-static void referenceFunction(CT_Image src, CT_Image srcAdd, CT_Image virt, CT_Image dst, enum vx_convert_policy_e policy, 
+static void referenceFunction(CT_Image src, CT_Image srcAdd, CT_Image virt, CT_Image dst, enum vx_convert_policy_e policy,
                               vx_enum ttype, int ta, int tb, int true_val, int false_val)
 {
     reference_threshold(src, virt, ttype, ta, tb, true_val, false_val);

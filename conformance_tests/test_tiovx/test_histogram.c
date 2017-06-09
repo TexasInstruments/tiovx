@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -15,14 +15,7 @@
  * limitations under the License.
  */
 
-/*
- *******************************************************************************
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
- * ALL RIGHTS RESERVED
- *
- *******************************************************************************
- */
+
 
 #include "test_tiovx.h"
 
@@ -248,7 +241,7 @@ TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_BINS failed\n");
 
             VX_CALL(vxQueryDistribution(dist_src0, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
-	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins, 
+	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins,
 	     * in other cases, its value shouldn't be checked */
             if (((range % nbins) == 0) && (attr_window != reference_window(range, nbins)))
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");
@@ -283,7 +276,7 @@ TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_BINS failed\n");
 
             VX_CALL(vxQueryDistribution(dist_src1, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
-	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins, 
+	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins,
 	     * in other cases, its value shouldn't be checked */
             if (((range % nbins) == 0) && (attr_window != reference_window(range, nbins)))
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");
