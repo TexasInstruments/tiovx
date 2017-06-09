@@ -50,65 +50,58 @@
 <a name="l00025"></a>00025 <span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <a name="l00026"></a>00026 <span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span>
 <a name="l00027"></a>00027 <span class="comment"> */</span>
-<a name="l00028"></a>00028 <span class="comment">/*</span>
-<a name="l00029"></a>00029 <span class="comment"> *******************************************************************************</span>
-<a name="l00030"></a>00030 <span class="comment"> *</span>
-<a name="l00031"></a>00031 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00032"></a>00032 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00033"></a>00033 <span class="comment"> *</span>
-<a name="l00034"></a>00034 <span class="comment"> *******************************************************************************</span>
-<a name="l00035"></a>00035 <span class="comment"> */</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 <span class="preprocessor">#ifndef VX_KERNEL_H_</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#define VX_KERNEL_H_</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span>
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00044"></a>00044 <span class="preprocessor">#endif</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00053"></a><a class="code" href="vx__kernel_8h.html#aa020e2b6ed4b2b168bcfecb1f52eba86">00053</a> <span class="preprocessor">#define TIVX_MAX_TARGETS_PER_KERNEL     (8u)</span>
-<a name="l00054"></a>00054 <span class="preprocessor"></span>
-<a name="l00058"></a><a class="code" href="structtivx__signature__t.html">00058</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_signature_t {
-<a name="l00060"></a><a class="code" href="structtivx__signature__t.html#a80f6496e8b7f46f488dc76b3adcda079">00060</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        directions[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
-<a name="l00062"></a><a class="code" href="structtivx__signature__t.html#a4804fd57a0f029c43c7872aa64a35e4f">00062</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        types[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
-<a name="l00064"></a><a class="code" href="structtivx__signature__t.html#afd4cdb8c9db7bb5d7f7ff404dc4f9b34">00064</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        states[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
-<a name="l00066"></a><a class="code" href="structtivx__signature__t.html#a33289a39c86d7e237820c2fd50f6b140">00066</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a>      num_parameters;
-<a name="l00067"></a>00067 } <a class="code" href="structtivx__signature__t.html" title="The internal representation of the attributes associated with a run-time parameter...">tivx_signature_t</a>;
-<a name="l00068"></a>00068 
-<a name="l00069"></a>00069 
-<a name="l00075"></a><a class="code" href="structtivx__kernel__t.html">00075</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_kernel
-<a name="l00076"></a>00076 {
-<a name="l00078"></a><a class="code" href="structtivx__kernel__t.html#acfbb4895979ef55b8dc09c572b7075c0">00078</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
-<a name="l00079"></a>00079 
-<a name="l00081"></a><a class="code" href="structtivx__kernel__t.html#a6c336a924c851366d1dabb837c244a0d">00081</a>     <a class="code" href="vx__types_8h.html#a9ce3f44bccc95f52b9897df2b3620713" title="An 8 bit ASCII character.">vx_char</a>        name[VX_MAX_KERNEL_NAME];
-<a name="l00083"></a><a class="code" href="structtivx__kernel__t.html#a3b71abe3f58c8f250c3f5f10cfd9a0f3">00083</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        enumeration;
-<a name="l00085"></a><a class="code" href="structtivx__kernel__t.html#adc3850b72f095a20b051bda5d67716f3">00085</a>     <a class="code" href="structtivx__signature__t.html" title="The internal representation of the attributes associated with a run-time parameter...">tivx_signature_t</a> signature;
-<a name="l00087"></a><a class="code" href="structtivx__kernel__t.html#ad6704409eeb206ff8698121f8c1ef34f">00087</a>     <a class="code" href="vx__types_8h.html#a69cfdc6762850b1afdffcdbebaab8eb9" title="The user-defined kernel node parameters validation function. The function only needs...">vx_kernel_validate_f</a>    validate;
-<a name="l00089"></a><a class="code" href="structtivx__kernel__t.html#acb2f9143dfc6c1d30dd29f28f4ee9742">00089</a>     <a class="code" href="vx__types_8h.html#a512f8da4d07b02aa9827c5d6f1af0b26" title="The pointer to the kernel initializer. If the host code requires a call to initialize...">vx_kernel_initialize_f</a> initialize;
-<a name="l00091"></a><a class="code" href="structtivx__kernel__t.html#aa9d3d74adaed638d933e5c181fcd0b09">00091</a>     <a class="code" href="vx__types_8h.html#a5e86f87af69c68e3066c4b745498048c" title="The pointer to the kernel deinitializer. If the host code requires a call to deinitialize...">vx_kernel_deinitialize_f</a> deinitialize;
-<a name="l00093"></a><a class="code" href="structtivx__kernel__t.html#a2d0ab6b9ed267690cbd13d8a219c7d57">00093</a>     <a class="code" href="vx__types_8h.html#a970c28a9c06c23c8567229d50ab341dc" title="The pointer to the Host side kernel.">vx_kernel_f</a>             function;
-<a name="l00095"></a><a class="code" href="structtivx__kernel__t.html#af8e9b75c7d975818143bc06c6897f778">00095</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a>               num_targets;
-<a name="l00097"></a><a class="code" href="structtivx__kernel__t.html#a7c5a152bcb2070d29d63e36fc8c67de8">00097</a>     <span class="keywordtype">char</span>                    target_name[<a class="code" href="vx__kernel_8h.html#aa020e2b6ed4b2b168bcfecb1f52eba86" title="Maximum targets a kernel can run on.">TIVX_MAX_TARGETS_PER_KERNEL</a>][<a class="code" href="group__group__tivx__ext.html#ga0731c235cd560c819c84532ca108f8f2" title="Max possible name of a target.">TIVX_TARGET_MAX_NAME</a>];
-<a name="l00099"></a><a class="code" href="structtivx__kernel__t.html#aa9c7555b6d372c72a6c3cdfac04ff6b5">00099</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>                 local_data_size;
-<a name="l00101"></a><a class="code" href="structtivx__kernel__t.html#aae966b4e2d599a0af197c4dd117c1ba7">00101</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 is_target_kernel;
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifndef VX_KERNEL_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define VX_KERNEL_H_</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00037"></a>00037 <span class="preprocessor">#endif</span>
+<a name="l00038"></a>00038 <span class="preprocessor"></span>
+<a name="l00046"></a><a class="code" href="vx__kernel_8h.html#aa020e2b6ed4b2b168bcfecb1f52eba86">00046</a> <span class="preprocessor">#define TIVX_MAX_TARGETS_PER_KERNEL     (8u)</span>
+<a name="l00047"></a>00047 <span class="preprocessor"></span>
+<a name="l00051"></a><a class="code" href="structtivx__signature__t.html">00051</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_signature_t {
+<a name="l00053"></a><a class="code" href="structtivx__signature__t.html#a80f6496e8b7f46f488dc76b3adcda079">00053</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        directions[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
+<a name="l00055"></a><a class="code" href="structtivx__signature__t.html#a4804fd57a0f029c43c7872aa64a35e4f">00055</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        types[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
+<a name="l00057"></a><a class="code" href="structtivx__signature__t.html#afd4cdb8c9db7bb5d7f7ff404dc4f9b34">00057</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        states[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
+<a name="l00059"></a><a class="code" href="structtivx__signature__t.html#a33289a39c86d7e237820c2fd50f6b140">00059</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a>      num_parameters;
+<a name="l00060"></a>00060 } <a class="code" href="structtivx__signature__t.html" title="The internal representation of the attributes associated with a run-time parameter...">tivx_signature_t</a>;
+<a name="l00061"></a>00061 
+<a name="l00062"></a>00062 
+<a name="l00068"></a><a class="code" href="structtivx__kernel__t.html">00068</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_kernel
+<a name="l00069"></a>00069 {
+<a name="l00071"></a><a class="code" href="structtivx__kernel__t.html#acfbb4895979ef55b8dc09c572b7075c0">00071</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
+<a name="l00072"></a>00072 
+<a name="l00074"></a><a class="code" href="structtivx__kernel__t.html#a6c336a924c851366d1dabb837c244a0d">00074</a>     <a class="code" href="vx__types_8h.html#a9ce3f44bccc95f52b9897df2b3620713" title="An 8 bit ASCII character.">vx_char</a>        name[VX_MAX_KERNEL_NAME];
+<a name="l00076"></a><a class="code" href="structtivx__kernel__t.html#a3b71abe3f58c8f250c3f5f10cfd9a0f3">00076</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>        enumeration;
+<a name="l00078"></a><a class="code" href="structtivx__kernel__t.html#adc3850b72f095a20b051bda5d67716f3">00078</a>     <a class="code" href="structtivx__signature__t.html" title="The internal representation of the attributes associated with a run-time parameter...">tivx_signature_t</a> signature;
+<a name="l00080"></a><a class="code" href="structtivx__kernel__t.html#ad6704409eeb206ff8698121f8c1ef34f">00080</a>     <a class="code" href="vx__types_8h.html#a69cfdc6762850b1afdffcdbebaab8eb9" title="The user-defined kernel node parameters validation function. The function only needs...">vx_kernel_validate_f</a>    validate;
+<a name="l00082"></a><a class="code" href="structtivx__kernel__t.html#acb2f9143dfc6c1d30dd29f28f4ee9742">00082</a>     <a class="code" href="vx__types_8h.html#a512f8da4d07b02aa9827c5d6f1af0b26" title="The pointer to the kernel initializer. If the host code requires a call to initialize...">vx_kernel_initialize_f</a> initialize;
+<a name="l00084"></a><a class="code" href="structtivx__kernel__t.html#aa9d3d74adaed638d933e5c181fcd0b09">00084</a>     <a class="code" href="vx__types_8h.html#a5e86f87af69c68e3066c4b745498048c" title="The pointer to the kernel deinitializer. If the host code requires a call to deinitialize...">vx_kernel_deinitialize_f</a> deinitialize;
+<a name="l00086"></a><a class="code" href="structtivx__kernel__t.html#a2d0ab6b9ed267690cbd13d8a219c7d57">00086</a>     <a class="code" href="vx__types_8h.html#a970c28a9c06c23c8567229d50ab341dc" title="The pointer to the Host side kernel.">vx_kernel_f</a>             function;
+<a name="l00088"></a><a class="code" href="structtivx__kernel__t.html#af8e9b75c7d975818143bc06c6897f778">00088</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a>               num_targets;
+<a name="l00090"></a><a class="code" href="structtivx__kernel__t.html#a7c5a152bcb2070d29d63e36fc8c67de8">00090</a>     <span class="keywordtype">char</span>                    target_name[<a class="code" href="vx__kernel_8h.html#aa020e2b6ed4b2b168bcfecb1f52eba86" title="Maximum targets a kernel can run on.">TIVX_MAX_TARGETS_PER_KERNEL</a>][<a class="code" href="group__group__tivx__ext.html#ga0731c235cd560c819c84532ca108f8f2" title="Max possible name of a target.">TIVX_TARGET_MAX_NAME</a>];
+<a name="l00092"></a><a class="code" href="structtivx__kernel__t.html#aa9c7555b6d372c72a6c3cdfac04ff6b5">00092</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>                 local_data_size;
+<a name="l00094"></a><a class="code" href="structtivx__kernel__t.html#aae966b4e2d599a0af197c4dd117c1ba7">00094</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 is_target_kernel;
+<a name="l00095"></a>00095 
+<a name="l00099"></a><a class="code" href="structtivx__kernel__t.html#ab7dd06f256af6a728ac64620022e392f">00099</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 lock_kernel_remove;
+<a name="l00100"></a>00100 
+<a name="l00101"></a>00101 } <a class="code" href="structtivx__kernel__t.html" title="Kernel object internal state.">tivx_kernel_t</a>;
 <a name="l00102"></a>00102 
-<a name="l00106"></a><a class="code" href="structtivx__kernel__t.html#ab7dd06f256af6a728ac64620022e392f">00106</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 lock_kernel_remove;
-<a name="l00107"></a>00107 
-<a name="l00108"></a>00108 } <a class="code" href="structtivx__kernel__t.html" title="Kernel object internal state.">tivx_kernel_t</a>;
-<a name="l00109"></a>00109 
-<a name="l00110"></a>00110 
-<a name="l00118"></a>00118 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__vx__kernel.html#gae4a8c1839a95c563eaf380bc1081027e" title="Get default target ID associated with this kernel.">ownKernelGetDefaultTarget</a>(<a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel);
-<a name="l00119"></a>00119 
-<a name="l00128"></a>00128 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__vx__kernel.html#ga61cbd0db4e18f3eafdb6510b4375b5c0" title="Match user provided target with supported targets and return target ID on which to...">ownKernelGetTarget</a>(<a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel, <span class="keyword">const</span> <span class="keywordtype">char</span> *target_string);
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130 
-<a name="l00131"></a>00131 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00132"></a>00132 <span class="preprocessor"></span>}
-<a name="l00133"></a>00133 <span class="preprocessor">#endif</span>
-<a name="l00134"></a>00134 <span class="preprocessor"></span>
-<a name="l00135"></a>00135 <span class="preprocessor">#endif</span>
+<a name="l00103"></a>00103 
+<a name="l00111"></a>00111 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__vx__kernel.html#gae4a8c1839a95c563eaf380bc1081027e" title="Get default target ID associated with this kernel.">ownKernelGetDefaultTarget</a>(<a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel);
+<a name="l00112"></a>00112 
+<a name="l00121"></a>00121 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__vx__kernel.html#ga61cbd0db4e18f3eafdb6510b4375b5c0" title="Match user provided target with supported targets and return target ID on which to...">ownKernelGetTarget</a>(<a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel, <span class="keyword">const</span> <span class="keywordtype">char</span> *target_string);
+<a name="l00122"></a>00122 
+<a name="l00123"></a>00123 
+<a name="l00124"></a>00124 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>}
+<a name="l00126"></a>00126 <span class="preprocessor">#endif</span>
+<a name="l00127"></a>00127 <span class="preprocessor"></span>
+<a name="l00128"></a>00128 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

@@ -24,117 +24,172 @@
     </ul>
   </div>
 <h1>tivx_objects.h</h1><a href="tivx__objects_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment"> *******************************************************************************</span>
-<a name="l00003"></a>00003 <span class="comment"> *</span>
-<a name="l00004"></a>00004 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00005"></a>00005 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00006"></a>00006 <span class="comment"> *</span>
-<a name="l00007"></a>00007 <span class="comment"> *******************************************************************************</span>
-<a name="l00008"></a>00008 <span class="comment"> */</span>
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef TIVX_OBJECTS_H_</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_OBJECTS_H_</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include &lt;<a class="code" href="vx__internal_8h.html" title="The top level TI OpenVX implementation header.">vx_internal.h</a>&gt;</span>
-<a name="l00015"></a>00015 
-<a name="l00016"></a>00016 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00017"></a>00017 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00018"></a>00018 <span class="preprocessor">#endif</span>
-<a name="l00019"></a>00019 <span class="preprocessor"></span>
-<a name="l00030"></a><a class="code" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881">00030</a> <span class="preprocessor">#define TIVX_META_FORMAT_MAX_OBJECTS        (32u)</span>
-<a name="l00031"></a>00031 <span class="preprocessor"></span>
-<a name="l00037"></a><a class="code" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88">00037</a> <span class="preprocessor">#define TIVX_CONTEXT_MAX_OBJECTS                    (1u)</span>
-<a name="l00038"></a>00038 <span class="preprocessor"></span>
-<a name="l00044"></a><a class="code" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912">00044</a> <span class="preprocessor">#define TIVX_GRAPH_MAX_OBJECTS                      (8u)</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00051"></a><a class="code" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b">00051</a> <span class="preprocessor">#define TIVX_NODE_MAX_OBJECTS                       (32u)</span>
-<a name="l00052"></a>00052 <span class="preprocessor"></span>
-<a name="l00058"></a><a class="code" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904">00058</a> <span class="preprocessor">#define TIVX_KERNEL_MAX_OBJECTS                       (64u)</span>
-<a name="l00059"></a>00059 <span class="preprocessor"></span>
-<a name="l00065"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11">00065</a> <span class="preprocessor">#define TIVX_ARRAY_MAX_OBJECTS                      (48u)</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span>
-<a name="l00072"></a><a class="code" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67">00072</a> <span class="preprocessor">#define TIVX_CONVOLUTION_MAX_OBJECTS                (48u)</span>
-<a name="l00073"></a>00073 <span class="preprocessor"></span>
-<a name="l00079"></a><a class="code" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30">00079</a> <span class="preprocessor">#define TIVX_DELAY_MAX_OBJECTS                      (48u)</span>
-<a name="l00080"></a>00080 <span class="preprocessor"></span>
-<a name="l00086"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74">00086</a> <span class="preprocessor">#define TIVX_DISTRIBUTION_MAX_OBJECTS               (48u)</span>
-<a name="l00087"></a>00087 <span class="preprocessor"></span>
-<a name="l00093"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff">00093</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_OBJECTS                      (384u)</span>
-<a name="l00094"></a>00094 <span class="preprocessor"></span>
-<a name="l00100"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be">00100</a> <span class="preprocessor">#define TIVX_LUT_MAX_OBJECTS                        (48u)</span>
-<a name="l00101"></a>00101 <span class="preprocessor"></span>
-<a name="l00107"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708">00107</a> <span class="preprocessor">#define TIVX_MATRIX_MAX_OBJECTS                     (48u)</span>
-<a name="l00108"></a>00108 <span class="preprocessor"></span>
-<a name="l00114"></a><a class="code" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f">00114</a> <span class="preprocessor">#define TIVX_PYRAMID_MAX_OBJECTS                    (48u)</span>
-<a name="l00115"></a>00115 <span class="preprocessor"></span>
-<a name="l00121"></a><a class="code" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e">00121</a> <span class="preprocessor">#define TIVX_REMAP_MAX_OBJECTS                      (48u)</span>
-<a name="l00122"></a>00122 <span class="preprocessor"></span>
-<a name="l00128"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2">00128</a> <span class="preprocessor">#define TIVX_SCALAR_MAX_OBJECTS                     (48u)</span>
-<a name="l00129"></a>00129 <span class="preprocessor"></span>
-<a name="l00135"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5">00135</a> <span class="preprocessor">#define TIVX_THRESHOLD_MAX_OBJECTS                  (48u)</span>
-<a name="l00136"></a>00136 <span class="preprocessor"></span>
-<a name="l00142"></a><a class="code" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be">00142</a> <span class="preprocessor">#define TIVX_ERROR_MAX_OBJECTS                      (30u)</span>
-<a name="l00143"></a>00143 <span class="preprocessor"></span>
-<a name="l00149"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56">00149</a> <span class="preprocessor">#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (48u)</span>
-<a name="l00150"></a>00150 <span class="preprocessor"></span>
-<a name="l00156"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be">00156</a> <span class="preprocessor">#define TIVX_PARAMETER_MAX_OBJECTS                  (48u)</span>
-<a name="l00157"></a>00157 <span class="preprocessor"></span>
-<a name="l00163"></a><a class="code" href="structtivx__object__t.html">00163</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_object_t
-<a name="l00164"></a>00164 {
-<a name="l00165"></a>00165     <a class="code" href="structtivx__meta__format__t.html" title="Meta Format object internal state.">tivx_meta_format_t</a>      meta_format[<a class="code" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881" title="Max number meta format objects supported.">TIVX_META_FORMAT_MAX_OBJECTS</a>];
-<a name="l00167"></a>00167     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isMfUse[<a class="code" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881" title="Max number meta format objects supported.">TIVX_META_FORMAT_MAX_OBJECTS</a>];
-<a name="l00170"></a>00170     <a class="code" href="structtivx__context__t.html" title="The top level context data for the entire OpenVX instance.">tivx_context_t</a>          context[<a class="code" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88" title="Max number context objects supported.">TIVX_CONTEXT_MAX_OBJECTS</a>];
-<a name="l00172"></a>00172     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isContextUse[<a class="code" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88" title="Max number context objects supported.">TIVX_CONTEXT_MAX_OBJECTS</a>];
-<a name="l00175"></a>00175     <a class="code" href="structtivx__graph__t.html" title="The top level data for graph object.">tivx_graph_t</a>            graph[<a class="code" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912" title="Max number graph objects supported.">TIVX_GRAPH_MAX_OBJECTS</a>];
-<a name="l00177"></a>00177     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isGraphUse[<a class="code" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912" title="Max number graph objects supported.">TIVX_GRAPH_MAX_OBJECTS</a>];
-<a name="l00180"></a>00180     <a class="code" href="structtivx__node__t.html" title="The internal representation of a node.">tivx_node_t</a>             node[<a class="code" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b" title="Max number node objects supported.">TIVX_NODE_MAX_OBJECTS</a>];
-<a name="l00182"></a>00182     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isNodeUse[<a class="code" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b" title="Max number node objects supported.">TIVX_NODE_MAX_OBJECTS</a>];
-<a name="l00185"></a>00185     <a class="code" href="structtivx__kernel__t.html" title="Kernel object internal state.">tivx_kernel_t</a>           kernel[<a class="code" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904" title="Max number kernel objects supported.">TIVX_KERNEL_MAX_OBJECTS</a>];
-<a name="l00187"></a>00187     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isKernelUse[<a class="code" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904" title="Max number kernel objects supported.">TIVX_KERNEL_MAX_OBJECTS</a>];
-<a name="l00190"></a>00190     <a class="code" href="structtivx__array__t.html" title="Array object internal state.">tivx_array_t</a>            array[<a class="code" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11" title="Max number array objects supported.">TIVX_ARRAY_MAX_OBJECTS</a>];
-<a name="l00192"></a>00192     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isArrayUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11" title="Max number array objects supported.">TIVX_ARRAY_MAX_OBJECTS</a>];
-<a name="l00195"></a>00195     <a class="code" href="structtivx__convolution__t.html" title="Convolution object internal state.">tivx_convolution_t</a>      convolution[<a class="code" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67" title="Max number convolution objects supported.">TIVX_CONVOLUTION_MAX_OBJECTS</a>];
-<a name="l00197"></a>00197     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isConvolutionUse[<a class="code" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67" title="Max number convolution objects supported.">TIVX_CONVOLUTION_MAX_OBJECTS</a>];
-<a name="l00200"></a>00200     <a class="code" href="structtivx__delay__t.html" title="Delay object internal state.">tivx_delay_t</a>            delay[<a class="code" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30" title="Max number delay objects supported.">TIVX_DELAY_MAX_OBJECTS</a>];
-<a name="l00202"></a>00202     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isDelayUse[<a class="code" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30" title="Max number delay objects supported.">TIVX_DELAY_MAX_OBJECTS</a>];
-<a name="l00205"></a>00205     <a class="code" href="structtivx__distribution__t.html" title="Convolution object internal state.">tivx_distribution_t</a>     distribution[<a class="code" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74" title="Max number distribution objects supported.">TIVX_DISTRIBUTION_MAX_OBJECTS</a>];
-<a name="l00207"></a>00207     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isDistributionUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74" title="Max number distribution objects supported.">TIVX_DISTRIBUTION_MAX_OBJECTS</a>];
-<a name="l00210"></a>00210     <a class="code" href="structtivx__image__t.html" title="Image object internal state.">tivx_image_t</a>            image[<a class="code" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff" title="Max number image objects supported.">TIVX_IMAGE_MAX_OBJECTS</a>];
-<a name="l00212"></a>00212     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isImageUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff" title="Max number image objects supported.">TIVX_IMAGE_MAX_OBJECTS</a>];
-<a name="l00215"></a>00215     <a class="code" href="structtivx__lut__t.html" title="Lut object internal state.">tivx_lut_t</a>              lut[<a class="code" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be" title="Max number lut objects supported.">TIVX_LUT_MAX_OBJECTS</a>];
-<a name="l00217"></a>00217     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isLutUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be" title="Max number lut objects supported.">TIVX_LUT_MAX_OBJECTS</a>];
-<a name="l00220"></a>00220     <a class="code" href="structtivx__matrix__t.html" title="Matrix object internal state.">tivx_matrix_t</a>           matrix[<a class="code" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708" title="Max number matrix objects supported.">TIVX_MATRIX_MAX_OBJECTS</a>];
-<a name="l00222"></a>00222     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isMatrixUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708" title="Max number matrix objects supported.">TIVX_MATRIX_MAX_OBJECTS</a>];
-<a name="l00225"></a>00225     <a class="code" href="structtivx__pyramid__t.html" title="Pyramid object internal state.">tivx_pyramid_t</a>          pyramid[<a class="code" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f" title="Max number pyramid objects supported.">TIVX_PYRAMID_MAX_OBJECTS</a>];
-<a name="l00227"></a>00227     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isPyramidUse[<a class="code" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f" title="Max number pyramid objects supported.">TIVX_PYRAMID_MAX_OBJECTS</a>];
-<a name="l00230"></a>00230     <a class="code" href="structtivx__remap__t.html" title="Remap object internal state.">tivx_remap_t</a>            remap[<a class="code" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e" title="Max number remap objects supported.">TIVX_REMAP_MAX_OBJECTS</a>];
-<a name="l00232"></a>00232     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isRemapUse[<a class="code" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e" title="Max number remap objects supported.">TIVX_REMAP_MAX_OBJECTS</a>];
-<a name="l00235"></a>00235     <a class="code" href="structtivx__scalar__t.html" title="Scalar object internal state.">tivx_scalar_t</a>           scalar[<a class="code" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2" title="Max number scalar objects supported.">TIVX_SCALAR_MAX_OBJECTS</a>];
-<a name="l00237"></a>00237     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isScalarUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2" title="Max number scalar objects supported.">TIVX_SCALAR_MAX_OBJECTS</a>];
-<a name="l00240"></a>00240     <a class="code" href="structtivx__threshold__t.html" title="Threshold object internal state.">tivx_threshold_t</a>        threshold[<a class="code" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5" title="Max number threshold objects supported.">TIVX_THRESHOLD_MAX_OBJECTS</a>];
-<a name="l00242"></a>00242     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isThresholdUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5" title="Max number threshold objects supported.">TIVX_THRESHOLD_MAX_OBJECTS</a>];
-<a name="l00245"></a>00245     <a class="code" href="structtivx__error__t.html" title="The internal representation of the error object.">tivx_error_t</a>            error[<a class="code" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be" title="Max number error objects supported.">TIVX_ERROR_MAX_OBJECTS</a>];
-<a name="l00247"></a>00247     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isErrorUse[<a class="code" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be" title="Max number error objects supported.">TIVX_ERROR_MAX_OBJECTS</a>];
-<a name="l00250"></a>00250     <a class="code" href="structtivx__objarray__t.html" title="object array internal state">tivx_objarray_t</a>         obj_array[<a class="code" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56" title="Max number object arrays supported.">TIVX_OBJ_ARRAY_MAX_OBJECTS</a>];
-<a name="l00252"></a>00252     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isObjArrUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56" title="Max number object arrays supported.">TIVX_OBJ_ARRAY_MAX_OBJECTS</a>];
-<a name="l00255"></a>00255     <a class="code" href="structtivx__parameter__t.html" title="Parameter object internal state.">tivx_parameter_t</a>        parameter[<a class="code" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be" title="Max number parameter objects supported.">TIVX_PARAMETER_MAX_OBJECTS</a>];
-<a name="l00257"></a>00257     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isParameterUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be" title="Max number parameter objects supported.">TIVX_PARAMETER_MAX_OBJECTS</a>];
-<a name="l00259"></a>00259 } <a class="code" href="structtivx__object__t.html" title="Structure to hold all framework objects.">tivx_object_t</a>;
-<a name="l00260"></a>00260 
-<a name="l00266"></a>00266 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__tivx__obj.html#ga96caebfc056a0fe986f6128a029bf6f1" title="Alloc memory for a reference of specified type.">tivxObjectAlloc</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype);
-<a name="l00267"></a>00267 
-<a name="l00273"></a>00273 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__obj.html#ga1be84ea7073fcc2460c5ad758ce8f753" title="Free memory for a reference.">tivxObjectFree</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00274"></a>00274 
-<a name="l00278"></a>00278 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__obj.html#ga10e04c49c62a5e0e8608db9d9085c409" title="Initialize object module.">tivxObjectInit</a>(<span class="keywordtype">void</span>);
-<a name="l00279"></a>00279 
-<a name="l00283"></a>00283 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__obj.html#ga69229b3e9b115ee370fb290028516363" title="De-Initialize object module.">tivxObjectDeInit</a>(<span class="keywordtype">void</span>);
-<a name="l00284"></a>00284 
-<a name="l00285"></a>00285 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00286"></a>00286 <span class="preprocessor"></span>}
-<a name="l00287"></a>00287 <span class="preprocessor">#endif</span>
-<a name="l00288"></a>00288 <span class="preprocessor"></span>
-<a name="l00289"></a>00289 <span class="preprocessor">#endif</span>
+<a name="l00002"></a>00002 <span class="comment">*</span>
+<a name="l00003"></a>00003 <span class="comment">* Copyright (c) 2017 Texas Instruments Incorporated</span>
+<a name="l00004"></a>00004 <span class="comment">*</span>
+<a name="l00005"></a>00005 <span class="comment">* All rights reserved not granted herein.</span>
+<a name="l00006"></a>00006 <span class="comment">*</span>
+<a name="l00007"></a>00007 <span class="comment">* Limited License.</span>
+<a name="l00008"></a>00008 <span class="comment">*</span>
+<a name="l00009"></a>00009 <span class="comment">* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive</span>
+<a name="l00010"></a>00010 <span class="comment">* license under copyrights and patents it now or hereafter owns or controls to make,</span>
+<a name="l00011"></a>00011 <span class="comment">* have made, use, import, offer to sell and sell (&quot;Utilize&quot;) this software subject to the</span>
+<a name="l00012"></a>00012 <span class="comment">* terms herein.  With respect to the foregoing patent license, such license is granted</span>
+<a name="l00013"></a>00013 <span class="comment">* solely to the extent that any such patent is necessary to Utilize the software alone.</span>
+<a name="l00014"></a>00014 <span class="comment">* The patent license shall not apply to any combinations which include this software,</span>
+<a name="l00015"></a>00015 <span class="comment">* other than combinations with devices manufactured by or for TI (&quot;TI Devices&quot;).</span>
+<a name="l00016"></a>00016 <span class="comment">* No hardware patent is licensed hereunder.</span>
+<a name="l00017"></a>00017 <span class="comment">*</span>
+<a name="l00018"></a>00018 <span class="comment">* Redistributions must preserve existing copyright notices and reproduce this license</span>
+<a name="l00019"></a>00019 <span class="comment">* (including the above copyright notice and the disclaimer and (if applicable) source</span>
+<a name="l00020"></a>00020 <span class="comment">* code license limitations below) in the documentation and/or other materials provided</span>
+<a name="l00021"></a>00021 <span class="comment">* with the distribution</span>
+<a name="l00022"></a>00022 <span class="comment">*</span>
+<a name="l00023"></a>00023 <span class="comment">* Redistribution and use in binary form, without modification, are permitted provided</span>
+<a name="l00024"></a>00024 <span class="comment">* that the following conditions are met:</span>
+<a name="l00025"></a>00025 <span class="comment">*</span>
+<a name="l00026"></a>00026 <span class="comment">* *       No reverse engineering, decompilation, or disassembly of this software is</span>
+<a name="l00027"></a>00027 <span class="comment">* permitted with respect to any software provided in binary form.</span>
+<a name="l00028"></a>00028 <span class="comment">*</span>
+<a name="l00029"></a>00029 <span class="comment">* *       any redistribution and use are licensed by TI for use only with TI Devices.</span>
+<a name="l00030"></a>00030 <span class="comment">*</span>
+<a name="l00031"></a>00031 <span class="comment">* *       Nothing shall obligate TI to provide you with source code for the software</span>
+<a name="l00032"></a>00032 <span class="comment">* licensed and provided to you in object code.</span>
+<a name="l00033"></a>00033 <span class="comment">*</span>
+<a name="l00034"></a>00034 <span class="comment">* If software source code is provided to you, modification and redistribution of the</span>
+<a name="l00035"></a>00035 <span class="comment">* source code are permitted provided that the following conditions are met:</span>
+<a name="l00036"></a>00036 <span class="comment">*</span>
+<a name="l00037"></a>00037 <span class="comment">* *       any redistribution and use of the source code, including any resulting derivative</span>
+<a name="l00038"></a>00038 <span class="comment">* works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00039"></a>00039 <span class="comment">*</span>
+<a name="l00040"></a>00040 <span class="comment">* *       any redistribution and use of any object code compiled from the source code</span>
+<a name="l00041"></a>00041 <span class="comment">* and any resulting derivative works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00042"></a>00042 <span class="comment">*</span>
+<a name="l00043"></a>00043 <span class="comment">* Neither the name of Texas Instruments Incorporated nor the names of its suppliers</span>
+<a name="l00044"></a>00044 <span class="comment">*</span>
+<a name="l00045"></a>00045 <span class="comment">* may be used to endorse or promote products derived from this software without</span>
+<a name="l00046"></a>00046 <span class="comment">* specific prior written permission.</span>
+<a name="l00047"></a>00047 <span class="comment">*</span>
+<a name="l00048"></a>00048 <span class="comment">* DISCLAIMER.</span>
+<a name="l00049"></a>00049 <span class="comment">*</span>
+<a name="l00050"></a>00050 <span class="comment">* THIS SOFTWARE IS PROVIDED BY TI AND TI&apos;S LICENSORS &quot;AS IS&quot; AND ANY EXPRESS</span>
+<a name="l00051"></a>00051 <span class="comment">* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span>
+<a name="l00052"></a>00052 <span class="comment">* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span>
+<a name="l00053"></a>00053 <span class="comment">* IN NO EVENT SHALL TI AND TI&apos;S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<a name="l00054"></a>00054 <span class="comment">* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span>
+<a name="l00055"></a>00055 <span class="comment">* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<a name="l00056"></a>00056 <span class="comment">* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY</span>
+<a name="l00057"></a>00057 <span class="comment">* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE</span>
+<a name="l00058"></a>00058 <span class="comment">* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span>
+<a name="l00059"></a>00059 <span class="comment">* OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<a name="l00060"></a>00060 <span class="comment">*</span>
+<a name="l00061"></a>00061 <span class="comment">*/</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 <span class="preprocessor">#ifndef TIVX_OBJECTS_H_</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_OBJECTS_H_</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span>
+<a name="l00069"></a>00069 <span class="preprocessor">#include &lt;<a class="code" href="vx__internal_8h.html" title="The top level TI OpenVX implementation header.">vx_internal.h</a>&gt;</span>
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00073"></a>00073 <span class="preprocessor">#endif</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00085"></a><a class="code" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881">00085</a> <span class="preprocessor">#define TIVX_META_FORMAT_MAX_OBJECTS        (32u)</span>
+<a name="l00086"></a>00086 <span class="preprocessor"></span>
+<a name="l00092"></a><a class="code" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88">00092</a> <span class="preprocessor">#define TIVX_CONTEXT_MAX_OBJECTS                    (1u)</span>
+<a name="l00093"></a>00093 <span class="preprocessor"></span>
+<a name="l00099"></a><a class="code" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912">00099</a> <span class="preprocessor">#define TIVX_GRAPH_MAX_OBJECTS                      (8u)</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span>
+<a name="l00106"></a><a class="code" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b">00106</a> <span class="preprocessor">#define TIVX_NODE_MAX_OBJECTS                       (32u)</span>
+<a name="l00107"></a>00107 <span class="preprocessor"></span>
+<a name="l00113"></a><a class="code" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904">00113</a> <span class="preprocessor">#define TIVX_KERNEL_MAX_OBJECTS                       (64u)</span>
+<a name="l00114"></a>00114 <span class="preprocessor"></span>
+<a name="l00120"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11">00120</a> <span class="preprocessor">#define TIVX_ARRAY_MAX_OBJECTS                      (48u)</span>
+<a name="l00121"></a>00121 <span class="preprocessor"></span>
+<a name="l00127"></a><a class="code" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67">00127</a> <span class="preprocessor">#define TIVX_CONVOLUTION_MAX_OBJECTS                (48u)</span>
+<a name="l00128"></a>00128 <span class="preprocessor"></span>
+<a name="l00134"></a><a class="code" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30">00134</a> <span class="preprocessor">#define TIVX_DELAY_MAX_OBJECTS                      (48u)</span>
+<a name="l00135"></a>00135 <span class="preprocessor"></span>
+<a name="l00141"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74">00141</a> <span class="preprocessor">#define TIVX_DISTRIBUTION_MAX_OBJECTS               (48u)</span>
+<a name="l00142"></a>00142 <span class="preprocessor"></span>
+<a name="l00148"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff">00148</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_OBJECTS                      (384u)</span>
+<a name="l00149"></a>00149 <span class="preprocessor"></span>
+<a name="l00155"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be">00155</a> <span class="preprocessor">#define TIVX_LUT_MAX_OBJECTS                        (48u)</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span>
+<a name="l00162"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708">00162</a> <span class="preprocessor">#define TIVX_MATRIX_MAX_OBJECTS                     (48u)</span>
+<a name="l00163"></a>00163 <span class="preprocessor"></span>
+<a name="l00169"></a><a class="code" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f">00169</a> <span class="preprocessor">#define TIVX_PYRAMID_MAX_OBJECTS                    (48u)</span>
+<a name="l00170"></a>00170 <span class="preprocessor"></span>
+<a name="l00176"></a><a class="code" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e">00176</a> <span class="preprocessor">#define TIVX_REMAP_MAX_OBJECTS                      (48u)</span>
+<a name="l00177"></a>00177 <span class="preprocessor"></span>
+<a name="l00183"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2">00183</a> <span class="preprocessor">#define TIVX_SCALAR_MAX_OBJECTS                     (48u)</span>
+<a name="l00184"></a>00184 <span class="preprocessor"></span>
+<a name="l00190"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5">00190</a> <span class="preprocessor">#define TIVX_THRESHOLD_MAX_OBJECTS                  (48u)</span>
+<a name="l00191"></a>00191 <span class="preprocessor"></span>
+<a name="l00197"></a><a class="code" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be">00197</a> <span class="preprocessor">#define TIVX_ERROR_MAX_OBJECTS                      (30u)</span>
+<a name="l00198"></a>00198 <span class="preprocessor"></span>
+<a name="l00204"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56">00204</a> <span class="preprocessor">#define TIVX_OBJ_ARRAY_MAX_OBJECTS                  (48u)</span>
+<a name="l00205"></a>00205 <span class="preprocessor"></span>
+<a name="l00211"></a><a class="code" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be">00211</a> <span class="preprocessor">#define TIVX_PARAMETER_MAX_OBJECTS                  (48u)</span>
+<a name="l00212"></a>00212 <span class="preprocessor"></span>
+<a name="l00218"></a><a class="code" href="structtivx__object__t.html">00218</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_object_t
+<a name="l00219"></a>00219 {
+<a name="l00220"></a>00220     <a class="code" href="structtivx__meta__format__t.html" title="Meta Format object internal state.">tivx_meta_format_t</a>      meta_format[<a class="code" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881" title="Max number meta format objects supported.">TIVX_META_FORMAT_MAX_OBJECTS</a>];
+<a name="l00222"></a>00222     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isMfUse[<a class="code" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881" title="Max number meta format objects supported.">TIVX_META_FORMAT_MAX_OBJECTS</a>];
+<a name="l00225"></a>00225     <a class="code" href="structtivx__context__t.html" title="The top level context data for the entire OpenVX instance.">tivx_context_t</a>          context[<a class="code" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88" title="Max number context objects supported.">TIVX_CONTEXT_MAX_OBJECTS</a>];
+<a name="l00227"></a>00227     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isContextUse[<a class="code" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88" title="Max number context objects supported.">TIVX_CONTEXT_MAX_OBJECTS</a>];
+<a name="l00230"></a>00230     <a class="code" href="structtivx__graph__t.html" title="The top level data for graph object.">tivx_graph_t</a>            graph[<a class="code" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912" title="Max number graph objects supported.">TIVX_GRAPH_MAX_OBJECTS</a>];
+<a name="l00232"></a>00232     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isGraphUse[<a class="code" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912" title="Max number graph objects supported.">TIVX_GRAPH_MAX_OBJECTS</a>];
+<a name="l00235"></a>00235     <a class="code" href="structtivx__node__t.html" title="The internal representation of a node.">tivx_node_t</a>             node[<a class="code" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b" title="Max number node objects supported.">TIVX_NODE_MAX_OBJECTS</a>];
+<a name="l00237"></a>00237     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isNodeUse[<a class="code" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b" title="Max number node objects supported.">TIVX_NODE_MAX_OBJECTS</a>];
+<a name="l00240"></a>00240     <a class="code" href="structtivx__kernel__t.html" title="Kernel object internal state.">tivx_kernel_t</a>           kernel[<a class="code" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904" title="Max number kernel objects supported.">TIVX_KERNEL_MAX_OBJECTS</a>];
+<a name="l00242"></a>00242     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isKernelUse[<a class="code" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904" title="Max number kernel objects supported.">TIVX_KERNEL_MAX_OBJECTS</a>];
+<a name="l00245"></a>00245     <a class="code" href="structtivx__array__t.html" title="Array object internal state.">tivx_array_t</a>            array[<a class="code" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11" title="Max number array objects supported.">TIVX_ARRAY_MAX_OBJECTS</a>];
+<a name="l00247"></a>00247     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isArrayUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11" title="Max number array objects supported.">TIVX_ARRAY_MAX_OBJECTS</a>];
+<a name="l00250"></a>00250     <a class="code" href="structtivx__convolution__t.html" title="Convolution object internal state.">tivx_convolution_t</a>      convolution[<a class="code" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67" title="Max number convolution objects supported.">TIVX_CONVOLUTION_MAX_OBJECTS</a>];
+<a name="l00252"></a>00252     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isConvolutionUse[<a class="code" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67" title="Max number convolution objects supported.">TIVX_CONVOLUTION_MAX_OBJECTS</a>];
+<a name="l00255"></a>00255     <a class="code" href="structtivx__delay__t.html" title="Delay object internal state.">tivx_delay_t</a>            delay[<a class="code" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30" title="Max number delay objects supported.">TIVX_DELAY_MAX_OBJECTS</a>];
+<a name="l00257"></a>00257     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isDelayUse[<a class="code" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30" title="Max number delay objects supported.">TIVX_DELAY_MAX_OBJECTS</a>];
+<a name="l00260"></a>00260     <a class="code" href="structtivx__distribution__t.html" title="Convolution object internal state.">tivx_distribution_t</a>     distribution[<a class="code" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74" title="Max number distribution objects supported.">TIVX_DISTRIBUTION_MAX_OBJECTS</a>];
+<a name="l00262"></a>00262     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isDistributionUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74" title="Max number distribution objects supported.">TIVX_DISTRIBUTION_MAX_OBJECTS</a>];
+<a name="l00265"></a>00265     <a class="code" href="structtivx__image__t.html" title="Image object internal state.">tivx_image_t</a>            image[<a class="code" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff" title="Max number image objects supported.">TIVX_IMAGE_MAX_OBJECTS</a>];
+<a name="l00267"></a>00267     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isImageUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff" title="Max number image objects supported.">TIVX_IMAGE_MAX_OBJECTS</a>];
+<a name="l00270"></a>00270     <a class="code" href="structtivx__lut__t.html" title="Lut object internal state.">tivx_lut_t</a>              lut[<a class="code" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be" title="Max number lut objects supported.">TIVX_LUT_MAX_OBJECTS</a>];
+<a name="l00272"></a>00272     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isLutUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be" title="Max number lut objects supported.">TIVX_LUT_MAX_OBJECTS</a>];
+<a name="l00275"></a>00275     <a class="code" href="structtivx__matrix__t.html" title="Matrix object internal state.">tivx_matrix_t</a>           matrix[<a class="code" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708" title="Max number matrix objects supported.">TIVX_MATRIX_MAX_OBJECTS</a>];
+<a name="l00277"></a>00277     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isMatrixUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708" title="Max number matrix objects supported.">TIVX_MATRIX_MAX_OBJECTS</a>];
+<a name="l00280"></a>00280     <a class="code" href="structtivx__pyramid__t.html" title="Pyramid object internal state.">tivx_pyramid_t</a>          pyramid[<a class="code" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f" title="Max number pyramid objects supported.">TIVX_PYRAMID_MAX_OBJECTS</a>];
+<a name="l00282"></a>00282     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isPyramidUse[<a class="code" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f" title="Max number pyramid objects supported.">TIVX_PYRAMID_MAX_OBJECTS</a>];
+<a name="l00285"></a>00285     <a class="code" href="structtivx__remap__t.html" title="Remap object internal state.">tivx_remap_t</a>            remap[<a class="code" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e" title="Max number remap objects supported.">TIVX_REMAP_MAX_OBJECTS</a>];
+<a name="l00287"></a>00287     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isRemapUse[<a class="code" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e" title="Max number remap objects supported.">TIVX_REMAP_MAX_OBJECTS</a>];
+<a name="l00290"></a>00290     <a class="code" href="structtivx__scalar__t.html" title="Scalar object internal state.">tivx_scalar_t</a>           scalar[<a class="code" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2" title="Max number scalar objects supported.">TIVX_SCALAR_MAX_OBJECTS</a>];
+<a name="l00292"></a>00292     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isScalarUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2" title="Max number scalar objects supported.">TIVX_SCALAR_MAX_OBJECTS</a>];
+<a name="l00295"></a>00295     <a class="code" href="structtivx__threshold__t.html" title="Threshold object internal state.">tivx_threshold_t</a>        threshold[<a class="code" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5" title="Max number threshold objects supported.">TIVX_THRESHOLD_MAX_OBJECTS</a>];
+<a name="l00297"></a>00297     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isThresholdUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5" title="Max number threshold objects supported.">TIVX_THRESHOLD_MAX_OBJECTS</a>];
+<a name="l00300"></a>00300     <a class="code" href="structtivx__error__t.html" title="The internal representation of the error object.">tivx_error_t</a>            error[<a class="code" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be" title="Max number error objects supported.">TIVX_ERROR_MAX_OBJECTS</a>];
+<a name="l00302"></a>00302     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isErrorUse[<a class="code" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be" title="Max number error objects supported.">TIVX_ERROR_MAX_OBJECTS</a>];
+<a name="l00305"></a>00305     <a class="code" href="structtivx__objarray__t.html" title="object array internal state">tivx_objarray_t</a>         obj_array[<a class="code" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56" title="Max number object arrays supported.">TIVX_OBJ_ARRAY_MAX_OBJECTS</a>];
+<a name="l00307"></a>00307     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isObjArrUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56" title="Max number object arrays supported.">TIVX_OBJ_ARRAY_MAX_OBJECTS</a>];
+<a name="l00310"></a>00310     <a class="code" href="structtivx__parameter__t.html" title="Parameter object internal state.">tivx_parameter_t</a>        parameter[<a class="code" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be" title="Max number parameter objects supported.">TIVX_PARAMETER_MAX_OBJECTS</a>];
+<a name="l00312"></a>00312     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>                 isParameterUse[<a class="code" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be" title="Max number parameter objects supported.">TIVX_PARAMETER_MAX_OBJECTS</a>];
+<a name="l00314"></a>00314 } <a class="code" href="structtivx__object__t.html" title="Structure to hold all framework objects.">tivx_object_t</a>;
+<a name="l00315"></a>00315 
+<a name="l00321"></a>00321 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__tivx__obj.html#ga96caebfc056a0fe986f6128a029bf6f1" title="Alloc memory for a reference of specified type.">tivxObjectAlloc</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype);
+<a name="l00322"></a>00322 
+<a name="l00328"></a>00328 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__obj.html#ga1be84ea7073fcc2460c5ad758ce8f753" title="Free memory for a reference.">tivxObjectFree</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00329"></a>00329 
+<a name="l00333"></a>00333 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__obj.html#ga10e04c49c62a5e0e8608db9d9085c409" title="Initialize object module.">tivxObjectInit</a>(<span class="keywordtype">void</span>);
+<a name="l00334"></a>00334 
+<a name="l00338"></a>00338 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__obj.html#ga69229b3e9b115ee370fb290028516363" title="De-Initialize object module.">tivxObjectDeInit</a>(<span class="keywordtype">void</span>);
+<a name="l00339"></a>00339 
+<a name="l00340"></a>00340 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00341"></a>00341 <span class="preprocessor"></span>}
+<a name="l00342"></a>00342 <span class="preprocessor">#endif</span>
+<a name="l00343"></a>00343 <span class="preprocessor"></span>
+<a name="l00344"></a>00344 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

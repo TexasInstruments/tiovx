@@ -50,61 +50,54 @@
 <a name="l00025"></a>00025 <span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <a name="l00026"></a>00026 <span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span>
 <a name="l00027"></a>00027 <span class="comment"> */</span>
-<a name="l00028"></a>00028 <span class="comment">/*</span>
-<a name="l00029"></a>00029 <span class="comment"> *******************************************************************************</span>
-<a name="l00030"></a>00030 <span class="comment"> *</span>
-<a name="l00031"></a>00031 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00032"></a>00032 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00033"></a>00033 <span class="comment"> *</span>
-<a name="l00034"></a>00034 <span class="comment"> *******************************************************************************</span>
-<a name="l00035"></a>00035 <span class="comment"> */</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 <span class="preprocessor">#ifndef VX_IMAGE_H_</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#define VX_IMAGE_H_</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span>
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00044"></a>00044 <span class="preprocessor">#endif</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00058"></a><a class="code" href="group__group__vx__image__cfg.html#gabc882a238706fb219028758eebe19daf">00058</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_SUBIMAGES     (16u)</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifndef VX_IMAGE_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define VX_IMAGE_H_</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00037"></a>00037 <span class="preprocessor">#endif</span>
+<a name="l00038"></a>00038 <span class="preprocessor"></span>
+<a name="l00051"></a><a class="code" href="group__group__vx__image__cfg.html#gabc882a238706fb219028758eebe19daf">00051</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_SUBIMAGES     (16u)</span>
+<a name="l00052"></a>00052 <span class="preprocessor"></span>
+<a name="l00058"></a><a class="code" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb">00058</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_MAPS     (16u)</span>
 <a name="l00059"></a>00059 <span class="preprocessor"></span>
-<a name="l00065"></a><a class="code" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb">00065</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_MAPS     (16u)</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span>
-<a name="l00072"></a><a class="code" href="structtivx__image__map__info__t.html">00072</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_image_map_info_t
-<a name="l00073"></a>00073 {
-<a name="l00075"></a><a class="code" href="structtivx__image__map__info__t.html#aa08494ec477c5acef58f7c99c5c404f0">00075</a>     uint8_t *map_addr;
-<a name="l00077"></a><a class="code" href="structtivx__image__map__info__t.html#a1d5a67c881bd1291b58fadc3d4c19808">00077</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>  map_size;
-<a name="l00079"></a><a class="code" href="structtivx__image__map__info__t.html#a586ccbafe62d20aaa442f0242e8a4cd8">00079</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> usage;
-<a name="l00080"></a>00080 } <a class="code" href="structtivx__image__map__info__t.html" title="Information about a image mapping.">tivx_image_map_info_t</a>;
-<a name="l00081"></a>00081 
-<a name="l00082"></a>00082 
-<a name="l00083"></a>00083 
-<a name="l00089"></a><a class="code" href="structtivx__image__t.html">00089</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_image
-<a name="l00090"></a>00090 {
-<a name="l00092"></a><a class="code" href="structtivx__image__t.html#a4e4404bf721fa9ee8128fa5c280a2a32">00092</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
-<a name="l00094"></a><a class="code" href="structtivx__image__t.html#aca587fb3abea2e75bb4247fe4432b746">00094</a>     <a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a>       parent;
-<a name="l00096"></a><a class="code" href="structtivx__image__t.html#a23c4156a202fd4a563019a69f280f9b0">00096</a>     <a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a>       subimages[<a class="code" href="group__group__vx__image__cfg.html#gabc882a238706fb219028758eebe19daf" title="Max possible sub images from a image.">TIVX_IMAGE_MAX_SUBIMAGES</a>];
-<a name="l00098"></a><a class="code" href="structtivx__image__t.html#a2f6ce351ec1a5f5f777e4128c2f70462">00098</a>     <a class="code" href="structtivx__image__map__info__t.html" title="Information about a image mapping.">tivx_image_map_info_t</a> maps[<a class="code" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb" title="Max possible mapping via vxMapImagePatch supported.">TIVX_IMAGE_MAX_MAPS</a>];
-<a name="l00100"></a><a class="code" href="structtivx__image__t.html#a5723b8f5dcd3bce020a438a75aca554e">00100</a>     uint32_t mem_offset[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
-<a name="l00102"></a><a class="code" href="structtivx__image__t.html#a5888822ce0316edc9c65b5d2e89dbac8">00102</a>     uint32_t channel_plane;
-<a name="l00103"></a>00103 } <a class="code" href="structtivx__image__t.html" title="Image object internal state.">tivx_image_t</a>;
-<a name="l00104"></a>00104 
-<a name="l00105"></a>00105 
-<a name="l00106"></a>00106 
-<a name="l00114"></a>00114 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__image.html#gab68727411ea99e2640bc5d9d25f7cc56" title="Print image patch addressing info.">ownPrintImageAddressing</a>(<span class="keyword">const</span> <a class="code" href="structvx__imagepatch__addressing__t.html" title="The addressing image patch structure is used by the Host only to address pixels in...">vx_imagepatch_addressing_t</a> *addr);
-<a name="l00115"></a>00115 
-<a name="l00123"></a>00123 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__image.html#ga82769f15a146e1609fdaf2bae5416132" title="Print image info.">ownPrintImage</a>(<a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a> image);
-<a name="l00124"></a>00124 
-<a name="l00137"></a>00137 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__image_8h.html#ad440b9aec9ec2c1c48a6fb8d7558a5fb" title="function to initialize virtual image&amp;#39;s parameters">ownInitVirtualImage</a>(
-<a name="l00138"></a>00138     <a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a> img, <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> width, <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> height, <a class="code" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8" title="Used to hold a VX_DF_IMAGE code to describe the pixel format and color space.">vx_df_image</a> format);
-<a name="l00139"></a>00139 
-<a name="l00140"></a>00140 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00141"></a>00141 <span class="preprocessor"></span>}
-<a name="l00142"></a>00142 <span class="preprocessor">#endif</span>
-<a name="l00143"></a>00143 <span class="preprocessor"></span>
-<a name="l00144"></a>00144 <span class="preprocessor">#endif</span>
+<a name="l00065"></a><a class="code" href="structtivx__image__map__info__t.html">00065</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_image_map_info_t
+<a name="l00066"></a>00066 {
+<a name="l00068"></a><a class="code" href="structtivx__image__map__info__t.html#aa08494ec477c5acef58f7c99c5c404f0">00068</a>     uint8_t *map_addr;
+<a name="l00070"></a><a class="code" href="structtivx__image__map__info__t.html#a1d5a67c881bd1291b58fadc3d4c19808">00070</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>  map_size;
+<a name="l00072"></a><a class="code" href="structtivx__image__map__info__t.html#a586ccbafe62d20aaa442f0242e8a4cd8">00072</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> usage;
+<a name="l00073"></a>00073 } <a class="code" href="structtivx__image__map__info__t.html" title="Information about a image mapping.">tivx_image_map_info_t</a>;
+<a name="l00074"></a>00074 
+<a name="l00075"></a>00075 
+<a name="l00076"></a>00076 
+<a name="l00082"></a><a class="code" href="structtivx__image__t.html">00082</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_image
+<a name="l00083"></a>00083 {
+<a name="l00085"></a><a class="code" href="structtivx__image__t.html#a4e4404bf721fa9ee8128fa5c280a2a32">00085</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
+<a name="l00087"></a><a class="code" href="structtivx__image__t.html#aca587fb3abea2e75bb4247fe4432b746">00087</a>     <a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a>       parent;
+<a name="l00089"></a><a class="code" href="structtivx__image__t.html#a23c4156a202fd4a563019a69f280f9b0">00089</a>     <a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a>       subimages[<a class="code" href="group__group__vx__image__cfg.html#gabc882a238706fb219028758eebe19daf" title="Max possible sub images from a image.">TIVX_IMAGE_MAX_SUBIMAGES</a>];
+<a name="l00091"></a><a class="code" href="structtivx__image__t.html#a2f6ce351ec1a5f5f777e4128c2f70462">00091</a>     <a class="code" href="structtivx__image__map__info__t.html" title="Information about a image mapping.">tivx_image_map_info_t</a> maps[<a class="code" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb" title="Max possible mapping via vxMapImagePatch supported.">TIVX_IMAGE_MAX_MAPS</a>];
+<a name="l00093"></a><a class="code" href="structtivx__image__t.html#a5723b8f5dcd3bce020a438a75aca554e">00093</a>     uint32_t mem_offset[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
+<a name="l00095"></a><a class="code" href="structtivx__image__t.html#a5888822ce0316edc9c65b5d2e89dbac8">00095</a>     uint32_t channel_plane;
+<a name="l00096"></a>00096 } <a class="code" href="structtivx__image__t.html" title="Image object internal state.">tivx_image_t</a>;
+<a name="l00097"></a>00097 
+<a name="l00098"></a>00098 
+<a name="l00099"></a>00099 
+<a name="l00107"></a>00107 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__image.html#gab68727411ea99e2640bc5d9d25f7cc56" title="Print image patch addressing info.">ownPrintImageAddressing</a>(<span class="keyword">const</span> <a class="code" href="structvx__imagepatch__addressing__t.html" title="The addressing image patch structure is used by the Host only to address pixels in...">vx_imagepatch_addressing_t</a> *addr);
+<a name="l00108"></a>00108 
+<a name="l00116"></a>00116 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__image.html#ga82769f15a146e1609fdaf2bae5416132" title="Print image info.">ownPrintImage</a>(<a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a> image);
+<a name="l00117"></a>00117 
+<a name="l00130"></a>00130 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__image_8h.html#ad440b9aec9ec2c1c48a6fb8d7558a5fb" title="function to initialize virtual image&amp;#39;s parameters">ownInitVirtualImage</a>(
+<a name="l00131"></a>00131     <a class="code" href="vx__types_8h.html#afaa07841fe324f1c1d5b0f27c27de7b5" title="An opaque reference to an image.">vx_image</a> img, <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> width, <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> height, <a class="code" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8" title="Used to hold a VX_DF_IMAGE code to describe the pixel format and color space.">vx_df_image</a> format);
+<a name="l00132"></a>00132 
+<a name="l00133"></a>00133 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00134"></a>00134 <span class="preprocessor"></span>}
+<a name="l00135"></a>00135 <span class="preprocessor">#endif</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span>
+<a name="l00137"></a>00137 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

@@ -50,117 +50,110 @@
 <a name="l00025"></a>00025 <span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <a name="l00026"></a>00026 <span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span>
 <a name="l00027"></a>00027 <span class="comment"> */</span>
-<a name="l00028"></a>00028 <span class="comment">/*</span>
-<a name="l00029"></a>00029 <span class="comment"> *******************************************************************************</span>
-<a name="l00030"></a>00030 <span class="comment"> *</span>
-<a name="l00031"></a>00031 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00032"></a>00032 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00033"></a>00033 <span class="comment"> *</span>
-<a name="l00034"></a>00034 <span class="comment"> *******************************************************************************</span>
-<a name="l00035"></a>00035 <span class="comment"> */</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 <span class="preprocessor">#ifndef VX_REFERENCE_H_</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#define VX_REFERENCE_H_</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span>
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 
-<a name="l00043"></a>00043 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00044"></a>00044 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00045"></a>00045 <span class="preprocessor">#endif</span>
-<a name="l00046"></a>00046 <span class="preprocessor"></span>
-<a name="l00059"></a><a class="code" href="group__group__vx__reference.html#gacd45d0c17bdc4c34ffc0c1c00c000617">00059</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_reftype_e {
-<a name="l00060"></a><a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a2dcb643ac40c572517e64e34a936f2bb">00060</a>     <a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a2dcb643ac40c572517e64e34a936f2bb">VX_INTERNAL</a> = 1,
-<a name="l00061"></a><a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a8625931f75a452b1522c56c4efa859ab">00061</a>     <a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a8625931f75a452b1522c56c4efa859ab">VX_EXTERNAL</a> = 2,
-<a name="l00062"></a><a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617ab955e8dc192ab3f60269b09d3d83398c">00062</a>     <a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617ab955e8dc192ab3f60269b09d3d83398c">VX_BOTH</a> = 3,
-<a name="l00063"></a>00063 } <a class="code" href="group__group__vx__reference.html#gacd45d0c17bdc4c34ffc0c1c00c000617" title="An internal enum for notating which sort of reference type we need.">tivx_reftype_e</a>;
-<a name="l00064"></a>00064 
-<a name="l00069"></a><a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b">00069</a> <span class="keyword">typedef</span> <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> (*<a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a>)(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00070"></a>00070 
-<a name="l00075"></a><a class="code" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">00075</a> <span class="keyword">typedef</span> <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> (* <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> tivx_reference_release_callback_f)(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> *ref);
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifndef VX_REFERENCE_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define VX_REFERENCE_H_</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 
+<a name="l00036"></a>00036 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00037"></a>00037 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00038"></a>00038 <span class="preprocessor">#endif</span>
+<a name="l00039"></a>00039 <span class="preprocessor"></span>
+<a name="l00052"></a><a class="code" href="group__group__vx__reference.html#gacd45d0c17bdc4c34ffc0c1c00c000617">00052</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_reftype_e {
+<a name="l00053"></a><a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a2dcb643ac40c572517e64e34a936f2bb">00053</a>     <a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a2dcb643ac40c572517e64e34a936f2bb">VX_INTERNAL</a> = 1,
+<a name="l00054"></a><a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a8625931f75a452b1522c56c4efa859ab">00054</a>     <a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a8625931f75a452b1522c56c4efa859ab">VX_EXTERNAL</a> = 2,
+<a name="l00055"></a><a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617ab955e8dc192ab3f60269b09d3d83398c">00055</a>     <a class="code" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617ab955e8dc192ab3f60269b09d3d83398c">VX_BOTH</a> = 3,
+<a name="l00056"></a>00056 } <a class="code" href="group__group__vx__reference.html#gacd45d0c17bdc4c34ffc0c1c00c000617" title="An internal enum for notating which sort of reference type we need.">tivx_reftype_e</a>;
+<a name="l00057"></a>00057 
+<a name="l00062"></a><a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b">00062</a> <span class="keyword">typedef</span> <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> (*<a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a>)(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00063"></a>00063 
+<a name="l00068"></a><a class="code" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">00068</a> <span class="keyword">typedef</span> <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> (* <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> tivx_reference_release_callback_f)(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> *ref);
+<a name="l00069"></a>00069 
+<a name="l00075"></a><a class="code" href="structtivx__reference__t.html">00075</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_reference {
 <a name="l00076"></a>00076 
-<a name="l00082"></a><a class="code" href="structtivx__reference__t.html">00082</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_reference {
-<a name="l00083"></a>00083 
-<a name="l00085"></a><a class="code" href="structtivx__reference__t.html#a1ddc639bc476ab1eec28de9a264f28cd">00085</a>     uint32_t magic;
-<a name="l00086"></a>00086 
-<a name="l00088"></a><a class="code" href="structtivx__reference__t.html#ab426d5bb07f9725e5a71a6d84e58b81c">00088</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type;
-<a name="l00089"></a>00089 
-<a name="l00093"></a><a class="code" href="structtivx__reference__t.html#a2d32696383b6ba91da028b4d1ae6ff7b">00093</a>     <a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context;
+<a name="l00078"></a><a class="code" href="structtivx__reference__t.html#a1ddc639bc476ab1eec28de9a264f28cd">00078</a>     uint32_t magic;
+<a name="l00079"></a>00079 
+<a name="l00081"></a><a class="code" href="structtivx__reference__t.html#ab426d5bb07f9725e5a71a6d84e58b81c">00081</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type;
+<a name="l00082"></a>00082 
+<a name="l00086"></a><a class="code" href="structtivx__reference__t.html#a2d32696383b6ba91da028b4d1ae6ff7b">00086</a>     <a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context;
+<a name="l00087"></a>00087 
+<a name="l00093"></a><a class="code" href="structtivx__reference__t.html#ac5f7c7cef208efccb8a400470d6b6611">00093</a>     <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope;
 <a name="l00094"></a>00094 
-<a name="l00100"></a><a class="code" href="structtivx__reference__t.html#ac5f7c7cef208efccb8a400470d6b6611">00100</a>     <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope;
-<a name="l00101"></a>00101 
-<a name="l00103"></a><a class="code" href="structtivx__reference__t.html#a2f4a238aac75334b52e1b9a52a576194">00103</a>     <span class="keywordtype">char</span> name[VX_MAX_REFERENCE_NAME];
-<a name="l00104"></a>00104 
-<a name="l00109"></a><a class="code" href="structtivx__reference__t.html#a642d6c4ea88ea88f63fc426a4ab33fe2">00109</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> external_count;
-<a name="l00110"></a>00110 
-<a name="l00114"></a><a class="code" href="structtivx__reference__t.html#a6f9a5f3dcba8c5228dca31493f98f742">00114</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> internal_count;
-<a name="l00115"></a>00115 
-<a name="l00118"></a><a class="code" href="structtivx__reference__t.html#a8aa4044294f8eb1c30ce4d09afd1c4fa">00118</a>     <a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a> mem_alloc_callback;
-<a name="l00119"></a>00119 
-<a name="l00123"></a><a class="code" href="structtivx__reference__t.html#a9263b6aa76840e5254d766e9567af7dd">00123</a>     <a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a> destructor_callback;
+<a name="l00096"></a><a class="code" href="structtivx__reference__t.html#a2f4a238aac75334b52e1b9a52a576194">00096</a>     <span class="keywordtype">char</span> name[VX_MAX_REFERENCE_NAME];
+<a name="l00097"></a>00097 
+<a name="l00102"></a><a class="code" href="structtivx__reference__t.html#a642d6c4ea88ea88f63fc426a4ab33fe2">00102</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> external_count;
+<a name="l00103"></a>00103 
+<a name="l00107"></a><a class="code" href="structtivx__reference__t.html#a6f9a5f3dcba8c5228dca31493f98f742">00107</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> internal_count;
+<a name="l00108"></a>00108 
+<a name="l00111"></a><a class="code" href="structtivx__reference__t.html#a8aa4044294f8eb1c30ce4d09afd1c4fa">00111</a>     <a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a> mem_alloc_callback;
+<a name="l00112"></a>00112 
+<a name="l00116"></a><a class="code" href="structtivx__reference__t.html#a9263b6aa76840e5254d766e9567af7dd">00116</a>     <a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a> destructor_callback;
+<a name="l00117"></a>00117 
+<a name="l00120"></a><a class="code" href="structtivx__reference__t.html#a68918255893d2784a3aa9ac6ad638edf">00120</a>     tivx_reference_release_callback_f release_callback;
+<a name="l00121"></a>00121 
+<a name="l00123"></a><a class="code" href="structtivx__reference__t.html#a743a14f09405c30f5f39e36bde0beaef">00123</a>     <a class="code" href="group__group__tivx__mutex.html#gaca8bf54b8519ecd4c6aa8368286bde45" title="Typedef for a mutex.">tivx_mutex</a> lock;
 <a name="l00124"></a>00124 
-<a name="l00127"></a><a class="code" href="structtivx__reference__t.html#a68918255893d2784a3aa9ac6ad638edf">00127</a>     tivx_reference_release_callback_f release_callback;
-<a name="l00128"></a>00128 
-<a name="l00130"></a><a class="code" href="structtivx__reference__t.html#a743a14f09405c30f5f39e36bde0beaef">00130</a>     <a class="code" href="group__group__tivx__mutex.html#gaca8bf54b8519ecd4c6aa8368286bde45" title="Typedef for a mutex.">tivx_mutex</a> lock;
-<a name="l00131"></a>00131 
-<a name="l00132"></a>00132     <span class="comment">/* \brief This indicates if the object belongs to a delay */</span>
-<a name="l00133"></a><a class="code" href="structtivx__reference__t.html#af655518f6f2a7e179d828e95c1a74ce8">00133</a>     <a class="code" href="vx__types_8h.html#a2c6de63476aff4a009bac8d0eb9800d1" title="The delay object. This is like a ring buffer of objects that is maintained by the...">vx_delay</a> delay;
-<a name="l00134"></a>00134     <span class="comment">/* \brief This indicates the original delay slot index when the object belongs to a delay */</span>
-<a name="l00135"></a><a class="code" href="structtivx__reference__t.html#a1caf1c5feb88111ebb5e38a4da188bd9">00135</a>     <a class="code" href="vx__types_8h.html#a822fc495cb9045d45893eed297d48737" title="A 32-bit signed value.">vx_int32</a> delay_slot_index;
-<a name="l00136"></a>00136 
-<a name="l00138"></a><a class="code" href="structtivx__reference__t.html#ae599ad74e0f2733829ae0e99c666a1fc">00138</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> is_virtual;
-<a name="l00139"></a>00139 
-<a name="l00143"></a><a class="code" href="structtivx__reference__t.html#afcce2c06f3667f29ef1688dbd8542f05">00143</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> is_accessible;
-<a name="l00144"></a>00144 
-<a name="l00146"></a><a class="code" href="structtivx__reference__t.html#a1f5d87219e4c59beee89ad61376ef464">00146</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> *obj_desc;
-<a name="l00147"></a>00147 } <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a>;
-<a name="l00148"></a>00148 
-<a name="l00159"></a>00159 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__vx__reference.html#ga4de1be80a5e70c18cd1b6a0693fbdb47" title="Create a reference object.">ownCreateReference</a>(<a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope);
-<a name="l00160"></a>00160 
-<a name="l00168"></a>00168 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#gac3ad1447b01e8ce0806adfa8447590c3" title="Used to destroy a reference.">ownReleaseReferenceInt</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> *ref,
-<a name="l00169"></a>00169                         <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type,
-<a name="l00170"></a>00170                         <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype,
-<a name="l00171"></a>00171                         <a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a> destructor);
+<a name="l00125"></a>00125     <span class="comment">/* \brief This indicates if the object belongs to a delay */</span>
+<a name="l00126"></a><a class="code" href="structtivx__reference__t.html#af655518f6f2a7e179d828e95c1a74ce8">00126</a>     <a class="code" href="vx__types_8h.html#a2c6de63476aff4a009bac8d0eb9800d1" title="The delay object. This is like a ring buffer of objects that is maintained by the...">vx_delay</a> delay;
+<a name="l00127"></a>00127     <span class="comment">/* \brief This indicates the original delay slot index when the object belongs to a delay */</span>
+<a name="l00128"></a><a class="code" href="structtivx__reference__t.html#a1caf1c5feb88111ebb5e38a4da188bd9">00128</a>     <a class="code" href="vx__types_8h.html#a822fc495cb9045d45893eed297d48737" title="A 32-bit signed value.">vx_int32</a> delay_slot_index;
+<a name="l00129"></a>00129 
+<a name="l00131"></a><a class="code" href="structtivx__reference__t.html#ae599ad74e0f2733829ae0e99c666a1fc">00131</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> is_virtual;
+<a name="l00132"></a>00132 
+<a name="l00136"></a><a class="code" href="structtivx__reference__t.html#afcce2c06f3667f29ef1688dbd8542f05">00136</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> is_accessible;
+<a name="l00137"></a>00137 
+<a name="l00139"></a><a class="code" href="structtivx__reference__t.html#a1f5d87219e4c59beee89ad61376ef464">00139</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> *obj_desc;
+<a name="l00140"></a>00140 } <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a>;
+<a name="l00141"></a>00141 
+<a name="l00152"></a>00152 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__vx__reference.html#ga4de1be80a5e70c18cd1b6a0693fbdb47" title="Create a reference object.">ownCreateReference</a>(<a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope);
+<a name="l00153"></a>00153 
+<a name="l00161"></a>00161 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#gac3ad1447b01e8ce0806adfa8447590c3" title="Used to destroy a reference.">ownReleaseReferenceInt</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> *ref,
+<a name="l00162"></a>00162                         <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type,
+<a name="l00163"></a>00163                         <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype,
+<a name="l00164"></a>00164                         <a class="code" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b" title="Callback type used to register different callbacks from object dervied from references...">tivx_reference_callback_f</a> destructor);
+<a name="l00165"></a>00165 
+<a name="l00171"></a>00171 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__reference.html#gab8dc3b7c601b6cb800b5194f35facb08" title="Used to validate everything but vx_context, vx_image.">ownIsValidSpecificReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type);
 <a name="l00172"></a>00172 
-<a name="l00178"></a>00178 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__reference.html#gab8dc3b7c601b6cb800b5194f35facb08" title="Used to validate everything but vx_context, vx_image.">ownIsValidSpecificReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type);
-<a name="l00179"></a>00179 
-<a name="l00184"></a>00184 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#ga46261af73a663a9ced354739f57100d1" title="Lock the reference.">ownReferenceLock</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00185"></a>00185 
-<a name="l00190"></a>00190 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#gaecb8495533f11379e448b826a0bcdbf3" title="Unlock the reference.">ownReferenceUnlock</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00177"></a>00177 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#ga46261af73a663a9ced354739f57100d1" title="Lock the reference.">ownReferenceLock</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00178"></a>00178 
+<a name="l00183"></a>00183 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#gaecb8495533f11379e448b826a0bcdbf3" title="Unlock the reference.">ownReferenceUnlock</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00184"></a>00184 
+<a name="l00190"></a>00190 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> <a class="code" href="group__group__vx__reference.html#ga8a250ea2cd1c516ba57798a360de4bc1" title="Increments the ref count.">ownIncrementReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype);
 <a name="l00191"></a>00191 
-<a name="l00197"></a>00197 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> <a class="code" href="group__group__vx__reference.html#ga8a250ea2cd1c516ba57798a360de4bc1" title="Increments the ref count.">ownIncrementReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype);
+<a name="l00197"></a>00197 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> <a class="code" href="group__group__vx__reference.html#gac4bd5051397559d84a544f09de52191c" title="Decrements the ref count.">ownDecrementReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype);
 <a name="l00198"></a>00198 
-<a name="l00204"></a>00204 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> <a class="code" href="group__group__vx__reference.html#gac4bd5051397559d84a544f09de52191c" title="Decrements the ref count.">ownDecrementReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> reftype);
-<a name="l00205"></a>00205 
-<a name="l00210"></a>00210 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> <a class="code" href="group__group__vx__reference.html#gabf65108598010b9690afdbc4893fb36c" title="Returns the total reference count of the object.">ownTotalReferenceCount</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00211"></a>00211 
-<a name="l00216"></a>00216 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__reference.html#gad786153df931e4dceafba594c6bb0d3b" title="Print reference information.">ownPrintReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00203"></a>00203 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> <a class="code" href="group__group__vx__reference.html#gabf65108598010b9690afdbc4893fb36c" title="Returns the total reference count of the object.">ownTotalReferenceCount</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00204"></a>00204 
+<a name="l00209"></a>00209 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__reference.html#gad786153df931e4dceafba594c6bb0d3b" title="Print reference information.">ownPrintReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00210"></a>00210 
+<a name="l00216"></a>00216 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__reference.html#ga7b73cbb59de6fb75e986948c92b399e1" title="This returns true if the type is within the definition of types in OpenVX.">ownIsValidType</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type);
 <a name="l00217"></a>00217 
-<a name="l00223"></a>00223 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__reference.html#ga7b73cbb59de6fb75e986948c92b399e1" title="This returns true if the type is within the definition of types in OpenVX.">ownIsValidType</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type);
-<a name="l00224"></a>00224 
-<a name="l00235"></a>00235 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#ga9ce862d27a2efc3e6ab316f0f5ce166f" title="Init a reference object.">ownInitReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope);
-<a name="l00236"></a>00236 
-<a name="l00237"></a>00237 
-<a name="l00245"></a>00245 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__reference.html#gaa07eb506d2b93ac98c0713861dc93c53" title="Check if reference is valid.">ownIsValidReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00246"></a>00246 
-<a name="l00253"></a>00253 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__reference.html#gaa2473ba58425fd73de7e9269f694a149" title="Used to initialize any vx_reference as a delay element.">ownInitReferenceForDelay</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a2c6de63476aff4a009bac8d0eb9800d1" title="The delay object. This is like a ring buffer of objects that is maintained by the...">vx_delay</a> d, <a class="code" href="vx__types_8h.html#a822fc495cb9045d45893eed297d48737" title="A 32-bit signed value.">vx_int32</a> index);
-<a name="l00254"></a>00254 
-<a name="l00258"></a>00258 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#gad42635678483ae9c930688bb56b9cf90" title="Alloc memory associated with this reference, typically data reference.">ownReferenceAllocMem</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00259"></a>00259 
-<a name="l00263"></a>00263 <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> <a class="code" href="group__group__vx__reference.html#ga8a824924e3547a69b56d03d93d6faab8" title="Get the size of the Type enum.">ownSizeOfEnumType</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type);
+<a name="l00228"></a>00228 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#ga9ce862d27a2efc3e6ab316f0f5ce166f" title="Init a reference object.">ownInitReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope);
+<a name="l00229"></a>00229 
+<a name="l00230"></a>00230 
+<a name="l00238"></a>00238 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__reference.html#gaa07eb506d2b93ac98c0713861dc93c53" title="Check if reference is valid.">ownIsValidReference</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00239"></a>00239 
+<a name="l00246"></a>00246 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__reference.html#gaa2473ba58425fd73de7e9269f694a149" title="Used to initialize any vx_reference as a delay element.">ownInitReferenceForDelay</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a2c6de63476aff4a009bac8d0eb9800d1" title="The delay object. This is like a ring buffer of objects that is maintained by the...">vx_delay</a> d, <a class="code" href="vx__types_8h.html#a822fc495cb9045d45893eed297d48737" title="A 32-bit signed value.">vx_int32</a> index);
+<a name="l00247"></a>00247 
+<a name="l00251"></a>00251 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__vx__reference.html#gad42635678483ae9c930688bb56b9cf90" title="Alloc memory associated with this reference, typically data reference.">ownReferenceAllocMem</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00252"></a>00252 
+<a name="l00256"></a>00256 <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> <a class="code" href="group__group__vx__reference.html#ga8a824924e3547a69b56d03d93d6faab8" title="Get the size of the Type enum.">ownSizeOfEnumType</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type);
+<a name="l00257"></a>00257 
+<a name="l00258"></a>00258 
+<a name="l00262"></a>00262 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__reference.html#ga6290c7e47db2bb4c7451a59e68b6dc2d" title="Set scope of a reference.">ownReferenceSetScope</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope);
+<a name="l00263"></a>00263 
 <a name="l00264"></a>00264 
-<a name="l00265"></a>00265 
-<a name="l00269"></a>00269 <span class="keywordtype">void</span> <a class="code" href="group__group__vx__reference.html#ga6290c7e47db2bb4c7451a59e68b6dc2d" title="Set scope of a reference.">ownReferenceSetScope</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> scope);
+<a name="l00268"></a>00268 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__vx__reference.html#ga8bcc2ede5b5fbb5370ea129ff215c2aa" title="Create reference from a exemplar object.">ownCreateReferenceFromExemplar</a>(
+<a name="l00269"></a>00269     <a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> exemplar);
 <a name="l00270"></a>00270 
-<a name="l00271"></a>00271 
-<a name="l00275"></a>00275 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__vx__reference.html#ga8bcc2ede5b5fbb5370ea129ff215c2aa" title="Create reference from a exemplar object.">ownCreateReferenceFromExemplar</a>(
-<a name="l00276"></a>00276     <a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> exemplar);
-<a name="l00277"></a>00277 
-<a name="l00278"></a>00278 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00279"></a>00279 <span class="preprocessor"></span>}
-<a name="l00280"></a>00280 <span class="preprocessor">#endif</span>
-<a name="l00281"></a>00281 <span class="preprocessor"></span>
-<a name="l00282"></a>00282 <span class="preprocessor">#endif</span>
+<a name="l00271"></a>00271 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00272"></a>00272 <span class="preprocessor"></span>}
+<a name="l00273"></a>00273 <span class="preprocessor">#endif</span>
+<a name="l00274"></a>00274 <span class="preprocessor"></span>
+<a name="l00275"></a>00275 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

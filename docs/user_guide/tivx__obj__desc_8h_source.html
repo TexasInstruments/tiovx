@@ -24,330 +24,384 @@
     </ul>
   </div>
 <h1>tivx_obj_desc.h</h1><a href="tivx__obj__desc_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment"> *******************************************************************************</span>
-<a name="l00003"></a>00003 <span class="comment"> *</span>
-<a name="l00004"></a>00004 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00005"></a>00005 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00006"></a>00006 <span class="comment"> *</span>
-<a name="l00007"></a>00007 <span class="comment"> *******************************************************************************</span>
-<a name="l00008"></a>00008 <span class="comment"> */</span>
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef TIVX_OBJ_DESC_H_</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_OBJ_DESC_H_</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include &lt;<a class="code" href="tivx__mem_8h.html" title="Interface to Memory allocation and deallocation APIs.">TI/tivx_mem.h</a>&gt;</span>
-<a name="l00015"></a>00015 
-<a name="l00016"></a>00016 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00017"></a>00017 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00018"></a>00018 <span class="preprocessor">#endif</span>
-<a name="l00019"></a>00019 <span class="preprocessor"></span>
-<a name="l00030"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">00030</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_PLANES   (3u)</span>
-<a name="l00031"></a>00031 <span class="preprocessor"></span>
-<a name="l00035"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">00035</a> <span class="preprocessor">#define TIVX_KERNEL_MAX_PARAMS      (10u)</span>
-<a name="l00036"></a>00036 <span class="preprocessor"></span>
-<a name="l00040"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#gad70fbfdc1f0c57ecc19a1d29878cbe18">00040</a> <span class="preprocessor">#define TIVX_NODE_MAX_OUT_NODES      (8u)</span>
-<a name="l00041"></a>00041 <span class="preprocessor"></span>
-<a name="l00045"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b">00045</a> <span class="preprocessor">#define TIVX_NODE_MAX_IN_NODES      (8u)</span>
-<a name="l00046"></a>00046 <span class="preprocessor"></span>
-<a name="l00050"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga9394c906b6f2581dcbfe1b830d31eee5">00050</a> <span class="preprocessor">#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32)</span>
-<a name="l00051"></a>00051 <span class="preprocessor"></span>
-<a name="l00055"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga1d57be13326dfee5ccb50f6bfae364da">00055</a> <span class="preprocessor">#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32)</span>
-<a name="l00056"></a>00056 <span class="preprocessor"></span>
-<a name="l00060"></a><a class="code" href="group__group__tivx__obj__desc.html#ga412e9ff53c1a69e16a33ac511366f742">00060</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_REPLICATED     (0x00000001u)</span>
-<a name="l00061"></a>00061 <span class="preprocessor"></span>
-<a name="l00065"></a><a class="code" href="group__group__tivx__obj__desc.html#gaf7ae2fec33c7997a3106f061624d9add">00065</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_EXECUTED       (0x00000002u)</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span>
-<a name="l00070"></a><a class="code" href="group__group__tivx__obj__desc.html#ga2f5e855e1a88921989451ebf30b70778">00070</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_USER_CALLBACK  (0x00000004u)</span>
-<a name="l00071"></a>00071 <span class="preprocessor"></span>
-<a name="l00076"></a><a class="code" href="group__group__tivx__obj__desc.html#ga4a01ab216dbd031e89a5b4367bb33881">00076</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)</span>
-<a name="l00077"></a>00077 <span class="preprocessor"></span>
-<a name="l00081"></a><a class="code" href="group__group__tivx__obj__desc.html#gaa345cc795baa95e1d5ff39694700ad87">00081</a> <span class="preprocessor">#define TIVX_GRAPH_MAX_NODES               (32u)</span>
-<a name="l00082"></a>00082 <span class="preprocessor"></span>
-<a name="l00086"></a><a class="code" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293">00086</a> <span class="preprocessor">#define TIVX_NODE_MAX_REPLICATE            (32u)</span>
-<a name="l00087"></a>00087 <span class="preprocessor"></span>
-<a name="l00093"></a><a class="code" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109">00093</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_obj_desc_type_e {
-<a name="l00094"></a>00094 
-<a name="l00096"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a39d38c49ae7032501ac90a53c38535d6">00096</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a39d38c49ae7032501ac90a53c38535d6" title="Object desciptor that has information related to image object.">TIVX_OBJ_DESC_IMAGE</a>         = 0x0,
-<a name="l00097"></a>00097 
-<a name="l00099"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8eda0effb9ba17eb34edd8e764d6d902">00099</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8eda0effb9ba17eb34edd8e764d6d902" title="Object desciptor that has information related to scalar object.">TIVX_OBJ_DESC_SCALAR</a>        = 0x1,
-<a name="l00100"></a>00100 
-<a name="l00102"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0e0a126cc88b7030ec9c2fed3de86b36">00102</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0e0a126cc88b7030ec9c2fed3de86b36" title="Object desciptor that has information related to remap object.">TIVX_OBJ_DESC_REMAP</a>         = 0x2,
-<a name="l00103"></a>00103 
-<a name="l00105"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0862c59114385a892326038f1c102bf1">00105</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0862c59114385a892326038f1c102bf1" title="Object desciptor that has information related to node object.">TIVX_OBJ_DESC_NODE</a>          = 0x3,
-<a name="l00106"></a>00106 
-<a name="l00108"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2c2ef770b3f13586c650244a0c5f6313">00108</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2c2ef770b3f13586c650244a0c5f6313" title="Object desciptor that has information related to command object.">TIVX_OBJ_DESC_CMD</a>           = 0x4,
-<a name="l00109"></a>00109 
-<a name="l00111"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109acd14a950c029d02bd12b014dc487d808">00111</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109acd14a950c029d02bd12b014dc487d808" title="Object desciptor that has information related to matrix object.">TIVX_OBJ_DESC_MATRIX</a>        = 0x5,
-<a name="l00112"></a>00112 
-<a name="l00114"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109af5a9c8ac33f96f177cd3728247c9ea6a">00114</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109af5a9c8ac33f96f177cd3728247c9ea6a" title="Object desciptor that has information related to Lut object.">TIVX_OBJ_DESC_LUT</a>           = 0x6,
-<a name="l00115"></a>00115 
-<a name="l00118"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ae19fb3ab5bc0f60b07e7c7739f676ea3">00118</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ae19fb3ab5bc0f60b07e7c7739f676ea3" title="Object desciptor that has information related to Convolution object.">TIVX_OBJ_DESC_CONVOLUTION</a>   = 0x7,
-<a name="l00119"></a>00119 
-<a name="l00122"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a890a0906323b92d8258238c3afe03c9a">00122</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a890a0906323b92d8258238c3afe03c9a" title="Object desciptor that has information related to Distribution object.">TIVX_OBJ_DESC_DISTRIBUTION</a>  = 0x8,
-<a name="l00123"></a>00123 
-<a name="l00126"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2756ef47debca4917e1d00337270ae2d">00126</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2756ef47debca4917e1d00337270ae2d" title="Object desciptor that has information related to threshold object.">TIVX_OBJ_DESC_THRESHOLD</a>     = 0x9,
-<a name="l00127"></a>00127 
-<a name="l00130"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a97895f8da837d0d5993433abf0b2394c">00130</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a97895f8da837d0d5993433abf0b2394c" title="Object desciptor that has information related to Array object.">TIVX_OBJ_DESC_ARRAY</a>         = 0xA,
-<a name="l00131"></a>00131 
-<a name="l00134"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ac3a0cf06df9653de61a3364a43e63f79">00134</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ac3a0cf06df9653de61a3364a43e63f79" title="Object desciptor that has information related to Pyramid object.">TIVX_OBJ_DESC_PYRAMID</a>       = 0xB,
-<a name="l00135"></a>00135 
-<a name="l00138"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d">00138</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d" title="Object desciptor that has information related to Object Array object.">TIVX_OBJ_DESC_OBJARRAY</a>      = 0xC,
-<a name="l00139"></a>00139 
-<a name="l00141"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f">00141</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f" title="Value of a invalid object descriptor.">TIVX_OBJ_DESC_INVALID</a>       = 0xFFFFu
-<a name="l00142"></a>00142 
-<a name="l00143"></a>00143 } <a class="code" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109" title="Enum that list all possible object descriptor type&amp;#39;s.">tivx_obj_desc_type_e</a>;
-<a name="l00144"></a>00144 
-<a name="l00150"></a><a class="code" href="group__group__tivx__obj__desc.html#ga25fa81b14d1e21751503d0b836ff5d77">00150</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_image_create_type_e
-<a name="l00151"></a>00151 {
-<a name="l00153"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77abdae207642f6d4eac4885ff53e3a1042">00153</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77abdae207642f6d4eac4885ff53e3a1042" title="Create using vxCreateImage().">TIVX_IMAGE_NORMAL</a>,
-<a name="l00155"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77a532f5e03024de0f3c8ce71bfb55b5de4">00155</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77a532f5e03024de0f3c8ce71bfb55b5de4" title="Create using vxCreateUniformImage().">TIVX_IMAGE_UNIFORM</a>,
-<a name="l00157"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac1cc0f02de444d51546f8b2d565f4f35">00157</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac1cc0f02de444d51546f8b2d565f4f35" title="Create using vxCreateVirtualImage().">TIVX_IMAGE_VIRTUAL</a>,
-<a name="l00159"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac6e8c647daf958ce6f40152d5de93907">00159</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac6e8c647daf958ce6f40152d5de93907" title="Create using vxCreateImageFromHandle().">TIVX_IMAGE_FROM_HANDLE</a>,
-<a name="l00161"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ab0934aa925c10c43c11560e58ef59cbf">00161</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ab0934aa925c10c43c11560e58ef59cbf" title="Create using vxCreateImageFromROI().">TIVX_IMAGE_FROM_ROI</a>,
-<a name="l00163"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ace7f7be141ec95c72d6b25bd4cf6b18a">00163</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ace7f7be141ec95c72d6b25bd4cf6b18a" title="Create using vxCreateImageFromChannel().">TIVX_IMAGE_FROM_CHANNEL</a>
-<a name="l00164"></a>00164 
-<a name="l00165"></a>00165 } <a class="code" href="group__group__tivx__obj__desc.html#ga25fa81b14d1e21751503d0b836ff5d77" title="Method by which image is created.">tivx_image_create_type_e</a>;
+<a name="l00002"></a>00002 <span class="comment">*</span>
+<a name="l00003"></a>00003 <span class="comment">* Copyright (c) 2017 Texas Instruments Incorporated</span>
+<a name="l00004"></a>00004 <span class="comment">*</span>
+<a name="l00005"></a>00005 <span class="comment">* All rights reserved not granted herein.</span>
+<a name="l00006"></a>00006 <span class="comment">*</span>
+<a name="l00007"></a>00007 <span class="comment">* Limited License.</span>
+<a name="l00008"></a>00008 <span class="comment">*</span>
+<a name="l00009"></a>00009 <span class="comment">* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive</span>
+<a name="l00010"></a>00010 <span class="comment">* license under copyrights and patents it now or hereafter owns or controls to make,</span>
+<a name="l00011"></a>00011 <span class="comment">* have made, use, import, offer to sell and sell (&quot;Utilize&quot;) this software subject to the</span>
+<a name="l00012"></a>00012 <span class="comment">* terms herein.  With respect to the foregoing patent license, such license is granted</span>
+<a name="l00013"></a>00013 <span class="comment">* solely to the extent that any such patent is necessary to Utilize the software alone.</span>
+<a name="l00014"></a>00014 <span class="comment">* The patent license shall not apply to any combinations which include this software,</span>
+<a name="l00015"></a>00015 <span class="comment">* other than combinations with devices manufactured by or for TI (&quot;TI Devices&quot;).</span>
+<a name="l00016"></a>00016 <span class="comment">* No hardware patent is licensed hereunder.</span>
+<a name="l00017"></a>00017 <span class="comment">*</span>
+<a name="l00018"></a>00018 <span class="comment">* Redistributions must preserve existing copyright notices and reproduce this license</span>
+<a name="l00019"></a>00019 <span class="comment">* (including the above copyright notice and the disclaimer and (if applicable) source</span>
+<a name="l00020"></a>00020 <span class="comment">* code license limitations below) in the documentation and/or other materials provided</span>
+<a name="l00021"></a>00021 <span class="comment">* with the distribution</span>
+<a name="l00022"></a>00022 <span class="comment">*</span>
+<a name="l00023"></a>00023 <span class="comment">* Redistribution and use in binary form, without modification, are permitted provided</span>
+<a name="l00024"></a>00024 <span class="comment">* that the following conditions are met:</span>
+<a name="l00025"></a>00025 <span class="comment">*</span>
+<a name="l00026"></a>00026 <span class="comment">* *       No reverse engineering, decompilation, or disassembly of this software is</span>
+<a name="l00027"></a>00027 <span class="comment">* permitted with respect to any software provided in binary form.</span>
+<a name="l00028"></a>00028 <span class="comment">*</span>
+<a name="l00029"></a>00029 <span class="comment">* *       any redistribution and use are licensed by TI for use only with TI Devices.</span>
+<a name="l00030"></a>00030 <span class="comment">*</span>
+<a name="l00031"></a>00031 <span class="comment">* *       Nothing shall obligate TI to provide you with source code for the software</span>
+<a name="l00032"></a>00032 <span class="comment">* licensed and provided to you in object code.</span>
+<a name="l00033"></a>00033 <span class="comment">*</span>
+<a name="l00034"></a>00034 <span class="comment">* If software source code is provided to you, modification and redistribution of the</span>
+<a name="l00035"></a>00035 <span class="comment">* source code are permitted provided that the following conditions are met:</span>
+<a name="l00036"></a>00036 <span class="comment">*</span>
+<a name="l00037"></a>00037 <span class="comment">* *       any redistribution and use of the source code, including any resulting derivative</span>
+<a name="l00038"></a>00038 <span class="comment">* works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00039"></a>00039 <span class="comment">*</span>
+<a name="l00040"></a>00040 <span class="comment">* *       any redistribution and use of any object code compiled from the source code</span>
+<a name="l00041"></a>00041 <span class="comment">* and any resulting derivative works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00042"></a>00042 <span class="comment">*</span>
+<a name="l00043"></a>00043 <span class="comment">* Neither the name of Texas Instruments Incorporated nor the names of its suppliers</span>
+<a name="l00044"></a>00044 <span class="comment">*</span>
+<a name="l00045"></a>00045 <span class="comment">* may be used to endorse or promote products derived from this software without</span>
+<a name="l00046"></a>00046 <span class="comment">* specific prior written permission.</span>
+<a name="l00047"></a>00047 <span class="comment">*</span>
+<a name="l00048"></a>00048 <span class="comment">* DISCLAIMER.</span>
+<a name="l00049"></a>00049 <span class="comment">*</span>
+<a name="l00050"></a>00050 <span class="comment">* THIS SOFTWARE IS PROVIDED BY TI AND TI&apos;S LICENSORS &quot;AS IS&quot; AND ANY EXPRESS</span>
+<a name="l00051"></a>00051 <span class="comment">* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span>
+<a name="l00052"></a>00052 <span class="comment">* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span>
+<a name="l00053"></a>00053 <span class="comment">* IN NO EVENT SHALL TI AND TI&apos;S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<a name="l00054"></a>00054 <span class="comment">* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span>
+<a name="l00055"></a>00055 <span class="comment">* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<a name="l00056"></a>00056 <span class="comment">* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY</span>
+<a name="l00057"></a>00057 <span class="comment">* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE</span>
+<a name="l00058"></a>00058 <span class="comment">* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span>
+<a name="l00059"></a>00059 <span class="comment">* OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<a name="l00060"></a>00060 <span class="comment">*</span>
+<a name="l00061"></a>00061 <span class="comment">*/</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 <span class="preprocessor">#ifndef TIVX_OBJ_DESC_H_</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_OBJ_DESC_H_</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span>
+<a name="l00068"></a>00068 <span class="preprocessor">#include &lt;<a class="code" href="tivx__mem_8h.html" title="Interface to Memory allocation and deallocation APIs.">TI/tivx_mem.h</a>&gt;</span>
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00072"></a>00072 <span class="preprocessor">#endif</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span>
+<a name="l00084"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">00084</a> <span class="preprocessor">#define TIVX_IMAGE_MAX_PLANES   (3u)</span>
+<a name="l00085"></a>00085 <span class="preprocessor"></span>
+<a name="l00089"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">00089</a> <span class="preprocessor">#define TIVX_KERNEL_MAX_PARAMS      (10u)</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span>
+<a name="l00094"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#gad70fbfdc1f0c57ecc19a1d29878cbe18">00094</a> <span class="preprocessor">#define TIVX_NODE_MAX_OUT_NODES      (8u)</span>
+<a name="l00095"></a>00095 <span class="preprocessor"></span>
+<a name="l00099"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b">00099</a> <span class="preprocessor">#define TIVX_NODE_MAX_IN_NODES      (8u)</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span>
+<a name="l00104"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga9394c906b6f2581dcbfe1b830d31eee5">00104</a> <span class="preprocessor">#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32)</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span>
+<a name="l00109"></a><a class="code" href="group__group__tivx__obj__desc__cfg.html#ga1d57be13326dfee5ccb50f6bfae364da">00109</a> <span class="preprocessor">#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32)</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span>
+<a name="l00114"></a><a class="code" href="group__group__tivx__obj__desc.html#ga412e9ff53c1a69e16a33ac511366f742">00114</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_REPLICATED     (0x00000001u)</span>
+<a name="l00115"></a>00115 <span class="preprocessor"></span>
+<a name="l00119"></a><a class="code" href="group__group__tivx__obj__desc.html#gaf7ae2fec33c7997a3106f061624d9add">00119</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_EXECUTED       (0x00000002u)</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>
+<a name="l00124"></a><a class="code" href="group__group__tivx__obj__desc.html#ga2f5e855e1a88921989451ebf30b70778">00124</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_USER_CALLBACK  (0x00000004u)</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>
+<a name="l00130"></a><a class="code" href="group__group__tivx__obj__desc.html#ga4a01ab216dbd031e89a5b4367bb33881">00130</a> <span class="preprocessor">#define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)</span>
+<a name="l00131"></a>00131 <span class="preprocessor"></span>
+<a name="l00135"></a><a class="code" href="group__group__tivx__obj__desc.html#gaa345cc795baa95e1d5ff39694700ad87">00135</a> <span class="preprocessor">#define TIVX_GRAPH_MAX_NODES               (32u)</span>
+<a name="l00136"></a>00136 <span class="preprocessor"></span>
+<a name="l00140"></a><a class="code" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293">00140</a> <span class="preprocessor">#define TIVX_NODE_MAX_REPLICATE            (32u)</span>
+<a name="l00141"></a>00141 <span class="preprocessor"></span>
+<a name="l00147"></a><a class="code" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109">00147</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_obj_desc_type_e {
+<a name="l00148"></a>00148 
+<a name="l00150"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a39d38c49ae7032501ac90a53c38535d6">00150</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a39d38c49ae7032501ac90a53c38535d6" title="Object desciptor that has information related to image object.">TIVX_OBJ_DESC_IMAGE</a>         = 0x0,
+<a name="l00151"></a>00151 
+<a name="l00153"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8eda0effb9ba17eb34edd8e764d6d902">00153</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8eda0effb9ba17eb34edd8e764d6d902" title="Object desciptor that has information related to scalar object.">TIVX_OBJ_DESC_SCALAR</a>        = 0x1,
+<a name="l00154"></a>00154 
+<a name="l00156"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0e0a126cc88b7030ec9c2fed3de86b36">00156</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0e0a126cc88b7030ec9c2fed3de86b36" title="Object desciptor that has information related to remap object.">TIVX_OBJ_DESC_REMAP</a>         = 0x2,
+<a name="l00157"></a>00157 
+<a name="l00159"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0862c59114385a892326038f1c102bf1">00159</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0862c59114385a892326038f1c102bf1" title="Object desciptor that has information related to node object.">TIVX_OBJ_DESC_NODE</a>          = 0x3,
+<a name="l00160"></a>00160 
+<a name="l00162"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2c2ef770b3f13586c650244a0c5f6313">00162</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2c2ef770b3f13586c650244a0c5f6313" title="Object desciptor that has information related to command object.">TIVX_OBJ_DESC_CMD</a>           = 0x4,
+<a name="l00163"></a>00163 
+<a name="l00165"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109acd14a950c029d02bd12b014dc487d808">00165</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109acd14a950c029d02bd12b014dc487d808" title="Object desciptor that has information related to matrix object.">TIVX_OBJ_DESC_MATRIX</a>        = 0x5,
 <a name="l00166"></a>00166 
-<a name="l00172"></a><a class="code" href="structtivx__remap__point__t.html">00172</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_remap_point {
+<a name="l00168"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109af5a9c8ac33f96f177cd3728247c9ea6a">00168</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109af5a9c8ac33f96f177cd3728247c9ea6a" title="Object desciptor that has information related to Lut object.">TIVX_OBJ_DESC_LUT</a>           = 0x6,
+<a name="l00169"></a>00169 
+<a name="l00172"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ae19fb3ab5bc0f60b07e7c7739f676ea3">00172</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ae19fb3ab5bc0f60b07e7c7739f676ea3" title="Object desciptor that has information related to Convolution object.">TIVX_OBJ_DESC_CONVOLUTION</a>   = 0x7,
 <a name="l00173"></a>00173 
-<a name="l00174"></a><a class="code" href="structtivx__remap__point__t.html#af5586365a9f6e22eb670e1cd21e90a07">00174</a>     <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> src_x;
-<a name="l00175"></a><a class="code" href="structtivx__remap__point__t.html#aedfe83efb21e4d0d637a46a9a0557232">00175</a>     <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> src_y;
-<a name="l00176"></a>00176 
-<a name="l00177"></a>00177 } <a class="code" href="structtivx__remap__point__t.html" title="Remap point in remap table.">tivx_remap_point_t</a>;
-<a name="l00178"></a>00178 
-<a name="l00189"></a><a class="code" href="structtivx__obj__desc__t.html">00189</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_t {
-<a name="l00190"></a>00190 
-<a name="l00192"></a><a class="code" href="structtivx__obj__desc__t.html#a4267007edae2e78773a690459d1d4867">00192</a>     uint16_t obj_desc_id;
+<a name="l00176"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a890a0906323b92d8258238c3afe03c9a">00176</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a890a0906323b92d8258238c3afe03c9a" title="Object desciptor that has information related to Distribution object.">TIVX_OBJ_DESC_DISTRIBUTION</a>  = 0x8,
+<a name="l00177"></a>00177 
+<a name="l00180"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2756ef47debca4917e1d00337270ae2d">00180</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2756ef47debca4917e1d00337270ae2d" title="Object desciptor that has information related to threshold object.">TIVX_OBJ_DESC_THRESHOLD</a>     = 0x9,
+<a name="l00181"></a>00181 
+<a name="l00184"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a97895f8da837d0d5993433abf0b2394c">00184</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a97895f8da837d0d5993433abf0b2394c" title="Object desciptor that has information related to Array object.">TIVX_OBJ_DESC_ARRAY</a>         = 0xA,
+<a name="l00185"></a>00185 
+<a name="l00188"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ac3a0cf06df9653de61a3364a43e63f79">00188</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ac3a0cf06df9653de61a3364a43e63f79" title="Object desciptor that has information related to Pyramid object.">TIVX_OBJ_DESC_PYRAMID</a>       = 0xB,
+<a name="l00189"></a>00189 
+<a name="l00192"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d">00192</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d" title="Object desciptor that has information related to Object Array object.">TIVX_OBJ_DESC_OBJARRAY</a>      = 0xC,
 <a name="l00193"></a>00193 
-<a name="l00195"></a><a class="code" href="structtivx__obj__desc__t.html#a961853b3326506e62ea2b1fba5b19fe2">00195</a>     uint16_t type;
+<a name="l00195"></a><a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f">00195</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f" title="Value of a invalid object descriptor.">TIVX_OBJ_DESC_INVALID</a>       = 0xFFFFu
 <a name="l00196"></a>00196 
-<a name="l00201"></a><a class="code" href="structtivx__obj__desc__t.html#a3b4114c51dfc1ab12a7194711ee70409">00201</a>     uint16_t scope_obj_desc_id;
-<a name="l00202"></a>00202 
-<a name="l00204"></a><a class="code" href="structtivx__obj__desc__t.html#ad732606f34283c471317f74c9c50b4c0">00204</a>     uint16_t rsv[1];
-<a name="l00205"></a>00205 
-<a name="l00206"></a>00206 } <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a>;
-<a name="l00207"></a>00207 
-<a name="l00217"></a><a class="code" href="structtivx__obj__desc__node__t.html">00217</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_node
-<a name="l00218"></a>00218 {
-<a name="l00220"></a><a class="code" href="structtivx__obj__desc__node__t.html#a03b652a236d7adc1a8472a3f3568055f">00220</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00221"></a>00221 
-<a name="l00224"></a><a class="code" href="structtivx__obj__desc__node__t.html#a66ba208b764dfc33957afa50eab4c826">00224</a>     uint32_t flags;
-<a name="l00225"></a>00225 
-<a name="l00227"></a><a class="code" href="structtivx__obj__desc__node__t.html#a59a452da1f524aa79c391775495105f3">00227</a>     uint32_t kernel_id;
-<a name="l00228"></a>00228 
-<a name="l00230"></a><a class="code" href="structtivx__obj__desc__node__t.html#add873605442c16e5ba4e89d1114652ca">00230</a>     uint32_t target_id;
-<a name="l00231"></a>00231 
-<a name="l00241"></a><a class="code" href="structtivx__obj__desc__node__t.html#a7848e5269eca552c4a58bc7e26bbc66c">00241</a>     uint32_t node_complete_cmd_obj_desc_id;
-<a name="l00242"></a>00242 
-<a name="l00245"></a><a class="code" href="structtivx__obj__desc__node__t.html#a1c9304b52456721025060d0578de5ac2">00245</a>     uintptr_t host_node_ref;
-<a name="l00246"></a>00246 
-<a name="l00254"></a><a class="code" href="structtivx__obj__desc__node__t.html#a9abdd9400dfdea0c44baec4369178d61">00254</a>     uint32_t target_kernel_index[<a class="code" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293" title="Max number of replicated nodes.">TIVX_NODE_MAX_REPLICATE</a>];
-<a name="l00255"></a>00255 
-<a name="l00257"></a><a class="code" href="structtivx__obj__desc__node__t.html#a07b0904d2b8a0d04e3063bd3be5bae56">00257</a>     uint32_t exe_status;
-<a name="l00258"></a>00258 
-<a name="l00260"></a><a class="code" href="structtivx__obj__desc__node__t.html#a73a9479d2ea9a78bef66091c82bd3649">00260</a>     uint32_t exe_time_beg_h;
+<a name="l00197"></a>00197 } <a class="code" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109" title="Enum that list all possible object descriptor type&amp;#39;s.">tivx_obj_desc_type_e</a>;
+<a name="l00198"></a>00198 
+<a name="l00204"></a><a class="code" href="group__group__tivx__obj__desc.html#ga25fa81b14d1e21751503d0b836ff5d77">00204</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_image_create_type_e
+<a name="l00205"></a>00205 {
+<a name="l00207"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77abdae207642f6d4eac4885ff53e3a1042">00207</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77abdae207642f6d4eac4885ff53e3a1042" title="Create using vxCreateImage().">TIVX_IMAGE_NORMAL</a>,
+<a name="l00209"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77a532f5e03024de0f3c8ce71bfb55b5de4">00209</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77a532f5e03024de0f3c8ce71bfb55b5de4" title="Create using vxCreateUniformImage().">TIVX_IMAGE_UNIFORM</a>,
+<a name="l00211"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac1cc0f02de444d51546f8b2d565f4f35">00211</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac1cc0f02de444d51546f8b2d565f4f35" title="Create using vxCreateVirtualImage().">TIVX_IMAGE_VIRTUAL</a>,
+<a name="l00213"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac6e8c647daf958ce6f40152d5de93907">00213</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac6e8c647daf958ce6f40152d5de93907" title="Create using vxCreateImageFromHandle().">TIVX_IMAGE_FROM_HANDLE</a>,
+<a name="l00215"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ab0934aa925c10c43c11560e58ef59cbf">00215</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ab0934aa925c10c43c11560e58ef59cbf" title="Create using vxCreateImageFromROI().">TIVX_IMAGE_FROM_ROI</a>,
+<a name="l00217"></a><a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ace7f7be141ec95c72d6b25bd4cf6b18a">00217</a>     <a class="code" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ace7f7be141ec95c72d6b25bd4cf6b18a" title="Create using vxCreateImageFromChannel().">TIVX_IMAGE_FROM_CHANNEL</a>
+<a name="l00218"></a>00218 
+<a name="l00219"></a>00219 } <a class="code" href="group__group__tivx__obj__desc.html#ga25fa81b14d1e21751503d0b836ff5d77" title="Method by which image is created.">tivx_image_create_type_e</a>;
+<a name="l00220"></a>00220 
+<a name="l00226"></a><a class="code" href="structtivx__remap__point__t.html">00226</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_remap_point {
+<a name="l00227"></a>00227 
+<a name="l00228"></a><a class="code" href="structtivx__remap__point__t.html#af5586365a9f6e22eb670e1cd21e90a07">00228</a>     <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> src_x;
+<a name="l00229"></a><a class="code" href="structtivx__remap__point__t.html#aedfe83efb21e4d0d637a46a9a0557232">00229</a>     <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> src_y;
+<a name="l00230"></a>00230 
+<a name="l00231"></a>00231 } <a class="code" href="structtivx__remap__point__t.html" title="Remap point in remap table.">tivx_remap_point_t</a>;
+<a name="l00232"></a>00232 
+<a name="l00243"></a><a class="code" href="structtivx__obj__desc__t.html">00243</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_t {
+<a name="l00244"></a>00244 
+<a name="l00246"></a><a class="code" href="structtivx__obj__desc__t.html#a4267007edae2e78773a690459d1d4867">00246</a>     uint16_t obj_desc_id;
+<a name="l00247"></a>00247 
+<a name="l00249"></a><a class="code" href="structtivx__obj__desc__t.html#a961853b3326506e62ea2b1fba5b19fe2">00249</a>     uint16_t type;
+<a name="l00250"></a>00250 
+<a name="l00255"></a><a class="code" href="structtivx__obj__desc__t.html#a3b4114c51dfc1ab12a7194711ee70409">00255</a>     uint16_t scope_obj_desc_id;
+<a name="l00256"></a>00256 
+<a name="l00258"></a><a class="code" href="structtivx__obj__desc__t.html#ad732606f34283c471317f74c9c50b4c0">00258</a>     uint16_t rsv[1];
+<a name="l00259"></a>00259 
+<a name="l00260"></a>00260 } <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a>;
 <a name="l00261"></a>00261 
-<a name="l00263"></a><a class="code" href="structtivx__obj__desc__node__t.html#aae3229cec1e56f08b703f6df1a7b6115">00263</a>     uint32_t exe_time_beg_l;
-<a name="l00264"></a>00264 
-<a name="l00266"></a><a class="code" href="structtivx__obj__desc__node__t.html#a3ea569d26497b3b2a28331e02ac587a7">00266</a>     uint32_t exe_time_end_h;
-<a name="l00267"></a>00267 
-<a name="l00269"></a><a class="code" href="structtivx__obj__desc__node__t.html#aa765c1f3fe78c344b6740689da2db130">00269</a>     uint32_t exe_time_end_l;
-<a name="l00270"></a>00270 
-<a name="l00272"></a><a class="code" href="structtivx__obj__desc__node__t.html#a4fecbe3574053ccb469a8f7aa3a72f6f">00272</a>     uint32_t num_params;
-<a name="l00273"></a>00273 
-<a name="l00275"></a><a class="code" href="structtivx__obj__desc__node__t.html#a2a43c3e06b5459979e6e65809b987004">00275</a>     uint32_t num_out_nodes;
-<a name="l00276"></a>00276 
-<a name="l00278"></a><a class="code" href="structtivx__obj__desc__node__t.html#a68c58da5f45b0048924112fdc2453e34">00278</a>     uint32_t num_in_nodes;
+<a name="l00271"></a><a class="code" href="structtivx__obj__desc__node__t.html">00271</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_node
+<a name="l00272"></a>00272 {
+<a name="l00274"></a><a class="code" href="structtivx__obj__desc__node__t.html#a03b652a236d7adc1a8472a3f3568055f">00274</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00275"></a>00275 
+<a name="l00278"></a><a class="code" href="structtivx__obj__desc__node__t.html#a66ba208b764dfc33957afa50eab4c826">00278</a>     uint32_t flags;
 <a name="l00279"></a>00279 
-<a name="l00281"></a><a class="code" href="structtivx__obj__desc__node__t.html#acc6e3f435fe97bff1c7bea3dd569a19c">00281</a>     <a class="code" href="structvx__border__t.html" title="Use with the enumeration VX_NODE_BORDER to set the border mode behavior of a node...">vx_border_t</a> border_mode;
+<a name="l00281"></a><a class="code" href="structtivx__obj__desc__node__t.html#a59a452da1f524aa79c391775495105f3">00281</a>     uint32_t kernel_id;
 <a name="l00282"></a>00282 
-<a name="l00288"></a><a class="code" href="structtivx__obj__desc__node__t.html#a06dfb149b449a526efe33871be6ec14f">00288</a>     uint32_t is_prm_replicated;
-<a name="l00289"></a>00289 
-<a name="l00294"></a><a class="code" href="structtivx__obj__desc__node__t.html#a6454f4f1b941a56acdf20c576ae01644">00294</a>     uint32_t num_of_replicas;
-<a name="l00295"></a>00295 
-<a name="l00297"></a><a class="code" href="structtivx__obj__desc__node__t.html#a52645fb7794dcefbdf87ccd2f0a24b46">00297</a>     uint16_t data_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
-<a name="l00298"></a>00298 
-<a name="l00300"></a><a class="code" href="structtivx__obj__desc__node__t.html#a4589184bf8aea905a30686b9552fa434">00300</a>     uint16_t out_node_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad70fbfdc1f0c57ecc19a1d29878cbe18" title="Max nodes taking output form a given node.">TIVX_NODE_MAX_OUT_NODES</a>];
-<a name="l00301"></a>00301 
-<a name="l00303"></a><a class="code" href="structtivx__obj__desc__node__t.html#a6978fe4f16c4b3af539ff2b13ca270cb">00303</a>     uint16_t in_node_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b" title="Max nodes feeding input to a given node.">TIVX_NODE_MAX_IN_NODES</a>];
-<a name="l00304"></a>00304 
-<a name="l00306"></a><a class="code" href="structtivx__obj__desc__node__t.html#a51155a9e2c23f7505b5dd5a7fc308a8a">00306</a>     uint32_t dummy;
-<a name="l00307"></a>00307 } <a class="code" href="structtivx__obj__desc__node__t.html" title="Node object descriptor.">tivx_obj_desc_node_t</a>;
-<a name="l00308"></a>00308 
-<a name="l00314"></a><a class="code" href="structtivx__obj__desc__image__t.html">00314</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_image
-<a name="l00315"></a>00315 {
-<a name="l00317"></a><a class="code" href="structtivx__obj__desc__image__t.html#a5007c18b86466d554a9957a8b7cd0514">00317</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00319"></a><a class="code" href="structtivx__obj__desc__image__t.html#a26f4741fcb370f706d690a92b772e7f4">00319</a>     uint32_t width;
-<a name="l00321"></a><a class="code" href="structtivx__obj__desc__image__t.html#aa389438c574490899d84934715e754e5">00321</a>     uint32_t height;
-<a name="l00323"></a><a class="code" href="structtivx__obj__desc__image__t.html#a2da683b29830bc930621abcf9741ee56">00323</a>     uint32_t format;
-<a name="l00325"></a><a class="code" href="structtivx__obj__desc__image__t.html#a14c9fd446f7c176554334ce6a42c4905">00325</a>     uint32_t planes;
-<a name="l00327"></a><a class="code" href="structtivx__obj__desc__image__t.html#a6666dcf2ce22c49cb118857f1c7d40bd">00327</a>     uint32_t color_space;
-<a name="l00329"></a><a class="code" href="structtivx__obj__desc__image__t.html#adb1333609462b46b240a0412929de1b2">00329</a>     uint32_t color_range;
-<a name="l00331"></a><a class="code" href="structtivx__obj__desc__image__t.html#a2fa8287d36905581e76fbc6f036892f7">00331</a>     uint32_t mem_size[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
-<a name="l00342"></a><a class="code" href="structtivx__obj__desc__image__t.html#aa5124f3fad8d260ec44de397be928625">00342</a>     uint32_t uniform_image_pixel_value;
-<a name="l00344"></a><a class="code" href="structtivx__obj__desc__image__t.html#aba13fb726e4d1d6d91d3f3d7df987448">00344</a>     uint32_t create_type;
-<a name="l00346"></a><a class="code" href="structtivx__obj__desc__image__t.html#a61381d3666b015372353a2fb75a2a004">00346</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
-<a name="l00348"></a><a class="code" href="structtivx__obj__desc__image__t.html#a4b82e50bb7c4e11eb776488f7221676e">00348</a>     <a class="code" href="structvx__imagepatch__addressing__t.html" title="The addressing image patch structure is used by the Host only to address pixels in...">vx_imagepatch_addressing_t</a> imagepatch_addr[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
-<a name="l00350"></a><a class="code" href="structtivx__obj__desc__image__t.html#a94978aef82e4545517b4afcfe9ce10d4">00350</a>     <a class="code" href="structvx__rectangle__t.html" title="The rectangle data structure that is shared with the users. The area of the rectangle...">vx_rectangle_t</a> valid_roi;
-<a name="l00351"></a>00351 } <a class="code" href="structtivx__obj__desc__image__t.html" title="Image object descriptor as placed in shared memory.">tivx_obj_desc_image_t</a>;
+<a name="l00284"></a><a class="code" href="structtivx__obj__desc__node__t.html#add873605442c16e5ba4e89d1114652ca">00284</a>     uint32_t target_id;
+<a name="l00285"></a>00285 
+<a name="l00295"></a><a class="code" href="structtivx__obj__desc__node__t.html#a7848e5269eca552c4a58bc7e26bbc66c">00295</a>     uint32_t node_complete_cmd_obj_desc_id;
+<a name="l00296"></a>00296 
+<a name="l00299"></a><a class="code" href="structtivx__obj__desc__node__t.html#a1c9304b52456721025060d0578de5ac2">00299</a>     uintptr_t host_node_ref;
+<a name="l00300"></a>00300 
+<a name="l00308"></a><a class="code" href="structtivx__obj__desc__node__t.html#a9abdd9400dfdea0c44baec4369178d61">00308</a>     uint32_t target_kernel_index[<a class="code" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293" title="Max number of replicated nodes.">TIVX_NODE_MAX_REPLICATE</a>];
+<a name="l00309"></a>00309 
+<a name="l00311"></a><a class="code" href="structtivx__obj__desc__node__t.html#a07b0904d2b8a0d04e3063bd3be5bae56">00311</a>     uint32_t exe_status;
+<a name="l00312"></a>00312 
+<a name="l00314"></a><a class="code" href="structtivx__obj__desc__node__t.html#a73a9479d2ea9a78bef66091c82bd3649">00314</a>     uint32_t exe_time_beg_h;
+<a name="l00315"></a>00315 
+<a name="l00317"></a><a class="code" href="structtivx__obj__desc__node__t.html#aae3229cec1e56f08b703f6df1a7b6115">00317</a>     uint32_t exe_time_beg_l;
+<a name="l00318"></a>00318 
+<a name="l00320"></a><a class="code" href="structtivx__obj__desc__node__t.html#a3ea569d26497b3b2a28331e02ac587a7">00320</a>     uint32_t exe_time_end_h;
+<a name="l00321"></a>00321 
+<a name="l00323"></a><a class="code" href="structtivx__obj__desc__node__t.html#aa765c1f3fe78c344b6740689da2db130">00323</a>     uint32_t exe_time_end_l;
+<a name="l00324"></a>00324 
+<a name="l00326"></a><a class="code" href="structtivx__obj__desc__node__t.html#a4fecbe3574053ccb469a8f7aa3a72f6f">00326</a>     uint32_t num_params;
+<a name="l00327"></a>00327 
+<a name="l00329"></a><a class="code" href="structtivx__obj__desc__node__t.html#a2a43c3e06b5459979e6e65809b987004">00329</a>     uint32_t num_out_nodes;
+<a name="l00330"></a>00330 
+<a name="l00332"></a><a class="code" href="structtivx__obj__desc__node__t.html#a68c58da5f45b0048924112fdc2453e34">00332</a>     uint32_t num_in_nodes;
+<a name="l00333"></a>00333 
+<a name="l00335"></a><a class="code" href="structtivx__obj__desc__node__t.html#acc6e3f435fe97bff1c7bea3dd569a19c">00335</a>     <a class="code" href="structvx__border__t.html" title="Use with the enumeration VX_NODE_BORDER to set the border mode behavior of a node...">vx_border_t</a> border_mode;
+<a name="l00336"></a>00336 
+<a name="l00342"></a><a class="code" href="structtivx__obj__desc__node__t.html#a06dfb149b449a526efe33871be6ec14f">00342</a>     uint32_t is_prm_replicated;
+<a name="l00343"></a>00343 
+<a name="l00348"></a><a class="code" href="structtivx__obj__desc__node__t.html#a6454f4f1b941a56acdf20c576ae01644">00348</a>     uint32_t num_of_replicas;
+<a name="l00349"></a>00349 
+<a name="l00351"></a><a class="code" href="structtivx__obj__desc__node__t.html#a52645fb7794dcefbdf87ccd2f0a24b46">00351</a>     uint16_t data_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09" title="Max parameters in a kernel.">TIVX_KERNEL_MAX_PARAMS</a>];
 <a name="l00352"></a>00352 
-<a name="l00353"></a>00353 
-<a name="l00359"></a><a class="code" href="structtivx__obj__desc__remap__t.html">00359</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_remap
-<a name="l00360"></a>00360 {
-<a name="l00362"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a56d5bdcb8463f5959c9d21c3eb035165">00362</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00364"></a><a class="code" href="structtivx__obj__desc__remap__t.html#ad095535e68586f0ef1729030367d4391">00364</a>     uint32_t src_width;
-<a name="l00366"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a48484d1f1be9545a1ea78b30c199a128">00366</a>     uint32_t src_height;
-<a name="l00368"></a><a class="code" href="structtivx__obj__desc__remap__t.html#ab3bc959716f1da1c60bdeb947c237098">00368</a>     uint32_t dst_width;
-<a name="l00370"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a353d5711729ca2e6f48be6ee28933555">00370</a>     uint32_t dst_height;
-<a name="l00372"></a><a class="code" href="structtivx__obj__desc__remap__t.html#adbb7fdab2d22630c81a4d85e5ceb144c">00372</a>     uint32_t mem_size;
-<a name="l00374"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a019afce79142d5ce37c827c03bccd841">00374</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
-<a name="l00375"></a>00375 } <a class="code" href="structtivx__obj__desc__remap__t.html" title="Remap object descriptor as placed in shared memory.">tivx_obj_desc_remap_t</a>;
-<a name="l00376"></a>00376 
-<a name="l00382"></a><a class="code" href="structtivx__obj__desc__matrix__t.html">00382</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_matrix
-<a name="l00383"></a>00383 {
-<a name="l00385"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a276c964b2670f2df2a98c13d17699a8b">00385</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00389"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a0252937faa83e16b6641b98bc492539b">00389</a>     uint32_t rows;
-<a name="l00391"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a04862a30820c064dc70b413f1a85208f">00391</a>     uint32_t columns;
-<a name="l00392"></a>00392 
-<a name="l00394"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#af8d7bdc9635c9f4fd3d06419e3c7ba4a">00394</a>     uint32_t origin_x;
-<a name="l00396"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#ae822fa8bb4ffadaabdf07b6e2b995bfb">00396</a>     uint32_t origin_y;
-<a name="l00397"></a>00397 
-<a name="l00399"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a5422df22d0674a36edbb3c1325381d02">00399</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> pattern;
-<a name="l00401"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#afd7554615071191e721c0956d09e5682">00401</a>     uint32_t mem_size;
-<a name="l00402"></a>00402 
-<a name="l00404"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a773602ec4c1604ff8a92a064fad62573">00404</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> data_type;
-<a name="l00405"></a>00405 
-<a name="l00407"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a3eba6f8e6813d20df3b67d09f99642a1">00407</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
-<a name="l00408"></a>00408 } <a class="code" href="structtivx__obj__desc__matrix__t.html" title="matrix object descriptor as placed in shared memory">tivx_obj_desc_matrix_t</a>;
-<a name="l00409"></a>00409 
-<a name="l00415"></a><a class="code" href="structtivx__obj__desc__lut__t.html">00415</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_lut
-<a name="l00416"></a>00416 {
-<a name="l00418"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a9910b8c76c7e842695a4b2b20e751bac">00418</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00419"></a>00419 
-<a name="l00421"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a246616705e5f2ad0e6549d8aa0fd9147">00421</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type;
-<a name="l00423"></a><a class="code" href="structtivx__obj__desc__lut__t.html#ac1efdd011919d9937247a489f3328f41">00423</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> item_size;
-<a name="l00425"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a9d88807eccef89057f02ef8da13d126d">00425</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> num_items;
-<a name="l00427"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a6a0398d2007846de01f0f3d7f0bc92d9">00427</a>     uint32_t mem_size;
-<a name="l00428"></a>00428 
-<a name="l00430"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a21a58447f27b6686909dbe7a5b04f686">00430</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
-<a name="l00431"></a>00431 } <a class="code" href="structtivx__obj__desc__lut__t.html" title="lut object descriptor as placed in shared memory">tivx_obj_desc_lut_t</a>;
-<a name="l00432"></a>00432 
-<a name="l00438"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html">00438</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_pyramid
-<a name="l00439"></a>00439 {
-<a name="l00441"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a7f5af0f5660e6bc1e5821182c85a0fbd">00441</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00442"></a>00442 
-<a name="l00444"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a5ab669c0fe79ece3948dd70967fbec9d">00444</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> num_levels;
-<a name="l00446"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a2265d3c605588d46886832a9a82f9bce">00446</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> width;
-<a name="l00448"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a672a6b3e72009992e2b5a1ccea8a60e6">00448</a>     uint32_t height;
-<a name="l00450"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a6aa80ede86a631696227b125e2cb32af">00450</a>     <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> scale;
+<a name="l00354"></a><a class="code" href="structtivx__obj__desc__node__t.html#a4589184bf8aea905a30686b9552fa434">00354</a>     uint16_t out_node_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad70fbfdc1f0c57ecc19a1d29878cbe18" title="Max nodes taking output form a given node.">TIVX_NODE_MAX_OUT_NODES</a>];
+<a name="l00355"></a>00355 
+<a name="l00357"></a><a class="code" href="structtivx__obj__desc__node__t.html#a6978fe4f16c4b3af539ff2b13ca270cb">00357</a>     uint16_t in_node_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b" title="Max nodes feeding input to a given node.">TIVX_NODE_MAX_IN_NODES</a>];
+<a name="l00358"></a>00358 
+<a name="l00360"></a><a class="code" href="structtivx__obj__desc__node__t.html#a51155a9e2c23f7505b5dd5a7fc308a8a">00360</a>     uint32_t dummy;
+<a name="l00361"></a>00361 } <a class="code" href="structtivx__obj__desc__node__t.html" title="Node object descriptor.">tivx_obj_desc_node_t</a>;
+<a name="l00362"></a>00362 
+<a name="l00368"></a><a class="code" href="structtivx__obj__desc__image__t.html">00368</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_image
+<a name="l00369"></a>00369 {
+<a name="l00371"></a><a class="code" href="structtivx__obj__desc__image__t.html#a5007c18b86466d554a9957a8b7cd0514">00371</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00373"></a><a class="code" href="structtivx__obj__desc__image__t.html#a26f4741fcb370f706d690a92b772e7f4">00373</a>     uint32_t width;
+<a name="l00375"></a><a class="code" href="structtivx__obj__desc__image__t.html#aa389438c574490899d84934715e754e5">00375</a>     uint32_t height;
+<a name="l00377"></a><a class="code" href="structtivx__obj__desc__image__t.html#a2da683b29830bc930621abcf9741ee56">00377</a>     uint32_t format;
+<a name="l00379"></a><a class="code" href="structtivx__obj__desc__image__t.html#a14c9fd446f7c176554334ce6a42c4905">00379</a>     uint32_t planes;
+<a name="l00381"></a><a class="code" href="structtivx__obj__desc__image__t.html#a6666dcf2ce22c49cb118857f1c7d40bd">00381</a>     uint32_t color_space;
+<a name="l00383"></a><a class="code" href="structtivx__obj__desc__image__t.html#adb1333609462b46b240a0412929de1b2">00383</a>     uint32_t color_range;
+<a name="l00385"></a><a class="code" href="structtivx__obj__desc__image__t.html#a2fa8287d36905581e76fbc6f036892f7">00385</a>     uint32_t mem_size[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
+<a name="l00396"></a><a class="code" href="structtivx__obj__desc__image__t.html#aa5124f3fad8d260ec44de397be928625">00396</a>     uint32_t uniform_image_pixel_value;
+<a name="l00398"></a><a class="code" href="structtivx__obj__desc__image__t.html#aba13fb726e4d1d6d91d3f3d7df987448">00398</a>     uint32_t create_type;
+<a name="l00400"></a><a class="code" href="structtivx__obj__desc__image__t.html#a61381d3666b015372353a2fb75a2a004">00400</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
+<a name="l00402"></a><a class="code" href="structtivx__obj__desc__image__t.html#a4b82e50bb7c4e11eb776488f7221676e">00402</a>     <a class="code" href="structvx__imagepatch__addressing__t.html" title="The addressing image patch structure is used by the Host only to address pixels in...">vx_imagepatch_addressing_t</a> imagepatch_addr[<a class="code" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4" title="Max possible planes of data in an image.">TIVX_IMAGE_MAX_PLANES</a>];
+<a name="l00404"></a><a class="code" href="structtivx__obj__desc__image__t.html#a94978aef82e4545517b4afcfe9ce10d4">00404</a>     <a class="code" href="structvx__rectangle__t.html" title="The rectangle data structure that is shared with the users. The area of the rectangle...">vx_rectangle_t</a> valid_roi;
+<a name="l00405"></a>00405 } <a class="code" href="structtivx__obj__desc__image__t.html" title="Image object descriptor as placed in shared memory.">tivx_obj_desc_image_t</a>;
+<a name="l00406"></a>00406 
+<a name="l00407"></a>00407 
+<a name="l00413"></a><a class="code" href="structtivx__obj__desc__remap__t.html">00413</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_remap
+<a name="l00414"></a>00414 {
+<a name="l00416"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a56d5bdcb8463f5959c9d21c3eb035165">00416</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00418"></a><a class="code" href="structtivx__obj__desc__remap__t.html#ad095535e68586f0ef1729030367d4391">00418</a>     uint32_t src_width;
+<a name="l00420"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a48484d1f1be9545a1ea78b30c199a128">00420</a>     uint32_t src_height;
+<a name="l00422"></a><a class="code" href="structtivx__obj__desc__remap__t.html#ab3bc959716f1da1c60bdeb947c237098">00422</a>     uint32_t dst_width;
+<a name="l00424"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a353d5711729ca2e6f48be6ee28933555">00424</a>     uint32_t dst_height;
+<a name="l00426"></a><a class="code" href="structtivx__obj__desc__remap__t.html#adbb7fdab2d22630c81a4d85e5ceb144c">00426</a>     uint32_t mem_size;
+<a name="l00428"></a><a class="code" href="structtivx__obj__desc__remap__t.html#a019afce79142d5ce37c827c03bccd841">00428</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
+<a name="l00429"></a>00429 } <a class="code" href="structtivx__obj__desc__remap__t.html" title="Remap object descriptor as placed in shared memory.">tivx_obj_desc_remap_t</a>;
+<a name="l00430"></a>00430 
+<a name="l00436"></a><a class="code" href="structtivx__obj__desc__matrix__t.html">00436</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_matrix
+<a name="l00437"></a>00437 {
+<a name="l00439"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a276c964b2670f2df2a98c13d17699a8b">00439</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00443"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a0252937faa83e16b6641b98bc492539b">00443</a>     uint32_t rows;
+<a name="l00445"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a04862a30820c064dc70b413f1a85208f">00445</a>     uint32_t columns;
+<a name="l00446"></a>00446 
+<a name="l00448"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#af8d7bdc9635c9f4fd3d06419e3c7ba4a">00448</a>     uint32_t origin_x;
+<a name="l00450"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#ae822fa8bb4ffadaabdf07b6e2b995bfb">00450</a>     uint32_t origin_y;
 <a name="l00451"></a>00451 
-<a name="l00453"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a8e5f5e6d83863cd29859b56485d0d80c">00453</a>     <a class="code" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8" title="Used to hold a VX_DF_IMAGE code to describe the pixel format and color space.">vx_df_image</a> format;
-<a name="l00454"></a>00454 
-<a name="l00456"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a74c0e4f0d5a331ba58dedae10c6b9b49">00456</a>     uint16_t obj_desc_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga9394c906b6f2581dcbfe1b830d31eee5" title="Maximum number of objects supported in pyramid.">TIVX_PYRAMID_MAX_LEVEL_OBJECTS</a>];
-<a name="l00457"></a>00457 } <a class="code" href="structtivx__obj__desc__pyramid__t.html" title="pyramid object descriptor as placed in shared memory">tivx_obj_desc_pyramid_t</a>;
-<a name="l00458"></a>00458 
-<a name="l00464"></a><a class="code" href="structtivx__obj__desc__convolution__t.html">00464</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_convolution
-<a name="l00465"></a>00465 {
-<a name="l00467"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a7e661ca17439f071eaad08b75b86cd0a">00467</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00471"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#ace31e454efdd5113b7de3ef5bf22b2b2">00471</a>     uint32_t rows;
-<a name="l00473"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a8fc1578ecc0d6ace3137eca863cb404b">00473</a>     uint32_t columns;
-<a name="l00475"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#ad76bfe5d1bb76125f1b9e46b802d9533">00475</a>     uint32_t scale;
-<a name="l00477"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a1af2cb0ced17a20cf926e2fc4111ac51">00477</a>     uint32_t mem_size;
-<a name="l00478"></a>00478 
-<a name="l00480"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a1fa7338af6cb4cd3b93285d4cdc2b89f">00480</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
-<a name="l00481"></a>00481 } <a class="code" href="structtivx__obj__desc__convolution__t.html" title="convolution object descriptor as placed in shared memory">tivx_obj_desc_convolution_t</a>;
+<a name="l00453"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a5422df22d0674a36edbb3c1325381d02">00453</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> pattern;
+<a name="l00455"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#afd7554615071191e721c0956d09e5682">00455</a>     uint32_t mem_size;
+<a name="l00456"></a>00456 
+<a name="l00458"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a773602ec4c1604ff8a92a064fad62573">00458</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> data_type;
+<a name="l00459"></a>00459 
+<a name="l00461"></a><a class="code" href="structtivx__obj__desc__matrix__t.html#a3eba6f8e6813d20df3b67d09f99642a1">00461</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
+<a name="l00462"></a>00462 } <a class="code" href="structtivx__obj__desc__matrix__t.html" title="matrix object descriptor as placed in shared memory">tivx_obj_desc_matrix_t</a>;
+<a name="l00463"></a>00463 
+<a name="l00469"></a><a class="code" href="structtivx__obj__desc__lut__t.html">00469</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_lut
+<a name="l00470"></a>00470 {
+<a name="l00472"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a9910b8c76c7e842695a4b2b20e751bac">00472</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00473"></a>00473 
+<a name="l00475"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a246616705e5f2ad0e6549d8aa0fd9147">00475</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type;
+<a name="l00477"></a><a class="code" href="structtivx__obj__desc__lut__t.html#ac1efdd011919d9937247a489f3328f41">00477</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> item_size;
+<a name="l00479"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a9d88807eccef89057f02ef8da13d126d">00479</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> num_items;
+<a name="l00481"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a6a0398d2007846de01f0f3d7f0bc92d9">00481</a>     uint32_t mem_size;
 <a name="l00482"></a>00482 
-<a name="l00488"></a><a class="code" href="structtivx__obj__desc__threshold__t.html">00488</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_threshold
-<a name="l00489"></a>00489 {
-<a name="l00491"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#aaa7ecad6986d9998d1b80b92d934ff9c">00491</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00495"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#afb0b6f49a831acf11c4577068aa91f7b">00495</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type;
+<a name="l00484"></a><a class="code" href="structtivx__obj__desc__lut__t.html#a21a58447f27b6686909dbe7a5b04f686">00484</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
+<a name="l00485"></a>00485 } <a class="code" href="structtivx__obj__desc__lut__t.html" title="lut object descriptor as placed in shared memory">tivx_obj_desc_lut_t</a>;
+<a name="l00486"></a>00486 
+<a name="l00492"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html">00492</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_pyramid
+<a name="l00493"></a>00493 {
+<a name="l00495"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a7f5af0f5660e6bc1e5821182c85a0fbd">00495</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
 <a name="l00496"></a>00496 
-<a name="l00498"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#aaf0f3038186760733708576e65f9a398">00498</a>     int32_t value;
-<a name="l00500"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#acd22578ec147e45919cb255e4f3b8351">00500</a>     int32_t upper;
-<a name="l00502"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#a0b75ca5f70c84cfbdfd6a8c843618be7">00502</a>     int32_t lower;
-<a name="l00503"></a>00503 
-<a name="l00505"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#ad85210aadf1e158fb45ae85e1af88a43">00505</a>     int32_t true_value;
-<a name="l00507"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#ae6b43eb57b2e33f5b4d4e5b5bb16f276">00507</a>     int32_t false_value;
+<a name="l00498"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a5ab669c0fe79ece3948dd70967fbec9d">00498</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> num_levels;
+<a name="l00500"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a2265d3c605588d46886832a9a82f9bce">00500</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> width;
+<a name="l00502"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a672a6b3e72009992e2b5a1ccea8a60e6">00502</a>     uint32_t height;
+<a name="l00504"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a6aa80ede86a631696227b125e2cb32af">00504</a>     <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> scale;
+<a name="l00505"></a>00505 
+<a name="l00507"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a8e5f5e6d83863cd29859b56485d0d80c">00507</a>     <a class="code" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8" title="Used to hold a VX_DF_IMAGE code to describe the pixel format and color space.">vx_df_image</a> format;
 <a name="l00508"></a>00508 
-<a name="l00510"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#adacbd104c4e98fc66180552c595d7627">00510</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> data_type;
-<a name="l00511"></a>00511 } <a class="code" href="structtivx__obj__desc__threshold__t.html" title="threshold object descriptor as placed in shared memory">tivx_obj_desc_threshold_t</a>;
+<a name="l00510"></a><a class="code" href="structtivx__obj__desc__pyramid__t.html#a74c0e4f0d5a331ba58dedae10c6b9b49">00510</a>     uint16_t obj_desc_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga9394c906b6f2581dcbfe1b830d31eee5" title="Maximum number of objects supported in pyramid.">TIVX_PYRAMID_MAX_LEVEL_OBJECTS</a>];
+<a name="l00511"></a>00511 } <a class="code" href="structtivx__obj__desc__pyramid__t.html" title="pyramid object descriptor as placed in shared memory">tivx_obj_desc_pyramid_t</a>;
 <a name="l00512"></a>00512 
-<a name="l00518"></a><a class="code" href="structtivx__obj__desc__distribution__t.html">00518</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_distribution
+<a name="l00518"></a><a class="code" href="structtivx__obj__desc__convolution__t.html">00518</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_convolution
 <a name="l00519"></a>00519 {
-<a name="l00521"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a8699147c5f7ae673933fc128e96d2cad">00521</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00525"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#af8a979b45b059abdb043535a9beb6f13">00525</a>     uint32_t num_bins;
-<a name="l00527"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a46aed4124f0d54087220eccf00274c55">00527</a>     uint32_t offset;
-<a name="l00529"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a706128e7a9e3e38490fa501a3cefd69b">00529</a>     uint32_t range;
-<a name="l00531"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#aa92cb33f2eea0e3053d3bfaf491741f2">00531</a>     uint32_t num_win;
-<a name="l00533"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a4d0014adf109b4f4cfe75b9b007dc66a">00533</a>     uint32_t mem_size;
-<a name="l00534"></a>00534 
-<a name="l00536"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a1751208fae568bd616273fc6c76a4f4d">00536</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
-<a name="l00537"></a>00537 } <a class="code" href="structtivx__obj__desc__distribution__t.html" title="distribution object descriptor as placed in shared memory">tivx_obj_desc_distribution_t</a>;
-<a name="l00538"></a>00538 
-<a name="l00544"></a><a class="code" href="structtivx__obj__desc__array__t.html">00544</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_array
-<a name="l00545"></a>00545 {
-<a name="l00547"></a><a class="code" href="structtivx__obj__desc__array__t.html#ac34a1b93372458887c746f32e24c6903">00547</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00551"></a><a class="code" href="structtivx__obj__desc__array__t.html#a09e8729e0d2cb1225e1b189b90afa6e9">00551</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type;
-<a name="l00553"></a><a class="code" href="structtivx__obj__desc__array__t.html#a5f5be8c6c9e3f2b32f0509997848aa6d">00553</a>     uint32_t item_size;
-<a name="l00555"></a><a class="code" href="structtivx__obj__desc__array__t.html#a45cce059f24e4d0d25106ff320c496c5">00555</a>     uint32_t num_items;
-<a name="l00557"></a><a class="code" href="structtivx__obj__desc__array__t.html#a99f172ab949e0d5ecc2829efc60d7942">00557</a>     uint32_t capacity;
-<a name="l00558"></a>00558 
-<a name="l00560"></a><a class="code" href="structtivx__obj__desc__array__t.html#a10cd791f609de1803bc2acb669880bfe">00560</a>     uint32_t mem_size;
-<a name="l00562"></a><a class="code" href="structtivx__obj__desc__array__t.html#a45d5d522c10966b8263517901258b438">00562</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
-<a name="l00563"></a>00563 } <a class="code" href="structtivx__obj__desc__array__t.html" title="array object descriptor as placed in shared memory">tivx_obj_desc_array_t</a>;
-<a name="l00564"></a>00564 
-<a name="l00570"></a><a class="code" href="structtivx__obj__desc__objarray__t.html">00570</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_objarray
-<a name="l00571"></a>00571 {
-<a name="l00573"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a78d60977f519210e28c685d21a36c1e4">00573</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00577"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a7d77b6a29034b5eeba697a8b67820873">00577</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type;
-<a name="l00579"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a5a8bfea097c4c4315e8c5bd739f8354d">00579</a>     uint32_t num_items;
-<a name="l00580"></a>00580 
-<a name="l00582"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a0917cb5b778aa973163497204788fe43">00582</a>     uint16_t obj_desc_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga1d57be13326dfee5ccb50f6bfae364da" title="Maximum number of objects supported in object array.">TIVX_OBJECT_ARRAY_MAX_ITEMS</a>];
-<a name="l00583"></a>00583 } <a class="code" href="structtivx__obj__desc__objarray__t.html" title="object array object descriptor as placed in shared memory">tivx_obj_desc_objarray_t</a>;
-<a name="l00584"></a>00584 
-<a name="l00590"></a><a class="code" href="structtivx__obj__desc__scalar__t.html">00590</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_scalar
-<a name="l00591"></a>00591 {
-<a name="l00593"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a03553e82f3b8f57db56f13119f664d06">00593</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
-<a name="l00594"></a>00594 
-<a name="l00596"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a46ca2b1fc1f1e81a9a2fcd54d0ccb1fc">00596</a>     uint32_t  data_type;
-<a name="l00597"></a>00597 
-<a name="l00599"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#ad07afbbc304bb4f9018d6ff7d8eb95aa">00599</a>     uint32_t rsv;
-<a name="l00600"></a>00600 
-<a name="l00601"></a>00601     <span class="keyword">union </span>{
-<a name="l00603"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a49c0bd1d68fb097bbd524d83c39cdb5a">00603</a>         <a class="code" href="vx__types_8h.html#a9ce3f44bccc95f52b9897df2b3620713" title="An 8 bit ASCII character.">vx_char</a>   chr;
-<a name="l00605"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a7a9043b8a8ee2efd731495fabb325ce5">00605</a>         <a class="code" href="vx__types_8h.html#a4bb9840db3fea374224e831b2d3d868a" title="An 8-bit signed value.">vx_int8</a>   s08;
-<a name="l00607"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a65b4b79a2151d5183dc01eebc0f1e3e8">00607</a>         <a class="code" href="vx__types_8h.html#ae3c17ecc60bf32f3e113766b10830aa4" title="An 8-bit unsigned value.">vx_uint8</a>  u08;
-<a name="l00609"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a291f4b4b58bdf659f4dcae5161c6b12e">00609</a>         <a class="code" href="vx__types_8h.html#a26c6ff9283467866f2640bceba3341f4" title="A 16-bit signed value.">vx_int16</a>  s16;
-<a name="l00611"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a0597e4d9e73071970dcd0fa88362da38">00611</a>         <a class="code" href="vx__types_8h.html#a23fad3d6af10532a44a2d497b7a9e6eb" title="A 16-bit unsigned value.">vx_uint16</a> u16;
-<a name="l00613"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#af658d2b5f3081270cfe9b34a2c59bde4">00613</a>         <a class="code" href="vx__types_8h.html#a822fc495cb9045d45893eed297d48737" title="A 32-bit signed value.">vx_int32</a>  s32;
-<a name="l00615"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a03d9d55d694a467bfbf674a3ae6e23a0">00615</a>         <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> u32;
-<a name="l00617"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a75f42532e836aaf9f2e525e8994ae4ca">00617</a>         <a class="code" href="vx__types_8h.html#ae1aa1cc6d0a77ddc362add072ef6a9b2" title="A 64-bit signed value.">vx_int64</a>  s64;
-<a name="l00619"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a82a4c73591c0a59296e9e20a0bd41bbc">00619</a>         <a class="code" href="vx__types_8h.html#ae1aa1cc6d0a77ddc362add072ef6a9b2" title="A 64-bit signed value.">vx_int64</a>  u64;
-<a name="l00620"></a>00620 <span class="preprocessor">#if defined(EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT)</span>
-<a name="l00621"></a>00621 <span class="preprocessor"></span>
-<a name="l00622"></a>00622         vx_float16 f16;
-<a name="l00623"></a>00623 <span class="preprocessor">#endif</span>
-<a name="l00624"></a>00624 <span class="preprocessor"></span>
-<a name="l00625"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a2a6b05f79890aec60e37f09ebeba9ad9">00625</a>         <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> f32;
-<a name="l00627"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#ab3d49af3e23ce491fca7aa497941cc6d">00627</a>         <a class="code" href="vx__types_8h.html#a3718da3659bf64bccb45830294edc59e" title="A 64-bit float value (aka double).">vx_float64</a> f64;
-<a name="l00629"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a60035ff3b528561d1ab322deb2f8c11b">00629</a>         <a class="code" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8" title="Used to hold a VX_DF_IMAGE code to describe the pixel format and color space.">vx_df_image</a>  fcc;
-<a name="l00631"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a65328459f8172c655645286e062d2fe1">00631</a>         <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>    enm;
-<a name="l00633"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a0480d9fa0cf43b39c5991bc6966584e2">00633</a>         <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>    size;
-<a name="l00635"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#ac3ee1c4ebdb2b3963098d6af9bd5448d">00635</a>         <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>    boolean;
-<a name="l00636"></a>00636     } data;
-<a name="l00637"></a>00637 
-<a name="l00638"></a>00638 } <a class="code" href="structtivx__obj__desc__scalar__t.html" title="Scalar object descriptor as placed in shared memory.">tivx_obj_desc_scalar_t</a>;
-<a name="l00639"></a>00639 
-<a name="l00640"></a>00640 
-<a name="l00651"></a>00651 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__obj__desc__cfg.html#ga1e02e5d729613194b6a7aa2c441688df" title="Function to get the pointer to object descriptors for the given object descriptor...">tivxGetObjDescList</a>(uint16_t obj_desc_id[],
-<a name="l00652"></a>00652     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> *obj_desc[], uint32_t num_desc_id);
-<a name="l00653"></a>00653 
-<a name="l00654"></a>00654 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00655"></a>00655 <span class="preprocessor"></span>}
-<a name="l00656"></a>00656 <span class="preprocessor">#endif</span>
-<a name="l00657"></a>00657 <span class="preprocessor"></span>
-<a name="l00658"></a>00658 <span class="preprocessor">#endif</span>
+<a name="l00521"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a7e661ca17439f071eaad08b75b86cd0a">00521</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00525"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#ace31e454efdd5113b7de3ef5bf22b2b2">00525</a>     uint32_t rows;
+<a name="l00527"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a8fc1578ecc0d6ace3137eca863cb404b">00527</a>     uint32_t columns;
+<a name="l00529"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#ad76bfe5d1bb76125f1b9e46b802d9533">00529</a>     uint32_t scale;
+<a name="l00531"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a1af2cb0ced17a20cf926e2fc4111ac51">00531</a>     uint32_t mem_size;
+<a name="l00532"></a>00532 
+<a name="l00534"></a><a class="code" href="structtivx__obj__desc__convolution__t.html#a1fa7338af6cb4cd3b93285d4cdc2b89f">00534</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
+<a name="l00535"></a>00535 } <a class="code" href="structtivx__obj__desc__convolution__t.html" title="convolution object descriptor as placed in shared memory">tivx_obj_desc_convolution_t</a>;
+<a name="l00536"></a>00536 
+<a name="l00542"></a><a class="code" href="structtivx__obj__desc__threshold__t.html">00542</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_threshold
+<a name="l00543"></a>00543 {
+<a name="l00545"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#aaa7ecad6986d9998d1b80b92d934ff9c">00545</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00549"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#afb0b6f49a831acf11c4577068aa91f7b">00549</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> type;
+<a name="l00550"></a>00550 
+<a name="l00552"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#aaf0f3038186760733708576e65f9a398">00552</a>     int32_t value;
+<a name="l00554"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#acd22578ec147e45919cb255e4f3b8351">00554</a>     int32_t upper;
+<a name="l00556"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#a0b75ca5f70c84cfbdfd6a8c843618be7">00556</a>     int32_t lower;
+<a name="l00557"></a>00557 
+<a name="l00559"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#ad85210aadf1e158fb45ae85e1af88a43">00559</a>     int32_t true_value;
+<a name="l00561"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#ae6b43eb57b2e33f5b4d4e5b5bb16f276">00561</a>     int32_t false_value;
+<a name="l00562"></a>00562 
+<a name="l00564"></a><a class="code" href="structtivx__obj__desc__threshold__t.html#adacbd104c4e98fc66180552c595d7627">00564</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> data_type;
+<a name="l00565"></a>00565 } <a class="code" href="structtivx__obj__desc__threshold__t.html" title="threshold object descriptor as placed in shared memory">tivx_obj_desc_threshold_t</a>;
+<a name="l00566"></a>00566 
+<a name="l00572"></a><a class="code" href="structtivx__obj__desc__distribution__t.html">00572</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_distribution
+<a name="l00573"></a>00573 {
+<a name="l00575"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a8699147c5f7ae673933fc128e96d2cad">00575</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00579"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#af8a979b45b059abdb043535a9beb6f13">00579</a>     uint32_t num_bins;
+<a name="l00581"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a46aed4124f0d54087220eccf00274c55">00581</a>     uint32_t offset;
+<a name="l00583"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a706128e7a9e3e38490fa501a3cefd69b">00583</a>     uint32_t range;
+<a name="l00585"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#aa92cb33f2eea0e3053d3bfaf491741f2">00585</a>     uint32_t num_win;
+<a name="l00587"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a4d0014adf109b4f4cfe75b9b007dc66a">00587</a>     uint32_t mem_size;
+<a name="l00588"></a>00588 
+<a name="l00590"></a><a class="code" href="structtivx__obj__desc__distribution__t.html#a1751208fae568bd616273fc6c76a4f4d">00590</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
+<a name="l00591"></a>00591 } <a class="code" href="structtivx__obj__desc__distribution__t.html" title="distribution object descriptor as placed in shared memory">tivx_obj_desc_distribution_t</a>;
+<a name="l00592"></a>00592 
+<a name="l00598"></a><a class="code" href="structtivx__obj__desc__array__t.html">00598</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_array
+<a name="l00599"></a>00599 {
+<a name="l00601"></a><a class="code" href="structtivx__obj__desc__array__t.html#ac34a1b93372458887c746f32e24c6903">00601</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00605"></a><a class="code" href="structtivx__obj__desc__array__t.html#a09e8729e0d2cb1225e1b189b90afa6e9">00605</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type;
+<a name="l00607"></a><a class="code" href="structtivx__obj__desc__array__t.html#a5f5be8c6c9e3f2b32f0509997848aa6d">00607</a>     uint32_t item_size;
+<a name="l00609"></a><a class="code" href="structtivx__obj__desc__array__t.html#a45cce059f24e4d0d25106ff320c496c5">00609</a>     uint32_t num_items;
+<a name="l00611"></a><a class="code" href="structtivx__obj__desc__array__t.html#a99f172ab949e0d5ecc2829efc60d7942">00611</a>     uint32_t capacity;
+<a name="l00612"></a>00612 
+<a name="l00614"></a><a class="code" href="structtivx__obj__desc__array__t.html#a10cd791f609de1803bc2acb669880bfe">00614</a>     uint32_t mem_size;
+<a name="l00616"></a><a class="code" href="structtivx__obj__desc__array__t.html#a45d5d522c10966b8263517901258b438">00616</a>     <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> mem_ptr;
+<a name="l00617"></a>00617 } <a class="code" href="structtivx__obj__desc__array__t.html" title="array object descriptor as placed in shared memory">tivx_obj_desc_array_t</a>;
+<a name="l00618"></a>00618 
+<a name="l00624"></a><a class="code" href="structtivx__obj__desc__objarray__t.html">00624</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_objarray
+<a name="l00625"></a>00625 {
+<a name="l00627"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a78d60977f519210e28c685d21a36c1e4">00627</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00631"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a7d77b6a29034b5eeba697a8b67820873">00631</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type;
+<a name="l00633"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a5a8bfea097c4c4315e8c5bd739f8354d">00633</a>     uint32_t num_items;
+<a name="l00634"></a>00634 
+<a name="l00636"></a><a class="code" href="structtivx__obj__desc__objarray__t.html#a0917cb5b778aa973163497204788fe43">00636</a>     uint16_t obj_desc_id[<a class="code" href="group__group__tivx__obj__desc__cfg.html#ga1d57be13326dfee5ccb50f6bfae364da" title="Maximum number of objects supported in object array.">TIVX_OBJECT_ARRAY_MAX_ITEMS</a>];
+<a name="l00637"></a>00637 } <a class="code" href="structtivx__obj__desc__objarray__t.html" title="object array object descriptor as placed in shared memory">tivx_obj_desc_objarray_t</a>;
+<a name="l00638"></a>00638 
+<a name="l00644"></a><a class="code" href="structtivx__obj__desc__scalar__t.html">00644</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_obj_desc_scalar
+<a name="l00645"></a>00645 {
+<a name="l00647"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a03553e82f3b8f57db56f13119f664d06">00647</a>     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> base;
+<a name="l00648"></a>00648 
+<a name="l00650"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a46ca2b1fc1f1e81a9a2fcd54d0ccb1fc">00650</a>     uint32_t  data_type;
+<a name="l00651"></a>00651 
+<a name="l00653"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#ad07afbbc304bb4f9018d6ff7d8eb95aa">00653</a>     uint32_t rsv;
+<a name="l00654"></a>00654 
+<a name="l00655"></a>00655     <span class="keyword">union </span>{
+<a name="l00657"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a49c0bd1d68fb097bbd524d83c39cdb5a">00657</a>         <a class="code" href="vx__types_8h.html#a9ce3f44bccc95f52b9897df2b3620713" title="An 8 bit ASCII character.">vx_char</a>   chr;
+<a name="l00659"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a7a9043b8a8ee2efd731495fabb325ce5">00659</a>         <a class="code" href="vx__types_8h.html#a4bb9840db3fea374224e831b2d3d868a" title="An 8-bit signed value.">vx_int8</a>   s08;
+<a name="l00661"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a65b4b79a2151d5183dc01eebc0f1e3e8">00661</a>         <a class="code" href="vx__types_8h.html#ae3c17ecc60bf32f3e113766b10830aa4" title="An 8-bit unsigned value.">vx_uint8</a>  u08;
+<a name="l00663"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a291f4b4b58bdf659f4dcae5161c6b12e">00663</a>         <a class="code" href="vx__types_8h.html#a26c6ff9283467866f2640bceba3341f4" title="A 16-bit signed value.">vx_int16</a>  s16;
+<a name="l00665"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a0597e4d9e73071970dcd0fa88362da38">00665</a>         <a class="code" href="vx__types_8h.html#a23fad3d6af10532a44a2d497b7a9e6eb" title="A 16-bit unsigned value.">vx_uint16</a> u16;
+<a name="l00667"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#af658d2b5f3081270cfe9b34a2c59bde4">00667</a>         <a class="code" href="vx__types_8h.html#a822fc495cb9045d45893eed297d48737" title="A 32-bit signed value.">vx_int32</a>  s32;
+<a name="l00669"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a03d9d55d694a467bfbf674a3ae6e23a0">00669</a>         <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> u32;
+<a name="l00671"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a75f42532e836aaf9f2e525e8994ae4ca">00671</a>         <a class="code" href="vx__types_8h.html#ae1aa1cc6d0a77ddc362add072ef6a9b2" title="A 64-bit signed value.">vx_int64</a>  s64;
+<a name="l00673"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a82a4c73591c0a59296e9e20a0bd41bbc">00673</a>         <a class="code" href="vx__types_8h.html#ae1aa1cc6d0a77ddc362add072ef6a9b2" title="A 64-bit signed value.">vx_int64</a>  u64;
+<a name="l00674"></a>00674 <span class="preprocessor">#if defined(EXPERIMENTAL_PLATFORM_SUPPORTS_16_FLOAT)</span>
+<a name="l00675"></a>00675 <span class="preprocessor"></span>
+<a name="l00676"></a>00676         vx_float16 f16;
+<a name="l00677"></a>00677 <span class="preprocessor">#endif</span>
+<a name="l00678"></a>00678 <span class="preprocessor"></span>
+<a name="l00679"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a2a6b05f79890aec60e37f09ebeba9ad9">00679</a>         <a class="code" href="vx__types_8h.html#af14ad5e46a20640307420a745d199e1d" title="A 32-bit float value.">vx_float32</a> f32;
+<a name="l00681"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#ab3d49af3e23ce491fca7aa497941cc6d">00681</a>         <a class="code" href="vx__types_8h.html#a3718da3659bf64bccb45830294edc59e" title="A 64-bit float value (aka double).">vx_float64</a> f64;
+<a name="l00683"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a60035ff3b528561d1ab322deb2f8c11b">00683</a>         <a class="code" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8" title="Used to hold a VX_DF_IMAGE code to describe the pixel format and color space.">vx_df_image</a>  fcc;
+<a name="l00685"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a65328459f8172c655645286e062d2fe1">00685</a>         <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a>    enm;
+<a name="l00687"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#a0480d9fa0cf43b39c5991bc6966584e2">00687</a>         <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>    size;
+<a name="l00689"></a><a class="code" href="structtivx__obj__desc__scalar__t.html#ac3ee1c4ebdb2b3963098d6af9bd5448d">00689</a>         <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a>    boolean;
+<a name="l00690"></a>00690     } data;
+<a name="l00691"></a>00691 
+<a name="l00692"></a>00692 } <a class="code" href="structtivx__obj__desc__scalar__t.html" title="Scalar object descriptor as placed in shared memory.">tivx_obj_desc_scalar_t</a>;
+<a name="l00693"></a>00693 
+<a name="l00694"></a>00694 
+<a name="l00705"></a>00705 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__obj__desc__cfg.html#ga1e02e5d729613194b6a7aa2c441688df" title="Function to get the pointer to object descriptors for the given object descriptor...">tivxGetObjDescList</a>(uint16_t obj_desc_id[],
+<a name="l00706"></a>00706     <a class="code" href="structtivx__obj__desc__t.html" title="Object descriptor.">tivx_obj_desc_t</a> *obj_desc[], uint32_t num_desc_id);
+<a name="l00707"></a>00707 
+<a name="l00708"></a>00708 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00709"></a>00709 <span class="preprocessor"></span>}
+<a name="l00710"></a>00710 <span class="preprocessor">#endif</span>
+<a name="l00711"></a>00711 <span class="preprocessor"></span>
+<a name="l00712"></a>00712 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

@@ -24,82 +24,137 @@
     </ul>
   </div>
 <h1>tivx_mem.h</h1><a href="tivx__mem_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment"> *******************************************************************************</span>
-<a name="l00003"></a>00003 <span class="comment"> *</span>
-<a name="l00004"></a>00004 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00005"></a>00005 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00006"></a>00006 <span class="comment"> *</span>
-<a name="l00007"></a>00007 <span class="comment"> *******************************************************************************</span>
-<a name="l00008"></a>00008 <span class="comment"> */</span>
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef TIVX_MEM_H_</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_MEM_H_</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#include &lt;VX/vx.h&gt;</span>
-<a name="l00015"></a>00015 
-<a name="l00016"></a>00016 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00017"></a>00017 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00018"></a>00018 <span class="preprocessor">#endif</span>
-<a name="l00019"></a>00019 <span class="preprocessor"></span>
-<a name="l00031"></a><a class="code" href="group__group__tivx__mem.html#ga16613a56b37f0bda2cc3fef86f40518e">00031</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_mem_type_e
-<a name="l00032"></a>00032 {
-<a name="l00038"></a><a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea9efbb1abf57ed3bd769d6c7d8ee3a48d">00038</a>     <a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea9efbb1abf57ed3bd769d6c7d8ee3a48d" title="External memory.">TIVX_MEM_EXTERNAL</a>,
-<a name="l00039"></a>00039 
-<a name="l00045"></a><a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea1f35a4596d35d81bdb534a657cecc557">00045</a>     <a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea1f35a4596d35d81bdb534a657cecc557" title="Internal memory at L3 level.">TIVX_MEM_INTERNAL_L3</a>,
-<a name="l00046"></a>00046 
-<a name="l00065"></a><a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea3ef35e2f23a736dba62cca6f01daa1d1">00065</a>     <a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea3ef35e2f23a736dba62cca6f01daa1d1" title="Internal memory at L2 level.">TIVX_MEM_INTERNAL_L2</a>
-<a name="l00066"></a>00066 
-<a name="l00067"></a>00067 } <a class="code" href="group__group__tivx__mem.html#ga16613a56b37f0bda2cc3fef86f40518e" title="Enum that list all possible memory regions from which allocations are possible.">tivx_mem_type_e</a>;
-<a name="l00068"></a>00068 
-<a name="l00074"></a><a class="code" href="structtivx__shared__mem__ptr__t.html">00074</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_shared_mem_ptr_t {
-<a name="l00075"></a>00075 
-<a name="l00077"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#aa11f6d52bfa3911e16d82f7b76306a2f">00077</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type;
-<a name="l00078"></a>00078 
-<a name="l00083"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#acd358584426137febe5a29ba465987e1">00083</a>     <span class="keywordtype">void</span> *shared_ptr;
-<a name="l00084"></a>00084 
-<a name="l00089"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#a08ec9977d4f04424859d6ceea157bf2c">00089</a>     <span class="keywordtype">void</span> *host_ptr;
-<a name="l00090"></a>00090 
-<a name="l00095"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#ac7cd343fc463946dfb84251ddf9225de">00095</a>     <span class="keywordtype">void</span> *target_ptr;
-<a name="l00096"></a>00096 
-<a name="l00097"></a>00097 } <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a>;
-<a name="l00098"></a>00098 
-<a name="l00099"></a>00099 
-<a name="l00100"></a><a class="code" href="structtivx__mem__stats.html">00100</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_mem_stats_t {
+<a name="l00002"></a>00002 <span class="comment">*</span>
+<a name="l00003"></a>00003 <span class="comment">* Copyright (c) 2017 Texas Instruments Incorporated</span>
+<a name="l00004"></a>00004 <span class="comment">*</span>
+<a name="l00005"></a>00005 <span class="comment">* All rights reserved not granted herein.</span>
+<a name="l00006"></a>00006 <span class="comment">*</span>
+<a name="l00007"></a>00007 <span class="comment">* Limited License.</span>
+<a name="l00008"></a>00008 <span class="comment">*</span>
+<a name="l00009"></a>00009 <span class="comment">* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive</span>
+<a name="l00010"></a>00010 <span class="comment">* license under copyrights and patents it now or hereafter owns or controls to make,</span>
+<a name="l00011"></a>00011 <span class="comment">* have made, use, import, offer to sell and sell (&quot;Utilize&quot;) this software subject to the</span>
+<a name="l00012"></a>00012 <span class="comment">* terms herein.  With respect to the foregoing patent license, such license is granted</span>
+<a name="l00013"></a>00013 <span class="comment">* solely to the extent that any such patent is necessary to Utilize the software alone.</span>
+<a name="l00014"></a>00014 <span class="comment">* The patent license shall not apply to any combinations which include this software,</span>
+<a name="l00015"></a>00015 <span class="comment">* other than combinations with devices manufactured by or for TI (&quot;TI Devices&quot;).</span>
+<a name="l00016"></a>00016 <span class="comment">* No hardware patent is licensed hereunder.</span>
+<a name="l00017"></a>00017 <span class="comment">*</span>
+<a name="l00018"></a>00018 <span class="comment">* Redistributions must preserve existing copyright notices and reproduce this license</span>
+<a name="l00019"></a>00019 <span class="comment">* (including the above copyright notice and the disclaimer and (if applicable) source</span>
+<a name="l00020"></a>00020 <span class="comment">* code license limitations below) in the documentation and/or other materials provided</span>
+<a name="l00021"></a>00021 <span class="comment">* with the distribution</span>
+<a name="l00022"></a>00022 <span class="comment">*</span>
+<a name="l00023"></a>00023 <span class="comment">* Redistribution and use in binary form, without modification, are permitted provided</span>
+<a name="l00024"></a>00024 <span class="comment">* that the following conditions are met:</span>
+<a name="l00025"></a>00025 <span class="comment">*</span>
+<a name="l00026"></a>00026 <span class="comment">* *       No reverse engineering, decompilation, or disassembly of this software is</span>
+<a name="l00027"></a>00027 <span class="comment">* permitted with respect to any software provided in binary form.</span>
+<a name="l00028"></a>00028 <span class="comment">*</span>
+<a name="l00029"></a>00029 <span class="comment">* *       any redistribution and use are licensed by TI for use only with TI Devices.</span>
+<a name="l00030"></a>00030 <span class="comment">*</span>
+<a name="l00031"></a>00031 <span class="comment">* *       Nothing shall obligate TI to provide you with source code for the software</span>
+<a name="l00032"></a>00032 <span class="comment">* licensed and provided to you in object code.</span>
+<a name="l00033"></a>00033 <span class="comment">*</span>
+<a name="l00034"></a>00034 <span class="comment">* If software source code is provided to you, modification and redistribution of the</span>
+<a name="l00035"></a>00035 <span class="comment">* source code are permitted provided that the following conditions are met:</span>
+<a name="l00036"></a>00036 <span class="comment">*</span>
+<a name="l00037"></a>00037 <span class="comment">* *       any redistribution and use of the source code, including any resulting derivative</span>
+<a name="l00038"></a>00038 <span class="comment">* works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00039"></a>00039 <span class="comment">*</span>
+<a name="l00040"></a>00040 <span class="comment">* *       any redistribution and use of any object code compiled from the source code</span>
+<a name="l00041"></a>00041 <span class="comment">* and any resulting derivative works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00042"></a>00042 <span class="comment">*</span>
+<a name="l00043"></a>00043 <span class="comment">* Neither the name of Texas Instruments Incorporated nor the names of its suppliers</span>
+<a name="l00044"></a>00044 <span class="comment">*</span>
+<a name="l00045"></a>00045 <span class="comment">* may be used to endorse or promote products derived from this software without</span>
+<a name="l00046"></a>00046 <span class="comment">* specific prior written permission.</span>
+<a name="l00047"></a>00047 <span class="comment">*</span>
+<a name="l00048"></a>00048 <span class="comment">* DISCLAIMER.</span>
+<a name="l00049"></a>00049 <span class="comment">*</span>
+<a name="l00050"></a>00050 <span class="comment">* THIS SOFTWARE IS PROVIDED BY TI AND TI&apos;S LICENSORS &quot;AS IS&quot; AND ANY EXPRESS</span>
+<a name="l00051"></a>00051 <span class="comment">* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span>
+<a name="l00052"></a>00052 <span class="comment">* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span>
+<a name="l00053"></a>00053 <span class="comment">* IN NO EVENT SHALL TI AND TI&apos;S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<a name="l00054"></a>00054 <span class="comment">* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span>
+<a name="l00055"></a>00055 <span class="comment">* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<a name="l00056"></a>00056 <span class="comment">* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY</span>
+<a name="l00057"></a>00057 <span class="comment">* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE</span>
+<a name="l00058"></a>00058 <span class="comment">* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span>
+<a name="l00059"></a>00059 <span class="comment">* OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<a name="l00060"></a>00060 <span class="comment">*</span>
+<a name="l00061"></a>00061 <span class="comment">*/</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 <span class="preprocessor">#ifndef TIVX_MEM_H_</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_MEM_H_</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span>
+<a name="l00069"></a>00069 <span class="preprocessor">#include &lt;VX/vx.h&gt;</span>
+<a name="l00070"></a>00070 
+<a name="l00071"></a>00071 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00072"></a>00072 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00073"></a>00073 <span class="preprocessor">#endif</span>
+<a name="l00074"></a>00074 <span class="preprocessor"></span>
+<a name="l00086"></a><a class="code" href="group__group__tivx__mem.html#ga16613a56b37f0bda2cc3fef86f40518e">00086</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_mem_type_e
+<a name="l00087"></a>00087 {
+<a name="l00093"></a><a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea9efbb1abf57ed3bd769d6c7d8ee3a48d">00093</a>     <a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea9efbb1abf57ed3bd769d6c7d8ee3a48d" title="External memory.">TIVX_MEM_EXTERNAL</a>,
+<a name="l00094"></a>00094 
+<a name="l00100"></a><a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea1f35a4596d35d81bdb534a657cecc557">00100</a>     <a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea1f35a4596d35d81bdb534a657cecc557" title="Internal memory at L3 level.">TIVX_MEM_INTERNAL_L3</a>,
 <a name="l00101"></a>00101 
-<a name="l00105"></a><a class="code" href="structtivx__mem__stats.html#a62e469f9bc1c18e5f33aef706bbb462a">00105</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> mem_size;
-<a name="l00106"></a>00106 
-<a name="l00110"></a><a class="code" href="structtivx__mem__stats.html#adccd2b072c437d798586cfcb390d7ecc">00110</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> free_size;
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112 } <a class="code" href="structtivx__mem__stats.html">tivx_mem_stats</a>;
-<a name="l00113"></a>00113 
-<a name="l00123"></a>00123 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__mem.html#ga6c91b589548245063060d06629795033" title="Alloc buffer from shared memory.">tivxMemBufferAlloc</a>(<a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> *mem_ptr, uint32_t size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00124"></a>00124 
-<a name="l00133"></a>00133 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__mem.html#gabe21a01434fffe5237e13436c669a3b3" title="Free buffer from shared memory.">tivxMemBufferFree</a>(<a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> *mem_ptr, uint32_t size);
-<a name="l00134"></a>00134 
-<a name="l00148"></a>00148 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#gad0a080f8f697f50ce522f05e1e646cfc" title="Map a allocated buffer address.">tivxMemBufferMap</a>(<span class="keywordtype">void</span> *host_ptr, uint32_t size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> maptype);
-<a name="l00149"></a>00149 
-<a name="l00163"></a>00163 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#ga7eb36b10bc001dc9946b032828bd3e4d" title="UnMap a buffer address.">tivxMemBufferUnmap</a>(<span class="keywordtype">void</span> *host_ptr, uint32_t size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> maptype);
-<a name="l00164"></a>00164 
-<a name="l00175"></a>00175 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga240956e2a8001810af0e5bc8e2163b78" title="Convert Host pointer to shared pointer.">tivxMemHost2SharedPtr</a>(<span class="keywordtype">void</span> *host_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00176"></a>00176 
-<a name="l00187"></a>00187 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga719f8b4abbf094d104dd43c21f3f08ad" title="Convert Shared memory pointer to host pointer.">tivxMemShared2HostPtr</a>(<span class="keywordtype">void</span> *shared_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00188"></a>00188 
-<a name="l00199"></a>00199 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga853fc075881b71e7a4592fc0bf098ecb" title="Convert shared pointer to target pointer.">tivxMemShared2TargetPtr</a>(<span class="keywordtype">void</span> *shared_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00200"></a>00200 
-<a name="l00211"></a>00211 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga87a9c979d1fe5fb5dca1f127bb843d8d" title="Convert target memory pointer to shared pointer.">tivxMemTarget2SharedPtr</a>(<span class="keywordtype">void</span> *target_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00212"></a>00212 
-<a name="l00222"></a>00222 <span class="keywordtype">void</span> *<a class="code" href="group__group__tivx__mem.html#gaf73adaa236689353ff173b268d49bf4b" title="Allocates memory of given size.">tivxMemAlloc</a>(<a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00223"></a>00223 
-<a name="l00232"></a>00232 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#ga1c3428e8e935844bd375655b3b9f3f34" title="Frees already allocated memory.">tivxMemFree</a>(<span class="keywordtype">void</span> *ptr, <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
-<a name="l00233"></a>00233 
-<a name="l00242"></a>00242 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#gac455e3957a61a111ced55bff62564ed0" title="Get memory segement information.">tivxMemStats</a>(<a class="code" href="structtivx__mem__stats.html">tivx_mem_stats</a> *stats, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00120"></a><a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea3ef35e2f23a736dba62cca6f01daa1d1">00120</a>     <a class="code" href="group__group__tivx__mem.html#gga16613a56b37f0bda2cc3fef86f40518ea3ef35e2f23a736dba62cca6f01daa1d1" title="Internal memory at L2 level.">TIVX_MEM_INTERNAL_L2</a>
+<a name="l00121"></a>00121 
+<a name="l00122"></a>00122 } <a class="code" href="group__group__tivx__mem.html#ga16613a56b37f0bda2cc3fef86f40518e" title="Enum that list all possible memory regions from which allocations are possible.">tivx_mem_type_e</a>;
+<a name="l00123"></a>00123 
+<a name="l00129"></a><a class="code" href="structtivx__shared__mem__ptr__t.html">00129</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_shared_mem_ptr_t {
+<a name="l00130"></a>00130 
+<a name="l00132"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#aa11f6d52bfa3911e16d82f7b76306a2f">00132</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type;
+<a name="l00133"></a>00133 
+<a name="l00138"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#acd358584426137febe5a29ba465987e1">00138</a>     <span class="keywordtype">void</span> *shared_ptr;
+<a name="l00139"></a>00139 
+<a name="l00144"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#a08ec9977d4f04424859d6ceea157bf2c">00144</a>     <span class="keywordtype">void</span> *host_ptr;
+<a name="l00145"></a>00145 
+<a name="l00150"></a><a class="code" href="structtivx__shared__mem__ptr__t.html#ac7cd343fc463946dfb84251ddf9225de">00150</a>     <span class="keywordtype">void</span> *target_ptr;
+<a name="l00151"></a>00151 
+<a name="l00152"></a>00152 } <a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a>;
+<a name="l00153"></a>00153 
+<a name="l00154"></a>00154 
+<a name="l00155"></a><a class="code" href="structtivx__mem__stats.html">00155</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_mem_stats_t {
+<a name="l00156"></a>00156 
+<a name="l00160"></a><a class="code" href="structtivx__mem__stats.html#a62e469f9bc1c18e5f33aef706bbb462a">00160</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> mem_size;
+<a name="l00161"></a>00161 
+<a name="l00165"></a><a class="code" href="structtivx__mem__stats.html#adccd2b072c437d798586cfcb390d7ecc">00165</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> free_size;
+<a name="l00166"></a>00166 
+<a name="l00167"></a>00167 } <a class="code" href="structtivx__mem__stats.html">tivx_mem_stats</a>;
+<a name="l00168"></a>00168 
+<a name="l00178"></a>00178 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__mem.html#ga6c91b589548245063060d06629795033" title="Alloc buffer from shared memory.">tivxMemBufferAlloc</a>(<a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> *mem_ptr, uint32_t size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00179"></a>00179 
+<a name="l00188"></a>00188 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__mem.html#gabe21a01434fffe5237e13436c669a3b3" title="Free buffer from shared memory.">tivxMemBufferFree</a>(<a class="code" href="structtivx__shared__mem__ptr__t.html" title="Structure describing a shared memory pointer.">tivx_shared_mem_ptr_t</a> *mem_ptr, uint32_t size);
+<a name="l00189"></a>00189 
+<a name="l00203"></a>00203 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#gad0a080f8f697f50ce522f05e1e646cfc" title="Map a allocated buffer address.">tivxMemBufferMap</a>(<span class="keywordtype">void</span> *host_ptr, uint32_t size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> maptype);
+<a name="l00204"></a>00204 
+<a name="l00218"></a>00218 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#ga7eb36b10bc001dc9946b032828bd3e4d" title="UnMap a buffer address.">tivxMemBufferUnmap</a>(<span class="keywordtype">void</span> *host_ptr, uint32_t size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> maptype);
+<a name="l00219"></a>00219 
+<a name="l00230"></a>00230 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga240956e2a8001810af0e5bc8e2163b78" title="Convert Host pointer to shared pointer.">tivxMemHost2SharedPtr</a>(<span class="keywordtype">void</span> *host_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00231"></a>00231 
+<a name="l00242"></a>00242 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga719f8b4abbf094d104dd43c21f3f08ad" title="Convert Shared memory pointer to host pointer.">tivxMemShared2HostPtr</a>(<span class="keywordtype">void</span> *shared_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
 <a name="l00243"></a>00243 
-<a name="l00244"></a>00244 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00245"></a>00245 <span class="preprocessor"></span>}
-<a name="l00246"></a>00246 <span class="preprocessor">#endif</span>
-<a name="l00247"></a>00247 <span class="preprocessor"></span>
-<a name="l00248"></a>00248 <span class="preprocessor">#endif</span>
+<a name="l00254"></a>00254 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga853fc075881b71e7a4592fc0bf098ecb" title="Convert shared pointer to target pointer.">tivxMemShared2TargetPtr</a>(<span class="keywordtype">void</span> *shared_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00255"></a>00255 
+<a name="l00266"></a>00266 <span class="keywordtype">void</span>* <a class="code" href="group__group__tivx__mem.html#ga87a9c979d1fe5fb5dca1f127bb843d8d" title="Convert target memory pointer to shared pointer.">tivxMemTarget2SharedPtr</a>(<span class="keywordtype">void</span> *target_ptr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00267"></a>00267 
+<a name="l00277"></a>00277 <span class="keywordtype">void</span> *<a class="code" href="group__group__tivx__mem.html#gaf73adaa236689353ff173b268d49bf4b" title="Allocates memory of given size.">tivxMemAlloc</a>(<a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00278"></a>00278 
+<a name="l00287"></a>00287 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#ga1c3428e8e935844bd375655b3b9f3f34" title="Frees already allocated memory.">tivxMemFree</a>(<span class="keywordtype">void</span> *ptr, <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> size, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00288"></a>00288 
+<a name="l00297"></a>00297 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__mem.html#gac455e3957a61a111ced55bff62564ed0" title="Get memory segement information.">tivxMemStats</a>(<a class="code" href="structtivx__mem__stats.html">tivx_mem_stats</a> *stats, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> mem_type);
+<a name="l00298"></a>00298 
+<a name="l00299"></a>00299 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00300"></a>00300 <span class="preprocessor"></span>}
+<a name="l00301"></a>00301 <span class="preprocessor">#endif</span>
+<a name="l00302"></a>00302 <span class="preprocessor"></span>
+<a name="l00303"></a>00303 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

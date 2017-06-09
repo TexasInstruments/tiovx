@@ -50,37 +50,30 @@
 <a name="l00025"></a>00025 <span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <a name="l00026"></a>00026 <span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span>
 <a name="l00027"></a>00027 <span class="comment"> */</span>
-<a name="l00028"></a>00028 <span class="comment">/*</span>
-<a name="l00029"></a>00029 <span class="comment"> *******************************************************************************</span>
-<a name="l00030"></a>00030 <span class="comment"> *</span>
-<a name="l00031"></a>00031 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00032"></a>00032 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00033"></a>00033 <span class="comment"> *</span>
-<a name="l00034"></a>00034 <span class="comment"> *******************************************************************************</span>
-<a name="l00035"></a>00035 <span class="comment"> */</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 <span class="preprocessor">#ifndef TIVX_ERROR_H_</span>
-<a name="l00038"></a>00038 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_ERROR_H_</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span>
-<a name="l00047"></a>00047 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00048"></a>00048 <span class="preprocessor"></span>    <span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00049"></a>00049 <span class="preprocessor">#endif</span>
-<a name="l00050"></a>00050 <span class="preprocessor"></span>
-<a name="l00054"></a><a class="code" href="structtivx__error__t.html">00054</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_error {
-<a name="l00056"></a><a class="code" href="structtivx__error__t.html#a2962ef2969e2140f58acfeaca942b753">00056</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
-<a name="l00058"></a><a class="code" href="structtivx__error__t.html#a03171aca76dff425378ee9a93f699874">00058</a>     <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> status;
-<a name="l00059"></a>00059 } <a class="code" href="structtivx__error__t.html" title="The internal representation of the error object.">tivx_error_t</a>;
-<a name="l00060"></a>00060 
-<a name="l00064"></a>00064 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__error.html#ga34e019f03086fa2129f03dc0234a9b85" title="Creates all the status codes as error objects.">ownCreateConstErrors</a>(<a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context);
-<a name="l00065"></a>00065 
-<a name="l00073"></a>00073 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__vx__error.html#ga2ada11aea304b54c80b632aa45dc6020" title="Matches the status code against all known error objects in the context.">ownGetErrorObject</a>(<a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> status);
-<a name="l00074"></a>00074 
-<a name="l00075"></a>00075 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00076"></a>00076 <span class="preprocessor"></span>}
-<a name="l00077"></a>00077 <span class="preprocessor">#endif</span>
-<a name="l00078"></a>00078 <span class="preprocessor"></span>
-<a name="l00079"></a>00079 <span class="preprocessor">#endif</span>
-<a name="l00080"></a>00080 <span class="preprocessor"></span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 <span class="preprocessor">#ifndef TIVX_ERROR_H_</span>
+<a name="l00031"></a>00031 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_ERROR_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span>
+<a name="l00040"></a>00040 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00041"></a>00041 <span class="preprocessor"></span>    <span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00042"></a>00042 <span class="preprocessor">#endif</span>
+<a name="l00043"></a>00043 <span class="preprocessor"></span>
+<a name="l00047"></a><a class="code" href="structtivx__error__t.html">00047</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_error {
+<a name="l00049"></a><a class="code" href="structtivx__error__t.html#a2962ef2969e2140f58acfeaca942b753">00049</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
+<a name="l00051"></a><a class="code" href="structtivx__error__t.html#a03171aca76dff425378ee9a93f699874">00051</a>     <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> status;
+<a name="l00052"></a>00052 } <a class="code" href="structtivx__error__t.html" title="The internal representation of the error object.">tivx_error_t</a>;
+<a name="l00053"></a>00053 
+<a name="l00057"></a>00057 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__error.html#ga34e019f03086fa2129f03dc0234a9b85" title="Creates all the status codes as error objects.">ownCreateConstErrors</a>(<a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context);
+<a name="l00058"></a>00058 
+<a name="l00066"></a>00066 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> <a class="code" href="group__group__vx__error.html#ga2ada11aea304b54c80b632aa45dc6020" title="Matches the status code against all known error objects in the context.">ownGetErrorObject</a>(<a class="code" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249" title="An opaque reference to the implementation context.">vx_context</a> context, <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> status);
+<a name="l00067"></a>00067 
+<a name="l00068"></a>00068 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span>}
+<a name="l00070"></a>00070 <span class="preprocessor">#endif</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>
+<a name="l00072"></a>00072 <span class="preprocessor">#endif</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span>
 </pre></div></div>
 
 <html>

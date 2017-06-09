@@ -50,50 +50,43 @@
 <a name="l00025"></a>00025 <span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <a name="l00026"></a>00026 <span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span>
 <a name="l00027"></a>00027 <span class="comment"> */</span>
-<a name="l00028"></a>00028 <span class="comment">/*</span>
-<a name="l00029"></a>00029 <span class="comment"> *******************************************************************************</span>
-<a name="l00030"></a>00030 <span class="comment"> *</span>
-<a name="l00031"></a>00031 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00032"></a>00032 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00033"></a>00033 <span class="comment"> *</span>
-<a name="l00034"></a>00034 <span class="comment"> *******************************************************************************</span>
-<a name="l00035"></a>00035 <span class="comment"> */</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 <span class="preprocessor">#ifndef VX_ARRAY_H_</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#define VX_ARRAY_H_</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span>
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00044"></a>00044 <span class="preprocessor">#endif</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00056"></a><a class="code" href="group__group__vx__array__cfg.html#gabbd167c37dae1c0efaf80b88ce66d870">00056</a> <span class="preprocessor">#define TIVX_ARRAY_MAX_MAPS     (16u)</span>
-<a name="l00057"></a>00057 <span class="preprocessor"></span>
-<a name="l00063"></a><a class="code" href="structtivx__array__map__info__t.html">00063</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_array_map_info_t
-<a name="l00064"></a>00064 {
-<a name="l00066"></a><a class="code" href="structtivx__array__map__info__t.html#a5e5de0b77a54378a551b18a416efa4d3">00066</a>     uint8_t *map_addr;
-<a name="l00068"></a><a class="code" href="structtivx__array__map__info__t.html#a7fc7263865726c5992423a1477b58cdc">00068</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>  map_size;
-<a name="l00070"></a><a class="code" href="structtivx__array__map__info__t.html#a6b9e256330b56e257c327b80fb3aec0c">00070</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> usage;
-<a name="l00071"></a>00071 } <a class="code" href="structtivx__array__map__info__t.html" title="Information about a array mapping.">tivx_array_map_info_t</a>;
-<a name="l00072"></a>00072 
-<a name="l00078"></a><a class="code" href="structtivx__array__t.html">00078</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_array
-<a name="l00079"></a>00079 {
-<a name="l00081"></a><a class="code" href="structtivx__array__t.html#afd2acd8907877b1504c4cf6c8237a75b">00081</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
-<a name="l00082"></a>00082 
-<a name="l00084"></a><a class="code" href="structtivx__array__t.html#aad4e747dfb2108437a38e7c2f16d3fa4">00084</a>     <a class="code" href="structtivx__array__map__info__t.html" title="Information about a array mapping.">tivx_array_map_info_t</a> maps[<a class="code" href="group__group__vx__array__cfg.html#gabbd167c37dae1c0efaf80b88ce66d870" title="Max possible mapping via vxMapArray supported.">TIVX_ARRAY_MAX_MAPS</a>];
-<a name="l00085"></a>00085 } <a class="code" href="structtivx__array__t.html" title="Array object internal state.">tivx_array_t</a>;
-<a name="l00086"></a>00086 
-<a name="l00087"></a>00087 
-<a name="l00088"></a>00088 
-<a name="l00100"></a>00100 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__array_8h.html#a8a098186365e5af5d29c57259e4111bb" title="function to initialize virtual array parameters">ownInitVirtualArray</a>(
-<a name="l00101"></a>00101     <a class="code" href="vx__types_8h.html#ab1f0193f8a470dd2fe10de539a533697" title="The Array Object. Array is a strongly-typed container for other data structures.">vx_array</a> arr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type, <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> capacity);
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00104"></a>00104 <span class="preprocessor"></span>}
-<a name="l00105"></a>00105 <span class="preprocessor">#endif</span>
-<a name="l00106"></a>00106 <span class="preprocessor"></span>
-<a name="l00107"></a>00107 <span class="preprocessor">#endif</span>
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifndef VX_ARRAY_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define VX_ARRAY_H_</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00037"></a>00037 <span class="preprocessor">#endif</span>
+<a name="l00038"></a>00038 <span class="preprocessor"></span>
+<a name="l00049"></a><a class="code" href="group__group__vx__array__cfg.html#gabbd167c37dae1c0efaf80b88ce66d870">00049</a> <span class="preprocessor">#define TIVX_ARRAY_MAX_MAPS     (16u)</span>
+<a name="l00050"></a>00050 <span class="preprocessor"></span>
+<a name="l00056"></a><a class="code" href="structtivx__array__map__info__t.html">00056</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_array_map_info_t
+<a name="l00057"></a>00057 {
+<a name="l00059"></a><a class="code" href="structtivx__array__map__info__t.html#a5e5de0b77a54378a551b18a416efa4d3">00059</a>     uint8_t *map_addr;
+<a name="l00061"></a><a class="code" href="structtivx__array__map__info__t.html#a7fc7263865726c5992423a1477b58cdc">00061</a>     <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a>  map_size;
+<a name="l00063"></a><a class="code" href="structtivx__array__map__info__t.html#a6b9e256330b56e257c327b80fb3aec0c">00063</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> usage;
+<a name="l00064"></a>00064 } <a class="code" href="structtivx__array__map__info__t.html" title="Information about a array mapping.">tivx_array_map_info_t</a>;
+<a name="l00065"></a>00065 
+<a name="l00071"></a><a class="code" href="structtivx__array__t.html">00071</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_array
+<a name="l00072"></a>00072 {
+<a name="l00074"></a><a class="code" href="structtivx__array__t.html#afd2acd8907877b1504c4cf6c8237a75b">00074</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
+<a name="l00075"></a>00075 
+<a name="l00077"></a><a class="code" href="structtivx__array__t.html#aad4e747dfb2108437a38e7c2f16d3fa4">00077</a>     <a class="code" href="structtivx__array__map__info__t.html" title="Information about a array mapping.">tivx_array_map_info_t</a> maps[<a class="code" href="group__group__vx__array__cfg.html#gabbd167c37dae1c0efaf80b88ce66d870" title="Max possible mapping via vxMapArray supported.">TIVX_ARRAY_MAX_MAPS</a>];
+<a name="l00078"></a>00078 } <a class="code" href="structtivx__array__t.html" title="Array object internal state.">tivx_array_t</a>;
+<a name="l00079"></a>00079 
+<a name="l00080"></a>00080 
+<a name="l00081"></a>00081 
+<a name="l00093"></a>00093 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__array_8h.html#a8a098186365e5af5d29c57259e4111bb" title="function to initialize virtual array parameters">ownInitVirtualArray</a>(
+<a name="l00094"></a>00094     <a class="code" href="vx__types_8h.html#ab1f0193f8a470dd2fe10de539a533697" title="The Array Object. Array is a strongly-typed container for other data structures.">vx_array</a> arr, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> item_type, <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324" title="A wrapper of size_t to keep the naming convention uniform.">vx_size</a> capacity);
+<a name="l00095"></a>00095 
+<a name="l00096"></a>00096 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span>}
+<a name="l00098"></a>00098 <span class="preprocessor">#endif</span>
+<a name="l00099"></a>00099 <span class="preprocessor"></span>
+<a name="l00100"></a>00100 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

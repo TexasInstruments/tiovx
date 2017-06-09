@@ -24,86 +24,140 @@
     </ul>
   </div>
 <h1>tivx_task.h</h1><a href="tivx__task_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment"> *******************************************************************************</span>
-<a name="l00003"></a>00003 <span class="comment"> *</span>
-<a name="l00004"></a>00004 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00005"></a>00005 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00006"></a>00006 <span class="comment"> *</span>
-<a name="l00007"></a>00007 <span class="comment"> *******************************************************************************</span>
-<a name="l00008"></a>00008 <span class="comment"> */</span>
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef TIVX_TASK_H_</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_TASK_H_</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00015"></a>00015 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00016"></a>00016 <span class="preprocessor">#endif</span>
-<a name="l00017"></a>00017 <span class="preprocessor"></span>
-<a name="l00028"></a><a class="code" href="group__group__tivx__task.html#ga58c994a20bea06f528079a77e407c1b9">00028</a> <span class="preprocessor">#define TIVX_TASK_PRI_HIGHEST   (0u)</span>
-<a name="l00029"></a>00029 <span class="preprocessor"></span>
-<a name="l00035"></a><a class="code" href="group__group__tivx__task.html#gaf56e776da306397705c872d6aeccf886">00035</a> <span class="preprocessor">#define TIVX_TASK_PRI_LOWEST    (15u)</span>
-<a name="l00036"></a>00036 <span class="preprocessor"></span>
-<a name="l00042"></a><a class="code" href="group__group__tivx__task.html#ga1ac27404550c393950aa05e0c6caf15a">00042</a> <span class="preprocessor">#define TIVX_TASK_AFFINITY_ANY      (0xFFFFu)</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span>
-<a name="l00049"></a><a class="code" href="group__group__tivx__task.html#ga73fc183a96e06488bf13c656f9b86ea3">00049</a> <span class="preprocessor">#define TIVX_MAX_TASK_NAME         (20)</span>
-<a name="l00050"></a>00050 <span class="preprocessor"></span>
-<a name="l00057"></a><a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a">00057</a> <span class="keyword">typedef</span> void (<a class="code" href="vx__types_8h.html#af22acf717e04b29aa5b836a1097f7181">VX_CALLBACK</a> *<a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a>)(<span class="keywordtype">void</span> *app_var);
-<a name="l00058"></a>00058 
-<a name="l00059"></a>00059 
-<a name="l00065"></a><a class="code" href="structtivx__task.html">00065</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_task_t
-<a name="l00066"></a>00066 {
-<a name="l00069"></a><a class="code" href="structtivx__task.html#a80f6070ffc5874260733340cab2bfe94">00069</a>     <span class="keywordtype">void</span> *tsk_handle;
-<a name="l00070"></a>00070 
-<a name="l00074"></a><a class="code" href="structtivx__task.html#ad2ba16f382b570fa09f86b35b34a1748">00074</a>     uint8_t *stack_ptr;
-<a name="l00075"></a>00075 
-<a name="l00078"></a><a class="code" href="structtivx__task.html#a00ff4a2148185a3ad91dab3c7adb13ec">00078</a>     uint32_t stack_size;
-<a name="l00079"></a>00079 
-<a name="l00085"></a><a class="code" href="structtivx__task.html#a2f8ac3097bde2fd040b39965a0acb849">00085</a>     uint32_t core_affinity;
-<a name="l00086"></a>00086 
-<a name="l00091"></a><a class="code" href="structtivx__task.html#a12c711cf4ce109e4afdaaa5c8cf67a0a">00091</a>     uint32_t priority;
-<a name="l00092"></a>00092 
-<a name="l00094"></a><a class="code" href="structtivx__task.html#ac69f95efcd82a3fe2eb126ecb0e6ab40">00094</a>     <a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a> task_func;
-<a name="l00095"></a>00095 
-<a name="l00097"></a><a class="code" href="structtivx__task.html#aca157d448b99c2eb98e3de61b8e1ef47">00097</a>     <span class="keywordtype">void</span> *app_var;
-<a name="l00098"></a>00098 } <a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a>;
-<a name="l00099"></a>00099 
-<a name="l00100"></a>00100 
-<a name="l00101"></a>00101 
-<a name="l00107"></a><a class="code" href="structtivx__task__create__params__t.html">00107</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_task_create_params
-<a name="l00108"></a>00108 {
-<a name="l00112"></a><a class="code" href="structtivx__task__create__params__t.html#ad87c180197353f9dec4b669e44107973">00112</a>     uint8_t *stack_ptr;
+<a name="l00002"></a>00002 <span class="comment">*</span>
+<a name="l00003"></a>00003 <span class="comment">* Copyright (c) 2017 Texas Instruments Incorporated</span>
+<a name="l00004"></a>00004 <span class="comment">*</span>
+<a name="l00005"></a>00005 <span class="comment">* All rights reserved not granted herein.</span>
+<a name="l00006"></a>00006 <span class="comment">*</span>
+<a name="l00007"></a>00007 <span class="comment">* Limited License.</span>
+<a name="l00008"></a>00008 <span class="comment">*</span>
+<a name="l00009"></a>00009 <span class="comment">* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive</span>
+<a name="l00010"></a>00010 <span class="comment">* license under copyrights and patents it now or hereafter owns or controls to make,</span>
+<a name="l00011"></a>00011 <span class="comment">* have made, use, import, offer to sell and sell (&quot;Utilize&quot;) this software subject to the</span>
+<a name="l00012"></a>00012 <span class="comment">* terms herein.  With respect to the foregoing patent license, such license is granted</span>
+<a name="l00013"></a>00013 <span class="comment">* solely to the extent that any such patent is necessary to Utilize the software alone.</span>
+<a name="l00014"></a>00014 <span class="comment">* The patent license shall not apply to any combinations which include this software,</span>
+<a name="l00015"></a>00015 <span class="comment">* other than combinations with devices manufactured by or for TI (&quot;TI Devices&quot;).</span>
+<a name="l00016"></a>00016 <span class="comment">* No hardware patent is licensed hereunder.</span>
+<a name="l00017"></a>00017 <span class="comment">*</span>
+<a name="l00018"></a>00018 <span class="comment">* Redistributions must preserve existing copyright notices and reproduce this license</span>
+<a name="l00019"></a>00019 <span class="comment">* (including the above copyright notice and the disclaimer and (if applicable) source</span>
+<a name="l00020"></a>00020 <span class="comment">* code license limitations below) in the documentation and/or other materials provided</span>
+<a name="l00021"></a>00021 <span class="comment">* with the distribution</span>
+<a name="l00022"></a>00022 <span class="comment">*</span>
+<a name="l00023"></a>00023 <span class="comment">* Redistribution and use in binary form, without modification, are permitted provided</span>
+<a name="l00024"></a>00024 <span class="comment">* that the following conditions are met:</span>
+<a name="l00025"></a>00025 <span class="comment">*</span>
+<a name="l00026"></a>00026 <span class="comment">* *       No reverse engineering, decompilation, or disassembly of this software is</span>
+<a name="l00027"></a>00027 <span class="comment">* permitted with respect to any software provided in binary form.</span>
+<a name="l00028"></a>00028 <span class="comment">*</span>
+<a name="l00029"></a>00029 <span class="comment">* *       any redistribution and use are licensed by TI for use only with TI Devices.</span>
+<a name="l00030"></a>00030 <span class="comment">*</span>
+<a name="l00031"></a>00031 <span class="comment">* *       Nothing shall obligate TI to provide you with source code for the software</span>
+<a name="l00032"></a>00032 <span class="comment">* licensed and provided to you in object code.</span>
+<a name="l00033"></a>00033 <span class="comment">*</span>
+<a name="l00034"></a>00034 <span class="comment">* If software source code is provided to you, modification and redistribution of the</span>
+<a name="l00035"></a>00035 <span class="comment">* source code are permitted provided that the following conditions are met:</span>
+<a name="l00036"></a>00036 <span class="comment">*</span>
+<a name="l00037"></a>00037 <span class="comment">* *       any redistribution and use of the source code, including any resulting derivative</span>
+<a name="l00038"></a>00038 <span class="comment">* works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00039"></a>00039 <span class="comment">*</span>
+<a name="l00040"></a>00040 <span class="comment">* *       any redistribution and use of any object code compiled from the source code</span>
+<a name="l00041"></a>00041 <span class="comment">* and any resulting derivative works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00042"></a>00042 <span class="comment">*</span>
+<a name="l00043"></a>00043 <span class="comment">* Neither the name of Texas Instruments Incorporated nor the names of its suppliers</span>
+<a name="l00044"></a>00044 <span class="comment">*</span>
+<a name="l00045"></a>00045 <span class="comment">* may be used to endorse or promote products derived from this software without</span>
+<a name="l00046"></a>00046 <span class="comment">* specific prior written permission.</span>
+<a name="l00047"></a>00047 <span class="comment">*</span>
+<a name="l00048"></a>00048 <span class="comment">* DISCLAIMER.</span>
+<a name="l00049"></a>00049 <span class="comment">*</span>
+<a name="l00050"></a>00050 <span class="comment">* THIS SOFTWARE IS PROVIDED BY TI AND TI&apos;S LICENSORS &quot;AS IS&quot; AND ANY EXPRESS</span>
+<a name="l00051"></a>00051 <span class="comment">* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span>
+<a name="l00052"></a>00052 <span class="comment">* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span>
+<a name="l00053"></a>00053 <span class="comment">* IN NO EVENT SHALL TI AND TI&apos;S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<a name="l00054"></a>00054 <span class="comment">* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span>
+<a name="l00055"></a>00055 <span class="comment">* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<a name="l00056"></a>00056 <span class="comment">* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY</span>
+<a name="l00057"></a>00057 <span class="comment">* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE</span>
+<a name="l00058"></a>00058 <span class="comment">* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span>
+<a name="l00059"></a>00059 <span class="comment">* OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<a name="l00060"></a>00060 <span class="comment">*</span>
+<a name="l00061"></a>00061 <span class="comment">*/</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 <span class="preprocessor">#ifndef TIVX_TASK_H_</span>
+<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_TASK_H_</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span>
+<a name="l00068"></a>00068 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00069"></a>00069 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00070"></a>00070 <span class="preprocessor">#endif</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>
+<a name="l00082"></a><a class="code" href="group__group__tivx__task.html#ga58c994a20bea06f528079a77e407c1b9">00082</a> <span class="preprocessor">#define TIVX_TASK_PRI_HIGHEST   (0u)</span>
+<a name="l00083"></a>00083 <span class="preprocessor"></span>
+<a name="l00089"></a><a class="code" href="group__group__tivx__task.html#gaf56e776da306397705c872d6aeccf886">00089</a> <span class="preprocessor">#define TIVX_TASK_PRI_LOWEST    (15u)</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span>
+<a name="l00096"></a><a class="code" href="group__group__tivx__task.html#ga1ac27404550c393950aa05e0c6caf15a">00096</a> <span class="preprocessor">#define TIVX_TASK_AFFINITY_ANY      (0xFFFFu)</span>
+<a name="l00097"></a>00097 <span class="preprocessor"></span>
+<a name="l00103"></a><a class="code" href="group__group__tivx__task.html#ga73fc183a96e06488bf13c656f9b86ea3">00103</a> <span class="preprocessor">#define TIVX_MAX_TASK_NAME         (20)</span>
+<a name="l00104"></a>00104 <span class="preprocessor"></span>
+<a name="l00111"></a><a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a">00111</a> <span class="keyword">typedef</span> void (<a class="code" href="vx__types_8h.html#af22acf717e04b29aa5b836a1097f7181">VX_CALLBACK</a> *<a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a>)(<span class="keywordtype">void</span> *app_var);
+<a name="l00112"></a>00112 
 <a name="l00113"></a>00113 
-<a name="l00116"></a><a class="code" href="structtivx__task__create__params__t.html#a16e1be05aecd68d7cbdd094e88691bb6">00116</a>     uint32_t stack_size;
-<a name="l00117"></a>00117 
-<a name="l00123"></a><a class="code" href="structtivx__task__create__params__t.html#af0bee71102e9c0fb203969143d1445fe">00123</a>     uint32_t core_affinity;
+<a name="l00119"></a><a class="code" href="structtivx__task.html">00119</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_task_t
+<a name="l00120"></a>00120 {
+<a name="l00123"></a><a class="code" href="structtivx__task.html#a80f6070ffc5874260733340cab2bfe94">00123</a>     <span class="keywordtype">void</span> *tsk_handle;
 <a name="l00124"></a>00124 
-<a name="l00129"></a><a class="code" href="structtivx__task__create__params__t.html#a04abcf53ea3bdac1892e31688115af37">00129</a>     uint32_t priority;
-<a name="l00130"></a>00130 
-<a name="l00132"></a><a class="code" href="structtivx__task__create__params__t.html#afabb86fedec11ed49eab78c70fec1692">00132</a>     <a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a> task_main;
+<a name="l00128"></a><a class="code" href="structtivx__task.html#ad2ba16f382b570fa09f86b35b34a1748">00128</a>     uint8_t *stack_ptr;
+<a name="l00129"></a>00129 
+<a name="l00132"></a><a class="code" href="structtivx__task.html#a00ff4a2148185a3ad91dab3c7adb13ec">00132</a>     uint32_t stack_size;
 <a name="l00133"></a>00133 
-<a name="l00135"></a><a class="code" href="structtivx__task__create__params__t.html#abab96569d42e5c46ddfe87a9961bca5b">00135</a>     <span class="keywordtype">void</span> *app_var;
-<a name="l00136"></a>00136 
-<a name="l00137"></a>00137     
-<a name="l00139"></a><a class="code" href="structtivx__task__create__params__t.html#ad5b5eb3590846650056dc3968d3573c2">00139</a>     <span class="keywordtype">char</span> task_name[<a class="code" href="group__group__tivx__task.html#ga73fc183a96e06488bf13c656f9b86ea3" title="Max Task Name Size.">TIVX_MAX_TASK_NAME</a>];
-<a name="l00140"></a>00140 } <a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a>;
-<a name="l00141"></a>00141 
-<a name="l00142"></a>00142 
-<a name="l00143"></a>00143 
-<a name="l00144"></a>00144 
-<a name="l00152"></a>00152 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__task.html#gab9c6892d3680cbbf7d141ba9715b5bd7" title="Used to set default task create parameters in parameter structure.">tivxTaskSetDefaultCreateParams</a>(<a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a> *params);
+<a name="l00139"></a><a class="code" href="structtivx__task.html#a2f8ac3097bde2fd040b39965a0acb849">00139</a>     uint32_t core_affinity;
+<a name="l00140"></a>00140 
+<a name="l00145"></a><a class="code" href="structtivx__task.html#a12c711cf4ce109e4afdaaa5c8cf67a0a">00145</a>     uint32_t priority;
+<a name="l00146"></a>00146 
+<a name="l00148"></a><a class="code" href="structtivx__task.html#ac69f95efcd82a3fe2eb126ecb0e6ab40">00148</a>     <a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a> task_func;
+<a name="l00149"></a>00149 
+<a name="l00151"></a><a class="code" href="structtivx__task.html#aca157d448b99c2eb98e3de61b8e1ef47">00151</a>     <span class="keywordtype">void</span> *app_var;
+<a name="l00152"></a>00152 } <a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a>;
 <a name="l00153"></a>00153 
-<a name="l00164"></a>00164 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__task.html#gae7df8005aad76cd598146b82cddadc7b" title="Create a task.">tivxTaskCreate</a>(<a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a> *task, <a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a> *params);
-<a name="l00165"></a>00165 
-<a name="l00175"></a>00175 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__task.html#ga198b31749312b9235b2ac19d9e0bb068" title="Delete a task.">tivxTaskDelete</a>(<a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a> *task);
-<a name="l00176"></a>00176 
-<a name="l00184"></a>00184 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__task.html#ga25fc34b7c559f1be5d8a237dd26eaf24" title="waits/sleeps for given milliseconds">tivxTaskWaitMsecs</a>(uint32_t msec);
-<a name="l00185"></a>00185 
-<a name="l00186"></a>00186 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00187"></a>00187 <span class="preprocessor"></span>}
-<a name="l00188"></a>00188 <span class="preprocessor">#endif</span>
-<a name="l00189"></a>00189 <span class="preprocessor"></span>
-<a name="l00190"></a>00190 <span class="preprocessor">#endif</span>
+<a name="l00154"></a>00154 
+<a name="l00155"></a>00155 
+<a name="l00161"></a><a class="code" href="structtivx__task__create__params__t.html">00161</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_task_create_params
+<a name="l00162"></a>00162 {
+<a name="l00166"></a><a class="code" href="structtivx__task__create__params__t.html#ad87c180197353f9dec4b669e44107973">00166</a>     uint8_t *stack_ptr;
+<a name="l00167"></a>00167 
+<a name="l00170"></a><a class="code" href="structtivx__task__create__params__t.html#a16e1be05aecd68d7cbdd094e88691bb6">00170</a>     uint32_t stack_size;
+<a name="l00171"></a>00171 
+<a name="l00177"></a><a class="code" href="structtivx__task__create__params__t.html#af0bee71102e9c0fb203969143d1445fe">00177</a>     uint32_t core_affinity;
+<a name="l00178"></a>00178 
+<a name="l00183"></a><a class="code" href="structtivx__task__create__params__t.html#a04abcf53ea3bdac1892e31688115af37">00183</a>     uint32_t priority;
+<a name="l00184"></a>00184 
+<a name="l00186"></a><a class="code" href="structtivx__task__create__params__t.html#afabb86fedec11ed49eab78c70fec1692">00186</a>     <a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a> task_main;
+<a name="l00187"></a>00187 
+<a name="l00189"></a><a class="code" href="structtivx__task__create__params__t.html#abab96569d42e5c46ddfe87a9961bca5b">00189</a>     <span class="keywordtype">void</span> *app_var;
+<a name="l00190"></a>00190 
+<a name="l00191"></a>00191 
+<a name="l00193"></a><a class="code" href="structtivx__task__create__params__t.html#ad5b5eb3590846650056dc3968d3573c2">00193</a>     <span class="keywordtype">char</span> task_name[<a class="code" href="group__group__tivx__task.html#ga73fc183a96e06488bf13c656f9b86ea3" title="Max Task Name Size.">TIVX_MAX_TASK_NAME</a>];
+<a name="l00194"></a>00194 } <a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a>;
+<a name="l00195"></a>00195 
+<a name="l00196"></a>00196 
+<a name="l00197"></a>00197 
+<a name="l00198"></a>00198 
+<a name="l00206"></a>00206 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__task.html#gab9c6892d3680cbbf7d141ba9715b5bd7" title="Used to set default task create parameters in parameter structure.">tivxTaskSetDefaultCreateParams</a>(<a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a> *params);
+<a name="l00207"></a>00207 
+<a name="l00218"></a>00218 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__task.html#gae7df8005aad76cd598146b82cddadc7b" title="Create a task.">tivxTaskCreate</a>(<a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a> *task, <a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a> *params);
+<a name="l00219"></a>00219 
+<a name="l00229"></a>00229 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__task.html#ga198b31749312b9235b2ac19d9e0bb068" title="Delete a task.">tivxTaskDelete</a>(<a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a> *task);
+<a name="l00230"></a>00230 
+<a name="l00238"></a>00238 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__task.html#ga25fc34b7c559f1be5d8a237dd26eaf24" title="waits/sleeps for given milliseconds">tivxTaskWaitMsecs</a>(uint32_t msec);
+<a name="l00239"></a>00239 
+<a name="l00240"></a>00240 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00241"></a>00241 <span class="preprocessor"></span>}
+<a name="l00242"></a>00242 <span class="preprocessor">#endif</span>
+<a name="l00243"></a>00243 <span class="preprocessor"></span>
+<a name="l00244"></a>00244 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

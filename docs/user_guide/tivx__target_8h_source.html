@@ -24,114 +24,169 @@
     </ul>
   </div>
 <h1>tivx_target.h</h1><a href="tivx__target_8h.html">Go to the documentation of this file.</a><div class="fragment"><pre class="fragment"><a name="l00001"></a>00001 <span class="comment">/*</span>
-<a name="l00002"></a>00002 <span class="comment"> *******************************************************************************</span>
-<a name="l00003"></a>00003 <span class="comment"> *</span>
-<a name="l00004"></a>00004 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00005"></a>00005 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00006"></a>00006 <span class="comment"> *</span>
-<a name="l00007"></a>00007 <span class="comment"> *******************************************************************************</span>
-<a name="l00008"></a>00008 <span class="comment"> */</span>
-<a name="l00009"></a>00009 
-<a name="l00010"></a>00010 
-<a name="l00011"></a>00011 <span class="preprocessor">#ifndef TIVX_TARGET_H_</span>
-<a name="l00012"></a>00012 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_TARGET_H_</span>
-<a name="l00013"></a>00013 <span class="preprocessor"></span>
-<a name="l00014"></a>00014 
-<a name="l00015"></a>00015 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00016"></a>00016 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00017"></a>00017 <span class="preprocessor">#endif</span>
-<a name="l00018"></a>00018 <span class="preprocessor"></span>
-<a name="l00028"></a><a class="code" href="group__group__tivx__target__cfg.html#ga672f053a5c680cf8ae0938477686dc5e">00028</a> <span class="preprocessor">#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)</span>
-<a name="l00029"></a>00029 <span class="preprocessor"></span>
-<a name="l00034"></a><a class="code" href="group__group__tivx__target__cfg.html#gacef8bfb75a477a21c677c37e8de8add3">00034</a> <span class="preprocessor">#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (32u)</span>
-<a name="l00035"></a>00035 <span class="preprocessor"></span>
-<a name="l00039"></a><a class="code" href="group__group__tivx__target.html#ga8e1f23af23b08043c86aafabfdcafb6d">00039</a> <span class="preprocessor">#define TIVX_TARGET_INST_MASK (0xFu)</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span>
-<a name="l00044"></a><a class="code" href="group__group__tivx__target.html#ga61f79413cd1c84255b912f313d2409ec">00044</a> <span class="preprocessor">#define TIVX_TARGET_INST_SHIFT (0x0u)</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00049"></a><a class="code" href="group__group__tivx__target.html#ga81ac34633650fbdaa95f15156f870e34">00049</a> <span class="preprocessor">#define TIVX_CPU_ID_MASK    (0xFu)</span>
-<a name="l00050"></a>00050 <span class="preprocessor"></span>
-<a name="l00054"></a><a class="code" href="group__group__tivx__target.html#ga325e1041e0add3a92e0ff1c210320dc7">00054</a> <span class="preprocessor">#define TIVX_CPU_ID_SHIFT   (0x4)</span>
-<a name="l00055"></a>00055 <span class="preprocessor"></span>
-<a name="l00059"></a><a class="code" href="group__group__tivx__target.html#ga6bc81498984f10b5e3fc6ee068f65a72">00059</a> <span class="preprocessor">#define TIVX_TARGET_ID_MASK     (0xFFu)</span>
-<a name="l00060"></a>00060 <span class="preprocessor"></span>
-<a name="l00064"></a><a class="code" href="group__group__tivx__target.html#ga48eacb31d68974bda585cbf9d2257a3a">00064</a> <span class="preprocessor">#define TIVX_TARGET_ID_SHIFT    (0x0u)</span>
-<a name="l00065"></a>00065 <span class="preprocessor"></span>
-<a name="l00073"></a><a class="code" href="group__group__tivx__target.html#ga033ec5e18b5d4cebbed152cd01086ecc">00073</a> <span class="preprocessor">#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)(((((uint32_t)cpu)&amp;TIVX_CPU_ID_MASK) &lt;&lt; TIVX_CPU_ID_SHIFT) |((((uint32_t)target_inst)&amp;TIVX_TARGET_INST_MASK) &lt;&lt; TIVX_TARGET_INST_SHIFT)))</span>
-<a name="l00074"></a>00074 <span class="preprocessor"></span>
-<a name="l00081"></a><a class="code" href="group__group__tivx__target.html#gae2b5f51dde194470e8cd20fd3137da53">00081</a> <span class="preprocessor">#define TIVX_GET_CPU_ID(target)                ((vx_enum)(((target)&gt;&gt;TIVX_CPU_ID_SHIFT)&amp;TIVX_CPU_ID_MASK))</span>
-<a name="l00082"></a>00082 <span class="preprocessor"></span>
-<a name="l00089"></a><a class="code" href="group__group__tivx__target.html#ga40dc0ddb4196d504ef538f958fef26cd">00089</a> <span class="preprocessor">#define TIVX_GET_TARGET_INST(target)           ((uint16_t)(((target)&gt;&gt;TIVX_TARGET_INST_SHIFT)) &amp; TIVX_TARGET_INST_MASK)</span>
+<a name="l00002"></a>00002 <span class="comment">*</span>
+<a name="l00003"></a>00003 <span class="comment">* Copyright (c) 2017 Texas Instruments Incorporated</span>
+<a name="l00004"></a>00004 <span class="comment">*</span>
+<a name="l00005"></a>00005 <span class="comment">* All rights reserved not granted herein.</span>
+<a name="l00006"></a>00006 <span class="comment">*</span>
+<a name="l00007"></a>00007 <span class="comment">* Limited License.</span>
+<a name="l00008"></a>00008 <span class="comment">*</span>
+<a name="l00009"></a>00009 <span class="comment">* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive</span>
+<a name="l00010"></a>00010 <span class="comment">* license under copyrights and patents it now or hereafter owns or controls to make,</span>
+<a name="l00011"></a>00011 <span class="comment">* have made, use, import, offer to sell and sell (&quot;Utilize&quot;) this software subject to the</span>
+<a name="l00012"></a>00012 <span class="comment">* terms herein.  With respect to the foregoing patent license, such license is granted</span>
+<a name="l00013"></a>00013 <span class="comment">* solely to the extent that any such patent is necessary to Utilize the software alone.</span>
+<a name="l00014"></a>00014 <span class="comment">* The patent license shall not apply to any combinations which include this software,</span>
+<a name="l00015"></a>00015 <span class="comment">* other than combinations with devices manufactured by or for TI (&quot;TI Devices&quot;).</span>
+<a name="l00016"></a>00016 <span class="comment">* No hardware patent is licensed hereunder.</span>
+<a name="l00017"></a>00017 <span class="comment">*</span>
+<a name="l00018"></a>00018 <span class="comment">* Redistributions must preserve existing copyright notices and reproduce this license</span>
+<a name="l00019"></a>00019 <span class="comment">* (including the above copyright notice and the disclaimer and (if applicable) source</span>
+<a name="l00020"></a>00020 <span class="comment">* code license limitations below) in the documentation and/or other materials provided</span>
+<a name="l00021"></a>00021 <span class="comment">* with the distribution</span>
+<a name="l00022"></a>00022 <span class="comment">*</span>
+<a name="l00023"></a>00023 <span class="comment">* Redistribution and use in binary form, without modification, are permitted provided</span>
+<a name="l00024"></a>00024 <span class="comment">* that the following conditions are met:</span>
+<a name="l00025"></a>00025 <span class="comment">*</span>
+<a name="l00026"></a>00026 <span class="comment">* *       No reverse engineering, decompilation, or disassembly of this software is</span>
+<a name="l00027"></a>00027 <span class="comment">* permitted with respect to any software provided in binary form.</span>
+<a name="l00028"></a>00028 <span class="comment">*</span>
+<a name="l00029"></a>00029 <span class="comment">* *       any redistribution and use are licensed by TI for use only with TI Devices.</span>
+<a name="l00030"></a>00030 <span class="comment">*</span>
+<a name="l00031"></a>00031 <span class="comment">* *       Nothing shall obligate TI to provide you with source code for the software</span>
+<a name="l00032"></a>00032 <span class="comment">* licensed and provided to you in object code.</span>
+<a name="l00033"></a>00033 <span class="comment">*</span>
+<a name="l00034"></a>00034 <span class="comment">* If software source code is provided to you, modification and redistribution of the</span>
+<a name="l00035"></a>00035 <span class="comment">* source code are permitted provided that the following conditions are met:</span>
+<a name="l00036"></a>00036 <span class="comment">*</span>
+<a name="l00037"></a>00037 <span class="comment">* *       any redistribution and use of the source code, including any resulting derivative</span>
+<a name="l00038"></a>00038 <span class="comment">* works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00039"></a>00039 <span class="comment">*</span>
+<a name="l00040"></a>00040 <span class="comment">* *       any redistribution and use of any object code compiled from the source code</span>
+<a name="l00041"></a>00041 <span class="comment">* and any resulting derivative works, are licensed by TI for use only with TI Devices.</span>
+<a name="l00042"></a>00042 <span class="comment">*</span>
+<a name="l00043"></a>00043 <span class="comment">* Neither the name of Texas Instruments Incorporated nor the names of its suppliers</span>
+<a name="l00044"></a>00044 <span class="comment">*</span>
+<a name="l00045"></a>00045 <span class="comment">* may be used to endorse or promote products derived from this software without</span>
+<a name="l00046"></a>00046 <span class="comment">* specific prior written permission.</span>
+<a name="l00047"></a>00047 <span class="comment">*</span>
+<a name="l00048"></a>00048 <span class="comment">* DISCLAIMER.</span>
+<a name="l00049"></a>00049 <span class="comment">*</span>
+<a name="l00050"></a>00050 <span class="comment">* THIS SOFTWARE IS PROVIDED BY TI AND TI&apos;S LICENSORS &quot;AS IS&quot; AND ANY EXPRESS</span>
+<a name="l00051"></a>00051 <span class="comment">* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span>
+<a name="l00052"></a>00052 <span class="comment">* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span>
+<a name="l00053"></a>00053 <span class="comment">* IN NO EVENT SHALL TI AND TI&apos;S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span>
+<a name="l00054"></a>00054 <span class="comment">* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span>
+<a name="l00055"></a>00055 <span class="comment">* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span>
+<a name="l00056"></a>00056 <span class="comment">* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY</span>
+<a name="l00057"></a>00057 <span class="comment">* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE</span>
+<a name="l00058"></a>00058 <span class="comment">* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span>
+<a name="l00059"></a>00059 <span class="comment">* OF THE POSSIBILITY OF SUCH DAMAGE.</span>
+<a name="l00060"></a>00060 <span class="comment">*</span>
+<a name="l00061"></a>00061 <span class="comment">*/</span>
+<a name="l00062"></a>00062 
+<a name="l00063"></a>00063 
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 
+<a name="l00066"></a>00066 <span class="preprocessor">#ifndef TIVX_TARGET_H_</span>
+<a name="l00067"></a>00067 <span class="preprocessor"></span><span class="preprocessor">#define TIVX_TARGET_H_</span>
+<a name="l00068"></a>00068 <span class="preprocessor"></span>
+<a name="l00069"></a>00069 
+<a name="l00070"></a>00070 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00072"></a>00072 <span class="preprocessor">#endif</span>
+<a name="l00073"></a>00073 <span class="preprocessor"></span>
+<a name="l00083"></a><a class="code" href="group__group__tivx__target__cfg.html#ga672f053a5c680cf8ae0938477686dc5e">00083</a> <span class="preprocessor">#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)</span>
+<a name="l00084"></a>00084 <span class="preprocessor"></span>
+<a name="l00089"></a><a class="code" href="group__group__tivx__target__cfg.html#gacef8bfb75a477a21c677c37e8de8add3">00089</a> <span class="preprocessor">#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (32u)</span>
 <a name="l00090"></a>00090 <span class="preprocessor"></span>
-<a name="l00091"></a>00091 
-<a name="l00095"></a><a class="code" href="group__group__tivx__target.html#gaf943ee340be601ee19cd92e378211b53">00095</a> <span class="preprocessor">#define TIVX_TARGET_ID_INVALID      (0xFFFFFFFFu)</span>
-<a name="l00096"></a>00096 <span class="preprocessor"></span>
-<a name="l00100"></a><a class="code" href="group__group__tivx__target.html#gab4723d77faf1c4eb39193f47dc5b81f4">00100</a> <span class="preprocessor">#define TIVX_CPU_ID_INVALID         (0xFFFFFFFFu)</span>
-<a name="l00101"></a>00101 <span class="preprocessor"></span>
-<a name="l00105"></a><a class="code" href="group__group__tivx__target.html#gaab9a2b437b24da392a6784bc35334e72">00105</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_target_cmd_e {
-<a name="l00106"></a>00106 
-<a name="l00108"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a27f3929cca255379921df4d7f10e62ca">00108</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a27f3929cca255379921df4d7f10e62ca" title="Command to create a node on target.">TIVX_CMD_NODE_CREATE</a>  = 0x00000001u,
-<a name="l00110"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a5c6648535cde2654e3220e790101067f">00110</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a5c6648535cde2654e3220e790101067f" title="Command to delete a node on target.">TIVX_CMD_NODE_DELETE</a>  = 0x00000002u,
-<a name="l00112"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a0ec94e1f3e56ed21acc8b26516483cf3">00112</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a0ec94e1f3e56ed21acc8b26516483cf3" title="Command to control a node on target.">TIVX_CMD_NODE_CONTROL</a>  = 0x00000003u,
-<a name="l00114"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a4683622e1c5471b8f2a581addbe19c7c">00114</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a4683622e1c5471b8f2a581addbe19c7c" title="Command to call a user callback, on node execution complete.">TIVX_CMD_NODE_USER_CALLBACK</a>  = 0x00000004u,
-<a name="l00115"></a>00115 
-<a name="l00116"></a>00116 } <a class="code" href="group__group__tivx__target.html#gaab9a2b437b24da392a6784bc35334e72" title="Command ID for commands that can be send to a target.">tivx_target_cmd_e</a>;
-<a name="l00117"></a>00117 
-<a name="l00119"></a><a class="code" href="tivx__target_8h.html#ae387c0cdeac5b0aa7ae6f78a6d1cb599">00119</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_target *<a class="code" href="tivx__target_8h.html#ae387c0cdeac5b0aa7ae6f78a6d1cb599" title="Target Object.">tivx_target</a>;
-<a name="l00120"></a>00120 
-<a name="l00126"></a><a class="code" href="structtivx__target__t.html">00126</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_target {
-<a name="l00127"></a>00127 
-<a name="l00129"></a><a class="code" href="structtivx__target__t.html#a51f83d9caf0818c0862697adccf99197">00129</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id;
-<a name="l00130"></a>00130 
-<a name="l00132"></a><a class="code" href="structtivx__target__t.html#a0c66df840eb31311136334a662fbd905">00132</a>     <a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a> task_handle;
-<a name="l00133"></a>00133 
-<a name="l00136"></a><a class="code" href="structtivx__target__t.html#ae6ba4d3b80daa3f4155f205467d6917f">00136</a>     <a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a> task_params;
-<a name="l00137"></a>00137 
-<a name="l00139"></a><a class="code" href="structtivx__target__t.html#ad8a879320dbc50898853cb87c39c2c05">00139</a>     <a class="code" href="structtivx__queue.html" title="Typedef for a queue.">tivx_queue</a> job_queue_handle;
-<a name="l00140"></a>00140 
-<a name="l00142"></a><a class="code" href="structtivx__target__t.html#a9bad213eb3acdf54a8d316ebc59a7a5e">00142</a>     uint32_t job_queue_memory[<a class="code" href="group__group__tivx__target__cfg.html#gacef8bfb75a477a21c677c37e8de8add3" title="Max depth of queue associated with target.">TIVX_TARGET_MAX_JOB_QUEUE_DEPTH</a>];
-<a name="l00143"></a>00143 
-<a name="l00145"></a><a class="code" href="structtivx__target__t.html#a1732a7c5991338bb7ab4b038cbfd4150">00145</a>     <a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a> target_main;
+<a name="l00094"></a><a class="code" href="group__group__tivx__target.html#ga8e1f23af23b08043c86aafabfdcafb6d">00094</a> <span class="preprocessor">#define TIVX_TARGET_INST_MASK (0xFu)</span>
+<a name="l00095"></a>00095 <span class="preprocessor"></span>
+<a name="l00099"></a><a class="code" href="group__group__tivx__target.html#ga61f79413cd1c84255b912f313d2409ec">00099</a> <span class="preprocessor">#define TIVX_TARGET_INST_SHIFT (0x0u)</span>
+<a name="l00100"></a>00100 <span class="preprocessor"></span>
+<a name="l00104"></a><a class="code" href="group__group__tivx__target.html#ga81ac34633650fbdaa95f15156f870e34">00104</a> <span class="preprocessor">#define TIVX_CPU_ID_MASK    (0xFu)</span>
+<a name="l00105"></a>00105 <span class="preprocessor"></span>
+<a name="l00109"></a><a class="code" href="group__group__tivx__target.html#ga325e1041e0add3a92e0ff1c210320dc7">00109</a> <span class="preprocessor">#define TIVX_CPU_ID_SHIFT   (0x4)</span>
+<a name="l00110"></a>00110 <span class="preprocessor"></span>
+<a name="l00114"></a><a class="code" href="group__group__tivx__target.html#ga6bc81498984f10b5e3fc6ee068f65a72">00114</a> <span class="preprocessor">#define TIVX_TARGET_ID_MASK     (0xFFu)</span>
+<a name="l00115"></a>00115 <span class="preprocessor"></span>
+<a name="l00119"></a><a class="code" href="group__group__tivx__target.html#ga48eacb31d68974bda585cbf9d2257a3a">00119</a> <span class="preprocessor">#define TIVX_TARGET_ID_SHIFT    (0x0u)</span>
+<a name="l00120"></a>00120 <span class="preprocessor"></span>
+<a name="l00128"></a><a class="code" href="group__group__tivx__target.html#ga033ec5e18b5d4cebbed152cd01086ecc">00128</a> <span class="preprocessor">#define TIVX_MAKE_TARGET_ID(cpu, target_inst)  ((vx_enum)(((((uint32_t)cpu)&amp;TIVX_CPU_ID_MASK) &lt;&lt; TIVX_CPU_ID_SHIFT) |((((uint32_t)target_inst)&amp;TIVX_TARGET_INST_MASK) &lt;&lt; TIVX_TARGET_INST_SHIFT)))</span>
+<a name="l00129"></a>00129 <span class="preprocessor"></span>
+<a name="l00136"></a><a class="code" href="group__group__tivx__target.html#gae2b5f51dde194470e8cd20fd3137da53">00136</a> <span class="preprocessor">#define TIVX_GET_CPU_ID(target)                ((vx_enum)(((target)&gt;&gt;TIVX_CPU_ID_SHIFT)&amp;TIVX_CPU_ID_MASK))</span>
+<a name="l00137"></a>00137 <span class="preprocessor"></span>
+<a name="l00144"></a><a class="code" href="group__group__tivx__target.html#ga40dc0ddb4196d504ef538f958fef26cd">00144</a> <span class="preprocessor">#define TIVX_GET_TARGET_INST(target)           ((uint16_t)(((target)&gt;&gt;TIVX_TARGET_INST_SHIFT)) &amp; TIVX_TARGET_INST_MASK)</span>
+<a name="l00145"></a>00145 <span class="preprocessor"></span>
 <a name="l00146"></a>00146 
-<a name="l00148"></a><a class="code" href="structtivx__target__t.html#aaeec0307b0da4d8ef5b477b6a2ad2657">00148</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> targetExitRequest;
-<a name="l00149"></a>00149 
-<a name="l00153"></a><a class="code" href="structtivx__target__t.html#a88f9d191258baa5a1ecb7632c35879f2">00153</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> targetExitDone;
-<a name="l00154"></a>00154 
-<a name="l00155"></a>00155 } <a class="code" href="structtivx__target__t.html" title="Target object internal state.">tivx_target_t</a>;
-<a name="l00156"></a>00156 
-<a name="l00162"></a><a class="code" href="structtivx__target__create__params__t.html">00162</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_target_create_params
-<a name="l00163"></a>00163 {
-<a name="l00167"></a><a class="code" href="structtivx__target__create__params__t.html#aa70966b5cb0b06cb2cdcab416947c620">00167</a>     uint8_t *task_stack_ptr;
-<a name="l00168"></a>00168 
-<a name="l00171"></a><a class="code" href="structtivx__target__create__params__t.html#ae4f3b5f7be903e06c06db219617bd66c">00171</a>     uint32_t task_stack_size;
+<a name="l00150"></a><a class="code" href="group__group__tivx__target.html#gaf943ee340be601ee19cd92e378211b53">00150</a> <span class="preprocessor">#define TIVX_TARGET_ID_INVALID      (0xFFFFFFFFu)</span>
+<a name="l00151"></a>00151 <span class="preprocessor"></span>
+<a name="l00155"></a><a class="code" href="group__group__tivx__target.html#gab4723d77faf1c4eb39193f47dc5b81f4">00155</a> <span class="preprocessor">#define TIVX_CPU_ID_INVALID         (0xFFFFFFFFu)</span>
+<a name="l00156"></a>00156 <span class="preprocessor"></span>
+<a name="l00160"></a><a class="code" href="group__group__tivx__target.html#gaab9a2b437b24da392a6784bc35334e72">00160</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_target_cmd_e {
+<a name="l00161"></a>00161 
+<a name="l00163"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a27f3929cca255379921df4d7f10e62ca">00163</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a27f3929cca255379921df4d7f10e62ca" title="Command to create a node on target.">TIVX_CMD_NODE_CREATE</a>  = 0x00000001u,
+<a name="l00165"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a5c6648535cde2654e3220e790101067f">00165</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a5c6648535cde2654e3220e790101067f" title="Command to delete a node on target.">TIVX_CMD_NODE_DELETE</a>  = 0x00000002u,
+<a name="l00167"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a0ec94e1f3e56ed21acc8b26516483cf3">00167</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a0ec94e1f3e56ed21acc8b26516483cf3" title="Command to control a node on target.">TIVX_CMD_NODE_CONTROL</a>  = 0x00000003u,
+<a name="l00169"></a><a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a4683622e1c5471b8f2a581addbe19c7c">00169</a>     <a class="code" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a4683622e1c5471b8f2a581addbe19c7c" title="Command to call a user callback, on node execution complete.">TIVX_CMD_NODE_USER_CALLBACK</a>  = 0x00000004u,
+<a name="l00170"></a>00170 
+<a name="l00171"></a>00171 } <a class="code" href="group__group__tivx__target.html#gaab9a2b437b24da392a6784bc35334e72" title="Command ID for commands that can be send to a target.">tivx_target_cmd_e</a>;
 <a name="l00172"></a>00172 
-<a name="l00178"></a><a class="code" href="structtivx__target__create__params__t.html#a2ef1017e639dfb054099bf2b78fe822e">00178</a>     uint32_t task_core_affinity;
-<a name="l00179"></a>00179 
-<a name="l00184"></a><a class="code" href="structtivx__target__create__params__t.html#a802ec4560176934da733f52e498ccd58">00184</a>     uint32_t task_priority;
+<a name="l00174"></a><a class="code" href="tivx__target_8h.html#ae387c0cdeac5b0aa7ae6f78a6d1cb599">00174</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_target *<a class="code" href="tivx__target_8h.html#ae387c0cdeac5b0aa7ae6f78a6d1cb599" title="Target Object.">tivx_target</a>;
+<a name="l00175"></a>00175 
+<a name="l00181"></a><a class="code" href="structtivx__target__t.html">00181</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_target {
+<a name="l00182"></a>00182 
+<a name="l00184"></a><a class="code" href="structtivx__target__t.html#a51f83d9caf0818c0862697adccf99197">00184</a>     <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id;
 <a name="l00185"></a>00185 
-<a name="l00186"></a>00186 } <a class="code" href="structtivx__target__create__params__t.html" title="Parameters that can be set during target creation.">tivx_target_create_params_t</a>;
-<a name="l00187"></a>00187 
-<a name="l00198"></a>00198 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__tivx__target.html#ga91042e4d910596a3f8889ba4a26df97a" title="Get CPU ID associated with given target ID.">tivxTargetGetCpuId</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id);
-<a name="l00199"></a>00199 
-<a name="l00212"></a>00212 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__target.html#ga75b9a3e518e3eff982210fb179a5c35c" title="Queue object descriptor to a given target.">tivxTargetQueueObjDesc</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id, uint16_t obj_desc_id);
-<a name="l00213"></a>00213 
-<a name="l00221"></a>00221 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target.html#ga5e59a1fe631ed63d7a225af8dcf6aa44" title="Used to set default target create parameters in parameter structure.">tivxTargetSetDefaultCreateParams</a>(<a class="code" href="structtivx__target__create__params__t.html" title="Parameters that can be set during target creation.">tivx_target_create_params_t</a> *params);
-<a name="l00222"></a>00222 
-<a name="l00234"></a>00234 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__target.html#gafc790d4875704d2d35d0b2df0e875c6d" title="Create a target object and associate with given target ID.">tivxTargetCreate</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id, <a class="code" href="structtivx__target__create__params__t.html" title="Parameters that can be set during target creation.">tivx_target_create_params_t</a> *params);
-<a name="l00235"></a>00235 
-<a name="l00236"></a>00236 
-<a name="l00246"></a>00246 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__target.html#gad0a24699e949291235bea34a6544b89d" title="Delete a target object.">tivxTargetDelete</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id);
-<a name="l00247"></a>00247 
-<a name="l00255"></a>00255 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target.html#ga28d7fa03e4c54e9a855b5e9997634fc1" title="Init global state of target module.">tivxTargetInit</a>(<span class="keywordtype">void</span>);
-<a name="l00256"></a>00256 
-<a name="l00264"></a>00264 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target.html#gab6deead17a33e5a72ba2efec1098be38" title="De-Init global state of target module.">tivxTargetDeInit</a>(<span class="keywordtype">void</span>);
-<a name="l00265"></a>00265 
-<a name="l00266"></a>00266 
-<a name="l00267"></a>00267 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00268"></a>00268 <span class="preprocessor"></span>}
-<a name="l00269"></a>00269 <span class="preprocessor">#endif</span>
-<a name="l00270"></a>00270 <span class="preprocessor"></span>
-<a name="l00271"></a>00271 <span class="preprocessor">#endif</span>
+<a name="l00187"></a><a class="code" href="structtivx__target__t.html#a0c66df840eb31311136334a662fbd905">00187</a>     <a class="code" href="structtivx__task.html" title="Typedef for a task.">tivx_task</a> task_handle;
+<a name="l00188"></a>00188 
+<a name="l00191"></a><a class="code" href="structtivx__target__t.html#ae6ba4d3b80daa3f4155f205467d6917f">00191</a>     <a class="code" href="structtivx__task__create__params__t.html" title="Parameters that can be set during task creation.">tivx_task_create_params_t</a> task_params;
+<a name="l00192"></a>00192 
+<a name="l00194"></a><a class="code" href="structtivx__target__t.html#ad8a879320dbc50898853cb87c39c2c05">00194</a>     <a class="code" href="structtivx__queue.html" title="Typedef for a queue.">tivx_queue</a> job_queue_handle;
+<a name="l00195"></a>00195 
+<a name="l00197"></a><a class="code" href="structtivx__target__t.html#a9bad213eb3acdf54a8d316ebc59a7a5e">00197</a>     uint32_t job_queue_memory[<a class="code" href="group__group__tivx__target__cfg.html#gacef8bfb75a477a21c677c37e8de8add3" title="Max depth of queue associated with target.">TIVX_TARGET_MAX_JOB_QUEUE_DEPTH</a>];
+<a name="l00198"></a>00198 
+<a name="l00200"></a><a class="code" href="structtivx__target__t.html#a1732a7c5991338bb7ab4b038cbfd4150">00200</a>     <a class="code" href="group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a" title="Entry point of task.">tivx_task_main_f</a> target_main;
+<a name="l00201"></a>00201 
+<a name="l00203"></a><a class="code" href="structtivx__target__t.html#aaeec0307b0da4d8ef5b477b6a2ad2657">00203</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> targetExitRequest;
+<a name="l00204"></a>00204 
+<a name="l00208"></a><a class="code" href="structtivx__target__t.html#a88f9d191258baa5a1ecb7632c35879f2">00208</a>     <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> targetExitDone;
+<a name="l00209"></a>00209 
+<a name="l00210"></a>00210 } <a class="code" href="structtivx__target__t.html" title="Target object internal state.">tivx_target_t</a>;
+<a name="l00211"></a>00211 
+<a name="l00217"></a><a class="code" href="structtivx__target__create__params__t.html">00217</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_target_create_params
+<a name="l00218"></a>00218 {
+<a name="l00222"></a><a class="code" href="structtivx__target__create__params__t.html#aa70966b5cb0b06cb2cdcab416947c620">00222</a>     uint8_t *task_stack_ptr;
+<a name="l00223"></a>00223 
+<a name="l00226"></a><a class="code" href="structtivx__target__create__params__t.html#ae4f3b5f7be903e06c06db219617bd66c">00226</a>     uint32_t task_stack_size;
+<a name="l00227"></a>00227 
+<a name="l00233"></a><a class="code" href="structtivx__target__create__params__t.html#a2ef1017e639dfb054099bf2b78fe822e">00233</a>     uint32_t task_core_affinity;
+<a name="l00234"></a>00234 
+<a name="l00239"></a><a class="code" href="structtivx__target__create__params__t.html#a802ec4560176934da733f52e498ccd58">00239</a>     uint32_t task_priority;
+<a name="l00240"></a>00240 
+<a name="l00241"></a>00241 } <a class="code" href="structtivx__target__create__params__t.html" title="Parameters that can be set during target creation.">tivx_target_create_params_t</a>;
+<a name="l00242"></a>00242 
+<a name="l00253"></a>00253 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__tivx__target.html#ga91042e4d910596a3f8889ba4a26df97a" title="Get CPU ID associated with given target ID.">tivxTargetGetCpuId</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id);
+<a name="l00254"></a>00254 
+<a name="l00267"></a>00267 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__target.html#ga75b9a3e518e3eff982210fb179a5c35c" title="Queue object descriptor to a given target.">tivxTargetQueueObjDesc</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id, uint16_t obj_desc_id);
+<a name="l00268"></a>00268 
+<a name="l00276"></a>00276 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target.html#ga5e59a1fe631ed63d7a225af8dcf6aa44" title="Used to set default target create parameters in parameter structure.">tivxTargetSetDefaultCreateParams</a>(<a class="code" href="structtivx__target__create__params__t.html" title="Parameters that can be set during target creation.">tivx_target_create_params_t</a> *params);
+<a name="l00277"></a>00277 
+<a name="l00289"></a>00289 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__target.html#gafc790d4875704d2d35d0b2df0e875c6d" title="Create a target object and associate with given target ID.">tivxTargetCreate</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id, <a class="code" href="structtivx__target__create__params__t.html" title="Parameters that can be set during target creation.">tivx_target_create_params_t</a> *params);
+<a name="l00290"></a>00290 
+<a name="l00291"></a>00291 
+<a name="l00301"></a>00301 <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="group__group__tivx__target.html#gad0a24699e949291235bea34a6544b89d" title="Delete a target object.">tivxTargetDelete</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> target_id);
+<a name="l00302"></a>00302 
+<a name="l00310"></a>00310 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target.html#ga28d7fa03e4c54e9a855b5e9997634fc1" title="Init global state of target module.">tivxTargetInit</a>(<span class="keywordtype">void</span>);
+<a name="l00311"></a>00311 
+<a name="l00319"></a>00319 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target.html#gab6deead17a33e5a72ba2efec1098be38" title="De-Init global state of target module.">tivxTargetDeInit</a>(<span class="keywordtype">void</span>);
+<a name="l00320"></a>00320 
+<a name="l00321"></a>00321 
+<a name="l00322"></a>00322 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00323"></a>00323 <span class="preprocessor"></span>}
+<a name="l00324"></a>00324 <span class="preprocessor">#endif</span>
+<a name="l00325"></a>00325 <span class="preprocessor"></span>
+<a name="l00326"></a>00326 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

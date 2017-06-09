@@ -50,50 +50,43 @@
 <a name="l00025"></a>00025 <span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span>
 <a name="l00026"></a>00026 <span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span>
 <a name="l00027"></a>00027 <span class="comment"> */</span>
-<a name="l00028"></a>00028 <span class="comment">/*</span>
-<a name="l00029"></a>00029 <span class="comment"> *******************************************************************************</span>
-<a name="l00030"></a>00030 <span class="comment"> *</span>
-<a name="l00031"></a>00031 <span class="comment"> * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/</span>
-<a name="l00032"></a>00032 <span class="comment"> * ALL RIGHTS RESERVED</span>
-<a name="l00033"></a>00033 <span class="comment"> *</span>
-<a name="l00034"></a>00034 <span class="comment"> *******************************************************************************</span>
-<a name="l00035"></a>00035 <span class="comment"> */</span>
-<a name="l00036"></a>00036 
-<a name="l00037"></a>00037 
-<a name="l00038"></a>00038 <span class="preprocessor">#ifndef VX_PARAMETER_H_</span>
-<a name="l00039"></a>00039 <span class="preprocessor"></span><span class="preprocessor">#define VX_PARAMETER_H_</span>
-<a name="l00040"></a>00040 <span class="preprocessor"></span>
-<a name="l00041"></a>00041 
-<a name="l00042"></a>00042 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00043"></a>00043 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
-<a name="l00044"></a>00044 <span class="preprocessor">#endif</span>
-<a name="l00045"></a>00045 <span class="preprocessor"></span>
-<a name="l00058"></a><a class="code" href="structtivx__parameter__t.html">00058</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_parameter
-<a name="l00059"></a>00059 {
-<a name="l00061"></a><a class="code" href="structtivx__parameter__t.html#aa83a224854f48a5885db14696703dea1">00061</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
-<a name="l00062"></a>00062 
-<a name="l00064"></a><a class="code" href="structtivx__parameter__t.html#a352a2b9989e9d4bdec5e415012bc14a7">00064</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a>      index;
-<a name="l00066"></a><a class="code" href="structtivx__parameter__t.html#aa03727814d9b11212c4715ec03cb4df3">00066</a>     <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a>        node;
-<a name="l00070"></a><a class="code" href="structtivx__parameter__t.html#a511b01ecc2907f14e97067220bf9216a">00070</a>     <a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a>      kernel;
-<a name="l00071"></a>00071 
-<a name="l00072"></a>00072 } <a class="code" href="structtivx__parameter__t.html" title="Parameter object internal state.">tivx_parameter_t</a>;
+<a name="l00028"></a>00028 
+<a name="l00029"></a>00029 
+<a name="l00030"></a>00030 
+<a name="l00031"></a>00031 <span class="preprocessor">#ifndef VX_PARAMETER_H_</span>
+<a name="l00032"></a>00032 <span class="preprocessor"></span><span class="preprocessor">#define VX_PARAMETER_H_</span>
+<a name="l00033"></a>00033 <span class="preprocessor"></span>
+<a name="l00034"></a>00034 
+<a name="l00035"></a>00035 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00036"></a>00036 <span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {
+<a name="l00037"></a>00037 <span class="preprocessor">#endif</span>
+<a name="l00038"></a>00038 <span class="preprocessor"></span>
+<a name="l00051"></a><a class="code" href="structtivx__parameter__t.html">00051</a> <span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_parameter
+<a name="l00052"></a>00052 {
+<a name="l00054"></a><a class="code" href="structtivx__parameter__t.html#aa83a224854f48a5885db14696703dea1">00054</a>     <a class="code" href="structtivx__reference__t.html" title="The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t...">tivx_reference_t</a> base;
+<a name="l00055"></a>00055 
+<a name="l00057"></a><a class="code" href="structtivx__parameter__t.html#a352a2b9989e9d4bdec5e415012bc14a7">00057</a>     <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a>      index;
+<a name="l00059"></a><a class="code" href="structtivx__parameter__t.html#aa03727814d9b11212c4715ec03cb4df3">00059</a>     <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a>        node;
+<a name="l00063"></a><a class="code" href="structtivx__parameter__t.html#a511b01ecc2907f14e97067220bf9216a">00063</a>     <a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a>      kernel;
+<a name="l00064"></a>00064 
+<a name="l00065"></a>00065 } <a class="code" href="structtivx__parameter__t.html" title="Parameter object internal state.">tivx_parameter_t</a>;
+<a name="l00066"></a>00066 
+<a name="l00067"></a>00067 
+<a name="l00072"></a>00072 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__parameter.html#ga6cdbdc68fa3c127c1dac4ab88d78c5c9" title="This returns true if the direction is a valid enum.">ownIsValidDirection</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> dir);
 <a name="l00073"></a>00073 
-<a name="l00074"></a>00074 
-<a name="l00079"></a>00079 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__parameter.html#ga6cdbdc68fa3c127c1dac4ab88d78c5c9" title="This returns true if the direction is a valid enum.">ownIsValidDirection</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> dir);
-<a name="l00080"></a>00080 
-<a name="l00085"></a>00085 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__parameter.html#ga2a44a15fedbceee8b19a45a267082de0" title="This returns true if the supplied type matches the expected type with some fuzzy...">ownIsValidTypeMatch</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> expected, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> supplied);
+<a name="l00078"></a>00078 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__parameter.html#ga2a44a15fedbceee8b19a45a267082de0" title="This returns true if the supplied type matches the expected type with some fuzzy...">ownIsValidTypeMatch</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> expected, <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> supplied);
+<a name="l00079"></a>00079 
+<a name="l00083"></a>00083 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__parameter.html#ga4608a7b092232d91d2cac05834727c79" title="This returns true if the supplied state is a valid enum.">ownIsValidState</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> state);
+<a name="l00084"></a>00084 
+<a name="l00085"></a>00085 
 <a name="l00086"></a>00086 
-<a name="l00090"></a>00090 <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> <a class="code" href="group__group__vx__parameter.html#ga4608a7b092232d91d2cac05834727c79" title="This returns true if the supplied state is a valid enum.">ownIsValidState</a>(<a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> state);
-<a name="l00091"></a>00091 
-<a name="l00092"></a>00092 
-<a name="l00093"></a>00093 
-<a name="l00094"></a>00094 
-<a name="l00095"></a>00095 
-<a name="l00096"></a>00096 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00097"></a>00097 <span class="preprocessor"></span>}
-<a name="l00098"></a>00098 <span class="preprocessor">#endif</span>
-<a name="l00099"></a>00099 <span class="preprocessor"></span>
-<a name="l00100"></a>00100 <span class="preprocessor">#endif</span>
+<a name="l00087"></a>00087 
+<a name="l00088"></a>00088 
+<a name="l00089"></a>00089 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00090"></a>00090 <span class="preprocessor"></span>}
+<a name="l00091"></a>00091 <span class="preprocessor">#endif</span>
+<a name="l00092"></a>00092 <span class="preprocessor"></span>
+<a name="l00093"></a>00093 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

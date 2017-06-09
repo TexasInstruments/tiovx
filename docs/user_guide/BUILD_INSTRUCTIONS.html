@@ -96,7 +96,7 @@ Build instructions for Vision SDK Platform</a></h2>
 </li>
 <li>Build Vision SDK and bootloader by following steps in appropiate SoC/EVM User Guide in Vision SDK<ul>
 <li>Typical Vision SDK build steps are (refer user guide for details) <div class="fragment"><pre class="fragment">        make linux         # <span class="keywordflow">for</span> LINUX+BIOS config, build linux kernel, uboot, kernel modules
-        make linux_install # <span class="keywordflow">for</span> LINUX+BIOS config, install kernel modules to linux filesystem
+        make linux_install # <span class="keywordflow">for</span> LINUX+BIOS config, install kernel modules <a class="code" href="tiovx__performance__TDA2x__BIOS_8html.html#abbc43ef69f541dca5e2ca497cfdaeb9f">to</a> linux filesystem
         make -s -j depend  # build drivers and other dependancies
         make -s -j         # build Vision SDK application binary
         make -s sbl        # <span class="keywordflow">for</span> BIOS config only, build SBL (secondary bootloader)
