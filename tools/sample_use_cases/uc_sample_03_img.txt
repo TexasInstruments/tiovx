@@ -20,7 +20,7 @@ digraph uc_sample_03 {
   /* NODE CONNECTIONS */
   image_1 -> node_4 [taillabel=0, labeldistance=3]
   image_2 -> node_4 [taillabel=1, labeldistance=3]
-  node_4 -> image_3 [headlabel=0, labeldistance=3]
+  node_4 -> image_3 [headlabel=2, labeldistance=3]
 
 
 }
