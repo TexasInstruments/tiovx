@@ -519,3 +519,42 @@ class ParamState(Enum):
 
     def get_vx_name(type) :
         return "vx_parameter_state_e"
+
+## Pyramid Scale (OpenVX equivalent = VX_SCALE_PYRAMID_xxx)
+#
+# \par Example usage:
+# \code
+# PyramidScale.HALF
+# PyramidScale.ORB
+# \endcode
+# \ingroup ENUMS
+#
+class PyramidScale(Enum):
+    ## OpenVX equivalent = VX_SCALE_PYRAMID_HALF
+    HALF = 1
+    ## OpenVX equivalent = VX_SCALE_PYRAMID_ORB
+    ORB = 2
+
+    def get_vx_enum_name(type) :
+        return "VX_SCALE_PYRAMID_" + type.name
+
+## Threshold Type (OpenVX equivalent = vx_threshold_type_e)
+#
+# \par Example usage:
+# \code
+# ThresholdType.BINARY
+# ThresholdType.RANGE
+# \endcode
+# \ingroup ENUMS
+#
+class ThresholdType(Enum):
+    ## OpenVX equivalent = VX_THRESHOLD_TYPE_BINARY
+    BINARY = 1
+    ## OpenVX equivalent = VX_THRESHOLD_TYPE_RANGE
+    RANGE = 2
+
+    def get_vx_enum_name(type) :
+        return "VX_THRESHOLD_TYPE_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_threshold_type_e"

@@ -1,5 +1,3 @@
 <map id="G" name="G">
-<area shape="rect" id="node1" href="$classtiovx_1_1image_1_1Image.html" title="Image object (OpenVX equivalent = vx_image, vxCreateImage)." alt="" coords="5,31,144,57"/>
-<area shape="rect" id="node2" href="$classtiovx_1_1image_1_1ImageFromChannel.html" title="Image from channel object (OpenVX equivalent = vx_image, vxCreateImageFromChannel)..." alt="" coords="192,5,407,32"/>
-<area shape="rect" id="node3" href="$classtiovx_1_1image_1_1ImageFromHandle.html" title="Image from handle object (OpenVX equivalent = vx_image, vxCreateImageFromHandle)..." alt="" coords="195,56,403,83"/>
+<area shape="rect" id="node1" href="$classtiovx_1_1enums_1_1ThresholdType.html" title="Threshold Type (OpenVX equivalent = vx_threshold_type_e)." alt="" coords="5,5,184,32"/>
 </map>

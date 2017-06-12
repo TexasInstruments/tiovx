@@ -21,7 +21,6 @@ from . import *
 # \endcode
 #
 # \ingroup FRAMEWORK
-
 class Context (Reference) :
     ## Constructor used to create this object
     #

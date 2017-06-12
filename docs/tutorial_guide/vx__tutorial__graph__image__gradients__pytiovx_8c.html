@@ -24,17 +24,42 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_graph_image_gradients_pytiovx.c File Reference</h1>
+<h1>vx_tutorial_graph_image_gradients_pytiovx.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Show example usage of PyTIOVX tool. The graph used is same as <a class="el" href="vx__tutorial__graph__image__gradients_8c.html">vx_tutorial_graph_image_gradients.c</a></p>
+<p>In this tutorial we learn the below concepts,</p>
+<ul>
+<li>How to write .py file to describe an OpenVX graph</li>
+<li>How to install and run PyTIOVX to generate .c/.h and .jpg file for the input .py file</li>
+<li>How to fill in the missing pieces to complete the OpenVX application</li>
+</ul>
+<p>When using PyTIOVX tool, first create a .py file which describes the OpenVX graph. Follow comments in <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx__uc_8py.html">vx_tutorial_graph_image_gradients_pytiovx_uc.py</a> to understand the graph description basic API.</p>
+<p>Next PyTIOVX tool is run to generate .c/.h file for the graph described in .py file. A .jpg file which shows the graph visually is also generated in the process.</p>
+<p>Follow steps mentioned in PyTIOVX user guide <a href="../pytiovx_guide/index.html" target="_blank">[HTML]</a> to install and run the PyTIOVX tool. See also additional APIs provided to describe a graph via PyTIOVX.</p>
+<p>For this example, run below command to generate the code and image file </p>
+<div class="fragment"><pre class="fragment"> python vx_tutorial_graph_image_gradients_pytiovx_uc.py
+</pre></div><p>Include the generated C code API header file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;ch03_graph/vx_tutorial_graph_image_gradients_pytiovx_uc.h&gt;</span>
+</pre></div><p> Note, that the generated file name and APIs use as prefix the string name passed as input during context create in the .py file.</p>
+<p>Follow the comments in the function <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#af07f015477a25ed860bbd03acc8204ff" title="Tutorial Entry Point.">vx_tutorial_graph_image_gradients_pytiovx()</a> to complete the rest of tutorial code to invoke the generated OpenVX graph. </p>
+
+<p>Definition in file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+
 <p><a href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;colors.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Input file name.  <a href="#a8118656bb5a60090a1dbffa402168438"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#ac7b4da9c3d57efe0b9187f424dba9324">PHASE_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_image_gradients_pytiovx_phase_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Phase file name.  <a href="#ac7b4da9c3d57efe0b9187f424dba9324"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#a477612b28de7f3778ec98290da147134">MAGNITUDE_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_image_gradients_pytiovx_magnitude_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Magnitude file name.  <a href="#a477612b28de7f3778ec98290da147134"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#a27e19862e6e875abe96f110243d1b5aa">GRAD_X_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_image_gradients_pytiovx_grad_x_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Gradient X file name.  <a href="#a27e19862e6e875abe96f110243d1b5aa"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#a6cd9df238bd8ee63bbaa4199395a09da">GRAD_Y_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_image_gradients_pytiovx_grad_y_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Gradient Y file name.  <a href="#a6cd9df238bd8ee63bbaa4199395a09da"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c.html#af07f015477a25ed860bbd03acc8204ff">vx_tutorial_graph_image_gradients_pytiovx</a> ()</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tutorial Entry Point.  <a href="#af07f015477a25ed860bbd03acc8204ff"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_graph_image_gradients_pytiovx.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -48,7 +73,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00016">16</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+<p>Input file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00109">109</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -63,7 +90,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00017">17</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+<p>Phase file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00112">112</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -78,7 +107,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00018">18</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+<p>Magnitude file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00115">115</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -93,7 +124,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00019">19</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+<p>Gradient X file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00118">118</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -108,7 +141,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00020">20</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+<p>Gradient Y file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00121">121</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -128,7 +163,84 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00022">22</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
+<p>Tutorial Entry Point. </p>
+
+<p><ul>
+<li>Define the data structure representing the generated OpenVX use-case code.</li>
+</ul>
+<p>This structure includes the context, data object, node, graph handles for the generated code. </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_tutorial_graph_image_gradients_pytiovx_uc_t uc;
+</pre></div><ul>
+<li>Create the OpenVX use-case using the generated create API.</li>
+</ul>
+<p>This creates the OpenVX context, data objects, nodes and graph for this use-case. <br/>
+ NOTE: graph verify is not yet called. <br/>
+ NOTE: Any customization like changing parameter values, loading data to data objects should be done next, before calling graph verify </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_tutorial_graph_image_gradients_pytiovx_uc_create(&amp;uc);
+</pre></div><ul>
+<li>Load input into input data reference</li>
+</ul>
+<p>NOTE: the data reference names in the use-case structure, match the name specified via name="xyz" in the .py file </p>
+<div class="fragment"><pre class="fragment">     */
+    status = <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(uc.input, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
+</pre></div><ul>
+<li>Print data object info for debug purposes <div class="fragment"><pre class="fragment">     */
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.input);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_y);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.magnitude);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x_img);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x_img);
+    <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x_img);
+</pre></div></li>
+</ul>
+<ul>
+<li>Call generated API to verify graphs present in this use-case</li>
+</ul>
+<p>Also prints graph info for debug purposes </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_tutorial_graph_image_gradients_pytiovx_uc_verify(&amp;uc);
+    <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
+</pre></div><ul>
+<li>Call generated API to run graphs present in this use-case <div class="fragment"><pre class="fragment">         */
+        vx_tutorial_graph_image_gradients_pytiovx_uc_run(&amp;uc);
+</pre></div></li>
+</ul>
+<ul>
+<li>Print graph execution info, save output data to file <div class="fragment"><pre class="fragment">         */
+
+        <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
+        <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(uc.node_1);
+        <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(uc.node_3);
+        <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(uc.node_5);
+        <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(uc.node_7);
+        <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(uc.node_9);
+
+        printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__graph__image__gradients_8c.html#ac7b4da9c3d57efe0b9187f424dba9324" title="Phase file name.">PHASE_FILE_NAME</a>);
+        <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__graph__image__gradients_8c.html#ac7b4da9c3d57efe0b9187f424dba9324" title="Phase file name.">PHASE_FILE_NAME</a>, uc.phase);
+
+        printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a477612b28de7f3778ec98290da147134" title="Magnitude file name.">MAGNITUDE_FILE_NAME</a>);
+        <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a477612b28de7f3778ec98290da147134" title="Magnitude file name.">MAGNITUDE_FILE_NAME</a>, uc.magnitude_img);
+
+        printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a27e19862e6e875abe96f110243d1b5aa" title="Gradient X file name.">GRAD_X_FILE_NAME</a>);
+        <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a27e19862e6e875abe96f110243d1b5aa" title="Gradient X file name.">GRAD_X_FILE_NAME</a>, uc.grad_x_img);
+
+        printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a6cd9df238bd8ee63bbaa4199395a09da" title="Gradient Y file name.">GRAD_Y_FILE_NAME</a>);
+        <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a6cd9df238bd8ee63bbaa4199395a09da" title="Gradient Y file name.">GRAD_Y_FILE_NAME</a>, uc.grad_y_img);
+</pre></div></li>
+</ul>
+<ul>
+<li>Call generated API to delete this use-case</li>
+</ul>
+<p>This releases the data objects, nodes, graphs and context associated with this use-case </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_tutorial_graph_image_gradients_pytiovx_uc_delete(&amp;uc);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html#l00126">126</a> of file <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx_8c_source.html">vx_tutorial_graph_image_gradients_pytiovx.c</a>.</p>
 
 </div>
 </div>

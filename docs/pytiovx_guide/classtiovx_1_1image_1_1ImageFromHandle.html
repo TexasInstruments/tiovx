@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>PyTIOVX User Guide: tiovx::image::ImageFromHandle Class Reference</title>
+<title>PyTIOVX User Guide: tiovx.image.ImageFromHandle Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javaScript" src="search/search.js"></script>
@@ -23,11 +23,11 @@
       <li><a href="modules.html"><span>Modules</span></a></li>
     </ul>
   </div>
-  <div class="navpath"><b>tiovx</b>::<b>image</b>::<a class="el" href="classtiovx_1_1image_1_1ImageFromHandle.html">ImageFromHandle</a>
+  <div class="navpath"><b>tiovx</b>.<b>image</b>.<a class="el" href="classtiovx_1_1image_1_1ImageFromHandle.html">ImageFromHandle</a>
   </div>
 </div>
 <div class="contents">
-<h1>tiovx::image::ImageFromHandle Class Reference<br/>
+<h1>tiovx.image.ImageFromHandle Class Reference<br/>
 <small>
 [<a class="el" href="group__DATA.html">2: Data Object APIs</a>]</small>
 </h1><!-- doxytag: class="tiovx::image::ImageFromHandle" --><!-- doxytag: inherits="tiovx::image::Image" --><hr/><a name="_details"></a><h2>Detailed Description</h2>
@@ -38,28 +38,19 @@
  my_img_addr = ImagePatchAddress(640, 480, 1, 640)
  my_img1 = ImageFromHandle(DfImage.RGB, my_img_addr, name=<span class="stringliteral">&quot;myimage&quot;</span>)
 </pre></div> 
-<p>Inherits <a class="el" href="classtiovx_1_1image_1_1Image.html">tiovx::image::Image</a>.</p>
-<div class="dynheader">
-Collaboration diagram for tiovx::image::ImageFromHandle:</div>
-<div class="dynsection">
-<div class="center"><img src="classtiovx_1_1image_1_1ImageFromHandle__coll__graph.png" border="0" usemap="#tiovx_1_1image_1_1ImageFromHandle_coll__map" alt="Collaboration graph"/></div>
-<map name="tiovx_1_1image_1_1ImageFromHandle_coll__map" id="tiovx_1_1image_1_1ImageFromHandle_coll__map">
-<area shape="rect" id="node2" href="classtiovx_1_1image_1_1Image.html" title="Image object (OpenVX equivalent = vx_image, vxCreateImage)." alt="" coords="40,5,179,32"/></map>
-<center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
-
 <p><a href="classtiovx_1_1image_1_1ImageFromHandle-members.html">List of all members.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1image_1_1ImageFromHandle.html#a7076686ed18dfc59b82a12d849679d4b">__init__</a></td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Constructor used to create this object.  <a href="#a7076686ed18dfc59b82a12d849679d4b"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1image_1_1ImageFromHandle.html#a4b9502358756171566bf5494fcfe8942">__init__</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Constructor used to create this object.  <a href="#a4b9502358756171566bf5494fcfe8942"></a><br/></td></tr>
 </table>
 <hr/><h2>Member Function Documentation</h2>
-<a class="anchor" id="a7076686ed18dfc59b82a12d849679d4b"></a><!-- doxytag: member="tiovx::image::ImageFromHandle::__init__" ref="a7076686ed18dfc59b82a12d849679d4b" args="" -->
+<a class="anchor" id="a4b9502358756171566bf5494fcfe8942"></a><!-- doxytag: member="tiovx::image::ImageFromHandle::__init__" ref="a4b9502358756171566bf5494fcfe8942" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">def tiovx::image::ImageFromHandle::__init__ </td>
+          <td class="memname">def tiovx.image.ImageFromHandle.__init__ </td>
           <td>(</td>
           <td class="paramtype">&nbsp;</td>
           <td class="paramname"> <em>self</em>, </td>
@@ -95,7 +86,7 @@ Collaboration diagram for tiovx::image::ImageFromHandle:</div>
 <p>See vxCreateImageFromHandle for more details about the parameters</p>
 <dl><dt><b>Parameters:</b></dt><dd>
   <table border="0" cellspacing="2" cellpadding="0">
-    <tr><td valign="top"></td><td valign="top"><em>df_image</em>&nbsp;</td><td>[in] <a class="el" href="classtiovx_1_1image_1_1Image.html" title="Image object (OpenVX equivalent = vx_image, vxCreateImage).">Image</a> data format. <a class="el" href="classtiovx_1_1enums_1_1DfImage.html" title="Image data format (OpenVX equivalent = vx_df_image).">tiovx::enums::DfImage</a> </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>df_image</em>&nbsp;</td><td>[in] <a class="el" href="classtiovx_1_1image_1_1Image.html" title="Image object (OpenVX equivalent = vx_image, vxCreateImage).">Image</a> data format. <a class="el" href="classtiovx_1_1enums_1_1DfImage.html" title="Image data format (OpenVX equivalent = vx_df_image).">tiovx.enums.DfImage</a> </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>image_patch_address</em>&nbsp;</td><td>[in] Data arragement in memory. <a class="el" href="classtiovx_1_1image_1_1ImagePatchAddress.html" title="Image patch object (OpenVX equivalent = vx_imagepatch_addressing_t).">ImagePatchAddress</a> </td></tr>
     <tr><td valign="top"></td><td valign="top"><em>name</em>&nbsp;</td><td>[in] [optional] Name of the object </td></tr>
   </table>

@@ -6,7 +6,28 @@
 from . import *
 import subprocess
 
+## Export objects from context to JPG image file
+#
+# NOTE: This 'dot' tool to be installed.
+#
+# \par Example Usage: Export objects from context to JPG image file
+#
+# \code
+#
+# from tiovx import *
+#
+# my_context = Context("my_context")
+#
+# ...
+#
+# ExportImage(my_context).export()
+# \endcode
+#
+# \ingroup FRAMEWORK
 class ExportImage (Export) :
+    ## Constructor used to create this object
+    #
+    # \param context [in] Context object. tiovx::context::Context
     def __init__(self, context) :
         Export.__init__(self, context)
         self.filename_prefix = context.name
@@ -95,6 +116,8 @@ class ExportImage (Export) :
             self.outputNodeConnection(node)
         self.file.write('\n')
 
+    ## Export object as C source code
+    #
     def export(self) :
         print ('Generating image from OpenVX context ...')
         print ('dot tool input  file is [%s] ...' % self.filename)

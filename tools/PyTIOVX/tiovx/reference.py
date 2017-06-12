@@ -20,11 +20,7 @@ from . import *
 #
 # \ingroup PYTIOVX_API
 
-## \defgroup KERNELS 4: Kernel / Node APIs
-#
-# \ingroup PYTIOVX_API
-
-## Reference object (OpenVX equivalent = vx_reference)
+# Reference object (OpenVX equivalent = vx_reference)
 #
 # NOT used by user directly.
 # Other objects inherit from this class

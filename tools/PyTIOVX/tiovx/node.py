@@ -5,7 +5,109 @@
 
 from . import *
 
+## Node object (OpenVX equivalent = vx_node)
+#
+# This object is base class for specific nodes which inherit from this class.
+# Some basic checks like parameter matching is done by this class.
+# Inherited node classes can do additional parameter checking.
+#
+# Node is created by using below syntax.
+#
+# \code
+#
+# from tiovx import *
+#
+# my_node1 = Node<Name>(<data object param>, <data object param>, ..., name="<string>", target=Target.<Target Name>)
+#
+# # node needs to be added to a graph
+# my_graph.add(my_node1)
+#
+# # a more compact way to the same is
+# my_graph.add( Node<Name>(<data object param>, <data object param>, ..., name="<string>", target=Target.<Target Name>))
+# \endcode
+#
+# Each node can take optional parameter of 'name' and 'target' as input. \n
+# <b>'name'</b> is used to given a user readable name to the node which can be seen later in the generated code, image \n
+# <b>'target'</b> is used to specify the target on which the node will run when executed. See tiovx.enums.Target for list of supported targets.
+#
+# \par Example Usage: Create nodes and add to graph
+#
+# \code
+#
+# from tiovx import *
+#
+# # create a node Sobel3x3 and add to graph object.
+# # target is specified as DSP1
+# graph.add ( NodeSobel3x3(in_image, grad_x, grad_y, target=Target.DSP1) )
+#
+# # create a node Phase and add to graph object.
+# # target is specified as DSP2
+# graph.add ( NodePhase(grad_x, grad_y, phase, target=Target.DSP2) )
+#
+# # create a custom node, as defined in next example and add to graph
+# graph.add ( NodePhaseRgb(phase, phase_rgb, target=Target.DSP1) )
+# \endcode
+#
+# Users can inherit from Node class to define their own custom nodes. \n
+# <b>NOTE: </b>Users need not modify this file to inherit from Node class. \n
+# Below code snippet shows one such example
+#
+# \par Example Usage: Create custom node class from base class
+#
+# \code
+#
+# from tiovx import *
+#
+# # inherit custom node class from tiobx.node.Node
+# class NodePhaseRgb (Node) :
+#     # implement constructor
+#     # first list all input and output parameter data objects
+#     # next provide optional parameters of name and target
+#     def __init__(self, image_in, image_out, name="default", target=Target.DEFAULT) :
+#         # call base class constructor with string of kernel name and list of parameters.
+#         # This string of kernel name is later used to create the node
+#         Node.__init__(self, "vx_tutorial_graph.phase_rgb", image_in, image_out)
+#         # Tell base how many of the parameters are input and how many are output
+#         # Also tell the data object type of the parameter
+#         # This is used by base class to do type checking
+#         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
+#         # Call base class API to set user provided target
+#         self.setTarget(target)
+#         # Tell base class that this is a user kernel and not a OpenVX specified kernel
+#         self.setKernelEnumName("VX_USER_KERNEL")
+#
+#     # implement function to do parameter checking
+#     # if not implemented then base class will do basic parameter checking like type checking
+#     def checkParams(self, *param_type_args) :
+#         # first call base class parameter checker
+#         Node.checkParams(self, *param_type_args)
+#         # Now add additional error conditions over the base class ones
+#         assert ( self.ref[0].width    == self.ref[1].width ), "Input and Output width MUST match"
+#         assert ( self.ref[0].height   == self.ref[1].height ), "Input and Output height MUST match"
+#         assert ( self.ref[0].df_image == DfImage.U8 ), "Input data format must be U8"
+#         assert ( self.ref[1].df_image == DfImage.RGB ), "Output data format must be RGB"
+#
+# \endcode
+#
+# Given below is the table of built-in kernels within PyTIOVX.
+#
+#    <TABLE frame="box" rules="all" cellspacing="0" width="50%" border="1" cellpadding="3">
+#        <TR bgcolor="lightgrey">
+#            <TD> Node class name </TD>
+#            <TD> Parameter data object types (listed in order in which they need to be passed to the Node class constructor)</TD>        </TR>
+#        </TR>
+#        <TR>
+#            <TD> NodeAbsDiff </TD>
+#            <TD> [in] IMAGE  \n [in] IMAGE  \n [out] IMAGE \n</TD>
+#        </TR>
+#    </TABLE>
+#
+# \ingroup FRAMEWORK
 class Node (Reference) :
+    ## Constructor for base class
+    #
+    #  \param kernel [in] kernel name of type string. Used to create OpenVX node.
+    #  \param args [in] Variable number of args list of parameter data objects
     def __init__(self, kernel, *args) :
         Reference.__init__(self, Type.NODE, "default")
         self.kernel = kernel
@@ -18,11 +120,26 @@ class Node (Reference) :
         self.num_out = 0
         self.vx_kernel_enum = "VX_KERNEL_"
 
+    ## Parameter checking function
+    #
+    #  Checks if number of parameters passed is correct
+    #  Checks if data type of parameters passed is correct
+    #
+    #  \param param_type_args [in] Variable number of args list of type tiovx.enums.Type to specify data object types.s
     def checkParams(self, *param_type_args) :
         assert (len(param_type_args) == (self.num_in + self.num_out)), 'Expected %d arguments but %d provided' % (len(param_type_args), (self.num_in + self.num_out))
         for i in range(0, len(param_type_args)) :
             assert (self.ref[i].type == param_type_args[i]), 'Parameter %d: Expected %s but %s is provided' % (i, param_type_args[i], self.ref[i].type)
 
+    ## Specify number of input/output parameters and data object type for each
+    #
+    # Assumes input parameters are followed by output parameters.
+    # It is recommended user kernels follow this convention.
+    #
+    # \param num_in [in] Number of inputs
+    # \param num_out [in] Number of outputs
+    # \param param_type_args [in] Variable number of args list of type tiovx.enums.Type to specify data object types. \n
+    #                             Number of arguments MUST match num_in+num_out
     def setParams(self, num_in, num_out, *param_type_args) :
         self.num_in = num_in
         self.num_out = num_out
@@ -32,6 +149,9 @@ class Node (Reference) :
             self.param_dir.append(Direction.OUTPUT)
         self.checkParams(*param_type_args)
 
+    ## Specify target on which to run this node
+    #
+    # \param target [in] Object of type tiovx.enums.Target
     def setTarget(self, target):
         self.target = target
 
@@ -43,6 +163,10 @@ class Node (Reference) :
             idx = idx + 1
         return print_str
 
+    ## Specify kernel enum name to use
+    #
+    # Use "VX_USER_KERNEL" as 'kernel_enum_name' for custom/user kernels
+    # \param kernel_enum_name [in] Type string.
     def setKernelEnumName(self, kernel_enum_name) :
         self.vx_kernel_enum = kernel_enum_name
 
