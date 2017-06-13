@@ -187,7 +187,14 @@ TEST_WITH_ARG(tivxAccumulateWeighted, testGraphProcessing, Arg,
 
     ASSERT_VX_OBJECT(node2 = vxAccumulateWeightedImageNode(graph, accum_image_intermediate, alpha_scalar_final, accum_image_final), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
+    }
 
     VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
 

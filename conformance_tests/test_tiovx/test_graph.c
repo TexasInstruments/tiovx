@@ -315,11 +315,19 @@ TEST_WITH_ARG(tivxGraph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZ
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node4, VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node4, VX_TARGET_STRING, "DSP-1"));
+    }
 
     VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(node4, VX_TARGET_STRING, "DSP-2"));
 
     // run graph
 #ifdef CT_EXECUTE_ASYNC
@@ -517,15 +525,23 @@ TEST_WITH_ARG(tivxGraph, testThreeParallelNodes, fuzzy_arg, ARITHM_FUZZY_ARGS(Ad
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node5, VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(node6, VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node5, VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(node6, VX_TARGET_STRING, "DSP-1"));
+    }
 
     VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, "DSP-1"));
 
     VX_CALL(vxSetNodeTarget(node4, VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(node5, VX_TARGET_STRING, "DSP-2"));
-
-    VX_CALL(vxSetNodeTarget(node6, VX_TARGET_STRING, "DSP-2"));
 
     // run graph
 #ifdef CT_EXECUTE_ASYNC
@@ -856,7 +872,14 @@ TEST_WITH_ARG(tivxGraph, testParallelGraphs, Arg,
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+    }
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph2));
@@ -1133,7 +1156,14 @@ TEST_WITH_ARG(tivxGraph, testThreeParallelGraphs, Arg,
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+    }
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph2));
@@ -1293,7 +1323,14 @@ TEST_WITH_ARG(tivxGraph, testMaxParallelGraphs, Arg,
     ASSERT_VX_OBJECT(node8 = vxAccumulateWeightedImageNode(graph8, input_image8, alpha_scalar8, accum_image_final8), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, "DSP-1"));
-    VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, "DSP-1"));
+    }
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph2));
