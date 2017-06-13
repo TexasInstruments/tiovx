@@ -351,6 +351,13 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
  */
 vx_bool tivxIsReferenceVirtual(vx_reference ref);
 
+/*!
+ * \brief Utility function to know if target is enabled or not
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_bool tivxIsTargetEnabled(char target_name[]);
+
 #ifdef __cplusplus
 }
 #endif
