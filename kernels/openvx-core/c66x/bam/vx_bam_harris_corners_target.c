@@ -438,9 +438,12 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
                 buf_params[0] = &vxlib_src;
                 buf_params[1] = &prms->vxlib_score;
 
-                status = tivxBamCreateHandleMultiNode(node_list, edge_list,
-                                                      buf_params, kernel_details,
-                                                      &prms->graph_handle);
+                status = tivxBamCreateHandleMultiNode(node_list,
+                    sizeof(node_list)/sizeof(BAM_NodeParams),
+                    edge_list,
+                    sizeof(edge_list)/sizeof(BAM_EdgeParams),
+                    buf_params, kernel_details,
+                    &prms->graph_handle);
             }
 
             if (VX_SUCCESS == status)

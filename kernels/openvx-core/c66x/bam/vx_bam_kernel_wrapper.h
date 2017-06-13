@@ -205,7 +205,9 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
  * \ingroup group_tivx_ext
  */
 vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
+                                       uint32_t max_nodes,
                                        BAM_EdgeParams edge_list[],
+                                       uint32_t max_edges,
                                        VXLIB_bufParams2D_t *buf_params[],
                                        tivx_bam_kernel_details_t kernel_details[],
                                        tivx_bam_graph_handle *graph_handle);

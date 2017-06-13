@@ -162,6 +162,10 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
             {
                 task->tsk_handle = (void *)context;
             }
+            else
+            {
+                free(context);
+            }
         }
     }
     else

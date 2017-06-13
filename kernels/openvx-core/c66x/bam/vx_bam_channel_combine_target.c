@@ -586,9 +586,12 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
                 buf_params[5] = &vxlib_dst2;
 
-                status = tivxBamCreateHandleMultiNode(node_list, edge_list,
-                                                      buf_params, multi_kernel_details,
-                                                      &prms->graph_handle);
+                status = tivxBamCreateHandleMultiNode(node_list,
+                    sizeof(node_list)/sizeof(BAM_NodeParams),
+                    edge_list,
+                    sizeof(edge_list)/sizeof(BAM_EdgeParams),
+                    buf_params, multi_kernel_details,
+                    &prms->graph_handle);
             }
             else
             if ((dst->format == VX_DF_IMAGE_NV12)

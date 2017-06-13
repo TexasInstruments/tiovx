@@ -382,9 +382,12 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 kernel_details[DBTHRESHOLD_NODE].compute_kernel_params = &dbThreshold_kernel_params;
                 kernel_details[SINK_NODE].compute_kernel_params = NULL;
 
-                status = tivxBamCreateHandleMultiNode(node_list, edge_list,
-                                                      buf_params, kernel_details,
-                                                      &prms->graph_handle);
+                status = tivxBamCreateHandleMultiNode(node_list,
+                    sizeof(node_list)/sizeof(BAM_NodeParams),
+                    edge_list,
+                    sizeof(edge_list)/sizeof(BAM_EdgeParams),
+                    buf_params, kernel_details,
+                    &prms->graph_handle);
             }
         }
         else
