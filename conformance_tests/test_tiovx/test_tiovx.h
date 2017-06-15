@@ -16,6 +16,7 @@
  */
 
 #include "test_engine/test.h"
+#include <TI/tivx.h>
 
 #define ADD_SIZE_18x18(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=18x18", __VA_ARGS__, 18, 18))

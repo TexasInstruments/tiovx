@@ -55,9 +55,16 @@ TEST(tivxGraphDelay, testSimple)
 
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
-
-    VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, "DSP-1"));
+    }
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -188,7 +195,14 @@ TEST(tivxGraphDelay, testTwoNodesTwoDSP)
 
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-1"));
+    }
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -363,9 +377,16 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
 
     VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, "DSP-1"));
 
-    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
-
-    VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, "DSP-2"));
+    if (vx_true_e == tivxIsTargetEnabled("DSP-2"))
+    {
+        VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-2"));
+        VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, "DSP-2"));
+    }
+    else
+    {
+        VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, "DSP-1"));
+        VX_CALL(vxSetNodeTarget(nodes[2], VX_TARGET_STRING, "DSP-1"));
+    }
 
     VX_CALL(vxRegisterAutoAging(graph_0, delay));
     VX_CALL(vxRegisterAutoAging(graph_1, delay));

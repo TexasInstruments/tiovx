@@ -373,13 +373,16 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
                                                        &prms->graph_handle);
             }
 
-            tivxBamControlNode(prms->graph_handle, 0,
-                               VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_CNT_PTR,
-                               prms->pMin_cnt);
+            if ((VX_SUCCESS == status) && (NULL != prms->graph_handle))
+            {
+                tivxBamControlNode(prms->graph_handle, 0,
+                                   VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_CNT_PTR,
+                                   prms->pMin_cnt);
 
-            tivxBamControlNode(prms->graph_handle, 0,
-                               VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_CNT_PTR,
-                               prms->pMax_cnt);
+                tivxBamControlNode(prms->graph_handle, 0,
+                                   VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_CNT_PTR,
+                                   prms->pMax_cnt);
+            }
 
         }
         else

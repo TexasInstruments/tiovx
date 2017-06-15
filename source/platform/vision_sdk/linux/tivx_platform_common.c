@@ -165,6 +165,9 @@ vx_bool tivxPlatformTargetMatch(
 
 void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {
+    tivx_obj_desc_t *tmp_obj_desc = NULL;
+    uint32_t i;
+
     if (NULL != table_info)
     {
         table_info->table_base = gTivxObjDescShmEntry;
@@ -172,11 +175,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 
         /* Change this according available entries*/
         table_info->last_alloc_index = 0U;
-    }
 
-    {
-        tivx_obj_desc_t *tmp_obj_desc = NULL;
-        uint32_t i;
         /* Initializing all desc to be available */
         for(i=0; i<table_info->num_entries; i++)
         {

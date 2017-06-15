@@ -928,9 +928,6 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
     BAM_EdgeParams edge_list[TIVX_BAM_MAX_EDGES];
 
-    /* Initialize to NULL in case there are any failures */
-    *graph_handle = NULL;
-
     if((NULL == buf_params) || (NULL == graph_handle) || (NULL == kernel_details))
     {
         status_v = VX_FAILURE;
@@ -938,6 +935,9 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
     if(VX_SUCCESS == status_v)
     {
+        /* Initialize to NULL in case there are any failures */
+        *graph_handle = NULL;
+
         /* For now keep separate ... these could potentially be an array of 2 of same structure */
         graph_args.kernel_info      = &kernel_details->kernel_info;
         graph_args.buf_params       = buf_params;
@@ -1209,7 +1209,9 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
  * compute_kernel_params not const due to BAM requirements
  */
 vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
+                                       uint32_t max_nodes,
                                        BAM_EdgeParams edge_list[],
+                                       uint32_t max_edges,
                                        VXLIB_bufParams2D_t *buf_params[],
                                        tivx_bam_kernel_details_t kernel_details[],
                                        tivx_bam_graph_handle *graph_handle)
@@ -1246,18 +1248,24 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         {
             status_v = VX_FAILURE;
         }
+
+        if ((0 == max_nodes) || (0 == max_edges) ||
+            (max_nodes >= TIVX_BAM_MAX_NODES) || (max_edges >= 100))
+        {
+            status_v = VX_FAILURE;
+        }
     }
 
     if(VX_SUCCESS == status_v)
     {
-        for(i = 0; i < MAX_NODES; i++)
+        for(i = 0; i < max_nodes; i++)
         {
             if(node_list[i].nodeIndex == BAM_END_NODE_MARKER)
             {
                 break;
             }
         }
-        if( i == MAX_NODES )
+        if ((i == MAX_NODES) || (i == max_nodes))
         {
             status_v = VX_FAILURE;
         }
@@ -1269,14 +1277,14 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(VX_SUCCESS == status_v)
     {
-        for(i = 0; i < 100; i++)
+        for(i = 0; i < max_edges; i++)
         {
             if(edge_list[i].upStreamNode.id == BAM_END_NODE_MARKER)
             {
                 break;
             }
         }
-        if( i == 100 )
+        if ((i == 100) || (i == max_edges))
         {
             status_v = VX_FAILURE;
         }
@@ -1407,7 +1415,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
          */
         for(i=0; i < num_data_blocks; i++)
         {
-            for(k=0; k < num_edges; k++)
+            for(k=0; (k < num_edges) && (k < max_edges); k++)
             {
                 /* Find edge associated with this block index */
                 if(edge_params[k].data_block_index == i)

@@ -102,10 +102,10 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
     uint32_t i;
     tivxColorConvertParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
-    uint8_t *src_addr[4], *dst_addr[4];
+    uint8_t *src_addr[4] = {NULL}, *dst_addr[4] = {NULL};
     vx_rectangle_t rect;
     uint32_t size;
-    void *img_ptrs[8];
+    void *img_ptrs[8] = {NULL};
 
 
     status = ownCheckNullParams(obj_desc, num_params,
