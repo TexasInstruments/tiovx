@@ -34,7 +34,7 @@
 <a name="l00010"></a>00010 <span class="preprocessor">#include &lt;TI/tivx.h&gt;</span>
 <a name="l00011"></a>00011 <span class="preprocessor">#include &lt;VX/vx.h&gt;</span>
 <a name="l00012"></a>00012 <span class="preprocessor">#include &lt;TI/tivx_target_kernel.h&gt;</span>
-<a name="l00013"></a>00013 <span class="preprocessor">#include &lt;vx_tutorial_kernels.h&gt;</span>
+<a name="l00013"></a>00013 <span class="preprocessor">#include &lt;<a class="code" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a>&gt;</span>
 <a name="l00014"></a>00014 
 <a name="l00015"></a><a class="code" href="phase__rgb__target__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f">00015</a> <span class="preprocessor">#define PHASE_RGB_IN0_IMG_IDX   (0u)</span>
 <a name="l00016"></a><a class="code" href="phase__rgb__target__kernel_8c.html#a1182feec6c80e38d758f284916141a9c">00016</a> <span class="preprocessor"></span><span class="preprocessor">#define PHASE_RGB_OUT0_IMG_IDX  (1u)</span>
@@ -49,9 +49,9 @@
 <a name="l00025"></a>00025     vx_status status = VX_SUCCESS;
 <a name="l00026"></a>00026     tivx_obj_desc_image_t *src_desc, *dst_desc;
 <a name="l00027"></a>00027 
-<a name="l00028"></a>00028     <span class="keywordflow">if</span> ((num_params != <a class="code" href="phase__rgb__user__kernel_8c.html#abee2067a26206b5dfb54f3d00f04fe2a">PHASE_RGB_MAX_PARAMS</a>)
-<a name="l00029"></a>00029         || (NULL == obj_desc[<a class="code" href="phase__rgb__user__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f">PHASE_RGB_IN0_IMG_IDX</a>])
-<a name="l00030"></a>00030         || (NULL == obj_desc[<a class="code" href="phase__rgb__user__kernel_8c.html#a1182feec6c80e38d758f284916141a9c">PHASE_RGB_OUT0_IMG_IDX</a>])
+<a name="l00028"></a>00028     <span class="keywordflow">if</span> ((num_params != <a class="code" href="phase__rgb__user__kernel_8c.html#abee2067a26206b5dfb54f3d00f04fe2a" title="Total number of parameters for this function.">PHASE_RGB_MAX_PARAMS</a>)
+<a name="l00029"></a>00029         || (NULL == obj_desc[<a class="code" href="phase__rgb__user__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f" title="Index of input image in parameter list.">PHASE_RGB_IN0_IMG_IDX</a>])
+<a name="l00030"></a>00030         || (NULL == obj_desc[<a class="code" href="phase__rgb__user__kernel_8c.html#a1182feec6c80e38d758f284916141a9c" title="Index of output image in parameter list.">PHASE_RGB_OUT0_IMG_IDX</a>])
 <a name="l00031"></a>00031         )
 <a name="l00032"></a>00032     {
 <a name="l00033"></a>00033         status = VX_FAILURE;
@@ -79,7 +79,7 @@
 <a name="l00055"></a>00055 
 <a name="l00056"></a>00056         <span class="comment">/* Run function for complete image, ROI is ignored in this example */</span>
 <a name="l00057"></a>00057         {
-<a name="l00058"></a>00058             vx_uint32 x, y, width, height;
+<a name="l00058"></a>00058             vx_uint32 x, y, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
 <a name="l00059"></a>00059             vx_uint8 *in_data_ptr, *out_data_ptr;
 <a name="l00060"></a>00060             vx_uint8 *in_pixel, *out_pixel;
 <a name="l00061"></a>00061 
@@ -185,7 +185,7 @@
 <a name="l00161"></a>00161         }
 <a name="l00162"></a>00162 
 <a name="l00163"></a>00163         <a class="code" href="phase__rgb__target__kernel_8c.html#af39e389b0e30c41e703a7100ad025fbe">phase_rgb_target_kernel</a> = tivxAddTargetKernel(
-<a name="l00164"></a>00164                     TIVX_TUTORIAL_KERNEL_PHASE_RGB,
+<a name="l00164"></a>00164                     <a class="code" href="vx__tutorial__kernels_8h.html#ad313f6307d27fea48432e16f1577d7bea81087035def5daa8186e02bc1f41979e" title="Converts Phase output to RGB image.">TIVX_TUTORIAL_KERNEL_PHASE_RGB</a>,
 <a name="l00165"></a>00165                     target_name,
 <a name="l00166"></a>00166                     <a class="code" href="phase__rgb__target__kernel_8c.html#aa7f2b3c5cb1853a9e491483616a93fe8">vxTutotrialPhaseRgb</a>,
 <a name="l00167"></a>00167                     <a class="code" href="phase__rgb__target__kernel_8c.html#ab934a0610fc7f8ddaac5e4956694965f">vxTutotrialPhaseRgbCreate</a>,

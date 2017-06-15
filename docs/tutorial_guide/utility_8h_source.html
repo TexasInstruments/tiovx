@@ -91,19 +91,19 @@
 <a name="l00070"></a>00070 <span class="preprocessor"></span>
 <a name="l00071"></a>00071 <span class="preprocessor">#include &lt;VX/vx.h&gt;</span>
 <a name="l00072"></a>00072 
-<a name="l00073"></a>00073 vx_image  <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(vx_context context, <span class="keywordtype">char</span> *filename, vx_bool convert_to_gray_scale);
+<a name="l00073"></a>00073 vx_image  <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>, <span class="keywordtype">char</span> *filename, vx_bool convert_to_gray_scale);
 <a name="l00074"></a>00074 
 <a name="l00075"></a>00075 vx_status <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(vx_image image, <span class="keywordtype">char</span> *filename, vx_bool convert_to_gray_scale);
 <a name="l00076"></a>00076 
 <a name="l00077"></a>00077 vx_status <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<span class="keywordtype">char</span> *filename, vx_image image);
 <a name="l00078"></a>00078 
-<a name="l00079"></a>00079 vx_node <a class="code" href="utility_8h.html#a36ad9bddac69149adf86bef3855e8ecc">create_generic_node</a>(vx_graph graph,
+<a name="l00079"></a>00079 vx_node <a class="code" href="utility_8h.html#a36ad9bddac69149adf86bef3855e8ecc">create_generic_node</a>(vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>,
 <a name="l00080"></a>00080                             vx_enum kernelenum,
 <a name="l00081"></a>00081                             vx_reference params[],
 <a name="l00082"></a>00082                             vx_uint32 num);
 <a name="l00083"></a>00083 
 <a name="l00084"></a>00084 <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(vx_image image);
-<a name="l00085"></a>00085 <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(vx_graph graph);
+<a name="l00085"></a>00085 <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>);
 <a name="l00086"></a>00086 <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(vx_node node);
 <a name="l00087"></a>00087 
 <a name="l00088"></a>00088 <span class="preprocessor">#endif</span>

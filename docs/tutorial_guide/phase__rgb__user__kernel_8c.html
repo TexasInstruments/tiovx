@@ -24,26 +24,87 @@
   </div>
 </div>
 <div class="contents">
-<h1>phase_rgb_user_kernel.c File Reference</h1>
+<h1>phase_rgb_user_kernel.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>User Kernel implementation for Phase to RGB conversion function</p>
+<p>This file shows a sample implementation of a user kernel function.</p>
+<p>To implement a user kernel the below top level interface functions are implemented</p>
+<ul>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add()</a> : Registers user kernel to OpenVX context<ul>
+<li>The implementation of this function has slight variation depending on the kernel implemented as as OpenVX user kernel or TIOVX target kernel</li>
+</ul>
+</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove()</a> : Un-Registers user kernel from OpenVX context<ul>
+<li>The implementation of this function is same for both OpenVX user kernel and TIOVX target kernel</li>
+</ul>
+</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node()</a>: Using the user kernel ID, creates a OpenVX node within a graph<ul>
+<li>The implementation of this function is same for both OpenVX user kernel and TIOVX target kernel</li>
+</ul>
+</li>
+</ul>
+<p>When registering a user kernel, the following callback function are implemented and registered with the OpenVX context</p>
+<ul>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#afb3302e5e0e9ec44562c7aaefdac5758" title="User/target kernel validate function.">phase_rgb_user_kernel_validate()</a> : kernel validate function. Called during graph verify.<ul>
+<li>The implementation of this function is same for both OpenVX user kernel and TIOVX target kernel</li>
+</ul>
+</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a7d7d2c869a100813bc3bf0ca85808a99" title="User/target kernel init function.">phase_rgb_user_kernel_init()</a> : kernel init function. Called after <a class="el" href="phase__rgb__user__kernel_8c.html#afb3302e5e0e9ec44562c7aaefdac5758" title="User/target kernel validate function.">phase_rgb_user_kernel_validate()</a> during graph verify<ul>
+<li>This function is typically only implemented for user kernel and is NULL for target kernel</li>
+</ul>
+</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#aaab492fc8853c4a4d487b39d80676a25" title="User/target kernel execute or run function.">phase_rgb_user_kernel_run()</a> : kernel run or execute function. Called when graph is executed.<ul>
+<li>This function is MUST be non-NULL for user kernel and MUST be NULL for target kernel</li>
+</ul>
+</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a1d9397bcd330123d495c6990f18f1015" title="User/target kernel de-init function.">phase_rgb_user_kernel_deinit()</a>: kernel deinit function. Called during graph release.<ul>
+<li>This function is typically only implemented for user kernel and is NULL for target kernel</li>
+</ul>
+</li>
+</ul>
+<p>When working with user kernel or target kernel,</p>
+<ul>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add()</a> MUST be called after vxCreateContext() and before <a class="el" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node()</a>.</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove()</a> MUST be called before vxReleaseContext() and</li>
+<li><a class="el" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node()</a> is called to insert the user kernel node into a OpenVX graph</li>
+</ul>
+<p>When working with target kernel, additional the target side implementation is done in file <a class="el" href="phase__rgb__target__kernel_8c.html">phase_rgb_target_kernel.c</a></p>
+<p>Follow the comments for the different functions in the file to understand how a user/target kernel is implemented. </p>
+
+<p>Definition in file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+
 <p><a href="phase__rgb__user__kernel_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f">PHASE_RGB_IN0_IMG_IDX</a>&nbsp;&nbsp;&nbsp;(0u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Index of input image in parameter list.  <a href="#a1c5d48e1731ea694529e9a0d772ce57f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a1182feec6c80e38d758f284916141a9c">PHASE_RGB_OUT0_IMG_IDX</a>&nbsp;&nbsp;&nbsp;(1u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Index of output image in parameter list.  <a href="#a1182feec6c80e38d758f284916141a9c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#abee2067a26206b5dfb54f3d00f04fe2a">PHASE_RGB_MAX_PARAMS</a>&nbsp;&nbsp;&nbsp;(2u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Total number of parameters for this function.  <a href="#abee2067a26206b5dfb54f3d00f04fe2a"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a7d7d2c869a100813bc3bf0ca85808a99">phase_rgb_user_kernel_init</a> (vx_node node, const vx_reference parameters[], vx_uint32 num)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User/target kernel init function.  <a href="#a7d7d2c869a100813bc3bf0ca85808a99"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#aaab492fc8853c4a4d487b39d80676a25">phase_rgb_user_kernel_run</a> (vx_node node, const vx_reference parameters[], vx_uint32 num)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User/target kernel execute or run function.  <a href="#aaab492fc8853c4a4d487b39d80676a25"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a1d9397bcd330123d495c6990f18f1015">phase_rgb_user_kernel_deinit</a> (vx_node node, const vx_reference parameters[], vx_uint32 num)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User/target kernel de-init function.  <a href="#a1d9397bcd330123d495c6990f18f1015"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#afb3302e5e0e9ec44562c7aaefdac5758">phase_rgb_user_kernel_validate</a> (vx_node node, const vx_reference parameters[], vx_uint32 num, vx_meta_format metas[])</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User/target kernel validate function.  <a href="#afb3302e5e0e9ec44562c7aaefdac5758"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_kernel&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a">phase_rgb_user_kernel_add_as_user_kernel</a> (vx_context context)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add kernel as user kernel.  <a href="#a7c691dea4f45ce5f916b8a85755bd96a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_kernel&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879">phase_rgb_user_kernel_add_as_target_kernel</a> (vx_context context)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add kernel as target kernel.  <a href="#aba18efe50f3602ef221480ead3cf5879"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b">phase_rgb_user_kernel_add</a> (vx_context context, vx_bool add_as_target_kernel)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add user/target kernel to OpenVX context.  <a href="#a5e51581ab691a0e9037aed069be8495b"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c">phase_rgb_user_kernel_remove</a> (vx_context context)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Remove user/target kernel from context.  <a href="#a25ca1ab2d5d29d7d84d81ddc366a464c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_node&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214">phase_rgb_user_kernel_node</a> (vx_graph graph, vx_image in, vx_image out)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User/target kernel node create function.  <a href="#a88488bc22b7681a4c2ad9cc7e80bd214"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_kernel&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#a3b79a7d30f81ffb2fb3860724609f919">phase_rgb_user_kernel</a> = NULL</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Handle to the registered user kernel [static global].  <a href="#a3b79a7d30f81ffb2fb3860724609f919"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static vx_enum&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac">phase_rgb_user_kernel_id</a> = VX_ERROR_INVALID_PARAMETERS</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Kernel ID of the registered user kernel. Used to create a node for the kernel function [static global].  <a href="#aaac0a07f835c24f1c543e423fe3d54ac"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a1c5d48e1731ea694529e9a0d772ce57f"></a><!-- doxytag: member="phase_rgb_user_kernel.c::PHASE_RGB_IN0_IMG_IDX" ref="a1c5d48e1731ea694529e9a0d772ce57f" args="" -->
@@ -57,7 +118,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00070">70</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Index of input image in parameter list. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00105">105</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -72,7 +135,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00071">71</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Index of output image in parameter list. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00108">108</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -87,7 +152,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00072">72</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Total number of parameters for this function. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00111">111</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -123,7 +190,19 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00352">352</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>User/target kernel init function. </p>
+<p>This function gets called during vxGraphVerify after kernel validate function. Typically any resources the kernel needs during its execution should be allocated during kernel init.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>node</em>&nbsp;</td><td>[in] OpenVX node which will execute the kernel </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>parameters</em>&nbsp;</td><td>[in] Parameters references for this kernel function </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num</em>&nbsp;</td><td>[in] Number of parameter references</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>VX_SUCCESS if validate is successful, else appropiate error code </dd></dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00537">537</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -158,7 +237,19 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00360">360</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>User/target kernel execute or run function. </p>
+<p>This function gets called during graph execution. This where the actual kernel function which reads the input data and writes the output data is implemented.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>node</em>&nbsp;</td><td>[in] OpenVX node which will execute the kernel </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>parameters</em>&nbsp;</td><td>[in] Parameters references for this kernel function </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num</em>&nbsp;</td><td>[in] Number of parameter references</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>VX_SUCCESS if validate is successful, else appropiate error code </dd></dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00558">558</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -193,7 +284,19 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00464">464</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>User/target kernel de-init function. </p>
+<p>This function gets called during vxReleaseGraph. Typically any resources allcoated during kernel init are released during deinit.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>node</em>&nbsp;</td><td>[in] OpenVX node which will execute the kernel </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>parameters</em>&nbsp;</td><td>[in] Parameters references for this kernel function </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num</em>&nbsp;</td><td>[in] Number of parameter references</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>VX_SUCCESS if validate is successful, else appropiate error code </dd></dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00674">674</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -234,7 +337,20 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00235">235</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>User/target kernel validate function. </p>
+<p>This function gets called during vxGraphVerify. The node which will runs the kernel, parameter references are passed as input to this function. This function checks the parameters to make sure all attributes of the parameter are as expected. ex, data format checks, image width, height relations between input and output.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>node</em>&nbsp;</td><td>[in] OpenVX node which will execute the kernel </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>parameters</em>&nbsp;</td><td>[in] Parameters references for this kernel function </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num</em>&nbsp;</td><td>[in] Number of parameter references </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>metas</em>&nbsp;</td><td>[in/out] Meta references update with attribute values</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>VX_SUCCESS if validate is successful, else appropiate error code </dd></dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00407">407</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -254,7 +370,40 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00161">161</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Add kernel as user kernel. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>context</em>&nbsp;</td><td>[in] OpenVX context to which the kernel will be added</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>OpenVX kernel object handle </dd></dl>
+
+<p><ul>
+<li>Dynamically allocate a kernel ID and store it in the global 'phase_rgb_user_kernel_id'</li>
+</ul>
+<p>This is used later to create the node with this kernel function </p>
+<div class="fragment"><pre class="fragment">     */
+    status = vxAllocateUserKernelId(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>, &amp;<a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a>);
+</pre></div><ul>
+<li>Register kernel to OpenVX context</li>
+</ul>
+<p>A kernel can be identified with its kernel ID (allocated above). <br/>
+ A kernel can also be identified with its unique kernel name string. "vx_tutorial_graph.phase_rgb" in this case.</p>
+<p>When calling vxAddUserKernel(), additional callbacks are registered including the mandatory <a class="el" href="phase__rgb__user__kernel_8c.html#aaab492fc8853c4a4d487b39d80676a25" title="User/target kernel execute or run function.">phase_rgb_user_kernel_run()</a> function.</p>
+<div class="fragment"><pre class="fragment">         */
+        kernel = vxAddUserKernel(
+                    <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>,
+                    <span class="stringliteral">&quot;vx_tutorial_graph.phase_rgb&quot;</span>,
+                    <a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a>,
+                    <a class="code" href="phase__rgb__user__kernel_8c.html#aaab492fc8853c4a4d487b39d80676a25" title="User/target kernel execute or run function.">phase_rgb_user_kernel_run</a>,
+                    2, <span class="comment">/* number of parameters objects for this user function */</span>
+                    <a class="code" href="phase__rgb__user__kernel_8c.html#afb3302e5e0e9ec44562c7aaefdac5758" title="User/target kernel validate function.">phase_rgb_user_kernel_validate</a>,
+                    <a class="code" href="phase__rgb__user__kernel_8c.html#a7d7d2c869a100813bc3bf0ca85808a99" title="User/target kernel init function.">phase_rgb_user_kernel_init</a>,
+                    <a class="code" href="phase__rgb__user__kernel_8c.html#a1d9397bcd330123d495c6990f18f1015" title="User/target kernel de-init function.">phase_rgb_user_kernel_deinit</a>);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00252">252</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -274,7 +423,48 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00187">187</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Add kernel as target kernel. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>context</em>&nbsp;</td><td>[in] OpenVX context to which the kernel will be added</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>OpenVX kernel object handle </dd></dl>
+
+<p><ul>
+<li>Statically allocate a kernel ID and store it in the global 'phase_rgb_user_kernel_id'</li>
+</ul>
+<p>Unlike user kernel, for target kernel a pre-defined static kernel ID is assigned to the global variable 'phase_rgb_user_kernel_id'. The static kernel ID specified here MUST match the kernel ID specified on the target side.</p>
+<div class="fragment"><pre class="fragment">     */
+    <a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a> = <a class="code" href="vx__tutorial__kernels_8h.html#ad313f6307d27fea48432e16f1577d7bea81087035def5daa8186e02bc1f41979e" title="Converts Phase output to RGB image.">TIVX_TUTORIAL_KERNEL_PHASE_RGB</a>;
+</pre></div><ul>
+<li>Register kernel to OpenVX context</li>
+</ul>
+<p>A kernel can be identified with its kernel ID (statically allocated above). <br/>
+ A kernel can also be identified with its unique kernel name string. "vx_tutorial_graph.phase_rgb" in this case.</p>
+<p>When calling vxAddUserKernel(), additional callbacks are registered. For target kernel, the 'run' callback is set to NULL. Typically 'init' and 'deinit' callbacks are also set to NULL. 'validate' callback is typically set</p>
+<div class="fragment"><pre class="fragment">     */
+    kernel = vxAddUserKernel(
+                <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>,
+                <span class="stringliteral">&quot;vx_tutorial_graph.phase_rgb&quot;</span>,
+                <a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a>,
+                NULL,
+                2, <span class="comment">/* number of parameters objects for this user function */</span>
+                <a class="code" href="phase__rgb__user__kernel_8c.html#afb3302e5e0e9ec44562c7aaefdac5758" title="User/target kernel validate function.">phase_rgb_user_kernel_validate</a>,
+                NULL,
+                NULL);
+
+    status = vxGetStatus((vx_reference)kernel);
+</pre></div><ul>
+<li>Add supported target's on which this target kernel can be run</li>
+</ul>
+<div class="fragment"><pre class="fragment">         */
+        tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
+        tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00304">304</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -303,7 +493,85 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00095">95</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Add user/target kernel to OpenVX context. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>context</em>&nbsp;</td><td>[in] OpenVX context into with the user kernel is added </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>add_as_target_kernel</em>&nbsp;</td><td>[in] 'vx_false_e', add this kernel as user kernel <br/>
+ 'vx_true_e', add this kernel as target kernel <br/>
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Depending on 'add_as_target_kernel' invoke user kernel or target kernel specific registration logic</li>
+</ul>
+<p><a class="el" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac">phase_rgb_user_kernel_id</a> is set as part of this function invocation. </p>
+<div class="fragment"><pre class="fragment">     */
+    <span class="keywordflow">if</span>(add_as_target_kernel==vx_false_e)
+    {
+        kernel = <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
+    }
+    <span class="keywordflow">if</span>(add_as_target_kernel==vx_true_e)
+    {
+        kernel = <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
+    }
+</pre></div><ul>
+<li>Checking is kernel was added successfully to OpenVX context <div class="fragment"><pre class="fragment">     */
+    status = vxGetStatus((vx_reference)kernel);
+</pre></div></li>
+</ul>
+<ul>
+<li>Now define parameters for the kernel</li>
+</ul>
+<p>When specifying the parameters, the below attributes of each parameter are specified,</p>
+<ul>
+<li>parameter index in the function parameter list</li>
+<li>the parameter direction: VX_INPUT or VX_OUTPUT</li>
+<li>parameter data object type</li>
+<li>paramater state: VX_PARAMETER_STATE_REQUIRED or VX_PARAMETER_STATE_OPTIONAL <div class="fragment"><pre class="fragment">         */
+        index = 0;
+
+        <span class="keywordflow">if</span> ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_INPUT,
+                VX_TYPE_IMAGE,
+                VX_PARAMETER_STATE_REQUIRED
+                );
+            index++;
+        }
+        <span class="keywordflow">if</span> ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_OUTPUT,
+                VX_TYPE_IMAGE,
+                VX_PARAMETER_STATE_REQUIRED
+                );
+            index++;
+        }
+</pre></div></li>
+</ul>
+<ul>
+<li>After all parameters are defined, now the kernel is finalized, i.e it is ready for use. <div class="fragment"><pre class="fragment">         */
+        <span class="keywordflow">if</span> ( status == VX_SUCCESS)
+        {
+            status = vxFinalizeKernel(kernel);
+        }
+</pre></div></li>
+</ul>
+<ul>
+<li>Set kernel handle to the global user kernel handle</li>
+</ul>
+<p>This global handle is used later to release the kernel when done with it </p>
+<div class="fragment"><pre class="fragment">         */
+        <a class="code" href="phase__rgb__user__kernel_8c.html#a3b79a7d30f81ffb2fb3860724609f919" title="Handle to the registered user kernel [static global].">phase_rgb_user_kernel</a> = kernel;
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00144">144</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -323,7 +591,23 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00215">215</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Remove user/target kernel from context. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>context</em>&nbsp;</td><td>[in] OpenVX context from which the kernel will be removed </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Remove user kernel from context and set the global 'phase_rgb_user_kernel' to NULL</li>
+</ul>
+<div class="fragment"><pre class="fragment">     */
+    status = vxRemoveKernel(<a class="code" href="phase__rgb__user__kernel_8c.html#a3b79a7d30f81ffb2fb3860724609f919" title="Handle to the registered user kernel [static global].">phase_rgb_user_kernel</a>);
+    <a class="code" href="phase__rgb__user__kernel_8c.html#a3b79a7d30f81ffb2fb3860724609f919" title="Handle to the registered user kernel [static global].">phase_rgb_user_kernel</a> = NULL;
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00365">365</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -358,7 +642,35 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00472">472</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>User/target kernel node create function. </p>
+<p>Given a graph reference, this function creates a OpenVX node and inserts it into the graph. The list of parameter references is also provided as input. Exact data type are used instead of base class references to allow some level of compile time type checking. In this example, there is one input image and one output image that are passed as parameters.</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>graph</em>&nbsp;</td><td>[in] OpenVX graph </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>in</em>&nbsp;</td><td>[in] Input image reference </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>out</em>&nbsp;</td><td>[in] Output image reference</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="return"><dt><b>Returns:</b></dt><dd>OpenVX node that is created and inserted into the graph </dd></dl>
+
+<p><ul>
+<li>Put parameters into a array of references <div class="fragment"><pre class="fragment">     */
+    vx_reference refs[] = {(vx_reference)in, (vx_reference)out};
+</pre></div></li>
+</ul>
+<ul>
+<li>Use TIOVX API to make a node using the graph, kernel ID, and parameter reference array as input <div class="fragment"><pre class="fragment">     */
+    node = tivxCreateNodeByKernelEnum(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>,
+                <a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a>,
+                refs, <span class="keyword">sizeof</span>(refs)/<span class="keyword">sizeof</span>(refs[0])
+                );
+    vxSetReferenceName((vx_reference)node, <span class="stringliteral">&quot;PHASE_RGB&quot;</span>);
+</pre></div> </li>
+</ul>
+</p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00697">697</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -374,7 +686,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00091">91</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Handle to the registered user kernel [static global]. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00131">131</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -389,7 +703,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00092">92</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
+<p>Kernel ID of the registered user kernel. Used to create a node for the kernel function [static global]. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__user__kernel_8c_source.html#l00134">134</a> of file <a class="el" href="phase__rgb__user__kernel_8c_source.html">phase_rgb_user_kernel.c</a>.</p>
 
 </div>
 </div>

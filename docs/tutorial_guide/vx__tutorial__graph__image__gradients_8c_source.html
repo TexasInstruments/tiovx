@@ -105,20 +105,20 @@
 <a name="l00114"></a>00114 <span class="preprocessor"></span>
 <a name="l00118"></a><a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a838f2ff5f2c2496ad0fee70c0c93f2b6">00118</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a838f2ff5f2c2496ad0fee70c0c93f2b6" title="Tutorial Entry Point.">vx_tutorial_graph_image_gradients</a>()
 <a name="l00119"></a>00119 {
-<a name="l00127"></a>00127     vx_context context;
-<a name="l00128"></a>00128     vx_image in_image = NULL;
-<a name="l00129"></a>00129     vx_image grad_x = NULL;
-<a name="l00130"></a>00130     vx_image grad_y = NULL;
+<a name="l00127"></a>00127     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
+<a name="l00128"></a>00128     vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">in_image</a> = NULL;
+<a name="l00129"></a>00129     vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a119e79a98a80ca3d13e05d814558f130">grad_x</a> = NULL;
+<a name="l00130"></a>00130     vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a769fba316fc6478b4f5068b5f585d662">grad_y</a> = NULL;
 <a name="l00131"></a>00131     vx_image magnitude = NULL;
-<a name="l00132"></a>00132     vx_image phase = NULL;
+<a name="l00132"></a>00132     vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a1f901eae8a7766dc6949c863f8e3d1c6">phase</a> = NULL;
 <a name="l00133"></a>00133     vx_image magnitude_image = NULL;
 <a name="l00134"></a>00134     vx_image grad_x_image = NULL;
 <a name="l00135"></a>00135     vx_image grad_y_image = NULL;
-<a name="l00136"></a>00136     vx_graph graph = NULL;
+<a name="l00136"></a>00136     vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a> = NULL;
 <a name="l00137"></a>00137     vx_scalar shift = NULL;
 <a name="l00138"></a>00138     vx_node node[<a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a196d5a36c4126bfa58ee4ea50baaae39">NUM_NODES</a>] = {NULL};
 <a name="l00140"></a>00140     int32_t shift_value = 0;
-<a name="l00141"></a>00141     vx_uint32 width, height;
+<a name="l00141"></a>00141     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
 <a name="l00142"></a>00142     vx_status status;
 <a name="l00143"></a>00143     uint32_t i;
 <a name="l00144"></a>00144 

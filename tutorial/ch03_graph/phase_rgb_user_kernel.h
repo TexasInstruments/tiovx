@@ -60,7 +60,11 @@
 *
 */
 
-
+/**
+ * \file phase_rgb_user_kernel.h Interface file for user kernel functions
+ *
+ * These interface functions are called by OpenVX application.
+ */
 
 #ifndef PHASE_RGB_USER_KERNEL
 #define PHASE_RGB_USER_KERNEL

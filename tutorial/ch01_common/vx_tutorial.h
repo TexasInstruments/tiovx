@@ -60,8 +60,6 @@
 *
 */
 
-
-
 #ifndef VX_TUTORIAL_H
 #define VX_TUTORIAL_H
 

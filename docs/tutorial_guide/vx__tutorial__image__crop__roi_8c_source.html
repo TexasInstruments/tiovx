@@ -96,16 +96,16 @@
 <a name="l00114"></a><a class="code" href="vx__tutorial__image__crop__roi_8c.html#a75506823f0db0ef3f4f022cf132dbbbb">00114</a> <span class="preprocessor">#define OUT_FILE_NAME      &quot;vx_tutorial_image_crop_roi.bmp&quot;</span>
 <a name="l00115"></a>00115 <span class="preprocessor"></span>
 <a name="l00116"></a>00116 vx_image  <a class="code" href="vx__tutorial__image__crop__roi_8c.html#a4295a6029fd44a53594f2886c414902d" title="Load image from handle from file.">load_image_from_handle_from_file</a>(
-<a name="l00117"></a>00117             vx_context context,
+<a name="l00117"></a>00117             vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>,
 <a name="l00118"></a>00118             <span class="keywordtype">char</span> *filename,
 <a name="l00119"></a>00119             vx_bool convert_to_gray_scale,
 <a name="l00120"></a>00120             <span class="keywordtype">void</span> **bmp_file_context);
 <a name="l00121"></a>00121 
 <a name="l00125"></a><a class="code" href="vx__tutorial__image__crop__roi_8c.html#a2e40fa229aa1f3c5666a2c8f36de0e1d">00125</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__image__crop__roi_8c.html#a2e40fa229aa1f3c5666a2c8f36de0e1d" title="Tutorial Entry Point.">vx_tutorial_image_crop_roi</a>()
 <a name="l00126"></a>00126 {
-<a name="l00134"></a>00134     vx_context context;
+<a name="l00134"></a>00134     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
 <a name="l00135"></a>00135     vx_image image, roi_image;
-<a name="l00136"></a>00136     vx_uint32 width, height;
+<a name="l00136"></a>00136     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
 <a name="l00137"></a>00137     vx_rectangle_t rect;
 <a name="l00139"></a>00139     <span class="keywordtype">void</span> *bmp_file_context;
 <a name="l00140"></a>00140 
@@ -151,13 +151,13 @@
 <a name="l00241"></a>00241 }
 <a name="l00242"></a>00242 
 <a name="l00254"></a><a class="code" href="vx__tutorial__image__crop__roi_8c.html#a4295a6029fd44a53594f2886c414902d">00254</a> vx_image  <a class="code" href="vx__tutorial__image__crop__roi_8c.html#a4295a6029fd44a53594f2886c414902d" title="Load image from handle from file.">load_image_from_handle_from_file</a>(
-<a name="l00255"></a>00255             vx_context context,
+<a name="l00255"></a>00255             vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>,
 <a name="l00256"></a>00256             <span class="keywordtype">char</span> *filename,
 <a name="l00257"></a>00257             vx_bool convert_to_gray_scale,
 <a name="l00258"></a>00258             <span class="keywordtype">void</span> **bmp_file_context)
 <a name="l00259"></a>00259 {
 <a name="l00260"></a>00260     vx_image image = NULL;
-<a name="l00261"></a>00261     uint32_t width, height, stride;
+<a name="l00261"></a>00261     uint32_t <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, stride;
 <a name="l00262"></a>00262     vx_df_image df;
 <a name="l00263"></a>00263     vx_status status;
 <a name="l00264"></a>00264     <span class="keywordtype">void</span> *data_ptr;

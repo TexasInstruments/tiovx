@@ -85,77 +85,71 @@
 <a name="l00061"></a>00061 <span class="comment">*/</span>
 <a name="l00062"></a>00062 
 <a name="l00063"></a>00063 
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
-<a name="l00066"></a>00066 <span class="preprocessor">#include &lt;VX/vx.h&gt;</span>
-<a name="l00067"></a>00067 <span class="preprocessor">#include &lt;TI/tivx.h&gt;</span>
-<a name="l00068"></a>00068 <span class="preprocessor">#include &lt;<a class="code" href="utility_8h.html">utility.h</a>&gt;</span>
-<a name="l00069"></a>00069 <span class="preprocessor">#include &lt;ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.h&gt;</span>
-<a name="l00070"></a>00070 <span class="preprocessor">#include &lt;<a class="code" href="phase__rgb__user__kernel_8h.html">ch03_graph/phase_rgb_user_kernel.h</a>&gt;</span>
-<a name="l00071"></a>00071 
-<a name="l00072"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">00072</a> <span class="preprocessor">#define IN_FILE_NAME                &quot;colors.bmp&quot;</span>
-<a name="l00073"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a858679d8af857cbb2c1346f4a4bc1c06">00073</a> <span class="preprocessor"></span><span class="preprocessor">#define OUT_USER_KERNEL_FILE_NAME   &quot;vx_tutorial_graph_user_kernel_pytiovx_out.bmp&quot;</span>
-<a name="l00074"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a9a1d52660f6cc470b9da80d5589808fc">00074</a> <span class="preprocessor"></span><span class="preprocessor">#define OUT_TARGET_KERNEL_FILE_NAME &quot;vx_tutorial_graph_target_kernel_pytiovx_out.bmp&quot;</span>
-<a name="l00075"></a>00075 <span class="preprocessor"></span>
-<a name="l00076"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a08ebb111969e2e91e4d36366d138d6ea">00076</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a08ebb111969e2e91e4d36366d138d6ea">vx_tutorial_graph_user_kernel_pytiovx</a>(vx_bool add_as_target_kernel)
-<a name="l00077"></a>00077 {
-<a name="l00078"></a>00078     vx_status status;
-<a name="l00079"></a>00079     vx_tutorial_graph_user_kernel_pytiovx_uc_t uc;
-<a name="l00080"></a>00080     vx_context context = NULL;
-<a name="l00081"></a>00081     <span class="keywordtype">char</span> *out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a858679d8af857cbb2c1346f4a4bc1c06">OUT_USER_KERNEL_FILE_NAME</a>;
-<a name="l00082"></a>00082 
-<a name="l00083"></a>00083     <span class="keywordflow">if</span>(add_as_target_kernel)
-<a name="l00084"></a>00084     {
-<a name="l00085"></a>00085         out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a9a1d52660f6cc470b9da80d5589808fc">OUT_TARGET_KERNEL_FILE_NAME</a>;
-<a name="l00086"></a>00086     }
-<a name="l00087"></a>00087     printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: Tutorial Started !!! \n&quot;</span>);
-<a name="l00088"></a>00088 
-<a name="l00089"></a>00089     context = vxCreateContext();
-<a name="l00090"></a>00090 
-<a name="l00091"></a>00091     status = <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b">phase_rgb_user_kernel_add</a>(context, add_as_target_kernel);
-<a name="l00092"></a>00092     <span class="keywordflow">if</span>(status!=VX_SUCCESS)
-<a name="l00093"></a>00093     {
-<a name="l00094"></a>00094         printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: ERROR: unable to add user kernel !!!\n&quot;</span>);
-<a name="l00095"></a>00095     }
-<a name="l00096"></a>00096     <span class="keywordflow">if</span>(status==VX_SUCCESS)
-<a name="l00097"></a>00097     {
-<a name="l00098"></a>00098         vx_tutorial_graph_user_kernel_pytiovx_uc_create(&amp;uc);
-<a name="l00099"></a>00099 
-<a name="l00100"></a>00100         printf(<span class="stringliteral">&quot; Loading file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>);
-<a name="l00101"></a>00101         status = <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(uc.input, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
-<a name="l00102"></a>00102 
-<a name="l00103"></a>00103         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.input);
-<a name="l00104"></a>00104         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x);
-<a name="l00105"></a>00105         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_y);
-<a name="l00106"></a>00106         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase);
-<a name="l00107"></a>00107         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase_rgb);
-<a name="l00108"></a>00108 
-<a name="l00109"></a>00109         vx_tutorial_graph_user_kernel_pytiovx_uc_verify(&amp;uc);
-<a name="l00110"></a>00110         <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
-<a name="l00111"></a>00111 
-<a name="l00112"></a>00112         <span class="keywordflow">if</span>(status==VX_SUCCESS)
-<a name="l00113"></a>00113         {
-<a name="l00114"></a>00114             printf(<span class="stringliteral">&quot; Executing graph ...\n&quot;</span>);
-<a name="l00115"></a>00115 
-<a name="l00116"></a>00116             vx_tutorial_graph_user_kernel_pytiovx_uc_run(&amp;uc);
-<a name="l00117"></a>00117 
-<a name="l00118"></a>00118             printf(<span class="stringliteral">&quot; Executing graph ... Done !!!\n&quot;</span>);
-<a name="l00119"></a>00119             <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
-<a name="l00120"></a>00120 
-<a name="l00121"></a>00121             printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, out_file);
-<a name="l00122"></a>00122             <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(out_file, uc.phase_rgb);
-<a name="l00123"></a>00123         }
-<a name="l00124"></a>00124 
-<a name="l00125"></a>00125         vx_tutorial_graph_user_kernel_pytiovx_uc_delete(&amp;uc);
-<a name="l00126"></a>00126 
-<a name="l00127"></a>00127         <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c">phase_rgb_user_kernel_remove</a>(context);
-<a name="l00128"></a>00128     }
-<a name="l00129"></a>00129 
-<a name="l00130"></a>00130     vxReleaseContext(&amp;context);
-<a name="l00131"></a>00131 
-<a name="l00132"></a>00132     printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: Tutorial Done !!! \n&quot;</span>);
-<a name="l00133"></a>00133     printf(<span class="stringliteral">&quot; \n&quot;</span>);
-<a name="l00134"></a>00134 }
+<a name="l00116"></a>00116 <span class="preprocessor">#include &lt;stdio.h&gt;</span>
+<a name="l00117"></a>00117 <span class="preprocessor">#include &lt;VX/vx.h&gt;</span>
+<a name="l00118"></a>00118 <span class="preprocessor">#include &lt;TI/tivx.h&gt;</span>
+<a name="l00119"></a>00119 <span class="preprocessor">#include &lt;<a class="code" href="utility_8h.html">utility.h</a>&gt;</span>
+<a name="l00120"></a>00120 <span class="preprocessor">#include &lt;ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.h&gt;</span>
+<a name="l00121"></a>00121 <span class="preprocessor">#include &lt;<a class="code" href="phase__rgb__user__kernel_8h.html">ch03_graph/phase_rgb_user_kernel.h</a>&gt;</span>
+<a name="l00122"></a>00122 
+<a name="l00124"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">00124</a> <span class="preprocessor">#define IN_FILE_NAME                &quot;colors.bmp&quot;</span>
+<a name="l00125"></a>00125 <span class="preprocessor"></span>
+<a name="l00127"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a858679d8af857cbb2c1346f4a4bc1c06">00127</a> <span class="preprocessor">#define OUT_USER_KERNEL_FILE_NAME   &quot;vx_tutorial_graph_user_kernel_pytiovx_out.bmp&quot;</span>
+<a name="l00128"></a>00128 <span class="preprocessor"></span>
+<a name="l00130"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a9a1d52660f6cc470b9da80d5589808fc">00130</a> <span class="preprocessor">#define OUT_TARGET_KERNEL_FILE_NAME &quot;vx_tutorial_graph_target_kernel_pytiovx_out.bmp&quot;</span>
+<a name="l00131"></a>00131 <span class="preprocessor"></span>
+<a name="l00138"></a><a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a08ebb111969e2e91e4d36366d138d6ea">00138</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a08ebb111969e2e91e4d36366d138d6ea" title="Tutorial Entry Point.">vx_tutorial_graph_user_kernel_pytiovx</a>(vx_bool add_as_target_kernel)
+<a name="l00139"></a>00139 {
+<a name="l00140"></a>00140     vx_status status;
+<a name="l00148"></a>00148     vx_tutorial_graph_user_kernel_pytiovx_uc_t uc;
+<a name="l00156"></a>00156     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a> = NULL;
+<a name="l00167"></a>00167     <span class="keywordtype">char</span> *out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a858679d8af857cbb2c1346f4a4bc1c06" title="Output file name when tutorial is run with user kernel.">OUT_USER_KERNEL_FILE_NAME</a>;
+<a name="l00168"></a>00168 
+<a name="l00169"></a>00169     <span class="keywordflow">if</span>(add_as_target_kernel)
+<a name="l00170"></a>00170     {
+<a name="l00171"></a>00171         out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a9a1d52660f6cc470b9da80d5589808fc" title="Output file name when tutorial is run with target kernel.">OUT_TARGET_KERNEL_FILE_NAME</a>;
+<a name="l00172"></a>00172     }
+<a name="l00175"></a>00175     printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: Tutorial Started !!! \n&quot;</span>);
+<a name="l00176"></a>00176 
+<a name="l00185"></a>00185     context = vxCreateContext();
+<a name="l00202"></a>00202     status = <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add</a>(context, add_as_target_kernel);
+<a name="l00203"></a>00203     <span class="keywordflow">if</span>(status!=VX_SUCCESS)
+<a name="l00204"></a>00204     {
+<a name="l00205"></a>00205         printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: ERROR: unable to add user kernel !!!\n&quot;</span>);
+<a name="l00206"></a>00206     }
+<a name="l00209"></a>00209     <span class="keywordflow">if</span>(status==VX_SUCCESS)
+<a name="l00210"></a>00210     {
+<a name="l00220"></a>00220         vx_tutorial_graph_user_kernel_pytiovx_uc_create(&amp;uc);
+<a name="l00230"></a>00230         printf(<span class="stringliteral">&quot; Loading file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>);
+<a name="l00231"></a>00231         status = <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(uc.input, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
+<a name="l00238"></a>00238         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.input);
+<a name="l00239"></a>00239         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x);
+<a name="l00240"></a>00240         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_y);
+<a name="l00241"></a>00241         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase);
+<a name="l00242"></a>00242         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase_rgb);
+<a name="l00251"></a>00251         vx_tutorial_graph_user_kernel_pytiovx_uc_verify(&amp;uc);
+<a name="l00252"></a>00252         <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
+<a name="l00255"></a>00255         <span class="keywordflow">if</span>(status==VX_SUCCESS)
+<a name="l00256"></a>00256         {
+<a name="l00257"></a>00257             printf(<span class="stringliteral">&quot; Executing graph ...\n&quot;</span>);
+<a name="l00258"></a>00258 
+<a name="l00263"></a>00263             vx_tutorial_graph_user_kernel_pytiovx_uc_run(&amp;uc);
+<a name="l00266"></a>00266             printf(<span class="stringliteral">&quot; Executing graph ... Done !!!\n&quot;</span>);
+<a name="l00267"></a>00267 
+<a name="l00272"></a>00272             <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
+<a name="l00273"></a>00273 
+<a name="l00274"></a>00274             printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, out_file);
+<a name="l00275"></a>00275             <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(out_file, uc.phase_rgb);
+<a name="l00277"></a>00277         }
+<a name="l00278"></a>00278 
+<a name="l00285"></a>00285         vx_tutorial_graph_user_kernel_pytiovx_uc_delete(&amp;uc);
+<a name="l00294"></a>00294         <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove</a>(context);
+<a name="l00296"></a>00296     }
+<a name="l00297"></a>00297 
+<a name="l00303"></a>00303     vxReleaseContext(&amp;context);
+<a name="l00306"></a>00306     printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: Tutorial Done !!! \n&quot;</span>);
+<a name="l00307"></a>00307     printf(<span class="stringliteral">&quot; \n&quot;</span>);
+<a name="l00308"></a>00308 }
 </pre></div></div>
 
 <html>

@@ -24,15 +24,46 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_graph_user_kernel_pytiovx.c File Reference</h1>
+<h1>vx_tutorial_graph_user_kernel_pytiovx.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Show example usage of using user kernel in larger graph.</p>
+<p>In the tutorial we learn below concepts,</p>
+<ul>
+<li>Use the user/target kernel defined in tutorial <a class="el" href="vx__tutorial__graph__user__kernel_8c.html">vx_tutorial_graph_user_kernel.c</a> in a larger graph</li>
+<li>Specify the user defined kernel in .py file in using PyTIOVX APIs</li>
+<li>Generate the graph code using the user defined kernel and other built-in kernels using the PyTIOVX APIs.</li>
+</ul>
+<p>When using PyTIOVX tool, first create a .py file which describes the OpenVX graph. Follow comments in <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a> to understand the graph description basic API. In this example, we also use the PyTIOVX API to define a user defined kernel. This allows user to add their own kernels to the tool without having to modify deep within the tool.</p>
+<p>Next PyTIOVX tool is run to generate .c/.h file for the graph described in .py file. A .jpg file which shows the graph visually is also generated in the process.</p>
+<p>Follow steps mentioned in PyTIOVX user guide <a href="../pytiovx_guide/index.html" target="_blank">[HTML]</a> to install and run the PyTIOVX tool. See also additional APIs provided to describe a graph via PyTIOVX.</p>
+<p>For this example, run below command to generate the code and image file </p>
+<div class="fragment"><pre class="fragment"> python vx_tutorial_graph_user_kernel_pytiovx_uc.py
+</pre></div><p>Include the generated C code API header file </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.h&gt;</span>
+</pre></div><p> Note, that the generated file name and APIs use as prefix the string name passed as input during context create in the .py file.</p>
+<p>Follow the comments in the function <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a08ebb111969e2e91e4d36366d138d6ea" title="Tutorial Entry Point.">vx_tutorial_graph_user_kernel_pytiovx()</a> to complete the rest of tutorial code to invoke the generated OpenVX graph.</p>
+<p><b> NOTE: </b> <br/>
+ The implementation on HOST side for user kernel and target kernel is largely the same. Any difference in implementation between user kernel and target kernel is shown by using using boolen variable 'add_as_target_kernel'.</p>
+<ul>
+<li>When 'add_as_target_kernel' is 'vx_false_e', it is the implementation for user kernel.</li>
+<li>When 'add_as_target_kernel' is 'vx_true_e', it is the implementation for target kernel.</li>
+</ul>
+<p>Include below file to use the HOST callable interface for the user/target kernel </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;<a class="code" href="phase__rgb__user__kernel_8h.html">ch03_graph/phase_rgb_user_kernel.h</a>&gt;</span>
+</pre></div> 
+<p>Definition in file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
+
 <p><a href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;colors.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Input file name.  <a href="#a8118656bb5a60090a1dbffa402168438"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a858679d8af857cbb2c1346f4a4bc1c06">OUT_USER_KERNEL_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_user_kernel_pytiovx_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Output file name when tutorial is run with user kernel.  <a href="#a858679d8af857cbb2c1346f4a4bc1c06"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a9a1d52660f6cc470b9da80d5589808fc">OUT_TARGET_KERNEL_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_target_kernel_pytiovx_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Output file name when tutorial is run with target kernel.  <a href="#a9a1d52660f6cc470b9da80d5589808fc"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c.html#a08ebb111969e2e91e4d36366d138d6ea">vx_tutorial_graph_user_kernel_pytiovx</a> (vx_bool add_as_target_kernel)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tutorial Entry Point.  <a href="#a08ebb111969e2e91e4d36366d138d6ea"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -46,7 +77,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00072">72</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
+<p>Input file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00124">124</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -61,7 +94,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00073">73</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
+<p>Output file name when tutorial is run with user kernel. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00127">127</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -76,7 +111,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00074">74</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
+<p>Output file name when tutorial is run with target kernel. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00130">130</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
 
 </div>
 </div>
@@ -97,7 +134,120 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00076">76</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
+<p>Tutorial Entry Point. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>add_as_target_kernel</em>&nbsp;</td><td>[in] 'vx_false_e', run this tutorial with custom kernel running as user kernel <br/>
+ 'vx_true_e', run this tutorial with custom kernel running as target kernel <br/>
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Define the data structure representing the generated OpenVX use-case code.</li>
+</ul>
+<p>This structure includes the context, data object, node, graph handles for the generated code. </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_tutorial_graph_user_kernel_pytiovx_uc_t uc;
+</pre></div><ul>
+<li>Define the OpenVX context</li>
+</ul>
+<div class="fragment"><pre class="fragment">     */
+    vx_context context = NULL;
+</pre></div><ul>
+<li>Specify the output file name</li>
+</ul>
+<p>In order to compare and confirm that the user kernel and target kernel generate the same output we specify a different output file for user and target kernel</p>
+<div class="fragment"><pre class="fragment">     */
+    <span class="keywordtype">char</span> *out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a858679d8af857cbb2c1346f4a4bc1c06" title="Output file name when tutorial is run with user kernel.">OUT_USER_KERNEL_FILE_NAME</a>;
+
+    <span class="keywordflow">if</span>(add_as_target_kernel)
+    {
+        out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a9a1d52660f6cc470b9da80d5589808fc" title="Output file name when tutorial is run with target kernel.">OUT_TARGET_KERNEL_FILE_NAME</a>;
+    }
+</pre></div><ul>
+<li>Create OpenVX context</li>
+</ul>
+<p>Even though the generated use-case creates OpenVX context later, we create it here, so as to allow us to register the user/target kernel, before creating the OpenVX use-case </p>
+<div class="fragment"><pre class="fragment">     */
+    context = vxCreateContext();
+</pre></div><ul>
+<li>Register user or target kernel into the OpenVX context</li>
+</ul>
+<p>This is required so that the user kernel or target can be invoked as any other node within an OpenVX graph. 'add_as_target_kernel' is used specify whether to register kernel as user kernel or target kernel.</p>
+<p>This function is implemented in <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a></p>
+<p><b> Rest of the implementation post this is same for both user kernel and target kernel. </b> </p>
+<div class="fragment"><pre class="fragment">     */
+    status = <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add</a>(context, add_as_target_kernel);
+    <span class="keywordflow">if</span>(status!=VX_SUCCESS)
+    {
+        printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel_pytiovx: ERROR: unable to add user kernel !!!\n&quot;</span>);
+    }
+</pre></div><ul>
+<li>Create the OpenVX use-case using the generated create API.</li>
+</ul>
+<p>This creates the OpenVX context, data objects, nodes and graph for this use-case. <br/>
+ NOTE: graph verify is not yet called. <br/>
+ NOTE: Any customization like changing parameter values, loading data to data objects should be done next, before calling graph verify </p>
+<div class="fragment"><pre class="fragment">         */
+        vx_tutorial_graph_user_kernel_pytiovx_uc_create(&amp;uc);
+</pre></div><ul>
+<li>Load input into input data reference</li>
+</ul>
+<p>NOTE: the data reference names in the use-case structure, match the name specified via name="xyz" in the .py file </p>
+<div class="fragment"><pre class="fragment">         */
+        printf(<span class="stringliteral">&quot; Loading file %s ...\n&quot;</span>, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>);
+        status = <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(uc.input, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
+</pre></div><ul>
+<li>Print data object info for debug purposes <div class="fragment"><pre class="fragment">         */
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.input);
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_x);
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.grad_y);
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase);
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(uc.phase_rgb);
+</pre></div></li>
+</ul>
+<ul>
+<li>Call generated API to verify graphs present in this use-case</li>
+</ul>
+<p>Also prints graph info for debug purposes </p>
+<div class="fragment"><pre class="fragment">         */
+        vx_tutorial_graph_user_kernel_pytiovx_uc_verify(&amp;uc);
+        <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
+</pre></div><ul>
+<li>Call generated API to run graphs present in this use-case <div class="fragment"><pre class="fragment">             */
+            vx_tutorial_graph_user_kernel_pytiovx_uc_run(&amp;uc);
+</pre></div></li>
+</ul>
+<ul>
+<li>Print graph execution info, save output data to file <div class="fragment"><pre class="fragment">             */
+            <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(uc.graph_0);
+
+            printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, out_file);
+            <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(out_file, uc.phase_rgb);
+</pre></div></li>
+</ul>
+<ul>
+<li>Call generated API to delete this use-case</li>
+</ul>
+<p>This releases the data objects, nodes, graphs and context associated with this use-case </p>
+<div class="fragment"><pre class="fragment">         */
+        vx_tutorial_graph_user_kernel_pytiovx_uc_delete(&amp;uc);
+</pre></div><ul>
+<li>Unregister user/kernel from the context</li>
+</ul>
+<p>This function is implemented in <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a> </p>
+<div class="fragment"><pre class="fragment">         */
+        <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove</a>(context);
+</pre></div><ul>
+<li>Finally release the OpenVX context</li>
+</ul>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseContext(&amp;context);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html#l00138">138</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx_8c_source.html">vx_tutorial_graph_user_kernel_pytiovx.c</a>.</p>
 
 </div>
 </div>

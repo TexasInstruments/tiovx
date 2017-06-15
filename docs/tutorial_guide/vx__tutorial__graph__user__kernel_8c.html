@@ -24,15 +24,66 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_graph_user_kernel.c File Reference</h1>
+<h1>vx_tutorial_graph_user_kernel.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Show example usage of developing and invoking a user kernel</p>
+<p>OpenVX allows users to define their own nodes called <b> user kernels </b> and provides an API to implement and invoke these user kernels. Once defined and implemented, user kernels can be added as any other node in an OpenVX graph</p>
+<p>OpenVX user kernels need to run on the "HOST" CPU, i.e CPU where OpenVX APIs are invoked. This can be limiting for users who want to exploit performnance of specialized targets, like DSP, to execute their own functions. For this purpose, TIOVX specifies an API to define and implement <b> "target kernels" </b>. Like user kernels, once a target kernel is defined and implemented on a target (ex, DSP), it can be invoked as a normal node in an OpenVX graph using standard OpenVX APIs.</p>
+<p>Most of the host side logic remains same for both user kernel and target kernel. For target kernel, additional target specific implementation is required on the required on target.</p>
+<p>In this tutorial we learn below concepts,</p>
+<ul>
+<li>Firstly, implement an OpenVX user kernel on HOST CPU</li>
+<li>Invoke it as a single node OpenVX graph to test the user kernel in standalone mode</li>
+<li>Next, implement target kernel on DSP for the same user kernel function</li>
+<li>Modify the HOST side logic to use target kernel instead of user kernel</li>
+<li>Invoke the same single node graph but this time with the target kernel</li>
+</ul>
+<p>The custom kernel (user or target) we define in this tutorial does the below,</p>
+<ul>
+<li>Take 16b signed phase image as input</li>
+<li>Generate a 24b RGB image with different colors representing different phase values</li>
+</ul>
+<p><b>NOTE: </b> Make sure to run <a class="el" href="vx__tutorial__graph__image__gradients_8c.html">vx_tutorial_graph_image_gradients.c</a> before running this tutorial, since output file from <a class="el" href="vx__tutorial__graph__image__gradients_8c.html">vx_tutorial_graph_image_gradients.c</a> is used as input by this tutorial</p>
+<dl class="user"><dt><b>Implementing a User Kernel</b></dt><dd><ul>
+<li>Follow comments in file <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a> to understand how to implement a user kernel</li>
+<li>Follow comments in the function <a class="el" href="vx__tutorial__graph__user__kernel_8c.html#a8820fe10988a7eae08a86a7abd6308ea" title="Tutorial Entry Point.">vx_tutorial_graph_user_kernel()</a> to understand how to register the implemented user kernel and invoke it as a user graph.</li>
+</ul>
+</dd></dl>
+<dl class="user"><dt><b>Implementing a Target Kernel on C66x DSP</b></dt><dd><ul>
+<li>For target kernel, there are two parts to the implementation, HOST side implementation and target side implementation</li>
+<li>Target side implementation<ul>
+<li>Follow comments in <a class="el" href="phase__rgb__target__kernel_8c.html">phase_rgb_target_kernel.c</a> for target side implementation</li>
+</ul>
+</li>
+<li>HOST side implementation<ul>
+<li>Follow comments in file <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a> to understand how to implement the HOST side portion of target kernel</li>
+<li>Follow comments in the function <a class="el" href="vx__tutorial__graph__user__kernel_8c.html#a8820fe10988a7eae08a86a7abd6308ea" title="Tutorial Entry Point.">vx_tutorial_graph_user_kernel()</a> to understand how to register the implemented target kernel and invoke it as a user graph.</li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+<p><b> NOTE: </b> <br/>
+ The implementation on HOST side for user kernel and target kernel is largely the same. Any difference in implementation between user kernel and target kernel is shown by using using boolen variable 'add_as_target_kernel'.</p>
+<ul>
+<li>When 'add_as_target_kernel' is 'vx_false_e', it is the implementation for user kernel.</li>
+<li>When 'add_as_target_kernel' is 'vx_true_e', it is the implementation for target kernel.</li>
+</ul>
+<p>Include below file to use the HOST callable interface for the user/target kernel </p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"> #include &lt;<a class="code" href="phase__rgb__user__kernel_8h.html">ch03_graph/phase_rgb_user_kernel.h</a>&gt;</span>
+</pre></div> 
+<p>Definition in file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
+
 <p><a href="vx__tutorial__graph__user__kernel_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel_8c.html#a8118656bb5a60090a1dbffa402168438">IN_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_image_gradients_phase_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Input file name.  <a href="#a8118656bb5a60090a1dbffa402168438"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel_8c.html#a858679d8af857cbb2c1346f4a4bc1c06">OUT_USER_KERNEL_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_user_kernel_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Output file name when tutorial is run with user kernel.  <a href="#a858679d8af857cbb2c1346f4a4bc1c06"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel_8c.html#a9a1d52660f6cc470b9da80d5589808fc">OUT_TARGET_KERNEL_FILE_NAME</a>&nbsp;&nbsp;&nbsp;&quot;vx_tutorial_graph_target_kernel_out.bmp&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Output file name when tutorial is run with target kernel.  <a href="#a9a1d52660f6cc470b9da80d5589808fc"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__tutorial__graph__user__kernel_8c.html#a8820fe10988a7eae08a86a7abd6308ea">vx_tutorial_graph_user_kernel</a> (vx_bool add_as_target_kernel)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tutorial Entry Point.  <a href="#a8820fe10988a7eae08a86a7abd6308ea"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a8118656bb5a60090a1dbffa402168438"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel.c::IN_FILE_NAME" ref="a8118656bb5a60090a1dbffa402168438" args="" -->
@@ -46,7 +97,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00071">71</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
+<p>Input file name. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00137">137</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -61,7 +114,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00072">72</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
+<p>Output file name when tutorial is run with user kernel. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00140">140</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -76,7 +131,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00073">73</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
+<p>Output file name when tutorial is run with target kernel. </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00143">143</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -97,7 +154,131 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00076">76</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
+<p>Tutorial Entry Point. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>add_as_target_kernel</em>&nbsp;</td><td>[in] 'vx_false_e', run this tutorial with custom kernel running as user kernel <br/>
+ 'vx_true_e', run this tutorial with custom kernel running as target kernel <br/>
+ </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p><ul>
+<li>Define OpenVX object references required to invoke the user/target kernel</li>
+</ul>
+<p>We need an OpenVX context, a graph to execute the node, a node to invoke the user target/kernel, and input/output image for the node. </p>
+<div class="fragment"><pre class="fragment">     */
+    vx_context context;
+    vx_image in_image = NULL;
+    vx_image out_image = NULL;
+    vx_node node = NULL;
+    vx_graph graph = NULL;
+</pre></div><ul>
+<li>Specify the output file name</li>
+</ul>
+<p>In order to compare and confirm that the user kernel and target kernel generate the same output we specify a different output file for user and target kernel</p>
+<div class="fragment"><pre class="fragment">     */
+    <span class="keywordtype">char</span> *out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a858679d8af857cbb2c1346f4a4bc1c06" title="Output file name when tutorial is run with user kernel.">OUT_USER_KERNEL_FILE_NAME</a>;
+
+    <span class="keywordflow">if</span>(add_as_target_kernel)
+    {
+        out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a9a1d52660f6cc470b9da80d5589808fc" title="Output file name when tutorial is run with target kernel.">OUT_TARGET_KERNEL_FILE_NAME</a>;
+    }
+</pre></div><ul>
+<li>Create OpenVX context</li>
+</ul>
+<div class="fragment"><pre class="fragment">     */
+    context = vxCreateContext();
+</pre></div><ul>
+<li>Register user or target kernel into the OpenVX context</li>
+</ul>
+<p>This is required so that the user kernel or target can be invoked as any other node within an OpenVX graph. 'add_as_target_kernel' is used specify whether to register kernel as user kernel or target kernel.</p>
+<p>This function is implemented in <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a></p>
+<p><b> Rest of the implementation post this is same for both user kernel and target kernel. </b> </p>
+<div class="fragment"><pre class="fragment">     */
+    status = <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add</a>(context, add_as_target_kernel);
+    <span class="keywordflow">if</span>(status!=VX_SUCCESS)
+    {
+        printf(<span class="stringliteral">&quot; vx_tutorial_graph_user_kernel: ERROR: unable to add user kernel !!!\n&quot;</span>);
+    }
+</pre></div><ul>
+<li>Create input image and load input data into it</li>
+</ul>
+<p>A name is given to the input image object via vxSetReferenceName. Image attributes are shown for informative purpose and width x height queried for later use.</p>
+<div class="fragment"><pre class="fragment">         */
+        in_image = <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(context, <a class="code" href="vx__tutorial__image__load__save_8c.html#a8118656bb5a60090a1dbffa402168438" title="Input file name.">IN_FILE_NAME</a>, vx_true_e);
+        vxSetReferenceName((vx_reference)in_image, <span class="stringliteral">&quot;INPUT&quot;</span>);
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(in_image);
+
+        vxQueryImage(in_image, VX_IMAGE_WIDTH, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(in_image, VX_IMAGE_HEIGHT, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, <span class="keyword">sizeof</span>(vx_uint32));
+</pre></div><ul>
+<li>Create output image</li>
+</ul>
+<p>Output image dimensions as same as input image. </p>
+<div class="fragment"><pre class="fragment">         */
+        out_image = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_RGB);
+        vxSetReferenceName((vx_reference)out_image, <span class="stringliteral">&quot;OUTPUT&quot;</span>);
+        <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(out_image);
+</pre></div><ul>
+<li>Create a graph object to execute the user/target kernel node</li>
+</ul>
+<div class="fragment"><pre class="fragment">         */
+        graph = vxCreateGraph(context);
+</pre></div><ul>
+<li>Create a node for the registered user/target kernel and insert into the graph</li>
+</ul>
+<p>This function is implemented in <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a> </p>
+<div class="fragment"><pre class="fragment">         */
+        node = <a class="code" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node</a>(graph, in_image, out_image);
+</pre></div><ul>
+<li>Verify and excute the graph using standard OpenVX APIs</li>
+</ul>
+<p>Ouptut image is saved to specified output file. </p>
+<div class="fragment"><pre class="fragment">         */
+        status = vxVerifyGraph(graph);
+
+        <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(graph);
+        <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(node);
+
+        <span class="keywordflow">if</span>(status==VX_SUCCESS)
+        {
+            printf(<span class="stringliteral">&quot; Executing graph ...\n&quot;</span>);
+
+            vxScheduleGraph(graph);
+            vxWaitGraph(graph);
+
+            printf(<span class="stringliteral">&quot; Executing graph ... Done !!!\n&quot;</span>);
+
+            <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(graph);
+            <a class="code" href="utility_8h.html#a4576aae15198e9645228f21be4290cff" title="Show attributes of previously created node.">show_node_attributes</a>(node);
+
+            printf(<span class="stringliteral">&quot; Saving to file %s ...\n&quot;</span>, out_file);
+            <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(out_file, out_image);
+        }
+</pre></div><ul>
+<li>Release image, node, graph objects</li>
+</ul>
+<div class="fragment"><pre class="fragment">         */
+        vxReleaseImage(&amp;in_image);
+        vxReleaseImage(&amp;out_image);
+        vxReleaseNode(&amp;node);
+        vxReleaseGraph(&amp;graph);
+</pre></div><ul>
+<li>Unregister user/kernel from the context</li>
+</ul>
+<p>This function is implemented in <a class="el" href="phase__rgb__user__kernel_8c.html">phase_rgb_user_kernel.c</a> </p>
+<div class="fragment"><pre class="fragment">         */
+        <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove</a>(context);
+</pre></div><ul>
+<li>Finally release the OpenVX context</li>
+</ul>
+<div class="fragment"><pre class="fragment">     */
+    vxReleaseContext(&amp;context);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html#l00151">151</a> of file <a class="el" href="vx__tutorial__graph__user__kernel_8c_source.html">vx_tutorial_graph_user_kernel.c</a>.</p>
 
 </div>
 </div>

@@ -60,15 +60,54 @@
 *
 */
 
-
+/**
+ * \file phase_rgb_user_kernel.c User Kernel implementation for Phase to RGB conversion function
+ *
+ *  This file shows a sample implementation of a user kernel function.
+ *
+ *  To implement a user kernel the below top level interface functions are implemented
+ *  - phase_rgb_user_kernel_add() : Registers user kernel to OpenVX context
+ *       - The implementation of this function has slight variation depending on the kernel implemented as
+ *         as OpenVX user kernel or TIOVX target kernel
+ *  - phase_rgb_user_kernel_remove() : Un-Registers user kernel from OpenVX context
+ *       - The implementation of this function is same for both OpenVX user kernel and TIOVX target kernel
+ *  - phase_rgb_user_kernel_node(): Using the user kernel ID, creates a OpenVX node within a graph
+ *       - The implementation of this function is same for both OpenVX user kernel and TIOVX target kernel
+ *
+ *  When registering a user kernel, the following callback function are implemented and registered with the OpenVX context
+ *  - phase_rgb_user_kernel_validate() : kernel validate function. Called during graph verify.
+ *       - The implementation of this function is same for both OpenVX user kernel and TIOVX target kernel
+ *  - phase_rgb_user_kernel_init() : kernel init function. Called after  phase_rgb_user_kernel_validate() during graph verify
+ *       - This function is typically only implemented for user kernel and is NULL for target kernel
+ *  - phase_rgb_user_kernel_run() : kernel run or execute function. Called when graph is executed.
+ *       - This function is MUST be non-NULL for user kernel and MUST be NULL for target kernel
+ *  - phase_rgb_user_kernel_deinit(): kernel deinit function. Called during graph release.
+ *       - This function is typically only implemented for user kernel and is NULL for target kernel
+ *
+ *  When working with user kernel or target kernel,
+ *  - phase_rgb_user_kernel_add() MUST be called after vxCreateContext() and
+ *     before phase_rgb_user_kernel_node().
+ *  - phase_rgb_user_kernel_remove() MUST be called before vxReleaseContext() and
+ *  - phase_rgb_user_kernel_node() is called to insert the user kernel node into a OpenVX graph
+ *
+ *  When working with target kernel, additional the target side implementation is done in file
+ *  \ref phase_rgb_target_kernel.c
+ *
+ *  Follow the comments for the different functions in the file to understand how a user/target kernel is implemented.
+ */
 
 #include <stdio.h>
 #include <VX/vx.h>
 #include <TI/tivx.h>
 #include <ch03_graph/phase_rgb_user_kernel.h>
 
+/** \brief Index of input image in parameter list */
 #define PHASE_RGB_IN0_IMG_IDX   (0u)
+
+/** \brief Index of output image in parameter list */
 #define PHASE_RGB_OUT0_IMG_IDX  (1u)
+
+/** \brief Total number of parameters for this function */
 #define PHASE_RGB_MAX_PARAMS    (2u)
 
 static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
@@ -88,16 +127,32 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
 static vx_kernel phase_rgb_user_kernel_add_as_user_kernel(vx_context context);
 static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context);
 
+/** \brief Handle to the registered user kernel [static global] */
 static vx_kernel phase_rgb_user_kernel = NULL;
+
+/** \brief Kernel ID of the registered user kernel. Used to create a node for the kernel function [static global] */
 static vx_enum phase_rgb_user_kernel_id = VX_ERROR_INVALID_PARAMETERS;
 
 
+/**
+ * \brief Add user/target kernel to OpenVX context
+ *
+ * \param context [in] OpenVX context into with the user kernel is added
+ * \param add_as_target_kernel [in] 'vx_false_e', add this kernel as user kernel \n
+ *                                  'vx_true_e', add this kernel as target kernel \n
+ */
 vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_kernel)
 {
     vx_kernel kernel = NULL;
     vx_status status;
     uint32_t index;
 
+    /**
+     * - Depending on 'add_as_target_kernel' invoke user kernel or target kernel specific registration logic
+     *
+     * \ref phase_rgb_user_kernel_id is set as part of this function invocation.
+     * \code
+     */
     if(add_as_target_kernel==vx_false_e)
     {
         kernel = phase_rgb_user_kernel_add_as_user_kernel(context);
@@ -106,10 +161,26 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
     {
         kernel = phase_rgb_user_kernel_add_as_target_kernel(context);
     }
+    /** \endcode */
 
+    /**
+     * - Checking is kernel was added successfully to OpenVX context
+     * \code
+     */
     status = vxGetStatus((vx_reference)kernel);
+    /** \endcode */
     if ( status == VX_SUCCESS)
     {
+        /**
+         * - Now define parameters for the kernel
+         *
+         *   When specifying the parameters, the below attributes of each parameter are specified,
+         *   - parameter index in the function parameter list
+         *   - the parameter direction: VX_INPUT or VX_OUTPUT
+         *   - parameter data object type
+         *   - paramater state: VX_PARAMETER_STATE_REQUIRED or VX_PARAMETER_STATE_OPTIONAL
+         * \code
+         */
         index = 0;
 
         if ( status == VX_SUCCESS)
@@ -132,10 +203,16 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
                 );
             index++;
         }
+        /** \endcode */
+        /**
+         * - After all parameters are defined, now the kernel is finalized, i.e it is ready for use.
+         * \code
+         */
         if ( status == VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
+        /** \endcode */
         if( status != VX_SUCCESS)
         {
             printf(" phase_rgb_user_kernel_add: ERROR: vxAddParameterToKernel, vxFinalizeKernel failed (%d)!!!\n", status);
@@ -151,73 +228,152 @@ vx_status phase_rgb_user_kernel_add(vx_context context, vx_bool add_as_target_ke
 
     if(status==VX_SUCCESS)
     {
+        /**
+         * - Set kernel handle to the global user kernel handle
+         *
+         * This global handle is used later to release the kernel when done with it
+         * \code
+         */
         phase_rgb_user_kernel = kernel;
+        /** \endcode */
         printf(" phase_rgb_user_kernel_add: SUCCESS !!!\n");
     }
 
     return status;
 }
 
+/**
+ * \brief Add kernel as user kernel
+ *
+ * \param context [in] OpenVX context to which the kernel will be added
+ *
+ * \return OpenVX kernel object handle
+ */
 static vx_kernel phase_rgb_user_kernel_add_as_user_kernel(vx_context context)
 {
     vx_kernel kernel = NULL;
     vx_status status;
 
+    /**
+     * - Dynamically allocate a kernel ID and store it in  the global 'phase_rgb_user_kernel_id'
+     *
+     * This is used later to create the node with this kernel function
+     * \code
+     */
     status = vxAllocateUserKernelId(context, &phase_rgb_user_kernel_id);
+    /** \endcode */
     if(status!=VX_SUCCESS)
     {
         printf(" phase_rgb_user_kernel_add_as_user_kernel: ERROR: vxAllocateUserKernelId failed (%d)!!!\n", status);
     }
     if(status==VX_SUCCESS)
     {
+        /**
+         * - Register kernel to OpenVX context
+         *
+         * A kernel can be identified with its kernel ID (allocated above). \n
+         * A kernel can also be identified with its unique kernel name string. "vx_tutorial_graph.phase_rgb" in this case.
+         *
+         * When calling vxAddUserKernel(), additional callbacks are registered
+         * including the mandatory phase_rgb_user_kernel_run() function.
+         *
+         * \code
+         */
         kernel = vxAddUserKernel(
                     context,
                     "vx_tutorial_graph.phase_rgb",
                     phase_rgb_user_kernel_id,
                     phase_rgb_user_kernel_run,
-                    2,
+                    2, /* number of parameters objects for this user function */
                     phase_rgb_user_kernel_validate,
                     phase_rgb_user_kernel_init,
                     phase_rgb_user_kernel_deinit);
+        /** \endcode */
     }
 
     return kernel;
 }
 
+/**
+ * \brief Add kernel as target kernel
+ *
+ * \param context [in] OpenVX context to which the kernel will be added
+ *
+ * \return OpenVX kernel object handle
+ */
 static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context)
 {
     vx_kernel kernel;
     vx_status status;
 
+    /**
+     * - Statically allocate a kernel ID and store it in  the global 'phase_rgb_user_kernel_id'
+     *
+     * Unlike user kernel, for target kernel a pre-defined static kernel ID is
+     * assigned to the global variable 'phase_rgb_user_kernel_id'. The static kernel ID specified
+     * here MUST match the kernel ID specified on the target side.
+     *
+     * \code
+     */
     phase_rgb_user_kernel_id = TIVX_TUTORIAL_KERNEL_PHASE_RGB;
-
+    /** \endcode */
+    /**
+     * - Register kernel to OpenVX context
+     *
+     * A kernel can be identified with its kernel ID (statically allocated above). \n
+     * A kernel can also be identified with its unique kernel name string. "vx_tutorial_graph.phase_rgb" in this case.
+     *
+     * When calling vxAddUserKernel(), additional callbacks are registered.
+     * For target kernel, the 'run' callback is set to NULL.
+     * Typically 'init' and 'deinit' callbacks are also set to NULL.
+     * 'validate' callback is typically set
+     *
+     * \code
+     */
     kernel = vxAddUserKernel(
                 context,
                 "vx_tutorial_graph.phase_rgb",
                 phase_rgb_user_kernel_id,
                 NULL,
-                2,
+                2, /* number of parameters objects for this user function */
                 phase_rgb_user_kernel_validate,
                 NULL,
                 NULL);
 
     status = vxGetStatus((vx_reference)kernel);
+    /** \endcode */
 
     if ( status == VX_SUCCESS)
     {
-        /* add supported target's */
+        /**
+         * - Add supported target's on which this target kernel can be run
+         *
+         * \code
+         */
         tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
         tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+        /** \endcode */
     }
     return kernel;
 }
 
+/**
+ * \brief Remove user/target kernel from context
+ *
+ * \param context [in] OpenVX context from which the kernel will be removed
+ */
 vx_status phase_rgb_user_kernel_remove(vx_context context)
 {
     vx_status status;
 
+    /**
+     * - Remove user kernel from context and set the global 'phase_rgb_user_kernel' to NULL
+     *
+     * \code
+     */
     status = vxRemoveKernel(phase_rgb_user_kernel);
     phase_rgb_user_kernel = NULL;
+    /** \endcode */
 
     if(status!=VX_SUCCESS)
     {
@@ -232,6 +388,22 @@ vx_status phase_rgb_user_kernel_remove(vx_context context)
     return status;
 }
 
+/**
+ *  \brief User/target kernel validate function
+ *
+ *  This function gets called during vxGraphVerify.
+ *  The node which will runs the kernel, parameter references
+ *  are passed as input to this function.
+ *  This function checks the parameters to make sure all attributes of the parameter are as expected.
+ *  ex, data format checks, image width, height relations between input and output.
+ *
+ *  \param node [in] OpenVX node which will execute the kernel
+ *  \param parameters [in] Parameters references for this kernel function
+ *  \param num [in] Number of parameter references
+ *  \param metas [in/out] Meta references update with attribute values
+ *
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
@@ -349,6 +521,19 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_validate(vx_node node,
     return status;
 }
 
+/**
+ *  \brief User/target kernel init function
+ *
+ *  This function gets called during vxGraphVerify after kernel validate function.
+ *  Typically any resources the kernel needs during its execution should be allocated during
+ *  kernel init.
+ *
+ *  \param node [in] OpenVX node which will execute the kernel
+ *  \param parameters [in] Parameters references for this kernel function
+ *  \param num [in] Number of parameter references
+ *
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num)
@@ -357,6 +542,19 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_init(vx_node node,
     return VX_SUCCESS;
 }
 
+/**
+ *  \brief User/target kernel execute or run function
+ *
+ *  This function gets called during graph execution.
+ *  This where the actual kernel function which reads the input data and writes the output data
+ *  is implemented.
+ *
+ *  \param node [in] OpenVX node which will execute the kernel
+ *  \param parameters [in] Parameters references for this kernel function
+ *  \param num [in] Number of parameter references
+ *
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num)
@@ -461,6 +659,18 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_run(vx_node node,
     return status;
 }
 
+/**
+ *  \brief User/target kernel de-init function
+ *
+ *  This function gets called during vxReleaseGraph.
+ *  Typically any resources allcoated during kernel init are released during deinit.
+ *
+ *  \param node [in] OpenVX node which will execute the kernel
+ *  \param parameters [in] Parameters references for this kernel function
+ *  \param num [in] Number of parameter references
+ *
+ *  \return VX_SUCCESS if validate is successful, else appropiate error code
+ */
 static vx_status VX_CALLBACK phase_rgb_user_kernel_deinit(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num)
@@ -469,16 +679,41 @@ static vx_status VX_CALLBACK phase_rgb_user_kernel_deinit(vx_node node,
     return VX_SUCCESS;
 }
 
+/**
+ *  \brief User/target kernel node create function
+ *
+ *  Given a graph reference, this function creates a OpenVX node and inserts it into the graph.
+ *  The list of parameter references is also provided as input.
+ *  Exact data type are used instead of base class references to allow some level
+ *  of compile time type checking.
+ *  In this example, there is one input image and one output image that are passed as parameters.
+ *
+ *  \param graph [in] OpenVX graph
+ *  \param in [in] Input image reference
+ *  \param out [in] Output image reference
+ *
+ *  \return OpenVX node that is created and inserted into the graph
+ */
 vx_node phase_rgb_user_kernel_node(vx_graph graph, vx_image in, vx_image out)
 {
     vx_node node;
+    /**
+     * - Put parameters into a array of references
+     * \code
+     */
     vx_reference refs[] = {(vx_reference)in, (vx_reference)out};
+    /** \endcode */
 
+    /**
+     * - Use TIOVX API to make a node using the graph, kernel ID, and parameter reference array as input
+     * \code
+     */
     node = tivxCreateNodeByKernelEnum(graph,
                 phase_rgb_user_kernel_id,
                 refs, sizeof(refs)/sizeof(refs[0])
                 );
     vxSetReferenceName((vx_reference)node, "PHASE_RGB");
+    /** \endcode */
 
     return node;
 }

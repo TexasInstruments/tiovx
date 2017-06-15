@@ -84,18 +84,16 @@
 <a name="l00060"></a>00060 <span class="comment">*</span>
 <a name="l00061"></a>00061 <span class="comment">*/</span>
 <a name="l00062"></a>00062 
-<a name="l00063"></a>00063 
-<a name="l00064"></a>00064 
-<a name="l00065"></a>00065 <span class="preprocessor">#ifndef PHASE_RGB_USER_KERNEL</span>
-<a name="l00066"></a>00066 <span class="preprocessor"></span><span class="preprocessor">#define PHASE_RGB_USER_KERNEL</span>
-<a name="l00067"></a>00067 <span class="preprocessor"></span>
-<a name="l00068"></a>00068 <span class="preprocessor">#include &lt;vx_tutorial_kernels.h&gt;</span>
-<a name="l00069"></a>00069 
-<a name="l00070"></a>00070 vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b">phase_rgb_user_kernel_add</a>(vx_context context, vx_bool add_as_target_kernel);
-<a name="l00071"></a>00071 vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c">phase_rgb_user_kernel_remove</a>(vx_context context);
-<a name="l00072"></a>00072 vx_node <a class="code" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214">phase_rgb_user_kernel_node</a>(vx_graph graph, vx_image in, vx_image out);
+<a name="l00069"></a>00069 <span class="preprocessor">#ifndef PHASE_RGB_USER_KERNEL</span>
+<a name="l00070"></a>00070 <span class="preprocessor"></span><span class="preprocessor">#define PHASE_RGB_USER_KERNEL</span>
+<a name="l00071"></a>00071 <span class="preprocessor"></span>
+<a name="l00072"></a>00072 <span class="preprocessor">#include &lt;<a class="code" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a>&gt;</span>
 <a name="l00073"></a>00073 
-<a name="l00074"></a>00074 <span class="preprocessor">#endif</span>
+<a name="l00074"></a>00074 vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>, vx_bool add_as_target_kernel);
+<a name="l00075"></a>00075 vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
+<a name="l00076"></a>00076 vx_node <a class="code" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node</a>(vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>, vx_image in, vx_image out);
+<a name="l00077"></a>00077 
+<a name="l00078"></a>00078 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

@@ -96,13 +96,13 @@
 <a name="l00121"></a>00121 <span class="preprocessor"></span>
 <a name="l00125"></a><a class="code" href="vx__tutorial__image__color__convert_8c.html#ad2b8fd09b4afa65ad14e89f0a9513f11">00125</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__image__color__convert_8c.html#ad2b8fd09b4afa65ad14e89f0a9513f11" title="Tutorial Entry Point.">vx_tutorial_image_color_convert</a>()
 <a name="l00126"></a>00126 {
-<a name="l00134"></a>00134     vx_context context;
+<a name="l00134"></a>00134     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
 <a name="l00135"></a>00135     vx_image rgb_image = NULL;
 <a name="l00136"></a>00136     vx_image nv12_image = NULL;
 <a name="l00137"></a>00137     vx_image y_image = NULL;
 <a name="l00138"></a>00138     vx_node node0 = NULL, node1 = NULL;
-<a name="l00139"></a>00139     vx_graph graph = NULL;
-<a name="l00141"></a>00141     vx_uint32 width, height;
+<a name="l00139"></a>00139     vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a> = NULL;
+<a name="l00141"></a>00141     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
 <a name="l00142"></a>00142     vx_status status;
 <a name="l00143"></a>00143 
 <a name="l00144"></a>00144     printf(<span class="stringliteral">&quot; vx_tutorial_image_color_convert: Tutorial Started !!! \n&quot;</span>);
@@ -166,7 +166,7 @@
 <a name="l00387"></a>00387 
 <a name="l00388"></a>00388 <span class="preprocessor">#define MAX_ATTRIBUTE_NAME (32u)</span>
 <a name="l00389"></a>00389 <span class="preprocessor"></span>
-<a name="l00399"></a><a class="code" href="vx__tutorial__image__color__convert_8c.html#a86ae0d04d187710cc2d10f85bccb6e5d">00399</a> <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(vx_graph graph)
+<a name="l00399"></a><a class="code" href="vx__tutorial__image__color__convert_8c.html#a86ae0d04d187710cc2d10f85bccb6e5d">00399</a> <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#a86ae0d04d187710cc2d10f85bccb6e5d" title="Show attributes of previously created graph.">show_graph_attributes</a>(vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>)
 <a name="l00400"></a>00400 {
 <a name="l00401"></a>00401     vx_uint32 num_nodes=0, num_params=0, ref_count=0;
 <a name="l00402"></a>00402     vx_enum state=0;

@@ -95,7 +95,7 @@
 <a name="l00107"></a>00107 <span class="preprocessor"></span>
 <a name="l00111"></a><a class="code" href="vx__tutorial__image__query_8c.html#a399d33511e4fca5b42322b28f85d93f7">00111</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__image__query_8c.html#a399d33511e4fca5b42322b28f85d93f7" title="Tutorial Entry Point.">vx_tutorial_image_query</a>()
 <a name="l00112"></a>00112 {
-<a name="l00120"></a>00120     vx_context context;
+<a name="l00120"></a>00120     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
 <a name="l00121"></a>00121     vx_image image;
 <a name="l00124"></a>00124     printf(<span class="stringliteral">&quot; vx_tutorial_image_query: Tutorial Started !!! \n&quot;</span>);
 <a name="l00125"></a>00125 
@@ -116,7 +116,7 @@
 <a name="l00185"></a>00185 <span class="preprocessor"></span>
 <a name="l00195"></a><a class="code" href="vx__tutorial__image__query_8c.html#ade45042efce712b30cf8254a6c90b3bc">00195</a> <span class="keywordtype">void</span> <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(vx_image image)
 <a name="l00196"></a>00196 {
-<a name="l00197"></a>00197     vx_uint32 width=0, height=0, ref_count=0;
+<a name="l00197"></a>00197     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>=0, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>=0, ref_count=0;
 <a name="l00198"></a>00198     vx_df_image df=0;
 <a name="l00199"></a>00199     vx_size num_planes=0, size=0;
 <a name="l00200"></a>00200     vx_enum color_space=0, channel_range=0, memory_type=0;
@@ -128,7 +128,7 @@
 <a name="l00206"></a>00206     <span class="keywordtype">char</span> ref_name_invalid[MAX_ATTRIBUTE_NAME];
 <a name="l00207"></a>00207 
 <a name="l00215"></a>00215     vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
-<a name="l00216"></a>00216     vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
+<a name="l00216"></a>00216     vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, <span class="keyword">sizeof</span>(vx_uint32));
 <a name="l00217"></a>00217     vxQueryImage(image, VX_IMAGE_FORMAT, &amp;df, <span class="keyword">sizeof</span>(vx_df_image));
 <a name="l00218"></a>00218     vxQueryImage(image, VX_IMAGE_PLANES, &amp;num_planes, <span class="keyword">sizeof</span>(vx_size));
 <a name="l00219"></a>00219     vxQueryImage(image, VX_IMAGE_SIZE, &amp;size, <span class="keyword">sizeof</span>(vx_size));
@@ -241,7 +241,7 @@
 <a name="l00328"></a>00328     printf(<span class="stringliteral">&quot; VX_TYPE_IMAGE: %s, %d x %d, %d plane(s), %d B, %s %s %s %s, %d refs\n&quot;</span>,
 <a name="l00329"></a>00329         ref_name,
 <a name="l00330"></a>00330         width,
-<a name="l00331"></a>00331         height,
+<a name="l00331"></a>00331         <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>,
 <a name="l00332"></a>00332         num_planes,
 <a name="l00333"></a>00333         size,
 <a name="l00334"></a>00334         df_name,
