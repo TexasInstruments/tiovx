@@ -171,75 +171,78 @@ TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
     vx_array corners;
     vx_perf_t perf_node;
 
-    IVisionLoadKernels(context);
-
-    image = tivxMemAlloc(IMG_WIDTH*IMG_HEIGHT, TIVX_MEM_EXTERNAL);
-    if(image)
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
     {
-        /* Copy input image to allocated buffer */
-        memcpy(image, gTivxHcTestInput, IMG_WIDTH*IMG_HEIGHT);
+        IVisionLoadKernels(context);
+
+        image = tivxMemAlloc(IMG_WIDTH*IMG_HEIGHT, TIVX_MEM_EXTERNAL);
+        if(image)
+        {
+            /* Copy input image to allocated buffer */
+            memcpy(image, gTivxHcTestInput, IMG_WIDTH*IMG_HEIGHT);
+        }
+        else
+        {
+            printf("HarrisCorners: Cannot allocate memory !!!\n");
+            return;
+        }
+
+        addrs.dim_x = IMG_WIDTH;
+        addrs.dim_y = IMG_HEIGHT;
+        addrs.stride_x = 1;
+        addrs.stride_y = IMG_WIDTH;
+        addrs.step_x = 1;
+        addrs.step_y = 1;
+        ASSERT_VX_OBJECT(input_image = vxCreateImageFromHandle(context,
+            VX_DF_IMAGE_U8, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+
+        num_corners = MAX_CORNERS;
+
+        ASSERT_VX_OBJECT(num_corners_scalar = vxCreateScalar(context,
+            VX_TYPE_SIZE, &num_corners), VX_TYPE_SCALAR);
+
+        ASSERT_VX_OBJECT(corners = vxCreateArray(context, VX_TYPE_KEYPOINT,
+            num_corners), VX_TYPE_ARRAY);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxHarrisCornersNode(graph,
+            input_image, arg_->scaling_factor, arg_->nms_threshold,
+            arg_->q_shift, arg_->win_size, arg_->score_method,
+            arg_->suppression_method,
+            corners, num_corners_scalar), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
+        VX_CALL(vxVerifyGraph(graph));
+        VX_CALL(vxProcessGraph(graph));
+
+        vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+
+        CheckOutput(corners);
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseArray(&corners));
+        VX_CALL(vxReleaseImage(&input_image));
+        VX_CALL(vxReleaseScalar(&num_corners_scalar));
+
+        if (image)
+        {
+            tivxMemFree(image, IMG_WIDTH*IMG_HEIGHT, TIVX_MEM_EXTERNAL);
+            image = NULL;
+        }
+
+        ASSERT(corners == 0);
+        ASSERT(num_corners_scalar == 0);
+        ASSERT(input_image == 0);
+
+        IVisionUnLoadKernels(context);
+
+        IVisionPrintPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N1");
     }
-    else
-    {
-        printf("HarrisCorners: Cannot allocate memory !!!\n");
-        return;
-    }
-
-    addrs.dim_x = IMG_WIDTH;
-    addrs.dim_y = IMG_HEIGHT;
-    addrs.stride_x = 1;
-    addrs.stride_y = IMG_WIDTH;
-    addrs.step_x = 1;
-    addrs.step_y = 1;
-    ASSERT_VX_OBJECT(input_image = vxCreateImageFromHandle(context,
-        VX_DF_IMAGE_U8, &addrs, &image, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
-
-    num_corners = MAX_CORNERS;
-
-    ASSERT_VX_OBJECT(num_corners_scalar = vxCreateScalar(context,
-        VX_TYPE_SIZE, &num_corners), VX_TYPE_SCALAR);
-
-    ASSERT_VX_OBJECT(corners = vxCreateArray(context, VX_TYPE_KEYPOINT,
-        num_corners), VX_TYPE_ARRAY);
-
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-    ASSERT_VX_OBJECT(node = tivxHarrisCornersNode(graph,
-        input_image, arg_->scaling_factor, arg_->nms_threshold,
-        arg_->q_shift, arg_->win_size, arg_->score_method,
-        arg_->suppression_method,
-        corners, num_corners_scalar), VX_TYPE_NODE);
-
-    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
-    VX_CALL(vxVerifyGraph(graph));
-    VX_CALL(vxProcessGraph(graph));
-
-    vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
-
-    CheckOutput(corners);
-
-    VX_CALL(vxReleaseNode(&node));
-    VX_CALL(vxReleaseGraph(&graph));
-    ASSERT(node == 0);
-    ASSERT(graph == 0);
-
-    VX_CALL(vxReleaseArray(&corners));
-    VX_CALL(vxReleaseImage(&input_image));
-    VX_CALL(vxReleaseScalar(&num_corners_scalar));
-
-    if (image)
-    {
-        tivxMemFree(image, IMG_WIDTH*IMG_HEIGHT, TIVX_MEM_EXTERNAL);
-        image = NULL;
-    }
-
-    ASSERT(corners == 0);
-    ASSERT(num_corners_scalar == 0);
-    ASSERT(input_image == 0);
-
-    IVisionUnLoadKernels(context);
-
-    IVisionPrintPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N1");
 }
 
 
