@@ -118,7 +118,7 @@ def make_my_graph() :
     ## Create grad_x image object.
     grad_x = Image(width, height, DfImage.S16, name="grad_x")
 
-    ## Create grad_x image object.
+    ## Create grad_y image object.
     grad_y = Image(width, height, DfImage.S16, name="grad_y")
 
     ## Create magnitude image object.
@@ -139,22 +139,22 @@ def make_my_graph() :
     ## Create a scalar object to represent 'shift' for ConvertDepth
     shift = Scalar(Type.INT32, 0, name="shift")
 
-    ## Create and node to graph for Sobel3x3
+    ## Create and add node to graph for Sobel3x3
     graph.add ( NodeSobel3x3(in_image, grad_x, grad_y, target=Target.DSP1) )
 
-    ## Create and node to graph for Magnitude
+    ## Create and add node to graph for Magnitude
     graph.add ( NodeMagnitude(grad_x, grad_y, magnitude, target=Target.DSP2) )
 
-    ## Create and node to graph for Phase
+    ## Create and add node to graph for Phase
     graph.add ( NodePhase(grad_x, grad_y, phase, target=Target.DSP1) )
 
-    ## Create and node to graph for ConvertDepth to convert magnitude to 8b grayscale image
+    ## Create and add node to graph for ConvertDepth to convert magnitude to 8b grayscale image
     graph.add ( NodeConvertDepth(magnitude, magnitude_img, Policy.SATURATE, shift, target=Target.DSP2) )
 
-    ## Create and node to graph for ConvertDepth to convert grad_x to 8b grayscale image
+    ## Create and add node to graph for ConvertDepth to convert grad_x to 8b grayscale image
     graph.add ( NodeConvertDepth(grad_x, grad_x_img, Policy.SATURATE, shift, target=Target.DSP2) )
 
-    ## Create and node to graph for ConvertDepth to convert grad_y to 8b grayscale image
+    ## Create and add node to graph for ConvertDepth to convert grad_y to 8b grayscale image
     graph.add ( NodeConvertDepth(grad_y, grad_y_img, Policy.SATURATE, shift, target=Target.DSP1) )
 
     ## Add graph to context

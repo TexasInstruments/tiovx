@@ -27,154 +27,30 @@
 <h1>Package vx_tutorial_graph_user_kernel_pytiovx_uc</h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Data Structures</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvx__tutorial__graph__user__kernel__pytiovx__uc_1_1NodePhaseRgb.html">NodePhaseRgb</a></td></tr>
-<tr><td colspan="2"><h2>Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a> = Context(&quot;vx_tutorial_graph_user_kernel_pytiovx_uc&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a> = Graph()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a> = 640</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a> = 480</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">in_image</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.U8, name=&quot;input&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a119e79a98a80ca3d13e05d814558f130">grad_x</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.S16, name=&quot;grad_x&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a769fba316fc6478b4f5068b5f585d662">grad_y</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.S16, name=&quot;grad_y&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a1f901eae8a7766dc6949c863f8e3d1c6">phase</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.U8, name=&quot;phase&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aca8d42862bd7bf7ce9b7e1b631ec0d23">phase_rgb</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.RGB, name=&quot;phase_rgb&quot;)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class to represent user/target kernel.  <a href="classvx__tutorial__graph__user__kernel__pytiovx__uc_1_1NodePhaseRgb.html#_details">More...</a><br/></td></tr>
+<tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a517d0f0ce7c6031f510ccbc591e569a3">make_my_graph</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Function to describe a graph and generate code, image using PyTIOVX tool.  <a href="#a517d0f0ce7c6031f510ccbc591e569a3"></a><br/></td></tr>
 </table>
-<hr/><a name="_details"></a><h2>Detailed Description</h2>
-<div class="fragment"><pre class="fragment">
-* Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
-* ALL RIGHTS RESERVED
-</pre></div> <hr/><h2>Variable Documentation</h2>
-<a class="anchor" id="a47dd1e0019e6df5622585094f251547c"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::context" ref="a47dd1e0019e6df5622585094f251547c" args="" -->
+<hr/><h2>Function Documentation</h2>
+<a class="anchor" id="a517d0f0ce7c6031f510ccbc591e569a3"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::make_my_graph" ref="a517d0f0ce7c6031f510ccbc591e569a3" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">vx_tutorial_graph_user_kernel_pytiovx_uc.context</a> = Context(&quot;vx_tutorial_graph_user_kernel_pytiovx_uc&quot;)</td>
+          <td class="memname">def vx_tutorial_graph_user_kernel_pytiovx_uc.make_my_graph </td>
+          <td>(</td>
+          <td class="paramname"></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00023">23</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
+<p>Function to describe a graph and generate code, image using PyTIOVX tool. </p>
 
-</div>
-</div>
-<a class="anchor" id="a332136c03e99eba0b494cbe67d2b1330"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::graph" ref="a332136c03e99eba0b494cbe67d2b1330" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">vx_tutorial_graph_user_kernel_pytiovx_uc.graph</a> = Graph()</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00024">24</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aee3b73ccdcb804935f252b4e8e3dd1ab"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::width" ref="aee3b73ccdcb804935f252b4e8e3dd1ab" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">vx_tutorial_graph_user_kernel_pytiovx_uc.width</a> = 640</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00026">26</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a7b293d599df4ea481cc1b4e0daacbe91"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::height" ref="a7b293d599df4ea481cc1b4e0daacbe91" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">vx_tutorial_graph_user_kernel_pytiovx_uc.height</a> = 480</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00027">27</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a01936eb3bd2d04694cf91abc68694c67"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::in_image" ref="a01936eb3bd2d04694cf91abc68694c67" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">vx_tutorial_graph_user_kernel_pytiovx_uc.in_image</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.U8, name=&quot;input&quot;)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00029">29</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a119e79a98a80ca3d13e05d814558f130"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::grad_x" ref="a119e79a98a80ca3d13e05d814558f130" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a119e79a98a80ca3d13e05d814558f130">vx_tutorial_graph_user_kernel_pytiovx_uc.grad_x</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.S16, name=&quot;grad_x&quot;)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00030">30</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a769fba316fc6478b4f5068b5f585d662"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::grad_y" ref="a769fba316fc6478b4f5068b5f585d662" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a769fba316fc6478b4f5068b5f585d662">vx_tutorial_graph_user_kernel_pytiovx_uc.grad_y</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.S16, name=&quot;grad_y&quot;)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00031">31</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a1f901eae8a7766dc6949c863f8e3d1c6"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::phase" ref="a1f901eae8a7766dc6949c863f8e3d1c6" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a1f901eae8a7766dc6949c863f8e3d1c6">vx_tutorial_graph_user_kernel_pytiovx_uc.phase</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.U8, name=&quot;phase&quot;)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00032">32</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aca8d42862bd7bf7ce9b7e1b631ec0d23"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::phase_rgb" ref="aca8d42862bd7bf7ce9b7e1b631ec0d23" args="" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">tuple <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aca8d42862bd7bf7ce9b7e1b631ec0d23">vx_tutorial_graph_user_kernel_pytiovx_uc.phase_rgb</a> = Image(<a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, DfImage.RGB, name=&quot;phase_rgb&quot;)</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00033">33</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00113">113</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
 
 </div>
 </div>

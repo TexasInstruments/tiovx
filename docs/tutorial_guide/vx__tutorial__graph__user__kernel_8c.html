@@ -211,14 +211,14 @@
         vxSetReferenceName((vx_reference)in_image, <span class="stringliteral">&quot;INPUT&quot;</span>);
         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(in_image);
 
-        vxQueryImage(in_image, VX_IMAGE_WIDTH, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <span class="keyword">sizeof</span>(vx_uint32));
-        vxQueryImage(in_image, VX_IMAGE_HEIGHT, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(in_image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(in_image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
 </pre></div><ul>
 <li>Create output image</li>
 </ul>
 <p>Output image dimensions as same as input image. </p>
 <div class="fragment"><pre class="fragment">         */
-        out_image = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_RGB);
+        out_image = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB);
         vxSetReferenceName((vx_reference)out_image, <span class="stringliteral">&quot;OUTPUT&quot;</span>);
         <a class="code" href="utility_8h.html#ade45042efce712b30cf8254a6c90b3bc" title="Show attributes of previously created image.">show_image_attributes</a>(out_image);
 </pre></div><ul>

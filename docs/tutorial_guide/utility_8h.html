@@ -101,7 +101,7 @@
     status = <a class="code" href="bmp__rd__wr_8h.html#a9fd09ad0e348951c4af9dbb4c852cfd5" title="Read data from BMP file.">bmp_file_read</a>(
                 filename,
                 convert_to_gray_scale,
-                &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, &amp;stride, &amp;df, &amp;data_ptr,
+                &amp;width, &amp;height, &amp;stride, &amp;df, &amp;data_ptr,
                 &amp;bmp_file_context);
 </pre></div><ul>
 <li>Create OpenVX image object.</li>
@@ -109,7 +109,7 @@
 <p>Creates a OpenVX image object of 'width' x 'height' and having data format 'df'.</p>
 <p><b>TIP:</b> In OpenVX whenever an object is created use vxGetStatus() to find if the object creation was successful. The object must be typecasted to vx_reference type when calling vxGetStatus() API. If the reference is valid VX_SUCCESS should be returned by vxGetStatus(). </p>
 <div class="fragment"><pre class="fragment">         */
-        image = vxCreateImage(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, df);
+        image = vxCreateImage(context, width, height, df);
         status = vxGetStatus((vx_reference)image);
 </pre></div><ul>
 <li>Copy pixel values from 'data_ptr' into image object.</li>
@@ -135,8 +135,8 @@
             <span class="keywordflow">else</span>
                 bpp = 1; <span class="comment">/* it should not reach here for BMP files */</span>
 
-            image_addr.dim_x = <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>;
-            image_addr.dim_y = <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
+            image_addr.dim_x = width;
+            image_addr.dim_y = height;
             image_addr.stride_x = bpp;
             image_addr.stride_y = stride;
             image_addr.scale_x = VX_SCALE_UNITY;
@@ -146,8 +146,8 @@
 
             rect.start_x = 0;
             rect.start_y = 0;
-            rect.end_x = <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>;
-            rect.end_y = <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
+            rect.end_x = width;
+            rect.end_y = height;
 
             vxCopyImagePatch(image,
                 &amp;rect,
@@ -266,8 +266,8 @@
 <p>These will be used to select ROI of data to be copied and and to set attributes of the BMP file </p>
 <div class="fragment"><pre class="fragment">         */
 
-        vxQueryImage(image, VX_IMAGE_WIDTH, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <span class="keyword">sizeof</span>(vx_uint32));
-        vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
+        vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
         vxQueryImage(image, VX_IMAGE_FORMAT, &amp;df, <span class="keyword">sizeof</span>(vx_df_image));
 </pre></div><ul>
 <li>Map image data to user accessible memory space</li>
@@ -280,8 +280,8 @@
 <div class="fragment"><pre class="fragment">         */
         rect.start_x = 0;
         rect.start_y = 0;
-        rect.end_x = <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>;
-        rect.end_y = <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
+        rect.end_x = width;
+        rect.end_y = height;
 
         status = vxMapImagePatch(image,
             &amp;rect,
@@ -298,7 +298,7 @@
 </ul>
 <p>'image_addr.stride_y' is used to specify the offset in bytes between two consecutive lines in memory. This is returned by vxMapImagePatch() above </p>
 <div class="fragment"><pre class="fragment">             */
-            <a class="code" href="bmp__rd__wr_8h.html#a34dec5bef3b7ecc629d59645b1c6306e" title="Write data into BMP file.">bmp_file_write</a>(filename, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, image_addr.stride_y, df, data_ptr);
+            <a class="code" href="bmp__rd__wr_8h.html#a34dec5bef3b7ecc629d59645b1c6306e" title="Write data into BMP file.">bmp_file_write</a>(filename, width, height, image_addr.stride_y, df, data_ptr);
 </pre></div><ul>
 <li>Unmapped a previously mapped image object</li>
 </ul>
@@ -380,8 +380,8 @@
 </ul>
 <p>Queries image for width, height, format, planes, size, space, range, range and memory type.</p>
 <div class="fragment"><pre class="fragment">     */
-    vxQueryImage(image, VX_IMAGE_WIDTH, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <span class="keyword">sizeof</span>(vx_uint32));
-    vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryImage(image, VX_IMAGE_WIDTH, &amp;width, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryImage(image, VX_IMAGE_HEIGHT, &amp;height, <span class="keyword">sizeof</span>(vx_uint32));
     vxQueryImage(image, VX_IMAGE_FORMAT, &amp;df, <span class="keyword">sizeof</span>(vx_df_image));
     vxQueryImage(image, VX_IMAGE_PLANES, &amp;num_planes, <span class="keyword">sizeof</span>(vx_size));
     vxQueryImage(image, VX_IMAGE_SIZE, &amp;size, <span class="keyword">sizeof</span>(vx_size));
@@ -424,10 +424,10 @@
 </ul>
 <p>Queries graph for number of nodes, number of parameters, state and performance</p>
 <div class="fragment"><pre class="fragment">     */
-    vxQueryGraph(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>, VX_GRAPH_NUMNODES, &amp;num_nodes, <span class="keyword">sizeof</span>(vx_uint32));
-    vxQueryGraph(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>, VX_GRAPH_NUMPARAMETERS, &amp;num_params, <span class="keyword">sizeof</span>(vx_uint32));
-    vxQueryGraph(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>, VX_GRAPH_STATE, &amp;state, <span class="keyword">sizeof</span>(vx_enum));
-    vxQueryGraph(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>, VX_GRAPH_PERFORMANCE, &amp;perf, <span class="keyword">sizeof</span>(vx_perf_t));
+    vxQueryGraph(graph, VX_GRAPH_NUMNODES, &amp;num_nodes, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryGraph(graph, VX_GRAPH_NUMPARAMETERS, &amp;num_params, <span class="keyword">sizeof</span>(vx_uint32));
+    vxQueryGraph(graph, VX_GRAPH_STATE, &amp;state, <span class="keyword">sizeof</span>(vx_enum));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &amp;perf, <span class="keyword">sizeof</span>(vx_perf_t));
 </pre></div> </p>
 
 <p>Definition at line <a class="el" href="vx__tutorial__image__color__convert_8c_source.html#l00399">399</a> of file <a class="el" href="vx__tutorial__image__color__convert_8c_source.html">vx_tutorial_image_color_convert.c</a>.</p>

@@ -181,7 +181,7 @@ class Node (Reference) :
     #  Checks if number of parameters passed is correct
     #  Checks if data type of parameters passed is correct
     #
-    #  \param param_type_args [in] Variable number of args list of type tiovx.enums.Type to specify data object types.s
+    #  \param param_type_args [in] Variable number of args list of type tiovx.enums.Type to specify data object types
     def checkParams(self, *param_type_args) :
         assert (len(param_type_args) == (self.num_in + self.num_out)), 'Expected %d arguments but %d provided' % (len(param_type_args), (self.num_in + self.num_out))
         for i in range(0, len(param_type_args)) :

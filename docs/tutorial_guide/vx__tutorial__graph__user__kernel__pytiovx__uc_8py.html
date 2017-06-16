@@ -24,23 +24,37 @@
   </div>
 </div>
 <div class="contents">
-<h1>vx_tutorial_graph_user_kernel_pytiovx_uc.py File Reference</h1>
+<h1>vx_tutorial_graph_user_kernel_pytiovx_uc.py File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>This file show example of using basic PyTIOVX APIs to describe user/target kernel class and use it within an OpenVX graph. </p>
+<p>See <a class="el" href="vx__tutorial__graph__image__gradients__pytiovx__uc_8py.html" title="This file show example of using basic PyTIOVX APIs to describe an OpenVX graph.">vx_tutorial_graph_image_gradients_pytiovx_uc.py</a> for basic API usage.</p>
+<p>The basic steps to define user/target class and use it with PyTIOVX tool</p>
+<ul>
+<li>Define a class for user/target kernel dervied from tiovx.node.Node base class</li>
+<li>Overide the constructor to explicitly specific the parameters and types<ul>
+<li>This allows the python to do basic syntax checking</li>
+</ul>
+</li>
+<li>Overide the checkParams method to specify additional parameter checking if required</li>
+<li>Write the OpenVX use-case using PyTIOVX APIs<ul>
+<li>Use the user/target class when adding the user/target kernel to the graph</li>
+</ul>
+</li>
+<li>Export the graph as C code or .jpg file</li>
+</ul>
+<p>See source code of function <a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a517d0f0ce7c6031f510ccbc591e569a3" title="Function to describe a graph and generate code, image using PyTIOVX tool.">vx_tutorial_graph_user_kernel_pytiovx_uc.make_my_graph()</a> for detailed API usage for this example. </p>
+
+<p>Definition in file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
+
 <p><a href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Data Structures</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">class &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvx__tutorial__graph__user__kernel__pytiovx__uc_1_1NodePhaseRgb.html">vx_tutorial_graph_user_kernel_pytiovx_uc.NodePhaseRgb</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Class to represent user/target kernel.  <a href="classvx__tutorial__graph__user__kernel__pytiovx__uc_1_1NodePhaseRgb.html#_details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2>Packages</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">package &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html">vx_tutorial_graph_user_kernel_pytiovx_uc</a></td></tr>
-<tr><td colspan="2"><h2>Variables</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">vx_tutorial_graph_user_kernel_pytiovx_uc.context</a> = Context(&quot;vx_tutorial_graph_user_kernel_pytiovx_uc&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">vx_tutorial_graph_user_kernel_pytiovx_uc.graph</a> = Graph()</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">vx_tutorial_graph_user_kernel_pytiovx_uc.width</a> = 640</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">vx_tutorial_graph_user_kernel_pytiovx_uc.height</a> = 480</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">vx_tutorial_graph_user_kernel_pytiovx_uc.in_image</a> = Image(width, height, DfImage.U8, name=&quot;input&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a119e79a98a80ca3d13e05d814558f130">vx_tutorial_graph_user_kernel_pytiovx_uc.grad_x</a> = Image(width, height, DfImage.S16, name=&quot;grad_x&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a769fba316fc6478b4f5068b5f585d662">vx_tutorial_graph_user_kernel_pytiovx_uc.grad_y</a> = Image(width, height, DfImage.S16, name=&quot;grad_y&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a1f901eae8a7766dc6949c863f8e3d1c6">vx_tutorial_graph_user_kernel_pytiovx_uc.phase</a> = Image(width, height, DfImage.U8, name=&quot;phase&quot;)</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">tuple&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aca8d42862bd7bf7ce9b7e1b631ec0d23">vx_tutorial_graph_user_kernel_pytiovx_uc.phase_rgb</a> = Image(width, height, DfImage.RGB, name=&quot;phase_rgb&quot;)</td></tr>
+<tr><td colspan="2"><h2>Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a517d0f0ce7c6031f510ccbc591e569a3">vx_tutorial_graph_user_kernel_pytiovx_uc.make_my_graph</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Function to describe a graph and generate code, image using PyTIOVX tool.  <a href="#a517d0f0ce7c6031f510ccbc591e569a3"></a><br/></td></tr>
 </table>
 </div>
 

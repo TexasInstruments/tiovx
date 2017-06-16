@@ -24,22 +24,62 @@
   </div>
 </div>
 <div class="contents">
-<h1>phase_rgb_target_kernel.c File Reference</h1>
+<h1>phase_rgb_target_kernel.c File Reference</h1><hr/><a name="_details"></a><h2>Introduction</h2>
+<p>Target Kernel implementation for Phase to RGB conversion function</p>
+<p>This file shows a sample implementation of a target kernel function.</p>
+<p>To implement a target kernel the below top level interface functions are implemented</p>
+<ul>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#aa8d4aa689401f9c9c575082455a0c4bb" title="Add target kernel to TIOVX framework.">vxTutorialAddTargetKernelPhaseRgb()</a> : Registers target kernel to TIOVX target framework</li>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#a19db36fd62a30ed433d818de092094ee" title="Remove target kernel from TIOVX framework.">vxTutorialRemoveTargetKernelPhaseRgb()</a> : Un-Registers target kernel from TIOVX target framework</li>
+</ul>
+<p>When registering a target kernel, the following callback function are implemented and registered with the TIOVX framework</p>
+<ul>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#aa7f2b3c5cb1853a9e491483616a93fe8" title="Target kernel run function.">vxTutotrialPhaseRgb()</a> : kernel execute/run function</li>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#ab934a0610fc7f8ddaac5e4956694965f" title="Target kernel create function.">vxTutotrialPhaseRgbCreate()</a> : kernel init function</li>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#ad4beb7eefc9e7e11cb3a29b7a0f827bf" title="Target kernel delete function.">vxTutotrialPhaseRgbDelete()</a> : kernel deinit function</li>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#a5920f42e3995c3ef87e71d0f30db904e" title="Target kernel control function.">vxTutotrialPhaseRgbControl()</a>: kernel control function</li>
+</ul>
+<p>When working with target kernel</p>
+<ul>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#aa8d4aa689401f9c9c575082455a0c4bb" title="Add target kernel to TIOVX framework.">vxTutorialAddTargetKernelPhaseRgb()</a> MUST be called during TIOVX target framework system init<ul>
+<li>This is done by using function <a class="el" href="vx__tutorial__target__kernel_8c.html#adde4ded9815b3fab321bd2c0e67feb39" title="Add target kernels for tutorial to C66x DSP target.">tivxRegisterTutorialTargetKernels()</a> in <a class="el" href="vx__tutorial__target__kernel_8c.html">vx_tutorial_target_kernel.c</a></li>
+</ul>
+</li>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#a19db36fd62a30ed433d818de092094ee" title="Remove target kernel from TIOVX framework.">vxTutorialRemoveTargetKernelPhaseRgb()</a> MUST be called during TIOVX target framework system deinit<ul>
+<li>This is done by using function <a class="el" href="vx__tutorial__target__kernel_8c.html#a284eda97cb09e9867b9e3607d7b4cfff" title="Remove target kernels for tutorial from C66x DSP target.">tivxUnRegisterTutorialTargetKernels()</a> in <a class="el" href="vx__tutorial__target__kernel_8c.html">vx_tutorial_target_kernel.c</a></li>
+</ul>
+</li>
+</ul>
+<p>When registering a target kernel a unique static kernel ID MUST be used to register the kernel on target side and HOST side. See <a class="el" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a> to understand how to define and use a static kernel ID.</p>
+<p>Follow the comments for the different functions in the file to understand how a user/target kernel is implemented. </p>
+
+<p>Definition in file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+
 <p><a href="phase__rgb__target__kernel_8c_source.html">Go to the source code of this file.</a></p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f">PHASE_RGB_IN0_IMG_IDX</a>&nbsp;&nbsp;&nbsp;(0u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Index of input image in parameter list.  <a href="#a1c5d48e1731ea694529e9a0d772ce57f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#a1182feec6c80e38d758f284916141a9c">PHASE_RGB_OUT0_IMG_IDX</a>&nbsp;&nbsp;&nbsp;(1u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Index of output image in parameter list.  <a href="#a1182feec6c80e38d758f284916141a9c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#abee2067a26206b5dfb54f3d00f04fe2a">PHASE_RGB_MAX_PARAMS</a>&nbsp;&nbsp;&nbsp;(2u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Total number of parameters for this function.  <a href="#abee2067a26206b5dfb54f3d00f04fe2a"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#aa7f2b3c5cb1853a9e491483616a93fe8">vxTutotrialPhaseRgb</a> (tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Target kernel run function.  <a href="#aa7f2b3c5cb1853a9e491483616a93fe8"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#ab934a0610fc7f8ddaac5e4956694965f">vxTutotrialPhaseRgbCreate</a> (tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Target kernel create function.  <a href="#ab934a0610fc7f8ddaac5e4956694965f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#ad4beb7eefc9e7e11cb3a29b7a0f827bf">vxTutotrialPhaseRgbDelete</a> (tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Target kernel delete function.  <a href="#ad4beb7eefc9e7e11cb3a29b7a0f827bf"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#a5920f42e3995c3ef87e71d0f30db904e">vxTutotrialPhaseRgbControl</a> (tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Target kernel control function.  <a href="#a5920f42e3995c3ef87e71d0f30db904e"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#aa8d4aa689401f9c9c575082455a0c4bb">vxTutorialAddTargetKernelPhaseRgb</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add target kernel to TIOVX framework.  <a href="#aa8d4aa689401f9c9c575082455a0c4bb"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#a19db36fd62a30ed433d818de092094ee">vxTutorialRemoveTargetKernelPhaseRgb</a> (void)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Remove target kernel from TIOVX framework.  <a href="#a19db36fd62a30ed433d818de092094ee"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Variables</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static tivx_target_kernel&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#af39e389b0e30c41e703a7100ad025fbe">phase_rgb_target_kernel</a> = NULL</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Target kernel handle [static global].  <a href="#af39e389b0e30c41e703a7100ad025fbe"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="a1c5d48e1731ea694529e9a0d772ce57f"></a><!-- doxytag: member="phase_rgb_target_kernel.c::PHASE_RGB_IN0_IMG_IDX" ref="a1c5d48e1731ea694529e9a0d772ce57f" args="" -->
@@ -53,7 +93,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00015">15</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Index of input image in parameter list. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00096">96</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -68,7 +110,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00016">16</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Index of output image in parameter list. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00099">99</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -83,7 +127,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00017">17</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Total number of parameters for this function. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00102">102</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -125,7 +171,18 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00021">21</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Target kernel run function. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>kernel</em>&nbsp;</td><td>[in] target kernel handle </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>obj_desc</em>&nbsp;</td><td>[in] Parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num_params</em>&nbsp;</td><td>[in] Number of parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>priv_arg</em>&nbsp;</td><td>[in] kernel instance priv argument </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00117">117</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -166,7 +223,18 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00121">121</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Target kernel create function. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>kernel</em>&nbsp;</td><td>[in] target kernel handle </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>obj_desc</em>&nbsp;</td><td>[in] Parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num_params</em>&nbsp;</td><td>[in] Number of parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>priv_arg</em>&nbsp;</td><td>[in] kernel instance priv argument </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00225">225</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -207,7 +275,18 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00128">128</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Target kernel delete function. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>kernel</em>&nbsp;</td><td>[in] target kernel handle </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>obj_desc</em>&nbsp;</td><td>[in] Parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num_params</em>&nbsp;</td><td>[in] Number of parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>priv_arg</em>&nbsp;</td><td>[in] kernel instance priv argument </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00240">240</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -248,7 +327,18 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00135">135</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Target kernel control function. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>kernel</em>&nbsp;</td><td>[in] target kernel handle </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>obj_desc</em>&nbsp;</td><td>[in] Parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>num_params</em>&nbsp;</td><td>[in] Number of parameter object descriptors </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>priv_arg</em>&nbsp;</td><td>[in] kernel instance priv argument </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00255">255</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -268,7 +358,46 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00143">143</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Add target kernel to TIOVX framework. </p>
+
+<p><ul>
+<li>Get CPU ID of the running CPU</li>
+</ul>
+<p>Add kernel to target framework only if it is supported on this target </p>
+<div class="fragment"><pre class="fragment">     */
+    self_cpu = tivxGetSelfCpuId();
+</pre></div><ul>
+<li>Find target name based on currently running CPU</li>
+</ul>
+<div class="fragment"><pre class="fragment">         */
+        <span class="keywordflow">if</span> (self_cpu == TIVX_CPU_ID_DSP1)
+        {
+            strncpy(target_name, TIVX_TARGET_DSP1,
+                TIVX_TARGET_MAX_NAME);
+        }
+        <span class="keywordflow">else</span>
+        {
+            strncpy(target_name, TIVX_TARGET_DSP2,
+                TIVX_TARGET_MAX_NAME);
+        }
+</pre></div><ul>
+<li>Register target kernel to TIOVX framework</li>
+</ul>
+<p>"TIVX_TUTORIAL_KERNEL_PHASE_RGB" is static kernel ID. See also <a class="el" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a></p>
+<p>This MUST match the kernel ID specified when registering the same kernel name on the HOST side.</p>
+<p>The registered target kernel handle is stored in a global variable. This is used during <a class="el" href="phase__rgb__target__kernel_8c.html#a19db36fd62a30ed433d818de092094ee" title="Remove target kernel from TIOVX framework.">vxTutorialRemoveTargetKernelPhaseRgb()</a></p>
+<div class="fragment"><pre class="fragment">         */
+        <a class="code" href="phase__rgb__target__kernel_8c.html#af39e389b0e30c41e703a7100ad025fbe" title="Target kernel handle [static global].">phase_rgb_target_kernel</a> = tivxAddTargetKernel(
+                    <a class="code" href="vx__tutorial__kernels_8h.html#ad313f6307d27fea48432e16f1577d7bea81087035def5daa8186e02bc1f41979e" title="Converts Phase output to RGB image.">TIVX_TUTORIAL_KERNEL_PHASE_RGB</a>,
+                    target_name,
+                    <a class="code" href="phase__rgb__target__kernel_8c.html#aa7f2b3c5cb1853a9e491483616a93fe8" title="Target kernel run function.">vxTutotrialPhaseRgb</a>,
+                    <a class="code" href="phase__rgb__target__kernel_8c.html#ab934a0610fc7f8ddaac5e4956694965f" title="Target kernel create function.">vxTutotrialPhaseRgbCreate</a>,
+                    <a class="code" href="phase__rgb__target__kernel_8c.html#ad4beb7eefc9e7e11cb3a29b7a0f827bf" title="Target kernel delete function.">vxTutotrialPhaseRgbDelete</a>,
+                    <a class="code" href="phase__rgb__target__kernel_8c.html#a5920f42e3995c3ef87e71d0f30db904e" title="Target kernel control function.">vxTutotrialPhaseRgbControl</a>,
+                    NULL);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00266">266</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -288,7 +417,17 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00174">174</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Remove target kernel from TIOVX framework. </p>
+
+<p><ul>
+<li>UnRegister target kernel from TIOVX framework</li>
+</ul>
+<p>The target kernel handle used is the one returned during tivxAddTargetKernel()</p>
+<div class="fragment"><pre class="fragment">     */
+    status = tivxRemoveTargetKernel(<a class="code" href="phase__rgb__target__kernel_8c.html#af39e389b0e30c41e703a7100ad025fbe" title="Target kernel handle [static global].">phase_rgb_target_kernel</a>);
+</pre></div> </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00329">329</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -304,7 +443,9 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00019">19</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Target kernel handle [static global]. </p>
+
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00107">107</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>

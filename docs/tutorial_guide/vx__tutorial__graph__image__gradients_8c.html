@@ -187,16 +187,16 @@
 </ul>
 <p>A vx_context object is defined which is used as input parameter for all subesquent OpenVX object create APIs </p>
 <div class="fragment"><pre class="fragment">     */
-    vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
-    vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">in_image</a> = NULL;
-    vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a119e79a98a80ca3d13e05d814558f130">grad_x</a> = NULL;
-    vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a769fba316fc6478b4f5068b5f585d662">grad_y</a> = NULL;
+    vx_context context;
+    vx_image in_image = NULL;
+    vx_image grad_x = NULL;
+    vx_image grad_y = NULL;
     vx_image magnitude = NULL;
-    vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a1f901eae8a7766dc6949c863f8e3d1c6">phase</a> = NULL;
+    vx_image phase = NULL;
     vx_image magnitude_image = NULL;
     vx_image grad_x_image = NULL;
     vx_image grad_y_image = NULL;
-    vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a> = NULL;
+    vx_graph graph = NULL;
     vx_scalar shift = NULL;
     vx_node node[<a class="code" href="vx__tutorial__graph__image__gradients_8c.html#a196d5a36c4126bfa58ee4ea50baaae39">NUM_NODES</a>] = {NULL};
 </pre></div><ul>
@@ -222,7 +222,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    grad_x = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_S16);
+    grad_x = vxCreateImage(context, width, height, VX_DF_IMAGE_S16);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>
@@ -234,7 +234,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    grad_y = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_S16);
+    grad_y = vxCreateImage(context, width, height, VX_DF_IMAGE_S16);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>
@@ -246,7 +246,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    magnitude = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_S16);
+    magnitude = vxCreateImage(context, width, height, VX_DF_IMAGE_S16);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>
@@ -258,7 +258,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    magnitude_image = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_U8);
+    magnitude_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>
@@ -270,7 +270,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    grad_x_image = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_U8);
+    grad_x_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>
@@ -282,7 +282,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    grad_y_image = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_U8);
+    grad_y_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>
@@ -294,7 +294,7 @@
 </ul>
 <p>Creates an OpenVX image object of 'width' x 'height' and having data format 'df'. </p>
 <div class="fragment"><pre class="fragment">     */
-    phase = vxCreateImage(context, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, VX_DF_IMAGE_U8);
+    phase = vxCreateImage(context, width, height, VX_DF_IMAGE_U8);
 </pre></div><ul>
 <li>Show image attributes.</li>
 </ul>

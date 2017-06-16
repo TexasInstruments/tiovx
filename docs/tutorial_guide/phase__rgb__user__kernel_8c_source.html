@@ -109,15 +109,15 @@
 <a name="l00124"></a>00124             vx_uint32 num,
 <a name="l00125"></a>00125             vx_meta_format metas[]);
 <a name="l00126"></a>00126 
-<a name="l00127"></a>00127 <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
-<a name="l00128"></a>00128 <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
+<a name="l00127"></a>00127 <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(vx_context context);
+<a name="l00128"></a>00128 <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(vx_context context);
 <a name="l00129"></a>00129 
 <a name="l00131"></a><a class="code" href="phase__rgb__user__kernel_8c.html#a3b79a7d30f81ffb2fb3860724609f919">00131</a> <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#a3b79a7d30f81ffb2fb3860724609f919" title="Handle to the registered user kernel [static global].">phase_rgb_user_kernel</a> = NULL;
 <a name="l00132"></a>00132 
 <a name="l00134"></a><a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac">00134</a> <span class="keyword">static</span> vx_enum <a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a> = VX_ERROR_INVALID_PARAMETERS;
 <a name="l00135"></a>00135 
 <a name="l00136"></a>00136 
-<a name="l00144"></a><a class="code" href="phase__rgb__user__kernel_8h.html#a5e51581ab691a0e9037aed069be8495b">00144</a> vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>, vx_bool add_as_target_kernel)
+<a name="l00144"></a><a class="code" href="phase__rgb__user__kernel_8h.html#a5e51581ab691a0e9037aed069be8495b">00144</a> vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a5e51581ab691a0e9037aed069be8495b" title="Add user/target kernel to OpenVX context.">phase_rgb_user_kernel_add</a>(vx_context context, vx_bool add_as_target_kernel)
 <a name="l00145"></a>00145 {
 <a name="l00146"></a>00146     vx_kernel kernel = NULL;
 <a name="l00147"></a>00147     vx_status status;
@@ -182,7 +182,7 @@
 <a name="l00242"></a>00242     <span class="keywordflow">return</span> status;
 <a name="l00243"></a>00243 }
 <a name="l00244"></a>00244 
-<a name="l00252"></a><a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a">00252</a> <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>)
+<a name="l00252"></a><a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a">00252</a> <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(vx_context context)
 <a name="l00253"></a>00253 {
 <a name="l00254"></a>00254     vx_kernel kernel = NULL;
 <a name="l00255"></a>00255     vx_status status;
@@ -208,7 +208,7 @@
 <a name="l00294"></a>00294     <span class="keywordflow">return</span> kernel;
 <a name="l00295"></a>00295 }
 <a name="l00296"></a>00296 
-<a name="l00304"></a><a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879">00304</a> <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>)
+<a name="l00304"></a><a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879">00304</a> <span class="keyword">static</span> vx_kernel <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(vx_context context)
 <a name="l00305"></a>00305 {
 <a name="l00306"></a>00306     vx_kernel kernel;
 <a name="l00307"></a>00307     vx_status status;
@@ -233,7 +233,7 @@
 <a name="l00357"></a>00357     <span class="keywordflow">return</span> kernel;
 <a name="l00358"></a>00358 }
 <a name="l00359"></a>00359 
-<a name="l00365"></a><a class="code" href="phase__rgb__user__kernel_8h.html#a25ca1ab2d5d29d7d84d81ddc366a464c">00365</a> vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>)
+<a name="l00365"></a><a class="code" href="phase__rgb__user__kernel_8h.html#a25ca1ab2d5d29d7d84d81ddc366a464c">00365</a> vx_status <a class="code" href="phase__rgb__user__kernel_8c.html#a25ca1ab2d5d29d7d84d81ddc366a464c" title="Remove user/target kernel from context.">phase_rgb_user_kernel_remove</a>(vx_context context)
 <a name="l00366"></a>00366 {
 <a name="l00367"></a>00367     vx_status status;
 <a name="l00368"></a>00368 
@@ -381,7 +381,7 @@
 <a name="l00559"></a>00559             <span class="keyword">const</span> vx_reference parameters[ ],
 <a name="l00560"></a>00560             vx_uint32 num)
 <a name="l00561"></a>00561 {
-<a name="l00562"></a>00562     vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">in_image</a> = (vx_image)parameters[<a class="code" href="phase__rgb__user__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f" title="Index of input image in parameter list.">PHASE_RGB_IN0_IMG_IDX</a>];
+<a name="l00562"></a>00562     vx_image in_image = (vx_image)parameters[<a class="code" href="phase__rgb__user__kernel_8c.html#a1c5d48e1731ea694529e9a0d772ce57f" title="Index of input image in parameter list.">PHASE_RGB_IN0_IMG_IDX</a>];
 <a name="l00563"></a>00563     vx_image out_image = (vx_image)parameters[<a class="code" href="phase__rgb__user__kernel_8c.html#a1182feec6c80e38d758f284916141a9c" title="Index of output image in parameter list.">PHASE_RGB_OUT0_IMG_IDX</a>];
 <a name="l00564"></a>00564     vx_rectangle_t rect = { 0 };
 <a name="l00565"></a>00565     vx_map_id in_map_id = (vx_map_id)VX_ERROR_INVALID_PARAMETERS, out_map_id = (vx_map_id)VX_ERROR_INVALID_PARAMETERS;
@@ -489,7 +489,7 @@
 <a name="l00679"></a>00679     <span class="keywordflow">return</span> VX_SUCCESS;
 <a name="l00680"></a>00680 }
 <a name="l00681"></a>00681 
-<a name="l00697"></a><a class="code" href="phase__rgb__user__kernel_8h.html#a88488bc22b7681a4c2ad9cc7e80bd214">00697</a> vx_node <a class="code" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node</a>(vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>, vx_image in, vx_image out)
+<a name="l00697"></a><a class="code" href="phase__rgb__user__kernel_8h.html#a88488bc22b7681a4c2ad9cc7e80bd214">00697</a> vx_node <a class="code" href="phase__rgb__user__kernel_8c.html#a88488bc22b7681a4c2ad9cc7e80bd214" title="User/target kernel node create function.">phase_rgb_user_kernel_node</a>(vx_graph graph, vx_image in, vx_image out)
 <a name="l00698"></a>00698 {
 <a name="l00699"></a>00699     vx_node node;
 <a name="l00704"></a>00704     vx_reference refs[] = {(vx_reference)in, (vx_reference)out};

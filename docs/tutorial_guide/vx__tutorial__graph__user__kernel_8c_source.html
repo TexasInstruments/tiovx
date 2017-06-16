@@ -99,12 +99,12 @@
 <a name="l00144"></a>00144 <span class="preprocessor"></span>
 <a name="l00151"></a><a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a8820fe10988a7eae08a86a7abd6308ea">00151</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a8820fe10988a7eae08a86a7abd6308ea" title="Tutorial Entry Point.">vx_tutorial_graph_user_kernel</a>(vx_bool add_as_target_kernel)
 <a name="l00152"></a>00152 {
-<a name="l00160"></a>00160     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
-<a name="l00161"></a>00161     vx_image <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a01936eb3bd2d04694cf91abc68694c67">in_image</a> = NULL;
+<a name="l00160"></a>00160     vx_context context;
+<a name="l00161"></a>00161     vx_image in_image = NULL;
 <a name="l00162"></a>00162     vx_image out_image = NULL;
 <a name="l00163"></a>00163     vx_node node = NULL;
-<a name="l00164"></a>00164     vx_graph <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a> = NULL;
-<a name="l00166"></a>00166     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
+<a name="l00164"></a>00164     vx_graph graph = NULL;
+<a name="l00166"></a>00166     vx_uint32 width, height;
 <a name="l00167"></a>00167     vx_status status;
 <a name="l00168"></a>00168 
 <a name="l00177"></a>00177     <span class="keywordtype">char</span> *out_file = <a class="code" href="vx__tutorial__graph__user__kernel_8c.html#a858679d8af857cbb2c1346f4a4bc1c06" title="Output file name when tutorial is run with user kernel.">OUT_USER_KERNEL_FILE_NAME</a>;

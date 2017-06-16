@@ -97,9 +97,9 @@
 <a name="l00124"></a>00124 <span class="preprocessor"></span>
 <a name="l00128"></a><a class="code" href="vx__tutorial__image__load__save_8c.html#a9de340eb905bd0b735ec6f0471314c85">00128</a> <span class="keywordtype">void</span> <a class="code" href="vx__tutorial__image__load__save_8c.html#a9de340eb905bd0b735ec6f0471314c85" title="Tutorial Entry Point.">vx_tutorial_image_load_save</a>()
 <a name="l00129"></a>00129 {
-<a name="l00137"></a>00137     vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>;
+<a name="l00137"></a>00137     vx_context context;
 <a name="l00138"></a>00138     vx_image image;
-<a name="l00140"></a>00140     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
+<a name="l00140"></a>00140     vx_uint32 width, height;
 <a name="l00141"></a>00141 
 <a name="l00142"></a>00142     printf(<span class="stringliteral">&quot; vx_tutorial_image_load_save: Tutorial Started !!! \n&quot;</span>);
 <a name="l00143"></a>00143 
@@ -120,10 +120,10 @@
 <a name="l00212"></a>00212     printf(<span class="stringliteral">&quot; \n&quot;</span>);
 <a name="l00213"></a>00213 }
 <a name="l00214"></a>00214 
-<a name="l00227"></a><a class="code" href="vx__tutorial__image__load__save_8c.html#af8e9cbbd49ab0dec7850267224548cd6">00227</a> vx_image  <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(vx_context <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>, <span class="keywordtype">char</span> *filename, vx_bool convert_to_gray_scale)
+<a name="l00227"></a><a class="code" href="vx__tutorial__image__load__save_8c.html#af8e9cbbd49ab0dec7850267224548cd6">00227</a> vx_image  <a class="code" href="utility_8h.html#af8e9cbbd49ab0dec7850267224548cd6" title="Create a image data object given BMP filename as input.">create_image_from_file</a>(vx_context context, <span class="keywordtype">char</span> *filename, vx_bool convert_to_gray_scale)
 <a name="l00228"></a>00228 {
 <a name="l00229"></a>00229     vx_image image = NULL;
-<a name="l00230"></a>00230     uint32_t <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, stride;
+<a name="l00230"></a>00230     uint32_t width, height, stride;
 <a name="l00231"></a>00231     vx_df_image df;
 <a name="l00232"></a>00232     vx_status status;
 <a name="l00233"></a>00233     <span class="keywordtype">void</span> *data_ptr, *bmp_file_context;
@@ -186,7 +186,7 @@
 <a name="l00346"></a>00346 
 <a name="l00355"></a><a class="code" href="vx__tutorial__image__load__save_8c.html#a2ffb77a8e510c0236b07306d0eb47a30">00355</a> vx_status <a class="code" href="utility_8h.html#a2ffb77a8e510c0236b07306d0eb47a30" title="Save data from image object to BMP file.">save_image_to_file</a>(<span class="keywordtype">char</span> *filename, vx_image image)
 <a name="l00356"></a>00356 {
-<a name="l00357"></a>00357     vx_uint32 <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>;
+<a name="l00357"></a>00357     vx_uint32 width, height;
 <a name="l00358"></a>00358     vx_imagepatch_addressing_t image_addr;
 <a name="l00359"></a>00359     vx_rectangle_t rect;
 <a name="l00360"></a>00360     vx_map_id map_id;
@@ -226,7 +226,7 @@
 <a name="l00437"></a>00437 
 <a name="l00456"></a><a class="code" href="vx__tutorial__image__load__save_8c.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62">00456</a> vx_status <a class="code" href="utility_8h.html#abb1f44b0f70eb1480ce3ed7dc7bf4e62" title="Load data from BMP file into a previously created vx_image object.">load_image_from_file</a>(vx_image image, <span class="keywordtype">char</span> *filename, vx_bool convert_to_gray_scale)
 <a name="l00457"></a>00457 {
-<a name="l00458"></a>00458     uint32_t <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#aee3b73ccdcb804935f252b4e8e3dd1ab">width</a>, <a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a7b293d599df4ea481cc1b4e0daacbe91">height</a>, stride;
+<a name="l00458"></a>00458     uint32_t width, height, stride;
 <a name="l00459"></a>00459     vx_df_image df;
 <a name="l00460"></a>00460     uint32_t img_width, img_height;
 <a name="l00461"></a>00461     vx_df_image img_df;

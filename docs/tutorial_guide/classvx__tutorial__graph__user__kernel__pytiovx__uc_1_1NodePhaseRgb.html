@@ -27,14 +27,18 @@
 </div>
 <div class="contents">
 <h1>vx_tutorial_graph_user_kernel_pytiovx_uc.NodePhaseRgb Class Reference</h1><!-- doxytag: class="vx_tutorial_graph_user_kernel_pytiovx_uc::NodePhaseRgb" --><!-- doxytag: inherits="Node" --><hr/><a name="_details"></a><h2>Detailed Description</h2>
+<p>Class to represent user/target kernel. </p>
+<p>Dervied from tiovx.node.Node base class </p>
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00007">7</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00084">84</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
 
 <p>Inherits <a class="el" href="classNode.html">Node</a>.</p>
 <table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvx__tutorial__graph__user__kernel__pytiovx__uc_1_1NodePhaseRgb.html#af7a2946aaf85a15ded46a2d116807632">__init__</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Constructor for user/target kernel class.  <a href="#af7a2946aaf85a15ded46a2d116807632"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">def&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="classvx__tutorial__graph__user__kernel__pytiovx__uc_1_1NodePhaseRgb.html#a05fd81cb8bdada3ad51416a471082af0">checkParams</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Parameter checking function.  <a href="#a05fd81cb8bdada3ad51416a471082af0"></a><br/></td></tr>
 </table>
 <hr/><h2>Member Function Documentation</h2>
 <a class="anchor" id="af7a2946aaf85a15ded46a2d116807632"></a><!-- doxytag: member="vx_tutorial_graph_user_kernel_pytiovx_uc::NodePhaseRgb::__init__" ref="af7a2946aaf85a15ded46a2d116807632" args="" -->
@@ -80,7 +84,18 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00008">8</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
+<p>Constructor for user/target kernel class. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>image_in</em>&nbsp;</td><td>[in] Input image handle parameter for this function </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>image_out</em>&nbsp;</td><td>[in] Output image handle parameter for this function </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>name</em>&nbsp;</td><td>[in] user indetifiable name </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>target</em>&nbsp;</td><td>[in] target CPU on which this kernel/node will run </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00091">91</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
 
 </div>
 </div>
@@ -109,7 +124,16 @@
 </div>
 <div class="memdoc">
 
-<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00014">14</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
+<p>Parameter checking function. </p>
+<p>Checks if number of parameters passed is correct Checks if data type of parameters passed is correct</p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>param_type_args</em>&nbsp;</td><td>[in] Variable number of args list of type tiovx.enums.Type to specify data object types </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html#l00103">103</a> of file <a class="el" href="vx__tutorial__graph__user__kernel__pytiovx__uc_8py_source.html">vx_tutorial_graph_user_kernel_pytiovx_uc.py</a>.</p>
 
 </div>
 </div>

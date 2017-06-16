@@ -59,16 +59,49 @@
 #
 #
 
+## \file vx_tutorial_graph_user_kernel_pytiovx_uc.py This file show example of using basic PyTIOVX APIs to
+#       describe user/target kernel class and use it within an OpenVX graph.
+#
+# See vx_tutorial_graph_image_gradients_pytiovx_uc.py for basic API usage.
+#
+# The basic steps to define user/target class and use it with PyTIOVX tool
+#  - Define a class for user/target kernel dervied from tiovx::node::Node base class
+#  - Overide the constructor to explicitly specific the parameters and types
+#    - This allows the python to do basic syntax checking
+#  - Overide the checkParams method to specify additional parameter checking if required
+#  - Write the OpenVX use-case using PyTIOVX APIs
+#    - Use the user/target class when adding the user/target kernel to the graph
+#  - Export the graph as C code or .jpg file
+#
+# See source code of function vx_tutorial_graph_user_kernel_pytiovx_uc.make_my_graph() for detailed API usage for this example.
+#
+
 from tiovx import *
 
+## Class to represent user/target kernel
+#
+# Dervied from tiovx::node::Node base class
 class NodePhaseRgb (Node) :
+    ## Constructor for user/target kernel class
+    #
+    #  \param image_in [in] Input image handle parameter for this function
+    #  \param image_out [in] Output image handle parameter for this function
+    #  \param name [in] user indetifiable name
+    #  \param target [in] target CPU on which this kernel/node will run
     def __init__(self, image_in, image_out, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "vx_tutorial_graph.phase_rgb", image_in, image_out)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
         self.setKernelEnumName("VX_USER_KERNEL")
 
+    ## Parameter checking function
+    #
+    #  Checks if number of parameters passed is correct
+    #  Checks if data type of parameters passed is correct
+    #
+    #  \param param_type_args [in] Variable number of args list of type tiovx.enums.Type to specify data object types
     def checkParams(self, *param_type_args) :
+        # invoke base class checker function
         Node.checkParams(self, *param_type_args)
         # additional error conditions over the basic ones
         assert ( self.ref[0].width    == self.ref[1].width ), "Input and Output width MUST match"
@@ -76,24 +109,49 @@ class NodePhaseRgb (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input data format must be U8"
         assert ( self.ref[1].df_image == DfImage.RGB ), "Output data format must be RGB"
 
+## Function to describe a graph and generate code, image using PyTIOVX tool
+def make_my_graph() :
+    ## Create a context object.
+    context = Context("vx_tutorial_graph_user_kernel_pytiovx_uc")
 
-context = Context("vx_tutorial_graph_user_kernel_pytiovx_uc")
-graph = Graph()
+    ## Create a graph object.
+    graph = Graph()
 
-width = 640
-height = 480
+    ## local variables to define the with and height of input image
+    width = 640
+    ## local variables to define the with and height of input image
+    height = 480
 
-in_image = Image(width, height, DfImage.U8, name="input")
-grad_x = Image(width, height, DfImage.S16, name="grad_x")
-grad_y = Image(width, height, DfImage.S16, name="grad_y")
-phase = Image(width, height, DfImage.U8, name="phase")
-phase_rgb = Image(width, height, DfImage.RGB, name="phase_rgb")
+    ## Create input image object.
+    in_image = Image(width, height, DfImage.U8, name="input")
 
-graph.add ( NodeSobel3x3(in_image, grad_x, grad_y, target=Target.DSP1) )
-graph.add ( NodePhase(grad_x, grad_y, phase, target=Target.DSP1) )
-graph.add ( NodePhaseRgb(phase, phase_rgb, target=Target.DSP1) )
+    ## Create grad_x image object.
+    grad_x = Image(width, height, DfImage.S16, name="grad_x")
 
-context.add ( graph )
+    ## Create grad_y image object.
+    grad_y = Image(width, height, DfImage.S16, name="grad_y")
 
-ExportImage(context).export()
-ExportCode(context).export()
+    ## Create phase image object.
+    phase = Image(width, height, DfImage.U8, name="phase")
+
+    ## Create 24b rgb object to represent phase.
+    phase_rgb = Image(width, height, DfImage.RGB, name="phase_rgb")
+
+    ## Create and add node to graph for Sobel3x3
+    graph.add ( NodeSobel3x3(in_image, grad_x, grad_y, target=Target.DSP1) )
+
+    ## Create and add node to graph for Phase
+    graph.add ( NodePhase(grad_x, grad_y, phase, target=Target.DSP1) )
+
+    ## Create and add node to graph for user/target kernel
+    graph.add ( NodePhaseRgb(phase, phase_rgb, target=Target.DSP1) )
+
+    ## Add graph to context
+    context.add ( graph )
+
+    ## Generate .jpg using 'dot' tool to generate visual representation of graphs in this context
+    ExportImage(context).export()
+    ## Generate C code to create, run, delete graphs in this context
+    ExportCode(context).export()
+
+make_my_graph()

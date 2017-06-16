@@ -84,11 +84,11 @@
 <div class="fragment"><pre class="fragment">     */
     <span class="keywordflow">if</span>(add_as_target_kernel==vx_false_e)
     {
-        kernel = <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
+        kernel = <a class="code" href="phase__rgb__user__kernel_8c.html#a7c691dea4f45ce5f916b8a85755bd96a" title="Add kernel as user kernel.">phase_rgb_user_kernel_add_as_user_kernel</a>(context);
     }
     <span class="keywordflow">if</span>(add_as_target_kernel==vx_true_e)
     {
-        kernel = <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a47dd1e0019e6df5622585094f251547c">context</a>);
+        kernel = <a class="code" href="phase__rgb__user__kernel_8c.html#aba18efe50f3602ef221480ead3cf5879" title="Add kernel as target kernel.">phase_rgb_user_kernel_add_as_target_kernel</a>(context);
     }
 </pre></div><ul>
 <li>Checking is kernel was added successfully to OpenVX context <div class="fragment"><pre class="fragment">     */
@@ -234,7 +234,7 @@
 </ul>
 <ul>
 <li>Use TIOVX API to make a node using the graph, kernel ID, and parameter reference array as input <div class="fragment"><pre class="fragment">     */
-    node = tivxCreateNodeByKernelEnum(<a class="code" href="namespacevx__tutorial__graph__user__kernel__pytiovx__uc.html#a332136c03e99eba0b494cbe67d2b1330">graph</a>,
+    node = tivxCreateNodeByKernelEnum(graph,
                 <a class="code" href="phase__rgb__user__kernel_8c.html#aaac0a07f835c24f1c543e423fe3d54ac" title="Kernel ID of the registered user kernel. Used to create a node for the kernel function...">phase_rgb_user_kernel_id</a>,
                 refs, <span class="keyword">sizeof</span>(refs)/<span class="keyword">sizeof</span>(refs[0])
                 );
