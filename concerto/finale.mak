@@ -164,7 +164,7 @@ ifeq ($($(_MODULE)_TYPE),library)
 define $(_MODULE)_BUILD_LIB
 $($(_MODULE)_BIN): $($(_MODULE)_OBJS) $($(_MODULE)_STATIC_LIBS)
 	$(PRINT) Linking $$@
-	-$(Q)$(MKDIR) $($(_MODULE)_TDIR)
+	-$(Q)$(MKDIR) $(call PATH_CONV,$($(_MODULE)_TDIR)) $(QUIET)
 	-$(Q)$(call $(_MODULE)_LINK_LIB) $(LOGGING)
 endef
 
@@ -178,7 +178,7 @@ else ifeq ($($(_MODULE)_TYPE),exe)
 define $(_MODULE)_BUILD_EXE
 $($(_MODULE)_BIN): $($(_MODULE)_OBJS) $($(_MODULE)_STATIC_LIBS) $($(_MODULE)_SHARED_LIBS) $($(_MODULE)_DEPS)
 	$(PRINT) Linking $$@
-	$(MKDIR) $($(_MODULE)_EXE_DIR)
+	-$(Q)$(MKDIR) $(call PATH_CONV,$($(_MODULE)_EXE_DIR)) $(QUIET)
 	-$(Q)$(call $(_MODULE)_LINK_EXE) $(LOGGING)
 endef
 
@@ -192,7 +192,7 @@ else ifeq ($($(_MODULE)_TYPE),dsmo)
 define $(_MODULE)_BUILD_DSO
 $($(_MODULE)_BIN): $($(_MODULE)_OBJS) $($(_MODULE)_STATIC_LIBS) $($(_MODULE)_SHARED_LIBS) $($(_MODULE)_DEPS)
 	$(PRINT) Linking $$@
-	-$(Q)$(MKDIR) $($(_MODULE)_TDIR)
+	-$(Q)$(MKDIR) $(call PATH_CONV,$($(_MODULE)_TDIR)) $(QUIET)
 	$(Q)$(call $(_MODULE)_LINK_DSO) $(LOGGING)
 	-$(Q)$(call $(_MODULE)_LN_DSO)
 endef
@@ -260,17 +260,18 @@ clean_target:: $(_MODULE)_clean_target
 clean:: $(_MODULE)_clean
 
 $(_MODULE)_clean_target::
+ifneq ($($(_MODULE)_BIN),)
 	$(PRINT) Cleaning $(_MODULE) target $($(_MODULE)_BIN)
-	-$(Q)$(CLEAN) $(call PATH_CONV,$($(_MODULE)_BIN))
+	-$(Q)$(CLEAN) $(call PATH_CONV,$($(_MODULE)_BIN)) $(QUIET)
+endif
 ifneq ($($(_MODULE)_MAP),)
 	$(PRINT) Cleaning $(_MODULE) target mapfile $($(_MODULE)_MAP)
-	-$(Q)$(CLEAN) $(call PATH_CONV,$($(_MODULE)_MAP))
+	-$(Q)$(CLEAN) $(call PATH_CONV,$($(_MODULE)_MAP)) $(QUIET)
 endif
 
 $(_MODULE)_clean:: $(_MODULE)_clean_target
 	$(PRINT) Cleaning $($(_MODULE)_ODIR)
-	-$(Q)$(CLEANDIR) $(call PATH_CONV,$($(_MODULE)_ODIR))
-
+	-$(Q)$(CLEANDIR) $(call PATH_CONV,$($(_MODULE)_ODIR)) $(QUIET)
 endef
 
 # Include compiler generated dependency rules

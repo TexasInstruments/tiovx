@@ -129,7 +129,7 @@ targets::
 
 scrub::
 	$(if $(wildcard $(BUILD_OUTPUT)),$(info Deleting $(BUILD_OUTPUT)),$(info BUILD_OUTPUT does not exist!))
-	$(if $(wildcard $(BUILD_OUTPUT)),-$(Q)$(CLEANDIR) $(call PATH_CONV,$(BUILD_OUTPUT)))
+	$(if $(wildcard $(BUILD_OUTPUT)),-$(Q)$(CLEANDIR) $(call PATH_CONV,$(BUILD_OUTPUT)) $(QUIET))
 
 vars:: $(foreach mod,$(MODULES),$(mod)_vars)
 	$(PRINT) HOST_ROOT=$(HOST_ROOT)
