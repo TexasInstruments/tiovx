@@ -21,7 +21,7 @@ vx_status tivxEventCreate(tivx_event *event)
 
     if (NULL != event)
     {
-        handle = BspOsal_semCreate(0U, FALSE);
+        handle = BspOsal_semCreate(0U, TRUE);
 
         if (NULL == handle)
         {
