@@ -156,6 +156,134 @@ from . import *
 #            <TD> NodeAbsDiff </TD>
 #            <TD> [in] IMAGE  \n [in] IMAGE  \n [out] IMAGE \n</TD>
 #        </TR>
+#        <TR>
+#            <TD>  NodeAccumulateImage </TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeAccumulateSquareImage \n NodeAccumulateWeightedImage </TD>
+#            <TD> [in] IMAGE \n [in] SCALAR \n [in] IMAGE \n [out] IMAGE</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeAdd \n NodeSubtract</TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n [in] SCALAR \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeAnd \n NodeXor \n NodeOr </TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeNot  </TD>
+#            <TD> [in] IMAGE \n [out] IMAGE\n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeBox3x3 \n NodeDilate3x3 \n NodeErode3x3 \n NodeGaussian3x3 \n NodeMedian3x3</TD>
+#            <TD> [in] IMAGE \n [out] IMAGE\n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeCannyEdgeDetector  </TD>
+#            <TD> [in] IMAGE \n [in] THRESHOLD \n [in] SCALAR \n [in] SCALAR \n [in] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeChannelCombine </TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n [in] IMAGE \n [in] IMAGE \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeChannelExtract  </TD>
+#            <TD> [in] IMAGE \n [in] SCALAR \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD>  NodeColorConvert </TD>
+#            <TD> [in] IMAGE \n [out] IMAGE\n</TD>
+#        </TR>
+#        <TR>
+#            <TD>  NodeConvertDepth </TD>
+#            <TD> [in] IMAGE \n [out] IMAGE\n [in] ENUM \n [in] SCALAR</TD>
+#        </TR>
+#        <TR>
+#            <TD>  NodeConvolve </TD>
+#            <TD> [in] IMAGE \n [in] CONVOLUTION \n [out] IMAGE </TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeEqualizeHist  </TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeFastCorners  </TD>
+#            <TD> [in] IMAGE \n [in] SCALAR \n [in] SCALAR \n [out] ARRAY \n [out] SCALAR \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeNonLinearFilter  </TD>
+#            <TD> [in] SCALAR \n [in] IMAGE \n [in] MATRIX \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeHarrisCorners  </TD>
+#            <TD> [in] IMAGE \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [out] ARRAY \n [out] SCALAR \n </TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeHistogram  </TD>
+#            <TD> [in] IMAGE \n [out] DISTRIBUTION \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeGaussianPyramid  </TD>
+#            <TD> [in] IMAGE \n [out] PYRAMID \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeLaplacianPyramid  </TD>
+#            <TD> [in] IMAGE \n [out] PYRAMID \n [out] IMAGE</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeLaplacianReconstruct  </TD>
+#            <TD> [in] PYRAMID \n [in] IMAGE \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD>  NodeIntegralImage </TD>
+#            <TD> [in] IMAGE \n [out] IMAGE\n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeMagnitude \n NodePhase </TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeMeanStdDev  </TD>
+#            <TD> [in] IMAGE \n [out] SCALAR \n [out] SCALAR \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeMinMaxLoc  </TD>
+#            <TD> [in] IMAGE \n [out] SCALAR \n [out] SCALAR \n [out] ARRAY \n [out] ARRAY \n [out] SCALAR \n [out] SCALAR \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeOpticalFlowPyrLK  </TD>
+#            <TD> [in] PYRAMID \n [in] PYRAMID \n [in] ARRAY \n [in] ARRAY \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [out] ARRAY \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeMultiply  </TD>
+#            <TD> [in] IMAGE \n [in] IMAGE \n [in] SCALAR \n [in] SCALAR \n [in] SCALAR \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeRemap  </TD>
+#            <TD> [in] IMAGE \n [in] REMAP \n [in] SCALAR \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeScaleImage \n NodeHalfScaleGaussian </TD>
+#            <TD> [in] IMAGE \n [out] IMAGE \n [in] SCALAR \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeSobel3x3  </TD>
+#            <TD> [in] IMAGE \n [out] IMAGE \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeTableLookup  </TD>
+#            <TD> [in] IMAGE \n [in] LUT \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeThreshold  </TD>
+#            <TD> [in] IMAGE \n [in] THRESHOLD \n [out] IMAGE \n</TD>
+#        </TR>
+#        <TR>
+#            <TD> NodeWarpAffine \n NodeWarpPerspective  </TD>
+#            <TD> [in] IMAGE \n [in] MATRIX \n [in] SCALAR \n [out] IMAGE</TD>
+#        </TR>
 #    </TABLE>
 #
 # \ingroup FRAMEWORK
