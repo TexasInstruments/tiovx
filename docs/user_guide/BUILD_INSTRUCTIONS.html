@@ -69,23 +69,14 @@ Build instructions for Vision SDK Platform</a></h2>
 </ul>
 </li>
 <li>The final Vision SDK executable with the OpenVX conformance test, tutorial needs to be build from Vision SDK folder</li>
-<li>Steps to build Vision SDK,<ul>
+<li>Steps to build Vision SDK, (OpenVX is enabled by default in Vision SDK)<ul>
 <li>In vision_sdk/build/Rules.make<ul>
-<li>For BIOS ONLY config<ul>
-<li>set MAKECONFIG=tdaxxx_evm_bios_openvx</li>
-</ul>
-</li>
-<li>For LINUX+BIOS config<ul>
-<li>set MAKECONFIG=tdaxxx_evm_linux_openvx</li>
-</ul>
-</li>
-</ul>
-</li>
-<li>In vision_sdk/apps/configs/tdaxxx_evm_&lt;linux/bios&gt;_openvx/cfg.mk<ul>
-<li>set VSDK_BOARD_TYPE to one of below based on your SoC/EVM<ul>
-<li>TDA3XX_EVM # only valid in BIOS config</li>
-<li>TDA2XX_EVM [default]</li>
-<li>TDA2EX_EVM</li>
+<li>set MAKECONFIG to one of below based on yor SoC/EVM<ul>
+<li>set MAKECONFIG=tda2xx_evm_bios_all # For TDA2x BIOS ONLY</li>
+<li>set MAKECONFIG=tda2ex_evm_bios_all # For TDA2Ex BIOS ONLY</li>
+<li>set MAKECONFIG=tda3xx_evm_bios_all # For TDA3x BIOS ONLY</li>
+<li>set MAKECONFIG=tda2xx_evm_linux_all # For TDA2x Linux+BIOS</li>
+<li>set MAKECONFIG=tda2ex_evm_linux_all # For TDA2Ex Linux+BIOS</li>
 </ul>
 </li>
 <li>set PROFILE to one of below<ul>
@@ -97,7 +88,7 @@ Build instructions for Vision SDK Platform</a></h2>
 </li>
 <li>Build Vision SDK and bootloader by following steps in appropiate SoC/EVM User Guide in Vision SDK<ul>
 <li>Typical Vision SDK build steps are (refer user guide for details) <div class="fragment"><pre class="fragment">        make linux         # <span class="keywordflow">for</span> LINUX+BIOS config, build linux kernel, uboot, kernel modules
-        make linux_install # <span class="keywordflow">for</span> LINUX+BIOS config, install kernel modules <a class="code" href="tiovx__performance__TDA2x__BIOS_8html.html#abbc43ef69f541dca5e2ca497cfdaeb9f">to</a> linux filesystem
+        make linux_install # <span class="keywordflow">for</span> LINUX+BIOS config, install kernel modules <a class="code" href="tiovx__performance__TDA2Ex__BIOS_8html.html#abbc43ef69f541dca5e2ca497cfdaeb9f">to</a> linux filesystem
         make -s -j depend  # build drivers and other dependancies
         make -s -j         # build Vision SDK application binary
         make -s sbl        # <span class="keywordflow">for</span> BIOS config only, build SBL (secondary bootloader)
