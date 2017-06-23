@@ -187,6 +187,7 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
     vx_context context = context_->vx_context_;
     vx_node node1 = 0, node2 = 0, node3 = 0;
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, arg_->result_format), VX_TYPE_IMAGE);
@@ -219,6 +220,15 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
 #else
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
+
+    vxGetValidRegionImage(src1, &src_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

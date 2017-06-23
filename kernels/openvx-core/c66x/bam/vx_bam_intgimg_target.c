@@ -75,7 +75,6 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
-    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
 } tivxIntgImgParams;
 
 static tivx_target_kernel vx_intgimg_target_kernel = NULL;
@@ -103,6 +102,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     vx_status status = VX_SUCCESS;
     tivxIntgImgParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
+    uint8_t *src_addr, *dst_addr;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -129,18 +129,18 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
 
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        ownSetPointerLocation(src, &src_addr);
+
+        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        ownSetPointerLocation(dst, &dst_addr);
 
-        ownInitBufParams(src, &dst->valid_roi, &prms->vxlib_src,
-            (uint8_t **)&img_ptrs[0], 1, 1, 1, 1);
-        ownInitBufParams(dst, NULL, &prms->vxlib_dst,
-            (uint8_t **)&img_ptrs[1], 0, 0, 0, 0);
+        img_ptrs[0] = src_addr;
+        img_ptrs[1] = dst_addr;
 
         tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
@@ -161,7 +161,6 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
-    uint8_t *addr;
     tivxIntgImgParams *prms = NULL;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -180,20 +179,23 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
         {
             tivx_bam_kernel_details_t kernel_details;
             BAM_VXLIB_integralImage_i8u_o32u_params kernel_params;
+            VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
             memset(prms, 0, sizeof(tivxIntgImgParams));
 
-            ownInitBufParams(src, NULL, &prms->vxlib_src, &addr, 0, 0, 0, 0);
-            ownInitBufParams(dst, NULL, &prms->vxlib_dst, &addr, 0, 0, 0, 0);
+            ownInitBufParams(src, &dst->valid_roi, &vxlib_src,
+                0, 0, 0, 0);
+            ownInitBufParams(dst, NULL, &vxlib_dst,
+                0, 0, 0, 0);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
-            buf_params[0] = &prms->vxlib_src;
-            buf_params[1] = &prms->vxlib_dst;
+            buf_params[0] = &vxlib_src;
+            buf_params[1] = &vxlib_dst;
 
-            kernel_params.frameWidth   = prms->vxlib_dst.dim_x;
-            kernel_params.frameHeight  = prms->vxlib_dst.dim_y;
+            kernel_params.frameWidth   = vxlib_dst.dim_x;
+            kernel_params.frameHeight  = vxlib_dst.dim_y;
 
             kernel_details.compute_kernel_params = (void*)&kernel_params;
 

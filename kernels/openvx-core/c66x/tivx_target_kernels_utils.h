@@ -95,8 +95,11 @@ void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
     vx_rectangle_t *rect,
     VXLIB_bufParams2D_t buf_params[],
-    uint8_t *addr[],
     uint32_t lpad, uint32_t tpad, uint32_t rpad, uint32_t bpad);
+
+void ownSetPointerLocation(
+    tivx_obj_desc_image_t *obj_desc,
+    uint8_t *addr[]);
 
 /*!
  * \brief Reserve L2MEM within C66x for usage with BAM framework

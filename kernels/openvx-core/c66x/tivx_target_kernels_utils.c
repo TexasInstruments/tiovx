@@ -114,7 +114,6 @@ void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
     vx_rectangle_t *rect,
     VXLIB_bufParams2D_t buf_params[],
-    uint8_t *addr[],
     uint32_t lpad, uint32_t tpad, uint32_t rpad, uint32_t bpad)
 {
     uint32_t i;
@@ -181,7 +180,17 @@ void ownInitBufParams(
                 buf_params[i].data_type = VXLIB_UINT24;
                 break;
         }
+    }
+}
 
+void ownSetPointerLocation(
+    tivx_obj_desc_image_t *obj_desc,
+    uint8_t *addr[])
+{
+    uint32_t i;
+
+    for (i = 0; i < obj_desc->planes; i ++)
+    {
         addr[i] = (uint8_t *)((uintptr_t)obj_desc->mem_ptr[i].target_ptr +
             ownComputePatchOffset(obj_desc->valid_roi.start_x,
             obj_desc->valid_roi.start_y,
