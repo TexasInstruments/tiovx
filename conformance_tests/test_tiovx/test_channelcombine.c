@@ -156,6 +156,8 @@ TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
     vx_graph graph1 = 0, graph2 = 0;
     vx_node node1 = 0, node2 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph1, perf_graph2;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     int channels = 0, i;
     CT_Image src1[4] = {NULL, NULL, NULL, NULL}, src2[4] = {NULL, NULL, NULL, NULL};
@@ -196,6 +198,27 @@ TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
 
     VX_CALL(vxVerifyGraph(graph2));
     VX_CALL(vxProcessGraph(graph2));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src1_image[0], &src_rect);
+    vxGetValidRegionImage(dst1_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    if (arg_->dst_format==VX_DF_IMAGE_NV12)
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width/2);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height/2);
+    }
+    else
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
+    }
+
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

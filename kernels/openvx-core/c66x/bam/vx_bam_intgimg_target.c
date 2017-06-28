@@ -184,10 +184,8 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
 
             memset(prms, 0, sizeof(tivxIntgImgParams));
 
-            ownInitBufParams(src, &dst->valid_roi, &vxlib_src,
-                0, 0, 0, 0);
-            ownInitBufParams(dst, NULL, &vxlib_dst,
-                0, 0, 0, 0);
+            ownInitBufParams(src, &vxlib_src);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */

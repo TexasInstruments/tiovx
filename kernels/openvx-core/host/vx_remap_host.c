@@ -71,6 +71,15 @@ static vx_kernel vx_remap_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelRemapInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -220,6 +229,49 @@ static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelRemapInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+    vx_image out_image;
+    vx_rectangle_t out_rect;
+    vx_uint32 width, height;
+
+    if (num_params != TIVX_KERNEL_REMAP_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0U; (i < TIVX_KERNEL_REMAP_MAX_PARAMS) &&
+            (VX_SUCCESS == status); i ++)
+    {
+        /* Check for NULL */
+        if (NULL == parameters[i])
+        {
+            status = VX_ERROR_NO_MEMORY;
+            break;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        out_image = (vx_image)parameters[TIVX_KERNEL_REMAP_OUT_IMG_IDX];
+
+        status |= vxQueryImage(out_image, VX_IMAGE_WIDTH, &width, sizeof(width));
+        status |= vxQueryImage(out_image, VX_IMAGE_HEIGHT, &height, sizeof(height));
+
+        out_rect.start_x = out_rect.start_y = 0;
+        out_rect.end_x = width;
+        out_rect.end_y = height;
+
+        status |= vxSetImageValidRectangle(out_image, &out_rect);
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelRemap(vx_context context)
 {
     vx_kernel kernel;
@@ -233,7 +285,7 @@ vx_status tivxAddKernelRemap(vx_context context)
                             NULL,
                             4,
                             tivxAddKernelRemapValidate,
-                            NULL,
+                            tivxAddKernelRemapInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

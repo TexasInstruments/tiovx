@@ -67,7 +67,7 @@
 #include <tivx_kernel_non_linear_filter.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -102,7 +102,6 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_matrix_t *mask;
     vx_uint8 *src_addr, *dst_addr;
-    vx_rectangle_t rect;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -142,19 +141,8 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(
-                    rect.start_x + (mask->origin_x),
-                    rect.start_y + (mask->origin_y),
-            &dst->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
+        ownSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -213,15 +201,8 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
 
             memset(prms, 0, sizeof(tivxNonLinearFiltParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
-
-            vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x - (mask->columns - 1);
-            vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y - (mask->rows - 1);
-            vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            vxlib_dst.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &vxlib_src);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */

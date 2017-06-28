@@ -73,6 +73,15 @@ static vx_kernel vx_accumulate_weighted_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -177,6 +186,51 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+    tivxKernelValidRectParams prms;
+
+    if (num_params != TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0U; (i < TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS) &&
+            (VX_SUCCESS == status); i ++)
+    {
+        /* Check for NULL */
+        if (NULL == parameters[i])
+        {
+            status = VX_ERROR_NO_MEMORY;
+            break;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_IN_IMG_IDX];
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_OUT_IMG_IDX];
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
 
 vx_status tivxAddKernelAccumulateWeighted(vx_context context)
 {
@@ -191,7 +245,7 @@ vx_status tivxAddKernelAccumulateWeighted(vx_context context)
                             NULL,
                             3,
                             tivxAddKernelAccumulateWeightedValidate,
-                            NULL,
+                            tivxAddKernelAccumulateWeightedInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

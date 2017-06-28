@@ -69,7 +69,16 @@
 
 static vx_kernel vx_gausspmd_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxAddKernelGassianPyramidValidate(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
+            const vx_reference parameters[],
+            vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
             const vx_reference parameters[],
             vx_uint32 num,
             vx_meta_format metas[])
@@ -187,6 +196,117 @@ static vx_status VX_CALLBACK tivxAddKernelGassianPyramidValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+    tivxKernelValidRectParams prms;
+    vx_pyramid pmd;
+    vx_size num_levels;
+    vx_image img, in_img, out_img;
+    vx_float32 scale;
+
+    if (num_params != TIVX_KERNEL_G_PYD_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        pmd = (vx_pyramid)parameters[TIVX_KERNEL_G_PYD_OUT_PYT_IDX];
+
+        status |= vxQueryPyramid(pmd, VX_PYRAMID_LEVELS, &num_levels,
+            sizeof(num_levels));
+
+        status |= vxQueryPyramid(pmd, VX_PYRAMID_SCALE, &scale,
+            sizeof(scale));
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_G_PYD_IN_IMG_IDX];
+        img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_G_PYD_OUT_PYT_IDX], 0);
+
+        prms.out_img[0] = img;
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+        status |= vxReleaseImage(&img);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (scale == VX_SCALE_PYRAMID_HALF)
+        {
+            for (i = 1; i < num_levels; i++)
+            {
+                in_img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_G_PYD_OUT_PYT_IDX], i-1);
+
+                out_img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_G_PYD_OUT_PYT_IDX], i);
+
+                prms.out_img[0] = out_img;
+
+                prms.num_input_images = 1;
+                prms.num_output_images = 1;
+
+                prms.top_pad = 1;
+                prms.bot_pad = 1;
+                prms.left_pad = 1;
+                prms.right_pad = 1;
+
+                prms.border_mode = VX_BORDER_UNDEFINED;
+
+                status |= tivxKernelConfigValidRect(&prms);
+
+                status |= vxReleaseImage(&out_img);
+                status |= vxReleaseImage(&in_img);
+            }
+        }
+        else
+        {
+            for (i = 1; i < num_levels; i++)
+            {
+                in_img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_G_PYD_OUT_PYT_IDX], i-1);
+
+                out_img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_G_PYD_OUT_PYT_IDX], i);
+
+                prms.in_img[0] = in_img;
+                prms.out_img[0] = out_img;
+
+                prms.num_input_images = 1;
+                prms.num_output_images = 1;
+
+                prms.top_pad = 2;
+                prms.bot_pad = 2;
+                prms.left_pad = 2;
+                prms.right_pad = 2;
+
+                prms.border_mode = VX_BORDER_UNDEFINED;
+
+                status |= tivxKernelConfigValidRect(&prms);
+
+                status |= vxReleaseImage(&out_img);
+                status |= vxReleaseImage(&in_img);
+            }
+        }
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelGaussianPyramid(vx_context context)
 {
     vx_kernel kernel;
@@ -199,8 +319,8 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
                             VX_KERNEL_GAUSSIAN_PYRAMID,
                             NULL,
                             2,
-                            tivxAddKernelGassianPyramidValidate,
-                            NULL,
+                            tivxAddKernelGaussianPyramidValidate,
+                            tivxAddKernelGaussianPyramidInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

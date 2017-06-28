@@ -69,7 +69,7 @@
 #include <tivx_kernel_fast_corners.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_fast_corners_target_kernel = NULL;
 
@@ -146,14 +146,8 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
         tivxMemBufferMap(arr->mem_ptr.target_ptr, arr->mem_size,
             arr->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-        /* Valid rectangle is ignore here */
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
-
-        vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
+        ownInitBufParams(src, &vxlib_src);
+        ownSetPointerLocation(src, &src_addr);
 
         status = VXLIB_fastCorners_i8u(
             src_addr, &vxlib_src, prms->corners, prms->strength,

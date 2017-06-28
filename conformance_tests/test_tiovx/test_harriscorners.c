@@ -413,6 +413,8 @@ TEST_WITH_ARG(tivxHarrisCorners, testVirtualImage, Arg,
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     size_t sz;
     vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_rectangle_t src_rect;
+    vx_bool valid_rect;
 
     vx_scalar strength_thresh_scalar, min_distance_scalar, sensitivity_scalar, num_corners_scalar0, num_corners_scalar1;
     vx_array corners, corners_virt;
@@ -508,6 +510,14 @@ TEST_WITH_ARG(tivxHarrisCorners, testVirtualImage, Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(input_image, &src_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), input->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), input->height);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

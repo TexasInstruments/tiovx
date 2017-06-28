@@ -68,7 +68,7 @@
 #include <tivx_kernel_channel_combine.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 #include <edma_utils_memcpy.h>
 
@@ -109,7 +109,6 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
     tivxChannelCombineParams *prms = NULL;
     tivx_obj_desc_image_t *src0, *src1, *src2, *src3, *dst;
     uint8_t *src0_addr = NULL, *src1_addr = NULL, *src2_addr = NULL, *src3_addr = NULL, *dst_addr[4U] = {NULL};
-    vx_rectangle_t rect;
     uint32_t size;
     uint16_t plane_idx;
 
@@ -147,19 +146,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
         tivxMemBufferMap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
             src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        rect = src0->valid_roi;
-        src0_addr = (uint8_t *)((uintptr_t)src0->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src0->imagepatch_addr[0U]));
+        ownSetPointerLocation(src0, &src0_addr);
 
         src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
         tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
             src1->mem_ptr[0].mem_type, VX_READ_ONLY);
-        rect = src1->valid_roi;
-        src1_addr = (uint8_t *)((uintptr_t)src1->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src1->imagepatch_addr[0U]));
+        ownSetPointerLocation(src1, &src1_addr);
         if( src2 != NULL)
         {
             src2->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
@@ -167,10 +160,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             tivxMemBufferMap(src2->mem_ptr[0].target_ptr,
                src2->mem_size[0], src2->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
-            rect = src2->valid_roi;
-            src2_addr = (uint8_t *)((uintptr_t)src2->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &src2->imagepatch_addr[0U]));
+            ownSetPointerLocation(src2, &src2_addr);
         }
         if( src3 != NULL)
         {
@@ -179,10 +169,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             tivxMemBufferMap(src3->mem_ptr[0].target_ptr,
                src3->mem_size[0], src3->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
-            rect = src3->valid_roi;
-            src3_addr = (uint8_t *)((uintptr_t)src3->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &src3->imagepatch_addr[0U]));
+            ownSetPointerLocation(src3, &src3_addr);
         }
         for(plane_idx=0; plane_idx<dst->planes; plane_idx++)
         {
@@ -191,11 +178,8 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             tivxMemBufferMap(dst->mem_ptr[plane_idx].target_ptr,
                dst->mem_size[plane_idx], dst->mem_ptr[plane_idx].mem_type,
                 VX_WRITE_ONLY);
-            rect = dst->valid_roi;
-            dst_addr[plane_idx] = (uint8_t *)((uintptr_t)dst->mem_ptr[plane_idx].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &dst->imagepatch_addr[plane_idx]));
         }
+        ownSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
         if ( (src2 != NULL) && (src3 != NULL) )
         {
@@ -348,15 +332,9 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
             memset(prms, 0, sizeof(tivxChannelCombineParams));
 
-            vxlib_src0.dim_x = src0->imagepatch_addr[0U].dim_x;
-            vxlib_src0.dim_y = src0->imagepatch_addr[0U].dim_y;
-            vxlib_src0.stride_y = src0->imagepatch_addr[0U].stride_y;
-            vxlib_src0.data_type = VXLIB_UINT8;
-
-            vxlib_src1.dim_x = src1->imagepatch_addr[0U].dim_x;
-            vxlib_src1.dim_y = src1->imagepatch_addr[0U].dim_y;
-            vxlib_src1.stride_y = src1->imagepatch_addr[0U].stride_y;
-            vxlib_src1.data_type = VXLIB_UINT8;
+            ownInitBufParams(src0, &vxlib_src0);
+            ownInitBufParams(src1, &vxlib_src1);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -365,19 +343,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
             if(src2 != NULL)
             {
-                vxlib_src2.dim_x = src2->imagepatch_addr[0U].dim_x;
-                vxlib_src2.dim_y = src2->imagepatch_addr[0U].dim_y;
-                vxlib_src2.stride_y = src2->imagepatch_addr[0U].stride_y;
-                vxlib_src2.data_type = VXLIB_UINT8;
+                ownInitBufParams(src2, &vxlib_src2);
                 buf_params[2] = &vxlib_src2;
             }
 
             if(src3 != NULL)
             {
-                vxlib_src3.dim_x = src3->imagepatch_addr[0U].dim_x;
-                vxlib_src3.dim_y = src3->imagepatch_addr[0U].dim_y;
-                vxlib_src3.stride_y = src3->imagepatch_addr[0U].stride_y;
-                vxlib_src3.data_type = VXLIB_UINT8;
+                ownInitBufParams(src3, &vxlib_src3);
                 buf_params[3] = &vxlib_src3;
             }
 

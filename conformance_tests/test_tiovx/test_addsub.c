@@ -188,6 +188,7 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
     vx_node node1 = 0, node2 = 0, node3 = 0;
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_graph;
     vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, arg_->result_format), VX_TYPE_IMAGE);
@@ -220,6 +221,9 @@ TEST_WITH_ARG(tivxAddSub, testFuzzy, fuzzy_arg, ARITHM_FUZZY_ARGS(Add), ARITHM_F
 #else
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxGetValidRegionImage(src1, &src_rect);
     vxGetValidRegionImage(dst, &dst_rect);

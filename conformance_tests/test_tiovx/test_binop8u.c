@@ -140,6 +140,8 @@ TEST_WITH_ARG(tivxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP
     vx_context context = context_->vx_context_;
     vx_node node1 = 0, node2 = 0, node3 = 0;
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_graph;
+    vx_rectangle_t src1_rect, src2_rect, dst_rect;
+    vx_bool valid_rect;
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -173,6 +175,22 @@ TEST_WITH_ARG(tivxBinOp8u, testFuzzy, fuzzy_arg, BINOP_SIZE_ARGS(AbsDiff), BINOP
 #else
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
 #endif
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src1, &src1_rect);
+    vxGetValidRegionImage(src2, &src2_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src1_rect.end_x - src1_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src1_rect.end_y - src1_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((src2_rect.end_x - src2_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src2_rect.end_y - src2_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

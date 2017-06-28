@@ -191,10 +191,8 @@ static vx_status VX_CALLBACK tivxKernelErodeCreate(
 
             memset(prms, 0, sizeof(tivxErodeParams));
 
-            ownInitBufParams(src, &dst->valid_roi, &vxlib_src,
-                1, 1, 1, 1);
-            ownInitBufParams(dst, NULL, &vxlib_dst,
-                0, 0, 0, 0);
+            ownInitBufParams(src, &vxlib_src);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* All 3x3 filter reduces the output size, therefore reduce output
              * height, but leave output width the same (DSP optimization) */

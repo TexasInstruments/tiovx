@@ -69,7 +69,7 @@
 #include <tivx_kernel_sobel3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -104,7 +104,6 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
     tivx_obj_desc_image_t *src, *dstx, *dsty;
     uint8_t *src_addr;
     int16_t *dstx_addr, *dsty_addr;
-    vx_rectangle_t rect;
     uint32_t size;
 
     if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
@@ -150,12 +149,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
 
         if(dstx != NULL)
         {
@@ -165,10 +159,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dstx->mem_ptr[0].target_ptr, dstx->mem_size[0],
                 dstx->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            /* TODO: Do we require to move pointer even for destination image */
-            dstx_addr = (int16_t *)((uintptr_t)dstx->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x + 1U, rect.start_y + 1U,
-                &dstx->imagepatch_addr[0]));
+            ownSetPointerLocation(dstx, (uint8_t **)&dstx_addr);
         }
 
         if(dsty != NULL)
@@ -179,10 +170,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dsty->mem_ptr[0].target_ptr, dsty->mem_size[0],
                 dsty->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            /* TODO: Do we require to move pointer even for destination image */
-            dsty_addr = (int16_t *)((uintptr_t)dsty->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x + 1U, rect.start_y + 1U,
-                &dsty->imagepatch_addr[0]));
+            ownSetPointerLocation(dsty, (uint8_t **)&dsty_addr);
         }
 
         if ((dstx != NULL) && (dsty != NULL))
@@ -283,10 +271,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
             memset(prms, 0, sizeof(tivxSobelParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &vxlib_src);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -298,18 +283,12 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
             if (dstx != NULL)
             {
-                vxlib_dstx.dim_x = dstx->imagepatch_addr[0].dim_x - 2u;
-                vxlib_dstx.dim_y = dstx->imagepatch_addr[0].dim_y - 2u;
-                vxlib_dstx.stride_y = dstx->imagepatch_addr[0].stride_y;
-                vxlib_dstx.data_type = VXLIB_UINT16;
+                ownInitBufParams(dstx, &vxlib_dstx);
             }
 
             if (dsty != NULL)
             {
-                vxlib_dsty.dim_x = dsty->imagepatch_addr[0].dim_x - 2u;
-                vxlib_dsty.dim_y = dsty->imagepatch_addr[0].dim_y - 2u;
-                vxlib_dsty.stride_y = dsty->imagepatch_addr[0].stride_y;
-                vxlib_dsty.data_type = VXLIB_UINT16;
+                ownInitBufParams(dsty, &vxlib_dsty);
             }
 
             if ((dstx != NULL) && (dsty != NULL))

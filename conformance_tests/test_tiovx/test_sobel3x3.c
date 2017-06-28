@@ -452,6 +452,153 @@ TEST_WITH_ARG(tivxSobel3x3, testGraphProcessing, Filter_Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+
+TEST_WITH_ARG(tivxSobel3x3, testValidRegion, Filter_Arg,
+    SOBEL_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst1_x_image = 0, dst1_y_image = 0;
+    vx_image dst2_x_image = 0, dst2_y_image = 0, virt1, virt2, virt3, virt4;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0, node5 = 0;
+    vx_perf_t perf_node1, perf_node2, perf_node3, perf_node4, perf_node5, perf_graph;
+    vx_scalar shift_convertdepth = 0;
+    vx_int32 sh = 0;
+    vx_rectangle_t rect;
+    vx_bool valid_rect;
+
+    CT_Image src = NULL, dst1_x = NULL, dst1_y = NULL, dst2_x = NULL, dst2_y = NULL, virt_ctimage1 = NULL, virt_ctimage2 = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    dst1_x_image = ct_create_similar_image_with_format(src_image, VX_DF_IMAGE_S16);
+    ASSERT_VX_OBJECT(dst1_x_image, VX_TYPE_IMAGE);
+
+    dst2_x_image = ct_create_similar_image_with_format(src_image, VX_DF_IMAGE_S16);
+    ASSERT_VX_OBJECT(dst2_x_image, VX_TYPE_IMAGE);
+
+    dst1_y_image = ct_create_similar_image_with_format(src_image, VX_DF_IMAGE_S16);
+    ASSERT_VX_OBJECT(dst1_y_image, VX_TYPE_IMAGE);
+
+    dst2_y_image = ct_create_similar_image_with_format(src_image, VX_DF_IMAGE_S16);
+    ASSERT_VX_OBJECT(dst2_y_image, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt4   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(shift_convertdepth = vxCreateScalar(context, VX_TYPE_INT32, &sh), VX_TYPE_SCALAR);
+
+    node1 = vxSobel3x3Node(graph, src_image, virt1, virt2);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    node2 = vxConvertDepthNode(graph, virt1, virt3, VX_CONVERT_POLICY_SATURATE, shift_convertdepth);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    node3 = vxConvertDepthNode(graph, virt2, virt4, VX_CONVERT_POLICY_SATURATE, shift_convertdepth);
+    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+
+    node4 = vxSobel3x3Node(graph, virt3, dst1_x_image, dst1_y_image);
+    ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
+
+    node5 = vxSobel3x3Node(graph, virt4, dst2_x_image, dst2_y_image);
+    ASSERT_VX_OBJECT(node5, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node4, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node5, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryNode(node3, VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
+    vxQueryNode(node4, VX_NODE_PERFORMANCE, &perf_node4, sizeof(perf_node4));
+    vxQueryNode(node5, VX_NODE_PERFORMANCE, &perf_node5, sizeof(perf_node5));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    vxGetValidRegionImage(dst1_x_image, &rect);
+
+    ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
+    ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
+
+    vxGetValidRegionImage(dst1_y_image, &rect);
+
+    ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
+    ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
+
+    vxGetValidRegionImage(dst2_x_image, &rect);
+
+    ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
+    ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
+
+    vxGetValidRegionImage(dst2_y_image, &rect);
+
+    ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
+    ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
+
+    ASSERT_NO_FAILURE(dst1_x = ct_image_from_vx_image(dst1_x_image));
+    ASSERT_NO_FAILURE(dst1_y = ct_image_from_vx_image(dst1_y_image));
+
+    ASSERT_NO_FAILURE(dst2_x = ct_image_from_vx_image(dst2_x_image));
+    ASSERT_NO_FAILURE(dst2_y = ct_image_from_vx_image(dst2_y_image));
+
+    virt_ctimage1 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+    virt_ctimage2 = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+
+    ASSERT_NO_FAILURE(sobel3x3_sequential_check(src, virt_ctimage1, virt_ctimage2, dst1_x, dst1_y, dst2_x, dst2_y, border));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseNode(&node5));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(node4 == 0);
+    ASSERT(node5 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&virt1));
+    VX_CALL(vxReleaseImage(&virt2));
+    VX_CALL(vxReleaseImage(&virt3));
+    VX_CALL(vxReleaseImage(&virt4));
+    VX_CALL(vxReleaseImage(&dst1_x_image));
+    VX_CALL(vxReleaseImage(&dst1_y_image));
+    VX_CALL(vxReleaseImage(&dst2_x_image));
+    VX_CALL(vxReleaseImage(&dst2_y_image));
+    VX_CALL(vxReleaseImage(&src_image));
+    VX_CALL(vxReleaseScalar(&shift_convertdepth));
+
+    ASSERT(dst1_x_image == 0);
+    ASSERT(dst1_y_image == 0);
+    ASSERT(dst2_x_image == 0);
+    ASSERT(dst2_y_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_node1, arg_->width*arg_->height, "N1");
+    printPerformance(perf_node2, arg_->width*arg_->height, "N2");
+    printPerformance(perf_node3, arg_->width*arg_->height, "N3");
+    printPerformance(perf_node4, arg_->width*arg_->height, "N4");
+    printPerformance(perf_node5, arg_->width*arg_->height, "N5");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
+}
+
 TEST_WITH_ARG(tivxSobel3x3, testOptionalParametersX, Filter_Arg,
     SOBEL_PARAMETERS
 )
@@ -606,4 +753,4 @@ TEST_WITH_ARG(tivxSobel3x3, negativeTestBorderMode, Filter_Arg,
     ASSERT(src_image == 0);
 }
 
-TESTCASE_TESTS(tivxSobel3x3, testGraphProcessing, testOptionalParametersX, testOptionalParametersY, negativeTestBorderMode)
+TESTCASE_TESTS(tivxSobel3x3, testGraphProcessing, testValidRegion, testOptionalParametersX, testOptionalParametersY, negativeTestBorderMode)

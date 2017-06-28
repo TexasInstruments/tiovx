@@ -60,15 +60,13 @@
 *
 */
 
-
-
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_color_convert.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -103,7 +101,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
     tivxColorConvertParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr[4] = {NULL}, *dst_addr[4] = {NULL};
-    vx_rectangle_t rect;
     uint32_t size;
     void *img_ptrs[8] = {NULL};
 
@@ -130,34 +127,23 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
 
     if (VX_SUCCESS == status)
     {
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
-
         for (i = 0; i < src->planes; i++)
         {
             src->mem_ptr[i].target_ptr = tivxMemShared2TargetPtr(
                 src->mem_ptr[i].shared_ptr, src->mem_ptr[i].mem_type);
             tivxMemBufferMap(src->mem_ptr[i].target_ptr, src->mem_size[i],
                 src->mem_ptr[i].mem_type, VX_READ_ONLY);
-
-            src_addr[i] = (uint8_t *)((uintptr_t)src->mem_ptr[i].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &src->imagepatch_addr[i]));
         }
+        ownSetPointerLocation(src, (uint8_t**)&src_addr);
 
-        rect = dst->valid_roi;
         for (i = 0; i < dst->planes; i++)
         {
             dst->mem_ptr[i].target_ptr = tivxMemShared2TargetPtr(
                 dst->mem_ptr[i].shared_ptr, dst->mem_ptr[i].mem_type);
             tivxMemBufferMap(dst->mem_ptr[i].target_ptr, dst->mem_size[i],
                 dst->mem_ptr[i].mem_type, VX_WRITE_ONLY);
-
-            /* TODO: Do we require to move pointer even for destination image */
-            dst_addr[i] = (uint8_t *)((uintptr_t)dst->mem_ptr[i].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &dst->imagepatch_addr[i]));
         }
+        ownSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
         if (((VX_DF_IMAGE_RGB == src->format) &&
              (VX_DF_IMAGE_YUV4 == dst->format)) ||
@@ -340,7 +326,6 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 {
 
     vx_status status = VX_SUCCESS;
-    uint32_t i;
     tivx_obj_desc_image_t *src, *dst;
     tivxColorConvertParams *prms = NULL;
     tivx_bam_kernel_details_t kernel_details;
@@ -368,80 +353,8 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
         if (NULL != prms)
         {
-            for (i = 0; i < src->planes; i++)
-            {
-                vxlib_src[i].dim_x = src->imagepatch_addr[i].dim_x;
-                vxlib_src[i].dim_y = src->imagepatch_addr[i].dim_y;
-                vxlib_src[i].stride_y = src->imagepatch_addr[i].stride_y;
-
-                if (512 == src->imagepatch_addr[i].scale_x)
-                {
-                    vxlib_src[i].dim_y = src->imagepatch_addr[i].dim_y / 2;
-
-                    if (VX_DF_IMAGE_IYUV == src->format)
-                    {
-                        vxlib_src[i].dim_x = src->imagepatch_addr[i].dim_x / 2;
-                    }
-                }
-
-                switch(src->format)
-                {
-                    case VX_DF_IMAGE_RGB:
-                        vxlib_src[i].data_type = VXLIB_UINT24;
-                        break;
-                    case VX_DF_IMAGE_RGBX:
-                        vxlib_src[i].data_type = VXLIB_UINT32;
-                        break;
-                    case VX_DF_IMAGE_YUV4:
-                    case VX_DF_IMAGE_IYUV:
-                    case VX_DF_IMAGE_NV12:
-                    case VX_DF_IMAGE_NV21:
-                        vxlib_src[i].data_type = VXLIB_UINT8;
-                        break;
-                    case VX_DF_IMAGE_YUYV:
-                    case VX_DF_IMAGE_UYVY:
-                        vxlib_src[i].data_type = VXLIB_UINT16;
-                        break;
-                }
-            }
-
-            for (i = 0; i < dst->planes; i++)
-            {
-                vxlib_dst[i].dim_x = dst->imagepatch_addr[i].dim_x;
-                vxlib_dst[i].dim_y = dst->imagepatch_addr[i].dim_y;
-                vxlib_dst[i].stride_y = dst->imagepatch_addr[i].stride_y;
-                vxlib_dst[i].data_type = VXLIB_UINT8;
-
-                if (512 == dst->imagepatch_addr[i].scale_x)
-                {
-                    vxlib_dst[i].dim_y = dst->imagepatch_addr[i].dim_y / 2;
-
-                    if (VX_DF_IMAGE_IYUV == dst->format)
-                    {
-                        vxlib_dst[i].dim_x = dst->imagepatch_addr[i].dim_x / 2;
-                    }
-                }
-
-                switch(dst->format)
-                {
-                    case VX_DF_IMAGE_RGB:
-                        vxlib_dst[i].data_type = VXLIB_UINT24;
-                        break;
-                    case VX_DF_IMAGE_RGBX:
-                        vxlib_dst[i].data_type = VXLIB_UINT32;
-                        break;
-                    case VX_DF_IMAGE_YUV4:
-                    case VX_DF_IMAGE_IYUV:
-                    case VX_DF_IMAGE_NV12:
-                    case VX_DF_IMAGE_NV21:
-                        vxlib_dst[i].data_type = VXLIB_UINT8;
-                        break;
-                    case VX_DF_IMAGE_YUYV:
-                    case VX_DF_IMAGE_UYVY:
-                        vxlib_dst[i].data_type = VXLIB_UINT16;
-                        break;
-                }
-            }
+            ownInitBufParams(src, (VXLIB_bufParams2D_t*)&vxlib_src);
+            ownInitBufParams(dst, (VXLIB_bufParams2D_t*)&vxlib_dst);
 
             kernel_details.compute_kernel_params = NULL;
             if ((VX_DF_IMAGE_RGB == src->format) &&

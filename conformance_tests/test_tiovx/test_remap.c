@@ -347,6 +347,8 @@ TEST_WITH_ARG(tivxRemap, testGraphProcessing, Arg,
     vx_image input_image2 = 0, output_image2 = 0, int_image;
     vx_remap map1 = 0, map2 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     CT_Image input = NULL, int_ctimage = NULL, output1 = NULL, output2 = NULL;
 
@@ -381,6 +383,18 @@ TEST_WITH_ARG(tivxRemap, testGraphProcessing, Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxGetValidRegionImage(input_image, &src_rect);
+    vxGetValidRegionImage(output_image2, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), SRC_WIDTH);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), SRC_HEIGHT);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), 16);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), 16);
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_true_e);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

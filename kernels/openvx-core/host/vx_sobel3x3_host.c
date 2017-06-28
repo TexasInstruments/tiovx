@@ -71,6 +71,15 @@ static vx_kernel vx_sobel_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelSobelInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -186,6 +195,58 @@ static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelSobelInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint8 num_output_images = 0;
+    tivxKernelValidRectParams prms;
+
+    if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_IN_IMG_IDX];
+        if ( (NULL == (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
+             (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX]) )
+        {
+            num_output_images = 1;
+            prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
+        }
+        else if ( (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
+                  (NULL == (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX]) )
+        {
+            num_output_images = 1;
+            prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
+        }
+        else if ( (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
+                  (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX]) )
+        {
+            num_output_images = 2;
+            prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
+            prms.out_img[1] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
+        }
+
+        prms.num_input_images = 1;
+        prms.num_output_images = num_output_images;
+
+        prms.top_pad = 1;
+        prms.bot_pad = 1;
+        prms.left_pad = 1;
+        prms.right_pad = 1;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelSobel3x3(vx_context context)
 {
     vx_kernel kernel;
@@ -199,7 +260,7 @@ vx_status tivxAddKernelSobel3x3(vx_context context)
                             NULL,
                             3,
                             tivxAddKernelSobelValidate,
-                            NULL,
+                            tivxAddKernelSobelInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

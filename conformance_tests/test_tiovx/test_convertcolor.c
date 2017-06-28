@@ -421,6 +421,8 @@ TEST_WITH_ARG(tivxColorConvert, testOnRandomAndNatural, format_arg,
     vx_context context = context_->vx_context_;
     int iter, niters = 3;
     uint64_t rng;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     rng = CT()->seed_;
 
@@ -509,6 +511,18 @@ TEST_WITH_ARG(tivxColorConvert, testOnRandomAndNatural, format_arg,
 
         VX_CALL(vxVerifyGraph(graph2));
         VX_CALL(vxProcessGraph(graph2));
+
+        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+        ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+        vxGetValidRegionImage(src, &src_rect);
+        vxGetValidRegionImage(dst, &dst_rect);
+
+        ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+        ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), height);
 
         vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
         vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

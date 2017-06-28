@@ -619,6 +619,11 @@ TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
     vx_size   winSize             = 5; // hardcoded from optflow test case
     vx_border_t border = arg_->border;
     vx_border_t border_rep = { VX_BORDER_REPLICATE };
+    vx_bool valid_rect;
+    vx_rectangle_t dst_rect;
+    vx_uint32 w, h, new_w, new_h, i;
+    vx_float32 new_wf, new_hf;
+    vx_image tmp_img;
 
     vx_size num_points = 0;
     vx_keypoint_t* old_points = 0;
@@ -669,6 +674,66 @@ TEST_WITH_ARG(tivxGaussianPyramid, testGraphProcessing, Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryPyramid(pyr, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
+    vxQueryPyramid(pyr, VX_PYRAMID_WIDTH, &w, sizeof(w));
+    vxQueryPyramid(pyr, VX_PYRAMID_HEIGHT, &h, sizeof(h));
+
+    new_w = w;
+    new_h = h;
+    new_wf = w;
+    new_hf = h;
+
+    if (arg_->scale == VX_SCALE_PYRAMID_HALF)
+    {
+        new_w = w / 2;
+        new_h = h / 2;
+        new_wf = w / 2;
+        new_hf = h / 2;
+
+        for (i = 1; i < levels; i++)
+        {
+            tmp_img = vxGetPyramidLevel(pyr, i);
+
+            vxGetValidRegionImage(tmp_img, &dst_rect);
+
+            ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), new_w-2);
+            ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), new_h-2);
+
+            new_w = new_w / 2;
+            new_h = new_h / 2;
+            VX_CALL(vxReleaseImage(&tmp_img));
+        }
+    }
+    else if (arg_->scale == VX_SCALE_PYRAMID_ORB) // 0.8408964f
+    {
+        vx_uint32 start_x = 2, start_y = 2;
+        new_wf = new_wf*VX_SCALE_PYRAMID_ORB - 0.001; // Had to subtract due to precision
+        new_hf = new_hf*VX_SCALE_PYRAMID_ORB - 0.001;
+        new_w = ceil(new_wf) - 2;
+        new_h = ceil(new_hf) - 2;
+
+        for (i = 1; i < levels; i++)
+        {
+            tmp_img = vxGetPyramidLevel(pyr, i);
+
+            vxGetValidRegionImage(tmp_img, &dst_rect);
+
+            ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), new_w-start_x);
+            ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), new_h-start_y);
+
+            new_wf = new_wf*VX_SCALE_PYRAMID_ORB - 0.001; // Had to subtract due to precision
+            new_hf = new_hf*VX_SCALE_PYRAMID_ORB - 0.001;
+            new_w = ceil(new_wf) - 2;
+            new_h = ceil(new_hf) - 2;
+            start_x += 2;
+            start_y += 2;
+            VX_CALL(vxReleaseImage(&tmp_img));
+        }
+    }
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

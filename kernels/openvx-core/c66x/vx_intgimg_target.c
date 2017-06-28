@@ -102,10 +102,8 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownInitBufParams(src, &dst->valid_roi, &vxlib_src,
-            0, 0, 0, 0);
-        ownInitBufParams(dst, NULL, &vxlib_dst,
-            0, 0, 0, 0);
+        ownInitBufParams(src, &vxlib_src);
+        ownInitBufParams(dst, &vxlib_dst);
 
         ownSetPointerLocation(src, &src_addr);
         ownSetPointerLocation(dst, (uint8_t **)&dst_addr);

@@ -197,6 +197,11 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     vx_node src_pyr_node[2] = { 0, 0 };
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_rectangle_t src_rect;
+    vx_bool valid_rect;
+    vx_size levels;
+    vx_uint32 w, h, new_w, new_h, i;
+    vx_image tmp_img[4];
 
     vx_size num_points = 0;
     vx_keypoint_t* old_points = 0;
@@ -284,6 +289,28 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
+    vxQueryPyramid(src_pyr[0], VX_PYRAMID_LEVELS, &levels, sizeof(levels));
+    vxQueryPyramid(src_pyr[0], VX_PYRAMID_WIDTH, &w, sizeof(w));
+    vxQueryPyramid(src_pyr[0], VX_PYRAMID_HEIGHT, &h, sizeof(h));
+
+    new_w = w;
+    new_h = h;
+    for (i = 0; i < levels; i++)
+    {
+        tmp_img[i] = vxGetPyramidLevel(src_pyr[0], i);
+
+        vxGetValidRegionImage(tmp_img[i], &src_rect);
+
+        ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), new_w);
+        ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), new_h);
+
+        new_w = new_w / 2;
+        new_h = new_h / 2;
+    }
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
@@ -307,6 +334,10 @@ TEST_WITH_ARG(tivxOptFlowPyrLK, testGraphProcessing, Arg,
     ct_free_mem(int_points_ref);
     ct_free_mem(old_points);
 
+    VX_CALL(vxReleaseImage(&tmp_img[0]));
+    VX_CALL(vxReleaseImage(&tmp_img[1]));
+    VX_CALL(vxReleaseImage(&tmp_img[2]));
+    VX_CALL(vxReleaseImage(&tmp_img[3]));
     VX_CALL(vxReleaseNode(&node1));
     VX_CALL(vxReleaseNode(&node2));
     VX_CALL(vxReleaseNode(&node3));

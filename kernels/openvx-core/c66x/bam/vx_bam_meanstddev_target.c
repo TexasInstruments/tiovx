@@ -68,7 +68,7 @@
 #include <tivx_kernel_meanstddev.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -101,7 +101,6 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
 {
     vx_status status = VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
-    vx_rectangle_t rect;
     uint32_t size;
 
     if (num_params != TIVX_KERNEL_MSD_MAX_PARAMS)
@@ -148,12 +147,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
@@ -215,10 +209,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
 
             memset(prms, 0, sizeof(tivxMeanStdDevParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &vxlib_src);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
