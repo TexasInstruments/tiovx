@@ -62,9 +62,18 @@
 
 #include <vx_internal.h>
 #include <pthread.h>
-#include <time.h>
 
-int nanosleep (const struct timespec *requested_time, struct timespec *remaining);
+#if _POSIX_C_SOURCE >= 199309L
+#include <time.h>   /* for nanosleep */
+
+int nanosleep(const struct timespec *req, struct timespec *rem);
+
+#else
+#include <unistd.h> /* for usleep */
+
+extern int usleep (__useconds_t __useconds);
+
+#endif
 
 #define PRI_MAX  sched_get_priority_max(SCHED_FIFO)
 #define PRI_MIN  sched_get_priority_min(SCHED_FIFO)
@@ -199,6 +208,7 @@ vx_status tivxTaskDelete(tivx_task *task)
 
 void tivxTaskWaitMsecs(uint32_t msec)
 {
+#if _POSIX_C_SOURCE >= 199309L
     struct timespec delay_time, remain_time;
     int ret;
 
@@ -218,5 +228,8 @@ void tivxTaskWaitMsecs(uint32_t msec)
             break;
         }
     } while(1);
+#else
+    usleep(msec * 1000);
+#endif
 }
 
