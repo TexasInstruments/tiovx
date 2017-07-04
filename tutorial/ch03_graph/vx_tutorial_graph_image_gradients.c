@@ -409,7 +409,14 @@ void vx_tutorial_graph_image_gradients()
      * Sets target CPU for node[i] to DSP2
      * \code
      */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    }
+    else /* DSP2 is not present on some platforms, so changing target to DSP1 */
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    }
     /** \endcode */
     i++;
 
@@ -490,7 +497,14 @@ void vx_tutorial_graph_image_gradients()
      * Sets target CPU for node[i] to DSP2
      * \code
      */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    }
+    else /* DSP2 is not present on some platforms, so changing target to DSP1 */
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    }
     /** \endcode */
 
     i++;
