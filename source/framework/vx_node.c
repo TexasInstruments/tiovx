@@ -269,10 +269,64 @@ vx_status ownNodeKernelInit(vx_node node)
                 (status == VX_SUCCESS))
             {
                 node->local_data_set_allow = vx_true_e;
+                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc;
+                uint32_t num_params = node->kernel->signature.num_parameters;
 
-                /* user has given initialize function so call it */
-                status = node->kernel->initialize(node, node->parameters,
-                    node->kernel->signature.num_parameters);
+                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
+                {
+                    vx_reference params[TIVX_KERNEL_MAX_PARAMS];
+                    vx_reference parent_ref[TIVX_KERNEL_MAX_PARAMS];
+                    uint32_t i, n;
+
+                    for(i=0; i<num_params ; i++)
+                    {
+                        parent_ref[i] = NULL;
+
+                        if((0 != node->replicated_flags[i]) &&
+                           (NULL != node->parameters[i]))
+                        {
+                            parent_ref[i] = node->parameters[i]->scope;
+                        }
+                    }
+
+                    for(n=0; n<node_obj_desc->num_of_replicas; n++)
+                    {
+                        for(i=0; i<num_params ; i++)
+                        {
+                            params[i] = NULL;
+                            if(node->replicated_flags[i])
+                            {
+                                if(parent_ref[i])
+                                {
+                                    if(parent_ref[i]->type==VX_TYPE_OBJECT_ARRAY)
+                                    {
+                                        params[i] = ((vx_object_array)parent_ref[i])->ref[n];
+                                    }
+                                    else if(parent_ref[i]->type==VX_TYPE_PYRAMID)
+                                    {
+                                        params[i] = (vx_reference)((vx_pyramid)parent_ref[i])->img[n];
+                                    }
+                                    else
+                                    {
+                                        params[i] = NULL;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                params[i] = node->parameters[i];
+                            }
+                        }
+
+                        status |= node->kernel->initialize(node, params, num_params);
+                    }
+                }
+                else
+                {
+                    /* user has given initialize function so call it */
+                    status = node->kernel->initialize(node, node->parameters,
+                        node->kernel->signature.num_parameters);
+                }
 
                 if(status!=VX_SUCCESS)
                 {
