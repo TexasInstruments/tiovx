@@ -41,9 +41,11 @@ BIOS_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_04_53
 DMAUTILS_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.DMAUTILS.00.08.00.02/dmautils
 ALGFRAMEWORK_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.ALGFRAMEWORK.02.07.00.00/algframework
 PDK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
-VSDK_PATH ?= $(VSDK_INSTALL_PATH)/vision_sdk
 CMEM_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/kernel/cmem
 TARGETFS ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/targetfs
+
+# Path to SDK interface that is used to integrate TIOVX with the specific SDK
+SDK_PLATFORM_IF_PATH ?= $(VSDK_INSTALL_PATH)/vision_sdk/links_fw
 
 
 

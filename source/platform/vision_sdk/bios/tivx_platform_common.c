@@ -9,6 +9,8 @@
 
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
+#include <xdc/std.h>
+#include <src/rtos/links_common/system/system_priv_openvx.h>
 
 /*! \brief Structure for keeping track of platform information
  *         Currently it is mainly used for mapping target id and target name
@@ -41,15 +43,13 @@ static tivx_platform_info_t g_tivx_platform_info =
     TIVX_TARGET_INFO
 };
 
-tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
-    [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
-#pragma DATA_SECTION(gTivxObjDescShmEntry, ".bss:extMemNonCache:tiovxObjDescShm");
-#pragma DATA_ALIGN(gTivxObjDescShmEntry, 32);
+tivx_obj_desc_shm_entry_t *gTivxObjDescShmEntry = NULL;
+
 
 vx_status tivxPlatformInit(void)
 {
-    vx_status status;
-    uint32_t i = 0;
+    vx_status status = VX_SUCCESS;
+    uint32_t i = 0, shmSize = 0;
 
     /* Build time check to see if the structure size is 8byte aligned and size of the elements is not more than  */
     BUILD_ASSERT(
@@ -58,18 +58,27 @@ vx_status tivxPlatformInit(void)
     BUILD_ASSERT(
     (sizeof(tivx_obj_desc_shm_entry_t)) <= TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE);
 
-    for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+    gTivxObjDescShmEntry = (tivx_obj_desc_shm_entry_t*)System_openvxGetObjDescShm(&shmSize);
+    if( (gTivxObjDescShmEntry == NULL)
+        || shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*sizeof(tivx_obj_desc_shm_entry_t)))
     {
-        status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
-
-        if (VX_SUCCESS != status)
-        {
-            tivxPlatformDeInit();
-            break;
-        }
+        /* insufficient shared memory size */
+        status = VX_FAILURE;
     }
+    if(status==VX_SUCCESS)
+    {
+        for (i = 0; i < TIVX_PLATFORM_LOCK_MAX; i ++)
+        {
+            status = tivxMutexCreate(&g_tivx_platform_info.g_platform_lock[i]);
 
-    tivxIpcInit();
+            if (VX_SUCCESS != status)
+            {
+                tivxPlatformDeInit();
+                break;
+            }
+        }
+        tivxIpcInit();
+    }
 
     return (status);
 }

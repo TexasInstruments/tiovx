@@ -268,7 +268,11 @@ void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type)
 
 void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type)
 {
-    return (shared_ptr);
+    /* For Bios implementation, host and shared pointers are same
+     * However when used in Linux+BIOS mode, a translation maybe required
+     * Utils_physToVirt abstracts this translation
+     */
+    return Utils_memPhysToVirt(shared_ptr);
 }
 
 void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type)

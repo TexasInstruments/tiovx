@@ -10,7 +10,6 @@
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
 
-#include <osa_types.h>
 #include <include/link_api/system_if.h>
 #include <include/link_api/system_procId.h>
 #include <src/hlos/system/system_priv_openvx.h>
@@ -123,7 +122,7 @@ vx_bool tivxIsTargetEnabled(char target_name[])
     vx_enum target_id = TIVX_TARGET_ID_INVALID;
     vx_enum cpu_id;
     uint32_t vsdk_cpu_id;
-    Bool vsdk_isenabled;
+    uint32_t vsdk_isenabled;
 
     if (NULL != target_name)
     {
