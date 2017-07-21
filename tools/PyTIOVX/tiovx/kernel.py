@@ -113,5 +113,26 @@ class Kernel  :
         self.params.append(params)
         self.index = self.index + 1
 
+    def getNumImages(self) :
+        num_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE :
+                num_images += 1
+        return num_images
+
+    def getNumInputImages(self) :
+        num_input_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE and prm.direction == Direction.INPUT:
+                num_input_images += 1
+        return num_input_images
+
+    def getNumOutputImages(self) :
+        num_output_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE and prm.direction == Direction.OUTPUT:
+                num_output_images += 1
+        return num_output_images
+
 
 
