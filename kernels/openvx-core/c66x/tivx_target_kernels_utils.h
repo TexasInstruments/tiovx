@@ -93,9 +93,7 @@ extern "C" {
  */
 void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
-    vx_rectangle_t *rect,
-    VXLIB_bufParams2D_t buf_params[],
-    uint32_t lpad, uint32_t tpad, uint32_t rpad, uint32_t bpad);
+    VXLIB_bufParams2D_t buf_params[]);
 
 void ownSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,

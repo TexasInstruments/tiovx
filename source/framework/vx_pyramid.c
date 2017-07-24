@@ -153,8 +153,7 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
     if ((ownIsValidSpecificReference(&prmd->base, VX_TYPE_PYRAMID) ==
             vx_true_e) && (prmd->base.obj_desc != NULL) &&
         (index < ((tivx_obj_desc_pyramid_t *)prmd->base.obj_desc)->
-            num_levels) &&
-        (prmd->base.is_virtual == vx_false_e))
+            num_levels))
     {
         img = prmd->img[index];
 
