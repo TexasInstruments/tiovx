@@ -1641,7 +1641,7 @@ static void tst_replicate_op(vx_context context, vx_reference input1, vx_referen
     return;
 }
 
-static void check_replicas(vx_reference ref, vx_reference tst)
+static void check_replicas(vx_reference ref, vx_reference tst, vx_border_t border)
 {
     vx_uint32 i;
     vx_size ref_levels = 0;
@@ -1652,8 +1652,10 @@ static void check_replicas(vx_reference ref, vx_reference tst)
 
     if (type == VX_TYPE_PYRAMID)
     {
+        vx_float32 scale;
         VX_CALL(vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_LEVELS, &ref_levels, sizeof(vx_size)));
         VX_CALL(vxQueryPyramid((vx_pyramid)tst, VX_PYRAMID_LEVELS, &tst_levels, sizeof(vx_size)));
+        VX_CALL(vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_SCALE, &scale, sizeof(scale)));
         EXPECT_EQ_INT(ref_levels, tst_levels);
 
         for (i = 0; i < ref_levels; i++)
@@ -1668,6 +1670,24 @@ static void check_replicas(vx_reference ref, vx_reference tst)
 
             ASSERT_NO_FAILURE(img1 = ct_image_from_vx_image(src1));
             ASSERT_NO_FAILURE(img2 = ct_image_from_vx_image(src2));
+
+            if (VX_BORDER_UNDEFINED == border.mode)
+            {
+                if (i > 0)
+                {
+                    if (VX_SCALE_PYRAMID_ORB == scale)
+                    {
+                        ct_adjust_roi(img1, 2, 2, 2, 2);
+                        ct_adjust_roi(img2, 2, 2, 2, 2);
+                    }
+                    else if (VX_SCALE_PYRAMID_HALF == scale)
+                    {
+                        ct_adjust_roi(img1, 1, 1, 1, 1);
+                        ct_adjust_roi(img2, 1, 1, 1, 1);
+                    }
+                }
+            }
+
             EXPECT_EQ_CTIMAGE(img1, img2);
 
             VX_CALL(vxReleaseImage(&src1));
@@ -1716,6 +1736,7 @@ TEST_WITH_ARG(Graph, testReplicateNode, Test_Replicate_Arg, TEST_REPLICATE_PARAM
     vx_image input1 = 0;
     vx_image input2 = 0;
     vx_pixel_value_t value = {{ 2 }};
+    vx_border_t border;
 
     ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
 
@@ -1763,7 +1784,9 @@ TEST_WITH_ARG(Graph, testReplicateNode, Test_Replicate_Arg, TEST_REPLICATE_PARAM
 
     ref_replicate_op(context, src1, src2, ref, arg_->op);
     tst_replicate_op(context, src1, src2, tst, arg_->op);
-    check_replicas(ref, tst);
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
+    check_replicas(ref, tst, border);
 
     VX_CALL(vxReleaseReference(&src1));
     VX_CALL(vxReleaseReference(&src2));
