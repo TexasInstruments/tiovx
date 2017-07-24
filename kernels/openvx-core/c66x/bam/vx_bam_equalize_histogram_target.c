@@ -68,7 +68,7 @@
 #include <tivx_kernel_equalize_histogram.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 #define SCRATCH_BUFFER_SIZE         (1024)
@@ -110,7 +110,6 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     tivxEqHistParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     vx_uint8 *src_addr, *dst_addr;
-    vx_rectangle_t rect;
     uint32_t size;
     BAM_VXLIB_histogramSimple_i8u_o32u_params hist_params;
 
@@ -148,18 +147,8 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-
-        rect = dst->valid_roi;
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0]));
+        ownSetPointerLocation(src, &src_addr);
+        ownSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -245,15 +234,8 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
 
         if (VX_SUCCESS == status)
         {
-            prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            prms->vxlib_src.data_type = VXLIB_UINT8;
-
-            prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            prms->vxlib_dst.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &prms->vxlib_src);
+            ownInitBufParams(dst, &prms->vxlib_dst);
 
             buf_params[0] = &prms->vxlib_src;
             buf_params[1] = &prms->vxlib_dst;

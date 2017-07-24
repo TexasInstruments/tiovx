@@ -69,7 +69,7 @@
 #include <tivx_kernel_laplacian_reconstruct.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_laplacian_reconstruct_target_kernel = NULL;
 
@@ -99,6 +99,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
     int16_t *laplac_addr;
     uint8_t *src_addr, *dst_addr;
     uint32_t size;
+    vx_rectangle_t rect;
 
     if (num_params != TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS)
     {
@@ -162,10 +163,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             out_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
         /* Input is 8-bit image ... need to convert to 16 */
-        prms->vxlib_scratch.dim_x = low_img->imagepatch_addr[0].dim_x;
-        prms->vxlib_scratch.dim_y = low_img->imagepatch_addr[0].dim_y;
-        prms->vxlib_scratch.stride_y = low_img->imagepatch_addr[0].stride_y;
-        prms->vxlib_scratch.data_type = VXLIB_UINT8;
+        ownInitBufParams(low_img, &prms->vxlib_scratch);
 
         prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x;
         prms->vxlib_src.dim_y = prms->vxlib_scratch.dim_y;
@@ -173,14 +171,14 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         prms->vxlib_src.data_type = VXLIB_INT16;
 
         src_addr = (uint8_t *)prms->add_output;
-        dst_addr = (uint8_t *)out_img->mem_ptr[0U].target_ptr;
+        ownSetPointerLocation(out_img, &dst_addr);
 
         status = VXLIB_convertDepth_i8u_o16s(
             (uint8_t *)low_img->mem_ptr[0U].target_ptr, &prms->vxlib_scratch,
             (int16_t *)src_addr, &prms->vxlib_src, 0);
 
         /* Reinterpret 16-bit version of low_img as an 8 bit image, where every other byte is 0 */
-        prms->vxlib_src.dim_x = low_img->imagepatch_addr[0].dim_x*2u;
+        prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x*2u;
         prms->vxlib_src.data_type = VXLIB_UINT8;
 
         for (level = pmd->num_levels-1; (level >= 0) && (VX_SUCCESS == status);
@@ -195,29 +193,31 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 pyd_level->mem_size[0], pyd_level->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
 
-            laplac_addr = (int16_t *)pyd_level->mem_ptr[0].target_ptr;
+            ownSetPointerLocation(pyd_level, (uint8_t**)&laplac_addr);
 
-            prms->vxlib_scratch.dim_x = pyd_level->imagepatch_addr[0].dim_x;
-            prms->vxlib_scratch.dim_y = pyd_level->imagepatch_addr[0].dim_y/2u;
-            prms->vxlib_scratch.stride_y = pyd_level->imagepatch_addr[0].dim_x*2;
+            rect = pyd_level->valid_roi;
+
+            prms->vxlib_scratch.dim_x = rect.end_x - rect.start_x;
+            prms->vxlib_scratch.dim_y = (rect.end_y - rect.start_y)/2u;
+            prms->vxlib_scratch.stride_y = (rect.end_x - rect.start_x)*2;
             prms->vxlib_scratch.data_type = VXLIB_UINT8;
 
-            prms->vxlib_laplac.dim_x = pyd_level->imagepatch_addr[0].dim_x;
-            prms->vxlib_laplac.dim_y = pyd_level->imagepatch_addr[0].dim_y;
+            prms->vxlib_laplac.dim_x = rect.end_x - rect.start_x;
+            prms->vxlib_laplac.dim_y = rect.end_y - rect.start_y;
             prms->vxlib_laplac.stride_y = pyd_level->imagepatch_addr[0].stride_y;
             prms->vxlib_laplac.data_type = VXLIB_INT16;
 
-            prms->vxlib_add.dim_x = pyd_level->imagepatch_addr[0].dim_x;
-            prms->vxlib_add.dim_y = pyd_level->imagepatch_addr[0].dim_y;
-            prms->vxlib_add.stride_y = pyd_level->imagepatch_addr[0].dim_x*2;
+            prms->vxlib_add.dim_x = rect.end_x - rect.start_x;;
+            prms->vxlib_add.dim_y = rect.end_y - rect.start_y;
+            prms->vxlib_add.stride_y = (rect.end_x - rect.start_x)*2;
             prms->vxlib_add.data_type = VXLIB_INT16;
 
             /* First upsample previous stage result */
             status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &prms->vxlib_src,
                 prms->upsample_output, &prms->vxlib_scratch);
 
-            prms->vxlib_scratch.dim_y = pyd_level->imagepatch_addr[0].dim_y;
-            prms->vxlib_scratch.stride_y = pyd_level->imagepatch_addr[0].dim_x;
+            prms->vxlib_scratch.dim_y = rect.end_y - rect.start_y;
+            prms->vxlib_scratch.stride_y = rect.end_x - rect.start_x;
 
             if (VXLIB_SUCCESS == status)
             {
@@ -240,10 +240,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             {
                 if(level == 0)
                 {
-                    prms->vxlib_dst.dim_x = out_img->imagepatch_addr[0].dim_x;
-                    prms->vxlib_dst.dim_y = out_img->imagepatch_addr[0].dim_y;
-                    prms->vxlib_dst.stride_y = out_img->imagepatch_addr[0].stride_y;
-                    prms->vxlib_dst.data_type = VXLIB_UINT8;
+                    ownInitBufParams(out_img, &prms->vxlib_dst);
 
                     status = VXLIB_convertDepth_i16s_o8u(
                         prms->add_output, &prms->vxlib_add,

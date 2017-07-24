@@ -69,7 +69,7 @@
 #include <tivx_kernel_remap.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_remap_target_kernel = NULL;
 
@@ -83,7 +83,6 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
     tivx_obj_desc_scalar_t *sc;
     vx_uint8 *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst, vxlib_remap;
-    vx_rectangle_t rect;
     vx_border_t border;
     tivx_obj_desc_remap_t *remap;
 
@@ -125,32 +124,16 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         tivxMemBufferMap(remap->mem_ptr.target_ptr, remap->mem_size,
             remap->mem_ptr.mem_type, VX_READ_ONLY);
 
-        /* Get the correct offset of the images from teh valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0]));
-
-        vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
-
-        vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-        vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
+        ownInitBufParams(src, &vxlib_src);
+        ownInitBufParams(dst, &vxlib_dst);
 
         vxlib_remap.dim_x = dst->imagepatch_addr[0].dim_x * 2U;
         vxlib_remap.dim_y = dst->imagepatch_addr[0].dim_y;
         vxlib_remap.stride_y = dst->imagepatch_addr[0].dim_x * 8U;
         vxlib_remap.data_type = VXLIB_FLOAT32;
+
+        ownSetPointerLocation(src, &src_addr);
+        ownSetPointerLocation(dst, &dst_addr);
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
 

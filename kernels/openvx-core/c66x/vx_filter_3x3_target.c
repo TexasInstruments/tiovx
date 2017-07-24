@@ -181,10 +181,8 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        ownInitBufParams(src_desc, &dst_desc->valid_roi, &vxlib_src,
-            1, 1, 1, 1);
-        ownInitBufParams(dst_desc, NULL, &vxlib_dst,
-            0, 0, 0, 0);
+        ownInitBufParams(src_desc, &vxlib_src);
+        ownInitBufParams(dst_desc, &vxlib_dst);
 
         ownSetPointerLocation(src_desc, &src_addr);
         ownSetPointerLocation(dst_desc, &dst_addr);

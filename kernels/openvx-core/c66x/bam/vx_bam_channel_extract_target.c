@@ -68,7 +68,7 @@
 #include <tivx_kernel_channel_extract.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -118,17 +118,8 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
         plane_idx = 2;
     }
 
-    vxlib_src.dim_x = src->imagepatch_addr[plane_idx].dim_x /
-        src->imagepatch_addr[plane_idx].step_x;
-    vxlib_src.dim_y = src->imagepatch_addr[plane_idx].dim_y /
-        src->imagepatch_addr[plane_idx].step_y;
-    vxlib_src.stride_y = src->imagepatch_addr[plane_idx].stride_y;
-    vxlib_src.data_type = VXLIB_UINT8;
-
-    vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
-    vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
-    vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-    vxlib_dst.data_type = VXLIB_UINT8;
+    ownInitBufParams(src, &vxlib_src);
+    ownInitBufParams(dst, &vxlib_dst);
 
     if (VX_SUCCESS == status)
     {
@@ -172,17 +163,8 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
         plane_idx = 1;
     }
 
-    vxlib_src.dim_x = src->imagepatch_addr[plane_idx].dim_x /
-        src->imagepatch_addr[plane_idx].step_x;
-    vxlib_src.dim_y = src->imagepatch_addr[plane_idx].dim_y /
-        src->imagepatch_addr[plane_idx].step_y;
-    vxlib_src.stride_y = src->imagepatch_addr[plane_idx].stride_y;
-    vxlib_src.data_type = VXLIB_UINT8;
-
-    vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
-    vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
-    vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-    vxlib_dst.data_type = VXLIB_UINT8;
+    ownInitBufParams(src, &vxlib_src);
+    ownInitBufParams(dst, &vxlib_dst);
 
     switch(ch->data.enm)
     {
@@ -267,15 +249,9 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
 
-    vxlib_src.dim_x = src->imagepatch_addr[0U].dim_x;
-    vxlib_src.dim_y = src->imagepatch_addr[0U].dim_y;
-    vxlib_src.stride_y = src->imagepatch_addr[0U].stride_y;
+    ownInitBufParams(src, &vxlib_src);
+    ownInitBufParams(dst, &vxlib_dst);
     vxlib_src.data_type = VXLIB_UINT32;
-
-    vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
-    vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
-    vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-    vxlib_dst.data_type = VXLIB_UINT8;
 
     switch(ch->data.enm)
     {
@@ -376,15 +352,8 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
 
-    vxlib_src.dim_x = src->imagepatch_addr[0U].dim_x;
-    vxlib_src.dim_y = src->imagepatch_addr[0U].dim_y;
-    vxlib_src.stride_y = src->imagepatch_addr[0U].stride_y;
-    vxlib_src.data_type = VXLIB_UINT8;
-
-    vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
-    vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
-    vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-    vxlib_dst.data_type = VXLIB_UINT8;
+    ownInitBufParams(src, &vxlib_src);
+    ownInitBufParams(dst, &vxlib_dst);
 
     switch(ch->data.enm)
     {

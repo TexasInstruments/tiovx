@@ -60,8 +60,6 @@
 *
 */
 
-
-
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
@@ -69,7 +67,7 @@
 #include <tivx_kernel_gaussian_pyramid.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
 
@@ -200,6 +198,18 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
             if (0u == levels)
             {
+                if(pmd->scale == 0.5f)
+                {
+                    ownInitBufParams(src, &vxlib_src);
+                }
+                else
+                {
+                    ownInitBufParams(src, &vxlib_src);
+                }
+                ownInitBufParams(dst, &vxlib_dst);
+
+                ownSetPointerLocation(src, &src_addr);
+                ownSetPointerLocation(dst, &dst_addr);
                 status = VXLIB_channelCopy_1to1_i8u_o8u(
                     src_addr, &vxlib_src, dst_addr, &vxlib_dst);
             }
@@ -207,13 +217,12 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             {
                 if(pmd->scale == 0.5f)
                 {
-                    dst_addr = (uint8_t *)(
-                        (uintptr_t)dst->mem_ptr[0U].target_ptr +
-                        ownComputePatchOffset(
-                        1u, 1u, &dst->imagepatch_addr[0]));
+                    ownInitBufParams(src, &vxlib_src);
+                    ownInitBufParams(src, &vxlib_gauss);
+                    ownInitBufParams(dst, &vxlib_dst);
 
-                    vxlib_dst.dim_x -= 2;
-                    vxlib_dst.dim_y -= 2;
+                    ownSetPointerLocation(src, &src_addr);
+                    ownSetPointerLocation(dst, &dst_addr);
 
                     status = VXLIB_halfScaleGaussian_5x5_i8u_o8u(
                         (uint8_t*)src_addr, &vxlib_src, dst_addr, &vxlib_dst);

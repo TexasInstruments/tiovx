@@ -63,10 +63,20 @@
 
 
 #include <TI/tivx.h>
-#include <VX/vx_types.h>
+#include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_channel_combine.h>
+#include <TI/tivx_target_kernel.h>
 
 static vx_kernel vx_channel_combine_kernel = NULL;
+
+static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
 
 static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -246,6 +256,59 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    tivxKernelValidRectParams prms;
+
+    if ((num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX])
+        || (NULL == parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX])
+        || (NULL == parameters[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX]))
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX];
+        prms.in_img[1] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX];
+        prms.num_input_images = 2;
+
+        if (NULL != parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC2_IDX])
+        {
+            prms.in_img[2] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC2_IDX];
+            prms.num_input_images = 3;
+        }
+
+        if (NULL != parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC3_IDX])
+        {
+            prms.in_img[3] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_SRC3_IDX];
+            prms.num_input_images = 4;
+        }
+
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX];
+
+
+        prms.num_output_images = 1;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
+
+
 vx_status tivxAddKernelChannelCombine(vx_context context)
 {
     vx_kernel kernel;
@@ -259,7 +322,7 @@ vx_status tivxAddKernelChannelCombine(vx_context context)
                 NULL,
                 TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS,
                 tivxAddKernelChannelCombineValidate,
-                NULL,
+                tivxAddKernelChannelCombineInitialize,
                 NULL);
 
     status = vxGetStatus((vx_reference)kernel);

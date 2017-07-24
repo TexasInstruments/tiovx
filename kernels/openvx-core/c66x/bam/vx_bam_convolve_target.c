@@ -68,7 +68,7 @@
 #include <tivx_kernel_convolve.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -103,7 +103,6 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_convolution_t *conv;
     vx_uint8 *src_addr, *dst_addr;
-    vx_rectangle_t rect;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -143,18 +142,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x + (conv->columns/2U),
-            rect.start_y + (conv->rows/2U),
-            &dst->imagepatch_addr[0]));
+        ownSetPointerLocation(src, &src_addr);
+        ownSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -210,27 +199,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
 
             memset(prms, 0, sizeof(tivxBamConvolveParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
-
-            /* All filter reduces the output size, therefore reduce output
-             * height, but leave output width the same (DSP optimization) */
-            vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x -
-                ((conv->columns/2U) * 2U);
-            vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y -
-                ((conv->rows/2U) * 2U);
-            vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            if (VX_DF_IMAGE_U8 == dst->format)
-            {
-                vxlib_dst.data_type = VXLIB_UINT8;
-            }
-            else
-            {
-                vxlib_dst.data_type = VXLIB_INT16;
-            }
-
+            ownInitBufParams(src, &vxlib_src);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */

@@ -68,7 +68,7 @@
 #include <tivx_kernel_convert_depth.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -102,7 +102,6 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
     tivxConvertDepthParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
-    vx_rectangle_t rect;
     uint32_t size;
     tivx_obj_desc_scalar_t *sc_desc[2];
     BAM_VXLIB_convertDepth_i16s_o8u_params prms_1;
@@ -134,24 +133,17 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
     {
         void *img_ptrs[2];
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
-
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_READ_ONLY);
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0U]));
+        ownSetPointerLocation(dst, &dst_addr);
 
         if (VX_DF_IMAGE_S16 == dst->format)
         {
@@ -233,29 +225,8 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
 
             memset(prms, 0, sizeof(tivxConvertDepthParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0U].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0U].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0U].stride_y;
-            if (VX_DF_IMAGE_U8 == src->format)
-            {
-                vxlib_src.data_type = VXLIB_UINT8;
-            }
-            else
-            {
-                vxlib_src.data_type = VXLIB_INT16;
-            }
-
-            vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
-            vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
-            vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-            if (VX_DF_IMAGE_U8 == dst->format)
-            {
-                vxlib_dst.data_type = VXLIB_UINT8;
-            }
-            else
-            {
-                vxlib_dst.data_type = VXLIB_INT16;
-            }
+            ownInitBufParams(src, &vxlib_src);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */

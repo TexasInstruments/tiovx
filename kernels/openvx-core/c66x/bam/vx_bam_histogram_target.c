@@ -69,7 +69,7 @@
 #include <tivx_kernel_histogram.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -104,7 +104,6 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     tivx_obj_desc_image_t *src;
     tivx_obj_desc_distribution_t *dst;
     uint8_t *src_addr;
-    vx_rectangle_t rect;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -139,12 +138,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         tivxMemBufferMap(dst->mem_ptr.target_ptr, dst->mem_size,
             dst->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
@@ -194,10 +188,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
 
             memset(prms, 0, sizeof(tivxHistogramParams));
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &vxlib_src);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */

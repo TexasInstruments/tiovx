@@ -749,6 +749,8 @@ TEST_WITH_ARG(tivxFastCorners, testOptionalParameters, format_arg,
     vx_keypoint_t* corners_data = 0;
     uint32_t i, dst1stride;
     vx_perf_t perf_node1, perf_graph;
+    vx_rectangle_t src_rect;
+    vx_bool valid_rect;
 
     ASSERT_NO_FAILURE(src0 = ct_read_image(imgname, 1));
     ASSERT(src0->format == VX_DF_IMAGE_U8);
@@ -774,6 +776,14 @@ TEST_WITH_ARG(tivxFastCorners, testOptionalParameters, format_arg,
     ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src, &src_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
 
     vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));

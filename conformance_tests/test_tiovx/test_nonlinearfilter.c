@@ -355,6 +355,8 @@ TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
     vx_node node1 = 0, node2 = 0;
     vx_enum pattern = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     CT_Image src0 = NULL, dst0 = NULL, src1 = NULL, dst1 = NULL;
     vx_border_t border = arg_->border;
@@ -393,6 +395,18 @@ TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src0_image, &src_rect);
+    vxGetValidRegionImage(dst0_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (arg_->width - (arg_->mask_size-1) ));
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (arg_->height - (arg_->mask_size-1) ));
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

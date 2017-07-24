@@ -167,8 +167,8 @@ static void convolve_sequential_check(CT_Image src, CT_Image dst, vx_border_t bo
     ASSERT_NO_FAILURE(
         if (border.mode == VX_BORDER_UNDEFINED)
         {
-            ct_adjust_roi(dst, cols / 2, rows / 2, cols / 2, rows / 2);
-            ct_adjust_roi(dst_ref, cols / 2, rows / 2, cols / 2, rows / 2);
+            ct_adjust_roi(dst, cols - 1, rows - 1, cols - 1, rows - 1);
+            ct_adjust_roi(dst_ref, cols - 1, rows - 1, cols - 1, rows - 1);
         }
     );
 
@@ -220,6 +220,8 @@ TEST_WITH_ARG(tivxConvolve, testGraphProcessing, Arg,
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     CT_Image src = NULL, dst = NULL;
     vx_border_t border = arg_->border;
@@ -254,6 +256,18 @@ TEST_WITH_ARG(tivxConvolve, testGraphProcessing, Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src_image, &src_rect);
+    vxGetValidRegionImage(dst_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (arg_->width - 2*(arg_->cols-1)));
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (arg_->height - 2*(arg_->rows-1)));
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

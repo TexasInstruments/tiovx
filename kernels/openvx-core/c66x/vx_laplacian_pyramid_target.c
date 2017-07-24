@@ -69,7 +69,7 @@
 #include <tivx_kernel_laplacian_pyramid.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_laplacian_pyramid_target_kernel = NULL;
 
@@ -97,6 +97,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
     int16_t *dst_addr;
     uint8_t *out_addr;
     uint32_t size, levels;
+    vx_rectangle_t rect;
 
     if (num_params != TIVX_KERNEL_LPL_PMD_MAX_PARAMS)
     {
@@ -166,10 +167,8 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
 
-        prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        prms->vxlib_src.data_type = VXLIB_UINT8;
+        ownSetPointerLocation(src, &src_addr);
+        ownInitBufParams(src, &prms->vxlib_src);
 
         prms->vxlib_gauss0.data_type = VXLIB_UINT8;
         prms->vxlib_gauss1.data_type = VXLIB_UINT8;
@@ -188,41 +187,35 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            /* Valid rectangle is ignore here */
-            dst_addr = (int16_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
+            ownSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
             /* Half scaled intermediate result */
             if(levels == (pmd->num_levels - 1u))
             {
-                prms->vxlib_gauss0.dim_x = low_img->imagepatch_addr[0].dim_x;
-                prms->vxlib_gauss0.dim_y = low_img->imagepatch_addr[0].dim_y;
-                prms->vxlib_gauss0.stride_y = low_img->imagepatch_addr[0].stride_y;
+                ownInitBufParams(low_img, &prms->vxlib_gauss0);
+                prms->vxlib_gauss0.data_type = VXLIB_UINT8;
 
-                out_addr = (uint8_t *)(
-                    (uintptr_t)low_img->mem_ptr[0U].target_ptr +
-                    ownComputePatchOffset(0, 0,
-                    &low_img->imagepatch_addr[0]));
+                ownSetPointerLocation(low_img, &out_addr);
             }
             else
             {
                 /* Half scaled intermediate result */
-                prms->vxlib_gauss0.dim_x = dst->imagepatch_addr[0].dim_x / 2;
-                prms->vxlib_gauss0.dim_y = dst->imagepatch_addr[0].dim_y / 2;
-                prms->vxlib_gauss0.stride_y = dst->imagepatch_addr[0].dim_x / 2;
+                rect = dst->valid_roi;
+                prms->vxlib_gauss0.dim_x = (rect.end_x - rect.start_x) / 2;
+                prms->vxlib_gauss0.dim_y = (rect.end_y - rect.start_y) / 2;
+                prms->vxlib_gauss0.stride_y = (rect.end_x - rect.start_x) / 2;
 
                 out_addr = prms->hsg_output[buf];
             }
 
-
             /* Full scale intermediate result (half scaled upsampled) */
-            prms->vxlib_gauss1.dim_x = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_gauss1.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_gauss1.stride_y = dst->imagepatch_addr[0].dim_x;
+            ownInitBufParams(dst, &prms->vxlib_gauss1);
+            rect = dst->valid_roi;
+            prms->vxlib_gauss1.stride_y = rect.end_x - rect.start_x;
+            prms->vxlib_gauss1.data_type = VXLIB_UINT8;
 
-            prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
+            ownInitBufParams(dst, &prms->vxlib_dst);
+            prms->vxlib_dst.data_type = VXLIB_INT16;
 
             /* First do half scale gaussian filter with included upsampled result */
             status = VXLIB_halfScaleGaussian_5x5_br_i8u_o8u_o8u(

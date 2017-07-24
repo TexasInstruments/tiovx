@@ -69,7 +69,7 @@
 #include <tivx_kernel_canny.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -167,8 +167,11 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         rect = dst->valid_roi;
 
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x + (prms->gs / 2) + 1, rect.start_y + (prms->gs / 2) + 1,
+            ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
+
+        /* Get the correct offset of the images from the valid roi parameter */
+        rect = src->valid_roi;
 
         border_addr_tl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
@@ -338,15 +341,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     {BAM_END_NODE_MARKER, 0}},\
             };
 
-            vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
-
-            prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x - prms->gs - 1;
-            prms->vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y - prms->gs - 1;
-            prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            prms->vxlib_dst.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &vxlib_src);
+            ownInitBufParams(dst, &prms->vxlib_dst);
 
             prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 

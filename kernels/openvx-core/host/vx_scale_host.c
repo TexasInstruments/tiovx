@@ -71,6 +71,15 @@ static vx_kernel vx_scale_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -174,6 +183,89 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+    tivxKernelValidRectParams prms;
+    vx_uint32 w[2U], h[2U], scale;
+    vx_image img[2U];
+
+    if (num_params != TIVX_KERNEL_SCALE_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0U; (i < TIVX_KERNEL_SCALE_MAX_PARAMS) &&
+            (VX_SUCCESS == status); i ++)
+    {
+        /* Check for NULL */
+        if (NULL == parameters[i])
+        {
+            status = VX_ERROR_NO_MEMORY;
+            break;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_SCALE_IN_IMG_IDX];
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SCALE_OUT_IMG_IDX];
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        img[0U] = (vx_image)parameters[TIVX_KERNEL_SCALE_IN_IMG_IDX];
+        img[1U] = (vx_image)parameters[TIVX_KERNEL_SCALE_OUT_IMG_IDX];
+        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
+        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
+        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+
+        if (w[1U] > w[0U])
+        {
+            vx_rectangle_t rect, out_rect;
+
+            scale = w[1U] / w[0U];
+            status = vxGetValidRegionImage(img[0U], &rect);
+
+            out_rect.start_x = rect.start_x;
+            out_rect.start_y = rect.start_y;
+
+            // SCALE_NEAR_UP case
+            if ((w[1U] - w[0U]) == 1)
+            {
+                out_rect.end_x = rect.end_x + 1;
+                out_rect.end_y = rect.end_y + 1;
+            }
+            else
+            {
+                out_rect.end_x = rect.end_x * scale;
+                out_rect.end_y = rect.end_y * scale;
+            }
+
+            status |= vxSetImageValidRectangle(img[1U], &out_rect);
+        }
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelScale(vx_context context)
 {
     vx_kernel kernel;
@@ -187,7 +279,7 @@ vx_status tivxAddKernelScale(vx_context context)
                             NULL,
                             3,
                             tivxAddKernelScaleValidate,
-                            NULL,
+                            tivxAddKernelScaleInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

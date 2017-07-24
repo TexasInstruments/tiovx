@@ -172,7 +172,7 @@ static void halfScaleGaussian_check(CT_Image src, CT_Image int_image, CT_Image d
     EXPECT_EQ_INT((int)ceil(src->height * 0.25), dst0->height);
     halfScaleGaussian_validate(src, int_image, kernel_size, border);
     halfScaleGaussian_validate(int_image, dst0, kernel_size, border);
-    ASSERT_EQ_CTIMAGE(dst0, dst1);
+    halfScaleGaussian_validate(int_image, dst1, kernel_size, border);
 #if 0
     if (CT_HasFailure())
     {
@@ -195,12 +195,14 @@ typedef struct {
 
 
 #define ADD_KERNEL_SIZE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/k=3", __VA_ARGS__, 3))
+    CT_EXPAND(nextmacro(testArgName "/k=1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/k=5", __VA_ARGS__, 5))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_1600x1200, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
+
 
 TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
     PARAMETERS
@@ -212,6 +214,8 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_node4, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     CT_Image src = NULL, dst0 = NULL, dst1 = NULL, int_ctimage = NULL;
 
@@ -238,9 +242,36 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
 
     VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
     VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+    VX_CALL(vxSetNodeAttribute(node3, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+    VX_CALL(vxSetNodeAttribute(node4, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxGetValidRegionImage(src_image, &src_rect);
+    vxGetValidRegionImage(dst1_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    if (arg_->kernel_size == 1)
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), dst_width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), dst_height);
+    }
+    else if (arg_->kernel_size == 3)
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (dst_width-3));
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (dst_height-3));
+    }
+    else if (arg_->kernel_size == 5) // -3 because -2 + -1; -2 on first downscale then -1 on second
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (dst_width-3));
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (dst_height-3));
+    }
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     ASSERT_NO_FAILURE(int_ctimage = ct_image_from_vx_image(int_image));
     ASSERT_NO_FAILURE(dst0 = ct_image_from_vx_image(dst0_image));

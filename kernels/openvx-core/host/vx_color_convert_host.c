@@ -70,6 +70,17 @@
 
 static vx_kernel vx_color_convert_kernel = NULL;
 
+static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format);
+
+static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelColorConvertInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
 static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format)
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
@@ -228,6 +239,42 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelColorConvertInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    tivxKernelValidRectParams prms;
+
+    if ((num_params != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX])
+        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX]))
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
+
 
 vx_status tivxAddKernelColorConvert(vx_context context)
 {
@@ -242,7 +289,7 @@ vx_status tivxAddKernelColorConvert(vx_context context)
                             NULL,
                             2,
                             tivxAddKernelColorConvertValidate,
-                            NULL,
+                            tivxAddKernelColorConvertInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

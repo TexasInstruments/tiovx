@@ -172,6 +172,8 @@ TEST_WITH_ARG(tivxMinMaxLoc, testOnRandom, format_arg,
     uint32_t pixsize = ct_image_bits_per_pixel(format)/8;
     Point* ptbuf = 0;
     vx_size bufbytes = 0, npoints = 0, bufcap = 0;
+    vx_rectangle_t src_rect;
+    vx_bool valid_rect;
 
     if( format == VX_DF_IMAGE_U8 )
         a = 0, b = 256;
@@ -244,6 +246,14 @@ TEST_WITH_ARG(tivxMinMaxLoc, testOnRandom, format_arg,
         ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
+
+        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+        ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+        vxGetValidRegionImage(src0_image, &src_rect);
+
+        ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+        ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
 
         vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
         vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

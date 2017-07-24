@@ -184,6 +184,8 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
     vx_border_t border;
     vx_scalar shift_convertdepth = 0;
     vx_int32 sh = 0;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
 
     ASSERT( srcformat != -1 && phaseformat != -1 );
     rng = CT()->seed_;
@@ -290,6 +292,18 @@ TEST_WITH_ARG(tivxPhase, testOnRandom, format_arg,
         ASSERT_VX_OBJECT(node10, VX_TYPE_NODE);
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
+
+        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+        ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+        vxGetValidRegionImage(dx_node1, &src_rect);
+        vxGetValidRegionImage(phase_branch2, &dst_rect);
+
+        ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+        ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), height);
 
         vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
         vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

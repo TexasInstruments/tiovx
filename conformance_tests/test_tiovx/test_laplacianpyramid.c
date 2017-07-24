@@ -349,6 +349,7 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testGraphProcessing, Arg, LAPLACIAN_PYRAMID_
     vx_context context = context_->vx_context_;
     vx_size levels = 0;
     vx_uint32 i;
+    vx_uint32 new_w, new_h;
     vx_image src = 0;
     vx_image ref_dst = 0;
     vx_image tst_dst = 0;
@@ -395,6 +396,9 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testGraphProcessing, Arg, LAPLACIAN_PYRAMID_
         ASSERT_NO_FAILURE(ct_adjust_roi(ct_tst_dst, 2 * undefined_border, 2 * undefined_border, 2 * undefined_border, 2 * undefined_border));
         //EXPECT_CTIMAGE_NEAR(ct_ref_dst, ct_tst_dst, 1);
 
+        new_w = input->width;
+        new_h = input->height;
+
         for (i = 0; i < levels-1; i++)
         {
             //char name[32];
@@ -402,9 +406,15 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testGraphProcessing, Arg, LAPLACIAN_PYRAMID_
             CT_Image ct_tst_lev = 0;
             vx_image ref_lev = 0;
             vx_image tst_lev = 0;
+            vx_rectangle_t dst_rect;
 
             ASSERT_VX_OBJECT(ref_lev = vxGetPyramidLevel(ref_pyr, i), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(tst_lev = vxGetPyramidLevel(tst_pyr, i), VX_TYPE_IMAGE);
+
+            vxGetValidRegionImage(tst_lev, &dst_rect);
+
+            ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), new_w);
+            ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), new_h);
 
             ASSERT_NO_FAILURE(ct_ref_lev = ct_image_from_vx_image(ref_lev));
             ASSERT_NO_FAILURE(ct_tst_lev = ct_image_from_vx_image(tst_lev));
@@ -413,6 +423,9 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testGraphProcessing, Arg, LAPLACIAN_PYRAMID_
             //ct_write_image("laplac_ref.bmp", ct_ref_lev);
             //ct_write_image("laplac_tst.bmp", ct_tst_lev);
             //EXPECT_CTIMAGE_NEAR(ct_ref_lev, ct_tst_lev, 1);
+
+            new_w = new_w / 2;
+            new_h = new_h / 2;
 
             VX_CALL(vxReleaseImage(&ref_lev));
             VX_CALL(vxReleaseImage(&tst_lev));

@@ -72,6 +72,15 @@ static vx_kernel vx_laplacian_reconstruct_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node node,
             const vx_reference parameters[],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node node,
+            const vx_reference parameters[],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -191,6 +200,43 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    tivxKernelValidRectParams prms;
+    vx_image img;
+
+    if (num_params != TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+        img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX], 0);
+        prms.in_img[0] = img;
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_LPL_RCNSTR_OUT_IMG_IDX];
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+        status |= vxReleaseImage(&img);
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
 {
     vx_kernel kernel;
@@ -204,7 +250,7 @@ vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
                             NULL,
                             TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS,
                             tivxAddKernelLaplacianReconstructValidate,
-                            NULL,
+                            tivxAddKernelLaplacianReconstructInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

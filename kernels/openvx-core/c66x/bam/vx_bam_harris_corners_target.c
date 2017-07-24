@@ -69,7 +69,7 @@
 #include <tivx_kernel_harris_corners.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -203,9 +203,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = prms->hcs_score;
@@ -407,10 +405,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             kernel_details[SCORE_NODE].compute_kernel_params = &harris_score_kernel_params;
             kernel_details[SINK_NODE].compute_kernel_params = NULL;
 
-            vxlib_src.dim_x = img->imagepatch_addr[0].dim_x;
-            vxlib_src.dim_y = img->imagepatch_addr[0].dim_y;
-            vxlib_src.stride_y = img->imagepatch_addr[0].stride_y;
-            vxlib_src.data_type = VXLIB_UINT8;
+            ownInitBufParams(img, &vxlib_src);
 
             prms->vxlib_score.dim_x = img->imagepatch_addr[0].dim_x -
                 (prms->gs - 1) - (prms->bs - 1);

@@ -72,6 +72,15 @@ static vx_kernel vx_harris_corners_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelHarrisCInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -295,6 +304,40 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelHarrisCInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    tivxKernelValidRectParams prms;
+
+    /* Check for NULL */
+    if (NULL == parameters[TIVX_KERNEL_HARRISC_IN_IMG_IDX])
+    {
+        status = VX_ERROR_NO_MEMORY;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_HARRISC_IN_IMG_IDX];
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 0;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelHarrisCorners(vx_context context)
 {
     vx_kernel kernel;
@@ -308,7 +351,7 @@ vx_status tivxAddKernelHarrisCorners(vx_context context)
                             NULL,
                             TIVX_KERNEL_HARRISC_MAX_PARAMS,
                             tivxAddKernelHarrisCValidate,
-                            NULL,
+                            tivxAddKernelHarrisCInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

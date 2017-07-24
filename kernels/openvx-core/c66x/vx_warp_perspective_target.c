@@ -69,7 +69,7 @@
 #include <tivx_kernel_warp_perspective.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <stdio.h>
 
 static tivx_target_kernel vx_warp_perspective_target_kernel = NULL;
@@ -87,7 +87,6 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
     uint8_t *dst_addr;
     VXLIB_F32 *mat_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
-    vx_rectangle_t rect;
     vx_border_t border;
 
     if (num_params != TIVX_KERNEL_WARP_PERSPECTIVE_MAX_PARAMS)
@@ -128,28 +127,13 @@ static vx_status VX_CALLBACK tivxKernelWarpPerspectiveProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src->valid_roi;
+        ownInitBufParams(src, &vxlib_src);
+        ownInitBufParams(dst, &vxlib_dst);
 
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
+        ownSetPointerLocation(dst, &dst_addr);
+
         mat_addr = (VXLIB_F32 *)((uintptr_t)mat->mem_ptr.target_ptr);
-
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0]));
-
-        vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
-
-        vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-        vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
 

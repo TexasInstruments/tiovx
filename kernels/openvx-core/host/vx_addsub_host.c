@@ -360,7 +360,7 @@ vx_status tivxAddKernelSub(vx_context context)
                             NULL,
                             4,
                             tivxAddKernelAddSubValidate,
-                            NULL,
+                            tivxAddKernelAddSubInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

@@ -92,6 +92,7 @@ typedef struct
 
     uint32_t *edge_list;
     uint32_t edge_list_size;
+    uint32_t gs;
 
     VXLIB_bufParams2D_t vxlib_src;
     VXLIB_bufParams2D_t vxlib_dst;
@@ -118,6 +119,8 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_threshold_t *thr;
     uint8_t *src_addr, *dst_addr;
+    uint8_t *border_addr_tl, *border_addr_tr, *border_addr_bl;
+    uint32_t i;
     tivx_obj_desc_scalar_t *sc_gs, *sc_norm;
     vx_rectangle_t rect;
     uint32_t size, num_dbl_thr_items = 0, num_edge_trace_out = 0;
@@ -163,9 +166,17 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
+        rect = dst->valid_roi;
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
+
+        prms->gs = sc_gs->data.s32;
+
+        border_addr_tl = (uint8_t *)(prms->nms_edge + prms->vxlib_edge.stride_y * (prms->gs / 2u) +
+            (prms->gs / 2u));
+        border_addr_tr = (uint8_t *)(border_addr_tl + 2 + prms->vxlib_edge.dim_x);
+        border_addr_bl = (uint8_t *)(border_addr_tl + prms->vxlib_edge.stride_y*(2+prms->vxlib_edge.dim_y));
 
         prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
         prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
@@ -193,6 +204,16 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
             status = tivxCannyCalcDblThr(prms, &num_dbl_thr_items, thr->lower,
                 thr->upper, sc_gs->data.s32);
         }
+
+        /* Edge Tracing requires 1 pixel border of zeros */
+        memset(border_addr_tl, 0, prms->vxlib_edge.dim_x+2);
+        memset(border_addr_bl, 0, prms->vxlib_edge.dim_x+2);
+        for(i=0; i<(prms->vxlib_edge.dim_y+2); i++)
+        {
+            border_addr_tl[i*prms->vxlib_edge.stride_y] = 0;
+            border_addr_tr[i*prms->vxlib_edge.stride_y] = 0;
+        }
+
         if (VXLIB_SUCCESS == status)
         {
             status = VXLIB_edgeTracing_i8u(prms->nms_edge, &prms->vxlib_edge,

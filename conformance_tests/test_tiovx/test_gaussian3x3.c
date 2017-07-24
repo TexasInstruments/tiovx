@@ -269,6 +269,7 @@ TEST_WITH_ARG(tivxGaussian3x3, testValidRegion, Filter_Arg,
     vx_node node1 = 0, node2 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
     vx_rectangle_t rect;
+    vx_bool valid_rect;
 
     CT_Image src = NULL, dst = NULL;
     vx_border_t border = arg_->border;
@@ -297,6 +298,9 @@ TEST_WITH_ARG(tivxGaussian3x3, testValidRegion, Filter_Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
 

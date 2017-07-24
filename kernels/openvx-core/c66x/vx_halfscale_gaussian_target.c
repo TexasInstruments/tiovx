@@ -69,8 +69,7 @@
 #include <tivx_kernel_halfscale_gaussian.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
-#include <stdio.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_halfscale_gaussian_target_kernel = NULL;
 
@@ -85,7 +84,6 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
     tivx_obj_desc_scalar_t *gsize_desc;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
-    vx_rectangle_t rect;
 
     if ((num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX])
@@ -113,27 +111,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src_desc->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src_desc->imagepatch_addr[0U]));
-
-        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst_desc->imagepatch_addr[0U]));
-
-        vxlib_src.dim_x = src_desc->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src_desc->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src_desc->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
-
-        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y;
-        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
+        ownSetPointerLocation(src_desc, &src_addr);
+        ownSetPointerLocation(dst_desc, &dst_addr);
 
         if( gsize_desc != NULL)
         {
@@ -142,17 +121,21 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
 
         if(gsize_value == 1)
         {
+            ownInitBufParams(src_desc, &vxlib_src);
+            ownInitBufParams(dst_desc, &vxlib_dst);
             status |= VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                                                       dst_addr, &vxlib_dst,
                                                       2, 2, 0, 0, 0, 0);
         }
         else if ((gsize_value == 3) || (gsize_value == 5))
         {
-
             VXLIB_bufParams2D_t gauss_params;
             uint8_t *pGauss;
 
-            gauss_params.dim_x    = vxlib_src.dim_x;
+            ownInitBufParams(src_desc, &vxlib_src);
+            ownInitBufParams(dst_desc, &vxlib_dst);
+
+            gauss_params.dim_x    = vxlib_src.dim_x-(gsize_value-1);
             gauss_params.dim_y    = vxlib_src.dim_y-(gsize_value-1);
             gauss_params.stride_y = vxlib_src.stride_y;
 
@@ -162,7 +145,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
                 status = tivxGetTargetKernelInstanceContext(kernel, &gaussOut, &gaussOut_size);
                 if (VX_SUCCESS == status)
                 {
-                    pGauss = (uint8_t*)((uint8_t*)gaussOut + gauss_params.stride_y + 1);
+                    pGauss = (uint8_t*)(gaussOut);
                     status |= VXLIB_gaussian_3x3_i8u_o8u(src_addr, &vxlib_src,
                                                      pGauss, &gauss_params);
                     status |= VXLIB_scaleImageNearest_i8u_o8u((uint8_t*)gaussOut, &gauss_params,
@@ -170,10 +153,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
                                                           2, 2, 0, 0, 0, 0);
                 }
             } else {
-                pGauss = (uint8_t*)(dst_addr + vxlib_dst.stride_y + 1);
-                vxlib_dst.dim_y -= 2;
                 status |= VXLIB_halfScaleGaussian_5x5_i8u_o8u(src_addr, &vxlib_src,
-                                                              pGauss, &vxlib_dst);
+                                                              dst_addr, &vxlib_dst);
             }
         }
         else

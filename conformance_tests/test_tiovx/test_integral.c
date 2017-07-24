@@ -98,6 +98,7 @@ TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
     vx_graph graph = 0;
     vx_node node1 = 0, node2 = 0;
     vx_perf_t perf_node1, perf_node2, perf_graph;
+    vx_bool valid_rect;
 
     CT_Image src0 = NULL, dst0 = NULL, src1 = NULL, dst1 = NULL;
 
@@ -117,6 +118,9 @@ TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));

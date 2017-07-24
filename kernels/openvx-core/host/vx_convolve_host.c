@@ -72,6 +72,15 @@ static vx_kernel vx_convolve_kernel = NULL;
 static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
+            vx_meta_format metas[]);
+
+static vx_status VX_CALLBACK tivxAddKernelConvolveInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params);
+
+static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
@@ -197,6 +206,60 @@ static vx_status VX_CALLBACK tivxAddKernelConvolveValidate(vx_node node,
     return status;
 }
 
+static vx_status VX_CALLBACK tivxAddKernelConvolveInitialize(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num_params)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+    vx_convolution conv;
+    vx_size cols, rows;
+    tivxKernelValidRectParams prms;
+
+    if (num_params != TIVX_KERNEL_CONVOLVE_MAX_PARAMS)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0U; (i < TIVX_KERNEL_CONVOLVE_MAX_PARAMS) &&
+            (VX_SUCCESS == status); i ++)
+    {
+        /* Check for NULL */
+        if (NULL == parameters[i])
+        {
+            status = VX_ERROR_NO_MEMORY;
+            break;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+
+        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_CONVOLVE_IN_IMG_IDX];
+        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_CONVOLVE_OUT_IMG_IDX];
+        conv = (vx_convolution)parameters[TIVX_KERNEL_CONVOLVE_IN_CONVOLVE_IDX];
+
+        status |= vxQueryConvolution(conv, VX_CONVOLUTION_COLUMNS,
+            &cols, sizeof(cols));
+        status |= vxQueryConvolution(conv, VX_CONVOLUTION_ROWS,
+            &rows, sizeof(rows));
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
+
+        prms.top_pad = (rows-1)/2;
+        prms.bot_pad = (rows-1)/2;
+        prms.left_pad = (cols-1)/2;
+        prms.right_pad = (cols-1)/2;
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status |= tivxKernelConfigValidRect(&prms);
+    }
+
+    return status;
+}
+
 vx_status tivxAddKernelConvolve(vx_context context)
 {
     vx_kernel kernel;
@@ -210,7 +273,7 @@ vx_status tivxAddKernelConvolve(vx_context context)
                             NULL,
                             3,
                             tivxAddKernelConvolveValidate,
-                            NULL,
+                            tivxAddKernelConvolveInitialize,
                             NULL);
 
     status = vxGetStatus((vx_reference)kernel);

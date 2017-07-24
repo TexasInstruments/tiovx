@@ -212,12 +212,9 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
 
             memset(prms, 0, sizeof(tivxAddParams));
 
-            ownInitBufParams(src0, &dst->valid_roi, &vxlib_src0,
-                0, 0, 0, 0);
-            ownInitBufParams(src1, &dst->valid_roi, &vxlib_src1,
-                0, 0, 0, 0);
-            ownInitBufParams(dst, NULL, &vxlib_dst,
-                0, 0, 0, 0);
+            ownInitBufParams(src0, &vxlib_src0);
+            ownInitBufParams(src1, &vxlib_src1);
+            ownInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
