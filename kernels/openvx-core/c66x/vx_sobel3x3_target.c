@@ -69,7 +69,7 @@
 #include <tivx_kernel_sobel3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_sobel_target_kernel = NULL;
 
@@ -82,7 +82,6 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
     uint8_t *src_addr;
     int16_t *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
-    vx_rectangle_t rect;
 
     if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
     {
@@ -113,13 +112,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+        ownSetPointerLocation(src, &src_addr);
 
         vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
         vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
@@ -134,15 +127,9 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dst0->mem_ptr[0].target_ptr, dst0->mem_size[0],
                 dst0->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            /* TODO: Do we require to move pointer even for destination image */
-            dst_addr = (int16_t *)((uintptr_t)dst0->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x + 1U, rect.start_y + 1U,
-                &dst0->imagepatch_addr[0]));
+            ownSetPointerLocation(dst0, (uint8_t **)&dst_addr);
 
-            vxlib_dst.dim_x = dst0->imagepatch_addr[0].dim_x;
-            vxlib_dst.dim_y = dst0->imagepatch_addr[0].dim_y - 2U;
-            vxlib_dst.stride_y = dst0->imagepatch_addr[0].stride_y;
-            vxlib_dst.data_type = VXLIB_INT16;
+            ownInitBufParams(dst0, &vxlib_dst);
 
             status = VXLIB_sobelX_3x3_i8u_o16s(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst);
@@ -164,15 +151,9 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dst1->mem_ptr[0].target_ptr, dst1->mem_size[0],
                 dst1->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            /* TODO: Do we require to move pointer even for destination image */
-            dst_addr = (int16_t *)((uintptr_t)dst1->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x + 1U, rect.start_y + 1U,
-                &dst1->imagepatch_addr[0]));
+            ownSetPointerLocation(dst1, (uint8_t **)&dst_addr);
 
-            vxlib_dst.dim_x = dst1->imagepatch_addr[0].dim_x;
-            vxlib_dst.dim_y = dst1->imagepatch_addr[0].dim_y - 2U;
-            vxlib_dst.stride_y = dst1->imagepatch_addr[0].stride_y;
-            vxlib_dst.data_type = VXLIB_INT16;
+            ownInitBufParams(dst1, &vxlib_dst);
 
             status = VXLIB_sobelY_3x3_i8u_o16s(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst);

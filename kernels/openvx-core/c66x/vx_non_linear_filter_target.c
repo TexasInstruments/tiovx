@@ -69,7 +69,7 @@
 #include <tivx_kernel_non_linear_filter.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_non_linear_filter_target_kernel = NULL;
 
@@ -84,7 +84,6 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
     tivx_obj_desc_matrix_t *mask_desc;
     tivx_obj_desc_image_t *dst_desc;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst, mask_params;
-    vx_rectangle_t rect;
     uint8_t *src_addr;
     uint8_t *dst_addr;
     uint8_t *mask_addr;
@@ -123,28 +122,11 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
 
         mask_addr = (uint8_t *)((uintptr_t)mask_desc->mem_ptr.target_ptr);
 
-        rect = src_desc->valid_roi;
+        ownSetPointerLocation(src_desc, &src_addr);
+        ownSetPointerLocation(dst_desc, &dst_addr);
 
-        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src_desc->imagepatch_addr[0U]));
-
-        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(
-                    rect.start_x + (mask_desc->origin_x),
-                    rect.start_y + (mask_desc->origin_y),
-            &dst_desc->imagepatch_addr[0U]));
-
-
-        vxlib_src.dim_x = src_desc->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src_desc->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src_desc->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
-
-        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y - (2*(mask_desc->origin_y));
-        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
+        ownInitBufParams(src_desc, &vxlib_src);
+        ownInitBufParams(dst_desc, &vxlib_dst);
 
         mask_params.dim_x    = mask_desc->columns;
         mask_params.dim_y    = mask_desc->rows;

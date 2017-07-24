@@ -69,7 +69,7 @@
 #include <tivx_kernel_multiply.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_multiply_target_kernel = NULL;
 
@@ -83,7 +83,6 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
     uint8_t *src0_addr, *src1_addr;
     uint8_t *dst_addr;
     VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
-    vx_rectangle_t rect;
     uint16_t overflow_policy;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -112,57 +111,13 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src0->valid_roi;
+        ownSetPointerLocation(src0, &src0_addr);
+        ownSetPointerLocation(src1, &src1_addr);
+        ownSetPointerLocation(dst, &dst_addr);
 
-        src0_addr = (uint8_t *)((uintptr_t)src0->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src0->imagepatch_addr[0U]));
-        src1_addr = (uint8_t *)((uintptr_t)src1->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src1->imagepatch_addr[0U]));
-
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0]));
-
-        vxlib_src0.dim_x = src0->imagepatch_addr[0].dim_x;
-        vxlib_src0.dim_y = src0->imagepatch_addr[0].dim_y;
-        vxlib_src0.stride_y = src0->imagepatch_addr[0].stride_y;
-        if (VX_DF_IMAGE_U8 == src0->format)
-        {
-            vxlib_src0.data_type = VXLIB_UINT8;
-        }
-        else
-        {
-            vxlib_src0.data_type = VXLIB_INT16;
-        }
-
-        vxlib_src1.dim_x = src1->imagepatch_addr[0].dim_x;
-        vxlib_src1.dim_y = src1->imagepatch_addr[0].dim_y;
-        vxlib_src1.stride_y = src1->imagepatch_addr[0].stride_y;
-        if (VX_DF_IMAGE_U8 == src1->format)
-        {
-            vxlib_src1.data_type = VXLIB_UINT8;
-        }
-        else
-        {
-            vxlib_src1.data_type = VXLIB_INT16;
-        }
-
-        vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-        vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-        if (VX_DF_IMAGE_U8 == dst->format)
-        {
-            vxlib_dst.data_type = VXLIB_UINT8;
-        }
-        else
-        {
-            vxlib_dst.data_type = VXLIB_INT16;
-        }
+        ownInitBufParams(src0, &vxlib_src0);
+        ownInitBufParams(src1, &vxlib_src1);
+        ownInitBufParams(dst, &vxlib_dst);
 
         if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
         {

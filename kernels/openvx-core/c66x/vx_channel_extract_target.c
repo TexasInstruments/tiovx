@@ -69,7 +69,7 @@
 #include <tivx_kernel_channel_extract.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_channel_extract_target_kernel = NULL;
 
@@ -98,11 +98,7 @@ vx_status tivxChannelExtractRgbRgbxInput(
         ownComputePatchOffset(rect.start_x, rect.start_y,
         &in_desc->imagepatch_addr[0U]));
 
-    /* Initialize vxLib Parameters with the input/output frame parameters */
-    vxlib_src.dim_x = in_desc->imagepatch_addr[0U].dim_x;
-    vxlib_src.dim_y = in_desc->imagepatch_addr[0U].dim_y;
-    vxlib_src.stride_y = in_desc->imagepatch_addr[0U].stride_y;
-    vxlib_src.data_type = VXLIB_UINT8;
+    ownInitBufParams(in_desc, &vxlib_src);
 
     switch(channel_value)
     {
@@ -173,25 +169,14 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     VXLIB_bufParams2D_t vxlib_src;
     uint8_t *src_addr;
     uint8_t channel_offset;
-    vx_rectangle_t rect;
     vx_status status = VX_SUCCESS;
 
     in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
       in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_type);
 
-    /* Get the correct offset of the images from the valid roi parameter,
-     */
-    rect = in_desc->valid_roi;
+    ownSetPointerLocation(in_desc, &src_addr);
 
-    src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[0U].target_ptr +
-        ownComputePatchOffset(rect.start_x, rect.start_y,
-        &in_desc->imagepatch_addr[0U]));
-
-    /* Initialize vxLib Parameters with the input/output frame parameters */
-    vxlib_src.dim_x = in_desc->imagepatch_addr[0U].dim_x;
-    vxlib_src.dim_y = in_desc->imagepatch_addr[0U].dim_y;
-    vxlib_src.stride_y = in_desc->imagepatch_addr[0U].stride_y;
-    vxlib_src.data_type = VXLIB_UINT8;
+    ownInitBufParams(in_desc, &vxlib_src);
 
     switch(channel_value)
     {
@@ -304,8 +289,8 @@ vx_status tivxChannelExtractNv12Nv21Input(
             &in_desc->imagepatch_addr[plane_idx]));
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
-        vxlib_src.dim_x = in_desc->imagepatch_addr[plane_idx].dim_x/in_desc->imagepatch_addr[plane_idx].step_x;
-        vxlib_src.dim_y = in_desc->imagepatch_addr[plane_idx].dim_y/in_desc->imagepatch_addr[plane_idx].step_y;
+        vxlib_src.dim_x = (in_desc->valid_roi.end_x - in_desc->valid_roi.start_x)/in_desc->imagepatch_addr[plane_idx].step_x;
+        vxlib_src.dim_y = (in_desc->valid_roi.end_y - in_desc->valid_roi.start_y)/in_desc->imagepatch_addr[plane_idx].step_y;
         vxlib_src.stride_y = in_desc->imagepatch_addr[plane_idx].stride_y;
         vxlib_src.data_type = VXLIB_UINT8;
 
@@ -410,8 +395,8 @@ vx_status tivxChannelExtractIyuvYuv4Input(
             &in_desc->imagepatch_addr[plane_idx]));
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
-        vxlib_src.dim_x = in_desc->imagepatch_addr[plane_idx].dim_x/in_desc->imagepatch_addr[plane_idx].step_x;
-        vxlib_src.dim_y = in_desc->imagepatch_addr[plane_idx].dim_y/in_desc->imagepatch_addr[plane_idx].step_y;
+        vxlib_src.dim_x = (in_desc->valid_roi.end_x - in_desc->valid_roi.start_x)/in_desc->imagepatch_addr[plane_idx].step_x;
+        vxlib_src.dim_y = (in_desc->valid_roi.end_y - in_desc->valid_roi.start_y)/in_desc->imagepatch_addr[plane_idx].step_y;
         vxlib_src.stride_y = in_desc->imagepatch_addr[plane_idx].stride_y;
         vxlib_src.data_type = VXLIB_UINT8;
     }
@@ -478,10 +463,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
                 ownComputePatchOffset(rect.start_x, rect.start_y,
                 &out_desc->imagepatch_addr[0]));
 
-            vxlib_dst.dim_x = out_desc->imagepatch_addr[0U].dim_x;
-            vxlib_dst.dim_y = out_desc->imagepatch_addr[0U].dim_y;
-            vxlib_dst.stride_y = out_desc->imagepatch_addr[0U].stride_y;
-            vxlib_dst.data_type = VXLIB_UINT8;
+            ownInitBufParams(out_desc, &vxlib_dst);
 
             if (   (in_desc->format == VX_DF_IMAGE_RGB)
                 || (in_desc->format == VX_DF_IMAGE_RGBX)

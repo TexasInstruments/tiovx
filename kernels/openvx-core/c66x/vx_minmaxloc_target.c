@@ -69,7 +69,7 @@
 #include <tivx_kernel_minmaxloc.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_mml_target_kernel = NULL;
 
@@ -81,7 +81,6 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
     tivx_obj_desc_image_t *src;
     vx_uint8 *src_addr;
     VXLIB_bufParams2D_t vxlib_src;
-    vx_rectangle_t rect;
     tivx_obj_desc_scalar_t *sc[4U];
     tivx_obj_desc_array_t *arr[2U];
     uint32_t min_cnt = 0, max_cnt = 0, min_cap = 0, max_cap = 0;
@@ -138,26 +137,8 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
             max_cap = arr[1U]->mem_size / arr[1u]->item_size;
         }
 
-
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-
-        vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        if (VX_DF_IMAGE_U8 == src->format)
-        {
-            vxlib_src.data_type = VXLIB_UINT8;
-        }
-        else
-        {
-            vxlib_src.data_type = VXLIB_INT16;
-        }
+        ownSetPointerLocation(src, &src_addr);
+        ownInitBufParams(src, &vxlib_src);
 
         if (VX_DF_IMAGE_U8 == src->format)
         {

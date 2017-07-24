@@ -69,7 +69,8 @@
 #include <tivx_kernel_channel_combine.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
+#include <stdio.h>
 
 static tivx_target_kernel vx_channel_combine_target_kernel = NULL;
 
@@ -162,64 +163,23 @@ vx_status VX_CALLBACK tivxChannelCombine(
             uint8_t *src3_addr = NULL;
             VXLIB_bufParams2D_t vxlib_dst;
             uint8_t *dst_addr[4U] = {NULL};
-            vx_rectangle_t rect;
 
-            vxlib_src0.dim_x = src0_desc->imagepatch_addr[0U].dim_x;
-            vxlib_src0.dim_y = src0_desc->imagepatch_addr[0U].dim_y;
-            vxlib_src0.stride_y = src0_desc->imagepatch_addr[0U].stride_y;
-            vxlib_src0.data_type = VXLIB_UINT8;
+            ownInitBufParams(src0_desc, &vxlib_src0);
+            ownSetPointerLocation(src0_desc, &src0_addr);
 
-            /* Get the correct offset of the images from the valid roi parameter,
-             */
-            rect = src0_desc->valid_roi;
-
-            src0_addr = (uint8_t *)((uintptr_t)src0_desc->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &src0_desc->imagepatch_addr[0U]));
-
-            vxlib_src1.dim_x = src1_desc->imagepatch_addr[0U].dim_x;
-            vxlib_src1.dim_y = src1_desc->imagepatch_addr[0U].dim_y;
-            vxlib_src1.stride_y = src1_desc->imagepatch_addr[0U].stride_y;
-            vxlib_src1.data_type = VXLIB_UINT8;
-
-            /* Get the correct offset of the images from the valid roi parameter,
-             */
-            rect = src1_desc->valid_roi;
-
-            src1_addr = (uint8_t *)((uintptr_t)src1_desc->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
-                &src1_desc->imagepatch_addr[0U]));
+            ownInitBufParams(src1_desc, &vxlib_src1);
+            ownSetPointerLocation(src1_desc, &src1_addr);
 
             if(src2_desc != NULL)
             {
-                vxlib_src2.dim_x = src2_desc->imagepatch_addr[0U].dim_x;
-                vxlib_src2.dim_y = src2_desc->imagepatch_addr[0U].dim_y;
-                vxlib_src2.stride_y = src2_desc->imagepatch_addr[0U].stride_y;
-                vxlib_src2.data_type = VXLIB_UINT8;
-
-                /* Get the correct offset of the images from the valid roi parameter,
-                 */
-                rect = src2_desc->valid_roi;
-
-                src2_addr = (uint8_t *)((uintptr_t)src2_desc->mem_ptr[0U].target_ptr +
-                    ownComputePatchOffset(rect.start_x, rect.start_y,
-                    &src2_desc->imagepatch_addr[0U]));
+                ownInitBufParams(src2_desc, &vxlib_src2);
+                ownSetPointerLocation(src2_desc, &src2_addr);
             }
 
             if(src3_desc != NULL)
             {
-                /* Get the correct offset of the images from the valid roi parameter,
-                 */
-                rect = src3_desc->valid_roi;
-
-                vxlib_src3.dim_x = src3_desc->imagepatch_addr[0U].dim_x;
-                vxlib_src3.dim_y = src3_desc->imagepatch_addr[0U].dim_y;
-                vxlib_src3.stride_y = src3_desc->imagepatch_addr[0U].stride_y;
-                vxlib_src3.data_type = VXLIB_UINT8;
-
-                src3_addr = (uint8_t *)((uintptr_t)src3_desc->mem_ptr[0U].target_ptr +
-                    ownComputePatchOffset(rect.start_x, rect.start_y,
-                    &src3_desc->imagepatch_addr[0U]));
+                ownInitBufParams(src3_desc, &vxlib_src3);
+                ownSetPointerLocation(src3_desc, &src3_addr);
             }
 
             src_addr[0] = src0_addr;
@@ -229,16 +189,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
             vxlib_src[1] = &vxlib_src1;
             vxlib_src[2] = &vxlib_src2;
 
-            /* Get the correct offset of the images from the valid roi parameter,
-             */
-            rect = dst_desc->valid_roi;
-
-            for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
-            {
-                dst_addr[plane_idx] = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[plane_idx].target_ptr +
-                    ownComputePatchOffset(rect.start_x, rect.start_y,
-                        &dst_desc->imagepatch_addr[plane_idx]));
-            }
+            ownSetPointerLocation(dst_desc, (uint8_t**)&dst_addr);
 
             if (   dst_desc->format == VX_DF_IMAGE_RGB
                 || dst_desc->format == VX_DF_IMAGE_RGBX
@@ -246,13 +197,12 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 || dst_desc->format == VX_DF_IMAGE_UYVY
                 )
             {
-                vxlib_dst.dim_x = dst_desc->imagepatch_addr[0U].dim_x;
-                vxlib_dst.dim_y = dst_desc->imagepatch_addr[0U].dim_y;
-                vxlib_dst.stride_y = dst_desc->imagepatch_addr[0U].stride_y;
-                vxlib_dst.data_type = VXLIB_UINT8;
+                ownInitBufParams(dst_desc, &vxlib_dst);
 
                 if( dst_desc->format == VX_DF_IMAGE_RGB)
                 {
+                    vxlib_dst.data_type = VXLIB_UINT24;
+
                     status = VXLIB_channelCombine_3to1_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
@@ -263,6 +213,8 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 else
                 if( dst_desc->format == VX_DF_IMAGE_RGBX)
                 {
+                    vxlib_dst.data_type = VXLIB_UINT32;
+
                     status = VXLIB_channelCombine_4to1_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
@@ -274,6 +226,9 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 else
                 if( dst_desc->format == VX_DF_IMAGE_YUYV)
                 {
+                    vxlib_dst.dim_x = 2*vxlib_dst.dim_x;
+                    vxlib_dst.data_type = VXLIB_UINT16;
+
                     status = VXLIB_channelCombine_yuyv_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
@@ -284,6 +239,9 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 }
                 else /* format is VX_DF_IMAGE_UYVY */
                 {
+                    vxlib_dst.dim_x = 2*vxlib_dst.dim_x;
+                    vxlib_dst.data_type = VXLIB_UINT16;
+
                     status = VXLIB_channelCombine_yuyv_i8u_o8u(
                         src0_addr, &vxlib_src0,
                         src1_addr, &vxlib_src1,
@@ -301,10 +259,10 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
                 {
                     vxlib_dst.dim_x =
-                        dst_desc->imagepatch_addr[plane_idx].dim_x
+                        (dst_desc->valid_roi.end_x - dst_desc->valid_roi.start_x)
                         /dst_desc->imagepatch_addr[plane_idx].step_x;
                     vxlib_dst.dim_y =
-                        dst_desc->imagepatch_addr[plane_idx].dim_y
+                        (dst_desc->valid_roi.end_y - dst_desc->valid_roi.start_y)
                         /dst_desc->imagepatch_addr[plane_idx].step_y;
                     vxlib_dst.stride_y =
                         dst_desc->imagepatch_addr[plane_idx].stride_y;
@@ -324,10 +282,10 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 for(plane_idx=0; plane_idx<dst_desc->planes; plane_idx++)
                 {
                     vxlib_dst.dim_x =
-                        dst_desc->imagepatch_addr[plane_idx].dim_x
+                        (dst_desc->valid_roi.end_x - dst_desc->valid_roi.start_x)
                         /dst_desc->imagepatch_addr[plane_idx].step_x;
                     vxlib_dst.dim_y =
-                        dst_desc->imagepatch_addr[plane_idx].dim_y
+                        (dst_desc->valid_roi.end_y - dst_desc->valid_roi.start_y)
                         /dst_desc->imagepatch_addr[plane_idx].step_y;
                     vxlib_dst.stride_y =
                         dst_desc->imagepatch_addr[plane_idx].stride_y;

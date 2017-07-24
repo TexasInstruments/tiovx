@@ -69,7 +69,7 @@
 #include <tivx_kernel_accumulate_weighted.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_accumulate_weighted_target_kernel = NULL;
 
@@ -83,8 +83,7 @@ static vx_status tivxKernelAccumulateWeighted(
     tivx_obj_desc_image_t *src_desc, *dst_desc;
     tivx_obj_desc_scalar_t *sc_desc;
     uint32_t i;
-    void *src_addr, *dst_addr;
-    vx_rectangle_t rect;
+    uint8_t *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
 
     if (num_params != TIVX_KERNEL_ACCUMULATE_WEIGHTED_MAX_PARAMS)
@@ -122,28 +121,11 @@ static vx_status tivxKernelAccumulateWeighted(
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr, dst_desc->mem_size[0],
             dst_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src image */
-        rect = src_desc->valid_roi;
+        ownSetPointerLocation(src_desc, &src_addr);
+        ownSetPointerLocation(dst_desc, &dst_addr);
 
-        src_addr = (uint8_t *)((uintptr_t)src_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src_desc->imagepatch_addr[0U]));
-
-        /* TODO: Do we require to move pointer even for destination image */
-        dst_addr = (uint8_t *)((uintptr_t)dst_desc->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst_desc->imagepatch_addr[0]));
-
-        vxlib_src.dim_x = src_desc->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src_desc->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src_desc->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
-
-        vxlib_dst.dim_x = dst_desc->imagepatch_addr[0].dim_x;
-        vxlib_dst.dim_y = dst_desc->imagepatch_addr[0].dim_y;
-        vxlib_dst.stride_y = dst_desc->imagepatch_addr[0].stride_y;
-        vxlib_dst.data_type = VXLIB_UINT8;
+        ownInitBufParams(src_desc, &vxlib_src);
+        ownInitBufParams(dst_desc, &vxlib_dst);
 
         status = VXLIB_accumulateWeightedImage_i8u_io8u((uint8_t *)src_addr,
                     &vxlib_src, (uint8_t *)dst_addr, &vxlib_dst, sc_desc->data.f32);

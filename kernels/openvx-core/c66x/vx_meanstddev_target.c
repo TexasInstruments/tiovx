@@ -69,7 +69,7 @@
 #include <tivx_kernel_meanstddev.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 static tivx_target_kernel vx_msd_target_kernel = NULL;
 
@@ -82,7 +82,6 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
     tivx_obj_desc_image_t *src;
     vx_uint8 *src_addr;
     VXLIB_bufParams2D_t vxlib_src;
-    vx_rectangle_t rect;
     tivx_obj_desc_scalar_t *sc[2U];
     uint32_t pixelsProcessed;
     VXLIB_F32 currentSum, currentSqSum;
@@ -118,18 +117,8 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        /* Get the correct offset of the images from the valid roi parameter,
-           Assuming valid Roi is same for src0 and src1 images */
-        rect = src->valid_roi;
-
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
-
-        vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        vxlib_src.data_type = VXLIB_UINT8;
+        ownSetPointerLocation(src, &src_addr);
+        ownInitBufParams(src, &vxlib_src);
 
         status = VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
             &sc[0U]->data.f32, &sc[1U]->data.f32, &pixelsProcessed,

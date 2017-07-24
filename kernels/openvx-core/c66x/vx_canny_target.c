@@ -69,7 +69,7 @@
 #include <tivx_kernel_canny.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 
 typedef struct
 {
@@ -163,30 +163,32 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
+
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
-        rect = dst->valid_roi;
+
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             ownComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 
         prms->gs = sc_gs->data.s32;
 
-        border_addr_tl = (uint8_t *)(prms->nms_edge + prms->vxlib_edge.stride_y * (prms->gs / 2u) +
-            (prms->gs / 2u));
-        border_addr_tr = (uint8_t *)(border_addr_tl + 2 + prms->vxlib_edge.dim_x);
-        border_addr_bl = (uint8_t *)(border_addr_tl + prms->vxlib_edge.stride_y*(2+prms->vxlib_edge.dim_y));
+        /* Get the correct offset of the images from the valid roi parameter */
+        rect = src->valid_roi;
 
-        prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-        prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-        prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-        prms->vxlib_src.data_type = VXLIB_UINT8;
+        border_addr_tl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            &dst->imagepatch_addr[0U]));
+        border_addr_tr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            &dst->imagepatch_addr[0U]));
+        border_addr_bl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
+            &dst->imagepatch_addr[0U]));
 
-        prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-        prms->vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-        prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-        prms->vxlib_dst.data_type = VXLIB_UINT8;
+        ownInitBufParams(src, &prms->vxlib_src);
+        ownInitBufParams(dst, &prms->vxlib_dst);
 
         status = tivxCannyCalcSobel(prms, src_addr, sc_gs->data.s32);
 
@@ -206,12 +208,12 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         }
 
         /* Edge Tracing requires 1 pixel border of zeros */
-        memset(border_addr_tl, 0, prms->vxlib_edge.dim_x+2);
-        memset(border_addr_bl, 0, prms->vxlib_edge.dim_x+2);
-        for(i=0; i<(prms->vxlib_edge.dim_y+2); i++)
+        memset(border_addr_tl, 0, prms->vxlib_dst.dim_x+2);
+        memset(border_addr_bl, 0, prms->vxlib_dst.dim_x+2);
+        for(i=0; i<(prms->vxlib_dst.dim_y+2); i++)
         {
-            border_addr_tl[i*prms->vxlib_edge.stride_y] = 0;
-            border_addr_tr[i*prms->vxlib_edge.stride_y] = 0;
+            border_addr_tl[i*prms->vxlib_dst.stride_y] = 0;
+            border_addr_tr[i*prms->vxlib_dst.stride_y] = 0;
         }
 
         if (VXLIB_SUCCESS == status)
@@ -266,30 +268,24 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
         {
             memset(prms, 0, sizeof(tivxCannyParams));
 
-            prms->vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
-            prms->vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
-            prms->vxlib_src.stride_y = src->imagepatch_addr[0].stride_y;
-            prms->vxlib_src.data_type = VXLIB_UINT8;
+            ownInitBufParams(src, &prms->vxlib_src);
 
-            prms->vxlib_dst.dim_x = dst->imagepatch_addr[0].dim_x;
-            prms->vxlib_dst.dim_y = dst->imagepatch_addr[0].dim_y;
-            prms->vxlib_dst.stride_y = dst->imagepatch_addr[0].stride_y;
-            prms->vxlib_dst.data_type = VXLIB_UINT8;
+            ownInitBufParams(dst, &prms->vxlib_dst);
 
-            prms->vxlib_sobx.dim_x = src->imagepatch_addr[0].dim_x;
-            prms->vxlib_sobx.dim_y = src->imagepatch_addr[0].dim_y -
+            prms->vxlib_sobx.dim_x = prms->vxlib_src.dim_x;
+            prms->vxlib_sobx.dim_y = prms->vxlib_src.dim_y -
                 (sc_gs->data.s32 - 1u);
-            prms->vxlib_sobx.stride_y = (src->imagepatch_addr[0].stride_y * 2u);
+            prms->vxlib_sobx.stride_y = (prms->vxlib_src.stride_y * 2u);
             prms->vxlib_sobx.data_type = VXLIB_UINT16;
 
-            prms->vxlib_soby.dim_x = src->imagepatch_addr[0].dim_x;
-            prms->vxlib_soby.dim_y = src->imagepatch_addr[0].dim_y -
+            prms->vxlib_soby.dim_x = prms->vxlib_src.dim_x;
+            prms->vxlib_soby.dim_y = prms->vxlib_src.dim_y -
                 (sc_gs->data.s32 - 1u);
-            prms->vxlib_soby.stride_y = (src->imagepatch_addr[0].stride_y * 2u);
+            prms->vxlib_soby.stride_y = (prms->vxlib_src.stride_y * 2u);
             prms->vxlib_soby.data_type = VXLIB_UINT16;
 
             prms->sobel_size = prms->vxlib_sobx.stride_y *
-                src->imagepatch_addr[0].dim_y;
+                prms->vxlib_src.dim_y;
 
             prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->sobel_x)
@@ -309,15 +305,15 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->vxlib_norm.dim_x = src->imagepatch_addr[0].dim_x;
-                prms->vxlib_norm.dim_y = src->imagepatch_addr[0].dim_y -
+                prms->vxlib_norm.dim_x = prms->vxlib_src.dim_x;
+                prms->vxlib_norm.dim_y = prms->vxlib_src.dim_y -
                     (sc_gs->data.s32 - 1u);
-                prms->vxlib_norm.stride_y = (src->imagepatch_addr[0].stride_y *
+                prms->vxlib_norm.stride_y = (prms->vxlib_src.stride_y *
                     2u);
                 prms->vxlib_norm.data_type = VXLIB_UINT16;
 
                 prms->norm_size = prms->vxlib_norm.stride_y *
-                    src->imagepatch_addr[0].dim_y;
+                    prms->vxlib_src.dim_y;
 
                 prms->norm = tivxMemAlloc(prms->norm_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->norm)
@@ -328,14 +324,14 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->vxlib_edge.dim_x = src->imagepatch_addr[0].dim_x;
-                prms->vxlib_edge.dim_y = src->imagepatch_addr[0].dim_y -
+                prms->vxlib_edge.dim_x = prms->vxlib_src.dim_x;
+                prms->vxlib_edge.dim_y = prms->vxlib_src.dim_y -
                     (sc_gs->data.s32 - 1u) - 2u;
-                prms->vxlib_edge.stride_y = src->imagepatch_addr[0].stride_y;
+                prms->vxlib_edge.stride_y = prms->vxlib_src.stride_y;
                 prms->vxlib_edge.data_type = VXLIB_UINT8;
 
                 prms->nms_edge_size = prms->vxlib_edge.stride_y *
-                    src->imagepatch_addr[0].dim_y;
+                    prms->vxlib_src.dim_y;
 
                 prms->nms_edge = tivxMemAlloc(prms->nms_edge_size,
                     TIVX_MEM_EXTERNAL);
@@ -347,8 +343,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
             if (VX_SUCCESS == status)
             {
-                prms->edge_list_size = ((prms->vxlib_edge.stride_y / 2) *
-                    prms->vxlib_edge.dim_y);
+                prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 
                 prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u,
                     TIVX_MEM_EXTERNAL);
