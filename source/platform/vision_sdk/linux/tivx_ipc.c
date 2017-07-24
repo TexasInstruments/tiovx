@@ -10,6 +10,11 @@
 #include <vx_internal.h>
 #include <tivx_platform_vision_sdk.h>
 
+/* this is required for the funtion defined in system_if.h
+ * Below typedef is done to avoid pulling in XDC defined types on linux side
+ */
+typedef uint32_t UInt32;
+
 #include <include/link_api/system_if.h>
 #include <include/link_api/system_procId.h>
 #include <src/hlos/system/system_priv_openvx.h>
