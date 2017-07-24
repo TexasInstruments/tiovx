@@ -68,7 +68,7 @@
 #include <tivx_kernel_addsub.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_target_kernels_utils.h>
 #include <vx_bam_kernel_wrapper.h>
 
 typedef struct
@@ -102,7 +102,6 @@ static vx_status VX_CALLBACK tivxKernelAddProcess(
     tivxAddParams *prms = NULL;
     tivx_obj_desc_image_t *src0, *src1, *dst;
     uint8_t *src0_addr, *src1_addr, *dst_addr;
-    vx_rectangle_t rect;
     uint32_t size;
 
     status = ownCheckNullParams(obj_desc, num_params,
@@ -128,32 +127,23 @@ static vx_status VX_CALLBACK tivxKernelAddProcess(
     {
         void *img_ptrs[3];
 
-        /* Get the correct offset of the images from the valid roi parameter */
-        rect = src0->valid_roi;
-
         src0->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
         tivxMemBufferMap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
             src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        src0_addr = (uint8_t *)((uintptr_t)src0->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src0->imagepatch_addr[0U]));
+        ownSetPointerLocation(src0, &src0_addr);
 
         src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
         tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
             src1->mem_ptr[0].mem_type, VX_READ_ONLY);
-        src1_addr = (uint8_t *)((uintptr_t)src1->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &src1->imagepatch_addr[0U]));
+        ownSetPointerLocation(src1, &src1_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_READ_ONLY);
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0U]));
+        ownSetPointerLocation(dst, &dst_addr);
 
         if ((VX_DF_IMAGE_S16 == src0->format) &&
             (VX_DF_IMAGE_U8 == src1->format) &&
@@ -222,41 +212,12 @@ static vx_status VX_CALLBACK tivxKernelAddCreate(
 
             memset(prms, 0, sizeof(tivxAddParams));
 
-            vxlib_src0.dim_x = src0->imagepatch_addr[0U].dim_x;
-            vxlib_src0.dim_y = src0->imagepatch_addr[0U].dim_y;
-            vxlib_src0.stride_y = src0->imagepatch_addr[0U].stride_y;
-            if (VX_DF_IMAGE_U8 == src0->format)
-            {
-                vxlib_src0.data_type = VXLIB_UINT8;
-            }
-            else
-            {
-                vxlib_src0.data_type = VXLIB_INT16;
-            }
-
-            vxlib_src1.dim_x = src1->imagepatch_addr[0U].dim_x;
-            vxlib_src1.dim_y = src1->imagepatch_addr[0U].dim_y;
-            vxlib_src1.stride_y = src1->imagepatch_addr[0U].stride_y;
-            if (VX_DF_IMAGE_U8 == src1->format)
-            {
-                vxlib_src1.data_type = VXLIB_UINT8;
-            }
-            else
-            {
-                vxlib_src1.data_type = VXLIB_INT16;
-            }
-
-            vxlib_dst.dim_x = dst->imagepatch_addr[0U].dim_x;
-            vxlib_dst.dim_y = dst->imagepatch_addr[0U].dim_y;
-            vxlib_dst.stride_y = dst->imagepatch_addr[0U].stride_y;
-            if (VX_DF_IMAGE_U8 == dst->format)
-            {
-                vxlib_dst.data_type = VXLIB_UINT8;
-            }
-            else
-            {
-                vxlib_dst.data_type = VXLIB_INT16;
-            }
+            ownInitBufParams(src0, &dst->valid_roi, &vxlib_src0,
+                0, 0, 0, 0);
+            ownInitBufParams(src1, &dst->valid_roi, &vxlib_src1,
+                0, 0, 0, 0);
+            ownInitBufParams(dst, NULL, &vxlib_dst,
+                0, 0, 0, 0);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
