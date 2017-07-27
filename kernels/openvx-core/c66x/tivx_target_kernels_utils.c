@@ -110,6 +110,129 @@ void ownReserveC66xL2MEM(void)
 
 }
 
+void ownInitTwoBufParams(
+    tivx_obj_desc_image_t *obj_desc0,
+    tivx_obj_desc_image_t *obj_desc1,
+    VXLIB_bufParams2D_t buf_params0[],
+    VXLIB_bufParams2D_t buf_params1[])
+{
+    uint32_t i;
+    vx_rectangle_t rect;
+
+    rect = obj_desc0->valid_roi;
+
+    if (obj_desc1->valid_roi.start_x > rect.start_x)
+    {
+        rect.start_x = obj_desc1->valid_roi.start_x;
+    }
+    if (obj_desc1->valid_roi.start_y > rect.start_y)
+    {
+        rect.start_y = obj_desc1->valid_roi.start_y;
+    }
+
+    if (obj_desc1->valid_roi.end_x < rect.end_x)
+    {
+        rect.end_x = obj_desc1->valid_roi.end_x;
+    }
+    if (obj_desc1->valid_roi.end_y < rect.end_y)
+    {
+        rect.end_y = obj_desc1->valid_roi.end_y;
+    }
+
+    for (i = 0; i < obj_desc0->planes; i ++)
+    {
+        buf_params0[i].dim_x = rect.end_x - rect.start_x;
+        buf_params0[i].dim_y = rect.end_y - rect.start_y;
+        buf_params1[i].dim_x = rect.end_x - rect.start_x;
+        buf_params1[i].dim_y = rect.end_y - rect.start_y;
+
+        buf_params0[i].stride_y = obj_desc0->imagepatch_addr[i].stride_y;
+        buf_params1[i].stride_y = obj_desc1->imagepatch_addr[i].stride_y;
+
+        if (512 == obj_desc0->imagepatch_addr[i].scale_x)
+        {
+            buf_params0[i].dim_y = buf_params0[i].dim_y / 2;
+
+            if (VX_DF_IMAGE_IYUV == obj_desc0->format)
+            {
+                buf_params0[i].dim_x = buf_params0[i].dim_x / 2;
+            }
+        }
+
+        if (512 == obj_desc1->imagepatch_addr[i].scale_x)
+        {
+            buf_params1[i].dim_y = buf_params1[i].dim_y / 2;
+
+            if (VX_DF_IMAGE_IYUV == obj_desc1->format)
+            {
+                buf_params1[i].dim_x = buf_params1[i].dim_x / 2;
+            }
+        }
+
+        switch(obj_desc0->format)
+        {
+            case VX_DF_IMAGE_NV12:
+            case VX_DF_IMAGE_NV21:
+            case VX_DF_IMAGE_IYUV:
+            case VX_DF_IMAGE_YUV4:
+            case VX_DF_IMAGE_U8:
+                buf_params0[i].data_type = VXLIB_UINT8;
+                break;
+            case VX_DF_IMAGE_U16:
+                buf_params0[i].data_type = VXLIB_UINT16;
+                break;
+            case VX_DF_IMAGE_S16:
+                buf_params0[i].data_type = VXLIB_INT16;
+                break;
+            case VX_DF_IMAGE_RGBX:
+            case VX_DF_IMAGE_U32:
+                buf_params0[i].data_type = VXLIB_UINT32;
+                break;
+            case VX_DF_IMAGE_S32:
+                buf_params0[i].data_type = VXLIB_INT32;
+                break;
+            case VX_DF_IMAGE_RGB:
+                buf_params0[i].data_type = VXLIB_UINT24;
+                break;
+            case VX_DF_IMAGE_YUYV:
+            case VX_DF_IMAGE_UYVY:
+                buf_params0[i].data_type = VXLIB_UINT16;
+                break;
+        }
+
+        switch(obj_desc1->format)
+        {
+            case VX_DF_IMAGE_NV12:
+            case VX_DF_IMAGE_NV21:
+            case VX_DF_IMAGE_IYUV:
+            case VX_DF_IMAGE_YUV4:
+            case VX_DF_IMAGE_U8:
+                buf_params1[i].data_type = VXLIB_UINT8;
+                break;
+            case VX_DF_IMAGE_U16:
+                buf_params1[i].data_type = VXLIB_UINT16;
+                break;
+            case VX_DF_IMAGE_S16:
+                buf_params1[i].data_type = VXLIB_INT16;
+                break;
+            case VX_DF_IMAGE_RGBX:
+            case VX_DF_IMAGE_U32:
+                buf_params1[i].data_type = VXLIB_UINT32;
+                break;
+            case VX_DF_IMAGE_S32:
+                buf_params1[i].data_type = VXLIB_INT32;
+                break;
+            case VX_DF_IMAGE_RGB:
+                buf_params1[i].data_type = VXLIB_UINT24;
+                break;
+            case VX_DF_IMAGE_YUYV:
+            case VX_DF_IMAGE_UYVY:
+                buf_params1[i].data_type = VXLIB_UINT16;
+                break;
+        }
+    }
+}
+
 void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[])
@@ -163,6 +286,49 @@ void ownInitBufParams(
                 break;
         }
     }
+}
+
+void ownSetTwoPointerLocation(
+    tivx_obj_desc_image_t *obj_desc0,
+    tivx_obj_desc_image_t *obj_desc1,
+    uint8_t *addr0[],
+    uint8_t *addr1[])
+{
+    uint32_t i;
+    vx_rectangle_t rect;
+
+    rect = obj_desc0->valid_roi;
+
+    if (obj_desc1->valid_roi.start_x > rect.start_x)
+    {
+        rect.start_x = obj_desc1->valid_roi.start_x;
+    }
+    if (obj_desc1->valid_roi.start_y > rect.start_y)
+    {
+        rect.start_y = obj_desc1->valid_roi.start_y;
+    }
+
+    if (obj_desc1->valid_roi.end_x < rect.end_x)
+    {
+        rect.end_x = obj_desc1->valid_roi.end_x;
+    }
+    if (obj_desc1->valid_roi.end_y < rect.end_y)
+    {
+        rect.end_y = obj_desc1->valid_roi.end_y;
+    }
+
+    for (i = 0; i < obj_desc0->planes; i ++)
+    {
+        addr0[i] = (uint8_t *)((uintptr_t)obj_desc0->mem_ptr[i].target_ptr +
+            ownComputePatchOffset(rect.start_x,
+            rect.start_y,
+            &obj_desc0->imagepatch_addr[i]));
+        addr1[i] = (uint8_t *)((uintptr_t)obj_desc1->mem_ptr[i].target_ptr +
+            ownComputePatchOffset(rect.start_x,
+            rect.start_y,
+            &obj_desc1->imagepatch_addr[i]));
+    }
+
 }
 
 void ownSetPointerLocation(

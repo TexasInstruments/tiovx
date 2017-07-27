@@ -127,12 +127,10 @@ static vx_status tivxKernelAddSub(
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr, dst_desc->mem_size[0],
             dst_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src0_desc, &src0_addr);
-        ownSetPointerLocation(src1_desc, &src1_addr);
+        ownSetTwoPointerLocation(src0_desc, src1_desc, &src0_addr, &src1_addr);
         ownSetPointerLocation(dst_desc, &dst_addr);
 
-        ownInitBufParams(src0_desc, &vxlib_src0);
-        ownInitBufParams(src1_desc, &vxlib_src1);
+        ownInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
         ownInitBufParams(dst_desc, &vxlib_dst);
 
         if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)

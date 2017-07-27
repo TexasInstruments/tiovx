@@ -95,6 +95,27 @@ void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[]);
 
+/*!
+ * \brief A utility API to initialize two VXLIB bufparams for a kernel where
+ *        width and height should be equal. The API sets both buf_params to
+ *        the minimum of the valid rectangle
+ */
+void ownInitTwoBufParams(
+    tivx_obj_desc_image_t *obj_desc0,
+    tivx_obj_desc_image_t *obj_desc1,
+    VXLIB_bufParams2D_t buf_params0[],
+    VXLIB_bufParams2D_t buf_params1[]);
+
+/*!
+ * \brief A utility API that sets the pointer to the correct location based on
+ *        the minimum of the valid rectangle.
+ */
+void ownSetTwoPointerLocation(
+    tivx_obj_desc_image_t *obj_desc0,
+    tivx_obj_desc_image_t *obj_desc1,
+    uint8_t *addr0[],
+    uint8_t *addr1[]);
+
 void ownSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,
     uint8_t *addr[]);
