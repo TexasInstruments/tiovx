@@ -184,10 +184,113 @@ class KernelExportCode :
         # Initial parameters
         self.host_c_code.write_line("vx_status status = VX_SUCCESS;")
         self.host_c_code.write_line("vx_image img[%sU] = {NULL};" % self.kernel.getNumImages())
+        if self.kernel.getNumScalars() != 0 :
+            self.host_c_code.write_line("vx_scalar scalar[%sU] = {NULL};" % self.kernel.getNumScalars())
+            num_scalar = 0
+            for prm in self.kernel.params :
+                if Type.is_scalar_type(prm.type) is True :
+                    self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_scalar))
+                    num_scalar += 1
         self.host_c_code.write_line("vx_df_image fmt[%sU] = {NULL};" % self.kernel.getNumImages())
+        self.host_c_code.write_line("/* TODO: Change out_fmt to the correct output format */")
+        self.host_c_code.write_line("vx_df_image out_fmt = VX_DF_IMAGE_U8;")
+        #TODO write types other than just images and scalars
         self.host_c_code.write_line("vx_uint32 i, w[%sU], h[%sU], out_w, out_h;" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
         self.host_c_code.write_newline()
+        self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_%s_MAX_PARAMS);" % self.kernel.name_upper)
+        self.host_c_code.write_newline()
 
+        # Query all types here
+        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_open_brace()
+        # find code from target for here
+        # assigned descriptors to local variables
+        # TODO support other types than just images and scalars
+        num_image = 0
+        num_scalar = 0
+        for prm in self.kernel.params :
+            if Type.IMAGE == prm.type :
+                self.host_c_code.write_line("img[%sU] = (%s)parameters[TIVX_KERNEL_%s_%s_IDX];" %
+                    (num_image, Type.get_vx_name(prm.type), self.kernel.name_upper, prm.name_upper) )
+                num_image+=1
+            if Type.is_scalar_type(prm.type) is True :
+                self.host_c_code.write_line("scalar[%sU] = (vx_scalar)parameters[TIVX_KERNEL_%s_%s_IDX];" %
+                    (num_scalar, self.kernel.name_upper, prm.name_upper) )
+                num_scalar+=1
+        self.host_c_code.write_newline()
+        self.host_c_code.write_close_brace()
+
+        # for loop writing each query here around if statements checking the status
+        # TODO support other types than just images and scalars
+        num_image = 0
+        num_scalar = 0
+        for prm in self.kernel.params :
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
+            if Type.IMAGE == prm.type :
+                self.host_c_code.write_line("/* Get the image width/height and format */")
+                self.host_c_code.write_line("status = vxQueryImage(img[%sU], VX_IMAGE_FORMAT, &fmt[%sU]," % (num_image, num_image))
+                self.host_c_code.write_line("    sizeof(fmt[%sU]));" % num_image)
+                self.host_c_code.write_line("status |= vxQueryImage(img[%sU], VX_IMAGE_WIDTH, &w[%sU], sizeof(w[%sU]));" % (num_image, num_image, num_image))
+                self.host_c_code.write_line("status |= vxQueryImage(img[%sU], VX_IMAGE_HEIGHT, &h[%sU], sizeof(h[%sU]));" % (num_image, num_image, num_image))
+                num_image+=1
+            if Type.is_scalar_type(prm.type) is True :
+                self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &%s_%s, sizeof(%s_%s));" % (num_scalar, prm.type.name.lower(), num_scalar, prm.type.name.lower(), num_scalar))
+                num_scalar+=1
+            self.host_c_code.write_close_brace()
+            self.host_c_code.write_newline()
+
+        # If # of input images is = 2, validate that two input sizes are equal
+        if self.kernel.getNumInputImages() == 2 :
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);")
+            self.host_c_code.write_close_brace()
+            self.host_c_code.write_newline()
+
+        # Validate possible formats
+        num_image = 0
+        for prm in self.kernel.params :
+            if Type.IMAGE == prm.type and Direction.INPUT == prm.direction :
+                self.host_c_code.write_line("/* Check possible input image formats */")
+                self.host_c_code.write_line("#if 0")
+                self.host_c_code.write_line("if (VX_SUCCESS == status)")
+                self.host_c_code.write_open_brace()
+                self.host_c_code.write_line("status = tivxKernelValidatePossibleFormat(fmt[%sU], VX_DF_IMAGE_<possible_format>) &" % num_image)
+                self.host_c_code.write_line("         tivxKernelValidatePossibleFormat(fmt[%sU], VX_DF_IMAGE_<possible_format>);" % num_image)
+                num_image+=1
+                self.host_c_code.write_close_brace()
+                self.host_c_code.write_line("#endif")
+                self.host_c_code.write_newline()
+
+        # If there is at least 1 input image and 1 output image, validates each output image size
+        # Checks if output size is equal to the input size
+        if self.kernel.getNumInputImages() >= 1 and self.kernel.getNumOutputImages() >= 1 :
+            for x in range(0, self.kernel.getNumOutputImages()) :
+                self.host_c_code.write_line("if (VX_SUCCESS == status)")
+                self.host_c_code.write_open_brace()
+                temp = self.kernel.getNumOutputImages() - x
+                self.host_c_code.write_line("status = tivxKernelValidateOutputSize(w[0U], w[%sU], h[0U], h[%sU], img[%sU]);" % (self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp) )
+                self.host_c_code.write_close_brace()
+                self.host_c_code.write_newline()
+
+        num_scalar = 0
+        for prm in self.kernel.params :
+            if Type.is_scalar_type(prm.type) is True :
+                self.host_c_code.write_line("if (VX_SUCCESS == status)")
+                self.host_c_code.write_open_brace()
+                self.host_c_code.write_line("status = tivxKernelValidateScalarType(%s_%s, %s);" % (prm.type.name.lower(), num_scalar, Type.get_vx_enum_name(prm.type)))
+                num_scalar+=1
+                self.host_c_code.write_close_brace()
+                self.host_c_code.write_newline()
+
+        # setting metas
+        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("tivxKernelSetMetas(metas, TIVX_KERNEL_%s_MAX_PARAMS, out_fmt, w[0U], h[0U]);" % self.kernel.name_upper)
+        self.host_c_code.write_close_brace()
+
+        self.host_c_code.write_newline()
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()

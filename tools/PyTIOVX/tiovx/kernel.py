@@ -120,6 +120,13 @@ class Kernel  :
                 num_images += 1
         return num_images
 
+    def getNumScalars(self) :
+        num_scalars = 0
+        for prm in self.params :
+            if Type.is_scalar_type(prm.type) is True :
+                num_scalars += 1
+        return num_scalars
+
     def getNumInputImages(self) :
         num_input_images = 0
         for prm in self.params :
