@@ -192,7 +192,7 @@ class KernelExportCode :
                     self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_scalar))
                     num_scalar += 1
         self.host_c_code.write_line("vx_df_image fmt[%sU] = {NULL};" % self.kernel.getNumImages())
-        self.host_c_code.write_line("/* TODO: Change out_fmt to the correct output format */")
+        self.host_c_code.write_line("/* Developer TODO: Change out_fmt to the correct output format */")
         self.host_c_code.write_line("vx_df_image out_fmt = VX_DF_IMAGE_U8;")
         #TODO write types other than just images and scalars
         self.host_c_code.write_line("vx_uint32 i, w[%sU], h[%sU], out_w, out_h;" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
@@ -298,11 +298,62 @@ class KernelExportCode :
     def generate_host_c_initialize_func_code(self):
         self.host_c_code.write_line("static vx_status VX_CALLBACK tivxAddKernel%sInitialize(vx_node node," % self.kernel.name_camel)
         self.host_c_code.write_line("            const vx_reference parameters[ ],")
-        self.host_c_code.write_line("            vx_uint32 num,")
-        self.host_c_code.write_line("            vx_meta_format metas[])")
+        self.host_c_code.write_line("            vx_uint32 num_params)")
         self.host_c_code.write_open_brace()
         self.host_c_code.write_line("vx_status status = VX_SUCCESS;")
+        self.host_c_code.write_line("tivxKernelValidRectParams prms;")
         self.host_c_code.write_newline()
+
+        # Check number of parameters
+        self.host_c_code.write_line("if (num_params != TIVX_KERNEL_%s_MAX_PARAMS)" % self.kernel.name_upper)
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+        self.host_c_code.write_close_brace()
+        self.host_c_code.write_newline()
+
+        # Check if null params
+        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_%s_MAX_PARAMS);" % self.kernel.name_upper)
+        self.host_c_code.write_close_brace()
+        self.host_c_code.write_newline()
+
+        # Config valid rectangle
+        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("tivxKernelValidRectParams_init(&prms);")
+        self.host_c_code.write_newline()
+
+        # Set images
+        num_input_image = 0
+        num_output_image = 0
+        for prm in self.kernel.params :
+            if Type.IMAGE == prm.type and Direction.INPUT == prm.direction:
+                self.host_c_code.write_line("prms.in_img[%sU] = (vx_image)parameters[TIVX_KERNEL_%s_%s_IDX];" %
+                    (num_input_image, self.kernel.name_upper, prm.name_upper) )
+                num_input_image+=1
+            if Type.IMAGE == prm.type and Direction.OUTPUT == prm.direction:
+                self.host_c_code.write_line("prms.out_img[%sU] = (vx_image)parameters[TIVX_KERNEL_%s_%s_IDX];" %
+                    (num_output_image, self.kernel.name_upper, prm.name_upper) )
+                num_output_image+=1
+
+        self.host_c_code.write_newline()
+        self.host_c_code.write_line("prms.num_input_images = %s;" % self.kernel.getNumInputImages())
+        self.host_c_code.write_line("prms.num_output_images = %s;" % self.kernel.getNumOutputImages())
+        self.host_c_code.write_newline()
+        self.host_c_code.write_line("/* Developer TODO: Set padding values based on valid region*/")
+        self.host_c_code.write_line("#if 0")
+        self.host_c_code.write_line("prms.top_pad = 0;")
+        self.host_c_code.write_line("prms.bot_pad = 0;")
+        self.host_c_code.write_line("prms.left_pad = 0;")
+        self.host_c_code.write_line("prms.right_pad = 0;")
+        self.host_c_code.write_line("prms.border_mode = VX_BORDER_UNDEFINED;")
+        self.host_c_code.write_line("#endif")
+        self.host_c_code.write_newline()
+        self.host_c_code.write_line("status = tivxKernelConfigValidRect(&prms);")
+        self.host_c_code.write_close_brace()
+        self.host_c_code.write_newline()
+
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
