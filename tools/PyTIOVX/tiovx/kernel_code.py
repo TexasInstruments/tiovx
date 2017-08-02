@@ -186,15 +186,42 @@ class KernelExportCode :
         self.host_c_code.write_line("vx_image img[%sU] = {NULL};" % self.kernel.getNumImages())
         if self.kernel.getNumScalars() != 0 :
             self.host_c_code.write_line("vx_scalar scalar[%sU] = {NULL};" % self.kernel.getNumScalars())
-            num_scalar = 0
+            num_type = 0
             for prm in self.kernel.params :
-                if Type.is_scalar_type(prm.type) is True :
-                    self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_scalar))
-                    num_scalar += 1
+                if prm.type != Type.IMAGE :
+                    #TODO: test this section more thoroughly for other data types (maybe use optical flow UC)
+                    #TODO: Add more type-specific variables--delay, objectarray, threshold?
+                    self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_type))
+                    if prm.type == Type.ARRAY :
+                        self.host_c_code.write_line("vx_enum item_type_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size capacity_%s;" % num_type)
+                    if prm.type == Type.PYRAMID :
+                        self.host_c_code.write_line("vx_size levels_pyr_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size scale_pyr_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size w_pyr_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size h_pyr_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size df_image_pyr_%s;" % num_type)
+                    if prm.type == Type.MATRIX :
+                        self.host_c_code.write_line("vx_enum mat_type_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size mat_h_%s, mat_w_%s;" % (num_type, num_type))
+                    if prm.type == Type.CONVOLUTION :
+                        self.host_c_code.write_line("vx_size conv_col_%s;" % num_type)
+                        self.host_c_code.write_line("vx_size conv_row_%s;" % num_type)
+                    if prm.type == Type.DISTRIBUTION :
+                        self.host_c_code.write_line("vx_int32 offset_%s = 0;" % num_type)
+                        self.host_c_code.write_line("vx_uint32 range_%s = 0;" % num_type)
+                        self.host_c_code.write_line("vx_size numBins_%s = 0;" % num_type)
+                    if prm.type == Type.LUT :
+                        self.host_c_code.write_line("vx_enum lut_type_%s;" % num_type)
+                    if prm.type == Type.REMAP :
+                        self.host_c_code.write_line("vx_uint32 rmp_src_w_%s;" % num_type)
+                        self.host_c_code.write_line("vx_uint32 rmp_src_h_%s;" % num_type)
+                        self.host_c_code.write_line("vx_uint32 rmp_dst_w_%s;" % num_type)
+                        self.host_c_code.write_line("vx_uint32 rmp_dst_h_%s;" % num_type)
+                    num_type += 1
         self.host_c_code.write_line("vx_df_image fmt[%sU] = {NULL};" % self.kernel.getNumImages())
         self.host_c_code.write_line("/* Developer TODO: Change out_fmt to the correct output format */")
         self.host_c_code.write_line("vx_df_image out_fmt = VX_DF_IMAGE_U8;")
-        #TODO write types other than just images and scalars
         self.host_c_code.write_line("vx_uint32 i, w[%sU], h[%sU], out_w, out_h;" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
         self.host_c_code.write_newline()
         self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_%s_MAX_PARAMS);" % self.kernel.name_upper)
@@ -205,24 +232,29 @@ class KernelExportCode :
         self.host_c_code.write_open_brace()
         # find code from target for here
         # assigned descriptors to local variables
-        # TODO support other types than just images and scalars
         num_image = 0
+        num_nonimage = 0
         num_scalar = 0
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type :
                 self.host_c_code.write_line("img[%sU] = (%s)parameters[TIVX_KERNEL_%s_%s_IDX];" %
                     (num_image, Type.get_vx_name(prm.type), self.kernel.name_upper, prm.name_upper) )
                 num_image+=1
-            if Type.is_scalar_type(prm.type) is True :
-                self.host_c_code.write_line("scalar[%sU] = (vx_scalar)parameters[TIVX_KERNEL_%s_%s_IDX];" %
-                    (num_scalar, self.kernel.name_upper, prm.name_upper) )
-                num_scalar+=1
+            else :
+                if Type.is_scalar_type(prm.type) is True :
+                    self.host_c_code.write_line("scalar[%sU] = (vx_scalar)parameters[TIVX_KERNEL_%s_%s_IDX];" %
+                        (num_scalar, self.kernel.name_upper, prm.name_upper) )
+                    num_scalar+=1
+                else :
+                    self.host_c_code.write_line("%s_%s = (%s)parameters[TIVX_KERNEL_%s_%s_IDX];" %
+                        (prm.type.name.lower(), num_nonimage, Type.get_vx_name(prm.type), self.kernel.name_upper, prm.name_upper) )
+                num_nonimage+=1
         self.host_c_code.write_newline()
         self.host_c_code.write_close_brace()
 
         # for loop writing each query here around if statements checking the status
-        # TODO support other types than just images and scalars
         num_image = 0
+        num_nonimage = 0
         num_scalar = 0
         for prm in self.kernel.params :
             self.host_c_code.write_line("if (VX_SUCCESS == status)")
@@ -234,9 +266,39 @@ class KernelExportCode :
                 self.host_c_code.write_line("status |= vxQueryImage(img[%sU], VX_IMAGE_WIDTH, &w[%sU], sizeof(w[%sU]));" % (num_image, num_image, num_image))
                 self.host_c_code.write_line("status |= vxQueryImage(img[%sU], VX_IMAGE_HEIGHT, &h[%sU], sizeof(h[%sU]));" % (num_image, num_image, num_image))
                 num_image+=1
-            if Type.is_scalar_type(prm.type) is True :
-                self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &%s_%s, sizeof(%s_%s));" % (num_scalar, prm.type.name.lower(), num_scalar, prm.type.name.lower(), num_scalar))
-                num_scalar+=1
+            else :
+                if Type.is_scalar_type(prm.type) is True :
+                    self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &%s_%s, sizeof(%s_%s));" % (num_scalar, prm.type.name.lower(), num_scalar, prm.type.name.lower(), num_nonimage))
+                    num_scalar+=1
+                else :
+                    if Type.ARRAY == prm.type :
+                        self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_ITEMTYPE, &item_type_%s, sizeof(item_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_CAPACITY, &capacity_%s, sizeof(capacity_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.MATRIX == prm.type :
+                        self.host_c_code.write_line("status = vxQueryMatrix(matrix_%s, VX_MATRIX_TYPE, &mat_type_%s, sizeof(mat_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryMatrix(matrix_%s, VX_MATRIX_COLUMNS, &mat_w_%s, sizeof(mat_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryMatrix(matrix_%s, VX_MATRIX_ROWS, &mat_h_%s, sizeof(mat_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.PYRAMID == prm.type :
+                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_LEVELS, &levels_pyr_%s, sizeof(levels_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_SCALE, &scale_pyr_%s, sizeof(scale_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_WIDTH, &w_pyr_%s, sizeof(w_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_HEIGHT, &h_pyr_%s, sizeof(h_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_FORMAT, &df_image_pyr_%s, sizeof(df_image_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.CONVOLUTION == prm.type :
+                        self.host_c_code.write_line("status = vxQueryConvolution(convolution_%s, VX_CONVOLUTION_COLUMNS, &conv_col_%s, sizeof(conv_col_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryConvolution(convolution_%s, VX_CONVOLUTION_ROWS, &conv_row_%s, sizeof(conv_row_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if prm.type == Type.DISTRIBUTION :
+                        self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_BINS, &numBins_%s, sizeof(numBins_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_RANGE, &range_%s, sizeof(range_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_OFFSET, &offset_%s, sizeof(offset_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if prm.type == Type.LUT :
+                        self.host_c_code.write_line("status = vxQueryLUT(lut_%s, VX_LUT_TYPE, &lut_type_%s, sizeof(lut_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if prm.type == Type.REMAP :
+                        self.host_c_code.write_line("status = vxQueryRemap(remap_%s, VX_REMAP_SOURCE_WIDTH, &rmp_src_w_%s, sizeof(rmp_src_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_SOURCE_HEIGHT, &rmp_src_h_%s, sizeof(rmp_src_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_DESTINATION_WIDTH, &rmp_dst_w_%s, sizeof(rmp_dst_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_DESTINATION_HEIGHT, &rmp_dst_h_%s, sizeof(rmp_dst_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                num_nonimage+=1
             self.host_c_code.write_close_brace()
             self.host_c_code.write_newline()
 
@@ -274,7 +336,9 @@ class KernelExportCode :
                 self.host_c_code.write_close_brace()
                 self.host_c_code.write_newline()
 
+        # TODO: Put potential checks for other data types here
         num_scalar = 0
+        num_nonimage = 0
         for prm in self.kernel.params :
             if Type.is_scalar_type(prm.type) is True :
                 self.host_c_code.write_line("if (VX_SUCCESS == status)")
@@ -283,6 +347,8 @@ class KernelExportCode :
                 num_scalar+=1
                 self.host_c_code.write_close_brace()
                 self.host_c_code.write_newline()
+            #else
+            num_nonimage+=1
 
         # setting metas
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
