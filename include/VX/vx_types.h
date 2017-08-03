@@ -284,6 +284,7 @@ typedef struct _vx_object_array *vx_object_array;
  * if (!ret) printf("false!\n");
  * \endcode
  * This would print both strings.
+ * \see vx_bool
  * \ingroup group_basic_features
  */
 typedef enum _vx_bool_e {
@@ -291,7 +292,13 @@ typedef enum _vx_bool_e {
     vx_false_e = 0,
     /*! \brief The "true" value. */
     vx_true_e,
-} vx_bool;
+} vx_bool_e;
+
+/*! \brief A formal boolean type with known fixed size.
+ * \see vx_bool_e
+ * \ingroup group_basic_features
+ */
+typedef vx_enum vx_bool;
 
 /*!
  * \brief This object is used by output validation functions to specify the meta data
@@ -1188,7 +1195,7 @@ enum vx_pattern_e {
     VX_PATTERN_CROSS = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_PATTERN) + 0x1 ,
     /*! \brief A square matrix (rows = columns = size) */
     VX_PATTERN_DISK = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_PATTERN) + 0x2,
-    /*! \brief Matrix with any pattern othern than above. */
+    /*! \brief Matrix with any pattern other than above. */
     VX_PATTERN_OTHER = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_PATTERN) + 0x3,
 };
 
@@ -1289,7 +1296,7 @@ enum vx_norm_type_e {
  * \ingroup group_delay
  */
 enum vx_delay_attribute_e {
-    /*! \brief The type of reference contained in the delay. Read-only. Use a <tt>\ref vx_enum</tt> parameter. */
+    /*! \brief The type of objects in the delay. Read-only. Use a <tt>\ref vx_enum</tt> parameter. */
     VX_DELAY_TYPE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DELAY) + 0x0,
     /*! \brief The number of items in the delay. Read-only. Use a <tt>\ref vx_size</tt> parameter.*/
     VX_DELAY_SLOTS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_DELAY) + 0x1,
@@ -1327,35 +1334,35 @@ enum vx_round_policy_e {
 
 #if defined(_WIN32) || defined(UNDER_CE)
 #if defined(_WIN64)
-/*! Use to aid in debugging values in OpenVX.
+/*! \brief Use to aid in debugging values in OpenVX.
  * \ingroup group_basic_features
  */
 #define VX_FMT_REF  "%I64u"
-/*! Use to aid in debugging values in OpenVX.
+/*! \brief Use to aid in debugging values in OpenVX.
  * \ingroup group_basic_features
  */
 #define VX_FMT_SIZE "%I64u"
 #else
-/*! Use to aid in debugging values in OpenVX.
+/*! \brief Use to aid in debugging values in OpenVX.
  * \ingroup group_basic_features
  */
 #define VX_FMT_REF  "%lu"
-/*! Use to aid in debugging values in OpenVX.
+/*! \brief Use to aid in debugging values in OpenVX.
  * \ingroup group_basic_features
  */
 #define VX_FMT_SIZE "%lu"
 #endif
 #else
-/*! Use to aid in debugging values in OpenVX.
+/*! \brief Use to aid in debugging values in OpenVX.
  * \ingroup group_basic_features
  */
 #define VX_FMT_REF  "%p"
-/*! Use to aid in debugging values in OpenVX.
+/*! \brief Use to aid in debugging values in OpenVX.
  * \ingroup group_basic_features
  */
 #define VX_FMT_SIZE "%zu"
 #endif
-/*! Use to indicate the 1:1 ratio in Q22.10 format.
+/*! \brief Use to indicate the 1:1 ratio in Q22.10 format.
  * \ingroup group_basic_features
  */
 #define VX_SCALE_UNITY (1024u)
