@@ -1,4 +1,5 @@
 ifeq ($(BUILD_IVISION_KERNELS),yes)
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 include $(PRELUDE)
 TARGET      := vx_tiovx_ivision_tests
@@ -54,4 +55,5 @@ endif
 
 include $(FINALE)
 
+endif
 endif
