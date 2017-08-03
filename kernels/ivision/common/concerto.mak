@@ -1,3 +1,4 @@
+ifeq ($(BUILD_IVISION_KERNELS),yes)
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_ivision_common
@@ -31,3 +32,5 @@ endif
 
 
 include $(FINALE)
+
+endif

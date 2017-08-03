@@ -8,11 +8,14 @@ BUILD_EMULATION_MODE?=no
 BUILD_TARGET_MODE?=yes
 
 BUILD_CONFORMANCE_TEST?=yes
-BUILD_IVISION_KERNELS?=yes
-BUILD_BAM?=yes
 BUILD_TUTORIAL?=yes
+BUILD_BAM?=yes
 BUILD_LINUX_A15?=yes
 BUILD_EVE?=yes
+
+# Kernel Library Extensions
+BUILD_IVISION_KERNELS?=yes
+
 
 PROFILE?=all
 
@@ -20,23 +23,17 @@ DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
-DIRECTORIES += kernels/openvx-core
-ifeq ($(BUILD_IVISION_KERNELS),yes)
-DIRECTORIES += kernels/ivision
-endif
+DIRECTORIES += kernels
+
 ifeq ($(BUILD_TUTORIAL),yes)
+DIRECTORIES += conformance_tests/test_engine
 DIRECTORIES += tutorial
 endif
+
 DIRECTORIES += tools/sample_use_cases
 
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
-  DIRECTORIES += conformance_tests/test_conformance
-  DIRECTORIES += conformance_tests/test_engine
-  DIRECTORIES += conformance_tests/test_executable
-  DIRECTORIES += conformance_tests/test_tiovx
-  ifeq ($(BUILD_IVISION_KERNELS),yes)
-  DIRECTORIES += conformance_tests/test_ivision
-  endif
+  DIRECTORIES += conformance_tests
 endif
 
 TARGET_COMBOS :=

@@ -1,4 +1,4 @@
-
+ifeq ($(BUILD_IVISION_KERNELS),yes)
 
 include $(PRELUDE)
 TARGET      := vx_tiovx_ivision_tests
@@ -53,3 +53,5 @@ SKIPBUILD=0
 endif
 
 include $(FINALE)
+
+endif
