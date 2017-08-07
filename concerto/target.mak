@@ -13,7 +13,7 @@
 # limitations under the License.
 
 
-OVX_INC=$(HOST_ROOT)/include
+OVX_INC=$(HOST_ROOT)/include $(HOST_ROOT)/kernels/include 
 
 ifeq ($(BUILD_DEBUG),1)
 $(info TI_TOOLS_ROOT=$(TI_TOOLS_ROOT))

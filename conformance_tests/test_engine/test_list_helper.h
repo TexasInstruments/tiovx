@@ -19,14 +19,14 @@
 
 #undef CT_TESTCASE
 #define CT_TESTCASE(testcase) struct CT_TestCaseEntry* testcase##_register();
-#include "include/kernel_library_tests.h"
+#include "kernel_library_tests.h"
 #include "test_main.h"
 #include "test_tiovx/test_main.h"
 
 #undef CT_TESTCASE
 #define CT_TESTCASE(testcase) testcase##_register,
 CT_RegisterTestCaseFN g_testcase_register_fns[] = {
-    #include "include/kernel_library_tests.h"
+    #include "kernel_library_tests.h"
     #include "test_main.h"
     #include "test_tiovx/test_main.h"
     NULL

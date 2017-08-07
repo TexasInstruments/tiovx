@@ -61,58 +61,53 @@
 */
 
 
-#ifndef TIVX_KERNELS_H_
-#define TIVX_KERNELS_H_
 
-#include <VX/vx.h>
-#include <VX/vx_kernels.h>
+#include <TI/tivx.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
+                            vx_image  input,
+                            vx_uint32 scaling_factor,
+                            vx_int32  nms_threshold,
+                            vx_uint8  q_shift,
+                            vx_uint8  win_size,
+                            vx_uint8  score_method,
+                            vx_uint8  suppression_method,
+                            vx_array  corners,
+                            vx_scalar num_corners)
+{
+    vx_scalar sc_fact = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT32, &scaling_factor);
+    vx_scalar sc_thr = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_INT32, &nms_threshold);
+    vx_scalar sc_q_shift = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT8, &q_shift);
+    vx_scalar sc_win = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT8, &win_size);
+    vx_scalar sc_score = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT8, &score_method);
+    vx_scalar sc_suppr = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT8, &suppression_method);
 
-/*!
- * \file
- * \brief The list of supported kernels in the TIOVX.
- */
-
-
-/*! \brief The list of available libraries in tivx */
-enum tivx_library_e {
-    /*! \brief The set of kernels supported in ivision. */
-   TIVX_LIBRARY_IVISION_BASE = 0,
-
-   /*! \brief The set of target kernels implemented as part of TI OpenVX tutorial */
-   TIVX_LIBRARY_TUTORIAL_BASE = 1
-};
-
-/*!
- * \brief The list of kernels supported in ivision.
- *
- * Each kernel listed here can be used with the <tt>\ref vxGetKernelByEnum</tt> call.
- * When programming the parameters, use
- * \arg <tt>\ref VX_INPUT</tt> for [in]
- * \arg <tt>\ref VX_OUTPUT</tt> for [out]
- * \arg <tt>\ref VX_BIDIRECTIONAL</tt> for [in,out]
- *
- * When programming the parameters, use
- * \arg <tt>\ref VX_TYPE_IMAGE</tt> for a <tt>\ref vx_image</tt> in the size field of <tt>\ref vxGetParameterByIndex</tt> or <tt>\ref vxSetParameterByIndex</tt>  * \arg <tt>\ref VX_TYPE_ARRAY</tt> for a <tt>\ref vx_array</tt> in the size field of <tt>\ref vxGetParameterByIndex</tt> or <tt>\ref vxSetParameterByIndex</tt>  * \arg or other appropriate types in \ref vx_type_e.
- * \ingroup group_kernel
- */
-enum tivx_kernel_ivision_e {
-    /*! \brief The Harris Corners Kernel.
-     * \see group_vision_function_harris
-     */
-    TIVX_KERNEL_IVISION_HARRIS_CORNERS = VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x0,
-
-    /* insert new kernels here */
-    TIVX_KERNEL_IVISION_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
-};
-
-
-
-#ifdef __cplusplus
+    vx_reference params[] = {
+            (vx_reference)input,
+            (vx_reference)sc_fact,
+            (vx_reference)sc_thr,
+            (vx_reference)sc_q_shift,
+            (vx_reference)sc_win,
+            (vx_reference)sc_score,
+            (vx_reference)sc_suppr,
+            (vx_reference)corners,
+            (vx_reference)num_corners,
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_IVISION_HARRIS_CORNERS,
+                                           params,
+                                           dimof(params));
+    vxReleaseScalar(&sc_fact);
+    vxReleaseScalar(&sc_thr);
+    vxReleaseScalar(&sc_q_shift);
+    vxReleaseScalar(&sc_win);
+    vxReleaseScalar(&sc_score);
+    vxReleaseScalar(&sc_suppr);
+    return node;
 }
-#endif
-
-#endif

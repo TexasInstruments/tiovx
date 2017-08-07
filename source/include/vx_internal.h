@@ -132,13 +132,6 @@ extern "C" {
  */
 #define VX_CHECK_PARAM(ptr, size, type, align) ((size == sizeof(type)) && (((vx_size)ptr & align) == 0))
 
-/*! \brief Macro to find size of array
- * \ingroup group_vx_utils
- */
-#ifndef dimof
-#define dimof(x) (sizeof(x)/sizeof(x[0]))
-#endif
-
 static inline vx_bool tivxFlagIsBitSet(uint32_t flag_var, uint32_t flag_val);
 static inline void tivxFlagBitSet(uint32_t *flag_var, uint32_t flag_val);
 static inline void tivxFlagBitClear(uint32_t *flag_var, uint32_t flag_val);

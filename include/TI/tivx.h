@@ -79,16 +79,6 @@ extern "C" {
  * \brief Interface to TI extension APIs
  */
 
-
-/*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_ext
- */
-#define TIVX_MODULE_NAME0    "openvx-core"
-/*! \brief Name for TI OpenVX kernel module
- * \ingroup group_tivx_ext
- */
-#define TIVX_MODULE_NAME1    "ivsion"
-
 /*! \brief Name for DSP target class, instance 1
  * \ingroup group_tivx_ext
  */
@@ -323,6 +313,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
  */
 vx_enum tivxGetSelfCpuId(void);
 
+
+/*! \brief Macro to find size of array
+ * \ingroup group_tivx_ext
+ */
+#ifndef dimof
+#define dimof(x) (sizeof(x)/sizeof(x[0]))
+#endif
 
 /*!
  * \brief Utility function to create a node given parameter references and kernel enum
