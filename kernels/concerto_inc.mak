@@ -3,6 +3,10 @@
 # to make it easier to add/extend kernels without needing to modify
 # several concerto.mak files which depend on kernel libraries.
 
+ifneq ($(CUSTOM_KERNEL_PATH),)
+include $(CUSTOM_KERNEL_PATH)/concerto_inc.mak
+endif
+
 ifeq ($(BUILD_IVISION_KERNELS),yes)
 STATIC_LIBS += vx_tiovx_ivision_tests vx_kernels_ivision
 endif

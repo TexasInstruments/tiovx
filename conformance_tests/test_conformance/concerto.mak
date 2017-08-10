@@ -22,6 +22,7 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
 IDIRS       += $(HOST_ROOT)/kernels
+IDIRS       += $(CUSTOM_KERNEL_PATH)
 CFLAGS      += -DHAVE_VERSION_INC
 
 ifeq ($(HOST_COMPILER),TIARMCGT)

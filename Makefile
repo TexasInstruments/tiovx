@@ -24,6 +24,7 @@ DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels
+DIRECTORIES += $(CUSTOM_KERNEL_PATH)
 
 ifeq ($(BUILD_TUTORIAL),yes)
 DIRECTORIES += conformance_tests/test_engine

@@ -60,7 +60,10 @@
 *
 */
 
+#ifdef CUSTOM_KERNEL_PATH
+#include "custom_kernel_library_tests.h"
+#endif
+
 #ifdef BUILD_IVISION_KERNELS
 #include "ivision/test/test_main.h"
 #endif
-

@@ -13,6 +13,10 @@ ifeq ($(OS),Windows_NT)
     BUILD_OS=Windows_NT
 endif
 
+ifneq ($(CUSTOM_KERNEL_PATH),)
+include $(CUSTOM_KERNEL_PATH)/custom_tools_path.mak
+endif
+
 ifeq ($(BUILD_OS),Windows_NT)
 XDC_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/windows/xdctools_3_32_01_22_core
 TIARMCGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/windows/ti-cgt-arm_16.9.2.LTS

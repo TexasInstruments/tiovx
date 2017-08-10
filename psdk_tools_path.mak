@@ -16,6 +16,10 @@ ifeq ($(BUILD_OS),Windows_NT)
 GCC_WINDOWS_ROOT ?= C:/CodeBlocks/MinGW
 endif
 
+ifneq ($(CUSTOM_KERNEL_PATH),)
+include $(CUSTOM_KERNEL_PATH)/custom_tools_path.mak
+endif
+
 XDC_PATH := $(PRSDK_PATH)/xdctools_3_32_01_22_core/
 TIARMCGT_ROOT := $(PRSDK_PATH)/ti-cgt-arm_16.9.2.LTS
 
