@@ -64,7 +64,12 @@ $(if $(filter $(_MODULE),$(MODULES)),$(error MODULE $(_MODULE) already defined i
 MODULES += $(_MODULE)
 
 # Define the Path to the Source Files (always use the directory) and Header Files
+ifneq ($(wildcard $(HOST_ROOT)/$(_MODPATH)),)
 $(_MODULE)_SDIR := $(HOST_ROOT)/$(_MODPATH)
+else
+$(_MODULE)_SDIR := $(_MODPATH)
+endif
+
 $(_MODULE)_IDIRS:= $($(_MODULE)_SDIR)
 
 # Route the output for each module into it's own folder
