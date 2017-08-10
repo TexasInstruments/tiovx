@@ -129,6 +129,17 @@ extern "C" {
  */
 #define TIVX_TARGET_IPU2        "IPU2"
 
+#define TIVX_TARGET_RESV00      "RESV00"
+#define TIVX_TARGET_RESV01      "RESV01"
+#define TIVX_TARGET_RESV02      "RESV02"
+#define TIVX_TARGET_RESV03      "RESV03"
+#define TIVX_TARGET_RESV04      "RESV04"
+#define TIVX_TARGET_RESV05      "RESV05"
+#define TIVX_TARGET_RESV06      "RESV06"
+#define TIVX_TARGET_RESV07      "RESV07"
+#define TIVX_TARGET_RESV08      "RESV08"
+#define TIVX_TARGET_RESV09      "RESV09"
+
 /*!
  * \brief Max possible name of a target
  *
@@ -197,8 +208,38 @@ typedef enum _tivx_cpu_id_e {
     /*! \brief CPU ID for A15-0 */
     TIVX_CPU_ID_A15_1 = 10,
 
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV00 = 11,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV01 = 12,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV02 = 13,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV03 = 14,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV04 = 15,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV05 = 16,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV06 = 17,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV07 = 18,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV08 = 19,
+
+    /*! \brief Reserved Target  */
+    TIVX_CPU_ID_RESV09 = 20,
+
     /*! \brief Max value of CPU ID  */
-    TIVX_CPU_ID_MAX = 11,
+    TIVX_CPU_ID_MAX = 21,
 
     /*! \brief Invalid CPU ID */
     TIVX_INVALID_CPU_ID = 0xFF
