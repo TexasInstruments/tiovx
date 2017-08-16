@@ -67,47 +67,61 @@
 #include <TI/tivx_obj_desc.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_target_kernels_utils.h>
-#include <bam/vx_bam_kernel_wrapper.h>
+#include <vx_bam_kernel_wrapper.h>
 
-void ownReserveC66xL2MEM(void)
+void ownInitBufParams(
+    tivx_obj_desc_image_t *obj_desc,
+    VXLIB_bufParams2D_t buf_params[])
 {
-#if defined(BUILD_BAM)
-    tivx_mem_stats mem_stats;
-    void *ibuf_ptr, *wbuf_ptr;
-    vx_uint32 ibuf_size, wbuf_size;
-    vx_uint32 buf_align = 4*1024;
+    uint32_t i;
 
-    /* find L2MEM size */
-    tivxMemStats(&mem_stats, TIVX_MEM_INTERNAL_L2);
+    for (i = 0; i < obj_desc->planes; i ++)
+    {
+        buf_params[i].dim_x = obj_desc->valid_roi.end_x - obj_desc->valid_roi.start_x;
+        buf_params[i].dim_y = obj_desc->valid_roi.end_y - obj_desc->valid_roi.start_y;
+        buf_params[i].stride_y = obj_desc->imagepatch_addr[i].stride_y;
 
-    /* reserve L2MEM to BAM */
-    #if 1
-    wbuf_size = mem_stats.free_size / 5;
-    #else
-    wbuf_size = 32*1024;
-    #endif
+        if (512 == obj_desc->imagepatch_addr[i].scale_x)
+        {
+            buf_params[i].dim_y = buf_params[i].dim_y / 2;
 
-    /* floor to 'buf_align' bytes */
-    wbuf_size = (wbuf_size/buf_align)*buf_align;
-    ibuf_size = wbuf_size * 4;
+            if (VX_DF_IMAGE_IYUV == obj_desc->format)
+            {
+                buf_params[i].dim_x = buf_params[i].dim_x / 2;
+            }
+        }
 
-    ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
-    wbuf_ptr = tivxMemAlloc(wbuf_size, TIVX_MEM_INTERNAL_L2);
-
-    VX_PRINT(VX_ZONE_INIT,
-        "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
-        ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
-
-    tivxBamMemInit(ibuf_ptr, ibuf_size, wbuf_ptr, wbuf_size);
-
-    /* memory is allocated only to get a base address, otherwise
-     * this L2 memory is used as scratch, hence we free immediately afterwards
-     * so that some other algorithm can reuse the memory as scratch
-     */
-    tivxMemFree(ibuf_ptr, ibuf_size, TIVX_MEM_INTERNAL_L2);
-    tivxMemFree(wbuf_ptr, wbuf_size, TIVX_MEM_INTERNAL_L2);
-#endif
-
+        switch(obj_desc->format)
+        {
+            case VX_DF_IMAGE_NV12:
+            case VX_DF_IMAGE_NV21:
+            case VX_DF_IMAGE_IYUV:
+            case VX_DF_IMAGE_YUV4:
+            case VX_DF_IMAGE_U8:
+                buf_params[i].data_type = VXLIB_UINT8;
+                break;
+            case VX_DF_IMAGE_U16:
+                buf_params[i].data_type = VXLIB_UINT16;
+                break;
+            case VX_DF_IMAGE_S16:
+                buf_params[i].data_type = VXLIB_INT16;
+                break;
+            case VX_DF_IMAGE_RGBX:
+            case VX_DF_IMAGE_U32:
+                buf_params[i].data_type = VXLIB_UINT32;
+                break;
+            case VX_DF_IMAGE_S32:
+                buf_params[i].data_type = VXLIB_INT32;
+                break;
+            case VX_DF_IMAGE_RGB:
+                buf_params[i].data_type = VXLIB_UINT24;
+                break;
+            case VX_DF_IMAGE_YUYV:
+            case VX_DF_IMAGE_UYVY:
+                buf_params[i].data_type = VXLIB_UINT16;
+                break;
+        }
+    }
 }
 
 void ownInitTwoBufParams(
@@ -233,58 +247,18 @@ void ownInitTwoBufParams(
     }
 }
 
-void ownInitBufParams(
+void ownSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,
-    VXLIB_bufParams2D_t buf_params[])
+    uint8_t *addr[])
 {
     uint32_t i;
 
     for (i = 0; i < obj_desc->planes; i ++)
     {
-        buf_params[i].dim_x = obj_desc->valid_roi.end_x - obj_desc->valid_roi.start_x;
-        buf_params[i].dim_y = obj_desc->valid_roi.end_y - obj_desc->valid_roi.start_y;
-        buf_params[i].stride_y = obj_desc->imagepatch_addr[i].stride_y;
-
-        if (512 == obj_desc->imagepatch_addr[i].scale_x)
-        {
-            buf_params[i].dim_y = buf_params[i].dim_y / 2;
-
-            if (VX_DF_IMAGE_IYUV == obj_desc->format)
-            {
-                buf_params[i].dim_x = buf_params[i].dim_x / 2;
-            }
-        }
-
-        switch(obj_desc->format)
-        {
-            case VX_DF_IMAGE_NV12:
-            case VX_DF_IMAGE_NV21:
-            case VX_DF_IMAGE_IYUV:
-            case VX_DF_IMAGE_YUV4:
-            case VX_DF_IMAGE_U8:
-                buf_params[i].data_type = VXLIB_UINT8;
-                break;
-            case VX_DF_IMAGE_U16:
-                buf_params[i].data_type = VXLIB_UINT16;
-                break;
-            case VX_DF_IMAGE_S16:
-                buf_params[i].data_type = VXLIB_INT16;
-                break;
-            case VX_DF_IMAGE_RGBX:
-            case VX_DF_IMAGE_U32:
-                buf_params[i].data_type = VXLIB_UINT32;
-                break;
-            case VX_DF_IMAGE_S32:
-                buf_params[i].data_type = VXLIB_INT32;
-                break;
-            case VX_DF_IMAGE_RGB:
-                buf_params[i].data_type = VXLIB_UINT24;
-                break;
-            case VX_DF_IMAGE_YUYV:
-            case VX_DF_IMAGE_UYVY:
-                buf_params[i].data_type = VXLIB_UINT16;
-                break;
-        }
+        addr[i] = (uint8_t *)((uintptr_t)obj_desc->mem_ptr[i].target_ptr +
+            ownComputePatchOffset(obj_desc->valid_roi.start_x,
+            obj_desc->valid_roi.start_y,
+            &obj_desc->imagepatch_addr[i]));
     }
 }
 
@@ -328,21 +302,45 @@ void ownSetTwoPointerLocation(
             rect.start_y,
             &obj_desc1->imagepatch_addr[i]));
     }
-
 }
 
-void ownSetPointerLocation(
-    tivx_obj_desc_image_t *obj_desc,
-    uint8_t *addr[])
+void ownReserveC66xL2MEM(void)
 {
-    uint32_t i;
+#if defined(BUILD_BAM)
+    tivx_mem_stats mem_stats;
+    void *ibuf_ptr, *wbuf_ptr;
+    vx_uint32 ibuf_size, wbuf_size;
+    vx_uint32 buf_align = 4*1024;
 
-    for (i = 0; i < obj_desc->planes; i ++)
-    {
-        addr[i] = (uint8_t *)((uintptr_t)obj_desc->mem_ptr[i].target_ptr +
-            ownComputePatchOffset(obj_desc->valid_roi.start_x,
-            obj_desc->valid_roi.start_y,
-            &obj_desc->imagepatch_addr[i]));
-    }
+    /* find L2MEM size */
+    tivxMemStats(&mem_stats, TIVX_MEM_INTERNAL_L2);
+
+    /* reserve L2MEM to BAM */
+    #if 1
+    wbuf_size = mem_stats.free_size / 5;
+    #else
+    wbuf_size = 32*1024;
+    #endif
+
+    /* floor to 'buf_align' bytes */
+    wbuf_size = (wbuf_size/buf_align)*buf_align;
+    ibuf_size = wbuf_size * 4;
+
+    ibuf_ptr = tivxMemAlloc(ibuf_size, TIVX_MEM_INTERNAL_L2);
+    wbuf_ptr = tivxMemAlloc(wbuf_size, TIVX_MEM_INTERNAL_L2);
+
+    VX_PRINT(VX_ZONE_INIT,
+        "BAM memory config: IBUF %d bytes @ 0x%08x, WBUF %d bytes @ 0x%08x !!! \n",
+        ibuf_size, ibuf_ptr, wbuf_size, wbuf_ptr);
+
+    tivxBamMemInit(ibuf_ptr, ibuf_size, wbuf_ptr, wbuf_size);
+
+    /* memory is allocated only to get a base address, otherwise
+     * this L2 memory is used as scratch, hence we free immediately afterwards
+     * so that some other algorithm can reuse the memory as scratch
+     */
+    tivxMemFree(ibuf_ptr, ibuf_size, TIVX_MEM_INTERNAL_L2);
+    tivxMemFree(wbuf_ptr, wbuf_size, TIVX_MEM_INTERNAL_L2);
+#endif
+
 }
-

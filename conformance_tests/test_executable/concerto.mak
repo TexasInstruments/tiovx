@@ -45,6 +45,8 @@ ifeq ($(BUILD_BAM),yes)
 STATIC_LIBS += vx_target_kernels_openvx_core_bam vx_target_kernels_openvx_core
 endif
 
+STATIC_LIBS += vx_kernels_host_utils vx_kernels_target_utils
+
 STATIC_LIBS += vx_framework
 
 ifeq ($(BUILD_BAM),yes)

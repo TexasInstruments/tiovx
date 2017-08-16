@@ -67,7 +67,6 @@
 #include "bam_dma_one_shot_node.h"
 #include "edma_utils_autoincrement_v2.h"
 #include "edma_utils.h"
-#include <ti/vxlib/vxlib.h>
 
 #ifdef HOST_EMULATION
 extern CSL_EdmaccRegs dummyEDMAreg;

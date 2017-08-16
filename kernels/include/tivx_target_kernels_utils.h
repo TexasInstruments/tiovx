@@ -60,9 +60,6 @@
 *
 */
 
-
-
-
 #ifndef TIVX_TARGET_KERNELS_UTILS_
 #define TIVX_TARGET_KERNELS_UTILS_
 
@@ -110,15 +107,19 @@ void ownInitTwoBufParams(
  * \brief A utility API that sets the pointer to the correct location based on
  *        the minimum of the valid rectangle.
  */
+void ownSetPointerLocation(
+    tivx_obj_desc_image_t *obj_desc,
+    uint8_t *addr[]);
+
+/*!
+ * \brief A utility API that sets the pointer to the correct location based on
+ *        the minimum of the valid rectangle.
+ */
 void ownSetTwoPointerLocation(
     tivx_obj_desc_image_t *obj_desc0,
     tivx_obj_desc_image_t *obj_desc1,
     uint8_t *addr0[],
     uint8_t *addr1[]);
-
-void ownSetPointerLocation(
-    tivx_obj_desc_image_t *obj_desc,
-    uint8_t *addr[]);
 
 /*!
  * \brief Reserve L2MEM within C66x for usage with BAM framework
