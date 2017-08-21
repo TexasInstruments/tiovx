@@ -69,7 +69,7 @@
 #include <tivx_kernel_accumulate_weighted.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 static tivx_target_kernel vx_accumulate_weighted_target_kernel = NULL;
 

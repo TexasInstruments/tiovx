@@ -60,72 +60,93 @@
 *
 */
 
-#ifndef TIVX_TARGET_KERNELS_UTILS_
-#define TIVX_TARGET_KERNELS_UTILS_
 
-#include <tivx_kernel_utils.h>
+#ifndef TIVX_KERNELS_HOST_UTILS_
+#define TIVX_KERNELS_HOST_UTILS_
+
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /*!
- * \brief A utility API to initialize VXLIB buf parameters based
- *        on the provided valid rectangle and given object descriptor.
- *
- *        This API takes valid rectangle and object descriptor as an argument
- *        uses them to initialize VXLIB buf descriptor. It uses valid
- *        rectangle to initialize dimensions of the frame and object
- *        descriptor to initialize stride and data type.
- *        While initializing frame dimensions, it also takes into account
- *        the padding requirement of the calling kernel. If the kernel
- *        requires few pixels/lines on all sides of the kernels, this api
- *        increases the valid rectangle and then initializes vxlib buf
- *        descriptor.
- *
- *        If the valid rectangle is not provided, this API uses valid
- *        rectangle from the object descriptor.
- *
- * \param prms [in] Valid Rectangle Parameters
+ * \file
+ * \brief Interface file for utility functions for the Kernel
  */
-void ownInitBufParams(
-    tivx_obj_desc_image_t *obj_desc,
-    VXLIB_bufParams2D_t buf_params[]);
+
 
 /*!
- * \brief A utility API to initialize two VXLIB bufparams for a kernel where
- *        width and height should be equal. The API sets both buf_params to
- *        the minimum of the valid rectangle
+ * \brief Maximum number of images (input/output) supported in
+ *        calculating valid rectangles
  */
-void ownInitTwoBufParams(
-    tivx_obj_desc_image_t *obj_desc0,
-    tivx_obj_desc_image_t *obj_desc1,
-    VXLIB_bufParams2D_t buf_params0[],
-    VXLIB_bufParams2D_t buf_params1[]);
+#define TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE        (5u)
+
+typedef struct
+{
+    /*! \brief List of input images */
+    vx_image in_img[TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE];
+    /*! \brief number Valid entries in in_img array */
+    vx_uint32 num_input_images;
+
+    /*! \brief List of output images */
+    vx_image out_img[TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE];
+    /*! \brief number of Valid entries in out_img array */
+    vx_uint32 num_output_images;
+
+    /*! \brief Padding requied by the kernel */
+    vx_uint32 top_pad, bot_pad, right_pad, left_pad;
+
+    /*! \brief Input Border Mode */
+    vx_enum border_mode;
+} tivxKernelValidRectParams;
+
+
+vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx_uint8 maxParams);
+
+vx_status tivxKernelValidateInputSize(vx_uint32 inputWidth0, vx_uint32 inputWidth1,
+                            vx_uint32 inputHeight0, vx_uint32 inputHeight1);
+
+vx_status tivxKernelValidatePossibleFormat(vx_df_image inputFormat, vx_df_image possibleFormat);
+
+vx_status tivxKernelValidateScalarType(vx_enum scalarType, vx_enum expectedScalarType);
+
+vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 outputWidth, vx_uint32 expectedHeight,
+                             vx_uint32 outputHeight, vx_image outputImage);
+
+void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image fmt, vx_uint32 width, vx_uint32 height);
 
 /*!
- * \brief A utility API that sets the pointer to the correct location based on
- *        the minimum of the valid rectangle.
- */
-void ownSetPointerLocation(
-    tivx_obj_desc_image_t *obj_desc,
-    uint8_t *addr[]);
-
-/*!
- * \brief A utility API that sets the pointer to the correct location based on
- *        the minimum of the valid rectangle.
- */
-void ownSetTwoPointerLocation(
-    tivx_obj_desc_image_t *obj_desc0,
-    tivx_obj_desc_image_t *obj_desc1,
-    uint8_t *addr0[],
-    uint8_t *addr1[]);
-
-/*!
- * \brief Reserve L2MEM within C66x for usage with BAM framework
+ * \brief Function to initialize Valid Rect Parameter structure
+ *        Currently the entire structure is memset to 0
  *
+ * \param prms [in] Valid Rectange Parameters
  */
-void ownReserveC66xL2MEM(void);
+static inline void tivxKernelValidRectParams_init(
+    tivxKernelValidRectParams *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0, sizeof(tivxKernelValidRectParams));
+        prms->border_mode = VX_BORDER_UNDEFINED;
+    }
+}
+
+/*!
+ * \brief Function to calculate and configure valid region
+ *        This API loops over all the input and output image's valid
+ *        rectangles and figures out overlapping rectangle and sets it
+ *        as valid rectangle in the output image.
+ *
+ *        Each kernel may also require few lines/pixels of padding on
+ *        each side of the image. Host side kernel can provide this
+ *        information to this API and it will adjust valid
+ *        rectangle considering padding requirement also.
+ *
+ *        This is utility API.
+ *
+ * \param prms [in] Valid Rectange Parameters
+ */
+vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms);
 
 #ifdef __cplusplus
 }

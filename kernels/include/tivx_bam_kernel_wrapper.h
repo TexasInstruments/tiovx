@@ -80,7 +80,7 @@
 
 #include <TI/tivx.h>
 #include <VX/vx.h>
-#include "vx_bam_kernel_database.h"
+#include "tivx_bam_kernel_database.h"
 #include "bam_common.h"
 
 /*! \brief Graph handle

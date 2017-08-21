@@ -69,8 +69,8 @@
 #include <tivx_kernel_sobel3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
-#include <vx_bam_kernel_wrapper.h>
+#include <tivx_kernels_target_utils.h>
+#include <tivx_bam_kernel_wrapper.h>
 
 typedef struct
 {

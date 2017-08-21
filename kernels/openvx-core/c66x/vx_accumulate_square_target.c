@@ -69,7 +69,7 @@
 #include <tivx_kernel_accumulate_square.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 static tivx_target_kernel vx_accumulate_square_target_kernel = NULL;
 

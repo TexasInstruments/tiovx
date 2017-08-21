@@ -68,7 +68,7 @@
 #include <TI/tivx_target_kernel.h>
 #include <tivx_alg_ivision_if.h>
 #include <apps/harrisCornerDetection32/algo/inc/iHarrisCornerDetection32_ti.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 #define HARRIS_CORNER_MAX_BLOCK_SIZE        (32)
 

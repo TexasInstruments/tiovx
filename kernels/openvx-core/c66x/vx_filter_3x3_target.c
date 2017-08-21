@@ -69,7 +69,7 @@
 #include <tivx_kernel_filter_3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 typedef VXLIB_STATUS (*VxLib_Filt3x3_Fxn)(const uint8_t *,
     const VXLIB_bufParams2D_t *, uint8_t *, const VXLIB_bufParams2D_t *);

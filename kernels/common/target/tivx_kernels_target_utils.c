@@ -66,8 +66,8 @@
 #include <VX/vx.h>
 #include <TI/tivx_obj_desc.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
-#include <vx_bam_kernel_wrapper.h>
+#include <tivx_kernels_target_utils.h>
+#include <tivx_bam_kernel_wrapper.h>
 
 void ownInitBufParams(
     tivx_obj_desc_image_t *obj_desc,

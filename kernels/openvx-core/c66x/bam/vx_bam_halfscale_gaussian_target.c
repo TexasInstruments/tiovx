@@ -68,8 +68,8 @@
 #include <tivx_kernel_halfscale_gaussian.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
-#include <vx_bam_kernel_wrapper.h>
+#include <tivx_kernels_target_utils.h>
+#include <tivx_bam_kernel_wrapper.h>
 
 /* In the case of gaussian size == 3, use 2 separate graphs, one for
  * gaussian 3x3, and another for half scale.  A single graph for these

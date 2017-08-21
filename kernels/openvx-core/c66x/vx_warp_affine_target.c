@@ -69,7 +69,7 @@
 #include <tivx_kernel_warp_affine.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
+#include <tivx_kernels_target_utils.h>
 #include <stdio.h>
 
 static tivx_target_kernel vx_warp_affine_target_kernel = NULL;

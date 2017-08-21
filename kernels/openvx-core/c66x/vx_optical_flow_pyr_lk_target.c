@@ -69,7 +69,7 @@
 #include <tivx_kernel_optical_flow_pyr_lk.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_kernel_utils.h>
+#include <tivx_kernels_target_utils.h>
 #include <math.h>
 
 static tivx_target_kernel vx_optical_flow_pyr_lk_target_kernel = NULL;

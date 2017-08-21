@@ -67,7 +67,7 @@
 #include <tivx_kernel_gaussian_pyramid.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 static tivx_target_kernel vx_gaussian_pyramid_target_kernel = NULL;
 

@@ -68,8 +68,8 @@
 #include <tivx_kernel_equalize_histogram.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
-#include <vx_bam_kernel_wrapper.h>
+#include <tivx_kernels_target_utils.h>
+#include <tivx_bam_kernel_wrapper.h>
 
 #define SCRATCH_BUFFER_SIZE         (1024)
 

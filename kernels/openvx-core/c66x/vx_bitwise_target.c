@@ -69,7 +69,7 @@
 #include <tivx_kernel_bitwise.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
-#include <tivx_target_kernels_utils.h>
+#include <tivx_kernels_target_utils.h>
 
 typedef VXLIB_STATUS (*VxLib_Bitwise_Fxn)(
     const uint8_t *src0, const VXLIB_bufParams2D_t *src0_prms,

@@ -62,7 +62,7 @@
 
 
 
-#include "vx_bam_kernel_wrapper.h"
+#include "tivx_bam_kernel_wrapper.h"
 #include <TI/tivx_target_kernel.h>
 #include "bam_dma_one_shot_node.h"
 #include "edma_utils_autoincrement_v2.h"

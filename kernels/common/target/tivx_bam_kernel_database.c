@@ -68,7 +68,7 @@
  *  @brief      This file defines the table of interface of all kernels supported in BAM
  */
 
-#include "vx_bam_kernel_database.h"
+#include "tivx_bam_kernel_database.h"
 #include "bam_dma_one_shot_node.h"
 
 /**

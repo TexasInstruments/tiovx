@@ -66,7 +66,7 @@
 #include <TI/tivx.h>
 #include <TI/tivx_debug.h>
 #include <VX/vx_types.h>
-#include <tivx_kernel_common.h>
+#include <tivx_kernels_host_utils.h>
 
 vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx_uint8 maxParams)
 {
