@@ -105,7 +105,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
     vx_uint8 *src_addr, *dst_addr;
     uint32_t size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -142,8 +142,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -171,7 +171,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
     tivx_obj_desc_convolution_t *conv;
     tivxBamConvolveParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -199,8 +199,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreate(
 
             memset(prms, 0, sizeof(tivxBamConvolveParams));
 
-            ownInitBufParams(src, &vxlib_src);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -276,7 +276,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveDelete(
     uint32_t size;
     tivxBamConvolveParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CONVOLVE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

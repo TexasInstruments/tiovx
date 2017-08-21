@@ -181,11 +181,11 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        ownInitBufParams(src_desc, &vxlib_src);
-        ownInitBufParams(dst_desc, &vxlib_dst);
+        tivxInitBufParams(src_desc, &vxlib_src);
+        tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        ownSetPointerLocation(src_desc, &src_addr);
-        ownSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_addr);
 
         /* All 3x3 filter reduces the output size, therefore reduce output
          * height, but leave output width the same (DSP optimization) */

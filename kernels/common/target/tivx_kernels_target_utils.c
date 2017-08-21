@@ -69,7 +69,7 @@
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
 
-void ownInitBufParams(
+void tivxInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[])
 {
@@ -124,7 +124,7 @@ void ownInitBufParams(
     }
 }
 
-void ownInitTwoBufParams(
+void tivxInitTwoBufParams(
     tivx_obj_desc_image_t *obj_desc0,
     tivx_obj_desc_image_t *obj_desc1,
     VXLIB_bufParams2D_t buf_params0[],
@@ -247,7 +247,7 @@ void ownInitTwoBufParams(
     }
 }
 
-void ownSetPointerLocation(
+void tivxSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,
     uint8_t *addr[])
 {
@@ -256,13 +256,13 @@ void ownSetPointerLocation(
     for (i = 0; i < obj_desc->planes; i ++)
     {
         addr[i] = (uint8_t *)((uintptr_t)obj_desc->mem_ptr[i].target_ptr +
-            ownComputePatchOffset(obj_desc->valid_roi.start_x,
+            tivxComputePatchOffset(obj_desc->valid_roi.start_x,
             obj_desc->valid_roi.start_y,
             &obj_desc->imagepatch_addr[i]));
     }
 }
 
-void ownSetTwoPointerLocation(
+void tivxSetTwoPointerLocation(
     tivx_obj_desc_image_t *obj_desc0,
     tivx_obj_desc_image_t *obj_desc1,
     uint8_t *addr0[],
@@ -294,17 +294,17 @@ void ownSetTwoPointerLocation(
     for (i = 0; i < obj_desc0->planes; i ++)
     {
         addr0[i] = (uint8_t *)((uintptr_t)obj_desc0->mem_ptr[i].target_ptr +
-            ownComputePatchOffset(rect.start_x,
+            tivxComputePatchOffset(rect.start_x,
             rect.start_y,
             &obj_desc0->imagepatch_addr[i]));
         addr1[i] = (uint8_t *)((uintptr_t)obj_desc1->mem_ptr[i].target_ptr +
-            ownComputePatchOffset(rect.start_x,
+            tivxComputePatchOffset(rect.start_x,
             rect.start_y,
             &obj_desc1->imagepatch_addr[i]));
     }
 }
 
-void ownReserveC66xL2MEM(void)
+void tivxReserveC66xL2MEM(void)
 {
 #if defined(BUILD_BAM)
     tivx_mem_stats mem_stats;

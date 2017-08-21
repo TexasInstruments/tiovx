@@ -122,11 +122,11 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
 
         mask_addr = (uint8_t *)((uintptr_t)mask_desc->mem_ptr.target_ptr);
 
-        ownSetPointerLocation(src_desc, &src_addr);
-        ownSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_addr);
 
-        ownInitBufParams(src_desc, &vxlib_src);
-        ownInitBufParams(dst_desc, &vxlib_dst);
+        tivxInitBufParams(src_desc, &vxlib_src);
+        tivxInitBufParams(dst_desc, &vxlib_dst);
 
         mask_params.dim_x    = mask_desc->columns;
         mask_params.dim_y    = mask_desc->rows;

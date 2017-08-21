@@ -137,8 +137,8 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
             max_cap = arr[1U]->mem_size / arr[1u]->item_size;
         }
 
-        ownSetPointerLocation(src, &src_addr);
-        ownInitBufParams(src, &vxlib_src);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxInitBufParams(src, &vxlib_src);
 
         if (VX_DF_IMAGE_U8 == src->format)
         {

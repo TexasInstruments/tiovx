@@ -118,8 +118,8 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
         plane_idx = 2;
     }
 
-    ownInitBufParams(src, &vxlib_src);
-    ownInitBufParams(dst, &vxlib_dst);
+    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(dst, &vxlib_dst);
 
     if (VX_SUCCESS == status)
     {
@@ -163,8 +163,8 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
         plane_idx = 1;
     }
 
-    ownInitBufParams(src, &vxlib_src);
-    ownInitBufParams(dst, &vxlib_dst);
+    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(dst, &vxlib_dst);
 
     switch(ch->data.enm)
     {
@@ -249,8 +249,8 @@ static vx_status tivxBamChannelExtractYuyvUyvyInput(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
 
-    ownInitBufParams(src, &vxlib_src);
-    ownInitBufParams(dst, &vxlib_dst);
+    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(dst, &vxlib_dst);
     vxlib_src.data_type = VXLIB_UINT32;
 
     switch(ch->data.enm)
@@ -352,8 +352,8 @@ static vx_status tivxBamChannelExtractRgbRgbxInput(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
 
-    ownInitBufParams(src, &vxlib_src);
-    ownInitBufParams(dst, &vxlib_dst);
+    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(dst, &vxlib_dst);
 
     switch(ch->data.enm)
     {
@@ -453,7 +453,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
     uint32_t size;
     void *img_ptrs[2];
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -487,7 +487,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
             src->mem_size[plane_idx], src->mem_ptr[plane_idx].mem_type,
             VX_READ_ONLY);
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[plane_idx].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[plane_idx]));
 
         rect = dst->valid_roi;
@@ -497,7 +497,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_READ_ONLY);
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 
         img_ptrs[0] = src_addr;
@@ -531,7 +531,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
     tivxBamChannelExtractParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -610,7 +610,7 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     tivxBamChannelExtractParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

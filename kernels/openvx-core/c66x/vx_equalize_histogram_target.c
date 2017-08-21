@@ -119,11 +119,11 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
-        ownInitBufParams(src, &vxlib_src);
-        ownInitBufParams(dst, &vxlib_dst);
+        tivxInitBufParams(src, &vxlib_src);
+        tivxInitBufParams(dst, &vxlib_dst);
 
         status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 

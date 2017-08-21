@@ -124,16 +124,16 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         tivxMemBufferMap(remap->mem_ptr.target_ptr, remap->mem_size,
             remap->mem_ptr.mem_type, VX_READ_ONLY);
 
-        ownInitBufParams(src, &vxlib_src);
-        ownInitBufParams(dst, &vxlib_dst);
+        tivxInitBufParams(src, &vxlib_src);
+        tivxInitBufParams(dst, &vxlib_dst);
 
         vxlib_remap.dim_x = dst->imagepatch_addr[0].dim_x * 2U;
         vxlib_remap.dim_y = dst->imagepatch_addr[0].dim_y;
         vxlib_remap.stride_y = dst->imagepatch_addr[0].dim_x * 8U;
         vxlib_remap.data_type = VXLIB_FLOAT32;
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
 

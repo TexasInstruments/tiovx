@@ -105,7 +105,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianProcess(
     uint8_t *src_addr, *dst_addr;
     uint32_t size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_FILT3x3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -133,13 +133,13 @@ static vx_status VX_CALLBACK tivxKernelGaussianProcess(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -171,7 +171,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreate(
     tivx_obj_desc_image_t *src, *dst;
     tivxGaussianParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_FILT3x3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -191,8 +191,8 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreate(
 
             memset(prms, 0, sizeof(tivxGaussianParams));
 
-            ownInitBufParams(src, &vxlib_src);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* All 3x3 filter reduces the output size, therefore reduce output
              * height, but leave output width the same (DSP optimization) */
@@ -244,7 +244,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianDelete(
     uint32_t size;
     tivxGaussianParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_FILT3x3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

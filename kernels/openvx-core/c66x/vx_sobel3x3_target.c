@@ -112,7 +112,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
         vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
@@ -127,9 +127,9 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dst0->mem_ptr[0].target_ptr, dst0->mem_size[0],
                 dst0->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            ownSetPointerLocation(dst0, (uint8_t **)&dst_addr);
+            tivxSetPointerLocation(dst0, (uint8_t **)&dst_addr);
 
-            ownInitBufParams(dst0, &vxlib_dst);
+            tivxInitBufParams(dst0, &vxlib_dst);
 
             status = VXLIB_sobelX_3x3_i8u_o16s(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst);
@@ -151,9 +151,9 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dst1->mem_ptr[0].target_ptr, dst1->mem_size[0],
                 dst1->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            ownSetPointerLocation(dst1, (uint8_t **)&dst_addr);
+            tivxSetPointerLocation(dst1, (uint8_t **)&dst_addr);
 
-            ownInitBufParams(dst1, &vxlib_dst);
+            tivxInitBufParams(dst1, &vxlib_dst);
 
             status = VXLIB_sobelY_3x3_i8u_o16s(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst);

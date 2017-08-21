@@ -203,7 +203,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = prms->hcs_score;
@@ -405,7 +405,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersCreate(
             kernel_details[SCORE_NODE].compute_kernel_params = &harris_score_kernel_params;
             kernel_details[SINK_NODE].compute_kernel_params = NULL;
 
-            ownInitBufParams(img, &vxlib_src);
+            tivxInitBufParams(img, &vxlib_src);
 
             prms->vxlib_score.dim_x = img->imagepatch_addr[0].dim_x -
                 (prms->gs - 1) - (prms->bs - 1);

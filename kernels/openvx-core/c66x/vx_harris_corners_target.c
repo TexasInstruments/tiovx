@@ -194,9 +194,9 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
-        ownInitBufParams(src, &prms->vxlib_src);
+        tivxInitBufParams(src, &prms->vxlib_src);
 
         status = tivxHarrisCCalcSobel(prms, src_addr, sc_gs->data.s32);
 

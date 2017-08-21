@@ -146,13 +146,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
         tivxMemBufferMap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
             src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(src0, &src0_addr);
+        tivxSetPointerLocation(src0, &src0_addr);
 
         src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
         tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
             src1->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(src1, &src1_addr);
+        tivxSetPointerLocation(src1, &src1_addr);
         if( src2 != NULL)
         {
             src2->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             tivxMemBufferMap(src2->mem_ptr[0].target_ptr,
                src2->mem_size[0], src2->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
-            ownSetPointerLocation(src2, &src2_addr);
+            tivxSetPointerLocation(src2, &src2_addr);
         }
         if( src3 != NULL)
         {
@@ -169,7 +169,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             tivxMemBufferMap(src3->mem_ptr[0].target_ptr,
                src3->mem_size[0], src3->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
-            ownSetPointerLocation(src3, &src3_addr);
+            tivxSetPointerLocation(src3, &src3_addr);
         }
         for(plane_idx=0; plane_idx<dst->planes; plane_idx++)
         {
@@ -179,7 +179,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
                dst->mem_size[plane_idx], dst->mem_ptr[plane_idx].mem_type,
                 VX_WRITE_ONLY);
         }
-        ownSetPointerLocation(dst, (uint8_t**)&dst_addr);
+        tivxSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
         if ( (src2 != NULL) && (src3 != NULL) )
         {
@@ -332,9 +332,9 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
             memset(prms, 0, sizeof(tivxChannelCombineParams));
 
-            ownInitBufParams(src0, &vxlib_src0);
-            ownInitBufParams(src1, &vxlib_src1);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitBufParams(src0, &vxlib_src0);
+            tivxInitBufParams(src1, &vxlib_src1);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -343,13 +343,13 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
             if(src2 != NULL)
             {
-                ownInitBufParams(src2, &vxlib_src2);
+                tivxInitBufParams(src2, &vxlib_src2);
                 buf_params[2] = &vxlib_src2;
             }
 
             if(src3 != NULL)
             {
-                ownInitBufParams(src3, &vxlib_src3);
+                tivxInitBufParams(src3, &vxlib_src3);
                 buf_params[3] = &vxlib_src3;
             }
 
@@ -359,7 +359,7 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
                 || (dst->format == VX_DF_IMAGE_UYVY)
                 )
             {
-                ownInitBufParams(dst, &vxlib_dst);
+                tivxInitBufParams(dst, &vxlib_dst);
 
                 if( dst->format == VX_DF_IMAGE_RGB)
                 {

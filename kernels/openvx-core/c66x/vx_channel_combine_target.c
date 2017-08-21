@@ -164,22 +164,22 @@ vx_status VX_CALLBACK tivxChannelCombine(
             VXLIB_bufParams2D_t vxlib_dst;
             uint8_t *dst_addr[4U] = {NULL};
 
-            ownInitBufParams(src0_desc, &vxlib_src0);
-            ownSetPointerLocation(src0_desc, &src0_addr);
+            tivxInitBufParams(src0_desc, &vxlib_src0);
+            tivxSetPointerLocation(src0_desc, &src0_addr);
 
-            ownInitBufParams(src1_desc, &vxlib_src1);
-            ownSetPointerLocation(src1_desc, &src1_addr);
+            tivxInitBufParams(src1_desc, &vxlib_src1);
+            tivxSetPointerLocation(src1_desc, &src1_addr);
 
             if(src2_desc != NULL)
             {
-                ownInitBufParams(src2_desc, &vxlib_src2);
-                ownSetPointerLocation(src2_desc, &src2_addr);
+                tivxInitBufParams(src2_desc, &vxlib_src2);
+                tivxSetPointerLocation(src2_desc, &src2_addr);
             }
 
             if(src3_desc != NULL)
             {
-                ownInitBufParams(src3_desc, &vxlib_src3);
-                ownSetPointerLocation(src3_desc, &src3_addr);
+                tivxInitBufParams(src3_desc, &vxlib_src3);
+                tivxSetPointerLocation(src3_desc, &src3_addr);
             }
 
             src_addr[0] = src0_addr;
@@ -189,7 +189,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
             vxlib_src[1] = &vxlib_src1;
             vxlib_src[2] = &vxlib_src2;
 
-            ownSetPointerLocation(dst_desc, (uint8_t**)&dst_addr);
+            tivxSetPointerLocation(dst_desc, (uint8_t**)&dst_addr);
 
             if (   dst_desc->format == VX_DF_IMAGE_RGB
                 || dst_desc->format == VX_DF_IMAGE_RGBX
@@ -197,7 +197,7 @@ vx_status VX_CALLBACK tivxChannelCombine(
                 || dst_desc->format == VX_DF_IMAGE_UYVY
                 )
             {
-                ownInitBufParams(dst_desc, &vxlib_dst);
+                tivxInitBufParams(dst_desc, &vxlib_dst);
 
                 if( dst_desc->format == VX_DF_IMAGE_RGB)
                 {

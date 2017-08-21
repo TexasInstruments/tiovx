@@ -104,7 +104,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractProcess(
     uint8_t *src0_addr, *src1_addr, *dst_addr;
     uint32_t size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ADDSUB_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -137,13 +137,13 @@ static vx_status VX_CALLBACK tivxKernelSubtractProcess(
         tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
             src1->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        ownSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
+        tivxSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         if ((VX_DF_IMAGE_S16 == src0->format) &&
             (VX_DF_IMAGE_U8 == src1->format) &&
@@ -188,7 +188,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
     tivxAddParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ADDSUB_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -212,8 +212,8 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
 
             memset(prms, 0, sizeof(tivxAddParams));
 
-            ownInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -354,7 +354,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractDelete(
     tivxAddParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_ADDSUB_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

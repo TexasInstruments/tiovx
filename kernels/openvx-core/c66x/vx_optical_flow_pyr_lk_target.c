@@ -275,7 +275,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 VX_READ_ONLY);
 
             old_image_addr = (uint8_t *)((uintptr_t)old_image->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(0, 0, &old_image->imagepatch_addr[0U]));
+                tivxComputePatchOffset(0, 0, &old_image->imagepatch_addr[0U]));
 
             /* Map New image */
             new_image->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
@@ -286,7 +286,7 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                 VX_READ_ONLY); /* Not sure if this is READ_ONLY */
 
             new_image_addr = (uint8_t *)((uintptr_t)new_image->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(0, 0, &new_image->imagepatch_addr[0U]));
+                tivxComputePatchOffset(0, 0, &new_image->imagepatch_addr[0U]));
 
             /* Fetch ROI */
             rect = old_image->valid_roi;

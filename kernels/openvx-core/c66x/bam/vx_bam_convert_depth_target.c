@@ -107,7 +107,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
     BAM_VXLIB_convertDepth_i16s_o8u_params prms_1;
     BAM_VXLIB_convertDepth_i8u_o16s_params prms_2;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -137,13 +137,13 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         if (VX_DF_IMAGE_S16 == dst->format)
         {
@@ -201,7 +201,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
     tivx_obj_desc_scalar_t *sc_desc[2];
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -225,8 +225,8 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
 
             memset(prms, 0, sizeof(tivxConvertDepthParams));
 
-            ownInitBufParams(src, &vxlib_src);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -304,7 +304,7 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthDelete(
     tivxConvertDepthParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

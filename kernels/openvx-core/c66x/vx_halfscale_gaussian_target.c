@@ -111,8 +111,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src_desc, &src_addr);
-        ownSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_addr);
 
         if( gsize_desc != NULL)
         {
@@ -121,8 +121,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
 
         if(gsize_value == 1)
         {
-            ownInitBufParams(src_desc, &vxlib_src);
-            ownInitBufParams(dst_desc, &vxlib_dst);
+            tivxInitBufParams(src_desc, &vxlib_src);
+            tivxInitBufParams(dst_desc, &vxlib_dst);
             status |= VXLIB_scaleImageNearest_i8u_o8u(src_addr, &vxlib_src,
                                                       dst_addr, &vxlib_dst,
                                                       2, 2, 0, 0, 0, 0);
@@ -132,8 +132,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
             VXLIB_bufParams2D_t gauss_params;
             uint8_t *pGauss;
 
-            ownInitBufParams(src_desc, &vxlib_src);
-            ownInitBufParams(dst_desc, &vxlib_dst);
+            tivxInitBufParams(src_desc, &vxlib_src);
+            tivxInitBufParams(dst_desc, &vxlib_dst);
 
             gauss_params.dim_x    = vxlib_src.dim_x-(gsize_value-1);
             gauss_params.dim_y    = vxlib_src.dim_y-(gsize_value-1);

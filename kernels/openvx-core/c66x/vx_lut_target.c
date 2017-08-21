@@ -82,7 +82,7 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     vx_uint8 *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_LUT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -105,11 +105,11 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
-        ownInitBufParams(src, &vxlib_src);
-        ownInitBufParams(dst, &vxlib_dst);
+        tivxInitBufParams(src, &vxlib_src);
+        tivxInitBufParams(dst, &vxlib_dst);
 
         if (src->format == VX_DF_IMAGE_U8)
         {

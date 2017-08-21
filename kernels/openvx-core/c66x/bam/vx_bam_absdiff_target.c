@@ -149,13 +149,13 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffProcess(
         tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
             src1->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        ownSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
+        tivxSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_READ_ONLY);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src0_addr;
         img_ptrs[1] = src1_addr;
@@ -225,8 +225,8 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 
             memset(prms, 0, sizeof(tivxAbsDiffParams));
 
-            ownInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */

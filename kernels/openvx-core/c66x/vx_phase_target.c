@@ -120,11 +120,11 @@ static vx_status VX_CALLBACK tivxKernelPhaseProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownSetTwoPointerLocation(src0, src1, (uint8_t**)&src0_addr, (uint8_t**)&src1_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetTwoPointerLocation(src0, src1, (uint8_t**)&src0_addr, (uint8_t**)&src1_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
-        ownInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
-        ownInitBufParams(dst, &vxlib_dst);
+        tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(dst, &vxlib_dst);
 
         status = VXLIB_phase_i16s_i16s_o8u(src0_addr, &vxlib_src0,
             src1_addr, &vxlib_src1, dst_addr, &vxlib_dst);

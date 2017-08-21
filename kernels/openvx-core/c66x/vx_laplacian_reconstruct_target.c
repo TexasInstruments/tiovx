@@ -163,7 +163,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             out_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
         /* Input is 8-bit image ... need to convert to 16 */
-        ownInitBufParams(low_img, &prms->vxlib_scratch);
+        tivxInitBufParams(low_img, &prms->vxlib_scratch);
 
         prms->vxlib_src.dim_x = prms->vxlib_scratch.dim_x;
         prms->vxlib_src.dim_y = prms->vxlib_scratch.dim_y;
@@ -171,7 +171,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         prms->vxlib_src.data_type = VXLIB_INT16;
 
         src_addr = (uint8_t *)prms->add_output;
-        ownSetPointerLocation(out_img, &dst_addr);
+        tivxSetPointerLocation(out_img, &dst_addr);
 
         status = VXLIB_convertDepth_i8u_o16s(
             (uint8_t *)low_img->mem_ptr[0U].target_ptr, &prms->vxlib_scratch,
@@ -193,7 +193,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 pyd_level->mem_size[0], pyd_level->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
 
-            ownSetPointerLocation(pyd_level, (uint8_t**)&laplac_addr);
+            tivxSetPointerLocation(pyd_level, (uint8_t**)&laplac_addr);
 
             rect = pyd_level->valid_roi;
 
@@ -240,7 +240,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             {
                 if(level == 0)
                 {
-                    ownInitBufParams(out_img, &prms->vxlib_dst);
+                    tivxInitBufParams(out_img, &prms->vxlib_dst);
 
                     status = VXLIB_convertDepth_i16s_o8u(
                         prms->add_output, &prms->vxlib_add,

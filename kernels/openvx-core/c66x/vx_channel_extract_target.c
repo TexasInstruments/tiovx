@@ -95,10 +95,10 @@ vx_status tivxChannelExtractRgbRgbxInput(
     rect = in_desc->valid_roi;
 
     src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[0U].target_ptr +
-        ownComputePatchOffset(rect.start_x, rect.start_y,
+        tivxComputePatchOffset(rect.start_x, rect.start_y,
         &in_desc->imagepatch_addr[0U]));
 
-    ownInitBufParams(in_desc, &vxlib_src);
+    tivxInitBufParams(in_desc, &vxlib_src);
 
     switch(channel_value)
     {
@@ -174,9 +174,9 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
       in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_type);
 
-    ownSetPointerLocation(in_desc, &src_addr);
+    tivxSetPointerLocation(in_desc, &src_addr);
 
-    ownInitBufParams(in_desc, &vxlib_src);
+    tivxInitBufParams(in_desc, &vxlib_src);
 
     switch(channel_value)
     {
@@ -285,7 +285,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
         rect = in_desc->valid_roi;
 
         src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[plane_idx].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &in_desc->imagepatch_addr[plane_idx]));
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
@@ -391,7 +391,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
         rect = in_desc->valid_roi;
 
         src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[plane_idx].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &in_desc->imagepatch_addr[plane_idx]));
 
         /* Initialize vxLib Parameters with the input/output frame parameters */
@@ -428,7 +428,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
     tivx_obj_desc_image_t *out_desc;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_CHANNEL_EXTRACT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -460,10 +460,10 @@ vx_status VX_CALLBACK tivxChannelExtract(
 
             /* TODO: Do we require to move pointer even for destination image */
             dst_addr = (uint8_t *)((uintptr_t)out_desc->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(rect.start_x, rect.start_y,
+                tivxComputePatchOffset(rect.start_x, rect.start_y,
                 &out_desc->imagepatch_addr[0]));
 
-            ownInitBufParams(out_desc, &vxlib_dst);
+            tivxInitBufParams(out_desc, &vxlib_dst);
 
             if (   (in_desc->format == VX_DF_IMAGE_RGB)
                 || (in_desc->format == VX_DF_IMAGE_RGBX)

@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
@@ -302,7 +302,7 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
 
             memset(prms, 0, sizeof(tivxMinMaxLocParams));
 
-            ownInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(src, &vxlib_src);
 
             if (NULL != arr[0u])
             {

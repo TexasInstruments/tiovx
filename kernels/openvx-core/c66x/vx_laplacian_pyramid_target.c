@@ -165,10 +165,10 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
+            tivxComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
 
-        ownSetPointerLocation(src, &src_addr);
-        ownInitBufParams(src, &prms->vxlib_src);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxInitBufParams(src, &prms->vxlib_src);
 
         prms->vxlib_gauss0.data_type = VXLIB_UINT8;
         prms->vxlib_gauss1.data_type = VXLIB_UINT8;
@@ -187,15 +187,15 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            ownSetPointerLocation(dst, (uint8_t**)&dst_addr);
+            tivxSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
             /* Half scaled intermediate result */
             if(levels == (pmd->num_levels - 1u))
             {
-                ownInitBufParams(low_img, &prms->vxlib_gauss0);
+                tivxInitBufParams(low_img, &prms->vxlib_gauss0);
                 prms->vxlib_gauss0.data_type = VXLIB_UINT8;
 
-                ownSetPointerLocation(low_img, &out_addr);
+                tivxSetPointerLocation(low_img, &out_addr);
             }
             else
             {
@@ -209,12 +209,12 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             }
 
             /* Full scale intermediate result (half scaled upsampled) */
-            ownInitBufParams(dst, &prms->vxlib_gauss1);
+            tivxInitBufParams(dst, &prms->vxlib_gauss1);
             rect = dst->valid_roi;
             prms->vxlib_gauss1.stride_y = rect.end_x - rect.start_x;
             prms->vxlib_gauss1.data_type = VXLIB_UINT8;
 
-            ownInitBufParams(dst, &prms->vxlib_dst);
+            tivxInitBufParams(dst, &prms->vxlib_dst);
             prms->vxlib_dst.data_type = VXLIB_INT16;
 
             /* First do half scale gaussian filter with included upsampled result */

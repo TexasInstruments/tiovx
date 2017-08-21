@@ -105,7 +105,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
     void *img_ptrs[8] = {NULL};
 
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -134,7 +134,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
             tivxMemBufferMap(src->mem_ptr[i].target_ptr, src->mem_size[i],
                 src->mem_ptr[i].mem_type, VX_READ_ONLY);
         }
-        ownSetPointerLocation(src, (uint8_t**)&src_addr);
+        tivxSetPointerLocation(src, (uint8_t**)&src_addr);
 
         for (i = 0; i < dst->planes; i++)
         {
@@ -143,7 +143,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
             tivxMemBufferMap(dst->mem_ptr[i].target_ptr, dst->mem_size[i],
                 dst->mem_ptr[i].mem_type, VX_WRITE_ONLY);
         }
-        ownSetPointerLocation(dst, (uint8_t**)&dst_addr);
+        tivxSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
         if (((VX_DF_IMAGE_RGB == src->format) &&
              (VX_DF_IMAGE_YUV4 == dst->format)) ||
@@ -333,7 +333,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
     VXLIB_bufParams2D_t *buf_params[6];
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -353,8 +353,8 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 
         if (NULL != prms)
         {
-            ownInitBufParams(src, (VXLIB_bufParams2D_t*)&vxlib_src);
-            ownInitBufParams(dst, (VXLIB_bufParams2D_t*)&vxlib_dst);
+            tivxInitBufParams(src, (VXLIB_bufParams2D_t*)&vxlib_src);
+            tivxInitBufParams(dst, (VXLIB_bufParams2D_t*)&vxlib_dst);
 
             kernel_details.compute_kernel_params = NULL;
             if ((VX_DF_IMAGE_RGB == src->format) &&
@@ -846,7 +846,7 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertDelete(
     tivxColorConvertParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

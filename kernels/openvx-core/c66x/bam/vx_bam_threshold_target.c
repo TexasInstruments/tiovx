@@ -104,7 +104,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     vx_uint8 *src_addr, *dst_addr;
     vx_size size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -136,8 +136,8 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -163,7 +163,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
     tivx_obj_desc_threshold_t *thr;
     tivxThresholdParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -183,8 +183,8 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
 
             memset(prms, 0, sizeof(tivxThresholdParams));
 
-            ownInitBufParams(src, &vxlib_src);
-            ownInitBufParams(dst, &vxlib_dst);
+            tivxInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -255,7 +255,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdDelete(
     uint32_t size;
     tivxThresholdParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

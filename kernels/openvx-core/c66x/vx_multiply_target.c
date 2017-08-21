@@ -85,7 +85,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
     VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
     uint16_t overflow_policy;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_MULT_MAX_PARAMS);
     if (VX_SUCCESS == status)
     {
@@ -111,11 +111,11 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
-        ownInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
-        ownInitBufParams(dst, &vxlib_dst);
+        tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(dst, &vxlib_dst);
 
         if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
         {

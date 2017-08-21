@@ -121,7 +121,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
     vx_rectangle_t rect;
     uint32_t size, gsize_value = 1;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -159,11 +159,11 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
         rect = src->valid_roi;
 
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0]));
 
         if( gsize != NULL)
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianCreate(
     tivxHalfScaleGaussianParams *prms = NULL;
     int32_t gsize_value = 1;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -441,7 +441,7 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
     tivxHalfScaleGaussianParams *prms = NULL;
     tivx_obj_desc_scalar_t *gsize;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

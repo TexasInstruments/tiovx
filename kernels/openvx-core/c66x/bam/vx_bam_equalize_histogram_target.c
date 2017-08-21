@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     uint32_t size;
     BAM_VXLIB_histogramSimple_i8u_o32u_params hist_params;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -147,8 +147,8 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
         tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
@@ -196,7 +196,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
     VXLIB_bufParams2D_t *buf_params[2];
     uint32_t lut_kern_create = 0, hist_kern_create = 0;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -234,8 +234,8 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
 
         if (VX_SUCCESS == status)
         {
-            ownInitBufParams(src, &prms->vxlib_src);
-            ownInitBufParams(dst, &prms->vxlib_dst);
+            tivxInitBufParams(src, &prms->vxlib_src);
+            tivxInitBufParams(dst, &prms->vxlib_dst);
 
             buf_params[0] = &prms->vxlib_src;
             buf_params[1] = &prms->vxlib_dst;
@@ -312,7 +312,7 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistDelete(
     uint32_t size;
     tivxEqHistParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

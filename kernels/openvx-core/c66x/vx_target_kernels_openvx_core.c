@@ -180,7 +180,7 @@ void tivxRegisterOpenVXCoreTargetKernels()
         }
     }
 
-    ownReserveC66xL2MEM();
+    tivxReserveC66xL2MEM();
 }
 
 void tivxUnRegisterOpenVXCoreTargetKernels()

@@ -123,7 +123,7 @@ vx_status VX_CALLBACK tivxKernelBitwiseProcess(
     VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
     tivxBitwiseKernelInfo *kern_info;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_BITWISE_MAX_PARAMS);
 
     if ((VX_FAILURE == status) || (NULL == priv_arg))
@@ -162,11 +162,11 @@ vx_status VX_CALLBACK tivxKernelBitwiseProcess(
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        ownSetTwoPointerLocation(src0_desc, src1_desc, &src0_addr, &src1_addr);
-        ownSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetTwoPointerLocation(src0_desc, src1_desc, &src0_addr, &src1_addr);
+        tivxSetPointerLocation(dst_desc, &dst_addr);
 
-        ownInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
-        ownInitBufParams(dst_desc, &vxlib_dst);
+        tivxInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(dst_desc, &vxlib_dst);
 
         if (NULL != kern_info->vxlib_process)
         {
@@ -208,7 +208,7 @@ vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint8_t *src_addr, *dst_addr;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
             TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
 
     if ((VX_FAILURE == status) || (NULL == priv_arg))
@@ -238,11 +238,11 @@ vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
             dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
-        ownInitBufParams(src_desc, &vxlib_src);
-        ownInitBufParams(dst_desc, &vxlib_dst);
+        tivxInitBufParams(src_desc, &vxlib_src);
+        tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        ownSetPointerLocation(src_desc, &src_addr);
-        ownSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_addr);
 
         status = VXLIB_not_i8u_o8u(src_addr, &vxlib_src, dst_addr, &vxlib_dst);
 

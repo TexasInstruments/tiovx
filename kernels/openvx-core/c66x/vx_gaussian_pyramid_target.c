@@ -177,9 +177,9 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
             /* Valid rectangle is ignore here */
             src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
+                tivxComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
             dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-                ownComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
+                tivxComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
 
             vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
             vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
@@ -200,16 +200,16 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             {
                 if(pmd->scale == 0.5f)
                 {
-                    ownInitBufParams(src, &vxlib_src);
+                    tivxInitBufParams(src, &vxlib_src);
                 }
                 else
                 {
-                    ownInitBufParams(src, &vxlib_src);
+                    tivxInitBufParams(src, &vxlib_src);
                 }
-                ownInitBufParams(dst, &vxlib_dst);
+                tivxInitBufParams(dst, &vxlib_dst);
 
-                ownSetPointerLocation(src, &src_addr);
-                ownSetPointerLocation(dst, &dst_addr);
+                tivxSetPointerLocation(src, &src_addr);
+                tivxSetPointerLocation(dst, &dst_addr);
                 status = VXLIB_channelCopy_1to1_i8u_o8u(
                     src_addr, &vxlib_src, dst_addr, &vxlib_dst);
             }
@@ -217,12 +217,12 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             {
                 if(pmd->scale == 0.5f)
                 {
-                    ownInitBufParams(src, &vxlib_src);
-                    ownInitBufParams(src, &vxlib_gauss);
-                    ownInitBufParams(dst, &vxlib_dst);
+                    tivxInitBufParams(src, &vxlib_src);
+                    tivxInitBufParams(src, &vxlib_gauss);
+                    tivxInitBufParams(dst, &vxlib_dst);
 
-                    ownSetPointerLocation(src, &src_addr);
-                    ownSetPointerLocation(dst, &dst_addr);
+                    tivxSetPointerLocation(src, &src_addr);
+                    tivxSetPointerLocation(dst, &dst_addr);
 
                     status = VXLIB_halfScaleGaussian_5x5_i8u_o8u(
                         (uint8_t*)src_addr, &vxlib_src, dst_addr, &vxlib_dst);

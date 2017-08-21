@@ -87,7 +87,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     void *scratch;
     uint32_t scratch_size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -105,8 +105,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         tivxMemBufferMap(dst->mem_ptr.target_ptr, dst->mem_size,
             dst->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownInitBufParams(src, &vxlib_src);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxInitBufParams(src, &vxlib_src);
 
         status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
@@ -143,7 +143,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     vx_status status = VX_SUCCESS;
     void *temp_ptr;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -176,7 +176,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     void *temp_ptr;
     uint32_t temp_ptr_size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

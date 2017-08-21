@@ -125,7 +125,7 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     uint32_t size, num_edge_trace_out = 0;
     uint32_t num_dbl_thr_items = 0;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -161,26 +161,26 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         rect = src->valid_roi;
 
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
         rect = dst->valid_roi;
 
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x, rect.start_y,
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
         border_addr_tl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
             &dst->imagepatch_addr[0U]));
         border_addr_tr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
             &dst->imagepatch_addr[0U]));
         border_addr_bl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
-            ownComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
+            tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 
         img_ptrs[0] = src_addr;
@@ -238,7 +238,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     tivxCannyParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_gs, *sc_norm;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -341,8 +341,8 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     {BAM_END_NODE_MARKER, 0}},\
             };
 
-            ownInitBufParams(src, &vxlib_src);
-            ownInitBufParams(dst, &prms->vxlib_dst);
+            tivxInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(dst, &prms->vxlib_dst);
 
             prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 
@@ -416,7 +416,7 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     uint32_t size;
     tivxCannyParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_CNED_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

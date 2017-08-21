@@ -121,11 +121,11 @@ static vx_status tivxKernelAccumulateSquare(
         tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr, dst_desc->mem_size[0],
             dst_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src_desc, &src_addr);
-        ownSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_addr);
 
-        ownInitBufParams(src_desc, &vxlib_src);
-        ownInitBufParams(dst_desc, &vxlib_dst);
+        tivxInitBufParams(src_desc, &vxlib_src);
+        tivxInitBufParams(dst_desc, &vxlib_dst);
 
         status = VXLIB_accumulateSquareImage_i8u_io16s((uint8_t *)src_addr,
                     &vxlib_src, (int16_t *)dst_addr, &vxlib_dst, sc_desc->data.u32);

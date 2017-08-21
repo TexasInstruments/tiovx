@@ -117,8 +117,8 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownInitBufParams(src, &vxlib_src);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxInitBufParams(src, &vxlib_src);
 
         status = VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
             &sc[0U]->data.f32, &sc[1U]->data.f32, &pixelsProcessed,

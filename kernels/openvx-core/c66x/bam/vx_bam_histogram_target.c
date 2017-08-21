@@ -106,7 +106,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     uint8_t *src_addr;
     uint32_t size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -138,7 +138,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         tivxMemBufferMap(dst->mem_ptr.target_ptr, dst->mem_size,
             dst->mem_ptr.mem_type, VX_WRITE_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
@@ -167,7 +167,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     tivx_obj_desc_distribution_t *dst;
     tivxHistogramParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -188,7 +188,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
 
             memset(prms, 0, sizeof(tivxHistogramParams));
 
-            ownInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(src, &vxlib_src);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -237,7 +237,7 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     uint32_t size;
     tivxHistogramParams *prms = NULL;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
 
     if (VX_SUCCESS == status)

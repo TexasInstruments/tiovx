@@ -149,7 +149,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
             src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
-        ownSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_addr);
 
         if(dstx != NULL)
         {
@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dstx->mem_ptr[0].target_ptr, dstx->mem_size[0],
                 dstx->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            ownSetPointerLocation(dstx, (uint8_t **)&dstx_addr);
+            tivxSetPointerLocation(dstx, (uint8_t **)&dstx_addr);
         }
 
         if(dsty != NULL)
@@ -170,7 +170,7 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
             tivxMemBufferMap(dsty->mem_ptr[0].target_ptr, dsty->mem_size[0],
                 dsty->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            ownSetPointerLocation(dsty, (uint8_t **)&dsty_addr);
+            tivxSetPointerLocation(dsty, (uint8_t **)&dsty_addr);
         }
 
         if ((dstx != NULL) && (dsty != NULL))
@@ -271,7 +271,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
             memset(prms, 0, sizeof(tivxSobelParams));
 
-            ownInitBufParams(src, &vxlib_src);
+            tivxInitBufParams(src, &vxlib_src);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
@@ -283,12 +283,12 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 
             if (dstx != NULL)
             {
-                ownInitBufParams(dstx, &vxlib_dstx);
+                tivxInitBufParams(dstx, &vxlib_dstx);
             }
 
             if (dsty != NULL)
             {
-                ownInitBufParams(dsty, &vxlib_dsty);
+                tivxInitBufParams(dsty, &vxlib_dsty);
             }
 
             if ((dstx != NULL) && (dsty != NULL))

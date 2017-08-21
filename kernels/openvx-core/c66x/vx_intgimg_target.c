@@ -84,7 +84,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     uint32_t *prev_row, size;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTGIMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -102,11 +102,11 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        ownInitBufParams(src, &vxlib_src);
-        ownInitBufParams(dst, &vxlib_dst);
+        tivxInitBufParams(src, &vxlib_src);
+        tivxInitBufParams(dst, &vxlib_dst);
 
-        ownSetPointerLocation(src, &src_addr);
-        ownSetPointerLocation(dst, (uint8_t **)&dst_addr);
+        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(dst, (uint8_t **)&dst_addr);
 
         tivxGetTargetKernelInstanceContext(kernel, (void **)&prev_row, &size);
 
@@ -142,7 +142,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
     tivx_obj_desc_image_t *dst;
     void *temp_ptr;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTGIMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
@@ -178,7 +178,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     tivx_obj_desc_image_t *dst;
     void *temp_ptr;
 
-    status = ownCheckNullParams(obj_desc, num_params,
+    status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_INTGIMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
