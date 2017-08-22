@@ -58,50 +58,62 @@
 # OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 #
+import os, re
 
-from .utils import *
-from .enums import *
-from .reference import *
-from .scalar import *
-from .image import *
-from .node import *
-from .graph import *
-from .context import *
-from .reference_code import *
-from .image_code import *
-from .node_code import *
-from .graph_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .convolution_code import *
-from .distribution_code import *
-from .matrix_code import *
-from .threshold_code import *
-from .remap_code import *
-from .pyramid_code import *
-from .objectarray_code import *
-from .scalar_code import *
-from .array_code import *
-from .lut_code import *
-from .context_code import *
-from .code_generate import *
-from .code_modify import *
-from .usecase_code import *
-from .lut import *
-from .convolution import *
-from .distribution import *
-from .matrix import *
-from .threshold import *
-from .remap import *
-from .pyramid import *
-from .objectarray import *
-from .export import *
-from .export_image import *
-from .export_code import *
-from .kernel import *
-from .kernel_code import *
+from . import *
 
-from .array import *
+class CodeModify :
 
+    def file_append(self, filename, insert) :
+        self.file = open(filename,'a')
+        self.file.write(insert)
+        self.file.close()
+
+    def file_search(self, in_filename, search) :
+        if os.path.exists(in_filename):
+            self.status = False
+            with open(in_filename) as rd_file:
+                for line in rd_file:
+                    if search in line :
+                        return True
+            return False
+
+    def block_search(self, in_filename, start, end, search) :
+        if os.path.exists(in_filename):
+            self.status = False
+            with open(in_filename) as rd_file:
+                for line in rd_file:
+                    if start in line :
+                        self.multiline = line
+                        self.status = True
+                    elif self.status :
+                        self.multiline = self.multiline + line
+                        if end in line :
+                            self.status = False
+                            searchObj = re.findall(search, self.multiline)
+                            return (searchObj[-1])
+
+    def block_insert(self, in_filename, start, end, find, search, insert) :
+        if os.path.exists(in_filename):
+            self.status = False
+            self.include_customer_kernels_code = CodeGenerate(in_filename + ".tmp", header=False)
+            self.multiline = ""
+            with open(in_filename) as rd_file:
+                for line in rd_file:
+                    if start in line :
+                        self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
+                        self.multiline = line
+                        self.status = True
+                    elif self.status :
+                        self.multiline = self.multiline + line
+                        if end in line :
+                            self.status = False
+                            if not find in self.multiline :
+                                self.multiline = re.sub(search,insert + search, self.multiline)
+                            self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
+                    else :
+                        self.include_customer_kernels_code.write_line(line, new_line=False)
+            self.include_customer_kernels_code.close(new_line=False)
+            os.rename(in_filename + ".tmp", in_filename)
 
 

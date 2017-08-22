@@ -62,18 +62,21 @@
 from . import *
 
 class CodeGenerate :
-    def __init__(self, filename) :
+    def __init__(self, filename, header=True) :
         self.indent_level = 0
         self.indent = "    "
         self.filename = filename
+        self.header = header
         self.open()
 
     def open(self) :
         self.file = open(self.filename,'w')
-        self.write_header()
+        if self.header :
+            self.write_header()
 
-    def close(self) :
-        self.write_newline()
+    def close(self, new_line=True) :
+        if new_line :
+            self.write_newline()
         self.file.close()
 
     def write_header(self) :
@@ -143,11 +146,17 @@ class CodeGenerate :
     def write_comment_line(self, text_line) :
         self.write_line('/* %s */' % text_line)
 
-    def write_line(self, text_line) :
+    def write_line(self, text_line, new_line=True) :
         for i in range(0, self.indent_level) :
             self.file.write(self.indent)
         self.file.write(text_line)
-        self.file.write('\n')
+        if new_line:
+            self.file.write('\n')
+
+    def write_block(self, text_block, new_line=True) :
+        self.file.write(text_block)
+        if new_line:
+            self.file.write('\n')
 
     def write_open_brace(self) :
         self.write_line('{')
@@ -167,6 +176,18 @@ class CodeGenerate :
 
     def write_endif(self, text) :
         self.write_line('#endif /* %s */' % text)
+        self.write_newline()
+
+    def write_extern_c_top(self) :
+        self.write_line("#ifdef __cplusplus")
+        self.write_line("extern \"C\" {")
+        self.write_line("#endif")
+        self.write_newline()
+
+    def write_extern_c_bottom(self) :
+        self.write_line("#ifdef __cplusplus")
+        self.write_line("}")
+        self.write_line("#endif")
         self.write_newline()
 
     def write_newline(self) :

@@ -365,6 +365,30 @@ class Target(Enum) :
     def get_vx_enum_name(type) :
         return "TIVX_TARGET_" + type.name
 
+    def get_target_folder_name(type) :
+        if target == Target.DSP1 :
+            return c66
+        if target == Target.DSP2 :
+            return c66
+        if target == Target.EVE1 :
+            return eve
+        if target == Target.EVE2 :
+            return eve
+        if target == Target.EVE3 :
+            return eve
+        if target == Target.EVE4 :
+            return eve
+        if target == Target.A15_0 :
+            return a15
+        if target == Target.IPU1_0 :
+            return ipu
+        if target == Target.IPU1_1 :
+            return ipu
+        if target == Target.IPU2 :
+            return ipu
+
+        return None
+
     def get_cpu(target) :
         if target == Target.DSP1 :
             return Cpu.DSP1
@@ -554,6 +578,16 @@ class Direction(Enum):
         if type == Direction.BIDIRECTIONAL:
             return "VX_READ_WRITE"
         return "INVALID"
+
+    def get_doxygen_name(type) :
+        if type == Direction.INPUT:
+            return "in"
+        if type == Direction.OUTPUT:
+            return "out"
+        if type == Direction.BIDIRECTIONAL:
+            return "in,out"
+        return "INVALID"
+
 
 ## Parameter state (OpenVX equivalent = vx_parameter_state_e)
 #

@@ -87,8 +87,8 @@ class Kernel  :
         self.name_camel = toCamelCase(name)
         self.index = 0;
         self.params = []
-        self.name_str_prefix = "org.khronos.openvx."
-        self.enum_str_prefix = "VX_KERNEL_"
+        self.name_str_prefix = "com.ti."
+        self.enum_str_prefix = "TIVX_KERNEL_"
         self.targets = []
 
     def setKernelPrefix(self, name_str_prefix, enum_str_prefix) :
