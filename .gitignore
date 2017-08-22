@@ -1,0 +1,42 @@
+*.o
+*.dll
+out/
+lib/TDAX
+libvx_*.a
+vx_*_exe*
+*.pp
+*.interfaces
+*.executables
+*.dlls
+*.libraries*
+*.asm
+*.nfo
+*.obj
+*.d
+*~
+*.lib
+package
+
+# Top-level generic files
+tags
+TAGS
+!.gitignore
+!.mailmap
+!lib
+
+# stgit generated dirs
+patches-*
+
+# quilt's files
+*.patch
+patches
+series
+
+# cscope files
+cscope.*
+ncscope.*
+
+# python generated file
+*.egg-info
+__pycache__
+
