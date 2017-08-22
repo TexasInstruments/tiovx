@@ -783,7 +783,7 @@ class KernelExportCode :
         self.bam_target_c_code.write_newline()
 
         # checks function parameters
-        self.bam_target_c_code.write_line("status = ownCheckNullParams(obj_desc, num_params,")
+        self.bam_target_c_code.write_line("status = tivxCheckNullParams(obj_desc, num_params,")
         self.bam_target_c_code.write_line("        TIVX_KERNEL_%s_MAX_PARAMS);" % self.kernel.name_upper)
         self.bam_target_c_code.write_newline()
 
@@ -946,7 +946,7 @@ class KernelExportCode :
         self.bam_target_c_code.write_newline()
 
         # checks function parameters
-        self.bam_target_c_code.write_line("status = ownCheckNullParams(obj_desc, num_params,")
+        self.bam_target_c_code.write_line("status = tivxCheckNullParams(obj_desc, num_params,")
         self.bam_target_c_code.write_line("        TIVX_KERNEL_%s_MAX_PARAMS);" % self.kernel.name_upper)
         self.bam_target_c_code.write_newline()
 
@@ -1017,7 +1017,7 @@ class KernelExportCode :
         self.bam_target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
         self.bam_target_c_code.write_newline()
         self.bam_target_c_code.write_line("/* Check number of buffers and NULL pointers */")
-        self.bam_target_c_code.write_line("status = ownCheckNullParams(obj_desc, num_params,")
+        self.bam_target_c_code.write_line("status = tivxCheckNullParams(obj_desc, num_params,")
         self.bam_target_c_code.write_line("        TIVX_KERNEL_%s_MAX_PARAMS);" % self.kernel.name_upper)
         self.bam_target_c_code.write_newline()
         self.bam_target_c_code.write_line("if (VX_SUCCESS == status)")
