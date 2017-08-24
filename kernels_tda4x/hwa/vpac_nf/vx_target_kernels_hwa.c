@@ -60,15 +60,10 @@
 *
 */
 
+#include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_hwa_kernels.h>
-
-typedef void (*tivxTargetKernel_Fxn) ();
-
-typedef struct  {
-    tivxTargetKernel_Fxn    add_kernel;
-    tivxTargetKernel_Fxn    remove_kernel;
-} Tivx_Target_Kernel_List;
+#include <tivx_kernels_target_utils.h>
 
 void tivxAddTargetKernel_VPAC_NF_generic();
 void tivxRemoveTargetKernel_VPAC_NF_generic();
@@ -79,29 +74,10 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
 
 void tivxRegisterHWATargetKernels()
 {
-    vx_uint32 i;
-
-    for (i = 0; i <
-        sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List); i ++)
-    {
-        if (gTivx_target_kernel_list[i].add_kernel)
-        {
-            gTivx_target_kernel_list[i].add_kernel();
-        }
-    }
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
 void tivxUnRegisterHWATargetKernels()
 {
-    vx_uint32 i;
-
-    for (i = 0; i <
-        (sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List));
-        i ++)
-    {
-        if (gTivx_target_kernel_list[i].remove_kernel)
-        {
-            gTivx_target_kernel_list[i].remove_kernel();
-        }
-    }
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
