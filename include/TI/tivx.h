@@ -208,38 +208,8 @@ typedef enum _tivx_cpu_id_e {
     /*! \brief CPU ID for A15-0 */
     TIVX_CPU_ID_A15_1 = 10,
 
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV00 = 11,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV01 = 12,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV02 = 13,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV03 = 14,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV04 = 15,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV05 = 16,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV06 = 17,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV07 = 18,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV08 = 19,
-
-    /*! \brief Reserved Target  */
-    TIVX_CPU_ID_RESV09 = 20,
-
     /*! \brief Max value of CPU ID  */
-    TIVX_CPU_ID_MAX = 21,
+    TIVX_CPU_ID_MAX = 11,
 
     /*! \brief Invalid CPU ID */
     TIVX_INVALID_CPU_ID = 0xFF
