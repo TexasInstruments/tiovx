@@ -60,20 +60,10 @@
 *
 */
 
-
-
-
+#include <TI/tivx.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_target_kernels_priv.h>
-#include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
-
-typedef void (*tivxTargetKernel_Fxn) ();
-
-typedef struct  {
-    tivxTargetKernel_Fxn    add_kernel;
-    tivxTargetKernel_Fxn    remove_kernel;
-} Tivx_Target_Kernel_List;
 
 #ifdef BUILD_BAM
 static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
@@ -169,31 +159,12 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
 
 void tivxRegisterOpenVXCoreTargetKernels()
 {
-    vx_uint32 i;
-
-    for (i = 0; i <
-        sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List); i ++)
-    {
-        if (gTivx_target_kernel_list[i].add_kernel)
-        {
-            gTivx_target_kernel_list[i].add_kernel();
-        }
-    }
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 
     tivxReserveC66xL2MEM();
 }
 
 void tivxUnRegisterOpenVXCoreTargetKernels()
 {
-    vx_uint32 i;
-
-    for (i = 0; i <
-        (sizeof(gTivx_target_kernel_list)/sizeof(Tivx_Target_Kernel_List));
-        i ++)
-    {
-        if (gTivx_target_kernel_list[i].remove_kernel)
-        {
-            gTivx_target_kernel_list[i].remove_kernel();
-        }
-    }
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

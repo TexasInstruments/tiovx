@@ -69,6 +69,22 @@
 extern "C" {
 #endif
 
+typedef void (*tivxTargetKernel_Fxn) ();
+
+typedef struct  {
+    tivxTargetKernel_Fxn    add_kernel;
+    tivxTargetKernel_Fxn    remove_kernel;
+} Tivx_Target_Kernel_List;
+
+/*!
+ * \brief Registers the kernels list on the target side
+ */
+void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
+
+/*!
+ * \brief Unregisters the kernels list on the target side
+ */
+void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Computes the patch offset into the image

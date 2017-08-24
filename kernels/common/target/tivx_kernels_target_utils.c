@@ -68,6 +68,33 @@
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
 
+void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
+{
+    vx_uint32 i;
+
+    for (i = 0; i < num_kernels; i ++)
+    {
+        if (kernel_list[i].add_kernel)
+        {
+            kernel_list[i].add_kernel();
+        }
+    }
+}
+
+void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
+{
+    vx_uint32 i;
+
+    for (i = 0; i < num_kernels; i ++)
+    {
+        if (kernel_list[i].remove_kernel)
+        {
+            kernel_list[i].remove_kernel();
+        }
+    }
+}
+
+
 void tivxInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
     VXLIB_bufParams2D_t buf_params[])
