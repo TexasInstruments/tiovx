@@ -68,6 +68,48 @@
 #include <VX/vx_types.h>
 #include <tivx_kernels_host_utils.h>
 
+vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+
+    for (i = 0; i < num_kernels; i ++)
+    {
+        if (kernel_list[i].add_kernel)
+        {
+            status = kernel_list[i].add_kernel(context);
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            break;
+        }
+    }
+
+    return status;
+}
+
+vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels)
+{
+    vx_status status = VX_SUCCESS;
+    vx_uint32 i;
+
+    for (i = 0; i < num_kernels; i ++)
+    {
+        if (kernel_list[i].remove_kernel)
+        {
+            status = kernel_list[i].remove_kernel(context);
+        }
+
+        if (VX_SUCCESS != status)
+        {
+            break;
+        }
+    }
+
+    return status;
+}
+
 vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx_uint8 maxParams)
 {
     vx_status status = VX_SUCCESS;

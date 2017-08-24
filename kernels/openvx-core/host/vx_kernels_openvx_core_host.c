@@ -60,17 +60,11 @@
 *
 */
 
-
-
-
 #include <TI/tivx.h>
+#include "tivx_kernels_host_utils.h"
 
-typedef vx_status (*tivxHostKernel_Fxn) (vx_context context);
-
-typedef struct {
-    tivxHostKernel_Fxn    add_kernel;
-    tivxHostKernel_Fxn    remove_kernel;
-} Tivx_Host_Kernel_List;
+static vx_status VX_CALLBACK publishKernels(vx_context context);
+static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 
 vx_status tivxAddKernelAbsDiff(vx_context context);
 vx_status tivxAddKernelAccumulate(vx_context context);
@@ -188,56 +182,22 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelWarpPerspective, tivxRemoveKernelWarpPerspective}
 };
 
-static vx_status VX_CALLBACK tivxPublishKernels(vx_context context)
+static vx_status VX_CALLBACK publishKernels(vx_context context)
 {
-    vx_status status = VX_SUCCESS;
-    vx_uint32 i;
-
-    for (i = 0; i <
-        (sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List)); i ++)
-    {
-        if (gTivx_host_kernel_list[i].add_kernel)
-        {
-            status = gTivx_host_kernel_list[i].add_kernel(context);
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            break;
-        }
-    }
-
-    return status;
+    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
 }
 
-static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context)
+static vx_status VX_CALLBACK unPublishKernels(vx_context context)
 {
-    vx_status status = VX_SUCCESS;
-    vx_uint32 i;
-
-    for (i = 0; i <
-        (sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List)); i ++)
-    {
-        if (gTivx_host_kernel_list[i].remove_kernel)
-        {
-            status = gTivx_host_kernel_list[i].remove_kernel(context);
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            break;
-        }
-    }
-
-    return status;
+    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
 }
 
 void tivxRegisterOpenVXCoreKernels(void)
 {
-    tivxRegisterModule(TIVX_MODULE_NAME0, tivxPublishKernels, tivxUnPublishKernels);
+    tivxRegisterModule(TIVX_MODULE_NAME_OPENVX_CORE, publishKernels, unPublishKernels);
 }
 
 void tivxUnRegisterOpenVXCoreKernels(void)
 {
-    tivxUnRegisterModule(TIVX_MODULE_NAME0);
+    tivxUnRegisterModule(TIVX_MODULE_NAME_OPENVX_CORE);
 }

@@ -74,6 +74,23 @@ extern "C" {
  * \brief Interface file for utility functions for the Kernel
  */
 
+typedef vx_status (*tivxHostKernel_Fxn) (vx_context context);
+
+typedef struct {
+    tivxHostKernel_Fxn    add_kernel;
+    tivxHostKernel_Fxn    remove_kernel;
+} Tivx_Host_Kernel_List;
+
+/*!
+ * \brief Publishes the kernels list on the host side
+ */
+vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
+
+/*!
+ * \brief Unpublishes the kernels list on the host side
+ */
+vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
+
 
 /*!
  * \brief Maximum number of images (input/output) supported in

@@ -74,12 +74,12 @@ extern "C" {
 /*! \brief Name for TI OpenVX kernel module
  * \ingroup group_tivx_ext
  */
-#define TIVX_MODULE_NAME0    "openvx-core"
+#define TIVX_MODULE_NAME_OPENVX_CORE    "openvx-core"
 
 /*! \brief Name for TI OpenVX kernel module
  * \ingroup group_tivx_ext
  */
-#define TIVX_MODULE_NAME1    "ivision"
+#define TIVX_MODULE_NAME_IVISION    "ivision"
 
 /*!
  * \file
