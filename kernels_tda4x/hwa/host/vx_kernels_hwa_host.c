@@ -63,18 +63,12 @@
 #include <TI/tivx.h>
 #include <TI/tda4x.h>
 #include "tivx_hwa_kernels.h"
+#include "tivx_kernels_host_utils.h"
+
 #include <stdio.h>
 
-static vx_status VX_CALLBACK tivxPublishKernels(vx_context context);
-static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context);
-
-typedef vx_status (*tivxHostKernel_Fxn) (vx_context context);
-
-typedef struct {
-    tivxHostKernel_Fxn    add_kernel;
-    tivxHostKernel_Fxn    remove_kernel;
-} Tivx_Host_Kernel_List;
-
+static vx_status VX_CALLBACK publishKernels(vx_context context);
+static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 
 static uint32_t gIsHwaKernelsLoad = 0u;
 
@@ -88,53 +82,19 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernel_VPAC_NF_generic, tivxRemoveKernel_VPAC_NF_generic}
 };
 
-static vx_status VX_CALLBACK tivxPublishKernels(vx_context context)
+static vx_status VX_CALLBACK publishKernels(vx_context context)
 {
-    vx_status status = VX_SUCCESS;
-    vx_uint32 i;
-
-    for (i = 0; i <
-        (sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List)); i ++)
-    {
-        if (gTivx_host_kernel_list[i].add_kernel)
-        {
-            status = gTivx_host_kernel_list[i].add_kernel(context);
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            break;
-        }
-    }
-
-    return status;
+    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
 }
 
-static vx_status VX_CALLBACK tivxUnPublishKernels(vx_context context)
+static vx_status VX_CALLBACK unPublishKernels(vx_context context)
 {
-    vx_status status = VX_SUCCESS;
-    vx_uint32 i;
-
-    for (i = 0; i <
-        (sizeof(gTivx_host_kernel_list)/sizeof(Tivx_Host_Kernel_List)); i ++)
-    {
-        if (gTivx_host_kernel_list[i].remove_kernel)
-        {
-            status = gTivx_host_kernel_list[i].remove_kernel(context);
-        }
-
-        if (VX_SUCCESS != status)
-        {
-            break;
-        }
-    }
-
-    return status;
+    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
 }
 
 void tivxRegisterHWAKernels(void)
 {
-    tivxRegisterModule(TIVX_MODULE_NAME_HWA, tivxPublishKernels, tivxUnPublishKernels);
+    tivxRegisterModule(TIVX_MODULE_NAME_HWA, publishKernels, unPublishKernels);
 }
 
 void tivxUnRegisterHWAKernels(void)
