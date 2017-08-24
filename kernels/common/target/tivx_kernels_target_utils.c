@@ -65,7 +65,6 @@
 #include <TI/tivx_debug.h>
 #include <VX/vx.h>
 #include <TI/tivx_obj_desc.h>
-#include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 #include <tivx_bam_kernel_wrapper.h>
 

@@ -90,7 +90,7 @@ void IVisionLoadKernels(vx_context context)
         (NULL != context))
     {
         tivxRegisterIVisionCoreKernels();
-        vxLoadKernels(context, TIVX_MODULE_NAME1);
+        vxLoadKernels(context, TIVX_MODULE_NAME_IVISION);
         gIsIVisionKernelsLoad = 1U;
     }
 }
@@ -100,7 +100,7 @@ void IVisionUnLoadKernels(vx_context context)
     if ((1u == gIsIVisionKernelsLoad) &&
         (NULL != context))
     {
-        vxUnloadKernels(context, TIVX_MODULE_NAME1);
+        vxUnloadKernels(context, TIVX_MODULE_NAME_IVISION);
         tivxUnRegisterIVisionCoreKernels();
 
         gIsIVisionKernelsLoad = 0U;
