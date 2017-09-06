@@ -1383,7 +1383,7 @@ class KernelExportCode :
             self.include_customer_nodes_code.write_line(" * \\return <tt>\\ref vx_node</tt>.")
             self.include_customer_nodes_code.write_line(" * \\retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\\ref vxGetStatus</tt>")
             self.include_customer_nodes_code.write_line(" */")
-            self.include_customer_nodes_code.write_line("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "(vx_graph graph,")
+            self.include_customer_nodes_code.write_line("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,")
             for prm in self.kernel.params[:-1] :
                 self.include_customer_nodes_code.write_line("%-37s %-20s %s," % ("", prm.type.get_vx_name(), prm.name_lower))
             self.include_customer_nodes_code.write_line("%-37s %-20s %s);" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
@@ -1444,7 +1444,7 @@ class KernelExportCode :
             self.host_node_api_code.write_line("#include <TI/tivx.h>")
             self.host_node_api_code.write_line("#include <" + self.company + "/" + self.top_header_name + ".h>")
             self.host_node_api_code.write_newline()
-            self.host_node_api_code.write_line("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "(vx_graph graph,")
+            self.host_node_api_code.write_line("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,")
             for prm in self.kernel.params[:-1] :
                 self.host_node_api_code.write_line("%-37s %-20s %s," % ("", prm.type.get_vx_name(), prm.name_lower))
             self.host_node_api_code.write_line("%-37s %-20s %s)" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
@@ -1567,7 +1567,7 @@ class KernelExportCode :
             self.target_kernels_code.write_close_brace()
             self.target_kernels_code.close()
 
-    def modify_headers(self) :
+    def modify_files(self) :
         self.modify_kernel_header_file()
         self.modify_node_header_file()
         self.modify_node_api_source_file()
@@ -1603,7 +1603,7 @@ class KernelExportCode :
         self.insert += (r" * \\return <tt>\\ref vx_node</tt>.\n")
         self.insert += (r" * \\retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\\ref vxGetStatus</tt>\n")
         self.insert += (r" */\n")
-        self.insert += ("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "(vx_graph graph,\n")
+        self.insert += ("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,\n")
         for prm in self.kernel.params[:-1] :
             self.insert += ("%-37s %-20s %s,\n" % ("", prm.type.get_vx_name(), prm.name_lower))
         self.insert += ("%-37s %-20s %s);\n" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
@@ -1612,14 +1612,14 @@ class KernelExportCode :
         CodeModify().block_insert(self.include_customer_nodes_filename,
                           "VX_API_ENTRY",
                           "#ifdef __cplusplus",
-                          " tivx" + self.kernel.name_camel + "(vx_graph graph,",
+                          " tivx" + self.kernel.name_camel + "Node(vx_graph graph,",
                           "#ifdef __cplusplus",
                           self.insert)
 
     def modify_node_api_source_file(self) :
         print("Modifying " + self.host_node_api_filename)
-        if not CodeModify().file_search(self.host_node_api_filename, " tivx" + self.kernel.name_camel + "(vx_graph graph,") :
-            self.insert = ("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "(vx_graph graph,\n")
+        if not CodeModify().file_search(self.host_node_api_filename, " tivx" + self.kernel.name_camel + "Node(vx_graph graph,") :
+            self.insert = ("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,\n")
             for prm in self.kernel.params[:-1] :
                 self.insert += ("%-37s %-20s %s,\n" % ("", prm.type.get_vx_name(), prm.name_lower))
             self.insert += ("%-37s %-20s %s)\n" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
@@ -1756,7 +1756,7 @@ class KernelExportCode :
         print ('Creating new module-level sources ...')
         self.generate_sources()
 
-        self.modify_headers()
+        self.modify_files()
 
         print ('Creating new kernel-specific files ...')
         self.generate_h_file_code()
