@@ -1539,7 +1539,7 @@ class KernelExportCode :
             self.host_kernels_code.close()
 
         # TODO: this one needs to handle ammendments with new modules/kernels
-        self.target_kernels_filename = self.workarea_module_core + "/vx_target_kernels_" + self.module.lower() + ".c"
+        self.target_kernels_filename = self.workarea_module_core + "/vx_kernels_" + self.module.lower() + "_target.c"
         if not os.path.exists(self.target_kernels_filename):
             print("Creating " + self.target_kernels_filename)
             self.target_kernels_code = CodeGenerate(self.target_kernels_filename)
