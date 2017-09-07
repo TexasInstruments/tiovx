@@ -1303,21 +1303,20 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line("#include <VX/vx_kernels.h>")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_extern_c_top()
-            self.include_customer_kernels_code.write_line("/*! \\brief Name for OpenVX Extension kernel module")
-            self.include_customer_kernels_code.write_line(" * \\ingroup group_tivx_ext")
-            self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"")
-            self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\file")
             self.include_customer_kernels_code.write_line(" * \\brief The list of supported kernels in this kernel extension.")
             self.include_customer_kernels_code.write_line(" */")
             self.include_customer_kernels_code.write_newline()
+            self.include_customer_kernels_code.write_line("/*! \\brief Name for OpenVX Extension kernel module: " + self.module)
+            self.include_customer_kernels_code.write_line(" * \\ingroup group_tivx_ext")
+            self.include_customer_kernels_code.write_line(" */")
+            self.include_customer_kernels_code.write_line("#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*! \\brief The list of available libraries in this extension */")
             self.include_customer_kernels_code.write_line("enum " + self.top_header_name + "_library_e {")
             self.include_customer_kernels_code.write_line("   /*! \\brief The set of kernels supported in " + self.module + " module  */")
-            self.include_customer_kernels_code.write_line("   TIVX_LIBRARY_" + self.module.upper() + "_BASE = 0")
+            self.include_customer_kernels_code.write_line("   TIVX_LIBRARY_" + self.module.upper() + "_BASE = 0,")
             self.include_customer_kernels_code.write_line("};")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
@@ -1330,7 +1329,9 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line(" * \\arg <tt>\\ref VX_BIDIRECTIONAL</tt> for [in,out]")
             self.include_customer_kernels_code.write_line(" *")
             self.include_customer_kernels_code.write_line(" * When programming the parameters, use")
-            self.include_customer_kernels_code.write_line(" * \\arg <tt>\\ref VX_TYPE_IMAGE</tt> for a <tt>\\ref vx_image</tt> in the size field of <tt>\\ref vxGetParameterByIndex</tt> or <tt>\\ref vxSetParameterByIndex</tt>  * \\arg <tt>\\ref VX_TYPE_ARRAY</tt> for a <tt>\\ref vx_array</tt> in the size field of <tt>\\ref vxGetParameterByIndex</tt> or <tt>\\ref vxSetParameterByIndex</tt>  * \\arg or other appropriate types in \\ref vx_type_e.")
+            self.include_customer_kernels_code.write_line(" * \\arg <tt>\\ref VX_TYPE_IMAGE</tt> for a <tt>\\ref vx_image</tt> in the size field of <tt>\\ref vxGetParameterByIndex</tt> or <tt>\\ref vxSetParameterByIndex</tt>")
+            self.include_customer_kernels_code.write_line(" * \\arg <tt>\\ref VX_TYPE_ARRAY</tt> for a <tt>\\ref vx_array</tt> in the size field of <tt>\\ref vxGetParameterByIndex</tt> or <tt>\\ref vxSetParameterByIndex</tt>")
+            self.include_customer_kernels_code.write_line(" * \\arg or other appropriate types in \\ref vx_type_e.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
             self.include_customer_kernels_code.write_line("enum tivx_kernel_" + self.module + "_e {")
@@ -1341,25 +1342,20 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line("    " + self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */")
             self.include_customer_kernels_code.write_line("};")
             self.include_customer_kernels_code.write_newline()
-            self.include_customer_kernels_code.write_newline()
-            self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to load the " + self.module + " kernels into the context.")
-            self.include_customer_kernels_code.write_line(" *")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
             self.include_customer_kernels_code.write_line("void " + self.module + "LoadKernels(vx_context context);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to unload the " + self.module + " kernels from the context.")
-            self.include_customer_kernels_code.write_line(" *")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
             self.include_customer_kernels_code.write_line("void " + self.module + "UnLoadKernels(vx_context context);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used to print the performance of the kernels.")
-            self.include_customer_kernels_code.write_line(" *")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
             self.include_customer_kernels_code.write_line("void " + self.module + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);")
@@ -1392,7 +1388,6 @@ class KernelExportCode :
             self.include_customer_nodes_code.write_endif(self.top_header_name.upper() + "_NODES_H_")
             self.include_customer_nodes_code.close()
 
-        # TODO: this one needs to handle ammendments with new modules/kernels
         self.module_include_kernels_filename = self.workarea_module_include + "/tivx_" + self.module + "_kernels.h"
         if not os.path.exists(self.module_include_kernels_filename):
             print("Creating " + self.module_include_kernels_filename)
@@ -1462,7 +1457,6 @@ class KernelExportCode :
             self.host_node_api_code.write_close_brace()
             self.host_node_api_code.close()
 
-        # TODO: this one needs to handle ammendments with new modules/kernels
         self.host_kernels_filename = self.workarea_module_host + "/vx_kernels_" + self.module.lower() + "_host.c"
         if not os.path.exists(self.host_kernels_filename):
             print("Creating " + self.host_kernels_filename)
@@ -1538,7 +1532,6 @@ class KernelExportCode :
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.close()
 
-        # TODO: this one needs to handle ammendments with new modules/kernels
         self.target_kernels_filename = self.workarea_module_core + "/vx_kernels_" + self.module.lower() + "_target.c"
         if not os.path.exists(self.target_kernels_filename):
             print("Creating " + self.target_kernels_filename)
@@ -1574,9 +1567,89 @@ class KernelExportCode :
         self.modify_module_host_source_file()
         self.modify_module_target_source_file()
 
-    # TODO: Add if new library is added
     def modify_kernel_header_file(self) :
         print("Modifying " + self.include_customer_kernels_filename)
+        # Update for new modules
+        self.insert = (r"! \\brief Name for OpenVX Extension kernel module: " + self.module + "\n" +
+                        " * \\ingroup group_tivx_ext\n" +
+                        " */\n" +
+                        "#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"\n\n")
+        CodeModify().block_insert(self.include_customer_kernels_filename,
+                          "extern \"C\" {",
+                          "enum",
+                          "#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"",
+                          r"/*! \\brief The list of available libraries in this extension",
+                          self.insert)
+
+        self.prev_enum_value = CodeModify().block_search(self.include_customer_kernels_filename,
+                                                  "enum " + self.top_header_name + "_library_e",
+                                                  "};",
+                                                  " (\d)")
+        self.insert = (r"   /*! \\brief The set of kernels supported in " + self.module + " module  */\n" +
+                        "   TIVX_LIBRARY_" + self.module.upper() +
+                        "_BASE = %d,\n" % (int(self.prev_enum_value)+1))
+        CodeModify().block_insert(self.include_customer_kernels_filename,
+                          "enum " + self.top_header_name + "_library_e",
+                          "};",
+                          "TIVX_LIBRARY_" + self.module.upper() + "_BASE",
+                          "};",
+                          self.insert)
+
+
+        self.insert = (
+            r" \\brief The list of kernels supported in " + self.module + " module" + "\n" +
+            " *" + "\n" +
+            r" * Each kernel listed here can be used with the <tt>\\ref vxGetKernelByEnum</tt> call." + "\n" +
+            " * When programming the parameters, use" + "\n" +
+            r" * \\arg <tt>\\ref VX_INPUT</tt> for [in]" + "\n" +
+            r" * \\arg <tt>\\ref VX_OUTPUT</tt> for [out]" + "\n" +
+            r" * \\arg <tt>\\ref VX_BIDIRECTIONAL</tt> for [in,out]" + "\n" +
+            " *" + "\n" +
+            " * When programming the parameters, use" + "\n" +
+            r" * \\arg <tt>\\ref VX_TYPE_IMAGE</tt> for a <tt>\\ref vx_image</tt> in the size field of <tt>\\ref vxGetParameterByIndex</tt> or <tt>\\ref vxSetParameterByIndex</tt>" + "\n" +
+            r" * \\arg <tt>\\ref VX_TYPE_ARRAY</tt> for a <tt>\\ref vx_array</tt> in the size field of <tt>\\ref vxGetParameterByIndex</tt> or <tt>\\ref vxSetParameterByIndex</tt>" + "\n" +
+            r" * \\arg or other appropriate types in \\ref vx_type_e." + "\n" +
+            " * \\ingroup group_kernel" + "\n" +
+            " */" + "\n" +
+            "enum tivx_kernel_" + self.module + "_e {" + "\n" +
+            r"    /*! \\brief The " + self.kernel.name_lower + " kernel" + "\n" +
+            "     * \\see group_vision_function_" + self.module + "\n" +
+            "     */" + "\n" +
+            "    " + self.kernel.enum_str_prefix + self.kernel.name_upper + " = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_" + self.module.upper() + "_BASE) + 0," + "\n" +
+            "    " + self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */" + "\n" +
+            "};" + "\n\n/*! \n")
+        CodeModify().block_insert(self.include_customer_kernels_filename,
+                          "enum " + self.top_header_name + "_library_e",
+                          " Used for the Application to load the",
+                          "enum tivx_kernel_" + self.module + "_e {",
+                          r" * \\brief Used for the Application to load the",
+                          self.insert)
+
+        self.insert = (
+            "/*!" + "\n" +
+            r" * \\brief Used for the Application to load the " + self.module + " kernels into the context." + "\n" +
+            " * \\ingroup group_kernel" + "\n" +
+            " */" + "\n" +
+            "void " + self.module + "LoadKernels(vx_context context);" + "\n" + "\n" +
+            "/*!" + "\n" +
+            r" * \\brief Used for the Application to unload the " + self.module + " kernels from the context." + "\n" +
+            " * \\ingroup group_kernel" + "\n" +
+            " */" + "\n" +
+            "void " + self.module + "UnLoadKernels(vx_context context);" + "\n" + "\n" +
+            "/*!" + "\n" +
+            r" * \\brief Used to print the performance of the kernels." + "\n" +
+            " * \\ingroup group_kernel" + "\n" +
+            " */" + "\n" +
+            "void " + self.module + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);" + "\n" + "\n"
+            )
+        CodeModify().block_insert(self.include_customer_kernels_filename,
+                          "LoadKernels",
+                          "#ifdef __cplusplus",
+                          "void " + self.module + "LoadKernels",
+                          "#ifdef __cplusplus",
+                          self.insert)
+
+        # Update for new kernels
         self.prev_enum_value = CodeModify().block_search(self.include_customer_kernels_filename,
                                                   "enum tivx_kernel_" + self.module + "_e {",
                                                   self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0",

@@ -100,7 +100,7 @@ class CodeModify :
             self.multiline = ""
             with open(in_filename) as rd_file:
                 for line in rd_file:
-                    if start in line :
+                    if self.status==False and start in line :
                         self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
                         self.multiline = line
                         self.status = True
