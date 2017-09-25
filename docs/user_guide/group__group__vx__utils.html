@@ -30,7 +30,7 @@
 [<a class="el" href="group__group__vx__framework__utils.html">Utility and Debug Modules</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">static <a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__utils.html#ga8e19e8244e8e40dac1af54ce04ac0b3a">tivxFlagIsBitSet</a> (uint32_t flag_var, uint32_t flag_val)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">static <a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__utils.html#ga8e19e8244e8e40dac1af54ce04ac0b3a">tivxFlagIsBitSet</a> (uint32_t flag_var, uint32_t flag_val)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Macro to check if flag is set, flag MUST be of bit type.  <a href="#ga8e19e8244e8e40dac1af54ce04ac0b3a"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__utils.html#gabe1484e1cc6d183d574ff47720dba6f6">tivxFlagBitSet</a> (uint32_t *flag_var, uint32_t flag_val)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Macro to set flag value, flag MUST be of bit type.  <a href="#gabe1484e1cc6d183d574ff47720dba6f6"></a><br/></td></tr>
@@ -59,8 +59,6 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A magic value to look for and set in references. Used to indicate a free'ed reference.  <a href="#ga03c1805a3a7258cf0ec83ad8daab1838"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__utils.html#ga7986a750054beb62c0f9f720843e9495">VX_CHECK_PARAM</a>(ptr, size, type, align)&nbsp;&nbsp;&nbsp;((size == sizeof(type)) &amp;&amp; (((<a class="el" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324">vx_size</a>)ptr &amp; align) == 0))</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A parameter checker for size and alignment.  <a href="#ga7986a750054beb62c0f9f720843e9495"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__utils.html#ga077bde7b4af50f959972477bba9569ef">dimof</a>(x)&nbsp;&nbsp;&nbsp;(sizeof(x)/sizeof(x[0]))</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Macro to find size of array.  <a href="#ga077bde7b4af50f959972477bba9569ef"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
 <a class="anchor" id="ga3ce34986ae4e8bb261f86e769fbbc167"></a><!-- doxytag: member="vx_internal.h::TIVX_ALIGN" ref="ga3ce34986ae4e8bb261f86e769fbbc167" args="(value, align)" -->
@@ -253,33 +251,13 @@
 
 </div>
 </div>
-<a class="anchor" id="ga077bde7b4af50f959972477bba9569ef"></a><!-- doxytag: member="vx_internal.h::dimof" ref="ga077bde7b4af50f959972477bba9569ef" args="(x)" -->
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">#define dimof</td>
-          <td>(</td>
-          <td class="paramtype">x&nbsp;</td>
-          <td class="paramname"></td>
-          <td>&nbsp;)&nbsp;</td>
-          <td>&nbsp;&nbsp;&nbsp;(sizeof(x)/sizeof(x[0]))</td>
-        </tr>
-      </table>
-</div>
-<div class="memdoc">
-
-<p>Macro to find size of array. </p>
-
-</div>
-</div>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="ga8e19e8244e8e40dac1af54ce04ac0b3a"></a><!-- doxytag: member="vx_internal.h::tivxFlagIsBitSet" ref="ga8e19e8244e8e40dac1af54ce04ac0b3a" args="(uint32_t flag_var, uint32_t flag_val)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">static <a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a> tivxFlagIsBitSet </td>
+          <td class="memname">static <a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a> tivxFlagIsBitSet </td>
           <td>(</td>
           <td class="paramtype">uint32_t&nbsp;</td>
           <td class="paramname"> <em>flag_var</em>, </td>

@@ -341,7 +341,14 @@
 </ul>
 <p>Sets target CPU for node[i] to DSP2 </p>
 <div class="fragment"><pre class="fragment">     */
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    <span class="keywordflow">if</span> (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    }
+    <span class="keywordflow">else</span> <span class="comment">/* DSP2 is not present on some platforms, so changing target to DSP1 */</span>
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    }
 </pre></div><ul>
 <li>Create OpenVX node object.</li>
 </ul>
@@ -383,7 +390,14 @@
                     shift);
     vxSetReferenceName((vx_reference)node[i], <span class="stringliteral">&quot;GRAD_Y_IMAGE&quot;</span>);
 
-    vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    <span class="keywordflow">if</span> (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP2))
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP2);
+    }
+    <span class="keywordflow">else</span> <span class="comment">/* DSP2 is not present on some platforms, so changing target to DSP1 */</span>
+    {
+        vxSetNodeTarget(node[i], VX_TARGET_STRING, TIVX_TARGET_DSP1);
+    }
 </pre></div><ul>
 <li>Verify graph object.</li>
 </ul>

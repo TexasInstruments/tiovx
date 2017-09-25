@@ -28,7 +28,7 @@
 
 
 <h1><a class="anchor" id="BUILD_INSTRUCTIONS">TIOVX Build Instructions </a></h1><dl class="user"><dt><b>Contents</b></dt><dd><ul>
-<li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_VSDK">Build instructions for Vision SDK Platform</a></li>
+<li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_VSDK">Build instructions for Vision SDK Platform (TDA2x/3x/2Ex)</a></li>
 <li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_LINUX">Build instructions for x86 Linux Platform (HOST Emulation Mode)</a></li>
 <li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_OPTIONS">Makefile build options</a></li>
 <li><a class="el" href="BUILD_INSTRUCTIONS.html#BUILD_CLEAN">Deleting all generated files</a></li>
@@ -37,7 +37,7 @@
 <p><br/>
 <hr/>
 <h2><a class="anchor" id="BUILD_VSDK">
-Build instructions for Vision SDK Platform</a></h2>
+Build instructions for Vision SDK Platform (TDA2x/3x/2Ex)</a></h2>
 <dl class="user"><dt><b>Requirements</b></dt><dd><ul>
 <li>Install Vision SDK vXX.XX.XX.XX as mentioned in the TIOVX release notes<ul>
 <li>This will install all packages needed to build Vision SDK</li>
@@ -47,7 +47,7 @@ Build instructions for Vision SDK Platform</a></h2>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Setup</b></dt><dd><ul>
-<li>Edit $TIOVX_PATH/tools_path.mk, modify paths for various dependant packages if required.<ul>
+<li>Edit $TIOVX_PATH/vsdk_tools_path.mak, modify paths for various dependant packages if required.<ul>
 <li>NOTE: When Vision SDK is installed, all paths in this file would be setup to point to correct locations within the Vision SDK installation.</li>
 </ul>
 </li>
@@ -136,6 +136,14 @@ Build instructions for Vision SDK Platform</a></h2>
 </dd></dl>
 <p><br/>
 <hr/>
+<h2><a class="anchor" id="BUILD_VSDK">
+Build instructions for Vision SDK Platform (TDA2x/3x/2Ex)</a></h2>
+<dl class="user"><dt><b>Requirements</b></dt><dd></dd></dl>
+<dl class="user"><dt><b>Setup</b></dt><dd></dd></dl>
+<dl class="user"><dt><b>Build</b></dt><dd></dd></dl>
+<dl class="user"><dt><b>Running the conformance test and tutorial (for LINUX+BIOS config)</b></dt><dd></dd></dl>
+<p><br/>
+<hr/>
 <h2><a class="anchor" id="BUILD_LINUX">
 Build instructions for x86 Linux Platform (HOST Emulation Mode)</a></h2>
 <dl class="user"><dt><b>Requirements</b></dt><dd><ul>
@@ -153,7 +161,7 @@ Build instructions for x86 Linux Platform (HOST Emulation Mode)</a></h2>
 </ul>
 </dd></dl>
 <dl class="user"><dt><b>Setup</b></dt><dd><ul>
-<li>Edit $TIOVX_PATH/tools_path.mk<ul>
+<li>Edit $TIOVX_PATH/vsdk_tools_path.mak<ul>
 <li>Modify "GCC_LINUX_ROOT := /usr/" to match your environment if needed</li>
 <li>The following paths are the only paths that must be set correctly for host emulation mode. (If paths have been already set for build for Vision SDK Platform, they do not need to be changed.)<ul>
 <li>VXLIB_PATH</li>
@@ -238,6 +246,19 @@ Makefile build options</a></h2>
 <td><p>BUILD_LINUX_A15  </p>
 </td><td><p>Builds for A15 Linux target  </p>
 </td><td><p>yes   </p>
+</td></tr>
+<tr>
+<td><p>BUILD_EVE  </p>
+</td><td><p>Builds for EVE platform (ARP32CGT_ROOT and EVE_SW_PATH required to be set for this build)  </p>
+</td><td><p>yes   </p>
+</td></tr>
+<tr>
+<td><p>BUILD_SDK  </p>
+</td><td><p>Builds for Vision SDK SW platform (TDA2x/3x/2Ex) or Processor SDK SW platform (AM57xx). <br/>
+ Valid values are, <br/>
+ vsdk for Vision SDK SW platform <br/>
+ psdk for Processor SDK SW platform  </p>
+</td><td><p>vsdk   </p>
 </td></tr>
 </table>
 <p><br/>

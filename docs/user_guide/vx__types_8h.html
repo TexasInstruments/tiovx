@@ -83,8 +83,11 @@
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a79c86535e7d15b833aa40fb068887a46">VX_ENUM_BASE</a>(vendor, id)&nbsp;&nbsp;&nbsp;(((vendor) &lt;&lt; 20) | (id &lt;&lt; 12))</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Object IDs to get the base value of the enumeration.  <a href="#a79c86535e7d15b833aa40fb068887a46"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a865aabb216bd28500ebbf4a4deaa69d3">VX_FMT_REF</a>&nbsp;&nbsp;&nbsp;&quot;%p&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Use to aid in debugging values in OpenVX.  <a href="#a865aabb216bd28500ebbf4a4deaa69d3"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a328f8027757b32ebf3559c2e1e54d18c">VX_FMT_SIZE</a>&nbsp;&nbsp;&nbsp;&quot;%zu&quot;</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Use to aid in debugging values in OpenVX.  <a href="#a328f8027757b32ebf3559c2e1e54d18c"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#accecc43fdc28478076941ef5a7d56da6">VX_SCALE_UNITY</a>&nbsp;&nbsp;&nbsp;(1024u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Use to indicate the 1:1 ratio in Q22.10 format.  <a href="#accecc43fdc28478076941ef5a7d56da6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a35de9b9dc576fca917775ff2c9696a69">VX_IMAGEPATCH_ADDR_INIT</a>&nbsp;&nbsp;&nbsp;{0u, 0u, 0, 0, 0u, 0u, 0u, 0u}</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Use to initialize a <code><a class="el" href="structvx__imagepatch__addressing__t.html">vx_imagepatch_addressing_t</a></code> structure on the stack.  <a href="#a35de9b9dc576fca917775ff2c9696a69"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a16de0d845457e69f4e0a5b1662321a4b">VX_PERF_INIT</a>&nbsp;&nbsp;&nbsp;{0ul, 0ul, 0ul, 0ul, 0ul, 0ul}</td></tr>
@@ -161,6 +164,8 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">The Array Object. Array is a strongly-typed container for other data structures.  <a href="#ab1f0193f8a470dd2fe10de539a533697"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">typedef struct _vx_object_array *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a31a0de03c8cbf474afab6efb7bcffddb">vx_object_array</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">The ObjectArray Object. ObjectArray is a strongly-typed container of OpenVX data-objects.  <a href="#a31a0de03c8cbf474afab6efb7bcffddb"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A formal boolean type with known fixed size.  <a href="#ab1690f4b7e55ce7712e9a4c2ca61e100"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">typedef struct _vx_meta_format *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#abfa72c9eff71470a4c96e3cab7dbe838">vx_meta_format</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">This object is used by output validation functions to specify the meta data of the expected output data object.  <a href="#abfa72c9eff71470a4c96e3cab7dbe838"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a></td></tr>
@@ -186,11 +191,11 @@
 <tr><td class="memItemLeft" align="right" valign="top">typedef void(VX_CALLBACK *&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a1cb5484ed26e0f08d33427d6f68abd3a">vx_log_callback_f</a> )(<a class="el" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249">vx_context</a> context, <a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> ref, <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> status, const <a class="el" href="vx__types_8h.html#a9ce3f44bccc95f52b9897df2b3620713">vx_char</a> string[])</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">The log callback function.  <a href="#a1cb5484ed26e0f08d33427d6f68abd3a"></a><br/></td></tr>
 <tr><td colspan="2"><h2>Enumerations</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a> { <a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0afb2a8f065f221fda7ecac976517a28f3">vx_false_e</a> =  0, 
-<a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0a2a695a4d881a8c863881d4f1f88d6442">vx_true_e</a>
+<tr><td class="memItemLeft" align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974">vx_bool_e</a> { <a class="el" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974afb2a8f065f221fda7ecac976517a28f3">vx_false_e</a> =  0, 
+<a class="el" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974a2a695a4d881a8c863881d4f1f88d6442">vx_true_e</a>
  }</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><p>A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be TRUE. </p>
- <a href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">More...</a><br/></td></tr>
+ <a href="vx__types_8h.html#a3519b709518117bb11af04b11d594974">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6">vx_type_e</a> { <br/>
 &nbsp;&nbsp;<a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6abf4c9a7d6d689998498573ac247598f8">VX_TYPE_INVALID</a> =  0x000, 
 <a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6af927f497e65117e26cdc34f66c41bcf8">VX_TYPE_CHAR</a> =  0x001, 
@@ -1015,6 +1020,7 @@
       </table>
 </div>
 <div class="memdoc">
+
 <p>Use to aid in debugging values in OpenVX. </p>
 
 </div>
@@ -1029,6 +1035,7 @@
       </table>
 </div>
 <div class="memdoc">
+
 <p>Use to aid in debugging values in OpenVX. </p>
 
 </div>
@@ -1043,6 +1050,7 @@
       </table>
 </div>
 <div class="memdoc">
+
 <p>Use to indicate the 1:1 ratio in Q22.10 format. </p>
 
 </div>
@@ -1629,6 +1637,22 @@ vxGetKernelByEnum </dd></dl>
 
 </div>
 </div>
+<a class="anchor" id="ab1690f4b7e55ce7712e9a4c2ca61e100"></a><!-- doxytag: member="vx_types.h::vx_bool" ref="ab1690f4b7e55ce7712e9a4c2ca61e100" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> <a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>A formal boolean type with known fixed size. </p>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool_e</a> </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="abfa72c9eff71470a4c96e3cab7dbe838"></a><!-- doxytag: member="vx_types.h::vx_meta_format" ref="abfa72c9eff71470a4c96e3cab7dbe838" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -1888,28 +1912,29 @@ vxAssignNodeCallback </dd></dl>
 </div>
 </div>
 <hr/><h2>Enumeration Type Documentation</h2>
-<a class="anchor" id="a7ab7c7864a0ea6762a9e15be80ef28f0"></a><!-- doxytag: member="vx_types.h::vx_bool" ref="a7ab7c7864a0ea6762a9e15be80ef28f0" args="" -->
+<a class="anchor" id="a3519b709518117bb11af04b11d594974"></a><!-- doxytag: member="vx_types.h::vx_bool_e" ref="a3519b709518117bb11af04b11d594974" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a></td>
+          <td class="memname">enum <a class="el" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974">vx_bool_e</a></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
 <p>A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be TRUE. </p>
-<div class="fragment"><pre class="fragment"> <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0" title="A Boolean value. This allows 0 to be FALSE, as it is in C, and any non-zero to be...">vx_bool</a> ret = <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0a2a695a4d881a8c863881d4f1f88d6442" title="The &amp;quot;true&amp;quot; value.">vx_true_e</a>;
+<div class="fragment"><pre class="fragment"> <a class="code" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100" title="A formal boolean type with known fixed size.">vx_bool</a> ret = <a class="code" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974a2a695a4d881a8c863881d4f1f88d6442" title="The &amp;quot;true&amp;quot; value.">vx_true_e</a>;
  <span class="keywordflow">if</span> (ret) printf(<span class="stringliteral">&quot;true!\n&quot;</span>);
- ret = <a class="code" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0afb2a8f065f221fda7ecac976517a28f3" title="The &amp;quot;false&amp;quot; value.">vx_false_e</a>;
+ ret = <a class="code" href="vx__types_8h.html#a3519b709518117bb11af04b11d594974afb2a8f065f221fda7ecac976517a28f3" title="The &amp;quot;false&amp;quot; value.">vx_false_e</a>;
  <span class="keywordflow">if</span> (!ret) printf(<span class="stringliteral">&quot;false!\n&quot;</span>);
 </pre></div><p> This would print both strings. </p>
+<dl class="see"><dt><b>See also:</b></dt><dd><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100" title="A formal boolean type with known fixed size.">vx_bool</a> </dd></dl>
 <dl><dt><b>Enumerator: </b></dt><dd><table border="0" cellspacing="2" cellpadding="0">
-<tr><td valign="top"><em><a class="anchor" id="a7ab7c7864a0ea6762a9e15be80ef28f0afb2a8f065f221fda7ecac976517a28f3"></a><!-- doxytag: member="vx_false_e" ref="a7ab7c7864a0ea6762a9e15be80ef28f0afb2a8f065f221fda7ecac976517a28f3" args="" -->vx_false_e</em>&nbsp;</td><td>
+<tr><td valign="top"><em><a class="anchor" id="a3519b709518117bb11af04b11d594974afb2a8f065f221fda7ecac976517a28f3"></a><!-- doxytag: member="vx_false_e" ref="a3519b709518117bb11af04b11d594974afb2a8f065f221fda7ecac976517a28f3" args="" -->vx_false_e</em>&nbsp;</td><td>
 <p>The "false" value. </p>
 </td></tr>
-<tr><td valign="top"><em><a class="anchor" id="a7ab7c7864a0ea6762a9e15be80ef28f0a2a695a4d881a8c863881d4f1f88d6442"></a><!-- doxytag: member="vx_true_e" ref="a7ab7c7864a0ea6762a9e15be80ef28f0a2a695a4d881a8c863881d4f1f88d6442" args="" -->vx_true_e</em>&nbsp;</td><td>
+<tr><td valign="top"><em><a class="anchor" id="a3519b709518117bb11af04b11d594974a2a695a4d881a8c863881d4f1f88d6442"></a><!-- doxytag: member="vx_true_e" ref="a3519b709518117bb11af04b11d594974a2a695a4d881a8c863881d4f1f88d6442" args="" -->vx_true_e</em>&nbsp;</td><td>
 <p>The "true" value. </p>
 </td></tr>
 </table>
@@ -1977,7 +2002,7 @@ vxAssignNodeCallback </dd></dl>
 <p>A <code><a class="el" href="vx__types_8h.html#a371968e3355d6f9e413d836ccc14d5b8">vx_df_image</a></code>. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a44aa67e15168e5912a0800090a120be6a7feade3dbc0b0206502f8339d1617cc9"></a><!-- doxytag: member="VX_TYPE_BOOL" ref="a44aa67e15168e5912a0800090a120be6a7feade3dbc0b0206502f8339d1617cc9" args="" -->VX_TYPE_BOOL</em>&nbsp;</td><td>
-<p>A <code><a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a></code>. </p>
+<p>A <code><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></code>. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a44aa67e15168e5912a0800090a120be6ad1b8d1eea8e228c613dd8970fa0118d2"></a><!-- doxytag: member="VX_TYPE_SCALAR_MAX" ref="a44aa67e15168e5912a0800090a120be6ad1b8d1eea8e228c613dd8970fa0118d2" args="" -->VX_TYPE_SCALAR_MAX</em>&nbsp;</td><td>
 <p>A floating value for comparison between OpenVX scalars and OpenVX structs. </p>
@@ -2739,13 +2764,13 @@ vxAssignNodeCallback </dd></dl>
 <p>Indicates the number of node parameters, including optional parameters that are not passed. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a></code> parameter. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a6698e2a55aa6d7fd5c45e746a0d640b9a5e5d42c18129e3cdac3f45cdff95b9e8"></a><!-- doxytag: member="VX_NODE_IS_REPLICATED" ref="a6698e2a55aa6d7fd5c45e746a0d640b9a5e5d42c18129e3cdac3f45cdff95b9e8" args="" -->VX_NODE_IS_REPLICATED</em>&nbsp;</td><td>
-<p>Indicates whether the node is replicated. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a></code> parameter. </p>
+<p>Indicates whether the node is replicated. Read-only. Use a <code><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></code> parameter. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a6698e2a55aa6d7fd5c45e746a0d640b9af11c001527b12c28251c1a830ee8e699"></a><!-- doxytag: member="VX_NODE_REPLICATE_FLAGS" ref="a6698e2a55aa6d7fd5c45e746a0d640b9af11c001527b12c28251c1a830ee8e699" args="" -->VX_NODE_REPLICATE_FLAGS</em>&nbsp;</td><td>
-<p>Indicates the replicated parameters. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a></code>* parameter. </p>
+<p>Indicates the replicated parameters. Read-only. Use a <code><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></code>* parameter. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a6698e2a55aa6d7fd5c45e746a0d640b9aa674356b35e4bd1b12a433abdd71cd00"></a><!-- doxytag: member="VX_NODE_VALID_RECT_RESET" ref="a6698e2a55aa6d7fd5c45e746a0d640b9aa674356b35e4bd1b12a433abdd71cd00" args="" -->VX_NODE_VALID_RECT_RESET</em>&nbsp;</td><td>
-<p>Indicates the behavior with respect to the valid rectangle. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a7ab7c7864a0ea6762a9e15be80ef28f0">vx_bool</a></code> parameter. </p>
+<p>Indicates the behavior with respect to the valid rectangle. Read-only. Use a <code><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></code> parameter. </p>
 </td></tr>
 </table>
 </dd>
@@ -3377,7 +3402,7 @@ VX_KERNEL_WARP_PERSPECTIVE </dd></dl>
 <p>A square matrix (rows = columns = size). </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a408dfa61ca7a43e185d16180ea4b7ebbaacdb0f804e65801a4e4b9316e6cec631"></a><!-- doxytag: member="VX_PATTERN_OTHER" ref="a408dfa61ca7a43e185d16180ea4b7ebbaacdb0f804e65801a4e4b9316e6cec631" args="" -->VX_PATTERN_OTHER</em>&nbsp;</td><td>
-<p>Matrix with any pattern othern than above. </p>
+<p>Matrix with any pattern other than above. </p>
 </td></tr>
 </table>
 </dd>
@@ -3591,7 +3616,7 @@ VX_KERNEL_WARP_PERSPECTIVE </dd></dl>
 <p>The delay attribute list. </p>
 <dl><dt><b>Enumerator: </b></dt><dd><table border="0" cellspacing="2" cellpadding="0">
 <tr><td valign="top"><em><a class="anchor" id="a5c20574953e6aae4ecf01f483e2680b1a39f3a0e0fa867dc27daf774750130db0"></a><!-- doxytag: member="VX_DELAY_TYPE" ref="a5c20574953e6aae4ecf01f483e2680b1a39f3a0e0fa867dc27daf774750130db0" args="" -->VX_DELAY_TYPE</em>&nbsp;</td><td>
-<p>The type of reference contained in the delay. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a></code> parameter. </p>
+<p>The type of objects in the delay. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a></code> parameter. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="a5c20574953e6aae4ecf01f483e2680b1ab9b2d40a6db1c422669cfc4c3023e666"></a><!-- doxytag: member="VX_DELAY_SLOTS" ref="a5c20574953e6aae4ecf01f483e2680b1ab9b2d40a6db1c422669cfc4c3023e666" args="" -->VX_DELAY_SLOTS</em>&nbsp;</td><td>
 <p>The number of items in the delay. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324">vx_size</a></code> parameter. </p>
