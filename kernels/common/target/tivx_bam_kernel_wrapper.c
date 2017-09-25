@@ -1085,8 +1085,8 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         graph_create_params.onChipScratchMemSize = p_graph_sizes->graphScratchSize;
         graph_create_params.extMem               = p_graph_ptrs->graphcontext;
         graph_create_params.extMemSize           = p_graph_sizes->graphcontextSize;
-        graph_create_params.useSmartMemAlloc     = (BOOL)true;
-        graph_create_params.optimizeBlockDim     = (BOOL)false;
+        graph_create_params.useSmartMemAlloc     = (uint32_t)true;
+        graph_create_params.optimizeBlockDim     = (uint32_t)false;
 
         memcpy(&graph_create_params.intMemParams, &gIntMemParams, sizeof(BAM_InternalMemParams));
 
@@ -1174,7 +1174,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
 
     if(VX_SUCCESS == status_v)
     {
-        graph_create_params.optimizeBlockDim     = (BOOL)false;
+        graph_create_params.optimizeBlockDim     = (uint32_t)false;
 
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
@@ -1522,8 +1522,8 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         graph_create_params.onChipScratchMemSize = p_graph_sizes->graphScratchSize;
         graph_create_params.extMem               = p_graph_ptrs->graphcontext;
         graph_create_params.extMemSize           = p_graph_sizes->graphcontextSize;
-        graph_create_params.useSmartMemAlloc     = (BOOL)true;
-        graph_create_params.optimizeBlockDim     = (BOOL)false;
+        graph_create_params.useSmartMemAlloc     = (uint32_t)true;
+        graph_create_params.optimizeBlockDim     = (uint32_t)false;
 
         memcpy(&graph_create_params.intMemParams, &gIntMemParams, sizeof(BAM_InternalMemParams));
 
@@ -1611,7 +1611,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(VX_SUCCESS == status_v)
     {
-        graph_create_params.optimizeBlockDim     = (BOOL)false;
+        graph_create_params.optimizeBlockDim     = (uint32_t)false;
 
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 

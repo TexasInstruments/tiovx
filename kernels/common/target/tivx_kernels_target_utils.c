@@ -66,7 +66,7 @@
 #include <VX/vx.h>
 #include <TI/tivx_obj_desc.h>
 #include <tivx_kernels_target_utils.h>
-#include <tivx_bam_kernel_wrapper.h>
+
 
 void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels)
 {
@@ -333,6 +333,9 @@ void tivxSetTwoPointerLocation(
 void tivxReserveC66xL2MEM(void)
 {
 #if defined(BUILD_BAM)
+    vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
+                             void *wbuf_mem, uint32_t wbuf_size);
+
     tivx_mem_stats mem_stats;
     void *ibuf_ptr, *wbuf_ptr;
     vx_uint32 ibuf_size, wbuf_size;
