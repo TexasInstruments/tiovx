@@ -102,30 +102,32 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
     vx_status status = VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx;
     tivx_bam_kernel_details_t kernel_details;
-    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
+    VXLIB_bufParams2D_t vxlib_src[3], vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
+
+    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(dst, &vxlib_dst);
 
     if (VX_CHANNEL_Y == ch->data.enm)
     {
         plane_idx = 0;
+        buf_params[0] = &vxlib_src[0];
     }
     else if (VX_CHANNEL_U == ch->data.enm)
     {
         plane_idx = 1;
+        buf_params[0] = &vxlib_src[1];
     }
     else
     {
         plane_idx = 2;
+        buf_params[0] = &vxlib_src[2];
     }
-
-    tivxInitBufParams(src, &vxlib_src);
-    tivxInitBufParams(dst, &vxlib_dst);
 
     if (VX_SUCCESS == status)
     {
         /* Fill in the frame level sizes of buffers here. If the port
          * is optionally disabled, put NULL */
-        buf_params[0] = &vxlib_src;
         buf_params[1] = &vxlib_dst;
 
         kernel_details.compute_kernel_params = NULL;
@@ -151,20 +153,22 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
     vx_status status = VX_SUCCESS;
     uint8_t channel_offset = 0, plane_idx = 0;
     tivx_bam_kernel_details_t kernel_details;
-    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
+    VXLIB_bufParams2D_t vxlib_src[2], vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
+
+    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(dst, &vxlib_dst);
 
     if (VX_CHANNEL_Y == ch->data.enm)
     {
         plane_idx = 0;
+        buf_params[0] = &vxlib_src[0];
     }
     else
     {
         plane_idx = 1;
+        buf_params[0] = &vxlib_src[1];
     }
-
-    tivxInitBufParams(src, &vxlib_src);
-    tivxInitBufParams(dst, &vxlib_dst);
 
     switch(ch->data.enm)
     {
@@ -200,7 +204,6 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
     {
         /* Fill in the frame level sizes of buffers here. If the port
          * is optionally disabled, put NULL */
-        buf_params[0] = &vxlib_src;
         buf_params[1] = &vxlib_dst;
 
         kernel_details.compute_kernel_params = NULL;
@@ -218,7 +221,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
         {
             BAM_VXLIB_channelExtract_1of2_i8u_o8u_params params;
 
-            vxlib_src.data_type = VXLIB_UINT16;
+            vxlib_src[1].data_type = VXLIB_UINT16;
 
             params.channel_offset = channel_offset;
 

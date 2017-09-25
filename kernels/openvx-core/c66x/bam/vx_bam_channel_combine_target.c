@@ -334,7 +334,6 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineCreate(
 
             tivxInitBufParams(src0, &vxlib_src0);
             tivxInitBufParams(src1, &vxlib_src1);
-            tivxInitBufParams(dst, &vxlib_dst);
 
             /* Fill in the frame level sizes of buffers here. If the port
              * is optionally disabled, put NULL */
