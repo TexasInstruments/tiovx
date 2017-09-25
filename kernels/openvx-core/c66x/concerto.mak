@@ -23,7 +23,7 @@ IDIRS       += $(ALGFRAMEWORK_PATH)/inc \
                $(EDMA3_LLD_PATH)/packages/ti/sdo/edma3/rm \
                $(EDMA3_LLD_PATH)/packages
 
-DEFS += CORE_DSP
+DEFS += CORE_DSP CORE_C6XX
 
 ifeq ($(BUILD_BAM),yes)
 DEFS += BUILD_BAM

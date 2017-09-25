@@ -105,7 +105,7 @@ static vx_status tivxBamChannelExtractIyuvYuv4Input(
     VXLIB_bufParams2D_t vxlib_src[3], vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
 
-    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(src, &vxlib_src[0]);
     tivxInitBufParams(dst, &vxlib_dst);
 
     if (VX_CHANNEL_Y == ch->data.enm)
@@ -156,7 +156,7 @@ static vx_status tivxBamChannelExtractNv12Nv21Input(
     VXLIB_bufParams2D_t vxlib_src[2], vxlib_dst;
     VXLIB_bufParams2D_t *buf_params[2];
 
-    tivxInitBufParams(src, &vxlib_src);
+    tivxInitBufParams(src, &vxlib_src[0]);
     tivxInitBufParams(dst, &vxlib_dst);
 
     if (VX_CHANNEL_Y == ch->data.enm)

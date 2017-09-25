@@ -21,7 +21,7 @@ IDIRS       += $(HOST_ROOT)/kernels/include \
                $(EDMA3_LLD_PATH)/packages/ti/sdo/edma3/rm \
                $(EDMA3_LLD_PATH)/packages
 
-DEFS += CORE_DSP
+DEFS += CORE_DSP CORE_C6XX
 
 ifeq ($(BUILD_BAM),yes)
 SKIPBUILD=0

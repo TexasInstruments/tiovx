@@ -68,6 +68,8 @@
 #include "edma_utils_autoincrement_v2.h"
 #include "edma_utils.h"
 
+#define USE_ALGFRAMEWORK_2_8_0_0
+
 #ifdef HOST_EMULATION
 extern CSL_EdmaccRegs dummyEDMAreg;
 extern uint32_t edmaBase[1];
@@ -1102,8 +1104,10 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
         graph_create_params.blockDimParams.blockHeightStep = 2;
         graph_create_params.blockDimParams.blockWidthDivisorOf = 0;
         graph_create_params.blockDimParams.blockHeightDivisorOf = 0;
+        #ifdef USE_ALGFRAMEWORK_2_8_0_0
         graph_create_params.blockDimParams.blockWidthMax = buf_params[0]->dim_x;
         graph_create_params.blockDimParams.blockHeightMax = VXLIB_max(8, buf_params[0]->dim_y/4);
+        #endif
 
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
@@ -1539,8 +1543,10 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         graph_create_params.blockDimParams.blockHeightStep = 2;
         graph_create_params.blockDimParams.blockWidthDivisorOf = 0;
         graph_create_params.blockDimParams.blockHeightDivisorOf = 0;
+        #ifdef USE_ALGFRAMEWORK_2_8_0_0
         graph_create_params.blockDimParams.blockWidthMax = buf_params[0]->dim_x;
         graph_create_params.blockDimParams.blockHeightMax = VXLIB_max(8, buf_params[0]->dim_y/4);
+        #endif
 
         status_b = BAM_createGraph(&graph_create_params, &p_graph_handle->bam_graph_handle);
 
