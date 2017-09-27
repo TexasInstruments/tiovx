@@ -80,7 +80,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_target.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (12u)
+#define TIVX_PLATFORM_MAX_TARGETS            (22u)
 
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
