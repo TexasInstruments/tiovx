@@ -1742,6 +1742,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
                 map_addr, map_size,
                 obj_desc->mem_ptr[0].mem_type,
                 image->maps[map_id].usage);
+
+            image->maps[map_id].map_addr = NULL;
         }
         else
         {
