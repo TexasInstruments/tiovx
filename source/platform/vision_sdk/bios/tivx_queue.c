@@ -23,6 +23,8 @@ vx_status tivxQueueCreate(
 
     if ((NULL != queue) && (NULL != queue_memory) && (0 != max_elements))
     {
+        status = VX_SUCCESS;
+
         /*
          * init queue to 0's
          */
