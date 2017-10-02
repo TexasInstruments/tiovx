@@ -26,5 +26,5 @@ ifeq ($(TARGET_CPU),M4)
 SKIPBUILD=1
 endif
 
-
 include $(FINALE)
+

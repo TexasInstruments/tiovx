@@ -5,3 +5,4 @@
 
 STATIC_LIBS += vx_tiovx_hwa_tests vx_kernels_hwa vx_target_kernels_hwa
 STATIC_LIBS += vx_conformance_engine bl_filter_lib
+
