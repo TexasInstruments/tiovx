@@ -64,6 +64,7 @@
 #ifndef TIVX_KERNELS_HOST_UTILS_
 #define TIVX_KERNELS_HOST_UTILS_
 
+#include <TI/tivx_debug.h>
 
 #ifdef __cplusplus
 extern "C" {
