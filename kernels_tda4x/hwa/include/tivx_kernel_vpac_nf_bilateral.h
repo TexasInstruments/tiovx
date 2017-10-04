@@ -60,49 +60,26 @@
  *
  */
 
-#ifndef TDA4X_NODES_H_
-#define TDA4X_NODES_H_
-
-#include <VX/vx.h>
+#ifndef _TIVX_KERNEL_VPAC_NF_BILATERAL_
+#define _TIVX_KERNEL_VPAC_NF_BILATERAL_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*! \brief [Graph] Creates a VPAC_NF_GENERIC Node.
- * \param [in] graph The reference to the graph.
- * \param [in] input The input <tt>\ref VX_DF_IMAGE_U8, VX_DF_IMAGE_S16, or TIVX_DF_IMAGE_P12</tt> image.
- * \param [in] conv The input convolution matrix.
- * \param [in] configuration The input array of a single params structure of type tivx_vpac_nf_common_params_t.
- * \param [out] output The output <tt>\ref VX_DF_IMAGE_U8, VX_DF_IMAGE_S16, or TIVX_DF_IMAGE_P12</tt> image.
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
-                                      vx_image             input,
-                                      vx_convolution       conv,
-                                      vx_array             configuration,
-                                      vx_image             output);
 
-/*! \brief [Graph] Creates a VPAC_NF_BILATERAL Node.
- * \param [in] graph The reference to the graph.
- * \param [in] input
- * \param [in] sigmas
- * \param [in] configuration
- * \param [out] output
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
-                                      vx_image             input,
-                                      vx_array             sigmas,
-                                      vx_array             configuration,
-                                      vx_image             output);
+#define TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX (0U)
+#define TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX (1U)
+#define TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX (2U)
+#define TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX (3U)
+
+#define TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS (4U)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TDA4X_NODES_H_ */
+
+#endif /* _TIVX_KERNEL_VPAC_NF_BILATERAL_ */
 
 

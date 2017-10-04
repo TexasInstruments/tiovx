@@ -99,7 +99,6 @@ void tivxRegisterHWATargetKernels(void);
  */
 void tivxUnRegisterHWATargetKernels(void);
 
-
 #ifdef __cplusplus
 }
 #endif

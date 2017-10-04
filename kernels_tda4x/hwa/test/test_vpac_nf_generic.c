@@ -64,7 +64,7 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
     vx_context context = context_->vx_context_;
     vx_image src_image = 0, dst_image = 0;
     int cols = 3, rows = 3;
-    tivx_vpac_nf_generic_params_t params;
+    tivx_vpac_nf_common_params_t params;
     vx_enum params_type = VX_TYPE_INVALID;
     vx_array param_array;
     vx_int16 data[3 * 3] = { 0, 0, 0, 0, 1, 0, 0, 0, 0};
@@ -81,10 +81,10 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
 
         ASSERT_VX_OBJECT(convolution = convolution_create(context, cols, rows, data, 1), VX_TYPE_CONVOLUTION);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_generic_params_t));
+        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_common_params_t));
         ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
 
-        memset(&params, 0, sizeof(tivx_vpac_nf_generic_params_t));
+        memset(&params, 0, sizeof(tivx_vpac_nf_common_params_t));
 
         ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
 
@@ -290,7 +290,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
     vx_image src_image = 0, dst_image = 0;
     vx_convolution convolution = 0;
     vx_int16 data[MAX_CONV_SIZE * MAX_CONV_SIZE] = { 0 };
-    tivx_vpac_nf_generic_params_t params;
+    tivx_vpac_nf_common_params_t params;
     vx_enum params_type = VX_TYPE_INVALID;
     vx_array param_array;
     vx_size conv_max_dim = 0;
@@ -320,15 +320,15 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
         ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data));
         ASSERT_NO_FAILURE(convolution = convolution_create(context, arg_->cols, arg_->rows, data, 1));
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_generic_params_t));
+        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_common_params_t));
         ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
 
-        memset(&params, 0, sizeof(tivx_vpac_nf_generic_params_t));
-        params.shift = arg_->shift;
+        memset(&params, 0, sizeof(tivx_vpac_nf_common_params_t));
+        params.output_downshift = arg_->shift;
 
         ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
 
-        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_vpac_nf_generic_params_t)));
+        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_vpac_nf_common_params_t)));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 

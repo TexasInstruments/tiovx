@@ -71,11 +71,14 @@ static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 static uint32_t gIsHwaKernelsLoad = 0u;
 
 vx_status tivxAddKernelVpacNfGeneric(vx_context context);
+vx_status tivxAddKernelVpacNfBilateral(vx_context context);
 
 vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
+vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelVpacNfGeneric, tivxRemoveKernelVpacNfGeneric},
+    {tivxAddKernelVpacNfBilateral, tivxRemoveKernelVpacNfBilateral},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)

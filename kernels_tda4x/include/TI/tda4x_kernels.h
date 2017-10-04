@@ -106,6 +106,10 @@ enum tivx_kernel_hwa_e {
      * \see group_vision_function_hwa
      */
     TIVX_KERNEL_VPAC_NF_GENERIC = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 0,
+    /*! \brief The vpac_nf_bilateral kernel
+     * \see group_vision_function_hwa
+     */
+    TIVX_KERNEL_VPAC_NF_BILATERAL = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 1,
     TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 
@@ -115,15 +119,51 @@ enum tivx_kernel_hwa_e {
  * \ingroup group_kernel
  */
 typedef struct {
-    uint16_t  inputPlaneInterleaving;  /*! 0: NonInterleaved mode; 1: Interleaved mode */
-    int16_t  shift;                    /*! Indicates the down shift value to apply to the output before offset [Range (-8) - 7] */
-    uint16_t  offset;                  /*! Indicates the offset value to add after shift [Range (0 - 4095)] */
-    uint16_t  outputPixelSkip;         /*! Horizontal output pixel skipping  0: disabled, 1: enabled */
-    uint16_t  outputPixelSkipOdd;      /*! If outputPixelSkip == 1, then skip 0: even pixel, 1: odd pixel */
-    uint16_t  kern_ln_offset;          /*! kernel line offset [Range (0 - 4)] (LSE) */
-    uint16_t  kern_sz_height;          /*! kernel height [Range (1 - 5)] (LSE) */
-    uint16_t  src_ln_inc_2;            /*! 0: Off, 1: vertical skip input lines (LSE) */
-} tivx_vpac_nf_generic_params_t;
+    uint16_t  input_interleaved;       /*!< 0: NonInterleaved mode; 1: Interleaved mode */
+    int16_t   output_downshift;        /*!< Indicates the down shift value to apply to the output before offset [Range (-8) - 7] */
+    uint16_t  output_offset;           /*!< Indicates the offset value to add after shift [Range (0 - 4095)] */
+    uint16_t  output_pixel_skip;       /*!< Horizontal output pixel skipping  0: disabled, 1: enabled */
+    uint16_t  output_pixel_skip_odd;   /*!< If outputPixelSkip == 1, then skip 0: even pixel, 1: odd pixel */
+    uint16_t  kern_ln_offset;          /*!< kernel line offset [Range (0 - 4)] (LSE) */
+    uint16_t  kern_sz_height;          /*!< kernel height [Range (1 - 5)] (LSE) */
+    uint16_t  src_ln_inc_2;            /*!< 0: Off, 1: vertical skip input lines (LSE) */
+} tivx_vpac_nf_common_params_t;
+
+/*!
+ * \brief The parameters data structure used by the TIVX_KERNEL_VPAC_NF_BILATERAL kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    tivx_vpac_nf_common_params_t params;    /*!< Common parameters for configuring vpac nf */
+    uint16_t  adaptive_mode;                   /*!< Adaptive mode (automatically choose sub-table based on average intensity)   0: disabled, 1: enabled */
+    uint16_t  sub_table_select;                /*!< If adaptive_mode == 0, selects which sub-table to use [0 - 7] */
+} tivx_vpac_nf_bilateral_params_t;
+
+/*!
+ * \brief The sigmas data structure used by the TIVX_KERNEL_VPAC_NF_BILATERAL kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    /*! The number of sigmas given in each of the sigma_space and sigma_range arrays. Valid supported values are 1, 2, 4, or 8.
+     *  Since this corresponds to applying a lookup table in RAM, there are a few different use cases this is intended to enable:
+     *  1. The common case is to use a value of 1, applying the same pair of sigmas to the full image.
+     *  2. In the case where the VPAC NF will be used to alternate between luma and chroma planes of an image, there are two options:
+     *     a. Load one sigma to apply to luma plane, and then overwrite it with a second table to apply to chroma plane
+     *        - This has a latency penalty in between each plane to load 5*256 bytes
+     *     b. Load a quantized version of both luma and chroma planes at once, and hardware can alternate between each plane using the
+     *        sub_table_select identifier.
+     *        - This saves latency, but looses one bit of precision for the two sub-tables.
+     *  3. Adaptive mode case.  In adaptive mode, the user can load a different sigma value corresponding to the average neigborhood
+     *     intensity of the center pixel.  For example, if 4 sigmas are used, then the full dynamic range of the input is divided into
+     *     4 equal-sized ranges.  Sigma index '0' is applied to the lowest value range of the average neighborhood intensity, and so on.
+     *     - The tradeoff is that the more tables that are used, the less the precision of lookup tables.
+     */
+    uint16_t  num_sigmas;
+    double  sigma_space[8];  /*!< Array of space sigmas used to generate a 5x5 gaussian filter around the center pixel */
+    double  sigma_range[8];  /*!< Array of range sigmas used to weight the neigborhood pixels according to their absolute difference in value from the center pixel */
+} tivx_vpac_nf_bilateral_sigmas_t;
 
 
 /*!

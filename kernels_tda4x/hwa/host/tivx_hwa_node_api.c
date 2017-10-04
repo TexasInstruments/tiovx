@@ -82,3 +82,22 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
+                                      vx_image             input,
+                                      vx_array             sigmas,
+                                      vx_array             configuration,
+                                      vx_image             output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)sigmas,
+            (vx_reference)configuration,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_VPAC_NF_BILATERAL,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
