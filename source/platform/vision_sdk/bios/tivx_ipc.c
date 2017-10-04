@@ -134,16 +134,19 @@ vx_bool tivxIsTargetEnabled(char target_name[])
         if (target_id != TIVX_TARGET_ID_INVALID)
         {
             cpu_id = tivxTargetGetCpuId(target_id);
-            vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
-            vsdk_isenabled = System_openvxIsProcEnabled(vsdk_cpu_id);
+            if( cpu_id < TIVX_CPU_ID_MAX)
+            {
+                vsdk_cpu_id  = g_ipc_cpu_id_map[cpu_id];
+                vsdk_isenabled = System_openvxIsProcEnabled(vsdk_cpu_id);
 
-            if (vsdk_isenabled)
-            {
-                isEnabled = vx_true_e;
-            }
-            else
-            {
-                isEnabled = vx_false_e;
+                if (vsdk_isenabled)
+                {
+                    isEnabled = vx_true_e;
+                }
+                else
+                {
+                    isEnabled = vx_false_e;
+                }
             }
         }
     }
