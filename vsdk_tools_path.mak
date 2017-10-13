@@ -43,7 +43,7 @@ EDMA3_LLD_PATH ?= $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
 BIOS_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_04_53
 
 DMAUTILS_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.DMAUTILS.00.08.00.02/dmautils
-ALGFRAMEWORK_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.ALGFRAMEWORK.02.08.00.00_RC1/algframework
+ALGFRAMEWORK_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.ALGFRAMEWORK.02.08.00.00/algframework
 PDK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
 CMEM_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/kernel/cmem
 TARGETFS ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/targetfs
