@@ -110,6 +110,10 @@ enum tivx_kernel_hwa_e {
      * \see group_vision_function_hwa
      */
     TIVX_KERNEL_VPAC_NF_BILATERAL = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 1,
+    /*! \brief The dmpac_sde kernel
+     * \see group_vision_function_hwa
+     */
+    TIVX_KERNEL_DMPAC_SDE = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 2,
     TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 
@@ -119,8 +123,8 @@ enum tivx_kernel_hwa_e {
  * \ingroup group_kernel
  */
 typedef struct {
-    uint16_t  input_interleaved;       /*!< 0: NonInterleaved mode; 1: Interleaved mode */
-    int16_t   output_downshift;        /*!< Indicates the down shift value to apply to the output before offset [Range (-8) - 7] */
+    uint16_t  input_interleaved;       /*!< 0: NonInterleaved input mode; 1: Interleaved input mode (i.e. chroma plane of NV12) */
+    int16_t   output_downshift;        /*!< Indicates the down-shift value to apply to the output before offset [Range (-8) - 7] */
     uint16_t  output_offset;           /*!< Indicates the offset value to add after shift [Range (0 - 4095)] */
     uint16_t  output_pixel_skip;       /*!< Horizontal output pixel skipping  0: disabled, 1: enabled */
     uint16_t  output_pixel_skip_odd;   /*!< If outputPixelSkip == 1, then skip 0: even pixel, 1: odd pixel */
@@ -136,7 +140,11 @@ typedef struct {
  */
 typedef struct {
     tivx_vpac_nf_common_params_t params;    /*!< Common parameters for configuring vpac nf */
-    uint16_t  adaptive_mode;                   /*!< Adaptive mode (automatically choose sub-table based on average intensity)   0: disabled, 1: enabled */
+    /*! Adaptive mode 0: disabled, 1: enabled
+     *    Adaptive mode is when the sub-table sigma is automatically chosen on a per-pixel basis based on the
+     *    average intensity of local 4x4 neighborhood of the center pixel.
+     */
+    uint16_t  adaptive_mode;
     uint16_t  sub_table_select;                /*!< If adaptive_mode == 0, selects which sub-table to use [0 - 7] */
 } tivx_vpac_nf_bilateral_params_t;
 
@@ -165,6 +173,33 @@ typedef struct {
     double  sigma_range[8];  /*!< Array of range sigmas used to weight the neigborhood pixels according to their absolute difference in value from the center pixel */
 } tivx_vpac_nf_bilateral_sigmas_t;
 
+/*!
+ * \brief The parameters data structure used by the TIVX_KERNEL_DMPAC_SDE kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  median_filter_enable;         /*!< 0: Disabled; 1: Enable post-processing 5x5 median filter */
+    uint16_t  reduced_range_search_enable;  /*!< 0: Disabled; 1: Enable reduced range search on pixels near right margin */
+    uint16_t  disparity_min;                /*!< 0: minimum disparity == 0; 1: minimum disparity == -3 */
+    uint16_t  disparity_max;                /*!< 0: disparity_min + 63; 1: disparity_min + 127; 2: disparity_min + 191 */
+    uint16_t  threshold_left_right;         /*!< Left-right consistency check threshold in pixels [Range (0 - 255)] */
+    uint16_t  texture_filter_enable;        /*!< 0: Disabled; 1: Enable texture based filtering */
+    /*! If texture_filter_enable == 1, Scaled texture threshold [Range (0 - 255)]
+     *  Any pixel whose texture metric is lower than threshold_texture is considered to be low texture.  It is specified as
+     *  normalized texture threshold times 1024.  For instance, if threshold_texture == 204, the normalized texture threshold
+     *  is 204/1024 = 0.1992.
+     */
+    uint16_t  threshold_texture;
+    uint16_t  aggregation_penalty_p1;       /*!< SDE aggragation penalty P1. Optimization penalty constant for small disparity change. P1<=127 */
+    uint16_t  aggregation_penalty_p2;       /*!< SDE aggragation penalty P2. Optimization penalty constant for large disparity change. P2<=255 */
+    /*! Defines custom ranges for mapping internal confidence score to one of 8 levels. [Range (0 - 4095)]
+     *    The confidence score will map to level N if it is less than confidence_score_map[N] but greater than or equal to confidence_score_map[N-1]
+     *    For example, to map internal confidence scores from 0 to 50 to level 0, and confidence scores from 51 to 108 to level 1,
+     *    then set confidence_score_map[0] = 51 and confidence_score_map[1] = 109
+     *    NOTE: Each mapping value must be greater than the values from lower indices of the array */
+    uint16_t  confidence_score_map[8];
+} tivx_dmpac_sde_params_t;
 
 /*!
  * \brief Used for the Application to load the hwa kernels into the context.

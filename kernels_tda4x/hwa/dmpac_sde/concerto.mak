@@ -1,11 +1,12 @@
 include $(PRELUDE)
-TARGET      := vx_target_kernels_vpac_nf
+TARGET      := vx_target_kernels_dmpac_sde
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
-IDIRS       += $(BL_FILTER_PATH)/bl_filter/src
+IDIRS       += $(SDE_PATH)/include/lib
 IDIRS       += $(VXLIB_PATH)/packages
+DEFS        += TIOVX_SDE
 
 ifeq ($(TARGET_CPU),X86)
 endif

@@ -62,6 +62,7 @@
 
 #if 1
 //TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
+//TESTCASE(tivxHwaVpacNfBilateral)
+TESTCASE(tivxHwaDmpacSde)
 #endif
 

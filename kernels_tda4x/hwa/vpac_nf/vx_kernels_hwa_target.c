@@ -76,12 +76,12 @@ static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelVpacNfBilateral, tivxRemoveTargetKernelVpacNfBilateral},
 };
 
-void tivxRegisterHWATargetKernels()
+void tivxRegisterHWATargetVpacNfKernels()
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHWATargetKernels()
+void tivxUnRegisterHWATargetVpacNfKernels()
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

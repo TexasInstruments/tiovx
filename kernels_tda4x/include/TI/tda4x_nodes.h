@@ -99,6 +99,23 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
                                       vx_array             configuration,
                                       vx_image             output);
 
+/*! \brief [Graph] Creates a DMPAC_SDE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] left
+ * \param [in] right
+ * \param [in] configuration
+ * \param [out] output
+ * \param [out] confidence_histogram
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
+                                      vx_image             left,
+                                      vx_image             right,
+                                      vx_array             configuration,
+                                      vx_image             output,
+                                      vx_distribution      confidence_histogram);
+
 #ifdef __cplusplus
 }
 #endif

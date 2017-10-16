@@ -91,13 +91,26 @@ void tivxUnRegisterHWAKernels(void);
  * \brief Function to register HWA Kernels on the Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWATargetKernels(void);
+void tivxRegisterHWATargetVpacNfKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWATargetKernels(void);
+void tivxUnRegisterHWATargetVpacNfKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterHWATargetDmpacSdeKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterHWATargetDmpacSdeKernels(void);
+
 
 #ifdef __cplusplus
 }

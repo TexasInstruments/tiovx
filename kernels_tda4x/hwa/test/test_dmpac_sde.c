@@ -66,58 +66,50 @@
 #include "test_engine/test.h"
 #include <string.h>
 
+TESTCASE(tivxHwaDmpacSde, CT_VXContext, ct_setup_vx_context, 0)
 
-TESTCASE(tivxHwaVpacNfBilateral, CT_VXContext, ct_setup_vx_context, 0)
-
-TEST(tivxHwaVpacNfBilateral, testNodeCreation)
+TEST(tivxHwaDmpacSde, testNodeCreation)
 {
     vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0;
-    tivx_vpac_nf_bilateral_params_t params;
-    tivx_vpac_nf_bilateral_sigmas_t sigmas;
+    vx_image left_image = 0, right_image = 0, dst_image = 0;
+    tivx_dmpac_sde_params_t params;
     vx_enum params_type = VX_TYPE_INVALID;
-    vx_enum sigmas_type = VX_TYPE_INVALID;
     vx_array param_array;
-    vx_array sigma_array;
     vx_graph graph = 0;
     vx_node node = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
     {
         hwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(left_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(right_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_params_t));
+        params_type = vxRegisterUserStruct(context, sizeof(tivx_dmpac_sde_params_t));
         ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
+        memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
         ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
-        sigmas_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT(sigmas_type >= VX_TYPE_USER_STRUCT_START && sigmas_type <= VX_TYPE_USER_STRUCT_END);
-        memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT_VX_OBJECT(sigma_array = vxCreateArray(context, sigmas_type, 1), VX_TYPE_ARRAY);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, src_image, sigma_array, param_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, left_image, right_image, param_array, dst_image, NULL), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseImage(&dst_image));
-        VX_CALL(vxReleaseImage(&src_image));
+        VX_CALL(vxReleaseImage(&right_image));
+        VX_CALL(vxReleaseImage(&left_image));
         VX_CALL(vxReleaseArray(&param_array));
-        VX_CALL(vxReleaseArray(&sigma_array));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
         ASSERT(dst_image == 0);
-        ASSERT(src_image == 0);
+        ASSERT(right_image == 0);
+        ASSERT(left_image == 0);
         ASSERT(param_array == 0);
-        ASSERT(sigma_array == 0);
 
         hwaUnLoadKernels(context);
     }
@@ -148,103 +140,97 @@ typedef struct {
     const char* testName;
     CT_Image (*generator)(const char* fileName, int width, int height);
     const char* fileName;
-    double sigma_s, sigma_r;
-    vx_int32 numTables;
-    vx_int32 shift;
-    vx_df_image dst_format;
+    uint32_t dispMin, dispMax;
+    vx_int32 median;
+    vx_int32 texture;
+    uint32_t hist_output;
     vx_border_t border;
     int width, height;
 } Arg;
 
 
-#define ADD_SIGMAS(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/sigma_s=1.0/sigma_r=128.0", __VA_ARGS__, 1.0, 128.0))
+#define ADD_DISPMIN(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/dispMin=0", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/dispMin=-3", __VA_ARGS__, 1))
 
-#define ADD_NUMTABLES(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/num_tables=1", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/num_tables=2", __VA_ARGS__, 2)), \
-    CT_EXPAND(nextmacro(testArgName "/num_tables=4", __VA_ARGS__, 4)), \
-    CT_EXPAND(nextmacro(testArgName "/num_tables=8", __VA_ARGS__, 8))
+#define ADD_DISPMAX(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/dispMax=min+63", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/dispMax=min+127", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/dispMax=min+191", __VA_ARGS__, 2))
 
-#define ADD_CONV_SHIFT(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=0", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=1", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=2", __VA_ARGS__, 2)), \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=7", __VA_ARGS__, 7)), \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=-1", __VA_ARGS__, -1)), \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=-2", __VA_ARGS__, -2)), \
-    CT_EXPAND(nextmacro(testArgName "/conv_shift=-8", __VA_ARGS__, -8))
+#define ADD_MEDIAN(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/median=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/median=ON", __VA_ARGS__, 1))
 
-#define ADD_CONV_DST_FORMAT(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/dst8U", __VA_ARGS__, VX_DF_IMAGE_U8))
-#if 0
-, \
-    CT_EXPAND(nextmacro(testArgName "/dst16S", __VA_ARGS__, VX_DF_IMAGE_S16))
-#endif
+#define ADD_TEXTURE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/texture=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/texture=ON", __VA_ARGS__, 1))
+
+#define ADD_OUTPUT_HISTOGRAM(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/hist_output=OFF", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/hist_output=ON", __VA_ARGS__, 1))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, convolve_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("lena", ADD_SIGMAS, ADD_NUMTABLES, ADD_CONV_SHIFT, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("randomInput", ADD_DISPMIN, ADD_DISPMAX, ADD_MEDIAN, ADD_TEXTURE, ADD_OUTPUT_HISTOGRAM, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, convolve_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("lena", ADD_DISPMIN, ADD_DISPMAX, ADD_MEDIAN, ADD_TEXTURE, ADD_OUTPUT_HISTOGRAM, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
 
-TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
+TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
     PARAMETERS
 )
 {
     vx_context context = context_->vx_context_;
-    vx_image src_image = 0, dst_image = 0;
-    tivx_vpac_nf_bilateral_params_t params;
-    tivx_vpac_nf_bilateral_sigmas_t sigmas;
+    vx_image left_image = 0, right_image = 0, dst_image = 0;
+    vx_distribution histogram = 0;
+    tivx_dmpac_sde_params_t params;
     vx_enum params_type = VX_TYPE_INVALID;
-    vx_enum sigmas_type = VX_TYPE_INVALID;
     vx_array param_array;
-    vx_array sigma_array;
     vx_graph graph = 0;
     vx_node node = 0;
     int i;
 
-    CT_Image src = NULL;
+    CT_Image srcL = NULL;
+    CT_Image srcR = NULL;
     vx_border_t border = arg_->border;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
     {
         hwaLoadKernels(context);
 
-        ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
-        ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+        ASSERT_NO_FAILURE(srcL = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+        ASSERT_NO_FAILURE(srcR = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+        ASSERT_VX_OBJECT(left_image = ct_image_to_vx_image(srcL, context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(right_image = ct_image_to_vx_image(srcR, context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, srcL->width, srcL->height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
 
-        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
+        if(arg_->hist_output) {
+            ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 128, 0, 4096), VX_TYPE_DISTRIBUTION);
+        }
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_params_t));
+        params_type = vxRegisterUserStruct(context, sizeof(tivx_dmpac_sde_params_t));
         ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
+        memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
         ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
 
-        sigmas_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT(sigmas_type >= VX_TYPE_USER_STRUCT_START && sigmas_type <= VX_TYPE_USER_STRUCT_END);
-        memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT_VX_OBJECT(sigma_array = vxCreateArray(context, sigmas_type, 1), VX_TYPE_ARRAY);
-
-        params.params.output_downshift = arg_->shift;
-
-        sigmas.num_sigmas = arg_->numTables;
-        for(i=0; i < arg_->numTables; i++)
-        {
-            sigmas.sigma_space[i] = arg_->sigma_s + (0.2*i);
-            sigmas.sigma_range[i] = arg_->sigma_r + (20*i);
+        params.median_filter_enable = arg_->median;
+        params.disparity_min = arg_->dispMin;
+        params.disparity_max = arg_->dispMax;
+        params.texture_filter_enable = arg_->texture;
+        for(i = 0; i < 8; i++) {
+            params.confidence_score_map[i] = i*8;
         }
-        if(sigmas.num_sigmas > 1)
-        {
-            params.adaptive_mode = 1;
-        }
+        params.threshold_left_right = 0;
+        params.threshold_texture = 0;
+        params.aggregation_penalty_p1 = 0;
+        params.aggregation_penalty_p2 = 0;
+        params.reduced_range_search_enable = 0;
 
-        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_vpac_nf_bilateral_params_t)));
-        VX_CALL(vxAddArrayItems(sigma_array, 1, &sigmas, sizeof(tivx_vpac_nf_bilateral_sigmas_t)));
+        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_dmpac_sde_params_t)));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, src_image, sigma_array, param_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, left_image, right_image, param_array, dst_image, histogram), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
@@ -258,17 +244,22 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
         ASSERT(graph == 0);
 
         VX_CALL(vxReleaseImage(&dst_image));
-        VX_CALL(vxReleaseImage(&src_image));
+        VX_CALL(vxReleaseImage(&right_image));
+        VX_CALL(vxReleaseImage(&left_image));
         VX_CALL(vxReleaseArray(&param_array));
-        VX_CALL(vxReleaseArray(&sigma_array));
+
+        if(arg_->hist_output) {
+            VX_CALL(vxReleaseDistribution(&histogram));
+        }
 
         ASSERT(dst_image == 0);
-        ASSERT(src_image == 0);
+        ASSERT(right_image == 0);
+        ASSERT(left_image == 0);
         ASSERT(param_array == 0);
-        ASSERT(sigma_array == 0);
+        ASSERT(histogram == 0);
 
         hwaUnLoadKernels(context);
     }
 }
 
-TESTCASE_TESTS(tivxHwaVpacNfBilateral, testNodeCreation, testGraphProcessing)
+TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, testGraphProcessing)

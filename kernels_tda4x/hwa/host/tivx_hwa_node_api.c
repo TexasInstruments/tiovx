@@ -101,3 +101,24 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
+                                      vx_image             left,
+                                      vx_image             right,
+                                      vx_array             configuration,
+                                      vx_image             output,
+                                      vx_distribution      confidence_histogram)
+{
+    vx_reference prms[] = {
+            (vx_reference)left,
+            (vx_reference)right,
+            (vx_reference)configuration,
+            (vx_reference)output,
+            (vx_reference)confidence_histogram
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_DMPAC_SDE,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
