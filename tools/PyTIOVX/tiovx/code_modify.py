@@ -93,7 +93,7 @@ class CodeModify :
                             searchObj = re.findall(search, self.multiline)
                             return (searchObj[-1])
 
-    def block_insert(self, in_filename, start, end, find, search, insert) :
+    def block_insert(self, in_filename, start, end, find, search, searchNoEsc, insert) :
         if os.path.exists(in_filename):
             self.status = False
             self.include_customer_kernels_code = CodeGenerate(in_filename + ".tmp", header=False)
@@ -109,7 +109,7 @@ class CodeModify :
                         if end in line :
                             self.status = False
                             if not find in self.multiline :
-                                self.multiline = re.sub(search,insert + search, self.multiline)
+                                self.multiline = re.sub(search,insert + searchNoEsc, self.multiline)
                             self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
                     else :
                         self.include_customer_kernels_code.write_line(line, new_line=False)
