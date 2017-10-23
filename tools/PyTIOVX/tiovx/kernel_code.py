@@ -255,6 +255,8 @@ class KernelExportCode :
                     self.host_c_code.write_line("vx_uint32 rmp_src_h_%s;" % num_type)
                     self.host_c_code.write_line("vx_uint32 rmp_dst_w_%s;" % num_type)
                     self.host_c_code.write_line("vx_uint32 rmp_dst_h_%s;" % num_type)
+                if Type.is_scalar_type(prm.type) :
+                    self.host_c_code.write_line("vx_enum scalar_type_%s;" % num_type)
                 num_type += 1
         if self.kernel.getNumImages() > 0 :
             self.host_c_code.write_line("vx_df_image fmt[%sU] = {NULL};" % self.kernel.getNumImages())
@@ -306,7 +308,7 @@ class KernelExportCode :
                 num_image+=1
             else :
                 if Type.is_scalar_type(prm.type) is True :
-                    self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &%s_%s, sizeof(%s_%s));" % (num_scalar, prm.type.name.lower(), num_scalar, prm.type.name.lower(), num_nonimage))
+                    self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &scalar_type_%s, sizeof(scalar_type_%s));" % (num_scalar, num_nonimage, num_nonimage))
                     num_scalar+=1
                 else :
                     if Type.ARRAY == prm.type :
@@ -375,18 +377,16 @@ class KernelExportCode :
                 self.host_c_code.write_newline()
 
         # TODO: Put potential checks for other data types here
-        num_scalar = 0
         num_nonimage = 0
         for prm in self.kernel.params :
             if Type.is_scalar_type(prm.type) is True :
                 self.host_c_code.write_line("if (VX_SUCCESS == status)")
                 self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("status = tivxKernelValidateScalarType(%s_%s, %s);" % (prm.type.name.lower(), num_scalar, Type.get_vx_enum_name(prm.type)))
-                num_scalar+=1
+                self.host_c_code.write_line("status = tivxKernelValidateScalarType(scalar_type_%s, %s);" % (num_nonimage, Type.get_vx_enum_name(prm.type)))
                 self.host_c_code.write_close_brace()
                 self.host_c_code.write_newline()
-            #else
-            num_nonimage+=1
+            if Type.IMAGE != prm.type :
+                num_nonimage+=1
 
         # setting metas
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
@@ -742,7 +742,7 @@ class KernelExportCode :
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if (Type.is_scalar_type(prm.type) is True) and prm.direction != Direction.INPUT :
-                self.target_c_code.write_line("%s->%s = %s_value" % (desc, Type.get_scalar_obj_desc_data_name(prm.type), prm.name_lower))
+                self.target_c_code.write_line("%s->data.%s = %s_value;" % (desc, Type.get_scalar_obj_desc_data_name(prm.type), prm.name_lower))
         self.target_c_code.write_newline()
 
         self.target_c_code.write_close_brace()
@@ -1744,8 +1744,14 @@ class KernelExportCode :
         self.insert += (r" */\n")
         self.insert += ("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,\n")
         for prm in self.kernel.params[:-1] :
-            self.insert += ("%-37s %-20s %s,\n" % ("", prm.type.get_vx_name(), prm.name_lower))
-        self.insert += ("%-37s %-20s %s);\n" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
+            if Type.is_scalar_type(prm.type) :
+                self.insert += ("%-37s %-20s %s,\n" % ("", "vx_scalar", prm.name_lower))
+            else :
+                self.insert += ("%-37s %-20s %s,\n" % ("", prm.type.get_vx_name(), prm.name_lower))
+        if Type.is_scalar_type(self.kernel.params[-1].type) :
+            self.insert += ("%-37s %-20s %s);\n" % ("", "vx_scalar", self.kernel.params[-1].name_lower))
+        else :
+            self.insert += ("%-37s %-20s %s);\n" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
         self.insert += ("\n")
 
         CodeModify().block_insert(self.include_customer_nodes_filename,
@@ -1761,8 +1767,14 @@ class KernelExportCode :
         if not CodeModify().file_search(self.host_node_api_filename, " tivx" + self.kernel.name_camel + "Node(vx_graph graph,") :
             self.insert = ("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,\n")
             for prm in self.kernel.params[:-1] :
-                self.insert += ("%-37s %-20s %s,\n" % ("", prm.type.get_vx_name(), prm.name_lower))
-            self.insert += ("%-37s %-20s %s)\n" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
+                if Type.is_scalar_type(prm.type) :
+                    self.insert += ("%-37s %-20s %s,\n" % ("", "vx_scalar", prm.name_lower))
+                else :
+                    self.insert += ("%-37s %-20s %s,\n" % ("", prm.type.get_vx_name(), prm.name_lower))
+            if Type.is_scalar_type(self.kernel.params[-1].type) :
+                self.insert += ("%-37s %-20s %s)\n" % ("", "vx_scalar", self.kernel.params[-1].name_lower))
+            else :
+                self.insert += ("%-37s %-20s %s)\n" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
             self.insert += ("{\n")
             self.insert += ("    vx_reference prms[] = {\n")
             for prm in self.kernel.params[:-1] :
