@@ -86,7 +86,7 @@ extern "C" {
 /*! \brief Max parameters in a kernel
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_KERNEL_MAX_PARAMS      (10u)
+#define TIVX_KERNEL_MAX_PARAMS      (15u)
 
 /*! \brief Max nodes taking output form a given node
  * \ingroup group_tivx_obj_desc_cfg
