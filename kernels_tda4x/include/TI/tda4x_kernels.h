@@ -117,8 +117,13 @@ enum tivx_kernel_hwa_e {
     TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 
+/*********************************
+ *      VPAC_NF STRUCTURES
+ *********************************/
+
 /*!
- * \brief The parameters data structure used by the TIVX_KERNEL_VPAC_NF_GENERIC kernel.
+ * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_NF_GENERIC and TIVX_KERNEL_VPAC_NF_BILATERAL
+ *         kernels.
  *
  * \ingroup group_kernel
  */
@@ -134,7 +139,7 @@ typedef struct {
 } tivx_vpac_nf_common_params_t;
 
 /*!
- * \brief The parameters data structure used by the TIVX_KERNEL_VPAC_NF_BILATERAL kernel.
+ * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_NF_BILATERAL kernel.
  *
  * \ingroup group_kernel
  */
@@ -173,8 +178,12 @@ typedef struct {
     double  sigma_range[8];  /*!< Array of range sigmas used to weight the neigborhood pixels according to their absolute difference in value from the center pixel */
 } tivx_vpac_nf_bilateral_sigmas_t;
 
+/*********************************
+ *      DMPAC_SDE STRUCTURES
+ *********************************/
+
 /*!
- * \brief The parameters data structure used by the TIVX_KERNEL_DMPAC_SDE kernel.
+ * \brief The configuration data structure used by the TIVX_KERNEL_DMPAC_SDE kernel.
  *
  * \ingroup group_kernel
  */
@@ -200,6 +209,229 @@ typedef struct {
      *    NOTE: Each mapping value must be greater than the values from lower indices of the array */
     uint16_t  confidence_score_map[8];
 } tivx_dmpac_sde_params_t;
+
+/*********************************
+ *      VPAC_LDC STRUCTURES
+ *********************************/
+
+/*!
+ * \brief The convert depth structure in the configuration data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  in_bits;          /*!< Input bit depth [Range (8 - 12)] */
+    uint16_t  out_bits;         /*!< Output bit depth [Range (8 - 12)] */
+} tivx_vpac_ldc_convert_depth_params_t;
+
+/*!
+ * \brief The mesh data structure in the configuration data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  frame_width;       /*!< Mesh table full-frame width before subsampling */
+    uint16_t  frame_height;      /*!< Mesh table full-frame height before subsampling */
+    uint16_t  subsample_factor;  /*!< Mesh table subsample factor in horz and vert = 2^subsample_factor */
+} tivx_vpac_ldc_mesh_params_t;
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  luma_interpolation_type;          /*!< Luma Interpolation Type, 0: Bicubic; 1: Bilinear */
+    uint16_t  init_x;                           /*!< Output starting x-coordinate (must be multiple of 8) [Range (0 - 8191)] */
+    uint16_t  init_y;                           /*!< Output starting y-coordinate (must be multiple of 2) [Range (0 - 8191)] */
+    uint16_t  input_align_12bit;                            /*!< Optional: When input 16-bit unpacked, alignment of 12-bit pixel, 0: LSB, 1:MSB */
+    tivx_vpac_ldc_convert_depth_params_t  out_2_luma;   /*!< Optional: When 'out_2_luma_lut' is used, configures input/output bit depths */
+    tivx_vpac_ldc_convert_depth_params_t  out_3_chroma; /*!< Optional: When 'out_3_chroma_lut' is used, configures input/output bit depths */
+    tivx_vpac_ldc_mesh_params_t             mesh;        /*!< Optional: When 'mesh_table' is used, configures mesh parameters */
+} tivx_vpac_ldc_params_t;
+
+
+/*!
+ * \brief The region_params data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  out_block_width;              /*!< Output block width (must be multiple of 8) [Range (0 - 255)] */
+    uint16_t  out_block_height;             /*!< Output block height (must be multiple of 2) [Range (0 - 255)] */
+    uint16_t  pixel_pad;                    /*!< Pixel Padding [Range (0 - 15)] */
+} tivx_vpac_ldc_region_params_t;
+
+/*!
+ * \brief The alternative region_params data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t column_width[3];               /*!< Width of each column of sub-frames [Range (1 - 8191)] */
+    uint16_t row_height[3];                 /*!< Height of each row of sub-frames [Range (1 - 8191)] */
+    uint16_t enable[9];                     /*!< Subframe enable, 0: Disabled, 1: Enabled */
+    uint16_t out_block_width[9];            /*!< Output block width (must be multiple of 8) [Range (0 - 255)] */
+    uint16_t out_block_height[9];           /*!< Output block height (must be multiple of 2) [Range (0 - 255)] */
+    uint16_t pixel_pad[9];                  /*!< Pixel Padding [Range (0 - 15)] */
+} tivx_vpac_ldc_subregion_params_t;
+
+/*!
+ * \brief The bandwidth params structure used by the TIVX_KERNEL_VPAC_LDC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    /*! Limits the mean bandwidth (computed over one block) that the LDC module can request for read from system memory. [Range (0 - 4095)]
+     *    0: (Default) the bandwidth limiter is bypassed
+     *    1~4095: Maximum number of bytes per 256 cycles.
+     *
+     *    Examples:
+     *      1 : 1.17 MBytes/s @ 300 MHz
+     *      4095 : ~4.8 GBytes/s @300 MHz
+     */
+    uint16_t  bandwidth_control;
+    /*! Limits the maximum number of outstanding LDC requests to TAG_CNT+1. [Range (0 - 31)]
+     *    (Default): 31
+     */
+    uint16_t  tag_count;
+    /*! Limits the maximum burst length that could be used by LDC. [Range (0 - 3)]
+     *    Each burst is of 16 bytes.  Hardware breaks the command at max_burst_length boundary.
+     *    0: 16 (16*16 bytes = 256 bytes)
+     *    1:  8 (8*16 bytes  = 128 bytes) (Default)
+     *    2:  4 (4*16 bytes  =  64 bytes)
+     *    3:  2 (2*16 bytes  =  32 bytes)
+     */
+    uint16_t  max_burst_length;
+} tivx_vpac_ldc_bandwidth_params_t;
+
+/*********************************
+ *      VPAC_MSC STRUCTURES
+ *********************************/
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    /*! Single-phase horizontal filter coefficient source
+     *     0 : Use one of the dedicated single-phase coefficient sets
+     *     1 : Use one of the phases from the multi-phase coefficient set 0 (specified using 'horz_coef_sel')
+     */
+    uint16_t  horz_coef_src;
+    /*! Single-phase horizontal filter coefficient selection
+     *      if (horz_coef_src == 0)
+     *          Choose which single-phase coefficient set to use [Range (0-1)]
+     *      else
+     *          Choose which phase to use among multi-phase coefficient set 0 [Range (0-31)]
+     */
+    uint16_t  horz_coef_sel;
+    /*! Single-phase vertical filter coefficient source
+     *     0 : Use one of the dedicated single-phase coefficient sets
+     *     1 : Use one of the phases from the multi-phase coefficient set 0 (specified using 'vert_coef_sel')
+     */
+    uint16_t  vert_coef_src;
+    /*! Single-phase vertical filter coefficient selection
+     *      if (vert_coef_src == 0)
+     *          Choose which single-phase coefficient set to use [Range (0-1)]
+     *      else
+     *          Choose which phase to use among multi-phase coefficient set 0 [Range (0-31)]
+     */
+    uint16_t  vert_coef_sel;
+} tivx_vpac_msc_single_phase_params_t;
+
+/*!
+ * \brief The multi_phase data structure in the configuration data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  phase_mode;           /*!< Multi-phase Mode, 0: 64 phases, 1: 32 phases */
+    /*! Multi-phase horizontal coefficient set selection
+     *      if (phase_mode == 0)
+     *          0: 32 phase coefficient sets 0 & 1
+     *          2: 32 phase coefficient sets 2 & 3
+     *          1&3 : reserved
+     *      else
+     *          32 phase coefficient set [Range (0-3)]
+     */
+    uint16_t  horz_coef_sel;
+    /*! Multi-phase vertical coefficient set selection
+     *      if (phase_mode == 0)
+     *          0: 32 phase coefficient sets 0 & 1
+     *          2: 32 phase coefficient sets 2 & 3
+     *          1&3 : reserved
+     *      else
+     *          32 phase coefficient set [Range (0-3)]
+     */
+    uint16_t  vert_coef_sel;
+    uint16_t  init_phase_x;         /*!< Multi-phase initial horizontal resize phase (U12Q12) [Range (0-4095)] */
+    uint16_t  init_phase_y;         /*!< Multi-phase initial vertical resize phase (U12Q12) [Range (0-4095)] */
+} tivx_vpac_msc_multi_phase_params_t;
+
+/*!
+ * \brief The output config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  input_map;          /*!< Specified which input port this output is mapped to [Range (0-1)] */
+    uint16_t  signed_data;        /*!< Integer type of input and output frame data, 0: Unsigned 12-bit, 1: Signed 12-bit */
+    uint16_t  input_interleaved;  /*!< 0: NonInterleaved input mode; 1: Interleaved input mode (i.e. chroma plane of NV12) */
+    uint16_t  filter_mode;        /*!< 0: Single Phase Filter (integer ratios: 1x, 1/2x, 1/4x); 1: Multi-phase scaling filter */
+    uint16_t  coef_shift;         /*!< Sets the fractional bit precision of the 10-bit filter coefficient [Range (5-9)] */
+    uint16_t  saturation_mode;    /*!< Filter output saturation mdoe, 0: [0..4095] clipping; 1: [-2048..2047] clip followed by + 2048 */
+    uint16_t  offset_x;           /*!< Source region of interest X offset [Range (0-8191)] */
+    uint16_t  offset_y;           /*!< Source region of interest Y offset [Range (0-8191)] */
+    /*! Horizontal scaling ratio value (U15Q12) [Range (4096-16384)]
+     *      Output Width = 4096 / scale_x
+     *      When 'filter_mode' == 0: Single-phase, only valid values are 4096 (1x), 8192 (1/2x), or 16384 (1/4x)
+     */
+    uint16_t  scale_x;
+    /*! Vertical scaling ratio value (U15Q12) [Range (4096-16384)]
+     *      Output Width = 4096 / scale_x
+     *      When 'filter_mode' == 0: Single-phase, only valid values are 4096 (1x), 8192 (1/2x), or 16384 (1/4x)
+     */
+    uint16_t  scale_y;
+    uint16_t  pixel_width;              /*!< Output pixel width, 0: 8-bit, 1: 12-bit, 3: 16-bit */
+    uint16_t  output_align_12bit;       /*!< Optional: When input 16-bit unpacked, alignment of 12-bit pixel, 0: LSB, 1:MSB */
+    tivx_vpac_msc_single_phase_params_t single_phase;   /*!< Optional: When 'filter_mode' == 0: Single-phase */
+    tivx_vpac_msc_multi_phase_params_t  multi_phase;    /*!< Optional: When 'filter_mode' == 1: Multi-phase */
+} tivx_vpac_msc_output_params_t;
+
+/*!
+ * \brief The input config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  pixel_width;             /*!< Input pixel width, 0: 8-bit, 1: 12-bit, 3: 16-bit */
+    uint16_t  kern_tpad_sz;            /*!< kernel top padding lines [Range (0 - 4)] (LSE) */
+    uint16_t  kern_bpad_sz;            /*!< kernel bottom padding lines [Range (0 - 4)] (LSE) */
+    uint16_t  kern_ln_offset;          /*!< kernel line offset [Range (0 - 4)] (LSE) */
+    uint16_t  kern_sz_height;          /*!< kernel height [Range (1 - 5)] (LSE) */
+    uint16_t  src_ln_inc_2;            /*!< 0: Off, 1: vertical skip input lines (LSE) */
+    uint16_t  input_align_12bit;       /*!< Optional: When input 16-bit unpacked, alignment of 12-bit pixel, 0: LSB, 1:MSB */
+} tivx_vpac_msc_input_params_t;
+
+/*!
+ * \brief The coefficients input data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    int16_t  single_phase_0[5];             /*!< Single phase coefficient set 0, signed 10-bit */
+    int16_t  single_phase_1[5];             /*!< Single phase coefficient set 1, signed 10-bit */
+    int16_t  multi_phase_0[5*32];           /*!< Multi phase coefficient set 0, signed 10-bit */
+    int16_t  multi_phase_1[5*32];           /*!< Multi phase coefficient set 1, signed 10-bit */
+    int16_t  multi_phase_2[5*32];           /*!< Multi phase coefficient set 2, signed 10-bit */
+    int16_t  multi_phase_3[5*32];           /*!< Multi phase coefficient set 3, signed 10-bit */
+} tivx_vpac_msc_coefficients_t;
+
+/*********************************
+ *      Function Prototypes
+ *********************************/
 
 /*!
  * \brief Used for the Application to load the hwa kernels into the context.
