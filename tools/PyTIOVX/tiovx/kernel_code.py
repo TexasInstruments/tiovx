@@ -1838,7 +1838,7 @@ class KernelExportCode :
                           "        tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();",
                           "\n        gIsHwaKernelsLoad",
                           "\n        gIsHwaKernelsLoad",
-                          "tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();\n")
+                          "        tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();\n")
 
     def modify_module_target_source_file(self) :
         print("Modifying " + self.target_kernels_filename)

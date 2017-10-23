@@ -96,6 +96,7 @@ class CodeModify :
     def block_insert(self, in_filename, start, end, find, search, searchNoEsc, insert) :
         if os.path.exists(in_filename):
             self.status = False
+            self.found = False
             self.include_customer_kernels_code = CodeGenerate(in_filename + ".tmp", header=False)
             self.multiline = ""
             with open(in_filename) as rd_file:
@@ -104,15 +105,21 @@ class CodeModify :
                         self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
                         self.multiline = line
                         self.status = True
+                        self.found = True
                     elif self.status :
                         self.multiline = self.multiline + line
-                        if end in line :
+                        if end in line:
                             self.status = False
                             if not find in self.multiline :
                                 self.multiline = re.sub(search,insert + searchNoEsc, self.multiline)
                             self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
                     else :
                         self.include_customer_kernels_code.write_line(line, new_line=False)
+            if self.status==True and self.found==True:
+                if not find in self.multiline :
+                    self.multiline = re.sub(search,insert + searchNoEsc, self.multiline)
+                self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
+
             self.include_customer_kernels_code.close(new_line=False)
             os.rename(in_filename + ".tmp", in_filename)
 
