@@ -116,6 +116,41 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
                                       vx_image             output,
                                       vx_distribution      confidence_histogram);
 
+/*! \brief [Graph] Creates a VPAC_LDC Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] configuration
+ * \param [in] region_params
+ * \param [in] mesh_table
+ * \param [in] warp_matrix
+ * \param [in] out_2_luma_lut
+ * \param [in] out_3_chroma_lut
+ * \param [in] bandwidth_params
+ * \param [in] in_luma_or_422
+ * \param [in] in_chroma
+ * \param [out] out_0_luma_or_422
+ * \param [out] out_1_chroma
+ * \param [out] out_2_luma_or_422
+ * \param [out] out_3_chroma
+ * \param [out] error_status
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
+                                      vx_array             configuration,
+                                      vx_array             region_params,
+                                      vx_image             mesh_table,
+                                      vx_matrix            warp_matrix,
+                                      vx_lut               out_2_luma_lut,
+                                      vx_lut               out_3_chroma_lut,
+                                      vx_array             bandwidth_params,
+                                      vx_image             in_luma_or_422,
+                                      vx_image             in_chroma,
+                                      vx_image             out_0_luma_or_422,
+                                      vx_image             out_1_chroma,
+                                      vx_image             out_2_luma_or_422,
+                                      vx_image             out_3_chroma,
+                                      vx_scalar            error_status);
+
 #ifdef __cplusplus
 }
 #endif

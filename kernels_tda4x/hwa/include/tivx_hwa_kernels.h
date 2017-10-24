@@ -111,6 +111,18 @@ void tivxRegisterHWATargetDmpacSdeKernels(void);
  */
 void tivxUnRegisterHWATargetDmpacSdeKernels(void);
 
+/*!
+ * \brief Function to register HWA Kernels on the vpac_ldc Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterHWATargetVpacLdcKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the vpac_ldc Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterHWATargetVpacLdcKernels(void);
+
 
 #ifdef __cplusplus
 }

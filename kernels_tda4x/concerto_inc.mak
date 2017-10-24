@@ -6,5 +6,6 @@
 STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa
 STATIC_LIBS += vx_target_kernels_vpac_nf
 STATIC_LIBS += vx_target_kernels_dmpac_sde
+STATIC_LIBS += vx_target_kernels_vpac_ldc
 STATIC_LIBS += vx_conformance_engine bl_filter_lib sde_hw
 

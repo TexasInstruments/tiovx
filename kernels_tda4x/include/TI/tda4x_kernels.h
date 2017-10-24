@@ -114,6 +114,10 @@ enum tivx_kernel_hwa_e {
      * \see group_vision_function_hwa
      */
     TIVX_KERNEL_DMPAC_SDE = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 2,
+    /*! \brief The vpac_ldc kernel
+     * \see group_vision_function_hwa
+     */
+    TIVX_KERNEL_VPAC_LDC = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 3,
     TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 

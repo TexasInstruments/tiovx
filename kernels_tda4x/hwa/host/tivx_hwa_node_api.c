@@ -122,3 +122,42 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
+                                      vx_array             configuration,
+                                      vx_array             region_params,
+                                      vx_image             mesh_table,
+                                      vx_matrix            warp_matrix,
+                                      vx_lut               out_2_luma_lut,
+                                      vx_lut               out_3_chroma_lut,
+                                      vx_array             bandwidth_params,
+                                      vx_image             in_luma_or_422,
+                                      vx_image             in_chroma,
+                                      vx_image             out_0_luma_or_422,
+                                      vx_image             out_1_chroma,
+                                      vx_image             out_2_luma_or_422,
+                                      vx_image             out_3_chroma,
+                                      vx_scalar            error_status)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)region_params,
+            (vx_reference)mesh_table,
+            (vx_reference)warp_matrix,
+            (vx_reference)out_2_luma_lut,
+            (vx_reference)out_3_chroma_lut,
+            (vx_reference)bandwidth_params,
+            (vx_reference)in_luma_or_422,
+            (vx_reference)in_chroma,
+            (vx_reference)out_0_luma_or_422,
+            (vx_reference)out_1_chroma,
+            (vx_reference)out_2_luma_or_422,
+            (vx_reference)out_3_chroma,
+            (vx_reference)error_status
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_VPAC_LDC,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

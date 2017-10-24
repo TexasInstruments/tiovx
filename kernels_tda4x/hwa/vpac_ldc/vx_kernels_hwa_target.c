@@ -61,85 +61,25 @@
  */
 
 #include <TI/tivx.h>
-#include <TI/tda4x.h>
+#include <TI/tivx_target_kernel.h>
 #include "tivx_hwa_kernels.h"
-#include "tivx_kernels_host_utils.h"
+#include "tivx_kernels_target_utils.h"
 
-static vx_status VX_CALLBACK publishKernels(vx_context context);
-static vx_status VX_CALLBACK unPublishKernels(vx_context context);
+void tivxAddTargetKernelVpacLdc();
 
-static uint32_t gIsHwaKernelsLoad = 0u;
+void tivxRemoveTargetKernelVpacLdc();
 
-vx_status tivxAddKernelVpacNfGeneric(vx_context context);
-vx_status tivxAddKernelVpacNfBilateral(vx_context context);
-vx_status tivxAddKernelDmpacSde(vx_context context);
-vx_status tivxAddKernelVpacLdc(vx_context context);
-
-vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
-vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
-vx_status tivxRemoveKernelDmpacSde(vx_context context);
-vx_status tivxRemoveKernelVpacLdc(vx_context context);
-
-static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
-    {tivxAddKernelVpacNfGeneric, tivxRemoveKernelVpacNfGeneric},
-    {tivxAddKernelVpacNfBilateral, tivxRemoveKernelVpacNfBilateral},
-    {tivxAddKernelDmpacSde, tivxRemoveKernelDmpacSde},
-    {tivxAddKernelVpacLdc, tivxRemoveKernelVpacLdc},
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {tivxAddTargetKernelVpacLdc, tivxRemoveTargetKernelVpacLdc},
 };
 
-static vx_status VX_CALLBACK publishKernels(vx_context context)
+void tivxRegisterHWATargetVpacLdcKernels()
 {
-    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-static vx_status VX_CALLBACK unPublishKernels(vx_context context)
+void tivxUnRegisterHWATargetVpacLdcKernels()
 {
-    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
-}
-
-void tivxRegisterHWAKernels(void)
-{
-    tivxRegisterModule(TIVX_MODULE_NAME_HWA, publishKernels, unPublishKernels);
-}
-
-void tivxUnRegisterHWAKernels(void)
-{
-    tivxUnRegisterModule(TIVX_MODULE_NAME_HWA);
-}
-
-void hwaLoadKernels(vx_context context)
-{
-    if ((0 == gIsHwaKernelsLoad) && (NULL != context))
-    {
-        tivxRegisterHWAKernels();
-        vxLoadKernels(context, TIVX_MODULE_NAME_HWA);
-        
-        /* These three lines only work on PC emulation mode ...
-         * this will need to be updated when moving to target */
-        tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);
-        tivxRegisterHWATargetVpacNfKernels();
-        tivxRegisterHWATargetDmpacSdeKernels();
-        tivxRegisterHWATargetVpacLdcKernels();
-        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
-        
-        gIsHwaKernelsLoad = 1U;
-    }
-}
-
-void hwaUnLoadKernels(vx_context context)
-{
-    if ((1u == gIsHwaKernelsLoad) && (NULL != context))
-    {
-        vxUnloadKernels(context, TIVX_MODULE_NAME_HWA);
-        tivxUnRegisterHWAKernels();
-        
-        /* This line only work on PC emulation mode ...
-         * this will need to be updated when moving to target */
-        tivxUnRegisterHWATargetVpacNfKernels();
-        tivxUnRegisterHWATargetDmpacSdeKernels();
-        tivxUnRegisterHWATargetVpacLdcKernels();
-
-        gIsHwaKernelsLoad = 0U;
-    }
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
