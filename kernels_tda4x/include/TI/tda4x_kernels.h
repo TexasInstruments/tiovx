@@ -261,8 +261,8 @@ typedef struct {
  * \ingroup group_kernel
  */
 typedef struct {
-    uint16_t  out_block_width;              /*!< Output block width (must be multiple of 8) [Range (0 - 255)] */
-    uint16_t  out_block_height;             /*!< Output block height (must be multiple of 2) [Range (0 - 255)] */
+    uint16_t  out_block_width;              /*!< Output block width (must be multiple of 8) [Range (8 - 255)] */
+    uint16_t  out_block_height;             /*!< Output block height (must be multiple of 2) [Range (2 - 255)] */
     uint16_t  pixel_pad;                    /*!< Pixel Padding [Range (0 - 15)] */
 } tivx_vpac_ldc_region_params_t;
 

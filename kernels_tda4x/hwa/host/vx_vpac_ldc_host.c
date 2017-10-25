@@ -87,27 +87,30 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     vx_array array_0 = {NULL};
     vx_enum item_type_0;
     vx_size capacity_0;
+    vx_size item_size_0;
     vx_array array_1 = {NULL};
     vx_enum item_type_1;
     vx_size capacity_1;
+    vx_size item_size_1;
     vx_matrix matrix_2 = {NULL};
     vx_enum mat_type_2;
     vx_size mat_h_2, mat_w_2;
     vx_lut lut_3 = {NULL};
     vx_enum lut_type_3;
+    vx_size lut_count_3;
     vx_lut lut_4 = {NULL};
     vx_enum lut_type_4;
+    vx_size lut_count_4;
     vx_array array_5 = {NULL};
     vx_enum item_type_5;
     vx_size capacity_5;
-    vx_uint32 uint32_6 = {NULL};
+    vx_size item_size_5;
     vx_enum scalar_type_6;
-    vx_df_image fmt[7U] = {NULL};
-    /* < DEVELOPER_TODO: Change out_fmt to the correct output format > */
+    vx_df_image fmt[7U] = {0};
     vx_df_image out_fmt = VX_DF_IMAGE_U8;
-    vx_uint32 i, w[7U], h[7U];
+    vx_uint32 w[7U], h[7U];
     
-    status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_VPAC_LDC_MAX_PARAMS);
+    status = tivxKernelValidateParametersNotNull(parameters, 2);
     
     if (VX_SUCCESS == status)
     {
@@ -131,15 +134,17 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     {
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
         status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
+        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
     }
     
     if (VX_SUCCESS == status)
     {
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
         status |= vxQueryArray(array_1, VX_ARRAY_CAPACITY, &capacity_1, sizeof(capacity_1));
+        status |= vxQueryArray(array_1, VX_ARRAY_ITEMSIZE, &item_size_1, sizeof(item_size_1));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[0U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
@@ -148,30 +153,33 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != matrix_2))
     {
         status = vxQueryMatrix(matrix_2, VX_MATRIX_TYPE, &mat_type_2, sizeof(mat_type_2));
         status |= vxQueryMatrix(matrix_2, VX_MATRIX_COLUMNS, &mat_w_2, sizeof(mat_w_2));
         status |= vxQueryMatrix(matrix_2, VX_MATRIX_ROWS, &mat_h_2, sizeof(mat_h_2));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != lut_3))
     {
         status = vxQueryLUT(lut_3, VX_LUT_TYPE, &lut_type_3, sizeof(lut_type_3));
+        status = vxQueryLUT(lut_3, VX_LUT_COUNT, &lut_count_3, sizeof(lut_count_3));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != lut_4))
     {
         status = vxQueryLUT(lut_4, VX_LUT_TYPE, &lut_type_4, sizeof(lut_type_4));
+        status = vxQueryLUT(lut_4, VX_LUT_COUNT, &lut_count_4, sizeof(lut_count_4));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != array_5))
     {
         status |= vxQueryArray(array_5, VX_ARRAY_ITEMTYPE, &item_type_5, sizeof(item_type_5));
         status |= vxQueryArray(array_5, VX_ARRAY_CAPACITY, &capacity_5, sizeof(capacity_5));
+        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_5, sizeof(item_size_5));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[1U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
@@ -180,7 +188,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[2U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
@@ -189,7 +197,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[3U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[3U], VX_IMAGE_FORMAT, &fmt[3U],
@@ -198,7 +206,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[3U], VX_IMAGE_HEIGHT, &h[3U], sizeof(h[3U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[4U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[4U], VX_IMAGE_FORMAT, &fmt[4U],
@@ -207,7 +215,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[4U], VX_IMAGE_HEIGHT, &h[4U], sizeof(h[4U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[5U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[5U], VX_IMAGE_FORMAT, &fmt[5U],
@@ -216,7 +224,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[5U], VX_IMAGE_HEIGHT, &h[5U], sizeof(h[5U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != img[6U]))
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[6U], VX_IMAGE_FORMAT, &fmt[6U],
@@ -225,66 +233,291 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[6U], VX_IMAGE_HEIGHT, &h[6U], sizeof(h[6U]));
     }
     
-    if (VX_SUCCESS == status)
+    if ((VX_SUCCESS == status) && (NULL != scalar[0U]))
     {
         status = vxQueryScalar(scalar[0U], VX_SCALAR_TYPE, &scalar_type_6, sizeof(scalar_type_6));
     }
-    
-    /* Check possible input image formats */
-    #if 0
+
+
+    /* PARAMETER CHECKING */
+
+    /* Check size of configuration data structures (arrays) */
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_<possible_format>) &
-                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_<possible_format>);
+        if( item_size_0 != sizeof(tivx_vpac_ldc_params_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_ldc_params_t \n");
+        }
     }
-    #endif
-    
-    /* Check possible input image formats */
-    #if 0
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_<possible_format>) &
-                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_<possible_format>);
+        if( (item_size_1 != sizeof(tivx_vpac_ldc_region_params_t)) &&
+            (item_size_1 != sizeof(tivx_vpac_ldc_subregion_params_t)))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'region_params' should be an array of a user struct of type:\n tivx_vpac_ldc_region_params_t or tivx_vpac_ldc_subregion_params_t \n");
+        }
     }
-    #endif
-    
-    /* Check possible input image formats */
-    #if 0
+    if ((VX_SUCCESS == status) && (NULL != array_5))
+    {
+        if( item_size_5 != sizeof(tivx_vpac_ldc_bandwidth_params_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'bandwidth_params' should be an array of a user struct of type: tivx_vpac_ldc_bandwidth_params_t \n");
+        }
+    }
+
+    /* Check mesh */
+    if ((VX_SUCCESS == status) && (NULL != img[0]))
+    {
+        if (VX_DF_IMAGE_U32 != fmt[0])
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'mesh_table' type should be VX_DF_IMAGE_U32 \n");
+        }
+    }
+
+    /* Check matrix */
+    if ((VX_SUCCESS == status) && (NULL != matrix_2))
+    {
+        if (VX_TYPE_INT16 != mat_type_2)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' type should be VX_TYPE_INT16 \n");
+        }
+        if ((2 != mat_w_2) && (3 != mat_w_2))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' columns should be 2 (affine warp) or 3 (perspective warp) \n");
+        }
+        if (3 != mat_h_2)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' rows should be 3 \n");
+        }
+    }
+
+    /* Check luts */
+    if ((VX_SUCCESS == status) && (NULL != lut_3))
+    {
+        if (VX_TYPE_UINT16 != lut_type_3)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'out_2_luma_lut' type should be VX_TYPE_UINT16 \n");
+        }
+        if (513 != lut_count_3)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'out_2_luma_lut' count should be 513 \n");
+        }
+    }
+    if ((VX_SUCCESS == status) && (NULL != lut_4))
+    {
+        if (VX_TYPE_UINT16 != lut_type_4)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'out_3_chroma_lut' type should be VX_TYPE_UINT16 \n");
+        }
+        if (513 != lut_count_4)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'out_3_chroma_lut' count should be 513 \n");
+        }
+    }
+
+    /* Check input formats and relative sizes */
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidatePossibleFormat(fmt[2U], VX_DF_IMAGE_<possible_format>) &
-                 tivxKernelValidatePossibleFormat(fmt[2U], VX_DF_IMAGE_<possible_format>);
+        if (NULL != img[1U])
+        {
+            if(VX_DF_IMAGE_UYVY == fmt[1U])
+            {
+                if (NULL != img[2U])
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "If 'in_luma_or_422' is format VX_DF_IMAGE_UYVY, then in_chroma should be NULL.\n");
+                }
+            }
+            else
+            {
+                status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
+                         tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U16) &
+                         tivxKernelValidatePossibleFormat(fmt[1U], TIVX_DF_IMAGE_P12);
+                if (VX_SUCCESS != status)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Unsupported image format for port: 'in_luma_or_422'.\n");
+                }
+            }
+        }
     }
-    #endif
-    
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidateOutputSize(w[0U], w[3U], h[0U], h[3U], img[3U]);
+        if (NULL != img[2U])
+        {
+            status = tivxKernelValidatePossibleFormat(fmt[2U], VX_DF_IMAGE_U8) &
+                     tivxKernelValidatePossibleFormat(fmt[2U], VX_DF_IMAGE_U16) &
+                     tivxKernelValidatePossibleFormat(fmt[2U], TIVX_DF_IMAGE_P12);
+            if (VX_SUCCESS != status)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Unsupported image format for port: 'in_chroma'.\n");
+            }
+        }
     }
-    
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidateOutputSize(w[0U], w[4U], h[0U], h[4U], img[4U]);
+        if ((NULL != img[1U]) && (NULL != img[2U]))
+        {
+            if ((w[1] != w[2]) || (h[1] != (h[2]*2)))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Input image sizes do not match (widths should be same, in_chroma height should be 1/2 of luma height \n");
+                VX_PRINT(VX_ZONE_ERROR, "in_luma_or_422 width = %d\n", w[1]);
+                VX_PRINT(VX_ZONE_ERROR, "in_luma_or_422 height = %d\n", h[1]);
+                VX_PRINT(VX_ZONE_ERROR, "in_chroma width = %d\n", w[2]);
+                VX_PRINT(VX_ZONE_ERROR, "in_chroma height = %d\n", h[2]);
+            }
+        }
     }
-    
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidateOutputSize(w[0U], w[5U], h[0U], h[5U], img[5U]);
+        if ((NULL == img[1U]) && (NULL == img[2U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'in_luma_or_422' and 'in_chroma' should not BOTH be NULL.  At least one should be non-NULL \n");
+        }
     }
-    
+
+    /* Check output formats and relative sizes */
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidateOutputSize(w[0U], w[6U], h[0U], h[6U], img[6U]);
+        if (NULL != img[3U])
+        {
+            if((VX_DF_IMAGE_UYVY == fmt[3U]) || (VX_DF_IMAGE_YUYV == fmt[3U]))
+            {
+                if (NULL != img[4U])
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "If 'out_0_luma_or_422' is format VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV, then out_1_chroma should be NULL.\n");
+                }
+            }
+            else
+            {
+                status = tivxKernelValidatePossibleFormat(fmt[3U], VX_DF_IMAGE_U8) &
+                         tivxKernelValidatePossibleFormat(fmt[3U], VX_DF_IMAGE_U16) &
+                         tivxKernelValidatePossibleFormat(fmt[3U], TIVX_DF_IMAGE_P12);
+                if (VX_SUCCESS != status)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Unsupported image format for port: 'out_0_luma_or_422'.\n");
+                }
+            }
+        }
     }
-    
     if (VX_SUCCESS == status)
+    {
+        if (NULL != img[4U])
+        {
+            status = tivxKernelValidatePossibleFormat(fmt[4U], VX_DF_IMAGE_U8) &
+                     tivxKernelValidatePossibleFormat(fmt[4U], VX_DF_IMAGE_U16) &
+                     tivxKernelValidatePossibleFormat(fmt[4U], TIVX_DF_IMAGE_P12);
+            if (VX_SUCCESS != status)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Unsupported image format for port: 'out_1_chroma'.\n");
+            }
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        if ((NULL != img[3U]) && (NULL != img[4U]))
+        {
+            if ((w[3] != w[4]) ||
+                 ((h[3] != (h[4]*2)) && (h[3] != h[4])))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Output image sizes do not match (widths should be same, out_1_chroma should be 1/2 or equal to out_0_luma height \n");
+                VX_PRINT(VX_ZONE_ERROR, "out_0_luma_or_422 width = %d\n", w[3]);
+                VX_PRINT(VX_ZONE_ERROR, "out_0_luma_or_422 height = %d\n", h[3]);
+                VX_PRINT(VX_ZONE_ERROR, "out_1_chroma width = %d\n", w[4]);
+                VX_PRINT(VX_ZONE_ERROR, "out_1_chroma height = %d\n", h[4]);
+            }
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        if (NULL != img[5U])
+        {
+            if((VX_DF_IMAGE_UYVY == fmt[5U]) || (VX_DF_IMAGE_YUYV == fmt[5U]))
+            {
+                if (NULL != img[6U])
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "If 'out_2_luma_or_422' is format VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV, then out_3_chroma should be NULL.\n");
+                }
+            }
+            else
+            {
+                status = tivxKernelValidatePossibleFormat(fmt[5U], VX_DF_IMAGE_U8) &
+                         tivxKernelValidatePossibleFormat(fmt[5U], VX_DF_IMAGE_U16) &
+                         tivxKernelValidatePossibleFormat(fmt[5U], TIVX_DF_IMAGE_P12);
+                if (VX_SUCCESS != status)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Unsupported image format for port: 'out_2_luma_or_422'.\n");
+                }
+            }
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        if (NULL != img[6U])
+        {
+            status = tivxKernelValidatePossibleFormat(fmt[6U], VX_DF_IMAGE_U8) &
+                     tivxKernelValidatePossibleFormat(fmt[6U], VX_DF_IMAGE_U16) &
+                     tivxKernelValidatePossibleFormat(fmt[6U], TIVX_DF_IMAGE_P12);
+            if (VX_SUCCESS != status)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Unsupported image format for port: 'out_3_chroma'.\n");
+            }
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        if ((NULL != img[5U]) && (NULL != img[6U]))
+        {
+            if ((w[5] != w[6]) ||
+                 ((h[5] != (h[6]*2)) && (h[5] != h[6])))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Output image sizes do not match (widths should be same, out_3_chroma should be 1/2 or equal to out_2_luma height \n");
+                VX_PRINT(VX_ZONE_ERROR, "out_2_luma_or_622 width = %d\n", w[5]);
+                VX_PRINT(VX_ZONE_ERROR, "out_2_luma_or_622 height = %d\n", h[5]);
+                VX_PRINT(VX_ZONE_ERROR, "out_3_chroma width = %d\n", w[6]);
+                VX_PRINT(VX_ZONE_ERROR, "out_3_chroma height = %d\n", h[6]);
+            }
+        }
+    }
+    if (VX_SUCCESS == status)
+    {
+        if ((NULL == img[3U]) && (NULL == img[4U]) && (NULL == img[5U]) && (NULL == img[6U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "At least one output should be non-NULL \n");
+        }
+    }
+
+    if ((VX_SUCCESS == status) && (NULL != scalar[0U]))
     {
         status = tivxKernelValidateScalarType(scalar_type_6, VX_TYPE_UINT32);
     }
     
     if (VX_SUCCESS == status)
     {
-        tivxKernelSetMetas(metas, TIVX_KERNEL_VPAC_LDC_MAX_PARAMS, out_fmt, w[0U], h[0U]);
+        //tivxKernelSetMetas(metas, TIVX_KERNEL_VPAC_LDC_MAX_PARAMS, out_fmt, w[0U], h[0U]);
     }
     
     return status;
@@ -304,23 +537,41 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
     
     if (VX_SUCCESS == status)
     {
-        status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_VPAC_LDC_MAX_PARAMS);
+        status = tivxKernelValidateParametersNotNull(parameters, 2);
     }
     
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
-        
-        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_TABLE_IDX];
-        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
-        prms.in_img[2U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
-        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
-        prms.out_img[1U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX];
-        prms.out_img[2U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_OR_422_IDX];
-        prms.out_img[3U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_IDX];
 
-        prms.num_input_images = 3;
-        prms.num_output_images = 4;
+        if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX])
+        {
+            prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
+        }
+        else if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX])
+        {
+            prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
+        }
+        else
+        {
+            /* Do nothing */
+        }
+        
+        if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX])
+        {
+            prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
+        }
+        else if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX])
+        {
+            prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX];
+        }
+        else
+        {
+            /* Do nothing */
+        }
+
+        prms.num_input_images = 1;
+        prms.num_output_images = 1;
         
         /* < DEVELOPER_TODO: (Optional) Set padding values based on valid region if border mode is */
         /*                    set to VX_BORDER_UNDEFINED and remove the #if 0 and #endif lines. */
@@ -503,7 +754,8 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         if (status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_LDC1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_LDC2);
         }
         if (status == VX_SUCCESS)
         {

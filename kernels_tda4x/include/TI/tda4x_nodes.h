@@ -71,10 +71,12 @@ extern "C" {
 
 /*! \brief [Graph] Creates a VPAC_NF_GENERIC Node.
  * \param [in] graph The reference to the graph.
- * \param [in] input The input <tt>\ref VX_DF_IMAGE_U8, VX_DF_IMAGE_S16, or TIVX_DF_IMAGE_P12</tt> image.
- * \param [in] conv The input convolution matrix.
- * \param [in] configuration The input array of a single params structure of type tivx_vpac_nf_common_params_t.
- * \param [out] output The output <tt>\ref VX_DF_IMAGE_U8, VX_DF_IMAGE_S16, or TIVX_DF_IMAGE_P12</tt> image.
+ * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] conv The input convolution matrix. Max columns or rows supported is 5. 
+ * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_nf_common_params_t</tt>.
+ * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC</tt>
+ * \ingroup group_vision_function_vpac_nf_generic
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
@@ -86,10 +88,12 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
 
 /*! \brief [Graph] Creates a VPAC_NF_BILATERAL Node.
  * \param [in] graph The reference to the graph.
- * \param [in] input
- * \param [in] sigmas
- * \param [in] configuration
- * \param [out] output
+ * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] sigmas The input array of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_sigmas_t</tt>.
+ * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_params_t</tt>.
+ * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \see <tt>TIVX_KERNEL_VPAC_NF_BILATERAL</tt>
+ * \ingroup group_vision_function_vpac_nf_bilateral
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
@@ -101,11 +105,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
 
 /*! \brief [Graph] Creates a DMPAC_SDE Node.
  * \param [in] graph The reference to the graph.
- * \param [in] left
- * \param [in] right
- * \param [in] configuration
- * \param [out] output
- * \param [out] confidence_histogram
+ * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
+ * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0] 
+ * \param [out] confidence_histogram (optional) Histogram of the confidence scores.  Must be configured to 128 bins.
+ * \see <tt>TIVX_KERNEL_DMPAC_SDE</tt>
+ * \ingroup group_vision_function_dmpac_sde
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
@@ -118,20 +124,34 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
 
 /*! \brief [Graph] Creates a VPAC_LDC Node.
  * \param [in] graph The reference to the graph.
- * \param [in] configuration
- * \param [in] region_params
- * \param [in] mesh_table
- * \param [in] warp_matrix
- * \param [in] out_2_luma_lut
- * \param [in] out_3_chroma_lut
- * \param [in] bandwidth_params
- * \param [in] in_luma_or_422
- * \param [in] in_chroma
- * \param [out] out_0_luma_or_422
- * \param [out] out_1_chroma
- * \param [out] out_2_luma_or_422
- * \param [out] out_3_chroma
- * \param [out] error_status
+ * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_ldc_params_t</tt>.
+ * \param [in] region_params The input array of a single params structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt> or <tt>\ref tivx_vpac_ldc_subregion_params_t</tt>.
+ * \param [in] mesh_table (optional) The mesh table image. This can be a full remap table, but is typically sub-sampled by a power
+ *              of 2 to save memory footprint and bandwidth. The coordinates are of type S16Q3, and are stored as X,Y pairs of type
+ *              <tt>\ref VX_DF_IMAGE_U32</tt>.
+ * \param [in] warp_matrix (optional) The affine or perspective warp matrix. Must be 2x3 (affine) or 3x3 (perspective),
+ *              and of type <tt>\ref VX_TYPE_INT16</tt>.
+ * \param [in] out_2_luma_lut (optional) The bit depth conversion LUT for out_2_luma channel. Use 12-bit data in a container of
+ *              data_type <tt>\ref VX_TYPE_UINT16</tt>, and count of <tt>513</tt>
+ * \param [in] out_3_chroma_lut (optional) The bit depth conversion LUT for out_3_chroma channel. Use 12-bit data in a container of
+ *              data_type <tt>\ref VX_TYPE_UINT16</tt>, and count of <tt>513</tt>
+ * \param [in] bandwidth_params (optional) The input array of a single params structure of type <tt>\ref tivx_vpac_ldc_bandwidth_params_t</tt>.
+ * \param [in] in_luma_or_422 (optional) The input image in <tt>\ref VX_DF_IMAGE_UYVY</tt>, <tt>\ref VX_DF_IMAGE_U8</tt>,
+ *              <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] in_chroma (optional) The input chroma interleaved plane in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
+ *              or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [out] out_0_luma_or_422 (optional) The output image in <tt>\ref VX_DF_IMAGE_UYVY</tt>, <tt>\ref VX_DF_IMAGE_YUYV</tt>,
+ *               <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [out] out_1_chroma (optional) The output chroma interleaved plane in <tt>\ref VX_DF_IMAGE_U8</tt>,
+ *               <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [out] out_2_luma_or_422 (optional) Additional output image (typically with different bit depth) in
+ *               <tt>\ref VX_DF_IMAGE_UYVY</tt>, <tt>\ref VX_DF_IMAGE_YUYV</tt>, <tt>\ref VX_DF_IMAGE_U8</tt>,
+ *               <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [out] out_3_chroma (optional) Additional output chroma interleaved plane (typically with different bit depth)
+ *               in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [out] error_status (optional) Bit mask indicating error flags.  Use a <tt>\ref VX_TYPE_UINT32</tt> scalar.
+ * \see <tt>TIVX_KERNEL_VPAC_LDC</tt>
+ * \ingroup group_vision_function_vpac_ldc
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
