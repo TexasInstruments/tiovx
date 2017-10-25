@@ -46,11 +46,22 @@ vx_matrix VX_API_CALL vxCreateMatrix(
         {
             dim = sizeof(vx_uint8);
         }
+        else if ((data_type == VX_TYPE_INT16) ||
+                 (data_type == VX_TYPE_UINT16))
+        {
+            dim = sizeof(vx_uint16);
+        }
         else if ((data_type == VX_TYPE_INT32) ||
                  (data_type == VX_TYPE_UINT32) ||
                  (data_type == VX_TYPE_FLOAT32))
         {
             dim = sizeof(vx_uint32);
+        }
+        else if ((data_type == VX_TYPE_INT64) ||
+                 (data_type == VX_TYPE_UINT64) ||
+                 (data_type == VX_TYPE_FLOAT64))
+        {
+            dim = sizeof(vx_uint64);
         }
         else
         {
