@@ -86,9 +86,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     vx_array array_0 = {NULL};
     vx_enum item_type_0;
     vx_size capacity_0;
+    vx_size item_size_0;
     vx_array array_1 = {NULL};
     vx_enum item_type_1;
     vx_size capacity_1;
+    vx_size item_size_1;
     vx_df_image fmt[2U];
     vx_df_image out_fmt = VX_DF_IMAGE_U8;
     vx_uint32 w[2U], h[2U];
@@ -116,12 +118,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     {
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
         status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
+        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
     }
     
     if (VX_SUCCESS == status)
     {
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
         status |= vxQueryArray(array_1, VX_ARRAY_CAPACITY, &capacity_1, sizeof(capacity_1));
+        status |= vxQueryArray(array_1, VX_ARRAY_ITEMSIZE, &item_size_1, sizeof(item_size_1));
     }
     
     if (VX_SUCCESS == status)
@@ -132,12 +136,31 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
     }
-    
+
+    /* Check size of configuration data structures (arrays) */
+    if (VX_SUCCESS == status)
+    {
+        if( item_size_0 != sizeof(tivx_vpac_nf_bilateral_sigmas_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_nf_bilateral_sigmas_t \n");
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if( item_size_1 != sizeof(tivx_vpac_nf_bilateral_params_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_nf_bilateral_params_t \n");
+        }
+    }
+
     /* Check possible input image formats */
     if (VX_SUCCESS == status)
     {
         status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8) &
-                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_S16) &
+                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U16) &
                  tivxKernelValidatePossibleFormat(fmt[0U], TIVX_DF_IMAGE_P12);
     }
 
@@ -145,7 +168,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
-                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_S16) &
+                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U16) &
                  tivxKernelValidatePossibleFormat(fmt[1U], TIVX_DF_IMAGE_P12);
     }
 

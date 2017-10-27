@@ -85,6 +85,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     vx_convolution conv;
     vx_size size[2U];
     vx_border_t border;
+    vx_array array_0 = {NULL};
+    vx_enum item_type_0;
+    vx_size capacity_0;
+    vx_size item_size_0;
 
     status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS);
     
@@ -92,8 +96,19 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     {
         img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
         conv = (vx_convolution)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
+        array_0 = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
         img[1U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
+    }
 
+    if (VX_SUCCESS == status)
+    {
+        status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
+        status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
+        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
+    }
+
+    if (VX_SUCCESS == status)
+    {
         /* Get the image width/height and format */
         status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
             sizeof(fmt[0U]));
@@ -103,13 +118,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
     
     if (VX_SUCCESS == status)
     {
-        /* Check for validity of data format */
-        if ((VX_DF_IMAGE_U8 != fmt[0U]) &&
-            (VX_DF_IMAGE_S16 != fmt[0U]) &&
-            (TIVX_DF_IMAGE_P12 != fmt[0U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8) &
+                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U16) &
+                 tivxKernelValidatePossibleFormat(fmt[0U], TIVX_DF_IMAGE_P12);
     }
     
     if (VX_SUCCESS == status)
@@ -145,24 +156,19 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
             sizeof(fmt[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+    }
 
-        /* Check for format */
-        if ((VX_DF_IMAGE_U8 != fmt[1U]) &&
-            (VX_DF_IMAGE_S16 != fmt[1U]) &&
-            (TIVX_DF_IMAGE_P12 != fmt[1U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+    if (VX_SUCCESS == status)
+    {
+        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
+                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U16) &
+                 tivxKernelValidatePossibleFormat(fmt[1U], TIVX_DF_IMAGE_P12);
     }
 
     if ((VX_SUCCESS == status) &&
         (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
     {
-        /* Check for frame sizes */
-        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
+        status = tivxKernelValidateOutputSize(w[0U], w[1U], h[0U], h[1U], img[1U]);
     }
 
     if (VX_SUCCESS == status)
@@ -176,6 +182,16 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
                 status = VX_ERROR_NOT_SUPPORTED;
                 VX_PRINT(VX_ZONE_ERROR, "Only replicate border mode is supported for vpac_nf_generic\n");
             }
+        }
+    }
+
+    /* Check size of configuration data structure (array) */
+    if (VX_SUCCESS == status)
+    {
+        if( item_size_0 != sizeof(tivx_vpac_nf_common_params_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_nf_common_params_t \n");
         }
     }
 
