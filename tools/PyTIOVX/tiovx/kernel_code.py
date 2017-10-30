@@ -224,14 +224,20 @@ class KernelExportCode :
         if self.kernel.getNumScalars() > 0 :
             self.host_c_code.write_line("vx_scalar scalar[%sU] = {NULL};" % self.kernel.getNumScalars())
         num_type = 0
+        self.num_params = 0
+        self.num_optional = 0
+        self.first_optional = -1
+        self.last_optional = -1
+        self.last_required = -1
         for prm in self.kernel.params :
             if prm.type != Type.IMAGE :
-                #TODO: test this section more thoroughly for other data types (maybe use optical flow UC)
-                #TODO: Add more type-specific variables--delay, objectarray, threshold?
-                self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_type))
+                #TODO: test this section more thoroughly and perhaps add more attributes from the objects
+                if not Type.is_scalar_type(prm.type) :
+                    self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_type))
                 if prm.type == Type.ARRAY :
                     self.host_c_code.write_line("vx_enum item_type_%s;" % num_type)
                     self.host_c_code.write_line("vx_size capacity_%s;" % num_type)
+                    self.host_c_code.write_line("vx_size item_size_%s;" % num_type)
                 if prm.type == Type.PYRAMID :
                     self.host_c_code.write_line("vx_size levels_pyr_%s;" % num_type)
                     self.host_c_code.write_line("vx_size scale_pyr_%s;" % num_type)
@@ -250,6 +256,11 @@ class KernelExportCode :
                     self.host_c_code.write_line("vx_size numBins_%s = 0;" % num_type)
                 if prm.type == Type.LUT :
                     self.host_c_code.write_line("vx_enum lut_type_%s;" % num_type)
+                    self.host_c_code.write_line("vx_size lut_count_%s;" % num_type)
+                if prm.type == Type.THRESHOLD:
+                    self.host_c_code.write_line("vx_enum threshold_type_%s;" % num_type)
+                if prm.type == Type.OBJECT_ARRAY:
+                    self.host_c_code.write_line("vx_enum object_array_type_%s;" % num_type)
                 if prm.type == Type.REMAP :
                     self.host_c_code.write_line("vx_uint32 rmp_src_w_%s;" % num_type)
                     self.host_c_code.write_line("vx_uint32 rmp_src_h_%s;" % num_type)
@@ -258,13 +269,38 @@ class KernelExportCode :
                 if Type.is_scalar_type(prm.type) :
                     self.host_c_code.write_line("vx_enum scalar_type_%s;" % num_type)
                 num_type += 1
+            if prm.state == ParamState.OPTIONAL :
+                self.num_optional +=1
+                if self.first_optional == -1 :
+                    self.first_optional = self.num_params
+                self.last_optional = self.num_params
+            else :
+                self.last_required = self.num_params
+            self.num_params += 1
+
         if self.kernel.getNumImages() > 0 :
-            self.host_c_code.write_line("vx_df_image fmt[%sU] = {NULL};" % self.kernel.getNumImages())
+            self.host_c_code.write_line("vx_df_image fmt[%sU] = {0};" % self.kernel.getNumImages())
             self.host_c_code.write_line("/* < DEVELOPER_TODO: Change out_fmt to the correct output format > */")
             self.host_c_code.write_line("vx_df_image out_fmt = VX_DF_IMAGE_U8;")
-            self.host_c_code.write_line("vx_uint32 i, w[%sU], h[%sU];" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
+            self.host_c_code.write_line("vx_uint32 w[%sU], h[%sU];" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
             self.host_c_code.write_newline()
-        self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        if self.num_optional == 0 :
+            self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        else :
+            if self.first_optional > 0 and self.last_required < self.first_optional :
+                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
+            else :
+                self.host_c_code.write_line("if (VX_SUCCESS == status)")
+                self.host_c_code.write_open_brace()
+                self.host_c_code.write_line("if ( (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+                for prm in self.kernel.params :
+                    if prm.state is ParamState.REQUIRED :
+                        self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+                self.host_c_code.write_line(")")
+                self.host_c_code.write_open_brace()
+                self.host_c_code.write_line("status = VX_FAILURE;")
+                self.host_c_code.write_close_brace()
+                self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
         # Query all types here
@@ -297,9 +333,13 @@ class KernelExportCode :
         num_nonimage = 0
         num_scalar = 0
         for prm in self.kernel.params :
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
-            self.host_c_code.write_open_brace()
+            if prm.state is ParamState.REQUIRED :
+                self.host_c_code.write_line("if (VX_SUCCESS == status)")
+                self.host_c_code.write_open_brace()
             if Type.IMAGE == prm.type :
+                if prm.state is ParamState.OPTIONAL :
+                    self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != img[%sU]))" % (num_image))
+                    self.host_c_code.write_open_brace()
                 self.host_c_code.write_line("/* Get the image width/height and format */")
                 self.host_c_code.write_line("status = vxQueryImage(img[%sU], VX_IMAGE_FORMAT, &fmt[%sU]," % (num_image, num_image))
                 self.host_c_code.write_line("    sizeof(fmt[%sU]));" % num_image)
@@ -308,18 +348,25 @@ class KernelExportCode :
                 num_image+=1
             else :
                 if Type.is_scalar_type(prm.type) is True :
+                    if prm.state is ParamState.OPTIONAL :
+                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != scalar[%sU]))" % (num_scalar))
+                        self.host_c_code.write_open_brace()
                     self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &scalar_type_%s, sizeof(scalar_type_%s));" % (num_scalar, num_nonimage, num_nonimage))
                     num_scalar+=1
                 else :
+                    if prm.state is ParamState.OPTIONAL :
+                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != %s_%s))" % (prm.type.name.lower(), num_nonimage))
+                        self.host_c_code.write_open_brace()
                     if Type.ARRAY == prm.type :
-                        self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_ITEMTYPE, &item_type_%s, sizeof(item_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status = vxQueryArray(array_%s, VX_ARRAY_ITEMTYPE, &item_type_%s, sizeof(item_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_CAPACITY, &capacity_%s, sizeof(capacity_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_ITEMSIZE, &item_size_%s, sizeof(item_size_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                     if Type.MATRIX == prm.type :
                         self.host_c_code.write_line("status = vxQueryMatrix(matrix_%s, VX_MATRIX_TYPE, &mat_type_%s, sizeof(mat_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryMatrix(matrix_%s, VX_MATRIX_COLUMNS, &mat_w_%s, sizeof(mat_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryMatrix(matrix_%s, VX_MATRIX_ROWS, &mat_h_%s, sizeof(mat_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                     if Type.PYRAMID == prm.type :
-                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_LEVELS, &levels_pyr_%s, sizeof(levels_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status = vxQueryPyramid(pyramid_%s, VX_PYRAMID_LEVELS, &levels_pyr_%s, sizeof(levels_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_SCALE, &scale_pyr_%s, sizeof(scale_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_WIDTH, &w_pyr_%s, sizeof(w_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_HEIGHT, &h_pyr_%s, sizeof(h_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
@@ -327,13 +374,18 @@ class KernelExportCode :
                     if Type.CONVOLUTION == prm.type :
                         self.host_c_code.write_line("status = vxQueryConvolution(convolution_%s, VX_CONVOLUTION_COLUMNS, &conv_col_%s, sizeof(conv_col_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryConvolution(convolution_%s, VX_CONVOLUTION_ROWS, &conv_row_%s, sizeof(conv_row_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if prm.type == Type.DISTRIBUTION :
-                        self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_BINS, &numBins_%s, sizeof(numBins_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.DISTRIBUTION == prm.type :
+                        self.host_c_code.write_line("status = vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_BINS, &numBins_%s, sizeof(numBins_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_RANGE, &range_%s, sizeof(range_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_OFFSET, &offset_%s, sizeof(offset_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if prm.type == Type.LUT :
+                    if Type.LUT == prm.type:
                         self.host_c_code.write_line("status = vxQueryLUT(lut_%s, VX_LUT_TYPE, &lut_type_%s, sizeof(lut_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if prm.type == Type.REMAP :
+                        self.host_c_code.write_line("status |= vxQueryLUT(lut_%s, VX_LUT_COUNT, &lut_count_%s, sizeof(lut_count_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.THRESHOLD == prm.type:
+                        self.host_c_code.write_line("status = vxQueryThreshold(threshold_%s, VX_THRESHOLD_TYPE, &threshold_type_%s, sizeof(threshold_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.OBJECT_ARRAY == prm.type:
+                        self.host_c_code.write_line("status = vxQueryObjectArray(object_array_%s, VX_OBJECT_ARRAY_ITEMTYPE, &object_array_type_%s, sizeof(object_array_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                    if Type.REMAP == prm.type:
                         self.host_c_code.write_line("status = vxQueryRemap(remap_%s, VX_REMAP_SOURCE_WIDTH, &rmp_src_w_%s, sizeof(rmp_src_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_SOURCE_HEIGHT, &rmp_src_h_%s, sizeof(rmp_src_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_DESTINATION_WIDTH, &rmp_dst_w_%s, sizeof(rmp_dst_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
@@ -418,7 +470,20 @@ class KernelExportCode :
         # Check if null params
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
-        self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        if self.num_optional == 0 :
+            self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        else :
+            if self.first_optional > 0 and self.last_required < self.first_optional :
+                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
+            else :
+                self.host_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+                for prm in self.kernel.params :
+                    if prm.state is ParamState.REQUIRED :
+                        self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+                self.host_c_code.write_line(")")
+                self.host_c_code.write_open_brace()
+                self.host_c_code.write_line("status = VX_FAILURE;")
+                self.host_c_code.write_close_brace()
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
@@ -1424,7 +1489,13 @@ class KernelExportCode :
             self.include_customer_nodes_code.write_line("/*! \\brief [Graph] Creates a " + self.kernel.name_upper + " Node.")
             self.include_customer_nodes_code.write_line(" * \\param [in] graph The reference to the graph.")
             for prm in self.kernel.params :
-                self.include_customer_nodes_code.write_line(" * \param [" + prm.direction.get_doxygen_name() + "] " + prm.name_lower)
+                if(prm.state == ParamState.OPTIONAL) :
+                    self.paramstate = " (optional)"
+                else :
+                    self.paramstate = ""
+                self.include_customer_nodes_code.write_line(" * \param [" + prm.direction.get_doxygen_name() + "] " + prm.name_lower + self.paramstate)
+            self.include_customer_nodes_code.write_line(" * \\see <tt>" + self.kernel.enum_str_prefix + self.kernel.name_upper + "</tt>")
+            self.include_customer_nodes_code.write_line(" * \\ingroup group_vision_function_" + self.kernel.name_lower)
             self.include_customer_nodes_code.write_line(" * \\return <tt>\\ref vx_node</tt>.")
             self.include_customer_nodes_code.write_line(" * \\retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\\ref vxGetStatus</tt>")
             self.include_customer_nodes_code.write_line(" */")
@@ -1738,7 +1809,13 @@ class KernelExportCode :
         self.insert = (r"/*! \\brief [Graph] Creates a " + self.kernel.name_upper + " Node.\n")
         self.insert += (r" * \\param [in] graph The reference to the graph.\n")
         for prm in self.kernel.params :
-            self.insert += (" * \param [" + prm.direction.get_doxygen_name() + "] " + prm.name_lower + "\n")
+            if(prm.state == ParamState.OPTIONAL) :
+                self.paramstate = " (optional)"
+            else :
+                self.paramstate = ""
+            self.insert += (" * \param [" + prm.direction.get_doxygen_name() + "] " + prm.name_lower + self.paramstate + "\n")
+        self.insert += (r" * \\see <tt>" + self.kernel.enum_str_prefix + self.kernel.name_upper + "</tt>" + "\n")
+        self.insert += (r" * \\ingroup group_vision_function_" + self.kernel.name_lower + "\n")
         self.insert += (r" * \\return <tt>\\ref vx_node</tt>.\n")
         self.insert += (r" * \\retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\\ref vxGetStatus</tt>\n")
         self.insert += (r" */\n")
