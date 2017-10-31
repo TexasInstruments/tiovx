@@ -146,9 +146,10 @@ class CodeGenerate :
     def write_comment_line(self, text_line) :
         self.write_line('/* %s */' % text_line)
 
-    def write_line(self, text_line, new_line=True) :
-        for i in range(0, self.indent_level) :
-            self.file.write(self.indent)
+    def write_line(self, text_line, new_line=True, indent=True) :
+        if indent :
+            for i in range(0, self.indent_level) :
+                self.file.write(self.indent)
         self.file.write(text_line)
         if new_line:
             self.file.write('\n')
@@ -191,7 +192,7 @@ class CodeGenerate :
         self.write_newline()
 
     def write_newline(self) :
-        self.write_line('')
+        self.file.write('\n')
 
     def write_define_status(self) :
         self.write_line("vx_status status = VX_SUCCESS;")

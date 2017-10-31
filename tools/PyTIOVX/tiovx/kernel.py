@@ -62,7 +62,7 @@
 from . import *
 
 class KernelParams :
-    def __init__(self, index, type, direction, state, name, do_map=True, do_unmap=True, do_map_unmap_all_planes=False):
+    def __init__(self, index, type, direction, state, name, data_types=[],  do_map=True, do_unmap=True, do_map_unmap_all_planes=False):
         self.index = index
         self.type = type
         self.direction = direction
@@ -70,6 +70,7 @@ class KernelParams :
         self.name_upper = name.upper()
         self.name_lower = name.lower()
         self.name_camel = toCamelCase(name)
+        self.data_types = data_types
         self.do_map = do_map
         self.do_unmap = do_unmap
         self.do_map_unmap_all_planes = do_map_unmap_all_planes
@@ -108,8 +109,8 @@ class Kernel  :
             kernel_str += str(prm) + "\n"
         return kernel_str
 
-    def setParameter(self, type, direction, state, name, do_map=True, do_unmap=True, do_map_unmap_all_planes=False):
-        params = KernelParams(self.index, type, direction, state, name, do_map, do_unmap, do_map_unmap_all_planes);
+    def setParameter(self, type, direction, state, name, data_types=[], do_map=True, do_unmap=True, do_map_unmap_all_planes=False):
+        params = KernelParams(self.index, type, direction, state, name, data_types, do_map, do_unmap, do_map_unmap_all_planes);
         self.params.append(params)
         self.index = self.index + 1
 

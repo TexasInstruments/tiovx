@@ -394,6 +394,92 @@ class KernelExportCode :
             self.host_c_code.write_close_brace()
             self.host_c_code.write_newline()
 
+        self.host_c_code.write_newline()
+        self.host_c_code.write_line("/* PARAMETER CHECKING */")
+        self.host_c_code.write_newline()
+
+        # Check for sizeof array, and data type (format) of other objects
+        num_nonimage = 0
+        num_scalar = 0
+        num_image = 0
+        for prm in self.kernel.params :
+            if Type.IMAGE == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.is_scalar_type(prm.type) is True :
+                if prm.state is ParamState.REQUIRED :
+                    self.host_c_code.write_line("if (VX_SUCCESS == status)")
+                else :
+                    if Type.IMAGE == prm.type :
+                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != img[%sU]))" % (num_image))
+                    elif Type.is_scalar_type(prm.type) is True :
+                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != scalar[%sU]))" % (num_scalar))
+                    else :
+                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != %s_%s))" % (prm.type.name.lower(), num_nonimage))
+                self.host_c_code.write_open_brace()
+                if len(prm.data_types) == 0 :
+                    self.print_data_type = ['<Add type here>']
+                else :
+                    self.print_data_type = prm.data_types
+                if Type.IMAGE == prm.type :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( (%s != fmt[%sU]) &&" % (self.print_data_type[0], num_image))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    (%s != fmt[%sU]) &&" % (dt, num_image))
+                        self.host_c_code.write_line("    (%s != fmt[%sU]))" % (self.print_data_type[-1], num_image))
+                    else :
+                        self.host_c_code.write_line("if (%s != fmt[%sU])" % (self.print_data_type[0], num_image))
+                if Type.ARRAY == prm.type :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( (item_size_%s != sizeof(%s)) &&" % (num_nonimage, self.print_data_type[0]))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    (item_size_%s != sizeof(%s)) &&" % (num_nonimage, dt))
+                        self.host_c_code.write_line("    (item_size_%s != sizeof(%s)))" % (num_nonimage, self.print_data_type[-1]))
+                    else :
+                        self.host_c_code.write_line("if ( item_size_%s != sizeof(%s))" % (num_nonimage, self.print_data_type[0]))
+                if Type.MATRIX == prm.type :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( (%s != mat_type_%s) &&" % (self.print_data_type[0], num_nonimage))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    (%s != mat_type_%s) &&" % (dt, num_nonimage))
+                        self.host_c_code.write_line("    (%s != mat_type_%s))" % (self.print_data_type[-1], num_nonimage))
+                    else :
+                        self.host_c_code.write_line("if (%s != mat_type_%s)" % (self.print_data_type[0], num_nonimage))
+                if Type.LUT == prm.type :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( (%s != lut_type_%s) &&" % (self.print_data_type[0], num_nonimage))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    (%s != lut_type_%s) &&" % (dt, num_nonimage))
+                        self.host_c_code.write_line("    (%s != lut_type_%s))" % (self.print_data_type[-1], num_nonimage))
+                    else :
+                        self.host_c_code.write_line("if (%s != lut_type_%s)" % (self.print_data_type[0], num_nonimage))
+                if Type.is_scalar_type(prm.type) is True :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( (%s != scalar_type_%s) &&" % (self.print_data_type[0], num_nonimage))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    (%s != scalar_type_%s) &&" % (dt, num_nonimage))
+                        self.host_c_code.write_line("    (%s != scalar_type_%s))" % (self.print_data_type[-1], num_nonimage))
+                    else :
+                        self.host_c_code.write_line("if (%s != scalar_type_%s)" % (self.print_data_type[0], num_nonimage))
+                self.host_c_code.write_open_brace()
+                self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+                if Type.IMAGE == prm.type :
+                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be an image of format:\\n " % (prm.name_lower), new_line=False)
+                elif Type.is_scalar_type(prm.type) is True :
+                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be a scalar of type:\\n " % (prm.name_lower), new_line=False)
+                else :
+                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be a %s of type:\\n " % (prm.name_lower, prm.type.name.lower()), new_line=False)
+                self.host_c_code.write_line("%s " % (self.print_data_type[0]), new_line=False, indent=False)
+                for dt in self.print_data_type[1:] :
+                    self.host_c_code.write_line("or %s " % (dt), new_line=False, indent=False)
+                self.host_c_code.write_line("\\n\");", indent=False)
+                self.host_c_code.write_close_brace()
+                self.host_c_code.write_close_brace()
+                self.host_c_code.write_newline()
+            if Type.IMAGE == prm.type :
+                num_image+=1
+            elif Type.is_scalar_type(prm.type) is True :
+                num_scalar+=1
+            else :
+                num_nonimage+=1
+
         # If # of input images is = 2, validate that two input sizes are equal
         if self.kernel.getNumInputImages() == 2 :
             self.host_c_code.write_line("if (VX_SUCCESS == status)")
@@ -401,21 +487,6 @@ class KernelExportCode :
             self.host_c_code.write_line("status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);")
             self.host_c_code.write_close_brace()
             self.host_c_code.write_newline()
-
-        # Validate possible formats
-        num_image = 0
-        for prm in self.kernel.params :
-            if Type.IMAGE == prm.type and Direction.INPUT == prm.direction :
-                self.host_c_code.write_line("/* Check possible input image formats */")
-                self.host_c_code.write_line("#if 0")
-                self.host_c_code.write_line("if (VX_SUCCESS == status)")
-                self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("status = tivxKernelValidatePossibleFormat(fmt[%sU], VX_DF_IMAGE_<possible_format>) &" % num_image)
-                self.host_c_code.write_line("         tivxKernelValidatePossibleFormat(fmt[%sU], VX_DF_IMAGE_<possible_format>);" % num_image)
-                num_image+=1
-                self.host_c_code.write_close_brace()
-                self.host_c_code.write_line("#endif")
-                self.host_c_code.write_newline()
 
         # If there is at least 1 input image and 1 output image, validates each output image size
         # Checks if output size is equal to the input size
@@ -427,18 +498,6 @@ class KernelExportCode :
                 self.host_c_code.write_line("status = tivxKernelValidateOutputSize(w[0U], w[%sU], h[0U], h[%sU], img[%sU]);" % (self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp) )
                 self.host_c_code.write_close_brace()
                 self.host_c_code.write_newline()
-
-        # TODO: Put potential checks for other data types here
-        num_nonimage = 0
-        for prm in self.kernel.params :
-            if Type.is_scalar_type(prm.type) is True :
-                self.host_c_code.write_line("if (VX_SUCCESS == status)")
-                self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("status = tivxKernelValidateScalarType(scalar_type_%s, %s);" % (num_nonimage, Type.get_vx_enum_name(prm.type)))
-                self.host_c_code.write_close_brace()
-                self.host_c_code.write_newline()
-            if Type.IMAGE != prm.type :
-                num_nonimage+=1
 
         # setting metas
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
