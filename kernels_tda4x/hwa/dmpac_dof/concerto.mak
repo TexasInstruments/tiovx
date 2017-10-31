@@ -1,14 +1,13 @@
-
-ifeq ($(BUILD_HWA_VPAC_NF),yes)
+ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 
 include $(PRELUDE)
-TARGET      := vx_target_kernels_vpac_nf
+TARGET      := vx_target_kernels_dmpac_dof
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
-IDIRS       += $(BL_FILTER_PATH)/bl_filter/src
 IDIRS       += $(VXLIB_PATH)/packages
+IDIRS       += $(DMPAC_DOF_PATH)/modules/src/algo/libDOF
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 endif
@@ -32,4 +31,4 @@ endif
 include $(FINALE)
 
 endif
-# ifeq ($(BUILD_HWA_VPAC_NF),yes)
+# ifeq ($(BUILD_HWA_DMPAC_DOF),yes)

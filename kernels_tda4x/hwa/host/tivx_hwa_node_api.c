@@ -161,3 +161,28 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
+                                      vx_array             configuration,
+                                      vx_pyramid           input_current,
+                                      vx_pyramid           input_ref,
+                                      vx_image             flow_vector_in_temporal,
+                                      vx_image             sparse_of_map,
+                                      vx_image             flow_vector_out,
+                                      vx_distribution      confidence_histogram)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)input_current,
+            (vx_reference)input_ref,
+            (vx_reference)flow_vector_in_temporal,
+            (vx_reference)sparse_of_map,
+            (vx_reference)flow_vector_out,
+            (vx_reference)confidence_histogram
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_DMPAC_DOF,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

@@ -118,6 +118,10 @@ enum tivx_kernel_hwa_e {
      * \see group_vision_function_hwa
      */
     TIVX_KERNEL_VPAC_LDC = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 3,
+    /*! \brief The dmpac_dof kernel
+     * \see group_vision_function_hwa
+     */
+    TIVX_KERNEL_DMPAC_DOF = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 4,
     TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 
@@ -432,6 +436,25 @@ typedef struct {
     int16_t  multi_phase_2[5*32];           /*!< Multi phase coefficient set 2, signed 10-bit */
     int16_t  multi_phase_3[5*32];           /*!< Multi phase coefficient set 3, signed 10-bit */
 } tivx_vpac_msc_coefficients_t;
+
+
+/*********************************
+ *      DMPAC_DOF STRUCTURES
+ *********************************/
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_DMPAC_DOF kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  vertical_search_range[2];     /*!< Range [0, 63] 	Recommended = 48, 48 (vertical_search_range[0] (upward) + vertical_search_range[1] (downward) <= 96) */
+    uint16_t  horizontal_search_range;      /*!< Range [0, 191] Recommended value = 191 */
+    uint16_t  median_filter_enable;         /*!< 0: Disabled; 1: Enable post-processing median filter [recommended] */
+    uint16_t  motion_smoothness_factor;     /*!< Range [0, 31] 	recommended = 24 */
+    uint16_t  motion_direction;             /*!< 0 = Motion neutral 1 = Forward motion 2 = Reverse motion  */
+} tivx_dmpac_dof_params_t;
+
 
 /*********************************
  *      Function Prototypes

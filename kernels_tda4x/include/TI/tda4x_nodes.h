@@ -72,7 +72,7 @@ extern "C" {
 /*! \brief [Graph] Creates a VPAC_NF_GENERIC Node.
  * \param [in] graph The reference to the graph.
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] conv The input convolution matrix. Max columns or rows supported is 5. 
+ * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.
  * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_nf_common_params_t</tt>.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC</tt>
@@ -108,7 +108,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
  * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
- * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0] 
+ * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]
  * \param [out] confidence_histogram (optional) Histogram of the confidence scores.  Must be configured to 128 bins.
  * \see <tt>TIVX_KERNEL_DMPAC_SDE</tt>
  * \ingroup group_vision_function_dmpac_sde
@@ -170,6 +170,41 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_image             out_2_luma_or_422,
                                       vx_image             out_3_chroma,
                                       vx_scalar            error_status);
+
+/*! \brief [Graph] Creates a DMPAC_DOF Node.
+ *
+ * - The dataformat of image within pyramid MUST be <tt>\ref VX_DF_IMAGE_U8</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * The pyramid MUST use scale of VX_SCALE_PYRAMID_HALF
+ * The max number of pyramid levels can be 5
+ * The width and height of base level MUST be interger multiple of 2^pyramidlevels
+ * The meta properties of input_current, input_ref MUST be identical
+ *
+ * \param [in] graph                              The reference to the graph.
+ * \param [in] configuration                      The input array of a single params structure of
+ *                                                type <tt>\ref tivx_dmpac_dof_params_t</tt>.
+ * \param [in] input_current                      Current input pyramid.
+ * \param [in] input_reference                    Reference input pyramid.
+ * \param [in] flow_vector_in                     Flow vector from previous execution of DOF.
+ *                                                Size of image is base_width x base_height x 32bpp.
+ *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
+ * \param [in] sparse_of_map           (optional) Sparse OF bit-mask of size base_width/8 x base_height x 1bpp.
+ *                                                Use <tt>\ref VX_DF_IMAGE_U8 </tt> dataformat.
+ * \param [out] flow_vector_out                   Flow vector output.
+ *                                                Size of image is base_width x base_height x 32bpp.
+ *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
+ * \param [out] confidence_histogram   (optional) Confidence histogram.
+ *                                                Distribution meta properties, num_bins = 16, offset = 0, range = 16.
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
+                                      vx_array             configuration,
+                                      vx_pyramid           input_current,
+                                      vx_pyramid           input_reference,
+                                      vx_image             flow_vector_in,
+                                      vx_image             sparse_of_map,
+                                      vx_image             flow_vector_out,
+                                      vx_distribution      confidence_histogram);
 
 #ifdef __cplusplus
 }

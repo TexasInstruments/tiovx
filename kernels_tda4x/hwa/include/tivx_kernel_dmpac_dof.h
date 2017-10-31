@@ -60,86 +60,35 @@
  *
  */
 
-#ifndef VX_HWA_KERNELS_H_
-#define VX_HWA_KERNELS_H_
-
-#include "tivx_kernels_host_utils.h"
+#ifndef _TIVX_KERNEL_DMPAC_DOF_
+#define _TIVX_KERNEL_DMPAC_DOF_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!
- * \file
- * \brief Interface file for the HWA kernels
- */
 
+#define TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX (0U)
+#define TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX (1U)
+#define TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX (2U)
+#define TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX (3U)
+#define TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX (4U)
+#define TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX (5U)
+#define TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX (6U)
 
-/*!
- * \brief Function to register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHWAKernels(void);
+#define TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS (7U)
 
-/*!
- * \brief Function to un-register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHWAKernels(void);
+/* assuming base image of size 2048x1024, max levels can be 5 */
+#define TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS    (5U)
 
-/*!
- * \brief Function to register HWA Kernels on the Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHWATargetVpacNfKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHWATargetVpacNfKernels(void);
-
-/*!
- * \brief Function to register HWA Kernels on the Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHWATargetDmpacSdeKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHWATargetDmpacSdeKernels(void);
-
-/*!
- * \brief Function to register HWA Kernels on the vpac_ldc Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHWATargetVpacLdcKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the vpac_ldc Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHWATargetVpacLdcKernels(void);
-
-/*!
- * \brief Function to register HWA Kernels on the dmpac_dof Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHWATargetDmpacDofKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the dmpac_dof Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHWATargetDmpacDofKernels(void);
-
+/* max bins in confidence histogram */
+#define TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS (16U)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* VX_HWA_KERNELS_H_ */
+
+#endif /* _TIVX_KERNEL_DMPAC_DOF_ */
 
 

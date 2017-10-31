@@ -107,11 +107,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     vx_size item_size_5;
     vx_enum scalar_type_6;
     vx_df_image fmt[7U] = {0};
-    vx_df_image out_fmt = VX_DF_IMAGE_U8;
     vx_uint32 w[7U], h[7U];
-    
+
     status = tivxKernelValidateParametersNotNull(parameters, 2);
-    
+
     if (VX_SUCCESS == status)
     {
         array_0 = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
@@ -128,7 +127,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         img[5U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_OR_422_IDX];
         img[6U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_IDX];
         scalar[0U] = (vx_scalar)parameters[TIVX_KERNEL_VPAC_LDC_ERROR_STATUS_IDX];
-        
+
     }
     if (VX_SUCCESS == status)
     {
@@ -136,14 +135,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
     }
-    
+
     if (VX_SUCCESS == status)
     {
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
         status |= vxQueryArray(array_1, VX_ARRAY_CAPACITY, &capacity_1, sizeof(capacity_1));
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMSIZE, &item_size_1, sizeof(item_size_1));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[0U]))
     {
         /* Get the image width/height and format */
@@ -152,33 +151,33 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != matrix_2))
     {
         status = vxQueryMatrix(matrix_2, VX_MATRIX_TYPE, &mat_type_2, sizeof(mat_type_2));
         status |= vxQueryMatrix(matrix_2, VX_MATRIX_COLUMNS, &mat_w_2, sizeof(mat_w_2));
         status |= vxQueryMatrix(matrix_2, VX_MATRIX_ROWS, &mat_h_2, sizeof(mat_h_2));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != lut_3))
     {
         status = vxQueryLUT(lut_3, VX_LUT_TYPE, &lut_type_3, sizeof(lut_type_3));
         status = vxQueryLUT(lut_3, VX_LUT_COUNT, &lut_count_3, sizeof(lut_count_3));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != lut_4))
     {
         status = vxQueryLUT(lut_4, VX_LUT_TYPE, &lut_type_4, sizeof(lut_type_4));
         status = vxQueryLUT(lut_4, VX_LUT_COUNT, &lut_count_4, sizeof(lut_count_4));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != array_5))
     {
         status |= vxQueryArray(array_5, VX_ARRAY_ITEMTYPE, &item_type_5, sizeof(item_type_5));
         status |= vxQueryArray(array_5, VX_ARRAY_CAPACITY, &capacity_5, sizeof(capacity_5));
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_5, sizeof(item_size_5));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[1U]))
     {
         /* Get the image width/height and format */
@@ -187,7 +186,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[2U]))
     {
         /* Get the image width/height and format */
@@ -196,7 +195,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
         status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[3U]))
     {
         /* Get the image width/height and format */
@@ -205,7 +204,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[3U], VX_IMAGE_WIDTH, &w[3U], sizeof(w[3U]));
         status |= vxQueryImage(img[3U], VX_IMAGE_HEIGHT, &h[3U], sizeof(h[3U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[4U]))
     {
         /* Get the image width/height and format */
@@ -214,7 +213,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[4U], VX_IMAGE_WIDTH, &w[4U], sizeof(w[4U]));
         status |= vxQueryImage(img[4U], VX_IMAGE_HEIGHT, &h[4U], sizeof(h[4U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[5U]))
     {
         /* Get the image width/height and format */
@@ -223,7 +222,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[5U], VX_IMAGE_WIDTH, &w[5U], sizeof(w[5U]));
         status |= vxQueryImage(img[5U], VX_IMAGE_HEIGHT, &h[5U], sizeof(h[5U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != img[6U]))
     {
         /* Get the image width/height and format */
@@ -232,7 +231,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         status |= vxQueryImage(img[6U], VX_IMAGE_WIDTH, &w[6U], sizeof(w[6U]));
         status |= vxQueryImage(img[6U], VX_IMAGE_HEIGHT, &h[6U], sizeof(h[6U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != scalar[0U]))
     {
         status = vxQueryScalar(scalar[0U], VX_SCALAR_TYPE, &scalar_type_6, sizeof(scalar_type_6));
@@ -514,12 +513,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     {
         status = tivxKernelValidateScalarType(scalar_type_6, VX_TYPE_UINT32);
     }
-    
+
     if (VX_SUCCESS == status)
     {
         //tivxKernelSetMetas(metas, TIVX_KERNEL_VPAC_LDC_MAX_PARAMS, out_fmt, w[0U], h[0U]);
     }
-    
+
     return status;
 }
 
@@ -529,17 +528,17 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
 {
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
-    
+
     if (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
-    
+
     if (VX_SUCCESS == status)
     {
         status = tivxKernelValidateParametersNotNull(parameters, 2);
     }
-    
+
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
@@ -556,7 +555,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
         {
             /* Do nothing */
         }
-        
+
         if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX])
         {
             prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
@@ -572,7 +571,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
 
         prms.num_input_images = 1;
         prms.num_output_images = 1;
-        
+
         /* < DEVELOPER_TODO: (Optional) Set padding values based on valid region if border mode is */
         /*                    set to VX_BORDER_UNDEFINED and remove the #if 0 and #endif lines. */
         /*                    Else, remove this entire #if 0 ... #endif block > */
@@ -583,10 +582,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
         prms.right_pad = 0;
         prms.border_mode = VX_BORDER_UNDEFINED;
         #endif
-        
+
         status = tivxKernelConfigValidRect(&prms);
     }
-    
+
     return status;
 }
 
@@ -595,7 +594,7 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    
+
     kernel = vxAddUserKernel(
                 context,
                 "com.ti.hwa.vpac_ldc",
@@ -605,12 +604,12 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
                 tivxAddKernelVpacLdcValidate,
                 tivxAddKernelVpacLdcInitialize,
                 NULL);
-    
+
     status = vxGetStatus((vx_reference)kernel);
     if (status == VX_SUCCESS)
     {
         index = 0;
-        
+
         if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
@@ -772,7 +771,7 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
         kernel = NULL;
     }
     vx_vpac_ldc_kernel = kernel;
-    
+
     return status;
 }
 
@@ -780,10 +779,10 @@ vx_status tivxRemoveKernelVpacLdc(vx_context context)
 {
     vx_status status;
     vx_kernel kernel = vx_vpac_ldc_kernel;
-    
+
     status = vxRemoveKernel(kernel);
     vx_vpac_ldc_kernel = NULL;
-    
+
     return status;
 }
 

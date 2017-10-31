@@ -6,3 +6,13 @@
 BL_FILTER_PATH ?= /home/a0323847local/gitrepo/bl_filter
 SDE_PATH ?= /home/a0323847local/gitrepo/tda4x_cmodels/sde_tiovx_dv
 VPAC_LDC_PATH ?= /home/a0323847local/gitrepo/tda4x_cmodels/ldc/vpac_ldc
+DMPAC_DOF_PATH ?= /home/kedarc/code/tda4x_cmodels/dof/tidofimulator1.6.5.alpha
+
+# set values of below to yes or no to include or exclude the modules from compile and link
+BUILD_HWA_VPAC_LDC=no
+BUILD_HWA_VPAC_NF=no
+BUILD_HWA_VPAC_MSC=no
+BUILD_HWA_VPAC_VISS=no
+BUILD_HWA_DMPAC_SDE=no
+BUILD_HWA_DMPAC_DOF=yes
+

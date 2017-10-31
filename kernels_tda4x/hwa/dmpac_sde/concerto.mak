@@ -1,3 +1,6 @@
+
+ifeq ($(BUILD_HWA_DMPAC_SDE),yes)
+
 include $(PRELUDE)
 TARGET      := vx_target_kernels_dmpac_sde
 TARGETTYPE  := library
@@ -8,7 +11,7 @@ IDIRS       += $(SDE_PATH)/include/lib
 IDIRS       += $(VXLIB_PATH)/packages
 DEFS        += TIOVX_SDE
 
-ifeq ($(TARGET_CPU),X86)
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 endif
 
 ifeq ($(TARGET_CPU),C66)
@@ -29,3 +32,5 @@ endif
 
 include $(FINALE)
 
+endif
+# ifeq ($(BUILD_HWA_DMPAC_SDE),yes)

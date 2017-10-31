@@ -91,12 +91,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     vx_int32 offset_1 = 0;
     vx_uint32 range_1 = 0;
     vx_size numBins_1 = 0;
-    vx_df_image fmt[3U] = {NULL};
+    vx_df_image fmt[3U] = {0u, 0u, 0u};
     vx_df_image out_fmt = VX_DF_IMAGE_U8;
-    vx_uint32 i, w[3U], h[3U];
-    
+    vx_uint32 w[3U], h[3U];
+
     status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS-1);
-    
+
     if (VX_SUCCESS == status)
     {
         img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
@@ -104,7 +104,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
         array_0 = (vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         img[2U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         distribution_1 = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
-        
+
     }
     if (VX_SUCCESS == status)
     {
@@ -114,7 +114,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
         status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
         status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
     }
-    
+
     if (VX_SUCCESS == status)
     {
         /* Get the image width/height and format */
@@ -123,14 +123,14 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
         status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
         status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
     }
-    
+
     if (VX_SUCCESS == status)
     {
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
         status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
     }
-    
+
     if (VX_SUCCESS == status)
     {
         /* Get the image width/height and format */
@@ -139,19 +139,19 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
         status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
         status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
     }
-    
+
     if ((VX_SUCCESS == status) && (NULL != distribution_1))
     {
         status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_BINS, &numBins_1, sizeof(numBins_1));
         status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_RANGE, &range_1, sizeof(range_1));
         status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_OFFSET, &offset_1, sizeof(offset_1));
     }
-    
+
     if (VX_SUCCESS == status)
     {
         status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);
     }
-    
+
     /* Check possible input image formats */
     if (VX_SUCCESS == status)
     {
@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
                  tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U16) &
                  tivxKernelValidatePossibleFormat(fmt[0U], TIVX_DF_IMAGE_P12);
     }
-    
+
     /* Check possible input image formats */
     if (VX_SUCCESS == status)
     {
@@ -188,12 +188,12 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     {
         status = tivxKernelValidateOutputSize(w[0U], w[2U], h[0U], h[2U], img[2U]);
     }
-    
+
     if (VX_SUCCESS == status)
     {
         tivxKernelSetMetas(metas, TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS, out_fmt, w[0U], h[0U]);
     }
-    
+
     return status;
 }
 
@@ -203,28 +203,28 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
 {
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
-    
+
     if (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
     }
-    
+
     if (VX_SUCCESS == status)
     {
         status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS-1);
     }
-    
+
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
-        
+
         prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
         prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
         prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
 
         prms.num_input_images = 2;
         prms.num_output_images = 1;
-        
+
         /* < DEVELOPER_TODO: (Optional) Set padding values based on valid region if border mode is */
         /*                    set to VX_BORDER_UNDEFINED and remove the #if 0 and #endif lines. */
         /*                    Else, remove this entire #if 0 ... #endif block > */
@@ -235,10 +235,10 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
         prms.right_pad = 0;
         prms.border_mode = VX_BORDER_UNDEFINED;
         #endif
-        
+
         status = tivxKernelConfigValidRect(&prms);
     }
-    
+
     return status;
 }
 
@@ -247,7 +247,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    
+
     kernel = vxAddUserKernel(
                 context,
                 "com.ti.hwa.dmpac_sde",
@@ -257,12 +257,12 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
                 tivxAddKernelDmpacSdeValidate,
                 tivxAddKernelDmpacSdeInitialize,
                 NULL);
-    
+
     status = vxGetStatus((vx_reference)kernel);
     if (status == VX_SUCCESS)
     {
         index = 0;
-        
+
         if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
@@ -333,7 +333,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
         kernel = NULL;
     }
     vx_dmpac_sde_kernel = kernel;
-    
+
     return status;
 }
 
@@ -341,10 +341,10 @@ vx_status tivxRemoveKernelDmpacSde(vx_context context)
 {
     vx_status status;
     vx_kernel kernel = vx_dmpac_sde_kernel;
-    
+
     status = vxRemoveKernel(kernel);
     vx_dmpac_sde_kernel = NULL;
-    
+
     return status;
 }
 
