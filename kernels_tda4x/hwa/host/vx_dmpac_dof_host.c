@@ -88,16 +88,16 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     vx_size capacity_0;
     vx_pyramid pyramid_1 = {NULL};
     vx_size levels_pyr_1;
-    vx_size scale_pyr_1;
-    vx_size w_pyr_1;
-    vx_size h_pyr_1;
-    vx_size df_image_pyr_1;
+    vx_float32 scale_pyr_1;
+    vx_uint32 w_pyr_1;
+    vx_uint32 h_pyr_1;
+    vx_enum df_image_pyr_1;
     vx_pyramid pyramid_2 = {NULL};
     vx_size levels_pyr_2;
-    vx_size scale_pyr_2;
-    vx_size w_pyr_2;
-    vx_size h_pyr_2;
-    vx_size df_image_pyr_2;
+    vx_float32 scale_pyr_2;
+    vx_uint32 w_pyr_2;
+    vx_uint32 h_pyr_2;
+    vx_enum df_image_pyr_2;
     vx_distribution distribution_3 = {NULL};
     vx_int32 offset_3 = 0u;
     vx_uint32 range_3 = 0u;
@@ -187,7 +187,15 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
                 );
         }
-        if(df_image_pyr_1 != VX_DF_IMAGE_U8 || df_image_pyr_1 != TIVX_DF_IMAGE_P12)
+        if(scale_pyr_1 != VX_SCALE_PYRAMID_HALF )
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Scale of pyramid %3.1f does not match required scale of %3.1f!!!\n",
+                scale_pyr_1,
+                VX_SCALE_PYRAMID_HALF
+                );
+        }
+        if(df_image_pyr_1 != VX_DF_IMAGE_U8 && df_image_pyr_1 != TIVX_DF_IMAGE_P12)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Data format of image within pyramid MUST be VX_DF_IMAGE_U8 or TIVX_DF_IMAGE_P12 !!!\n"
@@ -200,7 +208,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 );
         }
         if( (w_pyr_1 % (1<<levels_pyr_1)) != 0
-            ||
+            &&
             (h_pyr_1 % (1<<levels_pyr_1)) != 0
           )
         {
@@ -212,13 +220,13 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 );
         }
         if(levels_pyr_1!=levels_pyr_2
-            ||
+            &&
             scale_pyr_1!=scale_pyr_2
-            ||
+            &&
             w_pyr_1!=w_pyr_2
-            ||
+            &&
             h_pyr_1!=h_pyr_2
-            ||
+            &&
             df_image_pyr_1!=df_image_pyr_2
             )
         {
@@ -226,7 +234,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Meta-properties of current input pyramid and reference input pyramid NOT matching !!!\n"
                 );
         }
-        if(w_pyr_1 != w[2u] || h_pyr_1 != h[2u])
+        if(w_pyr_1 != w[2u] && h_pyr_1 != h[2u])
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector output image WxH (%d x %d) MUST match pyramid base WxH (%d x %d)!!!\n",
@@ -239,7 +247,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector output image format MUST be VX_DF_IMAGE_U32 !!!\n"
                 );
         }
-        if(w_pyr_1 != w[0u] || h_pyr_1 != h[0u])
+        if(w_pyr_1 != w[0u] && h_pyr_1 != h[0u])
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image WxH (%d x %d) MUST match pyramid base WxH (%d x %d)!!!\n",
@@ -399,7 +407,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
         if (status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DMPAC_DOF);
         }
         if (status == VX_SUCCESS)
         {

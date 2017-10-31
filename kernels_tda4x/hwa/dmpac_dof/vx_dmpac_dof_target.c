@@ -119,7 +119,8 @@ static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
 
     for(i=0; i<prms->dofParams.numberOfPyramidLevels; i++)
     {
-        size = prms->pyramid_size[i][0]*prms->pyramid_size[i][1]*sizeof(int);
+        size = (prms->pyramid_size[i][0])*(prms->pyramid_size[i][1])*sizeof(int);
+
 
         if(status==VX_SUCCESS)
         {
@@ -169,7 +170,7 @@ static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms)
 
     for(i=0; i<prms->dofParams.numberOfPyramidLevels; i++)
     {
-        size = prms->pyramid_size[i][0]*prms->pyramid_size[i][1]*sizeof(int);
+        size = (prms->pyramid_size[i][0])*(prms->pyramid_size[i][1])*sizeof(int);
 
         if(prms->input_current[i] != NULL)
         {
@@ -517,7 +518,7 @@ void tivxAddTargetKernelDmpacDof()
 
     if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
     {
-        strncpy(target_name, TIVX_TARGET_IPU1_0, TIVX_TARGET_MAX_NAME);
+        strncpy(target_name, TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_MAX_NAME);
         status = VX_SUCCESS;
     }
     else
