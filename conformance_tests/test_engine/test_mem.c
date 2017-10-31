@@ -80,7 +80,7 @@ void *ct_calloc(size_t nmemb, size_t size)
         {
             /* First word stores the size of the memory allocated */
             *(uint32_t*)ptr = new_size;
-            ptr = (void *)((uint32_t)ptr + CT_MEM_HEADER_SIZE);
+            ptr = (void *)((uintptr_t)ptr + CT_MEM_HEADER_SIZE);
         }
     }
 

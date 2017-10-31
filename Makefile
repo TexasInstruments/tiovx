@@ -4,8 +4,11 @@ BUILD_SDK=vsdk
 
 include $(BUILD_SDK)_tools_path.mak
 
-BUILD_EMULATION_MODE?=no
+
 BUILD_TARGET_MODE?=yes
+BUILD_EMULATION_MODE?=no
+# valid values: X86 x86_64
+BUILD_EMULATION_ARCH?=X86
 
 BUILD_CONFORMANCE_TEST?=yes
 BUILD_TUTORIAL?=yes
@@ -16,6 +19,12 @@ BUILD_EVE?=yes
 # Kernel Library Extensions
 BUILD_IVISION_KERNELS?=yes
 
+# BAM not support on 64b emulation systems
+ifeq ($(BUILD_EMULATION_MODE),yes)
+  ifeq ($(BUILD_EMULATION_ARCH),x86_64)
+	BUILD_BAM=no
+  endif
+endif
 
 PROFILE?=all
 
@@ -72,19 +81,19 @@ endif
 ifeq ($(BUILD_EMULATION_MODE),yes)
   ifeq ($(OS),Windows_NT)
     ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-    TARGET_COMBOS += PC:WINDOWS:X86:1:debug:GCC_WINDOWS
+    TARGET_COMBOS += PC:WINDOWS:$(BUILD_EMULATION_ARCH):1:debug:GCC_WINDOWS
     endif
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-    TARGET_COMBOS += PC:WINDOWS:X86:1:release:GCC_WINDOWS
+    TARGET_COMBOS += PC:WINDOWS:$(BUILD_EMULATION_ARCH):1:release:GCC_WINDOWS
     endif
   else
     ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
-    TARGET_COMBOS += PC:LINUX:X86:1:debug:GCC_LINUX
+    TARGET_COMBOS += PC:LINUX:$(BUILD_EMULATION_ARCH):1:debug:GCC_LINUX
     endif
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
-    TARGET_COMBOS += PC:LINUX:X86:1:release:GCC_LINUX
+    TARGET_COMBOS += PC:LINUX:$(BUILD_EMULATION_ARCH):1:release:GCC_LINUX
     endif
   endif
 endif

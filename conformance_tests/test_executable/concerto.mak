@@ -1,4 +1,4 @@
-# 
+#
 
 # Copyright (c) 2012-2017 The Khronos Group Inc.
 #
@@ -23,14 +23,14 @@ TARGET      := vx_conformance_tests_exe
 TARGETTYPE  := exe
 CSOURCES    := $(call all-c-files)
 
-LDIRS       := $(TIOVX_PATH)/lib/PC/X86/$(TARGET_OS)/$(TARGET_BUILD)
+LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 
-STATIC_LIBS := vx_conformance_tests 
-STATIC_LIBS += vx_tiovx_tests 
+STATIC_LIBS := vx_conformance_tests
+STATIC_LIBS += vx_tiovx_tests
 
 STATIC_LIBS += vx_conformance_engine vx_conformance_tests_testmodule
 STATIC_LIBS += vx_vxu vx_framework
-STATIC_LIBS += vx_platform_pc vx_framework 
+STATIC_LIBS += vx_platform_pc vx_framework
 
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
 
@@ -40,23 +40,18 @@ ifeq ($(BUILD_TUTORIAL),yes)
 STATIC_LIBS += vx_target_kernels_tutorial
 endif
 
-
 ifeq ($(BUILD_BAM),yes)
 STATIC_LIBS += vx_target_kernels_openvx_core_bam vx_target_kernels_openvx_core
 endif
-
-STATIC_LIBS += vx_kernels_host_utils vx_kernels_target_utils
-
+STATIC_LIBS += vx_kernels_host_utils
+STATIC_LIBS += vx_kernels_target_utils
 STATIC_LIBS += vx_framework
-
 ifeq ($(BUILD_BAM),yes)
-STATIC_LIBS += vxlib_bamplugin_X86 
+STATIC_LIBS += vxlib_bamplugin_$(TARGET_CPU)
 endif
-
-STATIC_LIBS += vxlib_X86 c6xsim_X86_C66
-
+STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66
 ifeq ($(BUILD_BAM),yes)
-STATIC_LIBS += algframework_X86 dmautils_X86 
+STATIC_LIBS += algframework_$(TARGET_CPU) dmautils_$(TARGET_CPU)
 endif
 
 

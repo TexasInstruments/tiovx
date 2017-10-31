@@ -2,7 +2,7 @@
 include $(PRELUDE)
 TARGET      := vx_kernels_target_utils
 TARGETTYPE  := library
-CSOURCES    := tivx_kernels_target_utils.c 
+CSOURCES    := tivx_kernels_target_utils.c
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(ALGFRAMEWORK_PATH)/inc \
@@ -19,7 +19,7 @@ IDIRS       += $(ALGFRAMEWORK_PATH)/inc \
                $(EDMA3_LLD_PATH)/packages/ti/sdo/edma3/rm \
                $(EDMA3_LLD_PATH)/packages
 
-ifeq ($(TARGET_CPU),X86)
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 
 SKIPBUILD=0

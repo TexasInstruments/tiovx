@@ -124,10 +124,10 @@ The preceding variables can be set in the command shell and `make` will import t
 * `BUILD_DEBUG=1` - turns on explicit build output from each command
 * `TARGET_PLATFORM` - indicates the platform to build for (assumes 'PC' if not set).
 * `TARGET_OS` = LINUX __or__ Windows_NT __or__ DARWIN __or__ QNX
-* `TARGET_CPU` = ARM __or__ X86 __or__ X86_64 __or__ c64t  __or__ c67x
+* `TARGET_CPU` = ARM __or__ X86 __or__ x86_64 __or__ c64t  __or__ c67x
 * `TARGET_BUILD` = debug __or__ release __or__ production - used to generate debuggable components, optimized components or finale builds.
 * `HOST_OS` = LINUX __or__ Windows_NT 
-* `HOST_CPU` = X86  __or__ X86_64
+* `HOST_CPU` = X86  __or__ x86_64
 * `HOST_PLATFORM` = PC (ususally)
 
 Supported Platforms and Targets:
@@ -149,7 +149,7 @@ Target Environments:
 Target CPUs:
 * ARM
 * X86
-* X86_64
+* x86_64
 * TI DSPs
 
 

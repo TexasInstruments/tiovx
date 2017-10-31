@@ -11,7 +11,7 @@ IDIRS       += $(EVE_SW_PATH)/
 IDIRS       += $(EVE_SW_PATH)/common
 IDIRS       += $(VXLIB_PATH)/packages
 
-ifeq ($(TARGET_CPU),X86)
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 CFLAGS      += -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
 endif
 

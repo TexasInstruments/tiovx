@@ -117,7 +117,7 @@ class KernelExportCode :
         if not os.path.exists(self.directory):
             print("Creating " + self.directory)
             os.makedirs(self.directory)
-        
+
     def generate_h_file_code(self):
         print("Creating " + self.workarea_module_include + "/" + self.h_filename)
         self.h_code = CodeGenerate(self.workarea_module_include + "/" + self.h_filename)
@@ -1324,7 +1324,7 @@ class KernelExportCode :
             self.module_target_concerto_code.write_line("DEFS += BUILD_BAM")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
-            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),X86)")
+            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))")
             self.module_target_concerto_code.write_line("DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();

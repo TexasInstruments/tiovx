@@ -16,7 +16,7 @@ ifeq ($(TARGET_CPU),$(HOST_CPU))
 	CROSS_COMPILE:=
 endif
 
-ifeq ($(TARGET_CPU),X86)
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 	CROSS_COMPILE:=
 endif
 
@@ -29,10 +29,10 @@ $(if $(GCC_LINUX_ROOT),,$(error GCC_LINUX_ROOT must be defined!))
 $(if $(filter $(subst ;,$(SPACE),$(PATH)),$(GCC_LINUX_ROOT)),,$(error GCC_LINUX_ROOT must be in PATH as well as secondary directories))
 endif
 
-# check for the supported CPU types for this compiler 
+# check for the supported CPU types for this compiler
 ifeq ($(filter $(TARGET_FAMILY),ARM X86 x86_64),)
 $(error TARGET_FAMILY $(TARGET_FAMILY) is not supported by this compiler)
-endif 
+endif
 
 # check for the support OS types for this compiler
 ifeq ($(filter $(TARGET_OS),LINUX CYGWIN DARWIN NO_OS SYSBIOS),)
@@ -83,8 +83,8 @@ $(_MODULE)_BIN  := $($(_MODULE)_EXE_DIR)/$($(_MODULE)_OUT)
 $(_MODULE)_LIB  := $($(_MODULE)_TDIR)/$($(_MODULE)_OUT)
 $(_MODULE)_OBJS := $(ASSEMBLY:%.S=$($(_MODULE)_ODIR)/%.o) $(CPPSOURCES:%.cpp=$($(_MODULE)_ODIR)/%.o) $(CSOURCES:%.c=$($(_MODULE)_ODIR)/%.o)
 # Redefine the local static libs and shared libs with REAL paths and pre/post-fixes
-$(_MODULE)_STATIC_LIBS := $(foreach lib,$(STATIC_LIBS),$($(_MODULE)_TDIR)/lib$(lib).a) 
-$(_MODULE)_SHARED_LIBS := $(foreach lib,$(SHARED_LIBS),$($(_MODULE)_TDIR)/lib$(lib)$(DSO_EXT)) 
+$(_MODULE)_STATIC_LIBS := $(foreach lib,$(STATIC_LIBS),$($(_MODULE)_TDIR)/lib$(lib).a)
+$(_MODULE)_SHARED_LIBS := $(foreach lib,$(SHARED_LIBS),$($(_MODULE)_TDIR)/lib$(lib)$(DSO_EXT))
 ifeq ($(BUILD_MULTI_PROJECT),1)
 $(_MODULE)_STATIC_LIBS += $(foreach lib,$(SYS_STATIC_LIBS),$($(_MODULE)_TDIR)/lib$(lib).a)
 $(_MODULE)_SHARED_LIBS += $(foreach lib,$(SYS_SHARED_LIBS),$($(_MODULE)_TDIR)/lib$(lib)$(DSO_EXT))
@@ -97,10 +97,10 @@ $(_MODULE)_DEP_HEADERS := $(foreach inc,$($(_MODULE)_HEADERS),$($(_MODULE)_SDIR)
 ifneq ($(TARGET_OS),CYGWIN)
 $(_MODULE)_COPT += -fPIC
 endif
-$(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings -Wno-format-security 
+$(_MODULE)_COPT += -Wall -fms-extensions -Wno-write-strings -Wno-format-security
 
 ifeq ($(TARGET_OS),SYSBIOS)
-$(_MODULE)_COPT += -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A15F -DCGT_GCC -c -mcpu=cortex-a15 -g -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame  -ffunction-sections -fdata-sections 
+$(_MODULE)_COPT += -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A15F -DCGT_GCC -c -mcpu=cortex-a15 -g -mfpu=neon -mfloat-abi=hard -mabi=aapcs -mapcs-frame  -ffunction-sections -fdata-sections
 $(_MODULE)_COPT += -Wno-unknown-pragmas -Wno-missing-braces -Wno-format -Wno-unused-variable
 endif
 
@@ -114,7 +114,7 @@ endif
 
 ifeq ($(TARGET_BUILD),production)
 # Remove all symbols.
-$(_MODULE)_LOPT += -s 
+$(_MODULE)_LOPT += -s
 endif
 
 ifeq ($(TARGET_FAMILY),ARM)
@@ -134,7 +134,7 @@ endif
 
 ifeq ($(HOST_CPU),$(TARGET_CPU))
 $(_MODULE)_COPT += -march=native -pthread
-else ifeq ($(TARGET_CPU),X86)
+else ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
 $(_MODULE)_COPT += -march=native -pthread
 else ifeq ($(TARGET_CPU),M3)
 $(_MODULE)_COPT += -mcpu=cortex-m3
@@ -188,7 +188,7 @@ endif
 
 $(_MODULE)_LN_DSO     := $(LINK) $($(_MODULE)_BIN).$($(_MODULE)_VERSION) $($(_MODULE)_BIN)
 $(_MODULE)_LN_INST_DSO:= $(LINK) $($(_MODULE)_INSTALL_LIB)/$($(_MODULE)_OUT).$($(_MODULE)_VERSION) $($(_MODULE)_INSTALL_LIB)/$($(_MODULE)_OUT)
-$(_MODULE)_LINK_LIB   := $(AR) -rsc $($(_MODULE)_LIB) $($(_MODULE)_OBJS) 
+$(_MODULE)_LINK_LIB   := $(AR) -rsc $($(_MODULE)_LIB) $($(_MODULE)_OBJS)
 
 ifeq ($(HOST_OS),DARWIN)
 $(_MODULE)_LINK_DSO   := $(LD) -shared $($(_MODULE)_LDFLAGS) -all_load $($(_MODULE)_LIBRARIES) -lm -o $($(_MODULE)_BIN).$($(_MODULE)_VERSION) $($(_MODULE)_OBJS)
