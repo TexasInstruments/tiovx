@@ -64,15 +64,15 @@
 #include <TI/tda4x.h>
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
+                                      vx_array             configuration,
                                       vx_image             input,
                                       vx_convolution       conv,
-                                      vx_array             configuration,
                                       vx_image             output)
 {
     vx_reference prms[] = {
+            (vx_reference)configuration,
             (vx_reference)input,
             (vx_reference)conv,
-            (vx_reference)configuration,
             (vx_reference)output
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
@@ -83,15 +83,15 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
+                                      vx_array             configuration,
                                       vx_image             input,
                                       vx_array             sigmas,
-                                      vx_array             configuration,
                                       vx_image             output)
 {
     vx_reference prms[] = {
+            (vx_reference)configuration,
             (vx_reference)input,
             (vx_reference)sigmas,
-            (vx_reference)configuration,
             (vx_reference)output
     };
     vx_node node = tivxCreateNodeByKernelEnum(graph,
@@ -102,16 +102,16 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
+                                      vx_array             configuration,
                                       vx_image             left,
                                       vx_image             right,
-                                      vx_array             configuration,
                                       vx_image             output,
                                       vx_distribution      confidence_histogram)
 {
     vx_reference prms[] = {
+            (vx_reference)configuration,
             (vx_reference)left,
             (vx_reference)right,
-            (vx_reference)configuration,
             (vx_reference)output,
             (vx_reference)confidence_histogram
     };

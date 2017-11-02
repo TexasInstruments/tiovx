@@ -99,9 +99,9 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
+        array_0 = (vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
         img[1U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-        array_0 = (vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         img[2U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         distribution_1 = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
 
@@ -268,27 +268,27 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
-            );
-            index++;
-        }
-        if (status == VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                        index,
-                        VX_INPUT,
-                        VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
-            );
-            index++;
-        }
-        if (status == VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                        index,
-                        VX_INPUT,
                         VX_TYPE_ARRAY,
+                        VX_PARAMETER_STATE_REQUIRED
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_REQUIRED
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_IMAGE,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;

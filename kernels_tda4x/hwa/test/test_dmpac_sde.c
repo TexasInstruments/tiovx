@@ -93,7 +93,7 @@ TEST(tivxHwaDmpacSde, testNodeCreation)
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, left_image, right_image, param_array, dst_image, NULL), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_array, left_image, right_image, dst_image, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
 
@@ -228,7 +228,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, left_image, right_image, param_array, dst_image, histogram), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_array, left_image, right_image, dst_image, histogram), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
 

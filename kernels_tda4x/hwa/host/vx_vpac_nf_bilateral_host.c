@@ -99,21 +99,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     
     if (VX_SUCCESS == status)
     {
+        array_1 = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
         img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
         array_0 = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
-        array_1 = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
         img[1U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
-        
+
     }
-    if (VX_SUCCESS == status)
-    {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
-            sizeof(fmt[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
-    }
-    
     if (VX_SUCCESS == status)
     {
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
@@ -123,11 +114,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
     
     if (VX_SUCCESS == status)
     {
+        /* Get the image width/height and format */
+        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
+            sizeof(fmt[0U]));
+        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
+        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+    }
+
+    if (VX_SUCCESS == status)
+    {
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
         status |= vxQueryArray(array_1, VX_ARRAY_CAPACITY, &capacity_1, sizeof(capacity_1));
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMSIZE, &item_size_1, sizeof(item_size_1));
     }
-    
+
     if (VX_SUCCESS == status)
     {
         /* Get the image width/height and format */
@@ -244,7 +244,7 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_IMAGE,
+                        VX_TYPE_ARRAY,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -254,7 +254,7 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_IMAGE,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;

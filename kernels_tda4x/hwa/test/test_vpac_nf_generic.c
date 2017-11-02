@@ -90,7 +90,7 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, src_image, convolution, param_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_array, src_image, convolution, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 
@@ -332,7 +332,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, src_image, convolution, param_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_array, src_image, convolution, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 

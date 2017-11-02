@@ -101,7 +101,7 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, src_image, sigma_array, param_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_array, src_image, sigma_array, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 
@@ -242,7 +242,7 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, src_image, sigma_array, param_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_array, src_image, sigma_array, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 

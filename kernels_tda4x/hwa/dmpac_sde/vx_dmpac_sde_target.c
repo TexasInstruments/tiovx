@@ -111,16 +111,16 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    tivx_obj_desc_array_t *configuration_desc;
     tivx_obj_desc_image_t *left_desc;
     tivx_obj_desc_image_t *right_desc;
-    tivx_obj_desc_array_t *configuration_desc;
     tivx_obj_desc_image_t *output_desc;
     tivx_obj_desc_distribution_t *confidence_histogram_desc;
     
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
@@ -131,9 +131,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         uint32_t size;
         tivxDmpacSdeParams *prms = NULL;
 
+        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         left_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
         right_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
 
@@ -236,9 +236,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     vx_status status = VX_SUCCESS;
     
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
@@ -393,9 +393,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
     vx_status status = VX_SUCCESS;
 
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
     )
     {
