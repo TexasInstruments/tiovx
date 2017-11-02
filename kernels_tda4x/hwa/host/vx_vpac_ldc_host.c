@@ -175,7 +175,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     {
         status |= vxQueryArray(array_5, VX_ARRAY_ITEMTYPE, &item_type_5, sizeof(item_type_5));
         status |= vxQueryArray(array_5, VX_ARRAY_CAPACITY, &capacity_5, sizeof(capacity_5));
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_5, sizeof(item_size_5));
+        status |= vxQueryArray(array_5, VX_ARRAY_ITEMSIZE, &item_size_5, sizeof(item_size_5));
     }
 
     if ((VX_SUCCESS == status) && (NULL != img[1U]))

@@ -72,7 +72,7 @@ extern "C" {
 /*! \brief [Graph] Creates a VPAC_NF_GENERIC Node.
  * \param [in] graph The reference to the graph.
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.
+ * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.  Scale value is ignored.  Coefficients are 9-bit signed.
  * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_nf_common_params_t</tt>.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC</tt>
