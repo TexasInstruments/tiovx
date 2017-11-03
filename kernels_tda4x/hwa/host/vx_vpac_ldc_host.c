@@ -131,14 +131,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     }
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
+        status = vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
         status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
         status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
     }
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
+        status = vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
         status |= vxQueryArray(array_1, VX_ARRAY_CAPACITY, &capacity_1, sizeof(capacity_1));
         status |= vxQueryArray(array_1, VX_ARRAY_ITEMSIZE, &item_size_1, sizeof(item_size_1));
     }
@@ -162,18 +162,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     if ((VX_SUCCESS == status) && (NULL != lut_3))
     {
         status = vxQueryLUT(lut_3, VX_LUT_TYPE, &lut_type_3, sizeof(lut_type_3));
-        status = vxQueryLUT(lut_3, VX_LUT_COUNT, &lut_count_3, sizeof(lut_count_3));
+        status |= vxQueryLUT(lut_3, VX_LUT_COUNT, &lut_count_3, sizeof(lut_count_3));
     }
 
     if ((VX_SUCCESS == status) && (NULL != lut_4))
     {
         status = vxQueryLUT(lut_4, VX_LUT_TYPE, &lut_type_4, sizeof(lut_type_4));
-        status = vxQueryLUT(lut_4, VX_LUT_COUNT, &lut_count_4, sizeof(lut_count_4));
+        status |= vxQueryLUT(lut_4, VX_LUT_COUNT, &lut_count_4, sizeof(lut_count_4));
     }
 
     if ((VX_SUCCESS == status) && (NULL != array_5))
     {
-        status |= vxQueryArray(array_5, VX_ARRAY_ITEMTYPE, &item_type_5, sizeof(item_type_5));
+        status = vxQueryArray(array_5, VX_ARRAY_ITEMTYPE, &item_type_5, sizeof(item_type_5));
         status |= vxQueryArray(array_5, VX_ARRAY_CAPACITY, &capacity_5, sizeof(capacity_5));
         status |= vxQueryArray(array_5, VX_ARRAY_ITEMSIZE, &item_size_5, sizeof(item_size_5));
     }
@@ -249,6 +249,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_ldc_params_t \n");
         }
     }
+
     if (VX_SUCCESS == status)
     {
         if( (item_size_1 != sizeof(tivx_vpac_ldc_region_params_t)) &&

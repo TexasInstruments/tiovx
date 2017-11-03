@@ -108,6 +108,13 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     }
     if (VX_SUCCESS == status)
     {
+        status = vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
+        status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
+        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
+    }
+
+    if (VX_SUCCESS == status)
+    {
         /* Get the image width/height and format */
         status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
             sizeof(fmt[0U]));
@@ -126,13 +133,6 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
-    }
-
-    if (VX_SUCCESS == status)
-    {
         /* Get the image width/height and format */
         status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
             sizeof(fmt[2U]));
@@ -142,9 +142,21 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
 
     if ((VX_SUCCESS == status) && (NULL != distribution_1))
     {
-        status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_BINS, &numBins_1, sizeof(numBins_1));
+        status = vxQueryDistribution(distribution_1, VX_DISTRIBUTION_BINS, &numBins_1, sizeof(numBins_1));
         status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_RANGE, &range_1, sizeof(range_1));
         status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_OFFSET, &offset_1, sizeof(offset_1));
+    }
+
+
+    /* PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if ( item_size_0 != sizeof(tivx_dmpac_sde_params_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a array of type:\n tivx_dmpac_sde_params_t \n");
+        }
     }
 
     if (VX_SUCCESS == status)
@@ -172,16 +184,6 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         status = tivxKernelValidatePossibleFormat(fmt[2U], VX_DF_IMAGE_S16);
-    }
-
-    /* Check size of configuration data structure (array) */
-    if (VX_SUCCESS == status)
-    {
-        if( item_size_0 != sizeof(tivx_dmpac_sde_params_t))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_dmpac_sde_params_t \n");
-        }
     }
 
     if (VX_SUCCESS == status)

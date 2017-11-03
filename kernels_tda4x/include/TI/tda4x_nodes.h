@@ -194,6 +194,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
  *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
  * \param [out] confidence_histogram   (optional) Confidence histogram.
  *                                                Distribution meta properties, num_bins = 16, offset = 0, range = 16.
+ * \see <tt>TIVX_KERNEL_DMPAC_DOF</tt>
+ * \ingroup group_vision_function_dmpac_dof
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
