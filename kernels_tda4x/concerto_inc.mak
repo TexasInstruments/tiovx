@@ -29,6 +29,10 @@ LDIRS+=$(DMPAC_DOF_PATH)/build/extra/opencv/sources/3rdparty/lib
 LDIRS+=$(DMPAC_DOF_PATH)/build/extra/opencv/sources/lib
 endif
 
+ifeq ($(BUILD_HWA_VPAC_MSC),yes)
+STATIC_LIBS += vx_target_kernels_vpac_msc vx_vxu
+STATIC_LIBS += scalar
+endif
 STATIC_LIBS += vx_conformance_engine
 STATIC_LIBS += dl
 

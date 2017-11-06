@@ -134,6 +134,9 @@ void hwaLoadKernels(vx_context context)
         #ifdef BUILD_HWA_DMPAC_DOF
         tivxRegisterHWATargetDmpacDofKernels();
         #endif
+        #ifdef BUILD_HWA_VPAC_MSC
+        tivxRegisterHWATargetVpacMscKernels();
+        #endif
         tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
 
         gIsHwaKernelsLoad = 1U;
@@ -161,6 +164,10 @@ void hwaUnLoadKernels(vx_context context)
         #ifdef BUILD_HWA_DMPAC_DOF
         tivxUnRegisterHWATargetDmpacDofKernels();
         #endif
+        #ifdef BUILD_HWA_VPAC_MSC
+        tivxUnRegisterHWATargetVpacMscKernels();
+        #endif
+
         gIsHwaKernelsLoad = 0U;
     }
 }

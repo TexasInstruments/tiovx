@@ -60,10 +60,11 @@
  *
  */
 
-#if 1
+#if 0
 TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacLdc)
 #endif
+TESTCASE(tivxHwaVpacMscGaussianPyramid)
 
