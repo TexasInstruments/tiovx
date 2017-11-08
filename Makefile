@@ -35,6 +35,7 @@ DIRECTORIES += source/vxu
 DIRECTORIES += kernels
 DIRECTORIES += utils
 DIRECTORIES += $(CUSTOM_KERNEL_PATH)
+DIRECTORIES += $(CUSTOM_APPLICATION_PATH)
 
 ifeq ($(BUILD_TUTORIAL),yes)
 DIRECTORIES += conformance_tests/test_engine

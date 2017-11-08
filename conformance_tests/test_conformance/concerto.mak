@@ -1,4 +1,4 @@
-# 
+#
 
 # Copyright (c) 2012-2017 The Khronos Group Inc.
 #
@@ -23,6 +23,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
 IDIRS       += $(HOST_ROOT)/kernels
 IDIRS       += $(CUSTOM_KERNEL_PATH)
+IDIRS       += $(CUSTOM_APPLICATION_PATH)
 CFLAGS      += -DHAVE_VERSION_INC
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
@@ -35,19 +36,19 @@ endif
 ifeq ($(HOST_COMPILER),GCC)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-format-security
 endif
 
 ifeq ($(HOST_COMPILER),GCC_LINUX)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-format-security
 endif
 
 ifeq ($(HOST_COMPILER),GCC_LINARO)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security 
+CFLAGS += -Wno-format-security
 endif
 
 ifeq ($(HOST_COMPILER),GCC_WINDOWS)

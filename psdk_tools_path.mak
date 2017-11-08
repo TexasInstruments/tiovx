@@ -20,6 +20,10 @@ ifneq ($(CUSTOM_KERNEL_PATH),)
 include $(CUSTOM_KERNEL_PATH)/custom_tools_path.mak
 endif
 
+ifneq ($(CUSTOM_APPLICATION_PATH),)
+include $(CUSTOM_APPLICATION_PATH)/custom_tools_path.mak
+endif
+
 XDC_PATH := $(PRSDK_PATH)/xdctools_3_32_01_22_core/
 TIARMCGT_ROOT := $(PRSDK_PATH)/ti-cgt-arm_16.9.2.LTS
 

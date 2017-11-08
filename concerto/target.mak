@@ -13,7 +13,9 @@
 # limitations under the License.
 
 
-OVX_INC=$(HOST_ROOT)/include $(HOST_ROOT)/kernels/include $(CUSTOM_KERNEL_PATH)/include
+
+OVX_INC=$(HOST_ROOT)/include $(HOST_ROOT)/kernels/include $(CUSTOM_KERNEL_PATH)/include $(CUSTOM_APPLICATION_PATH)/kernels
+
 
 ifeq ($(BUILD_DEBUG),1)
 $(info TI_TOOLS_ROOT=$(TI_TOOLS_ROOT))

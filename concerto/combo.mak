@@ -48,7 +48,7 @@ endif
 
 # If the user is building for a remote core, they should set this variable
 ifeq ($(HOST_PLATFORM),$(TARGET_PLATFORM))
-# If the user supplied zero as the number of cores, we try to auto-detect on HOST. 
+# If the user supplied zero as the number of cores, we try to auto-detect on HOST.
 ifeq ($(TARGET_OS),Windows_NT)
 $(if $(filter 0,$(TARGET_NUM_CORES)),$(eval TARGET_NUM_CORES=$(NUMBER_OF_PROCESSORS)))
 else
@@ -104,6 +104,10 @@ endif
 ifneq ($(CUSTOM_KERNEL_PATH),)
 $(TARGET_COMBO_NAME)_DEFS += CUSTOM_KERNEL_PATH
 endif
+ifneq ($(CUSTOM_APPLICATION_PATH),)
+$(TARGET_COMBO_NAME)_DEFS += CUSTOM_APPLICATION_PATH
+endif
+
 
 ifeq ($(BUILD_TUTORIAL),yes)
 $(TARGET_COMBO_NAME)_DEFS += BUILD_TUTORIAL
@@ -154,7 +158,7 @@ endif
 
 include $(TARGET_MAKEFILES)
 
-# Define a rule to take care of libraries that are actual "system" libraries and 
+# Define a rule to take care of libraries that are actual "system" libraries and
 # are not present in the build, they will look like TDIR libraries.
 $(addprefix $(TARGET_OUT)/%,.so .dll .a .lib)::
 	@echo Required system library $(notdir $@)
