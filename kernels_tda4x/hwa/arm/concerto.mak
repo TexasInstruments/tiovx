@@ -1,5 +1,5 @@
 include $(PRELUDE)
-TARGET      := vx_target_kernels_arm
+TARGET      := vx_target_kernels_tda4x_arm
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include

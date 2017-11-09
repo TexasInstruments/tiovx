@@ -29,7 +29,8 @@ STATIC_LIBS += bl_filter_lib
 endif
 
 STATIC_LIBS += vx_vxu
-STATIC_LIBS += vx_target_kernels_arm
+STATIC_LIBS += vx_target_kernels_tda4x_arm
+STATIC_LIBS += vx_utils
 
 STATIC_LIBS += vx_conformance_engine
 STATIC_LIBS += dl png

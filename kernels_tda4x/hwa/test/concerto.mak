@@ -3,7 +3,7 @@ TARGET      := vx_kernels_hwa_tests
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
-IDIRS       += $(HOST_ROOT)/source/include
+IDIRS       += $(HOST_ROOT)/utils/include
 
 ifeq ($(HOST_COMPILER),GCC_LINUX)
 CFLAGS += -Wno-unused-function
