@@ -164,7 +164,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
     }
 }
 
-void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, uint32_t dst32[])
+void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, int32_t *dst32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */

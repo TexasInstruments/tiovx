@@ -65,25 +65,71 @@
 #include <TI/tda4x.h>
 #include "test_engine/test.h"
 #include <string.h>
+#include "png_rd_wr.h"
 
 TESTCASE(tivxHwaDmpacDof, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxHwaDmpacDof, testNodeCreation)
+#define MAX_ABS_FILENAME   (1024u)
+
+static void make_filename(char *abs_filename, char *filename_prefix, uint32_t level)
+{
+    snprintf(abs_filename, MAX_ABS_FILENAME, "%s/%s%d.png",
+        ct_get_test_file_path(), filename_prefix, level);
+}
+
+static vx_status load_image_into_pyramid_level(vx_pyramid pyr, uint32_t level, char *filename_prefix)
+{
+    char filename[MAX_ABS_FILENAME];
+    vx_image image;
+    vx_status status;
+
+    make_filename(filename, filename_prefix, level);
+    image = vxGetPyramidLevel(pyr, level);
+    status = load_vximage_from_pngfile(image, filename, vx_false_e);
+    vxReleaseImage(&image);
+    return status;
+}
+
+static vx_status save_image_from_dof(vx_image flow_vector_img, vx_image confidence_img, char *filename_prefix)
+{
+    char filename[MAX_ABS_FILENAME];
+    vx_status status;
+
+    snprintf(filename, MAX_ABS_FILENAME, "%s/%s_flow_img.png",
+        ct_get_test_file_path(), filename_prefix);
+
+    status = save_vximage_to_pngfile(filename, flow_vector_img);
+    if(status == VX_SUCCESS)
+    {
+        snprintf(filename, MAX_ABS_FILENAME, "%s/%s_confidence_img.png",
+            ct_get_test_file_path(), filename_prefix);
+
+        status = save_vximage_to_pngfile(filename, confidence_img);
+    }
+
+    return status;
+}
+
+
+TEST(tivxHwaDmpacDof, testGraphProcessing)
 {
     vx_context context = context_->vx_context_;
     vx_pyramid input_current = NULL, input_reference = NULL;
     vx_image flow_vector_in = NULL, flow_vector_out = NULL;
+    vx_image flow_vector_out_img = NULL, confidence_img = NULL;
     vx_distribution confidence_histogram = NULL;
     tivx_dmpac_dof_params_t params;
     vx_enum params_type = VX_TYPE_INVALID;
     vx_array param_array = NULL;
     vx_graph graph = 0;
-    vx_node node = 0;
+    vx_node node_dof = 0;
+    vx_node node_dof_vis = 0;
+    vx_status status;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
     {
-        uint32_t width = 256, height = 256;
-        uint32_t levels = 2;
+        uint32_t width = 256, height = 128;
+        uint32_t levels = 2, i;
         vx_enum format = VX_DF_IMAGE_U8;
 
         hwaLoadKernels(context);
@@ -108,9 +154,12 @@ TEST(tivxHwaDmpacDof, testNodeCreation)
         ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
 
+        ASSERT_VX_OBJECT(flow_vector_out_img = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(confidence_img = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxDmpacDofNode(graph,
+        ASSERT_VX_OBJECT(node_dof = tivxDmpacDofNode(graph,
                         param_array,
                         input_current,
                         input_reference,
@@ -118,13 +167,30 @@ TEST(tivxHwaDmpacDof, testNodeCreation)
                         NULL,
                         flow_vector_out,
                         confidence_histogram), VX_TYPE_NODE);
+        VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
+        ASSERT_VX_OBJECT(node_dof_vis = tivxDofVisualizeNode(graph,
+                        flow_vector_out,
+                        flow_vector_out_img,
+                        confidence_img), VX_TYPE_NODE);
+        VX_CALL(vxSetNodeTarget(node_dof_vis, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
         VX_CALL(vxVerifyGraph(graph));
+
+        for(i=0; i<levels; i++)
+        {
+            status = load_image_into_pyramid_level(input_current, i, "dofTestCase1_10_pl");
+            ASSERT(status==VX_SUCCESS);
+            status = load_image_into_pyramid_level(input_reference, i, "dofTestCase1_11_pl");
+            ASSERT(status==VX_SUCCESS);
+        }
         VX_CALL(vxProcessGraph(graph));
 
-        VX_CALL(vxReleaseNode(&node));
+        status = save_image_from_dof(flow_vector_out_img, confidence_img, "dofTestCase1");
+        ASSERT(status==VX_SUCCESS);
+
+        VX_CALL(vxReleaseNode(&node_dof));
+        VX_CALL(vxReleaseNode(&node_dof_vis));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleasePyramid(&input_current));
         VX_CALL(vxReleasePyramid(&input_reference));
@@ -133,7 +199,11 @@ TEST(tivxHwaDmpacDof, testNodeCreation)
         VX_CALL(vxReleaseDistribution(&confidence_histogram));
         VX_CALL(vxReleaseArray(&param_array));
 
-        ASSERT(node == 0);
+        VX_CALL(vxReleaseImage(&flow_vector_out_img));
+        VX_CALL(vxReleaseImage(&confidence_img));
+
+        ASSERT(node_dof == 0);
+        ASSERT(node_dof_vis == 0);
         ASSERT(graph == 0);
         ASSERT(input_current == 0);
         ASSERT(input_reference == 0);
@@ -142,23 +212,10 @@ TEST(tivxHwaDmpacDof, testNodeCreation)
         ASSERT(confidence_histogram == 0);
         ASSERT(param_array == 0);
 
-
         hwaUnLoadKernels(context);
     }
 }
 
-TEST(tivxHwaDmpacDof, testGraphProcessing)
-{
-    vx_context context = context_->vx_context_;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
-    {
-        hwaLoadKernels(context);
-
-
-        hwaUnLoadKernels(context);
-    }
-}
-
-TESTCASE_TESTS(tivxHwaDmpacDof, testNodeCreation, testGraphProcessing)
+TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing)
 

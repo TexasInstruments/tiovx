@@ -340,7 +340,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         /* kernel processing function complete */
 
         /* copy output */
-        lse_reformat_in_dof(flow_vector_out_desc, prms->current_prediction);
+        lse_reformat_out_dof(flow_vector_out_desc, flow_vector_out_desc, prms->current_prediction);
         if(confidence_histogram_desc!=NULL)
         {
             uint32_t *confidence_histogram = confidence_histogram_desc->mem_ptr.target_ptr;

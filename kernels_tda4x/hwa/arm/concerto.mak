@@ -1,8 +1,10 @@
 include $(PRELUDE)
-TARGET      := vx_kernels_hwa
+TARGET      := vx_target_kernels_arm
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
+IDIRS       += $(HOST_ROOT)/kernels/include
+IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(DMPAC_DOF_PATH)/modules/src/algo/libDOF
 
 ifeq ($(BUILD_HWA_VPAC_NF),yes)

@@ -122,6 +122,10 @@ enum tivx_kernel_hwa_e {
      * \see group_vision_function_hwa
      */
     TIVX_KERNEL_DMPAC_DOF = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 4,
+    /*! \brief The dof_visualize kernel
+     * \see group_vision_function_hwa
+     */
+    TIVX_KERNEL_DOF_VISUALIZE = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 5,
     TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 

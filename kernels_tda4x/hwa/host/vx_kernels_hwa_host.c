@@ -75,12 +75,14 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context);
 vx_status tivxAddKernelDmpacSde(vx_context context);
 vx_status tivxAddKernelVpacLdc(vx_context context);
 vx_status tivxAddKernelDmpacDof(vx_context context);
+vx_status tivxAddKernelDofVisualize(vx_context context);
 
 vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
 vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
 vx_status tivxRemoveKernelDmpacSde(vx_context context);
 vx_status tivxRemoveKernelVpacLdc(vx_context context);
 vx_status tivxRemoveKernelDmpacDof(vx_context context);
+vx_status tivxRemoveKernelDofVisualize(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelVpacNfGeneric, tivxRemoveKernelVpacNfGeneric},
@@ -88,6 +90,7 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelDmpacSde, tivxRemoveKernelDmpacSde},
     {tivxAddKernelVpacLdc, tivxRemoveKernelVpacLdc},
     {tivxAddKernelDmpacDof, tivxRemoveKernelDmpacDof},
+    {tivxAddKernelDofVisualize, tivxRemoveKernelDofVisualize},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -137,6 +140,8 @@ void hwaLoadKernels(vx_context context)
         #ifdef BUILD_HWA_VPAC_MSC
         tivxRegisterHWATargetVpacMscKernels();
         #endif
+        tivxRegisterHWATargetArmKernels();
+
         tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
 
         gIsHwaKernelsLoad = 1U;
@@ -167,6 +172,7 @@ void hwaUnLoadKernels(vx_context context)
         #ifdef BUILD_HWA_VPAC_MSC
         tivxUnRegisterHWATargetVpacMscKernels();
         #endif
+        tivxUnRegisterHWATargetArmKernels();
 
         gIsHwaKernelsLoad = 0U;
     }

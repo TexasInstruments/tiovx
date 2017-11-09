@@ -186,3 +186,20 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
+                                      vx_image             flow_vector,
+                                      vx_image             flow_vector_rgb,
+                                      vx_image             confidence_image)
+{
+    vx_reference prms[] = {
+            (vx_reference)flow_vector,
+            (vx_reference)flow_vector_rgb,
+            (vx_reference)confidence_image
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_DOF_VISUALIZE,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
