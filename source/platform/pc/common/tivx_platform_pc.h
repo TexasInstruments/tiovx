@@ -97,6 +97,15 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for CPU1 */
     TIVX_TARGET_ID_CPU1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 0),
 
+    /*! \brief target ID for CPU2 */
+    TIVX_TARGET_ID_CPU2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 1),
+
+    /*! \brief target ID for CPU3 */
+    TIVX_TARGET_ID_CPU3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 2),
+
+    /*! \brief target ID for CPU2 */
+    TIVX_TARGET_ID_CPU4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_DSP1, 3),
+
 } tivx_target_id_e;
 
 
@@ -118,16 +127,16 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_IPU2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_A15_0, TIVX_TARGET_ID_CPU1},                                  \
     {TIVX_TARGET_HOST, TIVX_TARGET_ID_CPU1},                                   \
-    {TIVX_TARGET_RESV00, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV01, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV02, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV03, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV04, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV05, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV06, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV07, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV08, TIVX_TARGET_ID_CPU1},                                 \
-    {TIVX_TARGET_RESV09, TIVX_TARGET_ID_CPU1}                                 \
+    {TIVX_TARGET_RESV00, TIVX_TARGET_ID_CPU2},                                 \
+    {TIVX_TARGET_RESV01, TIVX_TARGET_ID_CPU2},                                 \
+    {TIVX_TARGET_RESV02, TIVX_TARGET_ID_CPU3},                                 \
+    {TIVX_TARGET_RESV03, TIVX_TARGET_ID_CPU2},                                 \
+    {TIVX_TARGET_RESV04, TIVX_TARGET_ID_CPU3},                                 \
+    {TIVX_TARGET_RESV05, TIVX_TARGET_ID_CPU2},                                 \
+    {TIVX_TARGET_RESV06, TIVX_TARGET_ID_CPU2},                                 \
+    {TIVX_TARGET_RESV07, TIVX_TARGET_ID_CPU2},                                 \
+    {TIVX_TARGET_RESV08, TIVX_TARGET_ID_CPU3},                                 \
+    {TIVX_TARGET_RESV09, TIVX_TARGET_ID_CPU2}                                 \
 }
 
 

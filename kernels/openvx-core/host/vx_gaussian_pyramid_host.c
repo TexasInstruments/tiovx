@@ -354,6 +354,7 @@ vx_status tivxAddKernelGaussianPyramid(vx_context context)
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV03);
         }
 
         if ( status == VX_SUCCESS)

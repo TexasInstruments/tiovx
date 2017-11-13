@@ -100,9 +100,15 @@ static void tivxTargetDeleteTargetId(vx_enum target_id)
 void tivxPlatformCreateTargets(void)
 {
     tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU1);
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU2);
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU3);
+    tivxTargetCreateTargetId(TIVX_TARGET_ID_CPU4);
 }
 
 void tivxPlatformDeleteTargets(void)
 {
     tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU1);
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU2);
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU3);
+    tivxTargetDeleteTargetId(TIVX_TARGET_ID_CPU4);
 }
