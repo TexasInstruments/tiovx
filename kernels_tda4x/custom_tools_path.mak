@@ -3,17 +3,13 @@
 # used to overwrite environment variables from the psdk_tools_path.mak
 # and vsdk_tools_path.mak files from the tiovx directory.
 
-BL_FILTER_PATH ?= /home/a0323847local/gitrepo/bl_filter
-SDE_PATH ?= /home/a0323847local/gitrepo/tda4x_cmodels/sde_tiovx_dv
-VPAC_LDC_PATH ?= /home/a0323847local/gitrepo/tda4x_cmodels/ldc/vpac_ldc
-DMPAC_DOF_PATH ?= /home/kedarc/code/tda4x_cmodels/dof/tidofimulator1.6.5.alpha
-VPAC_MSC_PATH ?= /home/a0323847local/gitrepo/tda4x_cmodels/multi_scaler/
+TDA4x_C_MODELS_PATH ?= $(CUSTOM_KERNEL_PATH)/../tda4x_c_models/
 
 # set values of below to yes or no to include or exclude the modules from compile and link
-BUILD_HWA_VPAC_LDC=no
-BUILD_HWA_VPAC_NF=no
-BUILD_HWA_VPAC_MSC=no
+BUILD_HWA_VPAC_LDC=yes
+BUILD_HWA_VPAC_NF=yes
+BUILD_HWA_VPAC_MSC=yes
 BUILD_HWA_VPAC_VISS=no
-BUILD_HWA_DMPAC_SDE=no
+BUILD_HWA_DMPAC_SDE=yes
 BUILD_HWA_DMPAC_DOF=yes
 

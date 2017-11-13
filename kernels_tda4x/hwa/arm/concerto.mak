@@ -5,7 +5,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
-IDIRS       += $(DMPAC_DOF_PATH)/modules/src/algo/libDOF
+IDIRS       += $(TDA4x_C_MODELS_PATH)/include
 
 ifeq ($(BUILD_HWA_VPAC_NF),yes)
 DEFS += BUILD_HWA_VPAC_NF

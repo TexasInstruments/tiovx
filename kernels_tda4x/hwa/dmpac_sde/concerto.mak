@@ -7,7 +7,7 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
-IDIRS       += $(SDE_PATH)/include/lib
+IDIRS       += $(TDA4x_C_MODELS_PATH)/include
 IDIRS       += $(VXLIB_PATH)/packages
 DEFS        += TIOVX_SDE
 

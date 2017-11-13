@@ -7,7 +7,7 @@ TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
-IDIRS       += $(BL_FILTER_PATH)/bl_filter/src
+IDIRS       += $(TDA4x_C_MODELS_PATH)/include
 IDIRS       += $(VXLIB_PATH)/packages
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))

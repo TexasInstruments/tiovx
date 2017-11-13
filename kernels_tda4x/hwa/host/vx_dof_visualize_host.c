@@ -159,7 +159,6 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeInitialize(vx_node node,
             vx_uint32 num_params)
 {
     vx_status status = VX_SUCCESS;
-    tivxKernelValidRectParams prms;
 
     if (num_params != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS)
     {
