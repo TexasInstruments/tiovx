@@ -33,6 +33,7 @@ DIRECTORIES += source/platform
 DIRECTORIES += source/framework
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels
+DIRECTORIES += utils
 DIRECTORIES += $(CUSTOM_KERNEL_PATH)
 
 ifeq ($(BUILD_TUTORIAL),yes)
