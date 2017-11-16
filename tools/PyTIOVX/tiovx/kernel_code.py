@@ -65,16 +65,17 @@ from . import *
 from glob import glob
 
 class KernelExportCode :
-    def __init__(self, include_subpath="TI", include_filename="extvx", module="ext1", core="c66") :
+    def __init__(self, include_subpath="TI", include_filename="extvx", module="ext1", core="c66", env_var='CUSTOM_KERNEL_PATH') :
         self.company = include_subpath
         self.top_header_name = include_filename
         self.module = module
         self.core = core
+        self.env_var = env_var
 
-        self.workarea = os.environ.get('CUSTOM_KERNEL_PATH')
+        self.workarea = os.environ.get(self.env_var)
 
         if self.workarea == None :
-            sys.exit("ERROR: You must define CUSTOM_KERNEL_PATH environment variable as the root of the kernel workarea.");
+            sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
 
     def setCompanyDirectory(self, company) :
         self.company = company
@@ -91,16 +92,28 @@ class KernelExportCode :
     def create_all_directories(self):
         self.create_directory(self.workarea)
 
-        self.workarea_include = self.workarea + "/include"
+        if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            self.workarea_include = self.workarea + "/include"
+        else :
+            self.workarea_include = self.workarea + "/kernels/" + self.module + "/include"
+
         self.create_directory(self.workarea_include)
 
         self.workarea_include_company = self.workarea_include + "/" + self.company
         self.create_directory(self.workarea_include_company)
 
-        self.workarea_module = self.workarea + "/" + self.module
+        if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            self.workarea_module = self.workarea + "/" + self.module
+        else :
+            self.workarea_module = self.workarea + "/kernels/" + self.module
+
         self.create_directory(self.workarea_module)
 
-        self.workarea_module_include = self.workarea_module + "/include"
+        if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            self.workarea_module_include = self.workarea_module + "/include"
+        else :
+            self.workarea_module_include = self.workarea_module + "/host"
+
         self.create_directory(self.workarea_module_include)
 
         self.workarea_module_host = self.workarea_module + "/host"
@@ -595,7 +608,10 @@ class KernelExportCode :
         self.host_c_code = CodeGenerate(self.workarea_module_host + "/" + self.host_c_filename)
         self.host_c_code.write_include("TI/tivx.h")
         self.host_c_code.write_include(self.company + "/" + self.top_header_name + ".h")
-        self.host_c_code.write_include("tivx_" + self.module.lower() + "_kernels.h")
+        if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            self.host_c_code.write_include("tivx_" + self.module.lower() + "_kernels.h")
+        else :
+            self.host_c_code.write_include("tivx_" + self.module.lower() + "_kernels_priv.h")
         self.host_c_code.write_include(self.h_filename)
         self.host_c_code.write_include("TI/tivx_target_kernel.h")
         self.host_c_code.write_newline()
@@ -882,7 +898,10 @@ class KernelExportCode :
         self.target_c_code.write_include("TI/tivx.h")
         self.target_c_code.write_include(self.company + "/" + self.top_header_name + ".h")
         self.target_c_code.write_include("VX/vx.h")
-        self.target_c_code.write_include("tivx_" + self.module.lower()  + "_kernels.h")
+        if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            self.target_c_code.write_include("tivx_" + self.module.lower()  + "_kernels.h")
+        else :
+            self.target_c_code.write_include("tivx_" + self.module.lower()  + "_kernels_priv.h")
         self.target_c_code.write_include(self.h_filename)
         self.target_c_code.write_include("TI/tivx_target_kernel.h")
         self.target_c_code.write_include("tivx_kernels_target_utils.h")
@@ -1295,7 +1314,7 @@ class KernelExportCode :
         self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
         self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
 
-        self.target_c_code.write_newline()
+        self.bam_target_c_code.write_newline()
         self.generate_bam_target_c_process_func_code()
         self.generate_bam_target_c_create_func_code()
         self.generate_bam_target_c_delete_func_code()
@@ -1315,7 +1334,10 @@ class KernelExportCode :
             self.concerto_inc_code.write_line("# several concerto.mak files which depend on kernel libraries.")
             self.concerto_inc_code.write_newline()
             self.concerto_inc_code.write_line("STATIC_LIBS += vx_kernels_" + self.module + "_tests " + "vx_kernels_" + self.module)
-            self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core)
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core)
+            else:
+                self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core)
             self.concerto_inc_code.write_line("STATIC_LIBS += vx_conformance_engine")
             self.concerto_inc_code.write_line("# < DEVELOPER_TODO: Add any additional dependent libraries >")
             self.concerto_inc_code.close()
@@ -1340,7 +1362,10 @@ class KernelExportCode :
             self.module_host_concerto_code.write_line("TARGET      := vx_kernels_" + self.module)
             self.module_host_concerto_code.write_line("TARGETTYPE  := library")
             self.module_host_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
-            self.module_host_concerto_code.write_line("IDIRS       += $(CUSTOM_KERNEL_PATH)/" + self.module + "/include")
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.module_host_concerto_code.write_line("IDIRS       += $("+self.env_var+")/" + self.module + "/include")
+            else:
+                self.module_host_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/include")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
             self.module_host_concerto_code.write_line("SKIPBUILD=1")
@@ -1366,10 +1391,17 @@ class KernelExportCode :
             print("Creating " + self.module_target_concerto_filename)
             self.module_target_concerto_code = CodeGenerate(self.module_target_concerto_filename, header=False)
             self.module_target_concerto_code.write_line("include $(PRELUDE)")
-            self.module_target_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.core)
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.module_target_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.core)
+            else:
+                self.module_target_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.module + "_" + self.core);
             self.module_target_concerto_code.write_line("TARGETTYPE  := library")
             self.module_target_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
-            self.module_target_concerto_code.write_line("IDIRS       += $(CUSTOM_KERNEL_PATH)/" + self.module + "/include")
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.module_target_concerto_code.write_line("IDIRS       += $("+self.env_var+")/" + self.module + "/include")
+            else:
+                self.module_target_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/include")
+                self.module_target_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/host")
             self.module_target_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
             self.module_target_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
             self.module_target_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom include paths using 'IDIRS' >")
@@ -1437,7 +1469,11 @@ class KernelExportCode :
             self.module_test_concerto_code.close()
 
     def generate_headers(self) :
-        self.include_custom_kernel_library_tests_filename = self.workarea_include + "/custom_kernel_library_tests.h"
+        if( self.env_var == 'CUSTOM_KERNEL_PATH' ) :
+            self.include_custom_kernel_library_tests_filename = self.workarea_include + "/custom_kernel_library_tests.h"
+        else :
+            self.include_custom_kernel_library_tests_filename = self.workarea + "/kernels" + "/custom_app_kernel_library_tests.h"
+
         if not os.path.exists(self.include_custom_kernel_library_tests_filename):
             print("Creating " + self.include_custom_kernel_library_tests_filename)
             self.include_custom_kernel_library_tests_code = CodeGenerate(self.include_custom_kernel_library_tests_filename)
@@ -1519,19 +1555,19 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to load the " + self.module + " kernels into the context.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("void " + self.module + "LoadKernels(vx_context context);")
+            self.include_customer_kernels_code.write_line("void " + toCamelCase(self.module) + "LoadKernels(vx_context context);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to unload the " + self.module + " kernels from the context.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("void " + self.module + "UnLoadKernels(vx_context context);")
+            self.include_customer_kernels_code.write_line("void " + toCamelCase(self.module) + "UnLoadKernels(vx_context context);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used to print the performance of the kernels.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("void " + self.module + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);")
+            self.include_customer_kernels_code.write_line("void " + toCamelCase(self.module) + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_extern_c_bottom()
             self.include_customer_kernels_code.write_endif(self.top_header_name.upper() + "_KERNELS_H_")
@@ -1567,7 +1603,10 @@ class KernelExportCode :
             self.include_customer_nodes_code.write_endif(self.top_header_name.upper() + "_NODES_H_")
             self.include_customer_nodes_code.close()
 
-        self.module_include_kernels_filename = self.workarea_module_include + "/tivx_" + self.module + "_kernels.h"
+        if self.env_var == 'CUSTOM_KERNEL_PATH':
+            self.module_include_kernels_filename = self.workarea_module_include + "/tivx_" + self.module + "_kernels.h"
+        else:
+            self.module_include_kernels_filename = self.workarea_module_include + "/tivx_" + self.module + "_kernels_priv.h"
         if not os.path.exists(self.module_include_kernels_filename):
             print("Creating " + self.module_include_kernels_filename)
             self.module_include_kernels_code = CodeGenerate(self.module_include_kernels_filename)
@@ -1585,25 +1624,25 @@ class KernelExportCode :
             self.module_include_kernels_code.write_line(" * \\brief Function to register " + self.module.upper() + " Kernels on the Host")
             self.module_include_kernels_code.write_line(" * \\ingroup group_tivx_ext")
             self.module_include_kernels_code.write_line(" */")
-            self.module_include_kernels_code.write_line("void tivxRegister" + self.module.upper() + "Kernels(void);")
+            self.module_include_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Kernels(void);")
             self.module_include_kernels_code.write_newline()
             self.module_include_kernels_code.write_line("/*!")
             self.module_include_kernels_code.write_line(" * \\brief Function to un-register " + self.module.upper() + " Kernels on the Host")
             self.module_include_kernels_code.write_line(" * \\ingroup group_tivx_ext")
             self.module_include_kernels_code.write_line(" */")
-            self.module_include_kernels_code.write_line("void tivxUnRegister" + self.module.upper() + "Kernels(void);")
+            self.module_include_kernels_code.write_line("void tivxUnRegister" + toCamelCase(self.module) + "Kernels(void);")
             self.module_include_kernels_code.write_newline()
             self.module_include_kernels_code.write_line("/*!")
             self.module_include_kernels_code.write_line(" * \\brief Function to register " + self.module.upper() + " Kernels on the " + self.core + " Target")
             self.module_include_kernels_code.write_line(" * \\ingroup group_tivx_ext")
             self.module_include_kernels_code.write_line(" */")
-            self.module_include_kernels_code.write_line("void tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels(void);")
+            self.module_include_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);")
             self.module_include_kernels_code.write_newline()
             self.module_include_kernels_code.write_line("/*!")
             self.module_include_kernels_code.write_line(" * \\brief Function to un-register " + self.module.upper() + " Kernels on the " + self.core + " Target")
             self.module_include_kernels_code.write_line(" * \\ingroup group_tivx_ext")
             self.module_include_kernels_code.write_line(" */")
-            self.module_include_kernels_code.write_line("void tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels(void);")
+            self.module_include_kernels_code.write_line("void tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);")
             self.module_include_kernels_code.write_newline()
             self.module_include_kernels_code.write_newline()
             self.module_include_kernels_code.write_extern_c_bottom()
@@ -1642,7 +1681,10 @@ class KernelExportCode :
             self.host_kernels_code = CodeGenerate(self.host_kernels_filename)
             self.host_kernels_code.write_line("#include <TI/tivx.h>")
             self.host_kernels_code.write_line("#include <" + self.company + "/" + self.top_header_name + ".h>")
-            self.host_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels.h\"")
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.host_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels.h\"")
+            else :
+                self.host_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels_priv.h\"")
             self.host_kernels_code.write_line("#include \"tivx_kernels_host_utils.h\"")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("static vx_status VX_CALLBACK publishKernels(vx_context context);")
@@ -1668,43 +1710,43 @@ class KernelExportCode :
             self.host_kernels_code.write_line("return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));")
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_newline()
-            self.host_kernels_code.write_line("void tivxRegister" + self.module.upper() + "Kernels(void)")
+            self.host_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Kernels(void)")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("tivxRegisterModule(TIVX_MODULE_NAME_" + self.module.upper() + ", publishKernels, unPublishKernels);")
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_newline()
-            self.host_kernels_code.write_line("void tivxUnRegister" + self.module.upper() + "Kernels(void)")
+            self.host_kernels_code.write_line("void tivxUnRegister" + toCamelCase(self.module) + "Kernels(void)")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("tivxUnRegisterModule(TIVX_MODULE_NAME_" + self.module.upper() + ");")
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_newline()
-            self.host_kernels_code.write_line("void " + self.module.lower() + "LoadKernels(vx_context context)")
+            self.host_kernels_code.write_line("void " + toCamelCase(self.module) + "LoadKernels(vx_context context)")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("if ((0 == gIs" + toCamelCase(self.module) + "KernelsLoad) && (NULL != context))")
             self.host_kernels_code.write_open_brace()
-            self.host_kernels_code.write_line("tivxRegister" + self.module.upper() + "Kernels();")
+            self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Kernels();")
             self.host_kernels_code.write_line("vxLoadKernels(context, TIVX_MODULE_NAME_" + self.module.upper() + ");")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("/* These three lines only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
             self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);")
-            self.host_kernels_code.write_line("tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();")
+            self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
             self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 1U;")
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_newline()
-            self.host_kernels_code.write_line("void " + self.module.lower() + "UnLoadKernels(vx_context context)")
+            self.host_kernels_code.write_line("void " + toCamelCase(self.module) + "UnLoadKernels(vx_context context)")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("if ((1u == gIs" + toCamelCase(self.module) + "KernelsLoad) && (NULL != context))")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("vxUnloadKernels(context, TIVX_MODULE_NAME_" + self.module.upper() + ");")
-            self.host_kernels_code.write_line("tivxUnRegister" + self.module.upper() + "Kernels();")
+            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Kernels();")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("/* This line only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
-            self.host_kernels_code.write_line("tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();")
+            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 0U;")
             self.host_kernels_code.write_close_brace()
@@ -1717,7 +1759,10 @@ class KernelExportCode :
             self.target_kernels_code = CodeGenerate(self.target_kernels_filename)
             self.target_kernels_code.write_line("#include <TI/tivx.h>")
             self.target_kernels_code.write_line("#include <TI/tivx_target_kernel.h>")
-            self.target_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels.h\"")
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.target_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels.h\"")
+            else :
+                self.target_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels_priv.h\"")
             self.target_kernels_code.write_line("#include \"tivx_kernels_target_utils.h\"")
             self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("void tivxAddTargetKernel" + self.kernel.name_camel + "();")
@@ -1728,12 +1773,12 @@ class KernelExportCode :
             self.target_kernels_code.write_line("    {tivxAddTargetKernel" + self.kernel.name_camel + ", tivxRemoveTargetKernel" + self.kernel.name_camel + "},")
             self.target_kernels_code.write_line("};")
             self.target_kernels_code.write_newline()
-            self.target_kernels_code.write_line("void tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels()")
+            self.target_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels()")
             self.target_kernels_code.write_open_brace()
             self.target_kernels_code.write_line("tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));")
             self.target_kernels_code.write_close_brace()
             self.target_kernels_code.write_newline()
-            self.target_kernels_code.write_line("void tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels()")
+            self.target_kernels_code.write_line("void tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels()")
             self.target_kernels_code.write_open_brace()
             self.target_kernels_code.write_line("tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));")
             self.target_kernels_code.write_close_brace()
@@ -1750,13 +1795,23 @@ class KernelExportCode :
 
     def modify_make_file(self) :
         print("Modifying " + self.concerto_inc_filename)
-        CodeModify().block_insert(self.concerto_inc_filename,
+        if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            CodeModify().block_insert(self.concerto_inc_filename,
                           "vx_kernels_" + self.module,
                           "DEVELOPER_TODO",
                           "vx_target_kernels_" + self.core,
                           "STATIC_LIBS \+= vx_conformance_engine",
                           "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_target_kernels_" + self.core + "\n")
+        else:
+            CodeModify().block_insert(self.concerto_inc_filename,
+                          "vx_kernels_" + self.module,
+                          "DEVELOPER_TODO",
+                          "vx_target_kernels_" + self.core,
+                          "STATIC_LIBS \+= vx_conformance_engine",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "\n")
+
 
     def modify_kernel_header_file(self) :
         print("Modifying " + self.include_customer_kernels_filename)
@@ -1824,22 +1879,22 @@ class KernelExportCode :
             r" * \\brief Used for the Application to load the " + self.module + " kernels into the context." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "void " + self.module + "LoadKernels(vx_context context);" + "\n" + "\n" +
+            "void " + toCamelCase(self.module) + "LoadKernels(vx_context context);" + "\n" + "\n" +
             "/*!" + "\n" +
             r" * \\brief Used for the Application to unload the " + self.module + " kernels from the context." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "void " + self.module + "UnLoadKernels(vx_context context);" + "\n" + "\n" +
+            "void " + toCamelCase(self.module) + "UnLoadKernels(vx_context context);" + "\n" + "\n" +
             "/*!" + "\n" +
             r" * \\brief Used to print the performance of the kernels." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "void " + self.module + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);" + "\n" + "\n"
+            "void " + toCamelCase(self.module) + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);" + "\n" + "\n"
             )
         CodeModify().block_insert(self.include_customer_kernels_filename,
                           "LoadKernels",
                           "#ifdef __cplusplus",
-                          "void " + self.module + "LoadKernels",
+                          "void " + toCamelCase(self.module) + "LoadKernels",
                           "#ifdef __cplusplus",
                           "#ifdef __cplusplus",
                           self.insert)
@@ -1932,16 +1987,16 @@ class KernelExportCode :
         self.insert += (r" * \\brief Function to register " + self.module.upper() + " Kernels on the " + self.core + " Target\n")
         self.insert += (r" * \\ingroup group_tivx_ext\n")
         self.insert += (r" */\n")
-        self.insert += (r"void tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels(void);\n\n")
+        self.insert += (r"void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);\n\n")
         self.insert += (r"/*!\n")
         self.insert += (r" * \\brief Function to un-register " + self.module.upper() + " Kernels on the " + self.core + " Target\n")
         self.insert += (r" * \\ingroup group_tivx_ext\n")
         self.insert += (r" */\n")
-        self.insert += (r"void tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels(void);\n\n")
+        self.insert += (r"void tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);\n\n")
         CodeModify().block_insert(self.module_include_kernels_filename,
                           "Interface file for the HWA kernels",
                           "#ifdef __cplusplus",
-                          "void tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels(void);",
+                          "void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);",
                           "\n#ifdef __cplusplus",
                           "\n#ifdef __cplusplus",
                           self.insert)
@@ -1973,20 +2028,20 @@ class KernelExportCode :
                           "    {tivxAddKernel" + self.kernel.name_camel + ", tivxRemoveKernel" + self.kernel.name_camel + "},\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
-                          "hwaLoadKernels",
+                          toCamelCase(self.module) + "LoadKernels",
                           "}",
-                          "        tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();",
+                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
                           "        tivxSetSelfCpuId\(TIVX_CPU_ID_DSP1\);",
                           "        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);",
-                          "        tivxRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();\n")
+                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
-                          "hwaUnLoadKernels",
+                          toCamelCase(self.module) + "UnLoadKernels",
                           "}",
-                          "        tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();",
+                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
                           "\n        gIsHwaKernelsLoad",
                           "\n        gIsHwaKernelsLoad",
-                          "        tivxUnRegister" + self.module.upper() + "Target" + toCamelCase(self.core) + "Kernels();\n")
+                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
 
     def modify_module_target_source_file(self) :
         print("Modifying " + self.target_kernels_filename)
@@ -2027,7 +2082,7 @@ class KernelExportCode :
         self.todo_code.write_line("# to add custom code beyond what the script can generate.  This is generated as ")
         self.todo_code.write_line("# part of the KernelExportCode.export() function, but may also be called independently ")
         self.todo_code.write_line("# by calling the KernelExportCode.todo() function with the requirement that the ")
-        self.todo_code.write_line("# CUSTOM_KERNEL_PATH environment variable is defined. This function simply searches")
+        self.todo_code.write_line("# "+self.env_var+" environment variable is defined. This function simply searches")
         self.todo_code.write_line("# for the \"< DEVELOPER_TODO ...>\" string in all the files from this path, and lists them.")
         self.todo_code.write_line("# Removing the \"< DEVELOPER_TODO ...>\" comment block from the files will effectively remove those")
         self.todo_code.write_line("# lines from showing up in this file the next time KernelExportCode.todo() is run.")

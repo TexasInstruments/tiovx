@@ -62,5 +62,5 @@
 from . import *
 
 def toCamelCase(input_str):
-    output = ''.join(x for x in input_str.title() if x.isalpha())
+    output = ''.join(x for x in input_str.title() if (x.isalpha() or x.isdigit()))
     return output[0].title() + output[1:]
