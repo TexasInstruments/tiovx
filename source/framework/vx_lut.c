@@ -49,7 +49,7 @@ vx_lut VX_API_CALL vxCreateLUT(
 
     if(ownIsValidContext(context) == vx_true_e)
     {
-        if ((data_type == VX_TYPE_INT8) || (data_type == VX_TYPE_UINT8))
+        if ((data_type == VX_TYPE_INT8) || (data_type == VX_TYPE_UINT8) || (data_type == VX_TYPE_CHAR))
         {
             if (count <= 256)
             {
@@ -62,6 +62,14 @@ vx_lut VX_API_CALL vxCreateLUT(
             {
                 dim = sizeof(vx_uint16);
             }
+        }
+        else if ((data_type == VX_TYPE_FLOAT32) || (data_type == VX_TYPE_UINT32) || (data_type == VX_TYPE_INT32))
+        {
+            dim = 4u; /* 4 bytes per entry for float32, int32, uint32 */
+        }
+        else if ((data_type == VX_TYPE_FLOAT64) || (data_type == VX_TYPE_UINT64) || (data_type == VX_TYPE_INT64))
+        {
+            dim = 8u; /* 8 bytes per entry for float64, int64, uint64 */
         }
         else
         {
