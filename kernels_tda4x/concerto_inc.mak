@@ -32,7 +32,9 @@ STATIC_LIBS += vx_vxu
 STATIC_LIBS += vx_target_kernels_tda4x_arm
 STATIC_LIBS += vx_utils
 
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 STATIC_LIBS += vx_conformance_engine
+endif
 STATIC_LIBS += dl png
 
 LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
