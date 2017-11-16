@@ -60,7 +60,7 @@
  *
  */
 
-#if 1
+#if 0
 TESTCASE(tivxPngRdWr)
 TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
