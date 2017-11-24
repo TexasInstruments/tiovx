@@ -603,6 +603,10 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
     vx_df_image img_df;
     vx_status status;
     void *data_ptr = NULL, *bmp_file_context;
+    void *dst_data_ptr = NULL;
+    uint32_t copy_width, copy_height, src_start_x, src_start_y, dst_start_x, dst_start_y;
+    vx_bool enable_rgb2gray, enable_gray2rgb;
+    vx_map_id map_id;
 
     status = tivx_utils_png_file_read(
                 filename,
@@ -618,7 +622,49 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
         vxQueryImage(image, VX_IMAGE_HEIGHT, &img_height, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_FORMAT, &img_df, sizeof(vx_df_image));
 
-        if(width==img_width && height==img_height && df==img_df)
+        if(img_width>width)
+            copy_width = width;
+        else
+            copy_width = img_width;
+
+        if(img_height>height)
+            copy_height = height;
+        else
+            copy_height = img_height;
+
+        src_start_x = (width - copy_width)/2;
+        src_start_y = (height - copy_height)/2;
+
+        dst_start_x = (img_width - copy_width)/2;
+        dst_start_y = (img_height - copy_height)/2;
+
+        enable_rgb2gray = vx_false_e;
+        enable_gray2rgb = vx_false_e;
+
+        if(df!=img_df)
+        {
+            if(df==VX_DF_IMAGE_RGB && img_df==VX_DF_IMAGE_U8 && convert_to_gray_scale)
+            {
+                enable_rgb2gray = vx_true_e;
+            }
+            else
+            if(df==VX_DF_IMAGE_U8 && img_df==VX_DF_IMAGE_RGB)
+            {
+                enable_gray2rgb = vx_true_e;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, " PNG: Image data format mismatch [%s]\n", filename);
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+
+        #if 0
+        printf(" PNG: src_start=(%d, %d), dst_start=(%d,%d), copy=(%dx%d), r2g=%d, g2r=%d\n",
+            src_start_x, src_start_y, dst_start_x, dst_start_y, copy_width, copy_height, enable_rgb2gray, enable_gray2rgb);
+        #endif
+
+        if(status == VX_SUCCESS)
         {
             vx_imagepatch_addressing_t image_addr;
             vx_rectangle_t rect;
@@ -635,32 +681,75 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
             else
                 bpp = 1; /* it should not reach here for BMP files */
 
-            image_addr.dim_x = width;
-            image_addr.dim_y = height;
-            image_addr.stride_x = bpp;
-            image_addr.stride_y = stride;
-            image_addr.scale_x = VX_SCALE_UNITY;
-            image_addr.scale_y = VX_SCALE_UNITY;
-            image_addr.step_x = 1;
-            image_addr.step_y = 1;
+            rect.start_x = dst_start_x;
+            rect.start_y = dst_start_y;
+            rect.end_x = dst_start_x + copy_width;
+            rect.end_y = dst_start_y + copy_height;
 
-            rect.start_x = 0;
-            rect.start_y = 0;
-            rect.end_x = width;
-            rect.end_y = height;
+            data_ptr = (void*)((uint8_t*)data_ptr + (stride*src_start_y) + src_start_x*bpp);
 
-            vxCopyImagePatch(image,
+            vxMapImagePatch(image,
                 &rect,
                 0,
+                &map_id,
                 &image_addr,
-                data_ptr,
+                &dst_data_ptr,
                 VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST
+                VX_MEMORY_TYPE_HOST,
+                VX_NOGAP_X
                 );
-        }
-        else
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
+
+            if(!enable_rgb2gray && !enable_gray2rgb)
+            {
+                uint32_t y;
+
+                for(y=0; y<copy_height; y++)
+                {
+                    memcpy(dst_data_ptr, data_ptr, copy_width*bpp);
+                    data_ptr = (void*)((uint8_t*)data_ptr + stride);
+                    dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);
+                }
+            }
+            else
+            if(enable_rgb2gray)
+            {
+                uint32_t x, y, r, g, b;
+
+                for(y=0; y<copy_height; y++)
+                {
+                    for(x=0; x<copy_width; x++)
+                    {
+                        b = ((uint8_t*)data_ptr)[3*x + 0];
+                        g = ((uint8_t*)data_ptr)[3*x + 1];
+                        r = ((uint8_t*)data_ptr)[3*x + 2];
+
+                        ((uint8_t*)dst_data_ptr)[x] = (r+b+g)/3;
+                    }
+                    data_ptr = (void*)((uint8_t*)data_ptr + stride);
+                    dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);
+                }
+            }
+            else
+            if(enable_gray2rgb)
+            {
+                uint32_t x, y, g;
+
+                for(y=0; y<copy_height; y++)
+                {
+                    for(x=0; x<copy_width; x++)
+                    {
+                        g = ((uint8_t*)data_ptr)[x];
+
+                        ((uint8_t*)dst_data_ptr)[3*x+0] = g;
+                        ((uint8_t*)dst_data_ptr)[3*x+1] = g;
+                        ((uint8_t*)dst_data_ptr)[3*x+2] = g;
+                    }
+                    data_ptr = (void*)((uint8_t*)data_ptr + stride);
+                    dst_data_ptr = (void*)((uint8_t*)dst_data_ptr + image_addr.stride_y);
+                }
+            }
+
+            vxUnmapImagePatch(image, map_id);
         }
         tivx_utils_png_file_read_release(bmp_file_context);
     }
