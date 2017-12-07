@@ -259,10 +259,10 @@ class KernelExportCode :
                     self.host_c_code.write_line("vx_size item_size_%s;" % num_type)
                 if prm.type == Type.PYRAMID :
                     self.host_c_code.write_line("vx_size levels_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size scale_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size w_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size h_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size df_image_pyr_%s;" % num_type)
+                    self.host_c_code.write_line("vx_float32 scale_pyr_%s;" % num_type)
+                    self.host_c_code.write_line("vx_uint32 w_pyr_%s;" % num_type)
+                    self.host_c_code.write_line("vx_uint32 h_pyr_%s;" % num_type)
+                    self.host_c_code.write_line("vx_enum df_image_pyr_%s;" % num_type)
                 if prm.type == Type.MATRIX :
                     self.host_c_code.write_line("vx_enum mat_type_%s;" % num_type)
                     self.host_c_code.write_line("vx_size mat_h_%s, mat_w_%s;" % (num_type, num_type))
@@ -278,8 +278,10 @@ class KernelExportCode :
                     self.host_c_code.write_line("vx_size lut_count_%s;" % num_type)
                 if prm.type == Type.THRESHOLD:
                     self.host_c_code.write_line("vx_enum threshold_type_%s;" % num_type)
+                    self.host_c_code.write_line("vx_enum threshold_data_type_%s;" % num_type)
                 if prm.type == Type.OBJECT_ARRAY:
                     self.host_c_code.write_line("vx_enum object_array_type_%s;" % num_type)
+                    self.host_c_code.write_line("vx_size object_array_num_items_%s;" % num_type)
                 if prm.type == Type.REMAP :
                     self.host_c_code.write_line("vx_uint32 rmp_src_w_%s;" % num_type)
                     self.host_c_code.write_line("vx_uint32 rmp_src_h_%s;" % num_type)
@@ -402,8 +404,10 @@ class KernelExportCode :
                         self.host_c_code.write_line("status |= vxQueryLUT(lut_%s, VX_LUT_COUNT, &lut_count_%s, sizeof(lut_count_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                     if Type.THRESHOLD == prm.type:
                         self.host_c_code.write_line("status = vxQueryThreshold(threshold_%s, VX_THRESHOLD_TYPE, &threshold_type_%s, sizeof(threshold_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryThreshold(threshold_%s, VX_THRESHOLD_DATA_TYPE, &threshold_data_type_%s, sizeof(threshold_data_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                     if Type.OBJECT_ARRAY == prm.type:
                         self.host_c_code.write_line("status = vxQueryObjectArray(object_array_%s, VX_OBJECT_ARRAY_ITEMTYPE, &object_array_type_%s, sizeof(object_array_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
+                        self.host_c_code.write_line("status |= vxQueryObjectArray(object_array_%s, VX_OBJECT_ARRAY_NUMITEMS, &object_array_num_items_%s, sizeof(object_array_num_items_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                     if Type.REMAP == prm.type:
                         self.host_c_code.write_line("status = vxQueryRemap(remap_%s, VX_REMAP_SOURCE_WIDTH, &rmp_src_w_%s, sizeof(rmp_src_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
                         self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_SOURCE_HEIGHT, &rmp_src_h_%s, sizeof(rmp_src_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
@@ -519,12 +523,12 @@ class KernelExportCode :
                 self.host_c_code.write_newline()
 
         # setting metas
-        self.host_c_code.write_line("if (VX_SUCCESS == status)")
-        self.host_c_code.write_open_brace()
-        self.host_c_code.write_line("tivxKernelSetMetas(metas, %s%s_MAX_PARAMS, out_fmt, w[0U], h[0U]);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        self.host_c_code.write_close_brace()
-
-        self.host_c_code.write_newline()
+        if self.kernel.getNumImages() > 0 :
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("tivxKernelSetMetas(metas, %s%s_MAX_PARAMS, out_fmt, w[0U], h[0U]);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+            self.host_c_code.write_close_brace()
+            self.host_c_code.write_newline()
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
@@ -535,7 +539,8 @@ class KernelExportCode :
         self.host_c_code.write_line("            vx_uint32 num_params)")
         self.host_c_code.write_open_brace()
         self.host_c_code.write_line("vx_status status = VX_SUCCESS;")
-        self.host_c_code.write_line("tivxKernelValidRectParams prms;")
+        if self.kernel.getNumImages() > 0 :
+            self.host_c_code.write_line("tivxKernelValidRectParams prms;")
         self.host_c_code.write_newline()
 
         # Check number of parameters
