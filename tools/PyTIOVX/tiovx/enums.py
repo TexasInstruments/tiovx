@@ -261,6 +261,21 @@ class DfImage(Enum) :
     def get_vx_name(df_format) :
         return "vx_df_image_e"
 
+    def get_df_enum_from_string(full_df_name) :
+        index = full_df_name.find("VX_DF_IMAGE_")
+        if index == 0 :
+            newstr = full_df_name.replace("VX_DF_IMAGE_", "")
+            if newstr in DfImage.__members__ :
+                return DfImage[newstr]
+        return DfImage.INVALID
+
+    def get_num_planes(df_format) :
+        if df_format == DfImage.NV12 or df_format == DfImage.NV21 :
+            return 2
+        if df_format == DfImage.IYUV or df_format == DfImage.YUV4 :
+            return 3
+        return 1
+
 ## Image channel (OpenVX equivalent = vx_channel_e)
 #
 # \par Example usage:

@@ -765,13 +765,28 @@ class KernelExportCode :
         # define status variables and obj descriptor variable
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
         need_plane_idx_var = False
+        need_pyramid_idx_var = False
         for prm in self.kernel.params :
-            if prm.do_map or prm.do_unmap :
-                if prm.do_map_unmap_all_planes :
-                    need_plane_idx_var = True
-            self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
+            if prm.do_map or prm.do_unmap or (Type.is_scalar_type(prm.type) is True):
+                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type:
+                    if len(prm.data_types) > 1 :
+                        for dt in prm.data_types[0:-1] :
+                            if DfImage.get_num_planes(DfImage.get_df_enum_from_string(dt)) > 1 :
+                                need_plane_idx_var = True
+                                break
+                    if Type.PYRAMID == prm.type:
+                        need_pyramid_idx_var = True
+                self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
+                if prm.type == Type.PYRAMID :
+                    self.target_c_code.write_line("%s *img_%s_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];" % (Type.get_obj_desc_name(Type.IMAGE), prm.name_lower) )
+                #TODO: Object Array is hardcoded to image ... modify for proper type
+                if prm.type == Type.OBJECT_ARRAY :
+                    self.target_c_code.write_line("%s *img_%s_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];" % (Type.get_obj_desc_name(Type.IMAGE), prm.name_lower) )
         if need_plane_idx_var is True :
             self.target_c_code.write_line("uint16_t plane_idx;")
+        if need_pyramid_idx_var is True :
+            self.target_c_code.write_line("uint32_t i;")
+
         self.target_c_code.write_newline()
 
         # checks function parameters
@@ -806,56 +821,74 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
         # convert descriptors pointer to target pointers
-        #TODO: For arrays, remove "[plane_idx]"
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if Type.is_scalar_type(prm.type) is False :
-                if prm.state is ParamState.OPTIONAL:
-                    self.target_c_code.write_line("if( %s != NULL)" % desc)
-                    self.target_c_code.write_open_brace()
                 if prm.do_map or prm.do_unmap :
-                    if prm.do_map_unmap_all_planes :
-                        self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                    if prm.state is ParamState.OPTIONAL:
+                        self.target_c_code.write_line("if( %s != NULL)" % desc)
                         self.target_c_code.write_open_brace()
-                        self.target_c_code.write_line("%s->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(" % desc )
-                        self.target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_type);" % (desc, desc))
+                    if Type.IMAGE == prm.type or Type.PYRAMID == prm.type:
+                        # Check if data type has multi-planes
+                        self.multiplane = False
+                        if len(prm.data_types) > 1 :
+                            for dt in prm.data_types[0:-1] :
+                                if DfImage.get_num_planes(DfImage.get_df_enum_from_string(dt)) > 1 :
+                                    self.multiplane = True
+                                    break
+                        if prm.type == Type.IMAGE :
+                            if self.multiplane :
+                                self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                                self.target_c_code.write_open_brace()
+                                self.target_c_code.write_line("%s->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                                self.target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_type);" % (desc, desc))
+                                if prm.do_map :
+                                    self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[plane_idx].target_ptr," % desc )
+                                    self.target_c_code.write_line("   %s->mem_size[plane_idx], %s->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                self.target_c_code.write_close_brace()
+                            else :
+                                self.target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                                self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
+                                if prm.do_map :
+                                    self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[0].target_ptr," % desc )
+                                    self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
+                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                        elif prm.type == Type.PYRAMID :
+                            self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_levels);" % (desc, desc, desc) )
+                            if self.multiplane :
+                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                self.target_c_code.write_open_brace()
+                                self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                                self.target_c_code.write_open_brace()
+                                self.target_c_code.write_line("img_%s[i]->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                                self.target_c_code.write_line("  img_%s[i]->mem_ptr[plane_idx].shared_ptr, img_%s[i]->mem_ptr[plane_idx].mem_type);" % (desc, desc))
+                                if prm.do_map :
+                                    self.target_c_code.write_line("tivxMemBufferMap(img_%s[i]->mem_ptr[plane_idx].target_ptr," % desc )
+                                    self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], img_%s[i]->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                self.target_c_code.write_close_brace()
+                                self.target_c_code.write_close_brace()
+                            else :
+                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                self.target_c_code.write_open_brace()
+                                self.target_c_code.write_line("img_%s[i]->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
+                                self.target_c_code.write_line("  img_%s[i]->mem_ptr[0].shared_ptr, img_%s[i]->mem_ptr[0].mem_type);" % (desc, desc))
+                                if prm.do_map :
+                                    self.target_c_code.write_line("tivxMemBufferMap(img_%s[i]->mem_ptr[0].target_ptr," % desc )
+                                    self.target_c_code.write_line("   img_%s[i]->mem_size[0], img_%s[i]->mem_ptr[0].mem_type," % (desc, desc))
+                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                self.target_c_code.write_close_brace()
+                    else :
+                        self.target_c_code.write_line("%s->mem_ptr.target_ptr = tivxMemShared2TargetPtr(" % desc )
+                        self.target_c_code.write_line("  %s->mem_ptr.shared_ptr, %s->mem_ptr.mem_type);" % (desc, desc))
+                        if prm.do_map :
+                            self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr.target_ptr," % desc )
+                            self.target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
+                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                    if prm.state is ParamState.OPTIONAL:
                         self.target_c_code.write_close_brace()
-                    else:
-                        if prm.type == Type.IMAGE : #TODO: test with other types
-                            self.target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
-                            self.target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
-                        else:
-                            self.target_c_code.write_line("%s->mem_ptr.target_ptr = tivxMemShared2TargetPtr(" % desc )
-                            self.target_c_code.write_line("  %s->mem_ptr.shared_ptr, %s->mem_ptr.mem_type);" % (desc, desc))
-                if prm.state is ParamState.OPTIONAL:
-                    self.target_c_code.write_close_brace()
-        self.target_c_code.write_newline()
-
-        # map descriptors pointer
-        for prm in self.kernel.params :
-            desc = prm.name_lower + "_desc"
-            if prm.do_map :
-                if prm.state is ParamState.OPTIONAL:
-                    self.target_c_code.write_line("if( %s != NULL)" % desc)
-                    self.target_c_code.write_open_brace()
-                if prm.do_map_unmap_all_planes :
-                    self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
-                    self.target_c_code.write_open_brace()
-                    self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[plane_idx].target_ptr," % desc )
-                    self.target_c_code.write_line("   %s->mem_size[plane_idx], %s->mem_ptr[plane_idx].mem_type," % (desc, desc))
-                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    self.target_c_code.write_close_brace()
-                else:
-                    if prm.type == Type.IMAGE : #TODO: test with other types
-                        self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[0].target_ptr," % desc )
-                        self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
-                        self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    else:
-                        self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr.target_ptr," % desc )
-                        self.target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
-                        self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                if prm.state is ParamState.OPTIONAL:
-                    self.target_c_code.write_close_brace()
+                    self.target_c_code.write_newline()
         self.target_c_code.write_newline()
 
         # set scalar values to local variables for input type scalars
@@ -884,24 +917,51 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if prm.do_map_unmap_all_planes :
-                    self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
-                    self.target_c_code.write_open_brace()
-                    self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[plane_idx].target_ptr," % desc )
-                    self.target_c_code.write_line("   %s->mem_size[plane_idx], %s->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type:
+                    # Check if data type has multi-planes
+                    self.multiplane = False
+                    if len(prm.data_types) > 1 :
+                        for dt in prm.data_types[0:-1] :
+                            if DfImage.get_num_planes(DfImage.get_df_enum_from_string(dt)) > 1 :
+                                self.multiplane = True
+                                break
+                    if prm.type == Type.IMAGE :
+                        if self.multiplane :
+                            self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                            self.target_c_code.write_open_brace()
+                            self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[plane_idx].target_ptr," % desc )
+                            self.target_c_code.write_line("   %s->mem_size[plane_idx], %s->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_close_brace()
+                        else :
+                            self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[0].target_ptr," % desc )
+                            self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
+                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                    elif prm.type == Type.PYRAMID :
+                        if self.multiplane :
+                            self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                            self.target_c_code.write_open_brace()
+                            self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
+                            self.target_c_code.write_open_brace()
+                            self.target_c_code.write_line("tivxMemBufferUnmap(img_%s[i]->mem_ptr[plane_idx].target_ptr," % desc )
+                            self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], img_%s[i]->mem_ptr[plane_idx].mem_type," % (desc, desc))
+                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_close_brace()
+                            self.target_c_code.write_close_brace()
+                        else :
+                            self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                            self.target_c_code.write_open_brace()
+                            self.target_c_code.write_line("tivxMemBufferUnmap(img_%s[i]->mem_ptr[0].target_ptr," % desc )
+                            self.target_c_code.write_line("   img_%s[i]->mem_size[0], img_%s[i]->mem_ptr[0].mem_type," % (desc, desc))
+                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_close_brace()
+                else :
+                    self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr.target_ptr," % desc )
+                    self.target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
                     self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    self.target_c_code.write_close_brace()
-                else:
-                    if prm.type == Type.IMAGE : #TODO: test with other types
-                        self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[0].target_ptr," % desc )
-                        self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
-                        self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    else:
-                        self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr.target_ptr," % desc )
-                        self.target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
-                        self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_close_brace()
+                self.target_c_code.write_newline()
         self.target_c_code.write_newline()
 
         # set scalar values from local variables for output type scalars
