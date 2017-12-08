@@ -120,7 +120,7 @@ vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx
         /* Check for NULL */
         if (NULL == parameters[i])
         {
-            status = VX_ERROR_NO_MEMORY;
+            status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "Parameter %d is NULL\n", i);
             break;
         }

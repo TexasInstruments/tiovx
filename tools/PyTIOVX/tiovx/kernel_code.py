@@ -304,24 +304,35 @@ class KernelExportCode :
             self.host_c_code.write_line("/* < DEVELOPER_TODO: Change out_fmt to the correct output format > */")
             self.host_c_code.write_line("vx_df_image out_fmt = VX_DF_IMAGE_U8;")
             self.host_c_code.write_line("vx_uint32 w[%sU], h[%sU];" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
+
+        self.host_c_code.write_newline()
+        if self.num_optional == 0 or (self.first_optional > 0 and self.last_required < self.first_optional):
+            self.host_c_code.write_line("if (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Mismatch number of parameters\\n\");")
+            self.host_c_code.write_close_brace()
             self.host_c_code.write_newline()
-        if self.num_optional == 0 :
-            self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        else :
-            if self.first_optional > 0 and self.last_required < self.first_optional :
-                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
+            if self.num_optional == 0 :
+                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
             else :
-                self.host_c_code.write_line("if (VX_SUCCESS == status)")
-                self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("if ( (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
-                for prm in self.kernel.params :
-                    if prm.state is ParamState.REQUIRED :
-                        self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
-                self.host_c_code.write_line(")")
-                self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("status = VX_FAILURE;")
-                self.host_c_code.write_close_brace()
-                self.host_c_code.write_close_brace()
+                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
+            self.host_c_code.write_close_brace()
+        else :
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("if ( (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+            for prm in self.kernel.params :
+                if prm.state is ParamState.REQUIRED :
+                    self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+            self.host_c_code.write_line(")")
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
+            self.host_c_code.write_close_brace()
+            self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
         # Query all types here
@@ -346,8 +357,12 @@ class KernelExportCode :
                     self.host_c_code.write_line("%s_%s = (%s)parameters[%s%s_%s_IDX];" %
                         (prm.type.name.lower(), num_nonimage, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                 num_nonimage+=1
-        self.host_c_code.write_newline()
         self.host_c_code.write_close_brace()
+        self.host_c_code.write_newline()
+
+        self.host_c_code.write_newline()
+        self.host_c_code.write_line("/* PARAMETER ATTRIBUTE FETCH */")
+        self.host_c_code.write_newline()
 
         # for loop writing each query here around if statements checking the status
         num_image = 0
@@ -425,18 +440,18 @@ class KernelExportCode :
         num_nonimage = 0
         num_scalar = 0
         num_image = 0
+        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.is_scalar_type(prm.type) is True :
-                if prm.state is ParamState.REQUIRED :
-                    self.host_c_code.write_line("if (VX_SUCCESS == status)")
-                else :
+                if prm.state is ParamState.OPTIONAL :
                     if Type.IMAGE == prm.type :
-                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != img[%sU]))" % (num_image))
+                        self.host_c_code.write_line("if (NULL != img[%sU])" % (num_image))
                     elif Type.is_scalar_type(prm.type) is True :
-                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != scalar[%sU]))" % (num_scalar))
+                        self.host_c_code.write_line("if (NULL != scalar[%sU])" % (num_scalar))
                     else :
-                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != %s_%s))" % (prm.type.name.lower(), num_nonimage))
-                self.host_c_code.write_open_brace()
+                        self.host_c_code.write_line("if (NULL != %s_%s)" % (prm.type.name.lower(), num_nonimage))
+                    self.host_c_code.write_open_brace()
                 if len(prm.data_types) == 0 :
                     self.print_data_type = ['<Add type here>']
                 else :
@@ -494,14 +509,16 @@ class KernelExportCode :
                     self.host_c_code.write_line("or %s " % (dt), new_line=False, indent=False)
                 self.host_c_code.write_line("\\n\");", indent=False)
                 self.host_c_code.write_close_brace()
-                self.host_c_code.write_close_brace()
-                self.host_c_code.write_newline()
+                if prm.state is ParamState.OPTIONAL :
+                    self.host_c_code.write_close_brace()
             if Type.IMAGE == prm.type :
                 num_image+=1
             elif Type.is_scalar_type(prm.type) is True :
                 num_scalar+=1
             else :
                 num_nonimage+=1
+        self.host_c_code.write_close_brace()
+        self.host_c_code.write_newline()
 
         # If # of input images is = 2, validate that two input sizes are equal
         if self.kernel.getNumInputImages() == 2 :
@@ -529,6 +546,7 @@ class KernelExportCode :
             self.host_c_code.write_line("tivxKernelSetMetas(metas, %s%s_MAX_PARAMS, out_fmt, w[0U], h[0U]);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
             self.host_c_code.write_close_brace()
             self.host_c_code.write_newline()
+
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
@@ -543,31 +561,31 @@ class KernelExportCode :
             self.host_c_code.write_line("tivxKernelValidRectParams prms;")
         self.host_c_code.write_newline()
 
-        # Check number of parameters
-        self.host_c_code.write_line("if (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        self.host_c_code.write_open_brace()
-        self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-        self.host_c_code.write_close_brace()
-        self.host_c_code.write_newline()
-
         # Check if null params
-        self.host_c_code.write_line("if (VX_SUCCESS == status)")
-        self.host_c_code.write_open_brace()
-        if self.num_optional == 0 :
-            self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        else :
-            if self.first_optional > 0 and self.last_required < self.first_optional :
-                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
+        if self.num_optional == 0 or (self.first_optional > 0 and self.last_required < self.first_optional) :
+            self.host_c_code.write_line("if (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Mismatch number of parameters\\n\");")
+            self.host_c_code.write_close_brace()
+            self.host_c_code.write_newline()
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
+            if self.num_optional == 0 :
+                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
             else :
-                self.host_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
-                for prm in self.kernel.params :
-                    if prm.state is ParamState.REQUIRED :
-                        self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
-                self.host_c_code.write_line(")")
-                self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("status = VX_FAILURE;")
-                self.host_c_code.write_close_brace()
-        self.host_c_code.write_close_brace()
+                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
+            self.host_c_code.write_close_brace()
+        else :
+            self.host_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+            for prm in self.kernel.params :
+                if prm.state is ParamState.REQUIRED :
+                    self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+            self.host_c_code.write_line(")")
+            self.host_c_code.write_open_brace()
+            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
+            self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
         # Set images
