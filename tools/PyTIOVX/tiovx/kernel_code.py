@@ -1638,19 +1638,19 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to load the " + self.module + " kernels into the context.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("void " + toCamelCase(self.module) + "LoadKernels(vx_context context);")
+            self.include_customer_kernels_code.write_line("void tivx" + toCamelCase(self.module) + "LoadKernels(vx_context context);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to unload the " + self.module + " kernels from the context.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("void " + toCamelCase(self.module) + "UnLoadKernels(vx_context context);")
+            self.include_customer_kernels_code.write_line("void tivx" + toCamelCase(self.module) + "UnLoadKernels(vx_context context);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used to print the performance of the kernels.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("void " + toCamelCase(self.module) + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);")
+            self.include_customer_kernels_code.write_line("void tivx" + toCamelCase(self.module) + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_extern_c_bottom()
             self.include_customer_kernels_code.write_endif(self.top_header_name.upper() + "_KERNELS_H_")
@@ -1797,7 +1797,7 @@ class KernelExportCode :
             self.host_kernels_code.write_line("tivxUnRegisterModule(TIVX_MODULE_NAME_" + self.module.upper() + ");")
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_newline()
-            self.host_kernels_code.write_line("void " + toCamelCase(self.module) + "LoadKernels(vx_context context)")
+            self.host_kernels_code.write_line("void tivx" + toCamelCase(self.module) + "LoadKernels(vx_context context)")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("if ((0 == gIs" + toCamelCase(self.module) + "KernelsLoad) && (NULL != context))")
             self.host_kernels_code.write_open_brace()
@@ -1814,7 +1814,7 @@ class KernelExportCode :
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_close_brace()
             self.host_kernels_code.write_newline()
-            self.host_kernels_code.write_line("void " + toCamelCase(self.module) + "UnLoadKernels(vx_context context)")
+            self.host_kernels_code.write_line("void tivx" + toCamelCase(self.module) + "UnLoadKernels(vx_context context)")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("if ((1u == gIs" + toCamelCase(self.module) + "KernelsLoad) && (NULL != context))")
             self.host_kernels_code.write_open_brace()
@@ -1953,22 +1953,22 @@ class KernelExportCode :
             r" * \\brief Used for the Application to load the " + self.module + " kernels into the context." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "void " + toCamelCase(self.module) + "LoadKernels(vx_context context);" + "\n" + "\n" +
+            "void tivx" + toCamelCase(self.module) + "LoadKernels(vx_context context);" + "\n" + "\n" +
             "/*!" + "\n" +
             r" * \\brief Used for the Application to unload the " + self.module + " kernels from the context." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "void " + toCamelCase(self.module) + "UnLoadKernels(vx_context context);" + "\n" + "\n" +
+            "void tivx" + toCamelCase(self.module) + "UnLoadKernels(vx_context context);" + "\n" + "\n" +
             "/*!" + "\n" +
             r" * \\brief Used to print the performance of the kernels." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "void " + toCamelCase(self.module) + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);" + "\n" + "\n"
+            "void tivx" + toCamelCase(self.module) + "PrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);" + "\n" + "\n"
             )
         CodeModify().block_insert(self.include_customer_kernels_filename,
                           "LoadKernels",
                           "#ifdef __cplusplus",
-                          "void " + toCamelCase(self.module) + "LoadKernels",
+                          "void tivx" + toCamelCase(self.module) + "LoadKernels",
                           "#ifdef __cplusplus",
                           "#ifdef __cplusplus",
                           self.insert)
@@ -2102,7 +2102,7 @@ class KernelExportCode :
                           "    {tivxAddKernel" + self.kernel.name_camel + ", tivxRemoveKernel" + self.kernel.name_camel + "},\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
-                          toCamelCase(self.module) + "LoadKernels",
+                          "tivx" + toCamelCase(self.module) + "LoadKernels",
                           "}",
                           "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
                           "        tivxSetSelfCpuId\(TIVX_CPU_ID_DSP1\);",
@@ -2110,7 +2110,7 @@ class KernelExportCode :
                           "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
-                          toCamelCase(self.module) + "UnLoadKernels",
+                          "tivx" + toCamelCase(self.module) + "UnLoadKernels",
                           "}",
                           "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
                           "\n        gIs" + toCamelCase(self.module) + "KernelsLoad",
