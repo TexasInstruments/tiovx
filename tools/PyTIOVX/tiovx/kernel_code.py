@@ -244,10 +244,6 @@ class KernelExportCode :
             self.host_c_code.write_line("vx_scalar scalar[%sU] = {NULL};" % self.kernel.getNumScalars())
         num_type = 0
         self.num_params = 0
-        self.num_optional = 0
-        self.first_optional = -1
-        self.last_optional = -1
-        self.last_required = -1
         for prm in self.kernel.params :
             if prm.type != Type.IMAGE :
                 #TODO: test this section more thoroughly and perhaps add more attributes from the objects
@@ -290,13 +286,6 @@ class KernelExportCode :
                 if Type.is_scalar_type(prm.type) :
                     self.host_c_code.write_line("vx_enum scalar_type_%s;" % num_type)
                 num_type += 1
-            if prm.state == ParamState.OPTIONAL :
-                self.num_optional +=1
-                if self.first_optional == -1 :
-                    self.first_optional = self.num_params
-                self.last_optional = self.num_params
-            else :
-                self.last_required = self.num_params
             self.num_params += 1
 
         if self.kernel.getNumImages() > 0 :
@@ -306,33 +295,15 @@ class KernelExportCode :
             self.host_c_code.write_line("vx_uint32 w[%sU], h[%sU];" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
 
         self.host_c_code.write_newline()
-        if self.num_optional == 0 or (self.first_optional > 0 and self.last_required < self.first_optional):
-            self.host_c_code.write_line("if (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Mismatch number of parameters\\n\");")
-            self.host_c_code.write_close_brace()
-            self.host_c_code.write_newline()
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
-            self.host_c_code.write_open_brace()
-            if self.num_optional == 0 :
-                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-            else :
-                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
-            self.host_c_code.write_close_brace()
-        else :
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("if ( (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
-            for prm in self.kernel.params :
-                if prm.state is ParamState.REQUIRED :
-                    self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
-            self.host_c_code.write_line(")")
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
-            self.host_c_code.write_close_brace()
-            self.host_c_code.write_close_brace()
+        self.host_c_code.write_line("if ( (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+        for prm in self.kernel.params :
+            if prm.state is ParamState.REQUIRED :
+                self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+        self.host_c_code.write_line(")")
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+        self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
+        self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
         # Query all types here
@@ -562,31 +533,15 @@ class KernelExportCode :
         self.host_c_code.write_newline()
 
         # Check if null params
-        if self.num_optional == 0 or (self.first_optional > 0 and self.last_required < self.first_optional) :
-            self.host_c_code.write_line("if (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Mismatch number of parameters\\n\");")
-            self.host_c_code.write_close_brace()
-            self.host_c_code.write_newline()
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
-            self.host_c_code.write_open_brace()
-            if self.num_optional == 0 :
-                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-            else :
-                self.host_c_code.write_line("status = tivxKernelValidateParametersNotNull(parameters, " + str(self.first_optional) + " );")
-            self.host_c_code.write_close_brace()
-        else :
-            self.host_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
-            for prm in self.kernel.params :
-                if prm.state is ParamState.REQUIRED :
-                    self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
-            self.host_c_code.write_line(")")
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-            self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
-            self.host_c_code.write_close_brace()
-        self.host_c_code.write_newline()
+        self.host_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+        for prm in self.kernel.params :
+            if prm.state is ParamState.REQUIRED :
+                self.host_c_code.write_line("    || (NULL == parameters[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+        self.host_c_code.write_line(")")
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+        self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"One or more REQUIRED parameters are set to NULL\\n\");")
+        self.host_c_code.write_close_brace()
 
         # Set images
         num_input_image = 0
