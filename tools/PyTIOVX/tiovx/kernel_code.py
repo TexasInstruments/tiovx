@@ -488,6 +488,7 @@ class KernelExportCode :
                 num_scalar+=1
             else :
                 num_nonimage+=1
+            self.host_c_code.write_newline()
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
@@ -1821,6 +1822,17 @@ class KernelExportCode :
         self.modify_module_host_header_file()
         self.modify_module_host_source_file()
         self.modify_module_target_source_file()
+        self.modify_test_header()
+
+    def modify_test_header(self) :
+        print("Modifying " + self.module_test_main_filename)
+        CodeModify().block_insert(self.module_test_main_filename,
+                      "#if ",
+                      "#endif",
+                      "TESTCASE(tivx" + toCamelCase(self.module) + self.kernel.name_camel + ")",
+                      "#endif",
+                      "#endif",
+                      "TESTCASE(tivx" + toCamelCase(self.module) + self.kernel.name_camel + ")\n")
 
     def modify_make_file(self) :
         print("Modifying " + self.concerto_inc_filename)
