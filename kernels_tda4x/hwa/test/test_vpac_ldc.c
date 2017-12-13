@@ -96,7 +96,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
     {
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT_VX_OBJECT(input = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(output = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -161,7 +161,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         ASSERT(param_array == 0);
         ASSERT(region_array == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 
@@ -562,7 +562,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_LDC1))
     {
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->src_width, arg_->src_height));
         ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
@@ -692,7 +692,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         ASSERT(chroma_lut == 0);
         ASSERT(mesh_image == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
 
         if((arg_->input_mode == 0 || arg_->input_mode == 1) && (arg_->mesh_mode == 0))
         {

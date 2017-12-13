@@ -468,19 +468,19 @@ typedef struct {
  * \brief Used for the Application to load the hwa kernels into the context.
  * \ingroup group_kernel
  */
-void hwaLoadKernels(vx_context context);
+void tivxHwaLoadKernels(vx_context context);
 
 /*!
  * \brief Used for the Application to unload the hwa kernels from the context.
  * \ingroup group_kernel
  */
-void hwaUnLoadKernels(vx_context context);
+void tivxHwaUnLoadKernels(vx_context context);
 
 /*!
  * \brief Used to print the performance of the kernels.
  * \ingroup group_kernel
  */
-void hwaPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
+void tivxHwaPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
 
 #ifdef __cplusplus
 }

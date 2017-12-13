@@ -46,7 +46,7 @@ TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
 
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
 
@@ -103,7 +103,7 @@ TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
         ASSERT(pyr == 0);
         ASSERT(input == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 
@@ -563,7 +563,7 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT(arg_->scale < 1.0);
 
@@ -600,7 +600,7 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testGraphProcessing, Arg,
         ASSERT(pyr == 0);
         ASSERT(input_image == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 
@@ -621,7 +621,7 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testImmediateProcessing, Arg,
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
 
@@ -644,7 +644,7 @@ TEST_WITH_ARG(tivxHwaVpacMscGaussianPyramid, testImmediateProcessing, Arg,
         VX_CALL(vxReleaseImage(&input_image));
         ASSERT(pyr == 0);
         ASSERT(input_image == 0);
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 

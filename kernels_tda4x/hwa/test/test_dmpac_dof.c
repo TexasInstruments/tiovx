@@ -132,7 +132,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         uint32_t levels = 2, i;
         vx_enum format = VX_DF_IMAGE_U8;
 
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         params_type = vxRegisterUserStruct(context, sizeof(tivx_dmpac_dof_params_t));
         ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
@@ -212,7 +212,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         ASSERT(confidence_histogram == 0);
         ASSERT(param_array == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 

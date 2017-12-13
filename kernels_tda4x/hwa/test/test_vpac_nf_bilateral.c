@@ -84,7 +84,7 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
     {
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -119,7 +119,7 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
         ASSERT(param_array == 0);
         ASSERT(sigma_array == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 
@@ -207,7 +207,7 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_NF))
     {
-        hwaLoadKernels(context);
+        tivxHwaLoadKernels(context);
 
         ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
         ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
@@ -267,7 +267,7 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
         ASSERT(param_array == 0);
         ASSERT(sigma_array == 0);
 
-        hwaUnLoadKernels(context);
+        tivxHwaUnLoadKernels(context);
     }
 }
 

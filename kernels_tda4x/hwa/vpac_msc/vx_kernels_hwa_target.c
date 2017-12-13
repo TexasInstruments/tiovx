@@ -73,12 +73,12 @@ static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelVpacMscGaussianPyramid, tivxRemoveTargetKernelVpacMscGaussianPyramid},
 };
 
-void tivxRegisterHWATargetVpacMscKernels()
+void tivxRegisterHwaTargetVpacMscKernels()
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHWATargetVpacMscKernels()
+void tivxUnRegisterHwaTargetVpacMscKernels()
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

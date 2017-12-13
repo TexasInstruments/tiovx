@@ -79,86 +79,85 @@ extern "C" {
  * \brief Function to register HWA Kernels on the Host
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWAKernels(void);
+void tivxRegisterHwaKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the Host
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWAKernels(void);
+void tivxUnRegisterHwaKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the vpac_nf Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWATargetVpacNfKernels(void);
+void tivxRegisterHwaTargetVpacNfKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the vpac_nf Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWATargetVpacNfKernels(void);
+void tivxUnRegisterHwaTargetVpacNfKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the dmpac_sde Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWATargetDmpacSdeKernels(void);
+void tivxRegisterHwaTargetDmpacSdeKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the dmpac_sde Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWATargetDmpacSdeKernels(void);
+void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the vpac_ldc Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWATargetVpacLdcKernels(void);
+void tivxRegisterHwaTargetVpacLdcKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the vpac_ldc Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWATargetVpacLdcKernels(void);
-
-/*!
- * \brief Function to register HWA Kernels on the dmpac_dof Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHWATargetDmpacDofKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the dmpac_dof Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHWATargetDmpacDofKernels(void);
+void tivxUnRegisterHwaTargetVpacLdcKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the vpac_msc Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWATargetVpacMscKernels(void);
+void tivxRegisterHwaTargetVpacMscKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the vpac_msc Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWATargetVpacMscKernels(void);
+void tivxUnRegisterHwaTargetVpacMscKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the dmpac_dof Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterHwaTargetDmpacDofKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the dmpac_dof Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterHwaTargetDmpacDofKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the arm Target
  * \ingroup group_tivx_ext
  */
-void tivxRegisterHWATargetArmKernels(void);
+void tivxRegisterHwaTargetArmKernels(void);
 
 /*!
  * \brief Function to un-register HWA Kernels on the arm Target
  * \ingroup group_tivx_ext
  */
-void tivxUnRegisterHWATargetArmKernels(void);
-
+void tivxUnRegisterHwaTargetArmKernels(void);
 
 
 #ifdef __cplusplus

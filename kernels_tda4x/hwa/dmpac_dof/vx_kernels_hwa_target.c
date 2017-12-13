@@ -69,12 +69,12 @@ void tivxAddTargetKernelDmpacDof();
 
 void tivxRemoveTargetKernelDmpacDof();
 
-void tivxRegisterHWATargetDmpacDofKernels()
+void tivxRegisterHwaTargetDmpacDofKernels()
 {
     tivxAddTargetKernelDmpacDof();
 }
 
-void tivxUnRegisterHWATargetDmpacDofKernels()
+void tivxUnRegisterHwaTargetDmpacDofKernels()
 {
     tivxRemoveTargetKernelDmpacDof();
 }
