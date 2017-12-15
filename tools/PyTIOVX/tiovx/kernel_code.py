@@ -600,6 +600,8 @@ class KernelExportCode :
         self.host_c_code.write_line("static vx_status VX_CALLBACK tivxAddKernel%sInitialize(vx_node node," % self.kernel.name_camel)
         self.host_c_code.write_line("            const vx_reference parameters[ ],")
         self.host_c_code.write_line("            vx_uint32 num_params);")
+        self.host_c_code.write_line("vx_status tivxAddKernel%s(vx_context context);" % (self.kernel.name_camel))
+        self.host_c_code.write_line("vx_status tivxRemoveKernel%s(vx_context context);" % (self.kernel.name_camel))
 
         self.host_c_code.write_newline()
         self.generate_host_c_validate_func_code()
