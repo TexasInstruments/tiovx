@@ -512,14 +512,6 @@ class KernelExportCode :
                 self.host_c_code.write_close_brace()
                 self.host_c_code.write_newline()
 
-        # setting metas
-        if self.kernel.getNumImages() > 0 :
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("tivxKernelSetMetas(metas, %s%s_MAX_PARAMS, out_fmt, w[0U], h[0U]);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-            self.host_c_code.write_close_brace()
-            self.host_c_code.write_newline()
-
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
