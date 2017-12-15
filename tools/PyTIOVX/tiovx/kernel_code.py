@@ -176,7 +176,8 @@ class KernelExportCode :
         self.host_c_code.write_line("index = 0;")
         self.host_c_code.write_newline()
         for prm in self.kernel.params :
-            self.host_c_code.write_if_status()
+            if prm != self.kernel.params[0] :
+                self.host_c_code.write_if_status()
             self.host_c_code.write_open_brace()
             self.host_c_code.write_line("status = vxAddParameterToKernel(kernel,")
             self.host_c_code.write_line("            index,")
@@ -316,16 +317,16 @@ class KernelExportCode :
         num_scalar = 0
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type :
-                self.host_c_code.write_line("img[%sU] = (%s)parameters[%s%s_%s_IDX];" %
+                self.host_c_code.write_line("img[%sU] = (const %s)parameters[%s%s_%s_IDX];" %
                     (num_image, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                 num_image+=1
             else :
                 if Type.is_scalar_type(prm.type) is True :
-                    self.host_c_code.write_line("scalar[%sU] = (vx_scalar)parameters[%s%s_%s_IDX];" %
+                    self.host_c_code.write_line("scalar[%sU] = (const vx_scalar)parameters[%s%s_%s_IDX];" %
                         (num_scalar, self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                     num_scalar+=1
                 else :
-                    self.host_c_code.write_line("%s_%s = (%s)parameters[%s%s_%s_IDX];" %
+                    self.host_c_code.write_line("%s_%s = (const %s)parameters[%s%s_%s_IDX];" %
                         (prm.type.name.lower(), num_nonimage, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                 num_nonimage+=1
         self.host_c_code.write_close_brace()
@@ -551,11 +552,11 @@ class KernelExportCode :
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type:
                 if Direction.INPUT == prm.direction:
-                    self.temp_buffer += ("        prms.in_img[%sU] = (vx_image)parameters[%s%s_%s_IDX];\n" %
+                    self.temp_buffer += ("        prms.in_img[%sU] = (const vx_image)parameters[%s%s_%s_IDX];\n" %
                         (num_input_image, self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                     num_input_image+=1
                 if Direction.OUTPUT == prm.direction:
-                    self.temp_buffer += ("        prms.out_img[%sU] = (vx_image)parameters[%s%s_%s_IDX];\n" %
+                    self.temp_buffer += ("        prms.out_img[%sU] = (const vx_image)parameters[%s%s_%s_IDX];\n" %
                         (num_output_image, self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                     num_output_image+=1
 
@@ -616,7 +617,7 @@ class KernelExportCode :
         self.host_c_code.close()
 
     def generate_target_c_add_func_code(self):
-        self.target_c_code.write_line("void tivxAddTargetKernel%s()" % self.kernel.name_camel)
+        self.target_c_code.write_line("void tivxAddTargetKernel%s(void)" % self.kernel.name_camel)
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_FAILURE;")
         self.target_c_code.write_line("char target_name[TIVX_TARGET_MAX_NAME];")
@@ -653,7 +654,7 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
     def generate_target_c_remove_func_code(self):
-        self.target_c_code.write_line("void tivxRemoveTargetKernel%s()" % self.kernel.name_camel)
+        self.target_c_code.write_line("void tivxRemoveTargetKernel%s(void)" % self.kernel.name_camel)
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
         self.target_c_code.write_newline()
@@ -975,7 +976,7 @@ class KernelExportCode :
         self.target_c_code.close()
 
     def generate_bam_target_c_add_func_code(self):
-        self.bam_target_c_code.write_line("void tivxAddTargetKernelBam%s()" % self.kernel.name_camel)
+        self.bam_target_c_code.write_line("void tivxAddTargetKernelBam%s(void)" % self.kernel.name_camel)
         self.bam_target_c_code.write_open_brace()
         self.bam_target_c_code.write_line("vx_status status = VX_FAILURE;")
         self.bam_target_c_code.write_line("char target_name[TIVX_TARGET_MAX_NAME];")
@@ -1012,7 +1013,7 @@ class KernelExportCode :
         self.bam_target_c_code.write_newline()
 
     def generate_bam_target_c_remove_func_code(self):
-        self.bam_target_c_code.write_line("void tivxRemoveTargetKernelBam%s()" % self.kernel.name_camel)
+        self.bam_target_c_code.write_line("void tivxRemoveTargetKernelBam%s(void)" % self.kernel.name_camel)
         self.bam_target_c_code.write_open_brace()
         self.bam_target_c_code.write_line("vx_status status = VX_SUCCESS;")
         self.bam_target_c_code.write_newline()
@@ -1730,7 +1731,7 @@ class KernelExportCode :
             self.host_kernels_code.write_line("vx_status tivxRemoveKernel" + self.kernel.name_camel + "(vx_context context);")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {")
-            self.host_kernels_code.write_line("    {tivxAddKernel" + self.kernel.name_camel + ", tivxRemoveKernel" + self.kernel.name_camel + "},")
+            self.host_kernels_code.write_line("    {&tivxAddKernel" + self.kernel.name_camel + ", &tivxRemoveKernel" + self.kernel.name_camel + "},")
             self.host_kernels_code.write_line("};")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("static vx_status VX_CALLBACK publishKernels(vx_context context)")
@@ -1763,7 +1764,7 @@ class KernelExportCode :
             self.host_kernels_code.write_line("/* These three lines only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
             self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);")
-            self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
+            self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);")
             self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 1U;")
@@ -1775,11 +1776,11 @@ class KernelExportCode :
             self.host_kernels_code.write_line("if ((1u == gIs" + toCamelCase(self.module) + "KernelsLoad) && (NULL != context))")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("vxUnloadKernels(context, TIVX_MODULE_NAME_" + self.module.upper() + ");")
-            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Kernels();")
+            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Kernels(void);")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("/* This line only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
-            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
+            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 0U;")
             self.host_kernels_code.write_close_brace()
@@ -1795,20 +1796,20 @@ class KernelExportCode :
             self.target_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels" + self.kernels_header_extension + ".h\"")
             self.target_kernels_code.write_line("#include \"tivx_kernels_target_utils.h\"")
             self.target_kernels_code.write_newline()
-            self.target_kernels_code.write_line("void tivxAddTargetKernel" + self.kernel.name_camel + "();")
+            self.target_kernels_code.write_line("void tivxAddTargetKernel" + self.kernel.name_camel + "(void);")
             self.target_kernels_code.write_newline()
-            self.target_kernels_code.write_line("void tivxRemoveTargetKernel" + self.kernel.name_camel + "();")
+            self.target_kernels_code.write_line("void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);")
             self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {")
-            self.target_kernels_code.write_line("    {tivxAddTargetKernel" + self.kernel.name_camel + ", tivxRemoveTargetKernel" + self.kernel.name_camel + "},")
+            self.target_kernels_code.write_line("    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},")
             self.target_kernels_code.write_line("};")
             self.target_kernels_code.write_newline()
-            self.target_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels()")
+            self.target_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void)")
             self.target_kernels_code.write_open_brace()
             self.target_kernels_code.write_line("tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));")
             self.target_kernels_code.write_close_brace()
             self.target_kernels_code.write_newline()
-            self.target_kernels_code.write_line("void tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels()")
+            self.target_kernels_code.write_line("void tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void)")
             self.target_kernels_code.write_open_brace()
             self.target_kernels_code.write_line("tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));")
             self.target_kernels_code.write_close_brace()
@@ -2063,52 +2064,52 @@ class KernelExportCode :
         CodeModify().block_insert(self.host_kernels_filename,
                           "Tivx_Host_Kernel_List",
                           "};",
-                          "    {tivxAddKernel" + self.kernel.name_camel + ", tivxRemoveKernel" + self.kernel.name_camel + "}",
+                          "    {&tivxAddKernel" + self.kernel.name_camel + ", &tivxRemoveKernel" + self.kernel.name_camel + "}",
                           "};",
                           "};",
-                          "    {tivxAddKernel" + self.kernel.name_camel + ", tivxRemoveKernel" + self.kernel.name_camel + "},\n")
+                          "    {&tivxAddKernel" + self.kernel.name_camel + ", &tivxRemoveKernel" + self.kernel.name_camel + "},\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
                           "tivx" + toCamelCase(self.module) + "LoadKernels",
                           "}",
-                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
+                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);",
                           "        tivxSetSelfCpuId\(TIVX_CPU_ID_DSP1\);",
                           "        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);",
-                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
+                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
                           "tivx" + toCamelCase(self.module) + "UnLoadKernels",
                           "}",
-                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
+                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);",
                           "\n        gIs" + toCamelCase(self.module) + "KernelsLoad",
                           "\n        gIs" + toCamelCase(self.module) + "KernelsLoad",
-                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
+                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);\n")
 
     def modify_module_target_source_file(self) :
         print("Modifying " + self.target_kernels_filename)
         CodeModify().block_insert(self.target_kernels_filename,
                           "void tivxAddTargetKernel",
                           "void tivxRemoveTargetKernel",
-                          "void tivxAddTargetKernel" + self.kernel.name_camel + "();",
+                          "void tivxAddTargetKernel" + self.kernel.name_camel + "(void);",
                           "\nvoid tivxRemoveTargetKernel",
                           "\nvoid tivxRemoveTargetKernel",
-                          "void tivxAddTargetKernel" + self.kernel.name_camel + "();\n")
+                          "void tivxAddTargetKernel" + self.kernel.name_camel + "(void);\n")
 
         CodeModify().block_insert(self.target_kernels_filename,
                           "void tivxRemoveTargetKernel",
                           "Tivx_Target_Kernel_List",
-                          "void tivxRemoveTargetKernel" + self.kernel.name_camel + "();",
+                          "void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);",
                           "\nstatic Tivx_Target_Kernel_List",
                           "\nstatic Tivx_Target_Kernel_List",
-                          "void tivxRemoveTargetKernel" + self.kernel.name_camel + "();\n")
+                          "void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);\n")
 
         CodeModify().block_insert(self.target_kernels_filename,
                           "Tivx_Target_Kernel_List",
                           "};",
-                          "    {tivxAddTargetKernel" + self.kernel.name_camel + ", tivxRemoveTargetKernel" + self.kernel.name_camel + "}",
+                          "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "}",
                           "};",
                           "};",
-                          "    {tivxAddTargetKernel" + self.kernel.name_camel + ", tivxRemoveTargetKernel" + self.kernel.name_camel + "},\n")
+                          "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},\n")
 
     def todo(self) :
         self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
