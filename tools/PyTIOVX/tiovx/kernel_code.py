@@ -239,61 +239,46 @@ class KernelExportCode :
 
         # Initial parameters
         self.host_c_code.write_line("vx_status status = VX_SUCCESS;")
-        if self.kernel.getNumImages() > 0 :
-            self.host_c_code.write_line("vx_image img[%sU] = {NULL};" % self.kernel.getNumImages())
-        if self.kernel.getNumScalars() > 0 :
-            self.host_c_code.write_line("vx_scalar scalar[%sU] = {NULL};" % self.kernel.getNumScalars())
-        num_type = 0
         self.num_params = 0
         for prm in self.kernel.params :
-            if prm.type != Type.IMAGE :
-                #TODO: test this section more thoroughly and perhaps add more attributes from the objects
-                if not Type.is_scalar_type(prm.type) :
-                    self.host_c_code.write_line("%s %s_%s = {NULL};" % (Type.get_vx_name(prm.type), prm.type.name.lower(), num_type))
-                if prm.type == Type.ARRAY :
-                    self.host_c_code.write_line("vx_enum item_type_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size capacity_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size item_size_%s;" % num_type)
-                if prm.type == Type.PYRAMID :
-                    self.host_c_code.write_line("vx_size levels_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_float32 scale_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_uint32 w_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_uint32 h_pyr_%s;" % num_type)
-                    self.host_c_code.write_line("vx_enum df_image_pyr_%s;" % num_type)
-                if prm.type == Type.MATRIX :
-                    self.host_c_code.write_line("vx_enum mat_type_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size mat_h_%s, mat_w_%s;" % (num_type, num_type))
-                if prm.type == Type.CONVOLUTION :
-                    self.host_c_code.write_line("vx_size conv_col_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size conv_row_%s;" % num_type)
-                if prm.type == Type.DISTRIBUTION :
-                    self.host_c_code.write_line("vx_int32 offset_%s = 0;" % num_type)
-                    self.host_c_code.write_line("vx_uint32 range_%s = 0;" % num_type)
-                    self.host_c_code.write_line("vx_size numBins_%s = 0;" % num_type)
-                if prm.type == Type.LUT :
-                    self.host_c_code.write_line("vx_enum lut_type_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size lut_count_%s;" % num_type)
-                if prm.type == Type.THRESHOLD:
-                    self.host_c_code.write_line("vx_enum threshold_type_%s;" % num_type)
-                    self.host_c_code.write_line("vx_enum threshold_data_type_%s;" % num_type)
-                if prm.type == Type.OBJECT_ARRAY:
-                    self.host_c_code.write_line("vx_enum object_array_type_%s;" % num_type)
-                    self.host_c_code.write_line("vx_size object_array_num_items_%s;" % num_type)
-                if prm.type == Type.REMAP :
-                    self.host_c_code.write_line("vx_uint32 rmp_src_w_%s;" % num_type)
-                    self.host_c_code.write_line("vx_uint32 rmp_src_h_%s;" % num_type)
-                    self.host_c_code.write_line("vx_uint32 rmp_dst_w_%s;" % num_type)
-                    self.host_c_code.write_line("vx_uint32 rmp_dst_h_%s;" % num_type)
-                if Type.is_scalar_type(prm.type) :
-                    self.host_c_code.write_line("vx_enum scalar_type_%s;" % num_type)
-                num_type += 1
+            self.host_c_code.write_newline()
+            if not Type.is_scalar_type(prm.type) :
+                self.host_c_code.write_line("%s %s = NULL;" % (Type.get_vx_name(prm.type), prm.name_lower))
+            if prm.type == Type.IMAGE :
+                self.host_c_code.write_line("vx_df_image %s_fmt;" % prm.name_lower)
+                self.host_c_code.write_line("vx_uint32 %s_w, %s_h;" % (prm.name_lower, prm.name_lower))
+            elif prm.type == Type.ARRAY :
+                self.host_c_code.write_line("vx_enum %s_item_type;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_capacity, %s_item_size;" % (prm.name_lower, prm.name_lower))
+            elif prm.type == Type.PYRAMID :
+                self.host_c_code.write_line("vx_df_image %s_fmt;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_levels;" % prm.name_lower)
+                self.host_c_code.write_line("vx_float32 %s_scale;" % prm.name_lower)
+                self.host_c_code.write_line("vx_uint32 %s_w, %s_h;" % (prm.name_lower, prm.name_lower))
+            elif prm.type == Type.MATRIX :
+                self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_w, %s_h;" % (prm.name_lower, prm.name_lower))
+            elif prm.type == Type.CONVOLUTION :
+                self.host_c_code.write_line("vx_size %s_col, %s_row;" % (prm.name_lower, prm.name_lower))
+            elif prm.type == Type.DISTRIBUTION :
+                self.host_c_code.write_line("vx_int32 %s_offset = 0;" % prm.name_lower)
+                self.host_c_code.write_line("vx_uint32 %s_range = 0;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_numBins = 0;" % prm.name_lower)
+            elif prm.type == Type.LUT :
+                self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_count;" % prm.name_lower)
+            elif prm.type == Type.THRESHOLD:
+                self.host_c_code.write_line("vx_enum %s_threshold_type, %s_threshold_data_type;" % (prm.name_lower, prm.name_lower))
+            elif prm.type == Type.OBJECT_ARRAY:
+                self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_num_items;" % prm.name_lower)
+            elif prm.type == Type.REMAP :
+                self.host_c_code.write_line("vx_uint32 %s_src_w, %s_src_h;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_uint32 %s_dst_w, %s_dst_h;" % (prm.name_lower, prm.name_lower))
+            elif Type.is_scalar_type(prm.type) :
+                self.host_c_code.write_line("vx_scalar %s = NULL;" % prm.name_lower)
+                self.host_c_code.write_line("vx_enum %s_scalar_type;" % prm.name_lower)
             self.num_params += 1
-
-        if self.kernel.getNumImages() > 0 :
-            self.host_c_code.write_line("vx_df_image fmt[%sU] = {0};" % self.kernel.getNumImages())
-            self.host_c_code.write_line("/* < DEVELOPER_TODO: Change out_fmt to the correct output format > */")
-            self.host_c_code.write_line("vx_df_image out_fmt = VX_DF_IMAGE_U8;")
-            self.host_c_code.write_line("vx_uint32 w[%sU], h[%sU];" % (self.kernel.getNumImages(), self.kernel.getNumImages()))
 
         self.host_c_code.write_newline()
         self.host_c_code.write_line("if ( (num != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
@@ -312,23 +297,13 @@ class KernelExportCode :
         self.host_c_code.write_open_brace()
         # find code from target for here
         # assigned descriptors to local variables
-        num_image = 0
-        num_nonimage = 0
-        num_scalar = 0
         for prm in self.kernel.params :
-            if Type.IMAGE == prm.type :
-                self.host_c_code.write_line("img[%sU] = (const %s)parameters[%s%s_%s_IDX];" %
-                    (num_image, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
-                num_image+=1
+            if Type.is_scalar_type(prm.type) :
+                self.host_c_code.write_line("%s = (const %s)parameters[%s%s_%s_IDX];" %
+                    (prm.name_lower, Type.get_vx_name(Type.SCALAR), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
             else :
-                if Type.is_scalar_type(prm.type) is True :
-                    self.host_c_code.write_line("scalar[%sU] = (const vx_scalar)parameters[%s%s_%s_IDX];" %
-                        (num_scalar, self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
-                    num_scalar+=1
-                else :
-                    self.host_c_code.write_line("%s_%s = (const %s)parameters[%s%s_%s_IDX];" %
-                        (prm.type.name.lower(), num_nonimage, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
-                num_nonimage+=1
+                self.host_c_code.write_line("%s = (const %s)parameters[%s%s_%s_IDX];" %
+                    (prm.name_lower, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
@@ -344,63 +319,50 @@ class KernelExportCode :
             if prm.state is ParamState.REQUIRED :
                 self.host_c_code.write_line("if (VX_SUCCESS == status)")
                 self.host_c_code.write_open_brace()
-            if Type.IMAGE == prm.type :
-                if prm.state is ParamState.OPTIONAL :
-                    self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != img[%sU]))" % (num_image))
-                    self.host_c_code.write_open_brace()
-                self.host_c_code.write_line("/* Get the image width/height and format */")
-                self.host_c_code.write_line("status = vxQueryImage(img[%sU], VX_IMAGE_FORMAT, &fmt[%sU]," % (num_image, num_image))
-                self.host_c_code.write_line("    sizeof(fmt[%sU]));" % num_image)
-                self.host_c_code.write_line("status |= vxQueryImage(img[%sU], VX_IMAGE_WIDTH, &w[%sU], sizeof(w[%sU]));" % (num_image, num_image, num_image))
-                self.host_c_code.write_line("status |= vxQueryImage(img[%sU], VX_IMAGE_HEIGHT, &h[%sU], sizeof(h[%sU]));" % (num_image, num_image, num_image))
-                num_image+=1
             else :
-                if Type.is_scalar_type(prm.type) is True :
-                    if prm.state is ParamState.OPTIONAL :
-                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != scalar[%sU]))" % (num_scalar))
-                        self.host_c_code.write_open_brace()
-                    self.host_c_code.write_line("status = vxQueryScalar(scalar[%sU], VX_SCALAR_TYPE, &scalar_type_%s, sizeof(scalar_type_%s));" % (num_scalar, num_nonimage, num_nonimage))
-                    num_scalar+=1
-                else :
-                    if prm.state is ParamState.OPTIONAL :
-                        self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != %s_%s))" % (prm.type.name.lower(), num_nonimage))
-                        self.host_c_code.write_open_brace()
-                    if Type.ARRAY == prm.type :
-                        self.host_c_code.write_line("status = vxQueryArray(array_%s, VX_ARRAY_ITEMTYPE, &item_type_%s, sizeof(item_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_CAPACITY, &capacity_%s, sizeof(capacity_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryArray(array_%s, VX_ARRAY_ITEMSIZE, &item_size_%s, sizeof(item_size_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.MATRIX == prm.type :
-                        self.host_c_code.write_line("status = vxQueryMatrix(matrix_%s, VX_MATRIX_TYPE, &mat_type_%s, sizeof(mat_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryMatrix(matrix_%s, VX_MATRIX_COLUMNS, &mat_w_%s, sizeof(mat_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryMatrix(matrix_%s, VX_MATRIX_ROWS, &mat_h_%s, sizeof(mat_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.PYRAMID == prm.type :
-                        self.host_c_code.write_line("status = vxQueryPyramid(pyramid_%s, VX_PYRAMID_LEVELS, &levels_pyr_%s, sizeof(levels_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_SCALE, &scale_pyr_%s, sizeof(scale_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_WIDTH, &w_pyr_%s, sizeof(w_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_HEIGHT, &h_pyr_%s, sizeof(h_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryPyramid(pyramid_%s, VX_PYRAMID_FORMAT, &df_image_pyr_%s, sizeof(df_image_pyr_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.CONVOLUTION == prm.type :
-                        self.host_c_code.write_line("status = vxQueryConvolution(convolution_%s, VX_CONVOLUTION_COLUMNS, &conv_col_%s, sizeof(conv_col_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryConvolution(convolution_%s, VX_CONVOLUTION_ROWS, &conv_row_%s, sizeof(conv_row_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.DISTRIBUTION == prm.type :
-                        self.host_c_code.write_line("status = vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_BINS, &numBins_%s, sizeof(numBins_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_RANGE, &range_%s, sizeof(range_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryDistribution(distribution_%s, VX_DISTRIBUTION_OFFSET, &offset_%s, sizeof(offset_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.LUT == prm.type:
-                        self.host_c_code.write_line("status = vxQueryLUT(lut_%s, VX_LUT_TYPE, &lut_type_%s, sizeof(lut_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryLUT(lut_%s, VX_LUT_COUNT, &lut_count_%s, sizeof(lut_count_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.THRESHOLD == prm.type:
-                        self.host_c_code.write_line("status = vxQueryThreshold(threshold_%s, VX_THRESHOLD_TYPE, &threshold_type_%s, sizeof(threshold_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryThreshold(threshold_%s, VX_THRESHOLD_DATA_TYPE, &threshold_data_type_%s, sizeof(threshold_data_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.OBJECT_ARRAY == prm.type:
-                        self.host_c_code.write_line("status = vxQueryObjectArray(object_array_%s, VX_OBJECT_ARRAY_ITEMTYPE, &object_array_type_%s, sizeof(object_array_type_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryObjectArray(object_array_%s, VX_OBJECT_ARRAY_NUMITEMS, &object_array_num_items_%s, sizeof(object_array_num_items_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                    if Type.REMAP == prm.type:
-                        self.host_c_code.write_line("status = vxQueryRemap(remap_%s, VX_REMAP_SOURCE_WIDTH, &rmp_src_w_%s, sizeof(rmp_src_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_SOURCE_HEIGHT, &rmp_src_h_%s, sizeof(rmp_src_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_DESTINATION_WIDTH, &rmp_dst_w_%s, sizeof(rmp_dst_w_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                        self.host_c_code.write_line("status |= vxQueryRemap(remap_%s, VX_REMAP_DESTINATION_HEIGHT, &rmp_dst_h_%s, sizeof(rmp_dst_h_%s));" % (num_nonimage, num_nonimage, num_nonimage))
-                num_nonimage+=1
+                self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != %s))" % prm.name_lower)
+                self.host_c_code.write_open_brace()
+            if Type.is_scalar_type(prm.type) :
+                self.host_c_code.write_line("status = vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.IMAGE == prm.type :
+                self.host_c_code.write_line("status = vxQueryImage(%s, VX_IMAGE_FORMAT, &%s_fmt, sizeof(%s_fmt));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryImage(%s, VX_IMAGE_WIDTH, &%s_w, sizeof(%s_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryImage(%s, VX_IMAGE_HEIGHT, &%s_h, sizeof(%s_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.ARRAY == prm.type :
+                self.host_c_code.write_line("status = vxQueryArray(%s, VX_ARRAY_ITEMTYPE, &%s_item_type, sizeof(%s_item_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryArray(%s, VX_ARRAY_CAPACITY, &%s_capacity, sizeof(%s_capacity));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryArray(%s, VX_ARRAY_ITEMSIZE, &%s_item_size, sizeof(%s_item_size));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.MATRIX == prm.type :
+                self.host_c_code.write_line("status = vxQueryMatrix(%s, VX_MATRIX_TYPE, &%s_type, sizeof(%s_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryMatrix(%s, VX_MATRIX_COLUMNS, &%s_w, sizeof(%s_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryMatrix(%s, VX_MATRIX_ROWS, &%s_h, sizeof(%s_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.PYRAMID == prm.type :
+                self.host_c_code.write_line("status = vxQueryPyramid(%s, VX_PYRAMID_FORMAT, &%s_fmt, sizeof(%s_fmt));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_LEVELS, &%s_levels, sizeof(%s_levels));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_SCALE, &%s_scale, sizeof(%s_scale));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_WIDTH, &%s_w, sizeof(%s_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_HEIGHT, &%s_h, sizeof(%s_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.CONVOLUTION == prm.type :
+                self.host_c_code.write_line("status = vxQueryConvolution(%s, VX_CONVOLUTION_COLUMNS, &%s_col, sizeof(%s_col));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryConvolution(%s, VX_CONVOLUTION_ROWS, &%s_row, sizeof(%s_row));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.DISTRIBUTION == prm.type :
+                self.host_c_code.write_line("status = vxQueryDistribution(%s, VX_DISTRIBUTION_BINS, &%s_numBins, sizeof(%s_numBins));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryDistribution(%s, VX_DISTRIBUTION_RANGE, &%s_range, sizeof(%s_range));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryDistribution(%s, VX_DISTRIBUTION_OFFSET, &%s_offset, sizeof(%s_offset));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.LUT == prm.type:
+                self.host_c_code.write_line("status = vxQueryLUT(%s, VX_LUT_TYPE, &%s_type, sizeof(%s_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryLUT(%s, VX_LUT_COUNT, &%s_count, sizeof(%s_count));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.THRESHOLD == prm.type:
+                self.host_c_code.write_line("status = vxQueryThreshold(%s, VX_THRESHOLD_TYPE, &%s_threshold_type, sizeof(%s_threshold_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryThreshold(%s, VX_THRESHOLD_DATA_TYPE, &%s_threshold_data_type, sizeof(%s_threshold_data_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.OBJECT_ARRAY == prm.type:
+                self.host_c_code.write_line("status = vxQueryObjectArray(%s, VX_OBJECT_ARRAY_ITEMTYPE, &%s_type, sizeof(%s_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryObjectArray(%s, VX_OBJECT_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            elif Type.REMAP == prm.type:
+                self.host_c_code.write_line("status = vxQueryRemap(%s, VX_REMAP_SOURCE_WIDTH, &%s_src_w, sizeof(%s_src_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryRemap(%s, VX_REMAP_SOURCE_HEIGHT, &%s_src_h, sizeof(%s_src_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryRemap(%s, VX_REMAP_DESTINATION_WIDTH, &%s_dst_w, sizeof(%s_dst_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("status |= vxQueryRemap(%s, VX_REMAP_DESTINATION_HEIGHT, &%s_dst_h, sizeof(%s_dst_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             self.host_c_code.write_close_brace()
             self.host_c_code.write_newline()
 
@@ -409,20 +371,12 @@ class KernelExportCode :
         self.host_c_code.write_newline()
 
         # Check for sizeof array, and data type (format) of other objects
-        num_nonimage = 0
-        num_scalar = 0
-        num_image = 0
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.is_scalar_type(prm.type) is True :
                 if prm.state is ParamState.OPTIONAL :
-                    if Type.IMAGE == prm.type :
-                        self.host_c_code.write_line("if (NULL != img[%sU])" % (num_image))
-                    elif Type.is_scalar_type(prm.type) is True :
-                        self.host_c_code.write_line("if (NULL != scalar[%sU])" % (num_scalar))
-                    else :
-                        self.host_c_code.write_line("if (NULL != %s_%s)" % (prm.type.name.lower(), num_nonimage))
+                    self.host_c_code.write_line("if (NULL != %s)" % (prm.name_lower))
                     self.host_c_code.write_open_brace()
                 if len(prm.data_types) == 0 :
                     self.print_data_type = ['<Add type here>']
@@ -430,52 +384,46 @@ class KernelExportCode :
                     self.print_data_type = prm.data_types
                 if Type.IMAGE == prm.type :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != fmt[%sU]) &&" % (self.print_data_type[0], num_image))
+                        self.host_c_code.write_line("if( (%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != fmt[%sU]) &&" % (dt, num_image))
-                        self.host_c_code.write_line("    (%s != fmt[%sU]))" % (self.print_data_type[-1], num_image))
+                            self.host_c_code.write_line("    (%s != %s_fmt) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    (%s != %s_fmt))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != fmt[%sU])" % (self.print_data_type[0], num_image))
-                if Type.ARRAY == prm.type :
+                        self.host_c_code.write_line("if (%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
+                elif Type.ARRAY == prm.type :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (item_size_%s != sizeof(%s)) &&" % (num_nonimage, self.print_data_type[0]))
+                        self.host_c_code.write_line("if( (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, self.print_data_type[0]))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (item_size_%s != sizeof(%s)) &&" % (num_nonimage, dt))
-                        self.host_c_code.write_line("    (item_size_%s != sizeof(%s)))" % (num_nonimage, self.print_data_type[-1]))
+                            self.host_c_code.write_line("    (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, dt))
+                        self.host_c_code.write_line("    (%s_item_size != sizeof(%s)))" % (prm.name_lower, self.print_data_type[-1]))
                     else :
-                        self.host_c_code.write_line("if ( item_size_%s != sizeof(%s))" % (num_nonimage, self.print_data_type[0]))
-                if Type.MATRIX == prm.type :
+                        self.host_c_code.write_line("if ( %s_item_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]))
+                elif Type.MATRIX == prm.type or Type.LUT == prm.type:
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != mat_type_%s) &&" % (self.print_data_type[0], num_nonimage))
+                        self.host_c_code.write_line("if( (%s != %s_type) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != mat_type_%s) &&" % (dt, num_nonimage))
-                        self.host_c_code.write_line("    (%s != mat_type_%s))" % (self.print_data_type[-1], num_nonimage))
+                            self.host_c_code.write_line("    (%s != %s_type) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    (%s != %s_type))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != mat_type_%s)" % (self.print_data_type[0], num_nonimage))
-                if Type.LUT == prm.type :
+                        self.host_c_code.write_line("if (%s != %s_type)" % (self.print_data_type[0], prm.name_lower))
+                elif Type.is_scalar_type(prm.type) :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != lut_type_%s) &&" % (self.print_data_type[0], num_nonimage))
+                        self.host_c_code.write_line("if( (%s != %s_scalar_type) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != lut_type_%s) &&" % (dt, num_nonimage))
-                        self.host_c_code.write_line("    (%s != lut_type_%s))" % (self.print_data_type[-1], num_nonimage))
+                            self.host_c_code.write_line("    (%s != %s_scalar_type) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    (%s != %s_scalar_type))" % (self.print_data_type[-1], prm.name_lower))
                     else :
-                        self.host_c_code.write_line("if (%s != lut_type_%s)" % (self.print_data_type[0], num_nonimage))
-                if Type.is_scalar_type(prm.type) is True :
-                    if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s != scalar_type_%s) &&" % (self.print_data_type[0], num_nonimage))
-                        for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s != scalar_type_%s) &&" % (dt, num_nonimage))
-                        self.host_c_code.write_line("    (%s != scalar_type_%s))" % (self.print_data_type[-1], num_nonimage))
-                    else :
-                        self.host_c_code.write_line("if (%s != scalar_type_%s)" % (self.print_data_type[0], num_nonimage))
+                        self.host_c_code.write_line("if (%s != %s_scalar_type)" % (self.print_data_type[0], prm.name_lower))
                 self.host_c_code.write_open_brace()
                 self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-                if Type.IMAGE == prm.type :
-                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be an image of format:\\n " % (prm.name_lower), new_line=False)
-                elif Type.is_scalar_type(prm.type) is True :
+                vowel = ["a","e","i","o","u"]
+                if Type.is_scalar_type(prm.type) :
                     self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be a scalar of type:\\n " % (prm.name_lower), new_line=False)
                 else :
-                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be a %s of type:\\n " % (prm.name_lower, prm.type.name.lower()), new_line=False)
+                    article = 'a'
+                    if prm.type.name[0].lower() in vowel :
+                        article = 'an'
+                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be %s %s of type:\\n " % (prm.name_lower, article, prm.type.name.lower()), new_line=False)
                 self.host_c_code.write_line("%s " % (self.print_data_type[0]), new_line=False, indent=False)
                 for dt in self.print_data_type[1:] :
                     self.host_c_code.write_line("or %s " % (dt), new_line=False, indent=False)
@@ -483,34 +431,29 @@ class KernelExportCode :
                 self.host_c_code.write_close_brace()
                 if prm.state is ParamState.OPTIONAL :
                     self.host_c_code.write_close_brace()
-            if Type.IMAGE == prm.type :
-                num_image+=1
-            elif Type.is_scalar_type(prm.type) is True :
-                num_scalar+=1
-            else :
-                num_nonimage+=1
             self.host_c_code.write_newline()
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
+        # COMMENT OUT FOR NOW AS WE WILL BE REWORKING THIS 
         # If # of input images is = 2, validate that two input sizes are equal
-        if self.kernel.getNumInputImages() == 2 :
-            self.host_c_code.write_line("if (VX_SUCCESS == status)")
-            self.host_c_code.write_open_brace()
-            self.host_c_code.write_line("status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);")
-            self.host_c_code.write_close_brace()
-            self.host_c_code.write_newline()
+        #if self.kernel.getNumInputImages() == 2 :
+        #    self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        #    self.host_c_code.write_open_brace()
+        #    self.host_c_code.write_line("status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);")
+        #    self.host_c_code.write_close_brace()
+        #    self.host_c_code.write_newline()
 
         # If there is at least 1 input image and 1 output image, validates each output image size
         # Checks if output size is equal to the input size
-        if self.kernel.getNumInputImages() >= 1 and self.kernel.getNumOutputImages() >= 1 :
-            for x in range(0, self.kernel.getNumOutputImages()) :
-                self.host_c_code.write_line("if (VX_SUCCESS == status)")
-                self.host_c_code.write_open_brace()
-                temp = self.kernel.getNumOutputImages() - x
-                self.host_c_code.write_line("status = tivxKernelValidateOutputSize(w[0U], w[%sU], h[0U], h[%sU], img[%sU]);" % (self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp) )
-                self.host_c_code.write_close_brace()
-                self.host_c_code.write_newline()
+        #if self.kernel.getNumInputImages() >= 1 and self.kernel.getNumOutputImages() >= 1 :
+        #    for x in range(0, self.kernel.getNumOutputImages()) :
+        #        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        #        self.host_c_code.write_open_brace()
+        #        temp = self.kernel.getNumOutputImages() - x
+        #        self.host_c_code.write_line("status = tivxKernelValidateOutputSize(w[0U], w[%sU], h[0U], h[%sU], img[%sU]);" % (self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp) )
+        #        self.host_c_code.write_close_brace()
+        #        self.host_c_code.write_newline()
 
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
