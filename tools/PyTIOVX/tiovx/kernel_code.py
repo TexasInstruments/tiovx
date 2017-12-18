@@ -1758,7 +1758,7 @@ class KernelExportCode :
             self.host_kernels_code.write_line("/* These three lines only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
             self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);")
-            self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);")
+            self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
             self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 1U;")
@@ -1770,11 +1770,11 @@ class KernelExportCode :
             self.host_kernels_code.write_line("if ((1u == gIs" + toCamelCase(self.module) + "KernelsLoad) && (NULL != context))")
             self.host_kernels_code.write_open_brace()
             self.host_kernels_code.write_line("vxUnloadKernels(context, TIVX_MODULE_NAME_" + self.module.upper() + ");")
-            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Kernels(void);")
+            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Kernels();")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("/* This line only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
-            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);")
+            self.host_kernels_code.write_line("tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
             self.host_kernels_code.write_newline()
             self.host_kernels_code.write_line("gIs" + toCamelCase(self.module) + "KernelsLoad = 0U;")
             self.host_kernels_code.write_close_brace()
@@ -2066,18 +2066,18 @@ class KernelExportCode :
         CodeModify().block_insert(self.host_kernels_filename,
                           "tivx" + toCamelCase(self.module) + "LoadKernels",
                           "}",
-                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);",
+                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
                           "        tivxSetSelfCpuId\(TIVX_CPU_ID_DSP1\);",
                           "        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);",
-                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);\n")
+                          "        tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
 
         CodeModify().block_insert(self.host_kernels_filename,
                           "tivx" + toCamelCase(self.module) + "UnLoadKernels",
                           "}",
-                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);",
+                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();",
                           "\n        gIs" + toCamelCase(self.module) + "KernelsLoad",
                           "\n        gIs" + toCamelCase(self.module) + "KernelsLoad",
-                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void);\n")
+                          "        tivxUnRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();\n")
 
     def modify_module_target_source_file(self) :
         print("Modifying " + self.target_kernels_filename)
