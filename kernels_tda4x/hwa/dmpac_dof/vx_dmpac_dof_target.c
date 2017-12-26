@@ -214,12 +214,12 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
     tivx_obj_desc_image_t *img_reference_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
     uint32_t i;
     tivxDmpacDofParams *prms = NULL;
+    int *past_prediction = NULL;
 
     if ( num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX])
     )
     {
@@ -256,8 +256,11 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         configuration_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
           configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_type);
 
-        flow_vector_in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          flow_vector_in_desc->mem_ptr[0].shared_ptr, flow_vector_in_desc->mem_ptr[0].mem_type);
+        if(flow_vector_in_desc != NULL)
+        {
+            flow_vector_in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
+                flow_vector_in_desc->mem_ptr[0].shared_ptr, flow_vector_in_desc->mem_ptr[0].mem_type);
+        }
 
         if( sparse_of_map_desc != NULL)
         {
@@ -288,9 +291,12 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         tivxMemBufferMap(configuration_desc->mem_ptr.target_ptr,
            configuration_desc->mem_size, configuration_desc->mem_ptr.mem_type,
             VX_READ_ONLY);
-        tivxMemBufferMap(flow_vector_in_desc->mem_ptr[0].target_ptr,
-           flow_vector_in_desc->mem_size[0], flow_vector_in_desc->mem_ptr[0].mem_type,
-            VX_READ_ONLY);
+        if(flow_vector_in_desc != NULL)
+        {
+            tivxMemBufferMap(flow_vector_in_desc->mem_ptr[0].target_ptr,
+                flow_vector_in_desc->mem_size[0], flow_vector_in_desc->mem_ptr[0].mem_type,
+                VX_READ_ONLY);
+        }
         if( sparse_of_map_desc != NULL)
         {
             tivxMemBufferMap(sparse_of_map_desc->mem_ptr[0].target_ptr,
@@ -324,7 +330,13 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
             lse_reformat_in_dof(img_current_desc[i], prms->input_current[i]);
             lse_reformat_in_dof(img_reference_desc[i], prms->input_reference[i]);
         }
-        lse_reformat_in_dof(flow_vector_in_desc, prms->past_prediction);
+        /* when NULL past prediction not used */
+        past_prediction = NULL;
+        if(flow_vector_in_desc != NULL)
+        {
+            lse_reformat_in_dof(flow_vector_in_desc, prms->past_prediction);
+            past_prediction = prms->past_prediction;
+        }
 
         /* call kernel processing function */
 
@@ -332,7 +344,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
            &prms->dofParams,
            prms->input_current,
            prms->input_reference,
-           prms->past_prediction,
+           past_prediction,
            prms->pyramid_size,
            prms->current_prediction,
            prms->confidence_histogram);
@@ -355,9 +367,12 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         tivxMemBufferUnmap(configuration_desc->mem_ptr.target_ptr,
            configuration_desc->mem_size, configuration_desc->mem_ptr.mem_type,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(flow_vector_in_desc->mem_ptr[0].target_ptr,
+        if(flow_vector_in_desc != NULL)
+        {
+            tivxMemBufferUnmap(flow_vector_in_desc->mem_ptr[0].target_ptr,
                flow_vector_in_desc->mem_size[0], flow_vector_in_desc->mem_ptr[0].mem_type,
                 VX_READ_ONLY);
+        }
         if( sparse_of_map_desc != NULL)
         {
             tivxMemBufferUnmap(sparse_of_map_desc->mem_ptr[0].target_ptr,
@@ -399,7 +414,6 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX])
         )
     {

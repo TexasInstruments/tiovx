@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     img[2U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
     distribution_3 = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
 
-    if(array_0==NULL || pyramid_1 == NULL || pyramid_2 == NULL || img[0u] == NULL || img[2u] == NULL)
+    if(array_0==NULL || pyramid_1 == NULL || pyramid_2 == NULL || img[2u] == NULL)
     {
         /* required parameters are set to NULL */
         status = VX_ERROR_INVALID_PARAMETERS;
@@ -143,7 +143,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         status |= vxQueryPyramid(pyramid_2, VX_PYRAMID_FORMAT, &df_image_pyr_2, sizeof(df_image_pyr_2));
     }
 
-    if (VX_SUCCESS == status)
+    if (VX_SUCCESS == status && img[0] != NULL)
     {
         /* Get the image width/height and format */
         status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
@@ -247,26 +247,29 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector output image format MUST be VX_DF_IMAGE_U32 !!!\n"
                 );
         }
-        if(w_pyr_1 != w[0u] && h_pyr_1 != h[0u])
+        if(img[0u] != NULL )
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image WxH (%d x %d) MUST match pyramid base WxH (%d x %d)!!!\n",
-                w[0u], h[0u], w_pyr_1, h_pyr_1
-                );
-        }
-        if(fmt[0u]!=VX_DF_IMAGE_U32)
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image format MUST be VX_DF_IMAGE_U32 !!!\n"
-                );
+            if(w_pyr_1 != w[0u] && h_pyr_1 != h[0u])
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image WxH (%d x %d) MUST match pyramid base WxH (%d x %d)!!!\n",
+                    w[0u], h[0u], w_pyr_1, h_pyr_1
+                    );
+            }
+            if(fmt[0u]!=VX_DF_IMAGE_U32)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image format MUST be VX_DF_IMAGE_U32 !!!\n"
+                    );
+            }
         }
         if(img[1u] != NULL )
         {
-            if(w_pyr_1 > w[1u]*8 || h_pyr_1 > h[0u]*8)
+            if(w_pyr_1 > w[1u]*8 || h_pyr_1 > h[1u]*8)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Sparse OF bitmask image W(x8)xH(x8) (%dx8 x %dx8) MUST be >= base pyramid WxH (%d x %d) !!!\n",
-                    w[0u], h[0u], w_pyr_1, w_pyr_2
+                    w[1u], h[1u], w_pyr_1, w_pyr_2
                     );
             }
             if(fmt[1u]!=VX_DF_IMAGE_U8)
@@ -370,7 +373,7 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
                         index,
                         VX_INPUT,
                         VX_TYPE_IMAGE,
-                        VX_PARAMETER_STATE_REQUIRED
+                        VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }

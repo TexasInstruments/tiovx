@@ -184,7 +184,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
  *                                                type <tt>\ref tivx_dmpac_dof_params_t</tt>.
  * \param [in] input_current                      Current input pyramid.
  * \param [in] input_reference                    Reference input pyramid.
- * \param [in] flow_vector_in                     Flow vector from previous execution of DOF.
+ * \param [in] flow_vector_in          (optional) Flow vector from previous execution of DOF.
  *                                                Size of image is base_width x base_height x 32bpp.
  *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
  * \param [in] sparse_of_map           (optional) Sparse OF bit-mask of size base_width/8 x base_height x 1bpp.
