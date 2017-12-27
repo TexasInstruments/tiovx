@@ -99,6 +99,8 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
     tivx_obj_desc_image_t *flow_vector_desc;
     tivx_obj_desc_image_t *flow_vector_rgb_desc;
     tivx_obj_desc_image_t *confidence_image_desc;
+    tivx_obj_desc_scalar_t *confidence_threshold_desc;
+    int confidence_threshold = 8; /* default value */
 
     if ( num_params != TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX])
@@ -114,6 +116,7 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
         flow_vector_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
         flow_vector_rgb_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX];
         confidence_image_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
+        confidence_threshold_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
 
         flow_vector_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
           flow_vector_desc->mem_ptr[0].shared_ptr, flow_vector_desc->mem_ptr[0].mem_type);
@@ -132,6 +135,16 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
            confidence_image_desc->mem_size[0], confidence_image_desc->mem_ptr[0].mem_type,
             VX_WRITE_ONLY);
 
+        /* if not specified by user or value out of valid range use default value */
+        if(confidence_threshold_desc != NULL)
+        {
+            uint32_t tmp_value = confidence_threshold_desc->data.u32;
+
+            if(tmp_value<=15)
+            {
+                confidence_threshold = tmp_value;
+            }
+        }
 
         /* call kernel processing function */
         {
@@ -147,7 +160,8 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
                 confidence_image_desc->mem_ptr[0].target_ptr,
                 flow_vector_desc->width,
                 flow_vector_rgb_desc->imagepatch_addr[0].stride_y,
-                confidence_image_desc->imagepatch_addr[0].stride_y
+                confidence_image_desc->imagepatch_addr[0].stride_y,
+                confidence_threshold
              );
         }
 

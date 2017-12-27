@@ -211,6 +211,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
 /*! \brief [Graph] Creates a DOF visualization node Node.
  * \param [in] graph The reference to the graph.
  * \param [in] flow_vector Flow vector output from dmpac_dof node
+ * \param [in] confidence_threshold Threshold to use when generating flow_vector_rgb. vx_scalar of type vx_uint32.
+ *                                   Valid values are 0 (low threshold/confidence) .. 15 (high threshold/confidence).
+ *                                   When NULL, default value of 8 is used.
  * \param [out] flow_vector_rgb flow vector representated as 24 RGB image
  * \param [out] confidence_image confidence values represented as U8 grayscale image, 255 is high confidence
  * \see <tt>TIVX_KERNEL_DOF_VISUALIZE</tt>
@@ -220,6 +223,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             flow_vector,
+                                      vx_scalar            confidence_threshold,
                                       vx_image             flow_vector_rgb,
                                       vx_image             confidence_image);
 

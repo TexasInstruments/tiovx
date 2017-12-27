@@ -83,17 +83,20 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 {
     vx_status status = VX_SUCCESS;
     vx_image img[3U] = {NULL};
+    vx_scalar confidence_threshold;
     vx_df_image fmt[3U] = {0};
     vx_uint32 w[3U], h[3U];
-
-    status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         img[0U] = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
         img[1U] = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX];
         img[2U] = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
-
+        confidence_threshold = (vx_scalar)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
+    }
+    if(img[0u]==NULL || img[1u]==NULL || img[2u]==NULL)
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
     if (VX_SUCCESS == status)
     {
@@ -122,6 +125,17 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
         status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
     }
 
+    if(VX_SUCCESS == status && confidence_threshold!=NULL)
+    {
+        vx_enum type;
+
+        status = vxQueryScalar(confidence_threshold, VX_SCALAR_TYPE, &type, sizeof(vx_enum));
+
+        if(type!=VX_TYPE_UINT32)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
 
     /* PARAMETER CHECKING */
 
@@ -196,6 +210,16 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
                         VX_INPUT,
                         VX_TYPE_IMAGE,
                         VX_PARAMETER_STATE_REQUIRED
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_SCALAR,
+                        VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }

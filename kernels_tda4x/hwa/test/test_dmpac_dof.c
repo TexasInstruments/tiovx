@@ -171,6 +171,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
 
         ASSERT_VX_OBJECT(node_dof_vis = tivxDofVisualizeNode(graph,
                         flow_vector_out,
+                        NULL,
                         flow_vector_out_img,
                         confidence_img), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_dof_vis, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
