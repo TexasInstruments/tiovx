@@ -1,0 +1,373 @@
+#
+# Copyright (c) 2017 Texas Instruments Incorporated
+#
+# All rights reserved not granted herein.
+#
+# Limited License.
+#
+# Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
+# license under copyrights and patents it now or hereafter owns or controls to make,
+# have made, use, import, offer to sell and sell ("Utilize") this software subject to the
+# terms herein.  With respect to the foregoing patent license, such license is granted
+# solely to the extent that any such patent is necessary to Utilize the software alone.
+# The patent license shall not apply to any combinations which include this software,
+# other than combinations with devices manufactured by or for TI ("TI Devices").
+# No hardware patent is licensed hereunder.
+#
+# Redistributions must preserve existing copyright notices and reproduce this license
+# (including the above copyright notice and the disclaimer and (if applicable) source
+# code license limitations below) in the documentation and/or other materials provided
+# with the distribution
+#
+# Redistribution and use in binary form, without modification, are permitted provided
+# that the following conditions are met:
+#
+#       No reverse engineering, decompilation, or disassembly of this software is
+# permitted with respect to any software provided in binary form.
+#
+#       any redistribution and use are licensed by TI for use only with TI Devices.
+#
+#       Nothing shall obligate TI to provide you with source code for the software
+# licensed and provided to you in object code.
+#
+# If software source code is provided to you, modification and redistribution of the
+# source code are permitted provided that the following conditions are met:
+#
+#       any redistribution and use of the source code, including any resulting derivative
+# works, are licensed by TI for use only with TI Devices.
+#
+#       any redistribution and use of any object code compiled from the source code
+# and any resulting derivative works, are licensed by TI for use only with TI Devices.
+#
+# Neither the name of Texas Instruments Incorporated nor the names of its suppliers
+#
+# may be used to endorse or promote products derived from this software without
+# specific prior written permission.
+#
+# DISCLAIMER.
+#
+# THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
+# OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+# OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+# IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+# INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+# BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+# OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+# OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+# OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+
+from enum import Enum
+from . import *
+
+## Object/Data type (OpenVX equivalent = vx_image_attribute_e)
+#
+# \par Example usage:
+# \code
+# ImageAttribute.WIDTH
+# ImageAttribute.HEIGHT
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class ImageAttribute(Enum) :
+    ## OpenVX equivalent = VX_IMAGE_WIDTH
+    WIDTH       = 'w'
+    ## OpenVX equivalent = VX_IMAGE_HEIGHT
+    HEIGHT      = 'h'
+    ## OpenVX equivalent = VX_IMAGE_FORMAT
+    FORMAT      = 'fmt'
+    ## OpenVX equivalent = VX_IMAGE_PLANES
+    PLANES      = 'planes'
+    ## OpenVX equivalent = VX_IMAGE_SPACE
+    SPACE       = 'space'
+    ## OpenVX equivalent = VX_IMAGE_RANGE
+    RANGE       = 'range'
+    ## OpenVX equivalent = VX_IMAGE_SIZE
+    SIZE        = 'size'
+    ## OpenVX equivalent = VX_IMAGE_MEMORY_TYPE
+    MEMORY_TYPE = 'memory_type'
+
+    def vx_enum_name(attr) :
+        return "VX_IMAGE_" + attr.name
+
+    def object_type() :
+        return Type.Image
+
+## Object/Data type (OpenVX equivalent = vx_pyramid_attribute_e)
+#
+# \par Example usage:
+# \code
+# PyramidAttribute.WIDTH
+# PyramidAttribute.HEIGHT
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class PyramidAttribute(Enum) :
+    ## OpenVX equivalent = VX_PYRAMID_LEVELS
+    LEVELS      = 'levels'
+    ## OpenVX equivalent = VX_PYRAMID_SCALE
+    SCALE       = 'scale'
+    ## OpenVX equivalent = VX_PYRAMID_WIDTH
+    WIDTH       = 'w'
+    ## OpenVX equivalent = VX_PYRAMID_HEIGHT
+    HEIGHT      = 'h'
+    ## OpenVX equivalent = VX_PYRAMID_FORMAT
+    FORMAT      = 'fmt'
+
+    def vx_enum_name(attr) :
+        return "VX_PYRAMID_" + attr.name
+
+    def object_type() :
+        return Type.Pyramid
+
+## Object/Data type (OpenVX equivalent = vx_array_attribute_e)
+#
+# \par Example usage:
+# \code
+# ArrayAttribute.ITEMSIZE
+# ArrayAttribute.ITEMTYPE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class ArrayAttribute(Enum) :
+    ## OpenVX equivalent = VX_ARRAY_ITEMTYPE
+    ITEMTYPE      = 'item_type'
+    ## OpenVX equivalent = VX_ARRAY_NUMITEMS
+    NUMITEMS      = 'num_items'
+    ## OpenVX equivalent = VX_ARRAY_CAPACITY
+    CAPACITY      = 'capacity'
+    ## OpenVX equivalent = VX_ARRAY_ITEMSIZE
+    ITEMSIZE      = 'item_size'
+
+    def vx_enum_name(attr) :
+        return "VX_ARRAY_" + attr.name
+
+    def object_type() :
+        return Type.Array
+
+## Object/Data type (OpenVX equivalent = vx_scalar_attribute_e)
+#
+# \par Example usage:
+# \code
+# ScalarAttribute.TYPE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class ScalarAttribute(Enum) :
+    ## OpenVX equivalent = VX_SCALAR_TYPE
+    TYPE      = 'scalar_type'
+
+    def vx_enum_name(attr) :
+        return "VX_SCALAR_" + attr.name
+
+    def object_type() :
+        return Type.Scalar
+
+## Object/Data type (OpenVX equivalent = vx_convolution_attribute_e)
+#
+# \par Example usage:
+# \code
+# ConvolutionAttribute.ROWS
+# ConvolutionAttribute.COLUMNS
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class ConvolutionAttribute(Enum) :
+    ## OpenVX equivalent = VX_CONVOLUTION_ROWS
+    ROWS      = 'row'
+    ## OpenVX equivalent = VX_CONVOLUTION_COLUMNS
+    COLUMNS   = 'col'
+    ## OpenVX equivalent = VX_CONVOLUTION_SCALE
+    SCALE     = 'scale'
+    ## OpenVX equivalent = VX_CONVOLUTION_SIZE
+    SIZE      = 'size'
+
+    def vx_enum_name(attr) :
+        return "VX_CONVOLUTION_" + attr.name
+
+    def object_type() :
+        return Type.Convolution
+
+## Object/Data type (OpenVX equivalent = vx_matrix_attribute_e)
+#
+# \par Example usage:
+# \code
+# MatrixAttribute.ROWS
+# MatrixAttribute.COLUMNS
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class MatrixAttribute(Enum) :
+    ## OpenVX equivalent = VX_MATRIX_TYPE
+    TYPE      = 'type'
+    ## OpenVX equivalent = VX_MATRIX_ROWS
+    ROWS      = 'h'
+    ## OpenVX equivalent = VX_MATRIX_COLUMNS
+    COLUMNS   = 'w'
+    ## OpenVX equivalent = VX_MATRIX_SIZE
+    SIZE      = 'size'
+    ## OpenVX equivalent = VX_MATRIX_ORIGIN
+    ORIGIN    = 'origin'
+    ## OpenVX equivalent = VX_MATRIX_PATTERN
+    PATTERN   = 'pattern'
+
+    def vx_enum_name(attr) :
+        return "VX_MATRIX_" + attr.name
+
+    def object_type() :
+        return Type.Matrix
+
+## Object/Data type (OpenVX equivalent = vx_lut_attribute_e)
+#
+# \par Example usage:
+# \code
+# LutAttribute.COUNT
+# LutAttribute.TYPE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class LutAttribute(Enum) :
+    ## OpenVX equivalent = VX_LUT_TYPE
+    TYPE      = 'type'
+    ## OpenVX equivalent = VX_LUT_COUNT
+    COUNT     = 'count'
+    ## OpenVX equivalent = VX_LUT_SIZE
+    SIZE      = 'size'
+    ## OpenVX equivalent = VX_LUT_OFFSET
+    OFFSET    = 'offset'
+
+    def vx_enum_name(attr) :
+        return "VX_LUT_" + attr.name
+
+    def object_type() :
+        return Type.Lut
+
+## Object/Data type (OpenVX equivalent = vx_distribution_attribute_e)
+#
+# \par Example usage:
+# \code
+# DistributionAttribute.BINS
+# DistributionAttribute.RANGE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class DistributionAttribute(Enum) :
+    ## OpenVX equivalent = VX_DISTRIBUTION_DIMENSIONS
+    DIMENSIONS  = 'dims'
+    ## OpenVX equivalent = VX_DISTRIBUTION_OFFSET
+    OFFSET      = 'offset'
+    ## OpenVX equivalent = VX_DISTRIBUTION_RANGE
+    RANGE       = 'range'
+    ## OpenVX equivalent = VX_DISTRIBUTION_BINS
+    BINS        = 'bins'
+    ## OpenVX equivalent = VX_DISTRIBUTION_WINDOW
+    WINDOW      = 'win'
+    ## OpenVX equivalent = VX_DISTRIBUTION_SIZE
+    SIZE        = 'size'
+
+    def vx_enum_name(attr) :
+        return "VX_DISTRIBUTION_" + attr.name
+
+    def object_type() :
+        return Type.Distribution
+
+## Object/Data type (OpenVX equivalent = vx_threshold_attribute_e)
+#
+# \par Example usage:
+# \code
+# ThresholdAttribute.TYPE
+# ThresholdAttribute.DATA_TYPE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class ThresholdAttribute(Enum) :
+    ## OpenVX equivalent = VX_THRESHOLD_TYPE
+    TYPE             = 'threshold_type'
+    ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_VALUE
+    THRESHOLD_VALUE  = 'value'
+    ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_LOWER
+    THRESHOLD_LOWER  = 'lower'
+    ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_UPPER
+    THRESHOLD_UPPER  = 'upper'
+    ## OpenVX equivalent = VX_THRESHOLD_TRUE_VALUE
+    TRUE_VALUE       = 'true_value'
+    ## OpenVX equivalent = VX_THRESHOLD_FALSE_VALUE
+    FALSE_VALUE      = 'false_value'
+    ## OpenVX equivalent = VX_THRESHOLD_FALSE_VALUE
+    DATA_TYPE        = 'threshold_data_type'
+
+    def vx_enum_name(attr) :
+        return "VX_THRESHOLD_" + attr.name
+
+    def object_type() :
+        return Type.Threshold
+
+## Object/Data type (OpenVX equivalent = vx_remap_attribute_e)
+#
+# \par Example usage:
+# \code
+# RemapAttribute.SOURCE_WIDTH
+# RemapAttribute.SOURCE_HEIGHT
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class RemapAttribute(Enum) :
+    ## OpenVX equivalent = VX_REMAP_SOURCE_WIDTH
+    SOURCE_WIDTH         = 'src_w'
+    ## OpenVX equivalent = VX_REMAP_SOURCE_HEIGHT
+    SOURCE_HEIGHT        = 'src_h'
+    ## OpenVX equivalent = VX_REMAP_DESTINATION_WIDTH
+    DESTINATION_WIDTH    = 'dst_w'
+    ## OpenVX equivalent = VX_REMAP_DESTINATION_HEIGHT
+    DESTINATION_HEIGHT   = 'dst_h'
+
+    def vx_enum_name(attr) :
+        return "VX_REMAP_" + attr.name
+
+    def object_type() :
+        return Type.Remap
+
+## Object/Data type (OpenVX equivalent = vx_object_array_attribute_e)
+#
+# \par Example usage:
+# \code
+# ObjectArrayAttribute.ITEMTYPE
+# ObjectArrayAttribute.NUMITEMS
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class ObjectArrayAttribute(Enum) :
+    ## OpenVX equivalent = VX_OBJECT_ARRAY_ITEMTYPE
+    ITEMTYPE      = 'type'
+    ## OpenVX equivalent = VX_OBJECT_ARRAY_NUMITEMS
+    NUMITEMS      = 'num_items'
+
+    def vx_enum_name(attr) :
+        return "VX_OBJECT_ARRAY_" + attr.name
+
+    def object_type() :
+        return Type.ObjectArray
+
+## Object/Data type (OpenVX equivalent = none ... type aggregator for all attributes)
+#
+# \par Example usage:
+# \code
+# Attribute.Image.WIDTH
+# Attribute.Array.ITEMSIZE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class Attribute :
+    Image = ImageAttribute
+    Pyramid = PyramidAttribute
+    Array = ArrayAttribute
+    Scalar = ScalarAttribute
+    Convolution = ConvolutionAttribute
+    Matrix = MatrixAttribute
+    Lut = LutAttribute
+    Distribution = DistributionAttribute
+    Threshold = ThresholdAttribute
+    Remap = RemapAttribute
+    ObjectArray = ObjectArrayAttribute

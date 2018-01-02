@@ -100,6 +100,7 @@ from .export_image import *
 from .export_code import *
 from .kernel import *
 from .kernel_code import *
+from .attribute import *
 
 from .array import *
 

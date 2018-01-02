@@ -431,29 +431,36 @@ class KernelExportCode :
                 self.host_c_code.write_close_brace()
                 if prm.state is ParamState.OPTIONAL :
                     self.host_c_code.write_close_brace()
-            self.host_c_code.write_newline()
+                self.host_c_code.write_newline()
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
-        # COMMENT OUT FOR NOW AS WE WILL BE REWORKING THIS 
-        # If # of input images is = 2, validate that two input sizes are equal
-        #if self.kernel.getNumInputImages() == 2 :
-        #    self.host_c_code.write_line("if (VX_SUCCESS == status)")
-        #    self.host_c_code.write_open_brace()
-        #    self.host_c_code.write_line("status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);")
-        #    self.host_c_code.write_close_brace()
-        #    self.host_c_code.write_newline()
+        if len(self.kernel.relationship_list) :
+            self.host_c_code.write_newline()
+            self.host_c_code.write_line("/* PARAMETER RELATIONSHIP CHECKING */")
+            self.host_c_code.write_newline()
+            self.host_c_code.write_line("if (VX_SUCCESS == status)")
+            self.host_c_code.write_open_brace()
 
-        # If there is at least 1 input image and 1 output image, validates each output image size
-        # Checks if output size is equal to the input size
-        #if self.kernel.getNumInputImages() >= 1 and self.kernel.getNumOutputImages() >= 1 :
-        #    for x in range(0, self.kernel.getNumOutputImages()) :
-        #        self.host_c_code.write_line("if (VX_SUCCESS == status)")
-        #        self.host_c_code.write_open_brace()
-        #        temp = self.kernel.getNumOutputImages() - x
-        #        self.host_c_code.write_line("status = tivxKernelValidateOutputSize(w[0U], w[%sU], h[0U], h[%sU], img[%sU]);" % (self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp, self.kernel.getNumImages()-temp) )
-        #        self.host_c_code.write_close_brace()
-        #        self.host_c_code.write_newline()
+            for rel in self.kernel.relationship_list :
+                for attr in rel.attribute_list :
+                    if len(rel.prm_list) > 2 :
+                        self.host_c_code.write_line("if( (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                        for prm in rel.prm_list[2:-1] :
+                            self.host_c_code.write_line("    (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, prm.name_lower, attr.value))
+                        self.host_c_code.write_line("    (%s_%s != %s_%s))" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[-1].name_lower, attr.value))
+                    elif len(rel.prm_list) == 2 :
+                        self.host_c_code.write_line("if (%s_%s != %s_%s)" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+
+                    self.host_c_code.write_open_brace()
+                    self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
+                    self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Parameters '%s' and '%s' " % (rel.prm_list[0].name_lower, rel.prm_list[1].name_lower), new_line=False)
+                    for prm in rel.prm_list[2:] :
+                        self.host_c_code.write_line("and '%s' " % (prm.name_lower), new_line=False, indent=False)
+                    self.host_c_code.write_line("should have the same value for %s\\n\");" % attr.vx_enum_name(), indent=False)
+                    self.host_c_code.write_close_brace()
+                    self.host_c_code.write_newline()
+            self.host_c_code.write_close_brace()
 
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()

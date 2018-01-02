@@ -81,6 +81,15 @@ class KernelParams :
     def __str__(self):
         return "Param " + str(self.index) + ": " + self.name_upper + " " + Type.get_vx_enum_name(self.type) + " " + Direction.get_vx_enum_name(self.direction) + " " + ParamState.get_vx_enum_name(self.state)
 
+class KernelParamRelationship :
+    def __init__(self, prm_list, attribute_list, type):
+        self.attribute_list = attribute_list
+        self.prm_list = prm_list
+        self.type = type
+
+    def __str__(self):
+        return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + type
+
 class Kernel  :
     def __init__(self, name="default") :
         self.name_lower = name.lower()
@@ -91,6 +100,8 @@ class Kernel  :
         self.name_str_prefix = "com.ti."
         self.enum_str_prefix = "TIVX_KERNEL_"
         self.targets = []
+        self.relationship_list = []
+        self.relationship_list_index = 0
 
     def setKernelPrefix(self, name_str_prefix, enum_str_prefix) :
         self.name_str_prefix = name_str_prefix
@@ -142,5 +153,19 @@ class Kernel  :
                 num_output_images += 1
         return num_output_images
 
+    def setParameterRelationship(self, name_list=[], attribute_list=["all"], type="equal") :
+        assert len(name_list) > 1, "There should be more than 1 parameter in name_list"
+        prm_list = []
 
-
+        # Get params from names
+        for name in name_list :
+            found = False
+            for prm in self.params :
+                if name.lower() == prm.name_lower :
+                    prm_list.append(prm)
+                    found = True
+                    break
+            assert found == True, "'%s' was not found in parameter list" % name
+        relationship = KernelParamRelationship(prm_list, attribute_list, type)
+        self.relationship_list.append(relationship)
+        self.relationship_list_index = self.relationship_list_index + 1
