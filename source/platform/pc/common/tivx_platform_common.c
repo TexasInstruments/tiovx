@@ -96,6 +96,8 @@ static tivx_platform_info_t g_tivx_platform_info =
     TIVX_TARGET_INFO
 };
 
+static uint64_t g_start_time=0;
+
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
 
@@ -117,6 +119,8 @@ vx_status tivxPlatformInit(void)
     }
 
     tivxIpcInit();
+
+    g_start_time = tivxPlatformGetTimeInUsecs();
 
     return (status);
 }
@@ -176,6 +180,25 @@ vx_enum tivxPlatformGetTargetId(const char *target_name)
     return (target_id);
 }
 
+void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
+{
+    uint32_t i;
+
+    snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
+
+    if(target_id!=TIVX_TARGET_ID_INVALID)
+    {
+        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+        {
+            if (target_id == g_tivx_platform_info.target_info[i].target_id)
+            {
+                snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
+                break;
+            }
+        }
+    }
+}
+
 vx_bool tivxPlatformTargetMatch(
     const char *kernel_target_name, const char *target_string)
 {
@@ -230,7 +253,14 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 
 void tivxPlatformPrintf(const char *format)
 {
-    printf(format);
+    char buf[4*1024];
+    uint64_t cur_time = tivxPlatformGetTimeInUsecs() - g_start_time;
+
+    snprintf(buf, sizeof(buf), " %d.%ds: %s",
+        (uint32_t)(cur_time/1000000),
+        (uint32_t)(cur_time%1000000),
+        format);
+    printf(buf);
 }
 
 void tivxPlatformActivate()

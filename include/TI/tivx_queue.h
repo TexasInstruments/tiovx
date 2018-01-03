@@ -192,6 +192,29 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout);
  */
 vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout);
 
+/*!
+ * \brief Peek an element from the queue but dont extract it
+ *
+ * \param queue [in] Pointer to queue object
+ * \param data [out] element that is 'peeked'
+ *
+ * \return VX_SUCCESS on success
+ *
+ * \ingroup group_tivx_queue
+ */
+vx_status tivxQueuePeek(tivx_queue *queue, uint32_t *data);
+
+/*!
+ * \brief Check if queue is empty
+ *
+ * \param queue [in] Pointer to queue object
+ *
+ * \return vx_true_e if queue is empty, else vx_false_e
+ *
+ * \ingroup group_tivx_queue
+ */
+vx_bool tivxQueueIsEmpty(tivx_queue *queue);
+
 #ifdef __cplusplus
 }
 #endif

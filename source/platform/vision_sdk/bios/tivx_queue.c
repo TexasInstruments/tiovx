@@ -286,3 +286,45 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
     return (status);
 }
 
+vx_bool tivxQueueIsEmpty(tivx_queue *queue)
+{
+    vx_bool is_empty = vx_false_e;
+    uint32_t cookie;
+
+    /* disable interrupts */
+    cookie = BspOsal_disableInterrupt();
+
+    if (queue->count == 0)
+    {
+        is_empty = vx_true_e;
+    }
+
+    /* restore interrupts */
+    BspOsal_restoreInterrupt(cookie);
+
+    return is_empty;
+}
+
+vx_status tivxQueuePeek(tivx_queue *queue, uint32_t *data)
+{
+    vx_status status = VX_FAILURE;/* init status to error */
+
+    uint32_t cookie;
+
+    /* disable interrupts */
+    cookie = BspOsal_disableInterrupt();
+
+    if (queue->count > 0)
+    {
+        /* 'peek' the element but dont extract it */
+        *data = queue->queue[queue->cur_rd];
+
+        /* set status as success */
+        status = VX_SUCCESS;
+    }
+
+    /* restore interrupts */
+    BspOsal_restoreInterrupt(cookie);
+
+    return status;
+}

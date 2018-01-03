@@ -354,3 +354,57 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
     return (status);
 }
 
+vx_bool tivxQueueIsEmpty(tivx_queue *queue)
+{
+    vx_bool is_empty = vx_true_e;
+    tivx_queue_context context = NULL;
+    vx_status status;
+
+    if(queue && queue->context)
+    {
+        context = queue->context;
+
+        status = pthread_mutex_lock(&context->lock);
+        if(status==0)
+        {
+            if (queue->count == 0)
+            {
+                is_empty = vx_true_e;
+            }
+            else
+            {
+                is_empty = vx_false_e;
+            }
+
+            pthread_mutex_unlock(&context->lock);
+        }
+    }
+    return (is_empty);
+}
+
+vx_status tivxQueuePeek(tivx_queue *queue, uint32_t *data)
+{
+    vx_status status = VX_FAILURE;/* init status to error */
+    tivx_queue_context context = NULL;
+
+    if(queue && queue->context)
+    {
+        context = queue->context;
+
+        status = pthread_mutex_lock(&context->lock);
+        if(status==0)
+        {
+            if (queue->count > 0)
+            {
+                /* 'peek' the element but dont extract it */
+                *data = queue->queue[queue->cur_rd];
+
+                /* set status as success */
+                status = VX_SUCCESS;
+            }
+
+            status = pthread_mutex_unlock(&context->lock);
+        }
+    }
+    return (status);
+}

@@ -31,7 +31,7 @@ extern "C" {
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (512u)
+#define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (1024u)
 
 
 /*! \brief Default buffer allocation alignment
@@ -42,7 +42,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE        (280U)
+#define TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE        (384U)
 
 /*! \brief Macro to check the alignment of the size of
  *         the shared memory entry

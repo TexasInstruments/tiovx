@@ -170,6 +170,7 @@ TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
     vx_scalar num_corners_scalar;
     vx_array corners;
     vx_perf_t perf_node;
+    vx_perf_t perf_graph;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
     {
@@ -217,6 +218,7 @@ TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
         VX_CALL(vxProcessGraph(graph));
 
         vxQueryNode(node, VX_NODE_PERFORMANCE, &perf_node, sizeof(perf_node));
+        vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
 
         CheckOutput(corners);
 
@@ -241,7 +243,8 @@ TEST_WITH_ARG(tivxIVisionHarrisCorners, testHarrisCornerOnEve, Arg,
 
         IVisionUnLoadKernels(context);
 
-        IVisionPrintPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N1");
+        IVisionPrintPerformance(perf_node, IMG_WIDTH*IMG_HEIGHT, "N0");
+        IVisionPrintPerformance(perf_graph, IMG_WIDTH*IMG_HEIGHT, "G0");
     }
 }
 

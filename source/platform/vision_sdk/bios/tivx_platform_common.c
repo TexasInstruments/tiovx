@@ -211,3 +211,22 @@ void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)
         }
     }
 }
+
+void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
+{
+    uint32_t i;
+
+    snprintf(target_name, TIVX_TARGET_MAX_NAME, "UNKNOWN");
+
+    if(target_id!=TIVX_TARGET_ID_INVALID)
+    {
+        for (i = 0; i < TIVX_PLATFORM_MAX_TARGETS; i ++)
+        {
+            if (target_id == g_tivx_platform_info.target_info[i].target_id)
+            {
+                snprintf(target_name, TIVX_TARGET_MAX_NAME, "%s", g_tivx_platform_info.target_info[i].target_name);
+                break;
+            }
+        }
+    }
+}

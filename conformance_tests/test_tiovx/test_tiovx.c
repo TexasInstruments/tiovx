@@ -19,14 +19,17 @@
 
 void printPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName)
 {
-    printf("[ %c%c ] Execution time for %9d pixels (avg = %4d.%-6d ms, min = %4d.%-6d ms, max = %4d.%-6d ms)\n",
+    printf("[ %c%c ] Execution time for %9d pixels (avg = %4d.%-6d ms, sum = %4d.%-6d ms, min = %4d.%-6d ms, max = %4d.%-6d ms, num = %d)\n",
         testName[0], testName[1],
         numPixels,
         (uint32_t)(performance.avg/1000000),
         (uint32_t)(performance.avg%1000000),
+        (uint32_t)(performance.sum/1000000),
+        (uint32_t)(performance.sum%1000000),
         (uint32_t)(performance.min/1000000),
         (uint32_t)(performance.min%1000000),
         (uint32_t)(performance.max/1000000),
-        (uint32_t)(performance.max%1000000)
+        (uint32_t)(performance.max%1000000),
+        (uint32_t)(performance.num)
         );
 }

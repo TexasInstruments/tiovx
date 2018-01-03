@@ -69,7 +69,7 @@ typedef struct _tivx_event_t {
     pthread_mutex_t lock;
     pthread_cond_t  cond;
 
-} tivx_event_t;
+} tivx_linux_event_t;
 
 vx_status tivxEventCreate(tivx_event *event)
 {
@@ -78,7 +78,7 @@ vx_status tivxEventCreate(tivx_event *event)
     tivx_event tmp_event;
     vx_status status = VX_SUCCESS;
 
-    tmp_event = (tivx_event)malloc(sizeof(tivx_event_t));
+    tmp_event = (tivx_event)malloc(sizeof(tivx_linux_event_t));
     if(tmp_event==NULL)
     {
         *event = NULL;
