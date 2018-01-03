@@ -86,7 +86,7 @@ extern "C" {
 /*! \brief Max parameters in a kernel
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_KERNEL_MAX_PARAMS      (15u)
+#define TIVX_KERNEL_MAX_PARAMS      (16u)
 
 /*! \brief Max nodes taking output form a given node
  * \ingroup group_tivx_obj_desc_cfg
@@ -356,8 +356,6 @@ typedef struct _tivx_obj_desc_node
     /*! \brief parameter object descriptors */
     uint16_t in_node_id[TIVX_NODE_MAX_IN_NODES];
 
-    /*! \brief Added dummy variable to keep structure size 8byte aligned */
-    uint32_t dummy;
 } tivx_obj_desc_node_t;
 
 /*!
