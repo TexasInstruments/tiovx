@@ -93,7 +93,7 @@ class ImageAttribute(Enum) :
         return "VX_IMAGE_" + attr.name
 
     def object_type() :
-        return Type.Image
+        return Type.IMAGE
 
 ## Object/Data type (OpenVX equivalent = vx_pyramid_attribute_e)
 #
@@ -120,7 +120,7 @@ class PyramidAttribute(Enum) :
         return "VX_PYRAMID_" + attr.name
 
     def object_type() :
-        return Type.Pyramid
+        return Type.PYRAMID
 
 ## Object/Data type (OpenVX equivalent = vx_array_attribute_e)
 #
@@ -145,7 +145,7 @@ class ArrayAttribute(Enum) :
         return "VX_ARRAY_" + attr.name
 
     def object_type() :
-        return Type.Array
+        return Type.ARRAY
 
 ## Object/Data type (OpenVX equivalent = vx_scalar_attribute_e)
 #
@@ -163,7 +163,7 @@ class ScalarAttribute(Enum) :
         return "VX_SCALAR_" + attr.name
 
     def object_type() :
-        return Type.Scalar
+        return Type.SCALAR
 
 ## Object/Data type (OpenVX equivalent = vx_convolution_attribute_e)
 #
@@ -188,7 +188,7 @@ class ConvolutionAttribute(Enum) :
         return "VX_CONVOLUTION_" + attr.name
 
     def object_type() :
-        return Type.Convolution
+        return Type.CONVOLUTION
 
 ## Object/Data type (OpenVX equivalent = vx_matrix_attribute_e)
 #
@@ -217,7 +217,7 @@ class MatrixAttribute(Enum) :
         return "VX_MATRIX_" + attr.name
 
     def object_type() :
-        return Type.Matrix
+        return Type.MATRIX
 
 ## Object/Data type (OpenVX equivalent = vx_lut_attribute_e)
 #
@@ -242,7 +242,7 @@ class LutAttribute(Enum) :
         return "VX_LUT_" + attr.name
 
     def object_type() :
-        return Type.Lut
+        return Type.LUT
 
 ## Object/Data type (OpenVX equivalent = vx_distribution_attribute_e)
 #
@@ -271,7 +271,7 @@ class DistributionAttribute(Enum) :
         return "VX_DISTRIBUTION_" + attr.name
 
     def object_type() :
-        return Type.Distribution
+        return Type.DISTRIBUTION
 
 ## Object/Data type (OpenVX equivalent = vx_threshold_attribute_e)
 #
@@ -302,7 +302,7 @@ class ThresholdAttribute(Enum) :
         return "VX_THRESHOLD_" + attr.name
 
     def object_type() :
-        return Type.Threshold
+        return Type.THRESHOLD
 
 ## Object/Data type (OpenVX equivalent = vx_remap_attribute_e)
 #
@@ -327,7 +327,7 @@ class RemapAttribute(Enum) :
         return "VX_REMAP_" + attr.name
 
     def object_type() :
-        return Type.Remap
+        return Type.REMAP
 
 ## Object/Data type (OpenVX equivalent = vx_object_array_attribute_e)
 #
@@ -348,7 +348,7 @@ class ObjectArrayAttribute(Enum) :
         return "VX_OBJECT_ARRAY_" + attr.name
 
     def object_type() :
-        return Type.ObjectArray
+        return Type.OBJECT_ARRAY
 
 ## Object/Data type (OpenVX equivalent = none ... type aggregator for all attributes)
 #
@@ -371,3 +371,28 @@ class Attribute :
     Threshold = ThresholdAttribute
     Remap = RemapAttribute
     ObjectArray = ObjectArrayAttribute
+
+    def from_type(type) :
+        if type == Type.IMAGE :
+            return Attribute.Image
+        if type == Type.PYRAMID :
+            return Attribute.Pyramid
+        if type == Type.ARRAY :
+            return Attribute.Array
+        if type == Type.SCALAR :
+            return Attribute.Scalar
+        if type == Type.CONVOLUTION :
+            return Attribute.Convolution
+        if type == Type.MATRIX :
+            return Attribute.Matrix
+        if type == Type.LUT :
+            return Attribute.Lut
+        if type == Type.DISTRIBUTION :
+            return Attribute.Distribution
+        if type == Type.THRESHOLD :
+            return Attribute.Threshold
+        if type == Type.REMAP :
+            return Attribute.Remap
+        if type == Type.OBJECT_ARRAY :
+            return Attribute.ObjectArray
+        return "INVALID"

@@ -321,6 +321,18 @@ class KernelExportCode :
             if prm.state is ParamState.OPTIONAL :
                 self.host_c_code.write_line("if (NULL != %s)" % prm.name_lower)
                 self.host_c_code.write_open_brace()
+
+            # TODO:
+            # Now that we have attributes defined, these commented out lines *could* replace the if..else list below, however this would fetch ALL of the attributes, which we don't yet do.
+            #    also, we would need to do something similar for the variable declaration section above, and the parameter checking section below.
+            #
+            #attr = Attribute.from_type(prm.type)
+            #if Type.is_scalar_type(prm.type) :
+            #    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            #else :
+            #    for name, member in attr.__members__.items() :
+            #        self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value, prm.name_lower, member.value))
+
             if Type.is_scalar_type(prm.type) :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.IMAGE == prm.type :
