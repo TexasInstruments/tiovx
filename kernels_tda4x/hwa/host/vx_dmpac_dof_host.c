@@ -75,6 +75,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelDmpacDofInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+vx_status tivxAddKernelDmpacDof(vx_context context);
+vx_status tivxRemoveKernelDmpacDof(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -82,211 +84,283 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_image img[3U] = {NULL};
-    vx_array array_0 = {NULL};
-    vx_enum item_type_0;
-    vx_size capacity_0;
-    vx_pyramid pyramid_1 = {NULL};
-    vx_size levels_pyr_1;
-    vx_float32 scale_pyr_1;
-    vx_uint32 w_pyr_1;
-    vx_uint32 h_pyr_1;
-    vx_enum df_image_pyr_1;
-    vx_pyramid pyramid_2 = {NULL};
-    vx_size levels_pyr_2;
-    vx_float32 scale_pyr_2;
-    vx_uint32 w_pyr_2;
-    vx_uint32 h_pyr_2;
-    vx_enum df_image_pyr_2;
-    vx_distribution distribution_3 = {NULL};
-    vx_int32 offset_3 = 0u;
-    vx_uint32 range_3 = 0u;
-    vx_size numBins_3 = 0u;
-    vx_df_image fmt[3U] = {0u, 0u, 0u};
-    vx_uint32 w[3U], h[3U];
 
-    array_0 = (vx_array)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
-    pyramid_1 = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
-    pyramid_2 = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
-    img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
-    img[1U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
-    img[2U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
-    distribution_3 = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
+    vx_array configuration = NULL;
+    vx_enum configuration_item_type;
+    vx_size configuration_capacity, configuration_item_size;
 
-    if(array_0==NULL || pyramid_1 == NULL || pyramid_2 == NULL || img[2u] == NULL)
+    vx_pyramid input_current = NULL;
+    vx_df_image input_current_fmt;
+    vx_size input_current_levels;
+    vx_float32 input_current_scale;
+    vx_uint32 input_current_w, input_current_h;
+
+    vx_pyramid input_reference = NULL;
+    vx_df_image input_reference_fmt;
+    vx_size input_reference_levels;
+    vx_float32 input_reference_scale;
+    vx_uint32 input_reference_w, input_reference_h;
+
+    vx_image flow_vector_in = NULL;
+    vx_df_image flow_vector_in_fmt;
+    vx_uint32 flow_vector_in_w, flow_vector_in_h;
+
+    vx_image sparse_of_map = NULL;
+    vx_df_image sparse_of_map_fmt;
+    vx_uint32 sparse_of_map_w, sparse_of_map_h;
+
+    vx_image flow_vector_out = NULL;
+    vx_df_image flow_vector_out_fmt;
+    vx_uint32 flow_vector_out_w, flow_vector_out_h;
+
+    vx_distribution confidence_histogram = NULL;
+    vx_int32 confidence_histogram_offset = 0;
+    vx_uint32 confidence_histogram_range = 0;
+    vx_size confidence_histogram_numBins = 0;
+
+    if ( (num != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX])
+    )
     {
-        /* required parameters are set to NULL */
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
+        configuration = (const vx_array)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
+        input_current = (const vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
+        input_reference = (const vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
+        flow_vector_in = (const vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
+        sparse_of_map = (const vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
+        flow_vector_out = (const vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
+        confidence_histogram = (const vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
     }
+
+
+    /* PARAMETER ATTRIBUTE FETCH */
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryPyramid(pyramid_1, VX_PYRAMID_LEVELS, &levels_pyr_1, sizeof(levels_pyr_1));
-        status |= vxQueryPyramid(pyramid_1, VX_PYRAMID_SCALE, &scale_pyr_1, sizeof(scale_pyr_1));
-        status |= vxQueryPyramid(pyramid_1, VX_PYRAMID_WIDTH, &w_pyr_1, sizeof(w_pyr_1));
-        status |= vxQueryPyramid(pyramid_1, VX_PYRAMID_HEIGHT, &h_pyr_1, sizeof(h_pyr_1));
-        status |= vxQueryPyramid(pyramid_1, VX_PYRAMID_FORMAT, &df_image_pyr_1, sizeof(df_image_pyr_1));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMTYPE, &configuration_item_type, sizeof(configuration_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_CAPACITY, &configuration_capacity, sizeof(configuration_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMSIZE, &configuration_item_size, sizeof(configuration_item_size)));
+
+        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_FORMAT, &input_current_fmt, sizeof(input_current_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_LEVELS, &input_current_levels, sizeof(input_current_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_SCALE, &input_current_scale, sizeof(input_current_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_WIDTH, &input_current_w, sizeof(input_current_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_HEIGHT, &input_current_h, sizeof(input_current_h)));
+
+        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_FORMAT, &input_reference_fmt, sizeof(input_reference_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_LEVELS, &input_reference_levels, sizeof(input_reference_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_SCALE, &input_reference_scale, sizeof(input_reference_scale)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_WIDTH, &input_reference_w, sizeof(input_reference_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(input_reference, VX_PYRAMID_HEIGHT, &input_reference_h, sizeof(input_reference_h)));
+
+        if (NULL != flow_vector_in)
+        {
+            tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_FORMAT, &flow_vector_in_fmt, sizeof(flow_vector_in_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_WIDTH, &flow_vector_in_w, sizeof(flow_vector_in_w)));
+            tivxCheckStatus(&status, vxQueryImage(flow_vector_in, VX_IMAGE_HEIGHT, &flow_vector_in_h, sizeof(flow_vector_in_h)));
+        }
+
+        if (NULL != sparse_of_map)
+        {
+            tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_FORMAT, &sparse_of_map_fmt, sizeof(sparse_of_map_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_WIDTH, &sparse_of_map_w, sizeof(sparse_of_map_w)));
+            tivxCheckStatus(&status, vxQueryImage(sparse_of_map, VX_IMAGE_HEIGHT, &sparse_of_map_h, sizeof(sparse_of_map_h)));
+        }
+
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_FORMAT, &flow_vector_out_fmt, sizeof(flow_vector_out_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_WIDTH, &flow_vector_out_w, sizeof(flow_vector_out_w)));
+        tivxCheckStatus(&status, vxQueryImage(flow_vector_out, VX_IMAGE_HEIGHT, &flow_vector_out_h, sizeof(flow_vector_out_h)));
+
+        if (NULL != confidence_histogram)
+        {
+            tivxCheckStatus(&status, vxQueryDistribution(confidence_histogram, VX_DISTRIBUTION_BINS, &confidence_histogram_numBins, sizeof(confidence_histogram_numBins)));
+            tivxCheckStatus(&status, vxQueryDistribution(confidence_histogram, VX_DISTRIBUTION_RANGE, &confidence_histogram_range, sizeof(confidence_histogram_range)));
+            tivxCheckStatus(&status, vxQueryDistribution(confidence_histogram, VX_DISTRIBUTION_OFFSET, &confidence_histogram_offset, sizeof(confidence_histogram_offset)));
+        }
     }
+
+    /* PARAMETER CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryPyramid(pyramid_2, VX_PYRAMID_LEVELS, &levels_pyr_2, sizeof(levels_pyr_2));
-        status |= vxQueryPyramid(pyramid_2, VX_PYRAMID_SCALE, &scale_pyr_2, sizeof(scale_pyr_2));
-        status |= vxQueryPyramid(pyramid_2, VX_PYRAMID_WIDTH, &w_pyr_2, sizeof(w_pyr_2));
-        status |= vxQueryPyramid(pyramid_2, VX_PYRAMID_HEIGHT, &h_pyr_2, sizeof(h_pyr_2));
-        status |= vxQueryPyramid(pyramid_2, VX_PYRAMID_FORMAT, &df_image_pyr_2, sizeof(df_image_pyr_2));
+        if ( configuration_item_size != sizeof(tivx_dmpac_dof_params_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of type:\n tivx_dmpac_dof_params_t \n");
+        }
+
+        if( (VX_DF_IMAGE_U8 != input_current_fmt) &&
+            (VX_DF_IMAGE_U16 != input_current_fmt) &&
+            (TIVX_DF_IMAGE_P12 != input_current_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'input_current' should be a pyramid of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if( (VX_DF_IMAGE_U8 != input_reference_fmt) &&
+            (VX_DF_IMAGE_U16 != input_reference_fmt) &&
+            (TIVX_DF_IMAGE_P12 != input_reference_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'input_reference' should be a pyramid of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if (NULL != flow_vector_in)
+        {
+            if (VX_DF_IMAGE_U32 != flow_vector_in_fmt)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'flow_vector_in' should be an image of type:\n VX_DF_IMAGE_U32 \n");
+            }
+        }
+
+        if (NULL != sparse_of_map)
+        {
+            if (VX_DF_IMAGE_U8 != sparse_of_map_fmt)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'sparse_of_map' should be an image of type:\n VX_DF_IMAGE_U8 \n");
+            }
+        }
+
+        if (VX_DF_IMAGE_U32 != flow_vector_out_fmt)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'flow_vector_out' should be an image of type:\n VX_DF_IMAGE_U32 \n");
+        }
+
     }
 
-    if (VX_SUCCESS == status && img[0] != NULL)
-    {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
-            sizeof(fmt[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
-    }
 
-    if (VX_SUCCESS == status && img[1] != NULL)
-    {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
-            sizeof(fmt[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
-    }
+    /* PARAMETER RELATIONSHIP CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
-            sizeof(fmt[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
+        if (input_current_levels != input_reference_levels)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_LEVELS\n");
+        }
+        if (input_current_scale != input_reference_scale)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_SCALE\n");
+        }
+        if (input_current_w != input_reference_w)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_WIDTH\n");
+        }
+        if (input_current_h != input_reference_h)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_HEIGHT\n");
+        }
+        if (input_current_fmt != input_reference_fmt)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'input_reference' should have the same value for VX_PYRAMID_FORMAT\n");
+        }
+
+        if (input_current_w != flow_vector_out_w)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_WIDTH\n");
+        }
+        if (input_current_h != flow_vector_out_h)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current' and 'flow_vector_out' should have the same value for VX_IMAGE_HEIGHT\n");
+        }
+
+        if (NULL != flow_vector_in)
+        {
+            if (flow_vector_in_w != input_current_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'input_current' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (flow_vector_in_h != input_current_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'flow_vector_in' and 'input_current' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
+        }
+
+        if (NULL != sparse_of_map)
+        {
+            if (sparse_of_map_w != input_current_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'sparse_of_map' and 'input_current' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (sparse_of_map_h != input_current_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'sparse_of_map' and 'input_current' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
+        }
     }
 
-    if (VX_SUCCESS == status && distribution_3 != NULL)
-    {
-        status |= vxQueryDistribution(distribution_3, VX_DISTRIBUTION_BINS, &numBins_3, sizeof(numBins_3));
-        status |= vxQueryDistribution(distribution_3, VX_DISTRIBUTION_RANGE, &range_3, sizeof(range_3));
-        status |= vxQueryDistribution(distribution_3, VX_DISTRIBUTION_OFFSET, &offset_3, sizeof(offset_3));
-    }
+    /* CUSTOM PARAMETER CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        if(levels_pyr_1 > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
+        if(input_current_levels > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Number of pyramid levels %d exceeds max supported values of %d !!!\n",
-                levels_pyr_1,
+                input_current_levels,
                 TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS
                 );
         }
-        if(scale_pyr_1 != VX_SCALE_PYRAMID_HALF )
+
+        if(input_current_scale != VX_SCALE_PYRAMID_HALF )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Scale of pyramid %3.1f does not match required scale of %3.1f!!!\n",
-                scale_pyr_1,
+                input_current_scale,
                 VX_SCALE_PYRAMID_HALF
                 );
         }
-        if(df_image_pyr_1 != VX_DF_IMAGE_U8 && df_image_pyr_1 != TIVX_DF_IMAGE_P12)
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Data format of image within pyramid MUST be VX_DF_IMAGE_U8 or TIVX_DF_IMAGE_P12 !!!\n"
-                );
-        }
-        if(w_pyr_1 > 2048 || h_pyr_1 > 1024)
+
+        if((input_current_w > 2048U) || (input_current_h > 1024U))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH exceeds max supported limit !!!\n"
                 );
         }
-        if( (w_pyr_1 % (1<<levels_pyr_1)) != 0
-            &&
-            (h_pyr_1 % (1<<levels_pyr_1)) != 0
+
+        if( ((input_current_w % (1U<<(uint32_t)input_current_levels)) != 0) &&
+            ((input_current_h % (1U<<(uint32_t)input_current_levels)) != 0)
           )
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH of %d %d MUST be aligned to %d pixels !!!\n",
-                w_pyr_1,
-                h_pyr_1,
-                (1<<levels_pyr_1)
+                input_current_w,
+                input_current_h,
+                1U<<(uint32_t)input_current_levels
                 );
         }
-        if(levels_pyr_1!=levels_pyr_2
-            &&
-            scale_pyr_1!=scale_pyr_2
-            &&
-            w_pyr_1!=w_pyr_2
-            &&
-            h_pyr_1!=h_pyr_2
-            &&
-            df_image_pyr_1!=df_image_pyr_2
-            )
+
+        if(confidence_histogram != NULL)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Meta-properties of current input pyramid and reference input pyramid NOT matching !!!\n"
-                );
-        }
-        if(w_pyr_1 != w[2u] && h_pyr_1 != h[2u])
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector output image WxH (%d x %d) MUST match pyramid base WxH (%d x %d)!!!\n",
-                w[2u], h[2u], w_pyr_1, h_pyr_1
-                );
-        }
-        if(fmt[2u]!=VX_DF_IMAGE_U32)
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector output image format MUST be VX_DF_IMAGE_U32 !!!\n"
-                );
-        }
-        if(img[0u] != NULL )
-        {
-            if(w_pyr_1 != w[0u] && h_pyr_1 != h[0u])
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image WxH (%d x %d) MUST match pyramid base WxH (%d x %d)!!!\n",
-                    w[0u], h[0u], w_pyr_1, h_pyr_1
-                    );
-            }
-            if(fmt[0u]!=VX_DF_IMAGE_U32)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Flow vector input image format MUST be VX_DF_IMAGE_U32 !!!\n"
-                    );
-            }
-        }
-        if(img[1u] != NULL )
-        {
-            if(w_pyr_1 > w[1u]*8 || h_pyr_1 > h[1u]*8)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Sparse OF bitmask image W(x8)xH(x8) (%dx8 x %dx8) MUST be >= base pyramid WxH (%d x %d) !!!\n",
-                    w[1u], h[1u], w_pyr_1, w_pyr_2
-                    );
-            }
-            if(fmt[1u]!=VX_DF_IMAGE_U8)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Sparse OF bitmask image format MUST be VX_DF_IMAGE_U8 !!!\n"
-                    );
-            }
-        }
-        if(distribution_3 != NULL)
-        {
-            if(numBins_3!=TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS || range_3!=TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS || offset_3!=0)
+            if((confidence_histogram_numBins!=TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS) ||
+               (confidence_histogram_range!=TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS) ||
+               (confidence_histogram_offset!=0))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Confidence measure histogram meta properties "
                     "(bins=%d, offset=%d, range=%d) do NOT match expected meta properties (bins=%d, offset=0, range=%d)!!!\n",
-                    numBins_3, range_3, offset_3,
+                    confidence_histogram_numBins, confidence_histogram_range, confidence_histogram_offset,
                     TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS, TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS
                     );
             }
@@ -296,7 +370,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         /* output image format is U32 and WxH equal to pyramid base WxH */
-        tivxKernelSetMetas(metas, TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS, VX_DF_IMAGE_U32, w_pyr_1, w_pyr_2);
+        tivxKernelSetMetas(metas, TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS, VX_DF_IMAGE_U32, input_current_w, input_current_h);
     }
 
     return status;
@@ -337,7 +411,6 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
     {
         index = 0;
 
-        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
