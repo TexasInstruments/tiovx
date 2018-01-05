@@ -315,56 +315,58 @@ class KernelExportCode :
         num_image = 0
         num_nonimage = 0
         num_scalar = 0
+        self.host_c_code.write_line("if (VX_SUCCESS == status)")
+        self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
-            if prm.state is ParamState.REQUIRED :
-                self.host_c_code.write_line("if (VX_SUCCESS == status)")
-                self.host_c_code.write_open_brace()
-            else :
-                self.host_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != %s))" % prm.name_lower)
+            if prm.state is ParamState.OPTIONAL :
+                self.host_c_code.write_line("if (NULL != %s)" % prm.name_lower)
                 self.host_c_code.write_open_brace()
             if Type.is_scalar_type(prm.type) :
-                self.host_c_code.write_line("status = vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.IMAGE == prm.type :
-                self.host_c_code.write_line("status = vxQueryImage(%s, VX_IMAGE_FORMAT, &%s_fmt, sizeof(%s_fmt));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryImage(%s, VX_IMAGE_WIDTH, &%s_w, sizeof(%s_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryImage(%s, VX_IMAGE_HEIGHT, &%s_h, sizeof(%s_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_FORMAT, &%s_fmt, sizeof(%s_fmt)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_WIDTH, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_HEIGHT, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.ARRAY == prm.type :
-                self.host_c_code.write_line("status = vxQueryArray(%s, VX_ARRAY_ITEMTYPE, &%s_item_type, sizeof(%s_item_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryArray(%s, VX_ARRAY_CAPACITY, &%s_capacity, sizeof(%s_capacity));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryArray(%s, VX_ARRAY_ITEMSIZE, &%s_item_size, sizeof(%s_item_size));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_ITEMTYPE, &%s_item_type, sizeof(%s_item_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_CAPACITY, &%s_capacity, sizeof(%s_capacity)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_ITEMSIZE, &%s_item_size, sizeof(%s_item_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.MATRIX == prm.type :
-                self.host_c_code.write_line("status = vxQueryMatrix(%s, VX_MATRIX_TYPE, &%s_type, sizeof(%s_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryMatrix(%s, VX_MATRIX_COLUMNS, &%s_w, sizeof(%s_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryMatrix(%s, VX_MATRIX_ROWS, &%s_h, sizeof(%s_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_TYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_COLUMNS, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_ROWS, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.PYRAMID == prm.type :
-                self.host_c_code.write_line("status = vxQueryPyramid(%s, VX_PYRAMID_FORMAT, &%s_fmt, sizeof(%s_fmt));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_LEVELS, &%s_levels, sizeof(%s_levels));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_SCALE, &%s_scale, sizeof(%s_scale));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_WIDTH, &%s_w, sizeof(%s_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryPyramid(%s, VX_PYRAMID_HEIGHT, &%s_h, sizeof(%s_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_FORMAT, &%s_fmt, sizeof(%s_fmt)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_LEVELS, &%s_levels, sizeof(%s_levels)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_SCALE, &%s_scale, sizeof(%s_scale)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_WIDTH, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_HEIGHT, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.CONVOLUTION == prm.type :
-                self.host_c_code.write_line("status = vxQueryConvolution(%s, VX_CONVOLUTION_COLUMNS, &%s_col, sizeof(%s_col));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryConvolution(%s, VX_CONVOLUTION_ROWS, &%s_row, sizeof(%s_row));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_COLUMNS, &%s_col, sizeof(%s_col)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_ROWS, &%s_row, sizeof(%s_row)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.DISTRIBUTION == prm.type :
-                self.host_c_code.write_line("status = vxQueryDistribution(%s, VX_DISTRIBUTION_BINS, &%s_numBins, sizeof(%s_numBins));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryDistribution(%s, VX_DISTRIBUTION_RANGE, &%s_range, sizeof(%s_range));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryDistribution(%s, VX_DISTRIBUTION_OFFSET, &%s_offset, sizeof(%s_offset));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_BINS, &%s_numBins, sizeof(%s_numBins)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_RANGE, &%s_range, sizeof(%s_range)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_OFFSET, &%s_offset, sizeof(%s_offset)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.LUT == prm.type:
-                self.host_c_code.write_line("status = vxQueryLUT(%s, VX_LUT_TYPE, &%s_type, sizeof(%s_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryLUT(%s, VX_LUT_COUNT, &%s_count, sizeof(%s_count));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_TYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_COUNT, &%s_count, sizeof(%s_count)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.THRESHOLD == prm.type:
-                self.host_c_code.write_line("status = vxQueryThreshold(%s, VX_THRESHOLD_TYPE, &%s_threshold_type, sizeof(%s_threshold_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryThreshold(%s, VX_THRESHOLD_DATA_TYPE, &%s_threshold_data_type, sizeof(%s_threshold_data_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_TYPE, &%s_threshold_type, sizeof(%s_threshold_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_DATA_TYPE, &%s_threshold_data_type, sizeof(%s_threshold_data_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.OBJECT_ARRAY == prm.type:
-                self.host_c_code.write_line("status = vxQueryObjectArray(%s, VX_OBJECT_ARRAY_ITEMTYPE, &%s_type, sizeof(%s_type));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryObjectArray(%s, VX_OBJECT_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryObjectArray(%s, VX_OBJECT_ARRAY_ITEMTYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryObjectArray(%s, VX_OBJECT_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.REMAP == prm.type:
-                self.host_c_code.write_line("status = vxQueryRemap(%s, VX_REMAP_SOURCE_WIDTH, &%s_src_w, sizeof(%s_src_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryRemap(%s, VX_REMAP_SOURCE_HEIGHT, &%s_src_h, sizeof(%s_src_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryRemap(%s, VX_REMAP_DESTINATION_WIDTH, &%s_dst_w, sizeof(%s_dst_w));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("status |= vxQueryRemap(%s, VX_REMAP_DESTINATION_HEIGHT, &%s_dst_h, sizeof(%s_dst_h));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            self.host_c_code.write_close_brace()
-            self.host_c_code.write_newline()
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_SOURCE_WIDTH, &%s_src_w, sizeof(%s_src_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_SOURCE_HEIGHT, &%s_src_h, sizeof(%s_src_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_DESTINATION_WIDTH, &%s_dst_w, sizeof(%s_dst_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_DESTINATION_HEIGHT, &%s_dst_h, sizeof(%s_dst_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            if prm.state is ParamState.OPTIONAL :
+                self.host_c_code.write_close_brace()
+            if prm is not self.kernel.params[-1] :
+                self.host_c_code.write_newline()
+        self.host_c_code.write_close_brace()
 
         self.host_c_code.write_newline()
         self.host_c_code.write_line("/* PARAMETER CHECKING */")
@@ -431,6 +433,7 @@ class KernelExportCode :
                 self.host_c_code.write_close_brace()
                 if prm.state is ParamState.OPTIONAL :
                     self.host_c_code.write_close_brace()
+            if prm is not self.kernel.params[-1] :
                 self.host_c_code.write_newline()
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
@@ -459,8 +462,16 @@ class KernelExportCode :
                         self.host_c_code.write_line("and '%s' " % (prm.name_lower), new_line=False, indent=False)
                     self.host_c_code.write_line("should have the same value for %s\\n\");" % attr.vx_enum_name(), indent=False)
                     self.host_c_code.write_close_brace()
+                if rel is not self.kernel.relationship_list[-1] :
                     self.host_c_code.write_newline()
             self.host_c_code.write_close_brace()
+
+        self.host_c_code.write_newline()
+        self.host_c_code.write_line("/* CUSTOM PARAMETER CHECKING */")
+        self.host_c_code.write_newline()
+        self.host_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not")
+        self.host_c_code.write_comment_line("                  covered by the code-generation script.) >")
+        self.host_c_code.write_newline()
 
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()

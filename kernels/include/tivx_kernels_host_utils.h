@@ -150,6 +150,20 @@ static inline void tivxKernelValidRectParams_init(
 }
 
 /*!
+ * \brief Function to set the status variable equal to status_temp
+ *        if the status_temp variable is not VX_SUCCESS.
+ *
+ * \param status [in,out] status variable
+ * \param status_temp [in] temporary status variable
+ */
+static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
+{
+    if(VX_SUCCESS != status_temp) {
+        *status = status_temp;
+    }
+}
+
+/*!
  * \brief Function to calculate and configure valid region
  *        This API loops over all the input and output image's valid
  *        rectangles and figures out overlapping rectangle and sets it
