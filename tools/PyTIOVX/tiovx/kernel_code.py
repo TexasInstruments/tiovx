@@ -388,7 +388,7 @@ class KernelExportCode :
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
-            if Type.IMAGE == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.is_scalar_type(prm.type) is True :
+            if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.is_scalar_type(prm.type) is True :
                 if prm.state is ParamState.OPTIONAL :
                     self.host_c_code.write_line("if (NULL != %s)" % (prm.name_lower))
                     self.host_c_code.write_open_brace()
@@ -397,6 +397,14 @@ class KernelExportCode :
                 else :
                     self.print_data_type = prm.data_types
                 if Type.IMAGE == prm.type :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( (%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    (%s != %s_fmt) &&" % (dt, prm.name_lower))
+                        self.host_c_code.write_line("    (%s != %s_fmt))" % (self.print_data_type[-1], prm.name_lower))
+                    else :
+                        self.host_c_code.write_line("if (%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
+                elif Type.PYRAMID == prm.type :
                     if len(prm.data_types) > 1 :
                         self.host_c_code.write_line("if( (%s != %s_fmt) &&" % (self.print_data_type[0], prm.name_lower))
                         for dt in self.print_data_type[1:-1] :
