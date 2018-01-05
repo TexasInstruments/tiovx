@@ -82,13 +82,14 @@ class KernelParams :
         return "Param " + str(self.index) + ": " + self.name_upper + " " + Type.get_vx_enum_name(self.type) + " " + Direction.get_vx_enum_name(self.direction) + " " + ParamState.get_vx_enum_name(self.state)
 
 class KernelParamRelationship :
-    def __init__(self, prm_list, attribute_list, type):
+    def __init__(self, prm_list, attribute_list, type, state):
         self.attribute_list = attribute_list
         self.prm_list = prm_list
         self.type = type
+        self.state = state
 
     def __str__(self):
-        return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + type
+        return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + type + " " + state
 
 class Kernel  :
     def __init__(self, name="default") :
@@ -156,6 +157,8 @@ class Kernel  :
     def setParameterRelationship(self, name_list=[], attribute_list=["all"], type="equal") :
         assert len(name_list) > 1, "There should be more than 1 parameter in name_list"
         prm_list = []
+        required = 0
+        optional = 0
 
         # Get params from names
         for name in name_list :
@@ -163,9 +166,40 @@ class Kernel  :
             for prm in self.params :
                 if name.lower() == prm.name_lower :
                     prm_list.append(prm)
+                    if prm.state == ParamState.REQUIRED :
+                        required += 1
+                    elif prm.state == ParamState.OPTIONAL :
+                        optional += 1
                     found = True
                     break
             assert found == True, "'%s' was not found in parameter list" % name
-        relationship = KernelParamRelationship(prm_list, attribute_list, type)
-        self.relationship_list.append(relationship)
-        self.relationship_list_index = self.relationship_list_index + 1
+
+        # Divide list into multiple lists depending on if some of the parameters are optional or not
+        first_required = 0
+        if required > 1 :
+            if optional == 0 :
+                relationship = KernelParamRelationship(prm_list, attribute_list, type, ParamState.REQUIRED)
+            else :
+                sub_prm_list = []
+                for prm in prm_list :
+                    if prm.state == ParamState.REQUIRED :
+                        if first_required == 0 :
+                            first_required = prm
+                        sub_prm_list.append(prm)
+                        prm_list.remove(prm)
+                relationship = KernelParamRelationship(sub_prm_list, attribute_list, type, ParamState.REQUIRED)
+            self.relationship_list.append(relationship)
+            self.relationship_list_index = self.relationship_list_index + 1
+        if required > 0 :
+            while optional > 0 :
+                optional -= 1
+                sub_prm_list = []
+                for prm in prm_list :
+                    if prm.state == ParamState.OPTIONAL :
+                        sub_prm_list.append(prm)
+                        sub_prm_list.append(first_required)
+                        relationship = KernelParamRelationship(sub_prm_list, attribute_list, type, ParamState.OPTIONAL)
+                        self.relationship_list.append(relationship)
+                        self.relationship_list_index = self.relationship_list_index + 1
+                        prm_list.remove(prm)
+                        break

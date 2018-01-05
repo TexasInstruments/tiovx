@@ -466,6 +466,9 @@ class KernelExportCode :
             self.host_c_code.write_open_brace()
 
             for rel in self.kernel.relationship_list :
+                if rel.state is ParamState.OPTIONAL :
+                    self.host_c_code.write_line("if (NULL != %s)" % (rel.prm_list[0].name_lower))
+                    self.host_c_code.write_open_brace()
                 for attr in rel.attribute_list :
                     if len(rel.prm_list) > 2 :
                         self.host_c_code.write_line("if( (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
@@ -481,6 +484,8 @@ class KernelExportCode :
                     for prm in rel.prm_list[2:] :
                         self.host_c_code.write_line("and '%s' " % (prm.name_lower), new_line=False, indent=False)
                     self.host_c_code.write_line("should have the same value for %s\\n\");" % attr.vx_enum_name(), indent=False)
+                    self.host_c_code.write_close_brace()
+                if rel.state is ParamState.OPTIONAL :
                     self.host_c_code.write_close_brace()
                 if rel is not self.kernel.relationship_list[-1] :
                     self.host_c_code.write_newline()
