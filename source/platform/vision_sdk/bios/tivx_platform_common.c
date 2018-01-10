@@ -63,6 +63,7 @@ vx_status tivxPlatformInit(void)
         || shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*sizeof(tivx_obj_desc_shm_entry_t)))
     {
         /* insufficient shared memory size */
+        VX_PRINT(VX_ZONE_ERROR, "tivxPlatformInit: insufficient shared memory size\n");
         status = VX_FAILURE;
     }
     if(status==VX_SUCCESS)

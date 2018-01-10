@@ -87,6 +87,35 @@ vx_status ownInitVirtualArray(vx_array arr, vx_enum item_type, vx_size capacity)
 
             status = VX_SUCCESS;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
+            if ((ownIsValidArrayItemType(arr->base.context, item_type) !=
+                    vx_true_e))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Own is valid array item type failed\n");
+            }
+
+            if (!(capacity > 0))
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Array capacity is not greater than 0\n");
+            }
+
+            if (VX_TYPE_INVALID == item_type)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"array item type is invalid\n");
+            }
+
+            if (vx_true_e != arr->base.is_virtual)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"array is not virtual\n");
+            }
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Own init virtual array failed\n");
+        VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
     }
 
     return (status);
@@ -199,6 +228,8 @@ vx_status VX_API_CALL vxQueryArray(
     if ((ownIsValidSpecificReference(&arr->base, VX_TYPE_ARRAY) == vx_false_e)
             || (arr->base.obj_desc == NULL))
     {
+        VX_PRINT(VX_ZONE_ERROR,"vxQueryArray failed\n");
+        VX_PRINT(VX_ZONE_ERROR,"Reference is invalid or object descriptor is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -213,6 +244,7 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"query array item type failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -223,6 +255,7 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"query array num items failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -233,6 +266,7 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"query array capacity failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -243,10 +277,12 @@ vx_status VX_API_CALL vxQueryArray(
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"query array item size failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"query array option not supported\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -271,15 +307,23 @@ vx_status VX_API_CALL vxAddArrayItems(
 
     if (obj_desc == NULL)
     {
+        VX_PRINT(VX_ZONE_ERROR,"Array object descriptor is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
         status = ownAllocArrayBuffer((vx_reference)arr);
 
-        if ((obj_desc->capacity == 0) ||
-            (NULL == ptr))
+        if (obj_desc->capacity == 0)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Array capacity is 0\n");
+            /* Array is still not allocated */
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        if (NULL == ptr)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Array pointer is NULL\n");
             /* Array is still not allocated */
             status = VX_ERROR_INVALID_PARAMETERS;
         }
@@ -289,6 +333,7 @@ vx_status VX_API_CALL vxAddArrayItems(
             (stride == 0))
         {
             /* Array is full */
+            VX_PRINT(VX_ZONE_ERROR,"Array is full\n");
             status = VX_FAILURE;
         }
     }
@@ -333,6 +378,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
 
     if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
+        VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -340,12 +386,14 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
         if (obj_desc->capacity == 0)
         {
             /* Array is still not allocated */
+            VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (new_num_items > obj_desc->num_items)
         {
             /* Array is full */
+            VX_PRINT(VX_ZONE_ERROR,"Array is full\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -375,6 +423,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
 
     if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
+        VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -382,11 +431,13 @@ vx_status VX_API_CALL vxCopyArrayRange(
         if (user_ptr == NULL)
         {
             /* Array is still not allocated */
+            VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; user pointer is NULL\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
         if (obj_desc->capacity == 0)
         {
             /* Array is still not allocated */
+            VX_PRINT(VX_ZONE_ERROR,"Array is still not allocated; capacity is 0\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -394,6 +445,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
             (stride == 0))
         {
             /* Array is full */
+            VX_PRINT(VX_ZONE_ERROR,"Array is full\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -402,6 +454,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
               (range_end <= obj_desc->num_items)))
         {
             /* Invalid range */
+            VX_PRINT(VX_ZONE_ERROR,"Invalid array range\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -411,11 +464,13 @@ vx_status VX_API_CALL vxCopyArrayRange(
             )
         {
             /* cannot be accessed by app */
+            VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = VX_ERROR_OPTIMIZED_AWAY;
         }
 
         if (VX_MEMORY_TYPE_HOST != user_mem_type)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Invalid user_mem_type; must be VX_MEMORY_TYPE_HOST\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -486,6 +541,7 @@ vx_status VX_API_CALL vxMapArrayRange(
 
     if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL) )
     {
+        VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -496,6 +552,7 @@ vx_status VX_API_CALL vxMapArrayRange(
             )
         {
             /* cannot be accessed by app */
+            VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = VX_ERROR_OPTIMIZED_AWAY;
         }
 
@@ -504,12 +561,14 @@ vx_status VX_API_CALL vxMapArrayRange(
               (range_end <= obj_desc->num_items)))
         {
             /* Invalid range */
+            VX_PRINT(VX_ZONE_ERROR,"Invalid array range\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
         if (NULL == stride)
         {
             /* Invalid range */
+            VX_PRINT(VX_ZONE_ERROR,"Invalid array range; stride is NULL\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
@@ -570,6 +629,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
             )
         {
             /* cannot be accessed by app */
+            VX_PRINT(VX_ZONE_ERROR,"Array cannot be accessed by application\n");
             status = VX_ERROR_OPTIMIZED_AWAY;
         }
 
@@ -577,6 +637,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
             (arr->maps[map_id].map_addr == NULL) ||
             (arr->maps[map_id].map_size == 0))
         {
+            VX_PRINT(VX_ZONE_ERROR,"Array map is invalid\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -615,6 +676,7 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
                 if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
+                    VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
                 else
@@ -626,11 +688,13 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"Array object descriptor is NULL\n");
             status = VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR,"Reference is not an array type\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 

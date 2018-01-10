@@ -131,11 +131,13 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
         }
         if(idx>=dimof(g_module_table))
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Module table is full\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Publish and/or unpublish are NULL\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -162,6 +164,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name)
             g_module_table[idx].unpublish = NULL;
             status = VX_SUCCESS;
             break;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxUnRegisterModule: Publish and/or unpublish are NULL\n");
         }
     }
 
@@ -195,6 +201,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxLoadKernels(vx_context context, const vx_ch
     }
     if((idx>=dimof(g_module_table)) && (0 == kernels_loaded))
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxLoadKernels: Module table is full\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -225,6 +232,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnloadKernels(vx_context context, const vx_
     }
     if(idx>=dimof(g_module_table))
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxUnloadKernels: Module table is full\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 

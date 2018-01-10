@@ -83,7 +83,8 @@ static vx_status ownAllocRemapBuffer(vx_reference ref)
                 if(obj_desc->mem_ptr.host_ptr==NULL)
                 {
                     /* could not allocate memory */
-                    status = VX_ERROR_NO_MEMORY ;
+                    VX_PRINT(VX_ZONE_ERROR, "ownAllocRemapBuffer: Could not allocate memory\n");
+                    status = VX_ERROR_NO_MEMORY;
                 }
                 else
                 {
@@ -96,11 +97,13 @@ static vx_status ownAllocRemapBuffer(vx_reference ref)
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "ownAllocRemapBuffer: Reference object descriptor is NULL\n");
             status = VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownAllocRemapBuffer: Reference type is not remap\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -174,6 +177,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
         &&
         (remap->base.obj_desc == NULL))
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryRemap: Reference is not valid\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
@@ -188,6 +192,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryRemap: Query remap source width failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -198,6 +203,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryRemap: Query remap source height failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -208,6 +214,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryRemap: Query remap destination width failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -218,10 +225,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryRemap(vx_remap remap, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryRemap: Query remap destination height failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR, "vxQueryRemap: Invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
@@ -268,15 +277,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
             else
             {
                 status = VX_ERROR_INVALID_VALUE;
+                if (!(dst_x < obj_desc->dst_width))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetRemapPoint: dst_x is greater than object descriptor destination width\n");
+                }
+                if (!(dst_y < obj_desc->dst_height))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetRemapPoint: dst_x is greater than object descriptor destination width\n");
+                }
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxSetRemapPoint: Could not allocate memory\n");
             status = VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetRemapPoint: Invalid reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -318,15 +337,25 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
             else
             {
                 status = VX_ERROR_INVALID_VALUE;
+                if (!(dst_x < obj_desc->dst_width))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxGetRemapPoint: dst_x is greater than object descriptor destination width\n");
+                }
+                if (!(dst_y < obj_desc->dst_height))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxGetRemapPoint: dst_x is greater than object descriptor destination width\n");
+                }
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxGetRemapPoint: Could not allocate memory\n");
             status = VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxGetRemapPoint: Invalid reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;

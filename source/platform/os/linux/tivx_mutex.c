@@ -79,6 +79,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
     if(tmp_mutex==NULL)
     {
         *mutex = NULL;
+        VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex memory allocation failed\n");
         status = VX_ERROR_NO_MEMORY;
     }
     else
@@ -90,6 +91,7 @@ vx_status tivxMutexCreate(tivx_mutex *mutex)
         {
             free(tmp_mutex);
             *mutex = NULL;
+            VX_PRINT(VX_ZONE_ERROR, "tivxMutexCreate: Mutex initialization failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
         else
@@ -126,6 +128,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
         status = pthread_mutex_lock(&mutex->lock);
         if(status != 0)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Mutex lock failed\n");
             status = VX_FAILURE;
         }
     }
@@ -142,6 +145,7 @@ vx_status tivxMutexUnlock(tivx_mutex mutex)
         status = pthread_mutex_unlock(&mutex->lock);
         if(status != 0)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMutexUnlock: Mutex unlock failed\n");
             status = VX_FAILURE;
         }
     }

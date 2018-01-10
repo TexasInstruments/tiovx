@@ -399,6 +399,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
 
         if(target_kernel_instance == NULL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeCreate: target_kernel_instance is NULL\n");
             status = VX_ERROR_NO_RESOURCES;
             break;
         }
@@ -507,6 +508,7 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
 
         if(target_kernel_instance == NULL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeDelete: target_kernel_instance is NULL\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -552,6 +554,7 @@ static vx_status tivxTargetNodeDescNodeControl(
 
         if(target_kernel_instance == NULL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeControl: target_kernel_instance is NULL\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
         else
@@ -656,6 +659,7 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "tivxTargetCmdDescHandler: object descriptor type is invalid\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 tivxTargetCmdDescSendAck(cmd_obj_desc, status);
@@ -752,6 +756,7 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
 
     if(target == NULL)
     {
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetCreate: target is NULL\n");
         status = VX_ERROR_NO_RESOURCES;
     }
     else

@@ -141,6 +141,10 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
 
         status = VX_SUCCESS;
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelInstanceFree: target kernel instance is NULL\n");
+    }
 
     return status;
 }
@@ -201,6 +205,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
 
         status = VX_SUCCESS;
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxSetTargetKernelInstanceContext: target kernel instance is NULL\n");
+    }
     return status;
 }
 
@@ -217,6 +225,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
         *kernel_context_size = target_kernel_instance->kernel_context_size;
 
         status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxGetTargetKernelInstanceContext: target kernel instance is NULL\n");
     }
     return status;
 }

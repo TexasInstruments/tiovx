@@ -177,6 +177,7 @@ static vx_status ownGraphValidRectCallback(
                 {
                     /* not supported for other references */
                     status = VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR,"not supported for references other than image or pyramid\n");
                 }
             }
         }
@@ -209,6 +210,7 @@ static vx_status ownGraphInitVirtualNode(
                 if ((ref->scope->type == VX_TYPE_GRAPH) && (ref->scope != (vx_reference)graph))
                 {
                     status = VX_ERROR_INVALID_SCOPE;
+                    VX_PRINT(VX_ZONE_ERROR,"invalid scope\n");
                 }
 
                 if (VX_SUCCESS == status)
@@ -225,13 +227,20 @@ static vx_status ownGraphInitVirtualNode(
                                 if (type != mf->sc.type)
                                 {
                                     status = VX_ERROR_INVALID_TYPE;
+                                    VX_PRINT(VX_ZONE_ERROR,"invalid scalar type\n");
                                 }
                             }
                             break;
                         case VX_TYPE_IMAGE:
-                            if ((0 == mf->img.width) || (0 == mf->img.height))
+                            if (0 == mf->img.width)
                             {
                                 status = VX_ERROR_INVALID_VALUE;
+                                VX_PRINT(VX_ZONE_ERROR,"image width value equal to zero\n");
+                            }
+                            else if (0 == mf->img.height)
+                            {
+                                status = VX_ERROR_INVALID_VALUE;
+                                VX_PRINT(VX_ZONE_ERROR,"image height value equal to zero\n");
                             }
                             else
                             {
@@ -255,11 +264,20 @@ static vx_status ownGraphInitVirtualNode(
                             if (VX_SUCCESS == status)
                             {
                                 /* Levels must be same even in this case */
-                                if ((levels != mf->pmd.levels) ||
-                                    (0 == mf->pmd.width) ||
-                                    (0 == mf->pmd.height))
+                                if (levels != mf->pmd.levels)
                                 {
                                     status = VX_ERROR_INVALID_VALUE;
+                                    VX_PRINT(VX_ZONE_ERROR,"pyramid levels incorrect\n");
+                                }
+                                else if (0 == mf->pmd.width)
+                                {
+                                    status = VX_ERROR_INVALID_VALUE;
+                                    VX_PRINT(VX_ZONE_ERROR,"pyramid width equal to zero\n");
+                                }
+                                else if (0 == mf->pmd.height)
+                                {
+                                    status = VX_ERROR_INVALID_VALUE;
+                                    VX_PRINT(VX_ZONE_ERROR,"pyramid height equal to zero\n");
                                 }
                                 else
                                 {
@@ -303,7 +321,19 @@ static vx_status ownGraphNodeKernelValidate(
             if(status == VX_SUCCESS)
             {
                 status = ownGraphValidRectCallback(graph, node, meta);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"graph valid rectangle callback failed at index %d\n", i);
+                }
             }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"graph init virtual node failed at index %d\n", i);
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"node kernel validate failed at index %d\n", i);
         }
 
         if(status != VX_SUCCESS)
@@ -354,6 +384,7 @@ static vx_status ownGraphNodeKernelDeinit(vx_graph graph)
         status = ownNodeKernelDeinit(node);
         if(status != VX_SUCCESS)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Node kernel de-init for node at index %d failed\n", i);
             break;
         }
     }
@@ -433,6 +464,14 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                     {
                                         /* add node_current as input node for next node if not already added */
                                         status = ownNodeAddInNode(node_next, node_cur);
+                                        if (status != VX_SUCCESS)
+                                        {
+                                            VX_PRINT(VX_ZONE_ERROR,"Add in node at index %d failed\n", node_cur_idx);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        VX_PRINT(VX_ZONE_ERROR,"Add out node at index %d failed\n", node_cur_idx);
                                     }
                                 }
                             }
@@ -445,6 +484,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                 if(ownGraphIsRefMatch(graph, ref1, ref2))
                                 {
                                     status = VX_FAILURE;
+                                    VX_PRINT(VX_ZONE_ERROR,"Output of next node matches current node at index %d failed\n", node_cur_idx);
                                 }
                             }
                             else
@@ -518,6 +558,10 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
                      * then allocate memory for parent object
                      */
                     status = ownReferenceAllocMem(ref->scope);
+                    if (status != VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation for replicated parameter parent object at index %d failed\n", node_cur_idx);
+                    }
                 }
                 else
                 if(ref->delay != NULL )
@@ -526,6 +570,10 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
                      * delay objects
                      */
                     status = ownReferenceAllocMem((vx_reference)ref->delay);
+                    if (status != VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation for delay objects at index %d failed\n", node_cur_idx);
+                    }
                 }
                 else
                 {
@@ -534,6 +582,10 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
                      * memory gets allocated only once
                      */
                     status = ownReferenceAllocMem(ref);
+                    if (status != VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation for data reference at index %d failed\n", node_cur_idx);
+                    }
                 }
 
                 if(status != VX_SUCCESS)
@@ -563,6 +615,7 @@ static vx_status ownGraphNodeCreateCompletionEvents(vx_graph graph)
         status = ownNodeCreateCompletionEvent(node);
         if(status != VX_SUCCESS)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Node create completion event at index %d failed\n", i);
             break;
         }
     }
@@ -583,6 +636,7 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
         status = ownNodeCreateUserCallbackCommand(node);
         if(status != VX_SUCCESS)
         {
+            VX_PRINT(VX_ZONE_ERROR,"Node create user callback command at index %d failed\n", i);
             break;
         }
     }

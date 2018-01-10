@@ -35,7 +35,7 @@ void tivxPlatformCreateTargets(void)
     status = tivxTargetCreate(TIVX_TARGET_ID_IPU1_0, &target_create_prms);
     if (VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Cound not Add Target\n");
+        VX_PRINT(VX_ZONE_ERROR, "Could not Add Target\n");
     }
 }
 
@@ -46,6 +46,6 @@ void tivxPlatformDeleteTargets(void)
     status = tivxTargetDelete(TIVX_TARGET_ID_IPU1_0);
     if (VX_SUCCESS != status)
     {
-        VX_PRINT(VX_ZONE_ERROR, "Cound not Delete Target\n");
+        VX_PRINT(VX_ZONE_ERROR, "Could not Delete Target\n");
     }
 }

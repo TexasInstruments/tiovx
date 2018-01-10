@@ -281,6 +281,7 @@ vx_status tivxTargetKernelCreate(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelCreate: Kernel create function is NULL\n");
             status = VX_FAILURE;
         }
     }
@@ -308,6 +309,7 @@ vx_status tivxTargetKernelDelete(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelDelete: Kernel delete function is NULL\n");
             status = VX_FAILURE;
         }
     }
@@ -337,6 +339,7 @@ vx_status tivxTargetKernelExecute(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelExecute: Kernel process function is NULL\n");
             status = VX_FAILURE;
         }
     }
@@ -364,6 +367,7 @@ vx_status tivxTargetKernelControl(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxTargetKernelControl: Kernel control function is NULL\n");
             status = VX_FAILURE;
         }
     }

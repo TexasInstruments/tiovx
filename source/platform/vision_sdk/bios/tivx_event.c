@@ -25,6 +25,7 @@ vx_status tivxEventCreate(tivx_event *event)
 
         if (NULL == handle)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventCreate: Semaphore creation failed\n");
             status = VX_FAILURE;
         }
         else
@@ -84,11 +85,13 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
         if (FALSE == retVal)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Semaphore wait returned an error\n");
             status = VX_FAILURE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Event was NULL\n");
         status = VX_FAILURE;
     }
 

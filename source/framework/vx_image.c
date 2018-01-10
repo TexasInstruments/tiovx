@@ -261,7 +261,8 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                         if(obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
                         {
                             /* could not allocate memory */
-                            status = VX_ERROR_NO_MEMORY ;
+                            VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: could not allocate memory\n");
+                            status = VX_ERROR_NO_MEMORY;
                             break;
                         }
                         else
@@ -282,11 +283,13 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: object descriptor is NULL\n");
             status = VX_ERROR_INVALID_VALUE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: reference type is not an image\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -452,6 +455,7 @@ static vx_status ownIsFreeSubimageAvailable(vx_image image)
     }
     if(p>=TIVX_IMAGE_MAX_SUBIMAGES)
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownIsFreeSubimageAvailable: no subimage is available\n");
         status = VX_ERROR_NO_RESOURCES;
     }
 
@@ -531,6 +535,7 @@ static vx_status ownCopyAndMapCheckParams(
     /* bad parameters */
     if ( rect == NULL )
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: rectangle parameter is NULL\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
 
@@ -539,6 +544,7 @@ static vx_status ownCopyAndMapCheckParams(
         /* bad references */
         if ( ownIsValidImage(image) == vx_false_e )
         {
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is not valid\n");
             status = VX_ERROR_INVALID_REFERENCE;
         }
     }
@@ -548,6 +554,7 @@ static vx_status ownCopyAndMapCheckParams(
     {
         if(obj_desc->create_type == TIVX_IMAGE_VIRTUAL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image is virtual\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -555,11 +562,19 @@ static vx_status ownCopyAndMapCheckParams(
     if(status == VX_SUCCESS)
     {
         /* more bad parameters */
-        if ( (plane_index >= obj_desc->planes) ||
-             (start_x >= end_x) ||
-             (start_y >= end_y)
-            )
+        if (plane_index >= obj_desc->planes)
         {
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: plane index is greater than the image's number of planes\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        if (start_y >= end_y)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image start y is greater than image end y\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        if (start_x >= end_x)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image start x is greater than image end x\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -568,6 +583,10 @@ static vx_status ownCopyAndMapCheckParams(
     {
         /* allocate if not already allocated */
         status = ownAllocImageBuffer((vx_reference)image);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image allocation failed\n");
+        }
     }
 
     if(status==VX_SUCCESS)
@@ -576,6 +595,7 @@ static vx_status ownCopyAndMapCheckParams(
         {
             status = VX_ERROR_NOT_SUPPORTED;
             vxAddLogEntry(&image->base, status, "Can't write to constant data, only read!\n");
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: Can't write to constant data, only read!\n");
         }
         if ( (image->base.is_virtual == vx_true_e)
             &&
@@ -583,6 +603,7 @@ static vx_status ownCopyAndMapCheckParams(
             )
         {
             /* cannot be accessed by app */
+            VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: image cannot be accessed by application\n");
             status = VX_ERROR_OPTIMIZED_AWAY;
         }
     }
@@ -742,6 +763,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         (VX_DF_IMAGE_NV21 != format) )
                     {
                         subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: invalid image format for Y channel\n");
                         status = VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
@@ -754,6 +776,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                         (VX_DF_IMAGE_IYUV != format))
                     {
                         subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                        VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: invalid image format for U/V channel\n");
                         status = VX_ERROR_INVALID_PARAMETERS;
                     }
                     break;
@@ -762,6 +785,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                 default:
                 {
                     subimage = (vx_image)ownGetErrorObject(context, VX_ERROR_INVALID_PARAMETERS);
+                    VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: invalid image channel\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                     break;
                 }
@@ -772,6 +796,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromChannel(vx_image image, vx_en
                 status = ownIsFreeSubimageAvailable(image);
                 if(status!=VX_SUCCESS)
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "ownCopyAndMapCheckParams: no subimage is available\n");
                     subimage = (vx_image)ownGetErrorObject(context, status);
                 }
             }
@@ -909,6 +934,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                     status = ownIsFreeSubimageAvailable(image);
                     if(status!=VX_SUCCESS)
                     {
+                        VX_PRINT(VX_ZONE_ERROR, "vxCreateImageFromROI: no subimage is available\n");
                         subimage = (vx_image)ownGetErrorObject(context, status);
                     }
                 }
@@ -1115,6 +1141,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxCreateUniformImage: vxMapImagePatch failed\n");
                     vxReleaseImage(&image);
                     image = (vx_image)ownGetErrorObject(context, VX_FAILURE);
                     break;
@@ -1225,6 +1252,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetValidRegionImage(vx_image image, vx_rect
             }
             status = VX_SUCCESS;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxGetValidRegionImage: rectangle is NULL\n");
+        }
     }
     return status;
 }
@@ -1255,7 +1286,24 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageValidRectangle(vx_image image, cons
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: invalid rectangle dimensions\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
+                    if (!(rect->start_x <= rect->end_x))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: rectangle start x is greater than end x\n");
+                    }
+                    if (!(rect->start_y <= rect->end_y))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: rectangle start y is greater than end y\n");
+                    }
+                    if (!(rect->end_x <= obj_desc->width))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: rectangle end x is greater than image width\n");
+                    }
+                    if (!(rect->end_y <= obj_desc->height))
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxSetImageValidRectangle: rectangle end y is greater than image height\n");
+                    }
                 }
             }
             else
@@ -1334,6 +1382,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image format failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1344,6 +1393,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image width failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1354,6 +1404,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image height failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1364,6 +1415,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image planes failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1374,6 +1426,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image space failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1384,6 +1437,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image range failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1400,6 +1454,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image size failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -1410,16 +1465,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryImage(vx_image image, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: query image memory type failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryImage: invalid image reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1441,17 +1499,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetImageAttribute(vx_image image, vx_enum a
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetImageAttribute: invalid image space\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
 
             default:
+                VX_PRINT(VX_ZONE_ERROR, "vxSetImageAttribute: invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetImageAttribute: invalid image reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1477,12 +1538,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
     if(status == VX_SUCCESS)
     {
-        if((user_ptr == NULL) || (user_addr == NULL))
+        if (user_ptr == NULL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User pointer is null\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        if (user_addr == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: User addr is null\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
         if ((usage != VX_READ_ONLY) && (usage != VX_WRITE_ONLY))
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxCopyImagePatch: invalid usage parameter\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -1615,8 +1683,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 
     if(status == VX_SUCCESS)
     {
-        if((user_ptr == NULL) || (user_addr == NULL) || (map_id == NULL))
+        if (user_ptr == NULL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User pointer is null\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        if (user_addr == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: User addr is null\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        if (map_id == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: Map ID is null\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -1675,11 +1754,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
             }
             else
             {
+                VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: No available image maps\n");
                 status = VX_ERROR_NO_RESOURCES;
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxMapImagePatch: could not allocate memory\n");
             status = VX_ERROR_NO_MEMORY;
         }
     }
@@ -1695,6 +1776,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
     /* bad references */
     if (ownIsValidImage(image) == vx_false_e)
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: invalid image reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1706,6 +1788,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             )
         {
             /* cannot be accessed by app */
+            VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: image cannot be accessed by application\n");
             status = VX_ERROR_OPTIMIZED_AWAY;
         }
     }
@@ -1714,6 +1797,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
     {
         if(map_id >= TIVX_IMAGE_MAX_MAPS)
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: map ID is greater than the maximum image maps\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -1748,6 +1832,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
         else
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            if(image->maps[map_id].map_addr==NULL)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: map address is null\n");
+            }
+            if(image->maps[map_id].map_size==0)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "vxUnmapImagePatch: map size is equal to 0\n");
+            }
         }
     }
 
@@ -1773,6 +1865,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
         if(num_planes != image_planes)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: number of planes is not equal to the number of image planes\n");
         }
 
         if(status == VX_SUCCESS)
@@ -1784,6 +1877,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                     if (new_ptrs[p] == NULL)
                     {
                         status = VX_ERROR_INVALID_PARAMETERS;
+                        VX_PRINT(VX_ZONE_ERROR, "Plane %d is NULL\n", p);
                     }
                 }
             }
@@ -1795,6 +1889,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
             {
                 /* do not return prev pointers for subimages */
                 status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: Previous pointers are not returned for subimages\n");
             }
         }
 
@@ -1852,6 +1947,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                         else
                         {
                             /* Should not hit this condition */
+                            VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: Invalid image create type\n");
                             status = VX_FAILURE;
                         }
                     }
@@ -1883,6 +1979,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxSwapImageHandle: Invalid image reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -1904,6 +2001,19 @@ vx_status ownInitVirtualImage(
         {
             ownInitImage(img, width, height, format);
             status = VX_SUCCESS;
+        }
+
+        if (!(width > 0))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownInitVirtualImage: Width is not greater than 0\n");
+        }
+        if (!(height > 0))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownInitVirtualImage: Height is not greater than 0\n");
+        }
+        if (!(img->base.is_virtual == vx_true_e))
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownInitVirtualImage: Image is not virtual\n");
         }
     }
 

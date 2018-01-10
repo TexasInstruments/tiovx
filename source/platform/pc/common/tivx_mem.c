@@ -99,6 +99,7 @@ vx_status tivxMemBufferAlloc(
 
     if(mem_ptr->host_ptr==NULL)
     {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Memory was not allocated\n");
         status = VX_ERROR_NO_MEMORY;
     }
 

@@ -104,6 +104,7 @@ vx_status tivxQueueCreate(
 
         if(queue->context==NULL)
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxQueueCreate: queue memory allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
         else
@@ -242,6 +243,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout)
                     /* que is full */
                     if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
                     {
+                        VX_PRINT(VX_ZONE_ERROR, "tivxQueuePut: queue is full\n");
                         status = VX_FAILURE;
                         do_break = vx_true_e; /* non-blocking, so exit with error */
                     }
@@ -257,6 +259,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout)
                         /* blocking on que put disabled */
 
                         /* exit with error */
+                        VX_PRINT(VX_ZONE_ERROR, "tivxQueuePut: blocking on queue is disabled\n");
                         status = VX_FAILURE;
                         do_break = vx_true_e;
                     }
@@ -319,6 +322,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
                     /* no elements or not enough element in que to extract */
                     if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
                     {
+                        VX_PRINT(VX_ZONE_ERROR, "tivxQueueGet: no elements or not enough element in que to extract\n");
                         status = VX_FAILURE;
                         do_break = vx_true_e; /* non-blocking, exit with error */
                     }
@@ -337,6 +341,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
                         /* blocking on que get disabled */
 
                         /* exit with error */
+                        VX_PRINT(VX_ZONE_ERROR, "tivxQueueGet: blocking on que get disabled\n");
                         status = VX_FAILURE;
                         do_break = vx_true_e;
                     }

@@ -293,12 +293,14 @@ static vx_status ownAllocDelayBuffer(vx_reference delay_ref)
             }
             else
             {
+                VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayBuffer: delay reference %d is null\n", i);
                 status = VX_ERROR_INVALID_VALUE;
             }
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayBuffer: reference type is not delay\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -353,6 +355,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     status = VX_SUCCESS;
                     if(ownIsValidReference(ref)==vx_false_e)
                     {
+                        VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: invalid reference type\n");
                         status = VX_ERROR_INVALID_REFERENCE;
                     }
                     if(status == VX_SUCCESS)
@@ -387,6 +390,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                                     status = ownAddRefToDelay(context, pyrdelay, ref, i);
                                     if(status!=VX_SUCCESS)
                                     {
+                                        VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: reference was not added to delay\n");
                                         break;
                                     }
                                 }
@@ -400,6 +404,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     ownReleaseRefFromDelay(delay, i);
                     vxReleaseDelay(&delay);
 
+                    VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: Could not allocate delay object descriptor\n");
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate delay object descriptor\n");
                     delay = (vx_delay)ownGetErrorObject(
@@ -452,6 +457,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: delay type query failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -462,16 +468,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryDelay(vx_delay delay,
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: delay slots query failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid delay\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -527,6 +536,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAgeDelay(vx_delay delay)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryDelay: invalid delay\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;

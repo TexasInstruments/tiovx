@@ -67,6 +67,7 @@ static vx_status ownResetGraphPerf(vx_graph graph)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownResetGraphPerf: invalid graph object\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
@@ -95,6 +96,7 @@ static vx_status ownUpdateGraphPerf(vx_graph graph)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownUpdateGraphPerf: invalid graph object\n");
         status = VX_ERROR_INVALID_PARAMETERS;
     }
     return status;
@@ -134,11 +136,13 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: invalid graph index\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: invalid graph object\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -195,6 +199,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "ownGraphRemoveNode: invalid graph object\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -263,10 +268,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphAttribute(vx_graph graph, vx_enum a
     vx_status status = VX_SUCCESS;
     if (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e)
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: not supported\n");
         status = VX_ERROR_NOT_SUPPORTED;
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetGraphAttribute: invalid graph object\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -286,6 +293,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph performance failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -296,6 +304,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph state failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -306,6 +315,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of nodes failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -316,16 +326,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 }
                 else
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of parameters failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
                 break;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: invalid graph reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;
@@ -351,6 +364,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: number of graph parameters greater than maximum allowed\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -367,6 +381,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: number of graph parameters greater than maximum allowed\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -390,6 +405,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetGraphParameterByIndex(vx_graph graph, vx
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxSetGraphParameterByIndex: index greater than number of parameters allowed\n");
             status = VX_ERROR_INVALID_VALUE;
         }
     }
@@ -463,17 +479,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                 /* report error if there is no empty slots to register delay */
                 if (is_full == vx_true_e)
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: no empty slots to register delay\n");
                     status = VX_ERROR_NO_RESOURCES;
                 }
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: invalid graph reference\n");
             status = VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: invalid delay reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -492,9 +511,19 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
         {
             status = vxWaitGraph(graph);
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxProcessGraph: schedule graph failed\n");
+        }
+
+        if(status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxProcessGraph: wait graph failed\n");
+        }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxProcessGraph: invalid graph reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -547,9 +576,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
                 ownNodeKernelSchedule(graph->head_nodes[i]);
             }
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph verify failed\n");
+        }
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: invalid graph reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 
@@ -598,11 +632,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
             }
             if (graph->state == VX_GRAPH_STATE_ABANDONED)
             {
+                VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph: graph has been abandoned\n");
                 status = VX_ERROR_GRAPH_ABANDONED;
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph: graph has been abandoned\n");
             status = VX_ERROR_GRAPH_ABANDONED;
         }
 
@@ -614,6 +650,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
     }
     else
     {
+        VX_PRINT(VX_ZONE_ERROR, "vxWaitGraph: invalid graph reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
 

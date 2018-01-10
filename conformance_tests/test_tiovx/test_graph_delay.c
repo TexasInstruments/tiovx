@@ -568,6 +568,12 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
     ASSERT(node_image == 0);
     ASSERT(param == 0);
 
+    vxQueryNode(nodes[0], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    vxQueryNode(nodes[1], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+    vxQueryNode(nodes[2], VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
+    vxQueryGraph(graph_0, VX_GRAPH_PERFORMANCE, &perf_graph0, sizeof(perf_graph0));
+    vxQueryGraph(graph_1, VX_GRAPH_PERFORMANCE, &perf_graph1, sizeof(perf_graph1));
+
     for (i = 0; i < (sizeof(nodes)/sizeof(nodes[0])); i++)
     {
         VX_CALL(vxReleaseNode(&nodes[i]));
@@ -577,12 +583,6 @@ TEST(tivxGraphDelay, testRegisterAutoAging)
     {
         VX_CALL(vxReleaseImage(&images[i]));
     }
-
-    vxQueryNode(nodes[0], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
-    vxQueryNode(nodes[1], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
-    vxQueryNode(nodes[2], VX_NODE_PERFORMANCE, &perf_node3, sizeof(perf_node3));
-    vxQueryGraph(graph_0, VX_GRAPH_PERFORMANCE, &perf_graph0, sizeof(perf_graph0));
-    vxQueryGraph(graph_1, VX_GRAPH_PERFORMANCE, &perf_graph1, sizeof(perf_graph1));
 
     VX_CALL(vxReleaseGraph(&graph_0));
     VX_CALL(vxReleaseGraph(&graph_1));

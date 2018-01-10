@@ -20,6 +20,14 @@ vx_status tivxMemBufferAlloc(
 
     if ((NULL == mem_ptr) || (0 == size))
     {
+        if (NULL == mem_ptr)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+        }
+        if (0 == size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+        }
         status = VX_FAILURE;
     }
     else
@@ -35,6 +43,7 @@ vx_status tivxMemBufferAlloc(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem host pointer was not allocated\n");
             status = VX_ERROR_NO_MEMORY;
         }
     }
@@ -65,6 +74,18 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 
     if ((NULL == mem_ptr) || (mem_ptr->host_ptr == NULL) || (0 == size))
     {
+        if (NULL == mem_ptr)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+        }
+        if (mem_ptr->host_ptr == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem host pointer is NULL\n");
+        }
+        if (0 == size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+        }
         status = VX_FAILURE;
     }
     else

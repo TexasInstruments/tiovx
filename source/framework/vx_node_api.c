@@ -80,6 +80,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
         else
         {
             vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "Failed to create node with kernel enum %d\n", kernelenum);
+            VX_PRINT(VX_ZONE_ERROR,"vxCreateNodeByStructure: Failed to create node with kernel enum %d\n", kernelenum);
             status = VX_ERROR_NO_MEMORY;
         }
         vxReleaseKernel(&kernel);
@@ -87,6 +88,7 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
     else
     {
         vxAddLogEntry((vx_reference)graph, VX_ERROR_INVALID_PARAMETERS, "failed to retrieve kernel enum %d\n", kernelenum);
+        VX_PRINT(VX_ZONE_ERROR,"vxCreateNodeByStructure: failed to retrieve kernel enum %d\n", kernelenum);
         status = VX_ERROR_NOT_SUPPORTED;
     }
     return node;
