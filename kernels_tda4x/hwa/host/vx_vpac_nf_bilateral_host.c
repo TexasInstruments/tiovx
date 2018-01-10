@@ -75,6 +75,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+vx_status tivxAddKernelVpacNfBilateral(vx_context context);
+vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -82,106 +84,119 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralValidate(vx_node node,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_image img[2U] = {NULL};
-    vx_array array_0 = {NULL};
-    vx_enum item_type_0;
-    vx_size capacity_0;
-    vx_size item_size_0;
-    vx_array array_1 = {NULL};
-    vx_enum item_type_1;
-    vx_size capacity_1;
-    vx_size item_size_1;
-    vx_df_image fmt[2U];
-    vx_df_image out_fmt = VX_DF_IMAGE_U8;
-    vx_uint32 w[2U], h[2U];
-    
-    status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS);
-    
-    if (VX_SUCCESS == status)
-    {
-        array_1 = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
-        img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
-        array_0 = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
-        img[1U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
 
-    }
-    if (VX_SUCCESS == status)
+    vx_array configuration = NULL;
+    vx_enum configuration_item_type;
+    vx_size configuration_capacity, configuration_item_size;
+
+    vx_image input = NULL;
+    vx_df_image input_fmt;
+    vx_uint32 input_w, input_h;
+
+    vx_array sigmas = NULL;
+    vx_enum sigmas_item_type;
+    vx_size sigmas_capacity, sigmas_item_size;
+
+    vx_image output = NULL;
+    vx_df_image output_fmt;
+    vx_uint32 output_w, output_h;
+
+    if ( (num != TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX])
+    )
     {
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
-    }
-    
-    if (VX_SUCCESS == status)
-    {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
-            sizeof(fmt[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryArray(array_1, VX_ARRAY_ITEMTYPE, &item_type_1, sizeof(item_type_1));
-        status |= vxQueryArray(array_1, VX_ARRAY_CAPACITY, &capacity_1, sizeof(capacity_1));
-        status |= vxQueryArray(array_1, VX_ARRAY_ITEMSIZE, &item_size_1, sizeof(item_size_1));
+        configuration = (const vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
+        input = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
+        sigmas = (const vx_array)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
+        output = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
     }
+
+
+    /* PARAMETER ATTRIBUTE FETCH */
 
     if (VX_SUCCESS == status)
     {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
-            sizeof(fmt[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMTYPE, &configuration_item_type, sizeof(configuration_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_CAPACITY, &configuration_capacity, sizeof(configuration_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMSIZE, &configuration_item_size, sizeof(configuration_item_size)));
+
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+
+        tivxCheckStatus(&status, vxQueryArray(sigmas, VX_ARRAY_ITEMTYPE, &sigmas_item_type, sizeof(sigmas_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(sigmas, VX_ARRAY_CAPACITY, &sigmas_capacity, sizeof(sigmas_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(sigmas, VX_ARRAY_ITEMSIZE, &sigmas_item_size, sizeof(sigmas_item_size)));
+
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
     }
 
-    /* Check size of configuration data structures (arrays) */
+    /* PARAMETER CHECKING */
+
     if (VX_SUCCESS == status)
     {
-        if( item_size_0 != sizeof(tivx_vpac_nf_bilateral_sigmas_t))
+        if ( configuration_item_size != sizeof(tivx_vpac_nf_bilateral_params_t))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_nf_bilateral_sigmas_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of type:\n tivx_vpac_nf_bilateral_params_t \n");
+        }
+
+        if( (VX_DF_IMAGE_U8 != input_fmt) &&
+            (VX_DF_IMAGE_U16 != input_fmt) &&
+            (TIVX_DF_IMAGE_P12 != input_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if ( sigmas_item_size != sizeof(tivx_vpac_nf_bilateral_sigmas_t))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'sigmas' should be an array of type:\n tivx_vpac_nf_bilateral_sigmas_t \n");
+        }
+
+        if( (VX_DF_IMAGE_U8 != output_fmt) &&
+            (VX_DF_IMAGE_U16 != output_fmt) &&
+            (TIVX_DF_IMAGE_P12 != output_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
         }
     }
 
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
     if (VX_SUCCESS == status)
     {
-        if( item_size_1 != sizeof(tivx_vpac_nf_bilateral_params_t))
+        if (input_w != output_w)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of a user struct of type:\n tivx_vpac_nf_bilateral_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH\n");
+        }
+        if (input_h != output_h)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT\n");
         }
     }
 
-    /* Check possible input image formats */
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8) &
-                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U16) &
-                 tivxKernelValidatePossibleFormat(fmt[0U], TIVX_DF_IMAGE_P12);
-    }
+    /* CUSTOM PARAMETER CHECKING */
 
-    /* Check possible output image formats */
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
-                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U16) &
-                 tivxKernelValidatePossibleFormat(fmt[1U], TIVX_DF_IMAGE_P12);
-    }
+    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
+    /*                   covered by the code-generation script.) > */
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidateOutputSize(w[0U], w[1U], h[0U], h[1U], img[1U]);
-    }
-    
-    if (VX_SUCCESS == status)
-    {
-        tivxKernelSetMetas(metas, TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS, out_fmt, w[0U], h[0U]);
-    }
-    
     return status;
 }
 
@@ -191,30 +206,30 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfBilateralInitialize(vx_node node
 {
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
-    
-    if (num_params != TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS)
+
+    if ( (num_params != TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-    
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_VPAC_NF_BILATERAL_MAX_PARAMS);
-    }
-    
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
-        
-        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
-        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
+
+        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
+        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
 
         prms.num_input_images = 1;
         prms.num_output_images = 1;
-        
+
         status = tivxKernelConfigValidRect(&prms);
     }
-    
+
     return status;
 }
 
@@ -223,7 +238,7 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
-    
+
     kernel = vxAddUserKernel(
                 context,
                 "com.ti.hwa.vpac_nf_bilateral",
@@ -233,13 +248,12 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
                 tivxAddKernelVpacNfBilateralValidate,
                 tivxAddKernelVpacNfBilateralInitialize,
                 NULL);
-    
+
     status = vxGetStatus((vx_reference)kernel);
     if (status == VX_SUCCESS)
     {
         index = 0;
-        
-        if (status == VX_SUCCESS)
+
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -299,7 +313,7 @@ vx_status tivxAddKernelVpacNfBilateral(vx_context context)
         kernel = NULL;
     }
     vx_vpac_nf_bilateral_kernel = kernel;
-    
+
     return status;
 }
 
@@ -307,10 +321,10 @@ vx_status tivxRemoveKernelVpacNfBilateral(vx_context context)
 {
     vx_status status;
     vx_kernel kernel = vx_vpac_nf_bilateral_kernel;
-    
+
     status = vxRemoveKernel(kernel);
     vx_vpac_nf_bilateral_kernel = NULL;
-    
+
     return status;
 }
 

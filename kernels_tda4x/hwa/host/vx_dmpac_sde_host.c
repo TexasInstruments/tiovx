@@ -75,6 +75,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
 static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+vx_status tivxAddKernelDmpacSde(vx_context context);
+vx_status tivxRemoveKernelDmpacSde(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -82,119 +84,140 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_image img[3U] = {NULL};
-    vx_array array_0 = {NULL};
-    vx_enum item_type_0;
-    vx_size capacity_0;
-    vx_size item_size_0;
-    vx_distribution distribution_1 = {NULL};
-    vx_int32 offset_1 = 0;
-    vx_uint32 range_1 = 0;
-    vx_size numBins_1 = 0;
-    vx_df_image fmt[3U] = {0u, 0u, 0u};
-    vx_df_image out_fmt = VX_DF_IMAGE_U8;
-    vx_uint32 w[3U], h[3U];
 
-    status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS-1);
+    vx_array configuration = NULL;
+    vx_enum configuration_item_type;
+    vx_size configuration_capacity, configuration_item_size;
 
-    if (VX_SUCCESS == status)
+    vx_image left = NULL;
+    vx_df_image left_fmt;
+    vx_uint32 left_w, left_h;
+
+    vx_image right = NULL;
+    vx_df_image right_fmt;
+    vx_uint32 right_w, right_h;
+
+    vx_image output = NULL;
+    vx_df_image output_fmt;
+    vx_uint32 output_w, output_h;
+
+    vx_distribution confidence_histogram = NULL;
+    vx_int32 confidence_histogram_offset = 0;
+    vx_uint32 confidence_histogram_range = 0;
+    vx_size confidence_histogram_numBins = 0;
+
+    if ( (num != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
+    )
     {
-        array_0 = (vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
-        img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
-        img[1U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-        img[2U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
-        distribution_1 = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
-
-    }
-    if (VX_SUCCESS == status)
-    {
-        status = vxQueryArray(array_0, VX_ARRAY_ITEMTYPE, &item_type_0, sizeof(item_type_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_CAPACITY, &capacity_0, sizeof(capacity_0));
-        status |= vxQueryArray(array_0, VX_ARRAY_ITEMSIZE, &item_size_0, sizeof(item_size_0));
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
-            sizeof(fmt[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
     if (VX_SUCCESS == status)
     {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
-            sizeof(fmt[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+        configuration = (const vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
+        left = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+        right = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+        output = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
+        confidence_histogram = (const vx_distribution)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
     }
+
+
+    /* PARAMETER ATTRIBUTE FETCH */
 
     if (VX_SUCCESS == status)
     {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
-            sizeof(fmt[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
-    }
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMTYPE, &configuration_item_type, sizeof(configuration_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_CAPACITY, &configuration_capacity, sizeof(configuration_capacity)));
+        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMSIZE, &configuration_item_size, sizeof(configuration_item_size)));
 
-    if ((VX_SUCCESS == status) && (NULL != distribution_1))
-    {
-        status = vxQueryDistribution(distribution_1, VX_DISTRIBUTION_BINS, &numBins_1, sizeof(numBins_1));
-        status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_RANGE, &range_1, sizeof(range_1));
-        status |= vxQueryDistribution(distribution_1, VX_DISTRIBUTION_OFFSET, &offset_1, sizeof(offset_1));
-    }
+        tivxCheckStatus(&status, vxQueryImage(left, VX_IMAGE_FORMAT, &left_fmt, sizeof(left_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(left, VX_IMAGE_WIDTH, &left_w, sizeof(left_w)));
+        tivxCheckStatus(&status, vxQueryImage(left, VX_IMAGE_HEIGHT, &left_h, sizeof(left_h)));
 
+        tivxCheckStatus(&status, vxQueryImage(right, VX_IMAGE_FORMAT, &right_fmt, sizeof(right_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(right, VX_IMAGE_WIDTH, &right_w, sizeof(right_w)));
+        tivxCheckStatus(&status, vxQueryImage(right, VX_IMAGE_HEIGHT, &right_h, sizeof(right_h)));
+
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+
+        if (NULL != confidence_histogram)
+        {
+            tivxCheckStatus(&status, vxQueryDistribution(confidence_histogram, VX_DISTRIBUTION_BINS, &confidence_histogram_numBins, sizeof(confidence_histogram_numBins)));
+            tivxCheckStatus(&status, vxQueryDistribution(confidence_histogram, VX_DISTRIBUTION_RANGE, &confidence_histogram_range, sizeof(confidence_histogram_range)));
+            tivxCheckStatus(&status, vxQueryDistribution(confidence_histogram, VX_DISTRIBUTION_OFFSET, &confidence_histogram_offset, sizeof(confidence_histogram_offset)));
+        }
+    }
 
     /* PARAMETER CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        if ( item_size_0 != sizeof(tivx_dmpac_sde_params_t))
+        if ( configuration_item_size != sizeof(tivx_dmpac_sde_params_t))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a array of type:\n tivx_dmpac_sde_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of type:\n tivx_dmpac_sde_params_t \n");
+        }
+
+        if( (VX_DF_IMAGE_U8 != left_fmt) &&
+            (VX_DF_IMAGE_U16 != left_fmt) &&
+            (TIVX_DF_IMAGE_P12 != left_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'left' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if( (VX_DF_IMAGE_U8 != right_fmt) &&
+            (VX_DF_IMAGE_U16 != right_fmt) &&
+            (TIVX_DF_IMAGE_P12 != right_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'right' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if (VX_DF_IMAGE_S16 != output_fmt)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_S16 \n");
+        }
+
+    }
+
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if( (left_w != right_w) ||
+            (left_w != output_w))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'left' and 'right' and 'output' should have the same value for VX_IMAGE_WIDTH\n");
+        }
+        if( (left_h != right_h) ||
+            (left_h != output_h))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'left' and 'right' and 'output' should have the same value for VX_IMAGE_HEIGHT\n");
+        }
+
+        if (left_fmt != right_fmt)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'left' and 'right' should have the same value for VX_IMAGE_FORMAT\n");
         }
     }
 
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidateInputSize(w[0U], w[1U], h[0U], h[1U]);
-    }
+    /* CUSTOM PARAMETER CHECKING */
 
-    /* Check possible input image formats */
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U8) &
-                 tivxKernelValidatePossibleFormat(fmt[0U], VX_DF_IMAGE_U16) &
-                 tivxKernelValidatePossibleFormat(fmt[0U], TIVX_DF_IMAGE_P12);
-    }
-
-    /* Check possible input image formats */
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U8) &
-                 tivxKernelValidatePossibleFormat(fmt[1U], VX_DF_IMAGE_U16) &
-                 tivxKernelValidatePossibleFormat(fmt[1U], TIVX_DF_IMAGE_P12);
-    }
-
-    /* Check possible output image formats */
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidatePossibleFormat(fmt[2U], VX_DF_IMAGE_S16);
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidateOutputSize(w[0U], w[2U], h[0U], h[2U], img[2U]);
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        tivxKernelSetMetas(metas, TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS, out_fmt, w[0U], h[0U]);
-    }
+    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
+    /*                   covered by the code-generation script.) > */
 
     return status;
 }
@@ -206,23 +229,23 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
-    if (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
+    if ( (num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-
-    if (VX_SUCCESS == status)
-    {
-        status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS-1);
-    }
-
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
-        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
+        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
 
         prms.num_input_images = 2;
         prms.num_output_images = 1;
@@ -265,7 +288,6 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
     {
         index = 0;
 
-        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
