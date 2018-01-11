@@ -130,7 +130,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
  *              of 2 to save memory footprint and bandwidth. The coordinates are of type S16Q3, and are stored as X,Y pairs of type
  *              <tt>\ref VX_DF_IMAGE_U32</tt>.
  * \param [in] warp_matrix (optional) The affine or perspective warp matrix. Must be 2x3 (affine) or 3x3 (perspective),
- *              and of type <tt>\ref VX_TYPE_INT16</tt>.
+ *              and of type <tt>\ref VX_TYPE_INT16</tt> if using HW register values, or <tt>\ref VX_TYPE_FLOAT32</tt> if using matrix values defined in OpenVX warp functions.
  * \param [in] out_2_luma_lut (optional) The bit depth conversion LUT for out_2_luma channel. Use 12-bit data in a container of
  *              data_type <tt>\ref VX_TYPE_UINT16</tt>, and count of <tt>513</tt>
  * \param [in] out_3_chroma_lut (optional) The bit depth conversion LUT for out_3_chroma channel. Use 12-bit data in a container of

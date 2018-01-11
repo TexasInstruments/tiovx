@@ -134,7 +134,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
     tivx_obj_desc_image_t *out_2_luma_or_422_desc;
     tivx_obj_desc_image_t *out_3_chroma_desc;
     tivx_obj_desc_scalar_t *error_status_desc;
-    
+
     if ( num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX])
@@ -535,40 +535,75 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                 if( NULL != warp_matrix_desc )
                 {
-                    int16_t *mat_addr;
-
                     warp_matrix_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
                         warp_matrix_desc->mem_ptr.shared_ptr, warp_matrix_desc->mem_ptr.mem_type);
 
                     tivxMemBufferMap(warp_matrix_desc->mem_ptr.target_ptr, warp_matrix_desc->mem_size,
                         warp_matrix_desc->mem_ptr.mem_type, VX_READ_ONLY);
 
-                    mat_addr = (int16_t *)((uintptr_t)warp_matrix_desc->mem_ptr.target_ptr);
+                    if (VX_TYPE_INT16 == warp_matrix_desc->data_type) /* Direct pass to HW registers */
+                    {
+                        int16_t *mat_addr;
 
-                    if(3 == warp_matrix_desc->columns)
-                    {
-                        prms->mmr.affine_a = mat_addr[0];
-                        prms->mmr.affine_b = mat_addr[3];
-                        prms->mmr.affine_c = mat_addr[6];
-                        prms->mmr.affine_d = mat_addr[1];
-                        prms->mmr.affine_e = mat_addr[4];
-                        prms->mmr.affine_f = mat_addr[7];
-                        prms->mmr.affine_g = mat_addr[2];
-                        prms->mmr.affine_h = mat_addr[5];
-                        prms->mmr.pwarpen = 1;         // PWARP enable
+                        mat_addr = (int16_t *)((uintptr_t)warp_matrix_desc->mem_ptr.target_ptr);
+
+                        if(3 == warp_matrix_desc->columns)
+                        {
+                            prms->mmr.affine_a = mat_addr[0];
+                            prms->mmr.affine_b = mat_addr[3];
+                            prms->mmr.affine_c = mat_addr[6];
+                            prms->mmr.affine_d = mat_addr[1];
+                            prms->mmr.affine_e = mat_addr[4];
+                            prms->mmr.affine_f = mat_addr[7];
+                            prms->mmr.affine_g = mat_addr[2];
+                            prms->mmr.affine_h = mat_addr[5];
+                            prms->mmr.pwarpen = 1;         // PWARP enable
+                        }
+                        else
+                        {
+                            prms->mmr.affine_a = mat_addr[0];
+                            prms->mmr.affine_b = mat_addr[2];
+                            prms->mmr.affine_c = mat_addr[4];
+                            prms->mmr.affine_d = mat_addr[1];
+                            prms->mmr.affine_e = mat_addr[3];
+                            prms->mmr.affine_f = mat_addr[5];
+                            prms->mmr.affine_g = 0;
+                            prms->mmr.affine_h = 0;
+                            prms->mmr.pwarpen = 0;         // PWARP enable
+                        }
                     }
-                    else
+                    else /* Compute HW registers from floating point warp matrix */
                     {
-                        prms->mmr.affine_a = mat_addr[0];
-                        prms->mmr.affine_b = mat_addr[2];
-                        prms->mmr.affine_c = mat_addr[4];
-                        prms->mmr.affine_d = mat_addr[1];
-                        prms->mmr.affine_e = mat_addr[3];
-                        prms->mmr.affine_f = mat_addr[5];
-                        prms->mmr.affine_g = 0;
-                        prms->mmr.affine_h = 0;
-                        prms->mmr.pwarpen = 0;         // PWARP enable
+                        float *mat_addr;
+
+                        mat_addr = (float *)((uintptr_t)warp_matrix_desc->mem_ptr.target_ptr);
+
+                        if(3 == warp_matrix_desc->columns)
+                        {
+                            prms->mmr.affine_a = (int16_t)((mat_addr[0] / mat_addr[9]) * 4096.0f);
+                            prms->mmr.affine_b = (int16_t)((mat_addr[3] / mat_addr[9]) * 4096.0f);
+                            prms->mmr.affine_c = (int16_t)((mat_addr[6] / mat_addr[9]) * 8.0f);
+                            prms->mmr.affine_d = (int16_t)((mat_addr[1] / mat_addr[9]) * 4096.0f);
+                            prms->mmr.affine_e = (int16_t)((mat_addr[4] / mat_addr[9]) * 4096.0f);
+                            prms->mmr.affine_f = (int16_t)((mat_addr[7] / mat_addr[9]) * 8.0f);
+                            prms->mmr.affine_g = (int16_t)((mat_addr[2] / mat_addr[9]) * 8388608.0f);
+                            prms->mmr.affine_h = (int16_t)((mat_addr[5] / mat_addr[9]) * 8388608.0f);
+                            prms->mmr.pwarpen = 1;         // PWARP enable
+                        }
+                        else
+                        {
+                            prms->mmr.affine_a = (int16_t)(mat_addr[0] * 4096.0f);
+                            prms->mmr.affine_b = (int16_t)(mat_addr[2] * 4096.0f);
+                            prms->mmr.affine_c = (int16_t)(mat_addr[4] * 8.0f);
+                            prms->mmr.affine_d = (int16_t)(mat_addr[1] * 4096.0f);
+                            prms->mmr.affine_e = (int16_t)(mat_addr[3] * 4096.0f);
+                            prms->mmr.affine_f = (int16_t)(mat_addr[5] * 8.0f);
+                            prms->mmr.affine_g = 0;
+                            prms->mmr.affine_h = 0;
+                            prms->mmr.pwarpen = 0;         // PWARP enable
+                        }
                     }
+
                     tivxMemBufferUnmap(warp_matrix_desc->mem_ptr.target_ptr, warp_matrix_desc->mem_size,
                         warp_matrix_desc->mem_ptr.mem_type, VX_READ_ONLY);
                 }

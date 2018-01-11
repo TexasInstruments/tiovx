@@ -289,10 +289,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
         if (NULL != warp_matrix)
         {
-            if (VX_TYPE_INT16 != warp_matrix_type)
+            if( (VX_TYPE_INT16 != warp_matrix_type) &&
+                (VX_TYPE_FLOAT32 != warp_matrix_type))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' should be a matrix of type:\n VX_TYPE_INT16 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' should be a matrix of type:\n VX_TYPE_INT16 or VX_TYPE_FLOAT32 \n");
             }
         }
 
