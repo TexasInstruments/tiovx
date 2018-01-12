@@ -66,11 +66,17 @@
 #include "tivx_kernels_target_utils.h"
 
 void tivxAddTargetKernelVpacMscGaussianPyramid();
+void tivxAddTargetKernelVpacMscHalfScaleGaussian();
+void tivxAddTargetKernelVpacMscScale();
 
 void tivxRemoveTargetKernelVpacMscGaussianPyramid();
+void tivxRemoveTargetKernelVpacMscHalfScaleGaussian();
+void tivxRemoveTargetKernelVpacMscScale();
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelVpacMscGaussianPyramid, tivxRemoveTargetKernelVpacMscGaussianPyramid},
+    {tivxAddTargetKernelVpacMscHalfScaleGaussian, tivxRemoveTargetKernelVpacMscHalfScaleGaussian},
+    {tivxAddTargetKernelVpacMscScale, tivxRemoveTargetKernelVpacMscScale},
 };
 
 void tivxRegisterHwaTargetVpacMscKernels()

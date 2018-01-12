@@ -66,6 +66,8 @@ TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaVpacLdc)
 TESTCASE(tivxHwaVpacMscGaussianPyramid)
+TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
+TESTCASE(tivxHwaVpacMscScale)
 TESTCASE(tivxHwaDmpacDof)
 TESTCASE(tivxHwaDmpacSde)
 #endif
