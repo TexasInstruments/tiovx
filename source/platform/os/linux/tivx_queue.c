@@ -322,7 +322,6 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
                     /* no elements or not enough element in que to extract */
                     if (timeout == TIVX_EVENT_TIMEOUT_NO_WAIT)
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "tivxQueueGet: no elements or not enough element in que to extract\n");
                         status = VX_FAILURE;
                         do_break = vx_true_e; /* non-blocking, exit with error */
                     }

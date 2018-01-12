@@ -175,9 +175,65 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
         {
             if(context->reftable[ref_idx]==NULL)
             {
+                char name[VX_MAX_REFERENCE_NAME];
+
                 context->reftable[ref_idx] = ref;
                 context->num_references++;
                 is_success = vx_true_e;
+
+                switch(ref->type)
+                {
+                    case VX_TYPE_DELAY:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "delay_%d", ref_idx);
+                        break;
+                    case VX_TYPE_LUT:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "lut_%d", ref_idx);
+                        break;
+                    case VX_TYPE_DISTRIBUTION:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "distribution_%d", ref_idx);
+                        break;
+                    case VX_TYPE_PYRAMID:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "pyramid_%d", ref_idx);
+                        break;
+                    case VX_TYPE_THRESHOLD:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "threshold_%d", ref_idx);
+                        break;
+                    case VX_TYPE_MATRIX:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "matrix_%d", ref_idx);
+                        break;
+                    case VX_TYPE_CONVOLUTION:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "convolution_%d", ref_idx);
+                        break;
+                    case VX_TYPE_SCALAR:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "scalar_%d", ref_idx);
+                        break;
+                    case VX_TYPE_ARRAY:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "array_%d", ref_idx);
+                        break;
+                    case VX_TYPE_IMAGE:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "image_%d", ref_idx);
+                        break;
+                    case VX_TYPE_REMAP:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "remap_%d", ref_idx);
+                        break;
+                    case VX_TYPE_OBJECT_ARRAY:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "object_array_%d", ref_idx);
+                        break;
+                    case VX_TYPE_NODE:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "node_%d", ref_idx);
+                        break;
+                    case VX_TYPE_GRAPH:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "graph_%d", ref_idx);
+                        break;
+                    case TIVX_TYPE_DATA_REF_Q:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
+                        break;
+                    default:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
+                        break;
+                }
+                vxSetReferenceName(ref, name);
+
                 break;
             }
         }
@@ -360,7 +416,15 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
 
     if( (ownIsValidContext(context) == vx_true_e) && (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS) )
     {
+        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+
         ownContextLock(context);
+
+        tivx_uint64_to_uint32(
+            timestamp,
+            &context->obj_desc_cmd->timestamp_h,
+            &context->obj_desc_cmd->timestamp_l
+        );
 
         context->obj_desc_cmd->cmd_id = cmd;
         context->obj_desc_cmd->dst_target_id = target_id;
@@ -444,6 +508,10 @@ VX_API_ENTRY vx_context VX_API_CALL vxCreateContext(void)
             if(status==VX_SUCCESS)
             {
                 status = tivxMutexCreate(&context->log_lock);
+            }
+            if(status==VX_SUCCESS)
+            {
+                status = tivxEventQueueCreate(&context->event_queue);
             }
             if(status==VX_SUCCESS)
             {
@@ -583,6 +651,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxReleaseContext(vx_context *c)
             }
 
             ownContextDeleteCmdObj(context);
+
+            tivxEventQueueDelete(&context->event_queue);
 
             /*! \internal wipe away the context memory first */
             /* Normally destroy sem is part of release reference, but can't for context */

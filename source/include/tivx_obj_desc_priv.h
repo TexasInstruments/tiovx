@@ -82,6 +82,18 @@ extern "C" {
  */
 #define TIVX_CMD_MAX_OBJ_DESCS        (16u)
 
+
+/*! \brief Max nodes that can be blocked on object descriptor queue not empty
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES       (8u)
+
+
+/*! \brief Max elements in a object descriptor queue
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_OBJ_DESC_QUEUE_MAX_DEPTH               (32u)
+
 /*! \brief Flag to indicate if command receiver needs to ACK this command
  * \ingroup group_tivx_obj_desc_priv
  */
@@ -92,6 +104,17 @@ extern "C" {
  */
 #define TIVX_CMD_FLAG_IS_ACK             (0x00000002u)
 
+
+/*! \brief Data Ref Q flag to determine if ref consumed event should be sent
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT      (0x00000001u)
+
+/*! \brief Data Ref Q flag to determine if ref is acquired for this data ref q
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED                   (0x00000002u)
+
 /*! \brief Shift for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv
  */
@@ -101,6 +124,8 @@ extern "C" {
  * \ingroup group_tivx_obj_desc_priv
  */
 #define TIVX_OBJ_DESC_ID_MASK            (0x0000FFFFu)
+
+
 
 
 /*!
@@ -144,6 +169,12 @@ typedef struct _tivx_obj_desc_cmd
     /*! \brief command execution status */
     uint32_t cmd_status;
 
+    /*! \brief time at which this command is sent */
+    uint32_t timestamp_h;
+
+    /*! \brief time at which this command is sent */
+    uint32_t timestamp_l;
+
 } tivx_obj_desc_cmd_t;
 
 /*!
@@ -160,6 +191,119 @@ typedef struct _tivx_obj_desc_kernel_name
     char kernel_name[VX_MAX_KERNEL_NAME];
 
 } tivx_obj_desc_kernel_name_t;
+
+/*!
+ * \brief Data structure to get information about node blocked on this object descriptor to be
+ *        ready
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_queue_blocked_nodes {
+
+    /*! numbers of blocked nodes */
+    uint16_t num_nodes;
+
+    /*! \brief reserved field, to align to 64b */
+    uint16_t rsv[7];
+
+    /*! blocked node object descriptor IDs */
+    uint16_t node_id[TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES];
+
+} tivx_obj_desc_queue_blocked_nodes_t;
+
+/*!
+ * \brief Object descriptor queue
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_queue
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief Current read index */
+    uint16_t cur_rd;
+
+    /*! \brief Current write index  */
+    uint16_t cur_wr;
+
+    /*! \brief Count of elements in queue  */
+    uint16_t count;
+
+    /*! \brief reserved field, to align to 64b */
+    uint16_t rsv[5];
+
+    /*! \brief queue memory */
+    uint16_t queue_mem[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
+
+    /*! \brief node blocked on this object descriptor queue */
+    tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
+
+} tivx_obj_desc_queue_t;
+
+/*!
+ * \brief Data reference queue
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_data_ref_q
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief object specific flags */
+    uint32_t flags;
+
+    /*! \brief command to send when ref is consumed */
+    uint16_t ref_consumed_cmd_obj_desc_id;
+
+    /*! \brief queue to use for data ref acquire */
+    uint16_t acquire_q_obj_desc_id;
+
+    /*! \brief queue to use for data ref release */
+    uint16_t release_q_obj_desc_id;
+
+    /*! \brief acquired ref obj desc ID */
+    uint16_t ref_obj_desc_id;
+
+    /*! \brief number of input nodes that have consumed 'ref_obj_desc_id' */
+    uint16_t in_node_done_cnt;
+
+    /*! \brief number of nodes take this data ref as input */
+    uint16_t num_in_nodes;
+
+} tivx_obj_desc_data_ref_q_t;
+
+/*!
+ * \brief Graph object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_graph
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief pipeline ID of this graph instance */
+    uint32_t pipeline_id;
+
+    /*! \brief Graph instance state, running or completed or abandoned */
+    uint32_t state;
+
+    /*! \brief number of leaf nodes that have completed so far,
+     *  before a graph begins this value is 0
+     */
+    uint32_t complete_leaf_nodes;
+
+    /*! \brief graph execution time */
+    uint32_t exe_time_beg_h;
+    /*! \brief graph execution time */
+    uint32_t exe_time_beg_l;
+    /*! \brief graph execution time */
+    uint32_t exe_time_end_h;
+    /*! \brief graph execution time */
+    uint32_t exe_time_end_l;
+
+} tivx_obj_desc_graph_t;
 
 /*!
  * \brief Object Descriptor Shared memory entry which can hold any of the
@@ -183,6 +327,9 @@ typedef union {
     tivx_obj_desc_objarray_t objarray;
     tivx_obj_desc_scalar_t scalar;
     tivx_obj_desc_kernel_name_t kernel_name;
+    tivx_obj_desc_queue_t obj_desc_queue;
+    tivx_obj_desc_data_ref_q_t obj_desc_data_ref_q;
+    tivx_obj_desc_graph_t obj_desc_graph;
 
 } tivx_obj_desc_shm_entry_t;
 

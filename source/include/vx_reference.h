@@ -268,6 +268,12 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope);
 vx_reference ownCreateReferenceFromExemplar(
     vx_context context, vx_reference exemplar);
 
+
+/*! \brief Return reference given a obj desc ID
+ * \ingroup group_vx_reference
+ */
+vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id);
+
 #ifdef __cplusplus
 }
 #endif

@@ -167,7 +167,8 @@ typedef enum _tivx_target_cmd_e {
     TIVX_CMD_NODE_CONTROL  = 0x00000003u,
     /*! \brief Command to call a user callback, on node execution complete */
     TIVX_CMD_NODE_USER_CALLBACK  = 0x00000004u,
-
+    /*! \brief Command to inform host that a ref is consumed and is available for user dequeue */
+    TIVX_CMD_DATA_REF_CONSUMED = 0x00000005u,
 } tivx_target_cmd_e;
 
 /*! \brief Target Object */
@@ -265,6 +266,26 @@ vx_enum tivxTargetGetCpuId(vx_enum target_id);
  * \ingroup group_tivx_target
  */
 vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id);
+
+/*! \brief Trigger execution of a node obj desc
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetTriggerNode(uint16_t node_obj_desc_id);
+
+
+/*! \brief Acquire parameters for node execution
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
+            uint16_t prm_obj_desc_id[], vx_bool *is_node_blocked);
+
+/*! \brief Release parameters that were previously acquired
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetNodeDescReleaseAllParameters(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
 
 /*!
  * \brief Used to set default target create parameters in parameter structure

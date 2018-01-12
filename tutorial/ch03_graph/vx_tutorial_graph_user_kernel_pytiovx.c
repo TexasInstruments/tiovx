@@ -252,6 +252,12 @@ void vx_tutorial_graph_user_kernel_pytiovx(vx_bool add_as_target_kernel)
         show_graph_attributes(uc.graph_0);
         /** \endcode */
 
+        /** export graph to dot file, which can be coverted to jpg using dot tool
+         * \code
+         */
+        tivxExportGraphToDot(uc.graph_0, ".", "vx_tutorial_graph_user_kernel_pytiovx");
+        /** \endcode */
+
         if(status==VX_SUCCESS)
         {
             printf(" Executing graph ...\n");

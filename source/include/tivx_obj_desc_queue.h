@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -62,32 +62,76 @@
 
 
 
-#include <vx_internal.h>
-#include <windows.h>
 
-static uint64_t g_start_time=0;
+#ifndef TIVX_OBJ_DESC_QUEUE_H_
+#define TIVX_OBJ_DESC_QUEUE_H_
 
-uint64_t tivxPlatformGetTimeInUsecs(void)
-{
-    uint64_t timeInUsecs = 0;
-    LARGE_INTEGER value, hz, tmp;
-    BOOL is_ok;
 
-    is_ok = QueryPerformanceCounter(&value);
-    if(is_ok)
-    {
-        is_ok = QueryPerformanceFrequency(&hz);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-        tmp.QuadPart = (value.QuadPart*1000000ULL/hz.QuadPart);
+/*!
+ * \file
+ * \brief Implementation of Object descriptor Queue Object APIs
+ *
+ * NOTE: The APIs in this module dont do any locking for Q/DQ and other operations.
+ *       User of this API should take local CPU and/or multi-CPU locks
+ */
 
-        timeInUsecs = tmp.QuadPart;
+/*!
+ * \brief Create a object descriptor queue and return its obj_desc_id
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueCreate(uint16_t *obj_desc_id);
 
-        if(g_start_time==0)
-        {
-            g_start_time = timeInUsecs;
-        }
-    }
+/*!
+ * \brief Release a object descriptor queue
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueRelease(uint16_t *obj_desc_id);
 
-    return (timeInUsecs-g_start_time);
+
+/*!
+ * \brief Enqueue a obj_desc_id into a object descriptor queue
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueEnqueue(uint16_t obj_desc_q_id, uint16_t obj_desc_id);
+
+/*!
+ * \brief Get number of elements in a object descriptor queue
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueGetCount(uint16_t obj_desc_q_id, uint32_t *count);
+
+/*!
+ * \brief Dequeue a obj_desc_id from a object descriptor queue
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueDequeue(uint16_t obj_desc_q_id, uint16_t *obj_desc_id);
+
+/*!
+ * \brief Add 'node_id' to a list of blocked nodes associated with this object descriptor ID
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_id);
+
+/*!
+ * \brief Extract nodes blocked on this object descritor queue ID
+ *
+ * \ingroup tivx_obj_desc_queue
+ */
+vx_status tivxObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,
+            tivx_obj_desc_queue_blocked_nodes_t *out_blocked_nodes);
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif

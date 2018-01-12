@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -62,32 +62,104 @@
 
 
 
-#include <vx_internal.h>
-#include <windows.h>
+#ifndef TIVX_EVENT_QUEUE_H_
+#define TIVX_EVENT_QUEUE_H_
 
-static uint64_t g_start_time=0;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-uint64_t tivxPlatformGetTimeInUsecs(void)
+/*!
+ * \file
+ * \brief Interface to Event Queue APIs
+ *
+ *        Event Queue can be used to collect framework generated events
+ *        into a queue.
+ *        When user calls vxWaitEvent the event is returned
+ *        to the user in a first-in first out manner
+ */
+
+/*! \brief Max size of event queue
+ * \ingroup group_vx_event_cfg
+ */
+#define TIVX_EVENT_QUEUE_MAX_SIZE       (256u)
+
+/*! \brief Element inserted into event queue
+ * \ingroup group_tivx_event_queue
+ */
+typedef struct _tivx_event_queue_elem_t
 {
-    uint64_t timeInUsecs = 0;
-    LARGE_INTEGER value, hz, tmp;
-    BOOL is_ok;
+    vx_enum   event_id;
+    uint64_t  timestamp;
+    uintptr_t param1;
+    uintptr_t param2;
+} tivx_event_queue_elem_t;
 
-    is_ok = QueryPerformanceCounter(&value);
-    if(is_ok)
-    {
-        is_ok = QueryPerformanceFrequency(&hz);
+/*!
+ * \brief Event queue object
+ *
+ * \ingroup group_tivx_event_queue
+ */
+typedef struct _tivx_event_queue_t
+{
+    /*! \brief list of events */
+    tivx_event_queue_elem_t event_list[TIVX_EVENT_QUEUE_MAX_SIZE];
 
-        tmp.QuadPart = (value.QuadPart*1000000ULL/hz.QuadPart);
+    /*! \brief handle to free queue holding tivx_event_queue_elem_t's
+     * NOTE: queue holds index's to event_list[]
+     * */
+    tivx_queue free_queue;
 
-        timeInUsecs = tmp.QuadPart;
+    /*! \brief free queue memory */
+    uint32_t free_queue_memory[TIVX_EVENT_QUEUE_MAX_SIZE];
 
-        if(g_start_time==0)
-        {
-            g_start_time = timeInUsecs;
-        }
-    }
+    /*! \brief handle to ready queue holding tivx_event_queue_elem_t's which are ready to be delivered to users
+     * NOTE: queue holds index's to event_list[]
+     * */
+    tivx_queue ready_queue;
 
-    return (timeInUsecs-g_start_time);
+    /*! \brief free queue memory */
+    uint32_t ready_queue_memory[TIVX_EVENT_QUEUE_MAX_SIZE];
+
+    /*! \brief flag to control enable/disable of event addition to event queue  */
+    vx_bool enable;
+
+} tivx_event_queue_t;
+
+
+
+
+/*!
+ * \brief Create a event queue
+ *
+ * \return event queue handle on success, else error
+ *
+ * \ingroup group_tivx_event_queue
+ */
+vx_status tivxEventQueueCreate(tivx_event_queue_t *event_q);
+
+
+/*!
+ * \brief Delete a event queue
+ *
+ * \return event queue handle on success, else error
+ *
+ * \ingroup group_tivx_event_queue
+ */
+void tivxEventQueueDelete(tivx_event_queue_t *event_q);
+
+/*!
+ * \brief Add event to event queue
+ *
+ * When events are disabled, event is not added to the event_q
+ *
+ * \ingroup group_tivx_event_queue
+ */
+vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
+        vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2);
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif

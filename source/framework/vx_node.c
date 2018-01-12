@@ -31,14 +31,14 @@
 #include <vx_internal.h>
 
 static vx_status ownDestructNode(vx_reference ref);
-static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel);
+static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pipeline_id);
 static vx_status ownRemoveNodeInt(vx_node *n);
 static void ownNodeUserKernelSetParamsAccesible(vx_reference params[], vx_uint32 num_params, vx_bool is_accessible);
 
 static vx_status ownDestructNode(vx_reference ref)
 {
     vx_node node = (vx_node)ref;
-    uint32_t p;
+    uint32_t p, pipe_id;
 
     if(node->base.type == VX_TYPE_NODE)
     {
@@ -67,36 +67,35 @@ static vx_status ownDestructNode(vx_reference ref)
 
             ownReleaseReferenceInt((vx_reference *)&node->kernel, VX_TYPE_KERNEL, VX_INTERNAL, NULL);
         }
-        if(node->obj_desc!=NULL)
+        for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
         {
-            tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc);
-        }
-        if(node->completion_event!=NULL)
-        {
-            tivxEventDelete(&node->completion_event);
-        }
-        if(node->obj_desc_cmd!=NULL)
-        {
-            tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd);
+            if(node->obj_desc[pipe_id]!=NULL)
+            {
+                tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc[pipe_id]);
+            }
+            if(node->obj_desc_cmd[pipe_id]!=NULL)
+            {
+                tivxObjDescFree((tivx_obj_desc_t**)&node->obj_desc_cmd[pipe_id]);
+            }
         }
     }
     return VX_SUCCESS;
 }
 
-static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
+static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pipeline_id)
 {
-    tivx_obj_desc_node_t *obj_desc = node->obj_desc;
+    tivx_obj_desc_node_t *obj_desc = node->obj_desc[0];
     vx_status status = VX_SUCCESS;
     uint32_t idx;
 
     /* set default flags */
+    obj_desc->pipeline_id = pipeline_id;
+
     obj_desc->flags = 0;
 
     obj_desc->kernel_id = kernel->enumeration;
 
     obj_desc->node_complete_cmd_obj_desc_id = TIVX_OBJ_DESC_INVALID;
-
-    obj_desc->host_node_ref = (uintptr_t)node;
 
     obj_desc->border_mode.mode = VX_BORDER_UNDEFINED;
     memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
@@ -111,19 +110,27 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel)
     for(idx=0; idx<kernel->signature.num_parameters; idx++)
     {
         obj_desc->data_id[idx] = TIVX_OBJ_DESC_INVALID;
+        obj_desc->data_ref_q_id[idx] = TIVX_OBJ_DESC_INVALID;
     }
 
+    obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_IDLE;
     obj_desc->num_out_nodes = 0;
     obj_desc->num_in_nodes = 0;
     obj_desc->is_prm_replicated = 0;
+    obj_desc->is_prm_input = 0;
+    obj_desc->is_prm_data_ref_q = 0;
+    obj_desc->prev_pipe_node_id = TIVX_OBJ_DESC_INVALID;
+    obj_desc->blocked_node_id = TIVX_OBJ_DESC_INVALID;
+    obj_desc->prev_pipe_node_id = TIVX_OBJ_DESC_INVALID;
+
 
     if(vx_true_e == kernel->is_target_kernel)
     {
         tivxFlagBitSet(&obj_desc->flags, TIVX_NODE_FLAG_IS_TARGET_KERNEL);
     }
 
-    node->obj_desc->target_id = (uint32_t)ownKernelGetDefaultTarget(kernel);
-    if(node->obj_desc->target_id == (uint32_t)TIVX_TARGET_ID_INVALID)
+    obj_desc->target_id = (uint32_t)ownKernelGetDefaultTarget(kernel);
+    if(obj_desc->target_id == (uint32_t)TIVX_TARGET_ID_INVALID)
     {
         /* invalid target or no target, associated with kernel,
          */
@@ -271,7 +278,7 @@ vx_status ownNodeKernelInit(vx_node node)
                 (status == VX_SUCCESS))
             {
                 node->local_data_set_allow = vx_true_e;
-                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc;
+                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
                 uint32_t num_params = node->kernel->signature.num_parameters;
 
                 if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
@@ -349,12 +356,12 @@ vx_status ownNodeKernelInit(vx_node node)
                     strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
 
                     /* associated kernel name object descriptor with node object */
-                    node->obj_desc->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
+                    node->obj_desc[0]->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
 
-                    obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+                    obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
 
                     status = ownContextSendCmd(node->base.context,
-                        node->obj_desc->target_id, TIVX_CMD_NODE_CREATE,
+                        node->obj_desc[0]->target_id, TIVX_CMD_NODE_CREATE,
                         1, obj_desc_id);
 
                     if(status!=VX_SUCCESS)
@@ -364,8 +371,21 @@ vx_status ownNodeKernelInit(vx_node node)
                     /* dis associate kernel name obj desc, since it not required anymore,
                      * free object desc
                      */
-                    node->obj_desc->kernel_name_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+                    node->obj_desc[0]->kernel_name_obj_desc_id = TIVX_OBJ_DESC_INVALID;
                     tivxObjDescFree((tivx_obj_desc_t**)&kernel_name_obj_desc);
+
+                    /* copy the target_kernel_index[] from 0th object descriptor to other object descriptors */
+                    {
+                        uint32_t i;
+
+                        for(i=1; i<node->pipeline_depth; i++)
+                        {
+                            memcpy(node->obj_desc[i]->target_kernel_index,
+                                node->obj_desc[0]->target_kernel_index,
+                                sizeof(node->obj_desc[i]->target_kernel_index)
+                                );
+                        }
+                    }
                 }
                 else
                 {
@@ -418,9 +438,9 @@ vx_status ownNodeKernelDeinit(vx_node node)
         {
             uint16_t obj_desc_id[1];
 
-            obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+            obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
 
-            status = ownContextSendCmd(node->base.context, node->obj_desc->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
+            status = ownContextSendCmd(node->base.context, node->obj_desc[0]->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
         }
         if(status==VX_SUCCESS)
         {
@@ -430,16 +450,21 @@ vx_status ownNodeKernelDeinit(vx_node node)
     return status;
 }
 
-vx_status ownNodeKernelSchedule(vx_node node)
+vx_status ownNodeKernelSchedule(vx_node node, uint32_t pipeline_id)
 {
     vx_status status = VX_SUCCESS;
 
-    status = tivxObjDescSend(node->obj_desc->target_id, node->obj_desc->base.obj_desc_id);
+    VX_PRINT(VX_ZONE_INFO,"Scheduling Node (node=%d, pipe=%d)\n",
+                    node->obj_desc[pipeline_id]->base.obj_desc_id,
+                    node->obj_desc[pipeline_id]->pipeline_id
+                    );
+
+    status = tivxObjDescSend(node->obj_desc[pipeline_id]->target_id, node->obj_desc[pipeline_id]->base.obj_desc_id);
 
     return status;
 }
 
-vx_status ownNodeUserKernelExecute(vx_node node)
+vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[])
 {
     vx_status status = VX_SUCCESS;
 
@@ -450,7 +475,7 @@ vx_status ownNodeUserKernelExecute(vx_node node)
             if((NULL != node->kernel->function) &&
                 (vx_false_e == node->kernel->is_target_kernel))
             {
-                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc;
+                tivx_obj_desc_node_t *node_obj_desc = (tivx_obj_desc_node_t *)node->obj_desc[0];
                 uint32_t num_params = node->kernel->signature.num_parameters;
 
                 if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e )
@@ -464,9 +489,9 @@ vx_status ownNodeUserKernelExecute(vx_node node)
                         parent_ref[i] = NULL;
 
                         if((0 != node->replicated_flags[i]) &&
-                           (NULL != node->parameters[i]))
+                           (NULL != prm_ref[i]))
                         {
-                            parent_ref[i] = node->parameters[i]->scope;
+                            parent_ref[i] = prm_ref[i]->scope;
                         }
                     }
 
@@ -495,7 +520,7 @@ vx_status ownNodeUserKernelExecute(vx_node node)
                             }
                             else
                             {
-                                params[i] = node->parameters[i];
+                                params[i] = prm_ref[i];
                             }
                         }
 
@@ -508,12 +533,12 @@ vx_status ownNodeUserKernelExecute(vx_node node)
                 }
                 else
                 {
-                    ownNodeUserKernelSetParamsAccesible(node->parameters, num_params, vx_true_e);
+                    ownNodeUserKernelSetParamsAccesible(prm_ref, num_params, vx_true_e);
 
                     /* user has given user kernel function so call it */
-                    status = node->kernel->function(node, node->parameters, num_params);
+                    status = node->kernel->function(node, prm_ref, num_params);
 
-                    ownNodeUserKernelSetParamsAccesible(node->parameters, num_params, vx_false_e);
+                    ownNodeUserKernelSetParamsAccesible(prm_ref, num_params, vx_false_e);
                 }
             }
             else
@@ -561,7 +586,7 @@ vx_status ownResetNodePerf(vx_node node)
     return status;
 }
 
-vx_status ownUpdateNodePerf(vx_node node)
+vx_status ownUpdateNodePerf(vx_node node, uint32_t pipeline_id)
 {
     vx_status status = VX_SUCCESS;
 
@@ -570,14 +595,14 @@ vx_status ownUpdateNodePerf(vx_node node)
     {
         tivx_uint32_to_uint64(
                 &node->perf.beg,
-                node->obj_desc->exe_time_beg_h,
-                node->obj_desc->exe_time_beg_l
+                node->obj_desc[pipeline_id]->exe_time_beg_h,
+                node->obj_desc[pipeline_id]->exe_time_beg_l
             );
 
         tivx_uint32_to_uint64(
                 &node->perf.end,
-                node->obj_desc->exe_time_end_h,
-                node->obj_desc->exe_time_end_l
+                node->obj_desc[pipeline_id]->exe_time_end_h,
+                node->obj_desc[pipeline_id]->exe_time_end_l
             );
 
         node->perf.tmp = (node->perf.end - node->perf.beg)*1000; /* convert to nano secs */
@@ -664,15 +689,15 @@ vx_reference ownNodeGetParameterRef(vx_node node, uint32_t prm_index)
 vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
 {
     vx_bool is_present = vx_false_e;
-    uint32_t num_out_nodes = node->obj_desc->num_out_nodes;
-    uint16_t out_node_id = out_node->obj_desc->base.obj_desc_id;
+    uint32_t num_out_nodes = node->obj_desc[0]->num_out_nodes;
+    uint16_t out_node_id = out_node->obj_desc[0]->base.obj_desc_id;
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
     /* check if out_node is already part of output node list associated with this node */
     for(i=0; i<num_out_nodes; i++)
     {
-        if(out_node_id == node->obj_desc->out_node_id[i])
+        if(out_node_id == node->obj_desc[0]->out_node_id[i])
         {
             is_present = vx_true_e;
             break;
@@ -682,9 +707,9 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
     {
         if(num_out_nodes < TIVX_NODE_MAX_OUT_NODES)
         {
-            node->obj_desc->out_node_id[num_out_nodes] = out_node_id;
+            node->obj_desc[0]->out_node_id[num_out_nodes] = out_node_id;
             num_out_nodes++;
-            node->obj_desc->num_out_nodes = num_out_nodes;
+            node->obj_desc[0]->num_out_nodes = num_out_nodes;
         }
         else
         {
@@ -699,15 +724,15 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
 vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
 {
     vx_bool is_present = vx_false_e;
-    uint32_t num_in_nodes = node->obj_desc->num_in_nodes;
-    uint16_t in_node_id = in_node->obj_desc->base.obj_desc_id;
+    uint32_t num_in_nodes = node->obj_desc[0]->num_in_nodes;
+    uint16_t in_node_id = in_node->obj_desc[0]->base.obj_desc_id;
     vx_status status = VX_SUCCESS;
     uint32_t i;
 
     /* check if in_node is already part of input node list associated with this node */
     for(i=0; i<num_in_nodes; i++)
     {
-        if(in_node_id == node->obj_desc->in_node_id[i])
+        if(in_node_id == node->obj_desc[0]->in_node_id[i])
         {
             is_present = vx_true_e;
             break;
@@ -717,9 +742,9 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
     {
         if(num_in_nodes < TIVX_NODE_MAX_IN_NODES)
         {
-            node->obj_desc->in_node_id[num_in_nodes] = in_node_id;
+            node->obj_desc[0]->in_node_id[num_in_nodes] = in_node_id;
             num_in_nodes++;
-            node->obj_desc->num_in_nodes = num_in_nodes;
+            node->obj_desc[0]->num_in_nodes = num_in_nodes;
         }
         else
         {
@@ -735,103 +760,55 @@ uint32_t ownNodeGetNumInNodes(vx_node node)
 {
     /* references and structure fields values are checked outside this API,
       so simply return the required parameter */
-    return node->obj_desc->num_in_nodes;
+    return node->obj_desc[0]->num_in_nodes;
 }
 
 uint32_t ownNodeGetNumOutNodes(vx_node node)
 {
     /* references and structure fields values are checked outside this API,
       so simply return the required parameter */
-    return node->obj_desc->num_out_nodes;
+    return node->obj_desc[0]->num_out_nodes;
 }
 
-vx_status ownNodeCreateCompletionEvent(vx_node node)
+vx_status ownNodeCreateUserCallbackCommand(vx_node node, uint32_t pipeline_id)
 {
     vx_status status = VX_SUCCESS;
 
-    if(node->completion_event==NULL)
+    if(NULL != node && pipeline_id < TIVX_GRAPH_MAX_PIPELINE_DEPTH)
     {
-        status = tivxEventCreate(&node->completion_event);
-    }
+        tivx_obj_desc_node_t *obj_desc = node->obj_desc[pipeline_id];
+        tivx_obj_desc_cmd_t *obj_desc_cmd = node->obj_desc_cmd[pipeline_id];
 
-    return status;
-}
-
-vx_status ownNodeSendCompletionEvent(vx_node node)
-{
-    vx_status status = VX_SUCCESS;
-
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) ==
-            vx_true_e) &&
-        (NULL != node->completion_event))
-    {
-        status = tivxEventPost(node->completion_event);
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR,"ownNodeSendCompletionEvent: invalid node reference and/or node completion event is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
-    }
-
-    return status;
-}
-
-vx_status ownNodeWaitCompletionEvent(vx_node node)
-{
-    vx_status status = VX_SUCCESS;
-
-    if ((NULL != node) &&
-        (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) ==
-            vx_true_e) &&
-        (node->completion_event))
-    {
-        status = tivxEventWait(node->completion_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR,"ownNodeWaitCompletionEvent: invalid node reference and/or node completion event is NULL\n");
-        status = VX_ERROR_INVALID_PARAMETERS;
-    }
-
-
-    return status;
-}
-
-vx_status ownNodeCreateUserCallbackCommand(vx_node node)
-{
-    vx_status status = VX_SUCCESS;
-
-    if(NULL != node)
-    {
-        if(node->obj_desc_cmd==NULL)
+        if(obj_desc_cmd==NULL)
         {
-            node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD, NULL);
-            if(node->obj_desc_cmd != NULL)
-            {
-                node->obj_desc->node_complete_cmd_obj_desc_id
-                    = node->obj_desc_cmd->base.obj_desc_id;
+            obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD, NULL);
 
-                node->obj_desc_cmd->cmd_id = TIVX_CMD_NODE_USER_CALLBACK;
+            node->obj_desc_cmd[pipeline_id] = obj_desc_cmd;
+
+            if(obj_desc_cmd != NULL)
+            {
+                obj_desc->node_complete_cmd_obj_desc_id
+                    = obj_desc_cmd->base.obj_desc_id;
+
+                obj_desc_cmd->cmd_id = TIVX_CMD_NODE_USER_CALLBACK;
 
                 /* No ACK needed */
-                node->obj_desc_cmd->flags = 0;
+                obj_desc_cmd->flags = 0;
 
                 /* this command is sent by the target node to HOST hence dst_target_id is HOST */
-                node->obj_desc_cmd->dst_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+                obj_desc_cmd->dst_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
 
                 /* source is node target which is not known at this moment, however
                  * since ACK is not required for this command, this can be set to INVALID
                  */
-                node->obj_desc_cmd->src_target_id = TIVX_TARGET_ID_INVALID;
+                obj_desc_cmd->src_target_id = TIVX_TARGET_ID_INVALID;
 
                 /* parameter is node object descriptor ID */
-                node->obj_desc_cmd->num_obj_desc = 1;
-                node->obj_desc_cmd->obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+                obj_desc_cmd->num_obj_desc = 1;
+                obj_desc_cmd->obj_desc_id[0] = obj_desc->base.obj_desc_id;
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR,"ownNodeCreateUserCallbackCommand: node object descriptor memory not allocated\n");
                 status = VX_ERROR_NO_RESOURCES;
             }
         }
@@ -859,9 +836,9 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
 {
     vx_bool is_replicated = vx_false_e;
 
-    if((node) && (node->obj_desc))
+    if((node) && (node->obj_desc[0]))
     {
-        if( (tivxFlagIsBitSet( node->obj_desc->flags, TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e)
+        if( (tivxFlagIsBitSet( node->obj_desc[0]->flags, TIVX_NODE_FLAG_IS_REPLICATED) == vx_true_e)
             &&
             (node->replicated_flags[prm_idx]))
         {
@@ -869,6 +846,52 @@ vx_bool ownNodeIsPrmReplicated(vx_node node, uint32_t prm_idx)
         }
     }
     return is_replicated;
+}
+
+uint16_t ownNodeGetObjDescId(vx_node node, uint32_t pipeline_id)
+{
+    uint16_t obj_desc_id = TIVX_OBJ_DESC_INVALID;
+
+    if(node!=NULL && (pipeline_id < node->pipeline_depth) && (node->obj_desc[pipeline_id]!=NULL) )
+    {
+        obj_desc_id = node->obj_desc[pipeline_id]->base.obj_desc_id;
+    }
+
+    return obj_desc_id;
+}
+
+void ownNodeSetObjDescParamDirection(vx_node node)
+{
+    uint32_t prm_idx, prm_dir, is_prm_input;
+
+    is_prm_input = 0;
+
+    for(prm_idx=0; prm_idx < ownNodeGetNumParameters(node); prm_idx++)
+    {
+        prm_dir = ownNodeGetParameterDir(node, prm_idx);
+
+        if(prm_dir==VX_INPUT)
+        {
+            tivxFlagBitSet(&is_prm_input, (1<<prm_idx));
+        }
+    }
+
+    node->obj_desc[0]->is_prm_input = is_prm_input;
+}
+
+void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
+{
+    vx_node node = (vx_node)node_obj_desc->base.host_ref;
+
+    if(node!=NULL && node->base.context!=NULL)
+    {
+        if(node->is_enable_send_complete_event)
+        {
+            tivxEventQueueAddEvent(&node->base.context->event_queue,
+                        VX_EVENT_NODE_COMPLETED, timestamp,
+                        (uintptr_t)node->graph, (uintptr_t)node);
+        }
+    }
 }
 
 VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel kernel)
@@ -902,24 +925,30 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     {
                         node->parameters[idx] = NULL;
                         node->replicated_flags[idx] = vx_false_e;
+                        node->parameter_index_num_buf[idx] = 0;
                     }
                     node->valid_rect_reset = vx_false_e;
-                    node->completion_event = NULL;
-                    node->obj_desc_cmd = NULL;
+                    for(idx=0; idx<TIVX_GRAPH_MAX_PIPELINE_DEPTH; idx++)
+                    {
+                        node->obj_desc_cmd[idx] = NULL;
+                        node->obj_desc[idx] = NULL;
+                    }
                     node->user_callback = NULL;
                     node->local_data_ptr = NULL;
                     node->local_data_size = 0;
                     node->local_data_ptr_is_alloc = vx_false_e;
                     node->local_data_set_allow = vx_false_e;
+                    node->pipeline_depth = 1;
+                    node->is_enable_send_complete_event = vx_false_e;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = &ownDestructNode;
                     node->base.mem_alloc_callback = NULL;
                     node->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseNode;
 
-                    node->obj_desc = (tivx_obj_desc_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_NODE, (vx_reference)node);
+                    node->obj_desc[0] = (tivx_obj_desc_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_NODE, (vx_reference)node);
 
-                    if(node->obj_desc == NULL)
+                    if(node->obj_desc[0] == NULL)
                     {
                         vxReleaseNode(&node);
 
@@ -928,7 +957,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     }
                     else
                     {
-                        status = ownInitNodeObjDesc(node, kernel);
+                        status = ownInitNodeObjDesc(node, kernel, 0);
 
                         if(status!=VX_SUCCESS)
                         {
@@ -995,7 +1024,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_STATUS:
                 if (VX_CHECK_PARAM(ptr, size, vx_status, 0x3U))
                 {
-                    *(vx_status *)ptr = node->obj_desc->exe_status;
+                    /* returns  status for pipeline index 0,
+                     * may not reflect correct status
+                     * in pipelined mode
+                     */
+                    *(vx_status *)ptr = node->obj_desc[0]->exe_status;
                 }
                 else
                 {
@@ -1028,7 +1061,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_BORDER:
                 if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
-                    memcpy((vx_border_t *)ptr, &node->obj_desc->border_mode, sizeof(vx_border_t));
+                    memcpy((vx_border_t *)ptr, &node->obj_desc[0]->border_mode, sizeof(vx_border_t));
                 }
                 else
                 {
@@ -1052,7 +1085,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_IS_REPLICATED:
                 if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
                 {
-                    uint32_t is_replicated_flag = node->obj_desc->flags & TIVX_NODE_FLAG_IS_REPLICATED;
+                    uint32_t is_replicated_flag = node->obj_desc[0]->flags & TIVX_NODE_FLAG_IS_REPLICATED;
 
                     vx_bool is_replicated;
 
@@ -1106,7 +1139,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case TIVX_NODE_TARGET_STRING:
                 if ((ptr != NULL) && (size >= TIVX_TARGET_MAX_NAME))
                 {
-                    tivxPlatformGetTargetName(node->obj_desc->target_id, ptr);
+                    tivxPlatformGetTargetName(node->obj_desc[0]->target_id, ptr);
                 }
                 else
                 {
@@ -1194,7 +1227,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                 case VX_NODE_BORDER:
                     if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                     {
-                        memcpy(&node->obj_desc->border_mode, (vx_border_t *)ptr, sizeof(vx_border_t));
+                        /* set for pipeline index 0, assumed to be called before graph verify */
+                        memcpy(&node->obj_desc[0]->border_mode, (vx_border_t *)ptr, sizeof(vx_border_t));
                     }
                     else
                     {
@@ -1256,15 +1290,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxAssignNodeCallback(vx_node node, vx_nodecom
         }
         else
         {
+            uint32_t i;
+
             node->user_callback = callback;
 
-            if(callback)
+            for(i=0; i<node->pipeline_depth; i++)
             {
-                tivxFlagBitSet(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
-            }
-            else
-            {
-                tivxFlagBitClear(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
+                if(callback)
+                {
+                    tivxFlagBitSet(&node->obj_desc[i]->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
+                }
+                else
+                {
+                    tivxFlagBitClear(&node->obj_desc[i]->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
+                }
             }
             status = VX_SUCCESS;
         }
@@ -1428,15 +1467,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
     if(status == VX_SUCCESS)
     {
         /* set replicate flag for node */
-        first_node->obj_desc->flags |= TIVX_NODE_FLAG_IS_REPLICATED;
-        first_node->obj_desc->is_prm_replicated = 0;
-        first_node->obj_desc->num_of_replicas = num_of_replicas;
+        first_node->obj_desc[0]->flags |= TIVX_NODE_FLAG_IS_REPLICATED;
+        first_node->obj_desc[0]->is_prm_replicated = 0;
+        first_node->obj_desc[0]->num_of_replicas = num_of_replicas;
 
         for (n = 0u; n < number_of_parameters; n++)
         {
             if(replicate[n])
             {
-                first_node->obj_desc->is_prm_replicated |= (((uint32_t)1U)<<n);
+                first_node->obj_desc[0]->is_prm_replicated |= (((uint32_t)1U)<<n);
             }
 
             first_node->replicated_flags[n] = replicate[n];
@@ -1500,7 +1539,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
                             }
                             else
                             {
-                                node->obj_desc->target_id = (uint32_t)target_id;
+                                node->obj_desc[0]->target_id = (uint32_t)target_id;
                                 status = VX_SUCCESS;
                             }
                         }
@@ -1517,11 +1556,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeTarget(vx_node node, vx_enum target_
     return status;
 }
 
-void ownNodeClearExecuteState(vx_node node)
+void ownNodeClearExecuteState(vx_node node, uint32_t pipeline_id)
 {
-    if ((NULL != node) && (NULL != node->obj_desc))
+    if ((NULL != node) && (pipeline_id<TIVX_GRAPH_MAX_PIPELINE_DEPTH) )
     {
-        tivxFlagBitClear(&node->obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
+        tivx_obj_desc_node_t *obj_desc = node->obj_desc[pipeline_id];
+
+        if (NULL != obj_desc)
+        {
+            tivxFlagBitClear(&obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
+        }
     }
 }
 
@@ -1536,7 +1580,7 @@ void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value)
     node->parameters[index] = (vx_reference)value;
 
     /* Assign parameter descriptor id in the node */
-    node->obj_desc->data_id[index] =
+    node->obj_desc[0]->data_id[index] =
         tivxReferenceGetObjDescId(value);
 }
 
@@ -1544,18 +1588,261 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
 {
     vx_node next_node = NULL;
 
-    if((node) && (node->obj_desc) && (index < node->obj_desc->num_out_nodes))
+    if((node) && (node->obj_desc[0]) && (index < node->obj_desc[0]->num_out_nodes))
     {
         tivx_obj_desc_node_t *next_node_obj_desc;
 
         next_node_obj_desc =
             (tivx_obj_desc_node_t *)
-                tivxObjDescGet( node->obj_desc->out_node_id[index] );
+                tivxObjDescGet( node->obj_desc[0]->out_node_id[index] );
 
         if(next_node_obj_desc)
         {
-            next_node = (vx_node)next_node_obj_desc->host_node_ref;
+            next_node = (vx_node)next_node_obj_desc->base.host_ref;
         }
     }
     return next_node;
+}
+
+vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        if (node->graph->verified == vx_true_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"ownNodeRegisterEvent: Not supported on verified graph\n");
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        else
+        {
+            uint32_t i;
+
+            for(i=0; i<node->pipeline_depth; i++)
+            {
+                tivxFlagBitSet(&node->obj_desc[i]->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
+            }
+            node->is_enable_send_complete_event = vx_true_e;
+
+            VX_PRINT(VX_ZONE_INFO, "Enabling event at node [%s]\n", node->base.name);
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ownNodeRegisterEvent: Invalid node\n");
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+vx_bool ownCheckNodeCompleted(vx_node node, uint32_t pipeline_id)
+{
+    vx_bool is_completed = vx_false_e;
+
+    if ((NULL != node) && (pipeline_id<TIVX_GRAPH_MAX_PIPELINE_DEPTH) )
+    {
+        tivx_obj_desc_node_t *obj_desc = node->obj_desc[pipeline_id];
+
+        if (NULL != obj_desc)
+        {
+            is_completed = tivxFlagIsBitSet(obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"ownCheckNodeCompleted: Invalid node obj desc\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"ownCheckNodeCompleted: Invalid node or pipeline_id\n");
+    }
+    return is_completed;
+}
+
+void ownNodeLinkObjDescForPipeline(vx_node node)
+{
+    uint32_t pipe_id;
+    tivx_obj_desc_node_t *obj_desc;
+    tivx_obj_desc_node_t *obj_desc_0; /* 0th object descriptor */
+    uint32_t linked_node_idx;
+    vx_node linked_node;
+
+    obj_desc_0 = node->obj_desc[0];
+
+    for(pipe_id=1; pipe_id<node->pipeline_depth; pipe_id++)
+    {
+        /* current object descriptor */
+        obj_desc = node->obj_desc[pipe_id];
+
+        /* for input nodes */
+        for(linked_node_idx=0; linked_node_idx<obj_desc_0->num_in_nodes; linked_node_idx++)
+        {
+            /* get object descriptor of input to current node */
+            linked_node = (vx_node)ownReferenceGetHandleFromObjDescId(obj_desc_0->in_node_id[linked_node_idx]);
+            obj_desc->in_node_id[linked_node_idx] = ownNodeGetObjDescId(linked_node, pipe_id);
+        }
+        /* for output nodes */
+        for(linked_node_idx=0; linked_node_idx<obj_desc_0->num_out_nodes; linked_node_idx++)
+        {
+            /* get object descriptor of output from current node */
+            linked_node = (vx_node)ownReferenceGetHandleFromObjDescId(obj_desc_0->out_node_id[linked_node_idx]);
+            obj_desc->out_node_id[linked_node_idx] = ownNodeGetObjDescId(linked_node, pipe_id);
+        }
+    }
+}
+vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+
+    if(node->pipeline_depth == 1 && pipeline_depth > 1)
+    {
+        tivx_obj_desc_node_t *obj_desc;
+        tivx_obj_desc_node_t *obj_desc_0; /* 0th object descriptor */
+        uint32_t pipe_id;
+
+        /* i.e node needs to get pipelined and object descriptor alloc not done previously */
+
+        node->pipeline_depth = pipeline_depth;
+
+        obj_desc_0 = node->obj_desc[0];
+
+        /* alloc object descriptor, 0th one is alloacted earlier so allocate other ones */
+        for(pipe_id=1; pipe_id<node->pipeline_depth; pipe_id++)
+        {
+            node->obj_desc[pipe_id] = (tivx_obj_desc_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_NODE, (vx_reference)node);
+            if(node->obj_desc[pipe_id] != NULL)
+            {
+                obj_desc = node->obj_desc[pipe_id];
+
+                /* make obj descriptor identical to 0th obj descriptor
+                 */
+                obj_desc->flags = obj_desc_0->flags;
+                obj_desc->kernel_id = obj_desc_0->kernel_id;
+                obj_desc->kernel_name_obj_desc_id = obj_desc_0->kernel_name_obj_desc_id;
+                obj_desc->target_id = obj_desc_0->target_id;
+                obj_desc->node_complete_cmd_obj_desc_id = TIVX_OBJ_DESC_INVALID; /* obj_desc->node_complete_cmd_obj_desc_id, allocated later during graph verify */
+                /* obj_desc->target_kernel_index[], updated after kernel init */
+                obj_desc->exe_status = 0;
+                obj_desc->exe_time_beg_h = 0;
+                obj_desc->exe_time_beg_l = 0;
+                obj_desc->exe_time_end_h = 0;
+                obj_desc->exe_time_end_l = 0;
+                obj_desc->num_params = obj_desc_0->num_params;
+                obj_desc->num_out_nodes = obj_desc_0->num_out_nodes;
+                obj_desc->num_in_nodes = obj_desc_0->num_in_nodes;
+                obj_desc->border_mode = obj_desc_0->border_mode;
+                obj_desc->is_prm_replicated = obj_desc_0->is_prm_replicated;
+                obj_desc->num_of_replicas = obj_desc_0->num_of_replicas;
+
+                /* copying data_id[], out_node_id[], in_node_id[]
+                 * from 0th obj desc but these are overriden later
+                 */
+                for(i=0; i<TIVX_KERNEL_MAX_PARAMS; i++)
+                {
+                    obj_desc->data_id[i] = obj_desc_0->data_id[i];
+                    obj_desc->data_ref_q_id[i] = TIVX_OBJ_DESC_INVALID;
+                }
+                for(i=0; i<TIVX_NODE_MAX_OUT_NODES; i++)
+                {
+                    obj_desc->out_node_id[i] = obj_desc_0->out_node_id[i];
+                }
+                for(i=0; i<TIVX_NODE_MAX_IN_NODES; i++)
+                {
+                    obj_desc->in_node_id[i] = obj_desc_0->in_node_id[i];
+                }
+
+                obj_desc->state = obj_desc_0->state;
+                obj_desc->blocked_node_id = obj_desc_0->blocked_node_id;
+                /* pipeline ID is simply the index of object descriptor within node->obj_desc[] */
+                obj_desc->pipeline_id = pipe_id;
+                obj_desc->prev_pipe_node_id = TIVX_OBJ_DESC_INVALID; /* updated later */
+                obj_desc->is_prm_input = obj_desc_0->is_prm_input;
+                obj_desc->is_prm_data_ref_q = 0; /* this field is updated later */
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Unable to allocate obj desc for node\n");
+                status = VX_ERROR_NO_RESOURCES;
+            }
+        }
+
+        /* setup prev_pipe_node_id */
+        if(status==VX_SUCCESS)
+        {
+            tivx_obj_desc_node_t *prev_obj_desc;
+            uint32_t prev_pipe_id;
+
+            for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
+            {
+                prev_pipe_id = (pipe_id+node->pipeline_depth-1)%node->pipeline_depth;
+
+                prev_obj_desc = node->obj_desc[prev_pipe_id];
+                obj_desc = node->obj_desc[pipe_id];
+
+                obj_desc->prev_pipe_node_id = prev_obj_desc->base.obj_desc_id;
+            }
+        }
+    }
+
+    return status;
+}
+
+void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue data_ref_q)
+{
+    uint32_t pipe_id;
+
+    for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
+    {
+        tivxFlagBitSet(&node->obj_desc[pipe_id]->is_prm_data_ref_q, (1<<prm_id));
+        node->obj_desc[pipe_id]->data_ref_q_id[prm_id] = tivxDataRefQueueGetObjDescId(data_ref_q, pipe_id);
+    }
+}
+
+uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
+{
+    vx_uint32 num_buf = 0;
+
+    if(node != NULL
+      && index < ownNodeGetNumParameters(node)
+      && ownNodeGetParameterDir(node, index) == VX_OUTPUT)
+    {
+        num_buf = node->parameter_index_num_buf[index];
+    }
+    return num_buf;
+}
+
+vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+    {
+        if (node->graph->verified == vx_true_e)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Not supported on verified graph\n");
+            status = VX_ERROR_NOT_SUPPORTED;
+        }
+        if(status==VX_SUCCESS)
+        {
+            if( index < ownNodeGetNumParameters(node)
+                && num_buf < TIVX_OBJ_DESC_QUEUE_MAX_DEPTH
+                && ownNodeGetParameterDir(node, index) == VX_OUTPUT
+                )
+            {
+                node->parameter_index_num_buf[index] = num_buf;
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Invalid parameters\n");
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Invalid node\n");
+    }
+    return status;
 }

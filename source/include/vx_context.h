@@ -152,6 +152,9 @@ typedef struct _vx_context {
 
     /*! Context used while sorting a graph */
     tivx_graph_sort_context graph_sort_context;
+
+    /*! Event queue */
+    tivx_event_queue_t event_queue;
 } tivx_context_t;
 
 /**

@@ -67,8 +67,10 @@
 #define VX_EXT_TI_H_
 
 #include <VX/vx.h>
+#include <TI/tivx_debug.h>
 #include <TI/tivx_kernels.h>
 #include <TI/tivx_nodes.h>
+#include <TI/tivx_mem.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -387,6 +389,55 @@ vx_bool tivxIsReferenceVirtual(vx_reference ref);
  * \ingroup group_tivx_ext
  */
 vx_bool tivxIsTargetEnabled(char target_name[]);
+
+/*!
+ * \brief Get the time in micro seconds
+ *
+ * \ingroup group_tivx_ext
+ */
+uint64_t tivxPlatformGetTimeInUsecs(void);
+
+/*!
+ * \brief Export graph representation as DOT graph file
+ *
+ * Multiple representation of the graph are exported to different files
+ * using 'output_file_prefix' as filename prefix.
+ * The output files are stored at path 'output_file_path'
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
+
+
+/*!
+ * \brief Enable run-time logging of graph trace to 'stdout'
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status VX_API_CALL tivxLogRtTrace(vx_graph graph);
+
+/*!
+ * \brief Set number of buffers to allocate at output of a node parameter
+ *
+ * - Graph to which the node belongs MUST be scheduled in VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO or
+ *   VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL mode.
+ * - The node parameter MUST be of type virtual or all references to the parameter reference
+ * MUST be released before graph verify.
+ * - The node parameter specified MUST be a output parameter.
+ *
+ * This API acts as a hint and framework may overide user specified settings
+ * in case any of above conditions are not met.
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf);
+
+/*! \brief Indicates to the implementation the depth of the graph pipeline
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
+
 
 #ifdef __cplusplus
 }

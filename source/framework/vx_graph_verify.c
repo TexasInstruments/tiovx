@@ -80,9 +80,125 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
 static vx_status ownGraphCalcInAndOutNodes(vx_graph graph);
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
 static vx_status ownGraphAllocateDataObjects(vx_graph graph);
-static vx_status ownGraphNodeCreateCompletionEvents(vx_graph graph);
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
 
+/* Add's data reference to a list, increments number of times it is refered as input node */
+static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir)
+{
+    uint32_t i;
+    vx_status status = VX_FAILURE;
+
+    for(i=0; i<graph->num_data_ref; i++)
+    {
+        if(graph->data_ref[i]==ref)
+        {
+            /* increment num_in_node count for ref */
+            if(prm_dir==VX_INPUT)
+            {
+                graph->data_ref_num_in_nodes[i]++;
+            }
+            status = VX_SUCCESS;
+            break;
+        }
+    }
+    if( i == graph->num_data_ref
+     && graph->num_data_ref < TIVX_GRAPH_MAX_DATA_REF)
+    {
+        /* 'ref' not present in 'data_ref' list so add it */
+        graph->data_ref[i] = ref;
+        graph->data_ref_num_in_nodes[i] = 0;
+        graph->data_ref_num_out_nodes[i] = 0;
+        if(prm_dir==VX_INPUT)
+        {
+            graph->data_ref_num_in_nodes[i]++;
+        }
+        else
+        {
+            graph->data_ref_num_out_nodes[i]++;
+        }
+        graph->num_data_ref++;
+        status = VX_SUCCESS;
+    }
+    return status;
+}
+
+static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t node_prm_idx)
+{
+    uint32_t num_in_nodes = 0, i;
+    vx_reference ref;
+
+    ref = ownNodeGetParameterRef(node, node_prm_idx);
+    if(ref != NULL)
+    {
+        for(i=0; i<graph->num_data_ref; i++)
+        {
+            if(ref==graph->data_ref[i])
+            {
+                num_in_nodes = graph->data_ref_num_in_nodes[i];
+                break;
+            }
+        }
+    }
+    return num_in_nodes;
+}
+
+#if 0
+static uint32_t ownGraphGetNumOutNodes(vx_graph graph, vx_node node, uint32_t node_prm_idx)
+{
+    uint32_t num_out_nodes = 0, i;
+    vx_reference ref;
+
+    ref = ownNodeGetParameterRef(node, node_prm_idx);
+    if(ref != NULL)
+    {
+        for(i=0; i<graph->num_data_ref; i++)
+        {
+            if(ref==graph->data_ref[i])
+            {
+                num_out_nodes = graph->data_ref_num_out_nodes[i];
+                break;
+            }
+        }
+    }
+    return num_out_nodes;
+}
+#endif
+
+/* find all data references within graph and collect them in a list */
+static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
+{
+    vx_node node_cur;
+    uint32_t node_cur_idx;
+    uint32_t prm_cur_idx;
+    uint32_t prm_dir;
+    vx_reference ref;
+    vx_status status = VX_SUCCESS;
+
+    graph->num_data_ref = 0;
+
+    for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+    {
+        node_cur = graph->nodes[node_cur_idx];
+
+        for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
+        {
+            ref = ownNodeGetParameterRef(node_cur, prm_cur_idx);
+            prm_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
+
+            if(ref!=NULL) /* ref could be NULL due to optional parameters */
+            {
+                status = ownGraphAddDataReference(graph, ref, prm_dir);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Unable to add data reference to data reference list in graph\n");
+                    break;
+                }
+            }
+        }
+    }
+
+    return status;
+}
 
 static vx_status ownGraphValidRectCallback(
     vx_graph graph, vx_node node, vx_meta_format meta[])
@@ -533,6 +649,48 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     return VX_SUCCESS;
 }
 
+static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(ownNodeIsPrmReplicated(node_cur, prm_cur_idx))
+    {
+        /* if this is a replicated node, replicated parameter
+         * then allocate memory for parent object
+         */
+        status = ownReferenceAllocMem(ref->scope);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Memory allocation for replicated parameter parent object failed\n");
+        }
+    }
+    else
+    if(ref->delay != NULL )
+    {
+        /* if this is part of delay then allocate memory for all
+         * delay objects
+         */
+        status = ownReferenceAllocMem((vx_reference)ref->delay);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Memory allocation for delay objects failed\n");
+        }
+    }
+    else
+    {
+        /* alloc memory for data reference, if not already allocated
+         * Its ok to call this multiple times for the same reference
+         * memory gets allocated only once
+         */
+        status = ownReferenceAllocMem(ref);
+        if (status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Memory allocation for data reference failed\n");
+        }
+    }
+    return status;
+}
+
 static vx_status ownGraphAllocateDataObjects(vx_graph graph)
 {
     vx_node node_cur;
@@ -552,42 +710,7 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
             /* reference could be null for optional parameters */
             if (NULL != ref)
             {
-                if(ownNodeIsPrmReplicated(node_cur, prm_cur_idx))
-                {
-                    /* if this is a replicated node, replicated parameter
-                     * then allocate memory for parent object
-                     */
-                    status = ownReferenceAllocMem(ref->scope);
-                    if (status != VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation for replicated parameter parent object at index %d failed\n", node_cur_idx);
-                    }
-                }
-                else
-                if(ref->delay != NULL )
-                {
-                    /* if this is part of delay then allocate memory for all
-                     * delay objects
-                     */
-                    status = ownReferenceAllocMem((vx_reference)ref->delay);
-                    if (status != VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation for delay objects at index %d failed\n", node_cur_idx);
-                    }
-                }
-                else
-                {
-                    /* alloc memory for data reference, if not already allocated
-                     * Its ok to call this multiple times for the same reference
-                     * memory gets allocated only once
-                     */
-                    status = ownReferenceAllocMem(ref);
-                    if (status != VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Memory allocation for data reference at index %d failed\n", node_cur_idx);
-                    }
-                }
-
+                status = ownGraphAllocateDataObject(graph, node_cur, prm_cur_idx, ref);
                 if(status != VX_SUCCESS)
                 {
                     break;
@@ -602,38 +725,24 @@ static vx_status ownGraphAllocateDataObjects(vx_graph graph)
     return status;
 }
 
-static vx_status ownGraphNodeCreateCompletionEvents(vx_graph graph)
-{
-    vx_node node;
-    uint32_t i;
-    vx_status status = VX_SUCCESS;
-
-    for(i=0; i<graph->num_leaf_nodes; i++)
-    {
-        node = graph->leaf_nodes[i];
-
-        status = ownNodeCreateCompletionEvent(node);
-        if(status != VX_SUCCESS)
-        {
-            VX_PRINT(VX_ZONE_ERROR,"Node create completion event at index %d failed\n", i);
-            break;
-        }
-    }
-
-    return status;
-}
-
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
 {
     vx_node node;
-    uint32_t i;
+    uint32_t i, pipe_id;
     vx_status status = VX_SUCCESS;
 
     for(i=0; i<graph->num_nodes; i++)
     {
         node = graph->nodes[i];
 
-        status = ownNodeCreateUserCallbackCommand(node);
+        for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
+        {
+            status = ownNodeCreateUserCallbackCommand(node, pipe_id);
+            if(status != VX_SUCCESS)
+            {
+                break;
+            }
+        }
         if(status != VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Node create user callback command at index %d failed\n", i);
@@ -641,6 +750,427 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
         }
     }
 
+    return status;
+}
+
+static void ownGraphLinkDataReferenceQueues(vx_graph graph)
+{
+    uint32_t i, node_id, prm_id;
+
+    for(i=0; i<graph->num_params; i++)
+    {
+        if(graph->parameters[i].queue_enable)
+        {
+            vx_reference node_prm_ref;
+            tivx_data_ref_queue data_ref_q;
+            vx_node node;
+
+            data_ref_q = graph->parameters[i].data_ref_queue;
+            node_prm_ref = ownNodeGetParameterRef(graph->parameters[i].node, graph->parameters[i].index);
+
+            /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
+             * and insert data ref q handle at those (nodes,index)
+             * Also enable data ref queue at those (nodes,index)
+             */
+            for(node_id=0; node_id<graph->num_nodes; node_id++)
+            {
+                node = graph->nodes[node_id];
+
+                for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
+                {
+                    vx_reference ref;
+
+                    ref = ownNodeGetParameterRef(node, prm_id);
+                    if(ref==node_prm_ref)
+                    {
+                        ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+                    }
+                }
+            }
+        }
+    }
+    for(i=0; i<graph->num_data_ref_q; i++)
+    {
+        vx_reference node_prm_ref;
+        tivx_data_ref_queue data_ref_q;
+        vx_node node;
+
+        data_ref_q = graph->data_ref_q_list[i].data_ref_queue;
+        node_prm_ref = ownNodeGetParameterRef(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
+
+        /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
+         * and insert data ref q handle at those (nodes,index)
+         * Also enable data ref queue at those (nodes,index)
+         */
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        {
+            node = graph->nodes[node_id];
+
+            for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
+            {
+                vx_reference ref;
+
+                ref = ownNodeGetParameterRef(node, prm_id);
+                if(ref==node_prm_ref)
+                {
+                    ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+                }
+            }
+        }
+    }
+}
+
+/* enqueue initial references into intermediate data ref queues */
+static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
+{
+    uint32_t i, buf_id;
+    vx_reference ref;
+    uint16_t ref_obj_desc_id;
+    vx_status status = VX_SUCCESS;
+
+    for(i=0; i<graph->num_data_ref_q; i++)
+    {
+        tivx_data_ref_queue data_ref_q;
+
+        data_ref_q = graph->data_ref_q_list[i].data_ref_queue;
+
+        for(buf_id=0; buf_id<graph->data_ref_q_list[i].num_buf; buf_id++)
+        {
+            ref = graph->data_ref_q_list[i].refs_list[buf_id];
+            if(ref && ref->obj_desc)
+            {
+                ref_obj_desc_id = ref->obj_desc->obj_desc_id;
+
+                status = tivxObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
+            if(status!=VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Unable to prime data ref queue\n");
+                break;
+            }
+        }
+    }
+    return status;
+}
+
+static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
+{
+    tivx_data_ref_queue_create_params_t data_ref_create_prms;
+    uint32_t i;
+    vx_status status = VX_SUCCESS;
+
+    for(i=0; i<graph->num_data_ref_q; i++)
+    {
+        data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
+        data_ref_create_prms.enable_user_queueing = vx_false_e;
+        data_ref_create_prms.num_in_nodes = ownGraphGetNumInNodes(
+                        graph, graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
+        data_ref_create_prms.is_enable_send_ref_consumed_event = vx_false_e;
+        data_ref_create_prms.graph_parameter_index = (uint32_t)-1;
+
+        graph->data_ref_q_list[i].data_ref_queue =
+            tivxDataRefQueueCreate(graph, &data_ref_create_prms);
+
+        if(graph->data_ref_q_list[i].data_ref_queue == NULL)
+        {
+            status = VX_ERROR_NO_RESOURCES;
+        }
+        if(status==VX_SUCCESS)
+        {
+            uint32_t buf_id;
+
+            for(buf_id=0; buf_id<graph->data_ref_q_list[i].num_buf; buf_id++)
+            {
+                if(graph->data_ref_q_list[i].refs_list[buf_id]!=NULL)
+                {
+                    /* alloc memory for references that can be enqueued in data ref queues */
+                    status = ownGraphAllocateDataObject(graph,
+                            graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index,
+                            graph->data_ref_q_list[i].refs_list[buf_id]);
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Invalid reference in refs_list\n");
+                }
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "Unable to allocate data object memory \n");
+                    break;
+                }
+            }
+        }
+        if(status != VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Unable to create data ref queue\n");
+            break;
+        }
+    }
+
+    return status;
+}
+
+static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
+{
+    tivx_data_ref_queue_create_params_t data_ref_create_prms;
+    uint32_t i;
+    vx_status status = VX_SUCCESS;
+
+    for(i=0; i<graph->num_params; i++)
+    {
+        if(graph->parameters[i].queue_enable)
+        {
+            data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
+            data_ref_create_prms.enable_user_queueing = vx_true_e;
+            data_ref_create_prms.num_in_nodes = ownGraphGetNumInNodes(
+                            graph, graph->parameters[i].node, graph->parameters[i].index);
+            data_ref_create_prms.is_enable_send_ref_consumed_event =
+                            graph->parameters[i].is_enable_send_ref_consumed_event;
+            data_ref_create_prms.graph_parameter_index = i;
+
+            graph->parameters[i].data_ref_queue =
+                tivxDataRefQueueCreate(graph, &data_ref_create_prms);
+
+            if(graph->parameters[i].data_ref_queue == NULL)
+            {
+                status = VX_ERROR_NO_RESOURCES;
+            }
+            if(status==VX_SUCCESS)
+            {
+                uint32_t buf_id;
+
+                for(buf_id=0; buf_id<graph->parameters[i].num_buf; buf_id++)
+                {
+                    if(graph->parameters[i].refs_list[buf_id]!=NULL)
+                    {
+                        /* alloc memory for references that can be enqueued in data ref queues */
+                        status = ownGraphAllocateDataObject(graph,
+                                graph->parameters[i].node, graph->parameters[i].index,
+                                graph->parameters[i].refs_list[buf_id]);
+                    }
+                    else
+                    {
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                        VX_PRINT(VX_ZONE_ERROR, "Invalid reference in refs_list\n");
+                    }
+                    if(status != VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate data object memory \n");
+                        break;
+                    }
+                }
+            }
+            if(status != VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Unable to create data ref queue\n");
+                break;
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
+{
+    vx_status status;
+
+    status = ownGraphCreateGraphParameterDataReferenceQueues(graph);
+    if(status==VX_SUCCESS)
+    {
+        status = ownGraphCreateIntermediateDataReferenceQueues(graph);
+    }
+    if(status==VX_SUCCESS)
+    {
+        status = ownGraphPrimeDataReferenceQueues(graph);
+    }
+    if(status==VX_SUCCESS)
+    {
+        ownGraphLinkDataReferenceQueues(graph);
+    }
+    return status;
+}
+
+/* called during graph verify,
+ * this function is called for non-graph parameters that are intermeidate data objects
+ * within a graph
+ */
+static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index)
+{
+    vx_bool skip_add_data_ref_q = vx_false_e;
+    vx_status status = VX_SUCCESS;
+
+    /* Dont make a data ref queue if below is true
+     * - if node parameter is input
+     * - or node parameter is output but this is a leaf node
+     * - or no node reference specified at the node,index
+     * Here no data ref queue is required since if user really wanted to access
+     * the data ref, user would have a graph parameter out of this node,index
+     */
+    if( ownNodeGetParameterDir(node, index) != VX_OUTPUT /* input parameter */
+        || ownGraphGetNumInNodes(graph, node, index) == 0 /* leaf parameter */
+        || ownNodeGetParameterRef(node, index) == NULL /* no reference specified at node,index */
+        )
+    {
+        skip_add_data_ref_q = vx_true_e;
+    }
+
+    if(skip_add_data_ref_q==vx_false_e)
+    {
+        uint32_t i;
+
+        /* check if (node, index) is a graph parameter and if queueing is already enabled,
+        * if yes then do nothing */
+        for(i=0; i<graph->num_params; i++)
+        {
+            if(graph->parameters[i].node==node &&
+                graph->parameters[i].index==index &&
+                graph->parameters[i].queue_enable == vx_true_e)
+            {
+                skip_add_data_ref_q = vx_true_e;
+                break;
+            }
+        }
+    }
+    if(skip_add_data_ref_q==vx_false_e)
+    {
+        if(graph->num_data_ref_q<TIVX_GRAPH_MAX_DATA_REF_QUEUE)
+        {
+            uint32_t num_buf;
+            vx_reference exemplar;
+
+            graph->data_ref_q_list[graph->num_data_ref_q].node = node;
+            graph->data_ref_q_list[graph->num_data_ref_q].index = index;
+            graph->data_ref_q_list[graph->num_data_ref_q].num_buf = 1;
+            graph->data_ref_q_list[graph->num_data_ref_q].data_ref_queue = NULL;
+            graph->data_ref_q_list[graph->num_data_ref_q].refs_list[0] = ownNodeGetParameterRef(node, index);
+
+            /* if user has requested more than 1 buf at this node, then allocate the additional references */
+            num_buf = ownNodeGetParameterNumBuf(node, index);
+            if(num_buf>0)
+            {
+                uint32_t buf_id;
+                vx_bool is_replicated;
+
+                is_replicated = ownNodeIsPrmReplicated(node, index);
+
+                exemplar = graph->data_ref_q_list[graph->num_data_ref_q].refs_list[0];
+                if(is_replicated)
+                {
+                    exemplar = exemplar->scope;
+                }
+                for(buf_id=1; buf_id<num_buf; buf_id++)
+                {
+                    vx_reference ref;
+
+                    ref = ownCreateReferenceFromExemplar(graph->base.context, exemplar);
+                    if(ref==NULL)
+                    {
+                        status = VX_ERROR_NO_RESOURCES;
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to create references\n");
+                    }
+                    if(status==VX_SUCCESS)
+                    {
+                        if(is_replicated)
+                        {
+                            if (ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == vx_true_e)
+                            {
+                                vx_pyramid pyramid = (vx_pyramid)ref;
+
+                                ref = (vx_reference)pyramid->img[0];
+                            }
+                            else if (ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                            {
+                                vx_object_array object_array = (vx_object_array)ref;
+
+                                ref = object_array->ref[0];
+                            }
+                            else
+                            {
+                                VX_PRINT(VX_ZONE_ERROR,"Invalid reference type for replicated parameter\n");
+                                status = VX_FAILURE;
+                                ref = NULL;
+                            }
+                        }
+                        graph->data_ref_q_list[graph->num_data_ref_q].refs_list[buf_id] = ref;
+                    }
+                    if(status!=VX_SUCCESS)
+                    {
+                        break;
+                    }
+                }
+                if(status==VX_SUCCESS)
+                {
+                    graph->data_ref_q_list[graph->num_data_ref_q].num_buf = num_buf;
+                }
+            }
+            if(status==VX_SUCCESS)
+            {
+                graph->num_data_ref_q++;
+            }
+        }
+        else
+        {
+            status = VX_ERROR_NO_RESOURCES;
+            VX_PRINT(VX_ZONE_ERROR, "Unable to add data ref q to graph since list is full \n");
+        }
+    }
+    return status;
+}
+
+static vx_status ownGraphNodePipeline(vx_graph graph)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t node_id;
+
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
+    {
+        ownNodeSetObjDescParamDirection(graph->nodes[node_id]);
+
+        status = ownNodeAllocObjDescForPipeline(graph->nodes[node_id], graph->pipeline_depth);
+        if(status!=VX_SUCCESS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj descriptors at node for pipelining\n");
+        }
+    }
+
+    if(status==VX_SUCCESS)
+    {
+        for(node_id=0; node_id<graph->num_nodes; node_id++)
+        {
+            /* update out_node_id[], in_node_id[]
+             * from 0th obj desc
+             */
+            ownNodeLinkObjDescForPipeline(graph->nodes[node_id]);
+        }
+    }
+    if(status==VX_SUCCESS)
+    {
+        /* make data references at graph parameter only if graph is pipelined */
+        if(graph->pipeline_depth>1)
+        {
+            for(node_id=0; node_id<graph->num_nodes; node_id++)
+            {
+                uint32_t prm_id;
+                vx_node node;
+
+                node = graph->nodes[node_id];
+
+                for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
+                {
+                    status = ownGraphAddDataRefQ(graph, node, prm_id);
+                    if(status!=VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to add data ref q to graph\n");
+                    }
+                }
+            }
+        }
+    }
     return status;
 }
 
@@ -751,6 +1281,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(status == VX_SUCCESS)
             {
+                status = ownGraphFindAndAddDataReferences(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Find and add data references failed\n");
+                }
+            }
+
+            if(status == VX_SUCCESS)
+            {
                 /* Allocate memory associated with data objects of this graph
                  * Memory resources are allcoated in this step
                  * No need to free them in case of error, since they get free'ed during
@@ -765,16 +1304,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(status == VX_SUCCESS)
             {
-                /* Set completion event's with leaf nodes
-                 * If case of any error these events gets free'ed during
-                 * graph release
-                 */
-                status = ownGraphNodeCreateCompletionEvents(graph);
+                /* Pipeline node objects */
+                status = ownGraphNodePipeline(graph);
                 if(status != VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Create completion events for leaf nodes failed\n");
+                    VX_PRINT(VX_ZONE_ERROR,"Node pipelining failed\n");
                 }
             }
+
 
             if(status == VX_SUCCESS)
             {
@@ -791,6 +1328,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 
             if(status == VX_SUCCESS)
             {
+                /* create and link data references queues to node parameters */
+                status = ownGraphCreateAndLinkDataReferenceQueues(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Create data ref queues failed\n");
+                }
+            }
+
+            if(status == VX_SUCCESS)
+            {
                 /* Call target kernel init for each node
                  * This results in message coomunication with target kernels
                  * Memory gets allocated which MUST be free'ed via target kernel
@@ -801,6 +1348,16 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 if(status != VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
+                }
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                /* alloc object descriptor for graph and enqueue them */
+                status = ownGraphAllocAndEnqueueObjDescForPipeline(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
                 }
             }
 

@@ -95,8 +95,6 @@ static tivx_platform_info_t g_tivx_platform_info =
     TIVX_TARGET_INFO
 };
 
-static uint64_t g_start_time=0;
-
 tivx_obj_desc_shm_entry_t gTivxObjDescShmEntry
     [TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST];
 
@@ -119,7 +117,7 @@ vx_status tivxPlatformInit(void)
 
     tivxIpcInit();
 
-    g_start_time = tivxPlatformGetTimeInUsecs();
+    tivxPlatformGetTimeInUsecs();
 
     return (status);
 }
@@ -253,7 +251,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 void tivxPlatformPrintf(const char *format)
 {
     char buf[4*1024];
-    uint64_t cur_time = tivxPlatformGetTimeInUsecs() - g_start_time;
+    uint64_t cur_time = tivxPlatformGetTimeInUsecs();
 
     snprintf(buf, sizeof(buf), " %d.%ds: %s",
         (uint32_t)(cur_time/1000000),

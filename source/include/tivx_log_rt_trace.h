@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -62,32 +62,66 @@
 
 
 
-#include <vx_internal.h>
-#include <windows.h>
 
-static uint64_t g_start_time=0;
+#ifndef TIVX_LOG_RT_TRACE_H_
+#define TIVX_LOG_RT_TRACE_H_
 
-uint64_t tivxPlatformGetTimeInUsecs(void)
-{
-    uint64_t timeInUsecs = 0;
-    LARGE_INTEGER value, hz, tmp;
-    BOOL is_ok;
 
-    is_ok = QueryPerformanceCounter(&value);
-    if(is_ok)
-    {
-        is_ok = QueryPerformanceFrequency(&hz);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-        tmp.QuadPart = (value.QuadPart*1000000ULL/hz.QuadPart);
+/*!
+ * \file
+ * \brief Implementation of real-time trace log API
+ * \ingroup group_tivx_log_rt_trace
+ */
 
-        timeInUsecs = tmp.QuadPart;
+/*!
+ * \brief Log trace on node execute start
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtTraceNodeExeStart(uint64_t time, tivx_obj_desc_node_t *node_obj_desc);
 
-        if(g_start_time==0)
-        {
-            g_start_time = timeInUsecs;
-        }
-    }
+/*!
+ * \brief Log trace on node execute end
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtTraceNodeExeEnd(uint64_t time, tivx_obj_desc_node_t *node_obj_desc);
 
-    return (timeInUsecs-g_start_time);
+/*!
+ * \brief Log trace on graph execute start
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtTraceGraphExeStart(uint64_t time, tivx_obj_desc_graph_t *graph_obj_desc);
+
+/*!
+ * \brief Log trace on graph execute end
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtTraceGraphExeEnd(uint64_t time, tivx_obj_desc_graph_t *graph_obj_desc);
+
+/*!
+ * \brief Log trace on target execute start
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc);
+
+/*!
+ * \brief Log trace on target execute end
+ *
+ * \ingroup group_tivx_log_rt_trace
+ */
+void tivxLogRtTraceTargetExeEnd(tivx_target target, tivx_obj_desc_t *obj_desc);
+
+
+#ifdef __cplusplus
 }
+#endif
 
+#endif

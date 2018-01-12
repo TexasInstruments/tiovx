@@ -108,6 +108,11 @@ extern "C" {
  */
 #define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32)
 
+/*! \brief Flag to indicate if run-time trace should be logged
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_REF_FLAG_LOG_RT_TRACE            (0x00000001u)
+
 /*! \brief Flag to indicate if node is replicated
  * \ingroup group_tivx_obj_desc
  */
@@ -129,10 +134,35 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)
 
+
+/*! \brief State of a node object descriptor to indicate it is IDLE
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_OBJ_DESC_STATE_IDLE                    (0x0u)
+
+/*! \brief State of a node object descriptor to indicate it is
+ *         BLOCKED
+ *
+ *
+ *         There are two condition for which a node can be block
+ *         1. prev node obj desc in pipeline is waiting to be
+ *         executed
+ *         2. parameters could not be acquired
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_NODE_OBJ_DESC_STATE_BLOCKED                  (0x1u)
+
 /*! \brief Max possible nodes in graph
  * \ingroup group_tivx_obj_desc
  */
 #define TIVX_GRAPH_MAX_NODES               (32u)
+
+/*! \brief Max possible pipeline depth of a graph
+ * \ingroup group_tivx_obj_desc
+ */
+#define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (8u)
 
 /*! \brief Max number of replicated nodes
  * \ingroup group_tivx_obj_desc
@@ -194,6 +224,15 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to
         kernel name */
     TIVX_OBJ_DESC_KERNEL_NAME   = 0xD,
+
+    /*! \brief Object desciptor queue */
+    TIVX_OBJ_DESC_QUEUE         = 0xE,
+
+    /*! \brief Object desciptor data ref queue */
+    TIVX_OBJ_DESC_DATA_REF_Q    = 0xF,
+
+    /*! \brief Object desciptor graph */
+    TIVX_OBJ_DESC_GRAPH         = 0x10,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID       = 0xFFFFu
@@ -307,10 +346,6 @@ typedef struct _tivx_obj_desc_node
      */
     uint32_t node_complete_cmd_obj_desc_id;
 
-    /*! \brief Handle to OpenVX Node reference, valid only on host side
-     */
-    uintptr_t host_node_ref;
-
     /*! \brief Index in target kernel table
      *
      *         Used for fast indexing to kernel functions during graph execute
@@ -363,14 +398,40 @@ typedef struct _tivx_obj_desc_node
     /*! \brief parameter object descriptors */
     uint16_t data_id[TIVX_KERNEL_MAX_PARAMS];
 
+    /*! \brief parameter data ref q object descriptors,
+     * valid only when is_prm_data_ref_q is set */
+    uint16_t data_ref_q_id[TIVX_KERNEL_MAX_PARAMS];
+
     /*! \brief parameter object descriptors */
     uint16_t out_node_id[TIVX_NODE_MAX_OUT_NODES];
 
     /*! \brief parameter object descriptors */
     uint16_t in_node_id[TIVX_NODE_MAX_IN_NODES];
 
-    /*! \brief Reserved field to make struct aligned */
-    uint32_t rsv;
+    /*! \brief node state one of TIVX_NODE_OBJ_DESC_STATE_IDLE,
+     *       TIVX_NODE_OBJ_DESC_STATE_BLOCKED
+     */
+    uint16_t state;
+
+    /*! \brief node ID that is blocked on this node to be IDLE
+     */
+    uint16_t blocked_node_id;
+
+    /*! \brief pipeline ID to which this node obj desc belongs */
+    uint16_t pipeline_id;
+
+    /*! \brief node in the previous pipeline relative to this node */
+    uint16_t prev_pipe_node_id;
+
+    /*! \brief bitmask which indicates if prm is input to a node
+     *         bitN = 1 means param at index N is input to node
+     */
+    uint32_t is_prm_input;
+
+    /*! \brief bitmask which indicates if prm is data ref q
+     *         bitN = 1 means param at index N is data ref q
+     */
+    uint32_t is_prm_data_ref_q;
 
 } tivx_obj_desc_node_t;
 

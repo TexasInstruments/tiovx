@@ -73,16 +73,16 @@ static tivx_target tivxTargetGetHandle(vx_enum target_id);
 static void tivxTargetNodeDescSendComplete(const tivx_obj_desc_node_t *node_obj_desc);
 static vx_bool tivxTargetNodeDescCanNodeExecute(const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetNodeDescTriggerNextNodes(const tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc);
-static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc);
+static void tivxTargetNodeDescNodeExecuteTargetKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
+static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[]);
+static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc);
 static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_desc);
 static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_obj_desc);
 static vx_status tivxTargetNodeDescNodeControl(
     tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc);
-static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc);
+static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
 static void tivxTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc);
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status);
@@ -189,6 +189,14 @@ static void tivxTargetNodeDescSendComplete(
 
             if( tivxObjDescIsValidType( (tivx_obj_desc_t*)cmd_obj_desc, TIVX_OBJ_DESC_CMD) )
             {
+                uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+
+                tivx_uint64_to_uint32(
+                    timestamp,
+                    &cmd_obj_desc->timestamp_h,
+                    &cmd_obj_desc->timestamp_l
+                );
+
                 /* users wants a notification of node complete or this is leaf node
                  * so send node complete command to host
                  */
@@ -251,7 +259,7 @@ static void tivxTargetNodeDescTriggerNextNodes(
 }
 
 static void tivxTargetNodeDescNodeExecuteTargetKernel(
-    tivx_obj_desc_node_t *node_obj_desc)
+    tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
     tivx_target_kernel_instance target_kernel_instance;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
@@ -278,7 +286,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
 
             if(is_prm_replicated & (1U<<i))
             {
-                prm_obj_desc = tivxObjDescGet(node_obj_desc->data_id[i]);
+                prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
                 if(prm_obj_desc)
                 {
                     parent_obj_desc[i] = tivxObjDescGet(
@@ -316,7 +324,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             }
             else
             {
-                params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
+                params[i] = tivxObjDescGet(prm_obj_desc_id[i]);
             }
         }
 
@@ -325,47 +333,160 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
     }
 }
 
-static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc)
+static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
 {
-    node_obj_desc->exe_status = ownNodeUserKernelExecute((vx_node)node_obj_desc->host_node_ref);
+    vx_reference prm_ref[TIVX_KERNEL_MAX_PARAMS];
+    uint32_t i;
+
+    for(i=0; i<node_obj_desc->num_params; i++)
+    {
+        prm_ref[i] = ownReferenceGetHandleFromObjDescId(prm_obj_desc_id[i]);
+    }
+    node_obj_desc->exe_status = ownNodeUserKernelExecute((vx_node)node_obj_desc->base.host_ref, prm_ref);
 }
 
-static void tivxTargetNodeDescNodeExecute(tivx_obj_desc_node_t *node_obj_desc)
+vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc)
+{
+    tivx_obj_desc_node_t *prev_node_obj_desc;
+    vx_bool is_prev_node_blocked = vx_false_e;
+
+    prev_node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc->prev_pipe_node_id);
+    if(prev_node_obj_desc!=NULL)
+    {
+        if(node_obj_desc->state == TIVX_NODE_OBJ_DESC_STATE_IDLE)
+        {
+            if(prev_node_obj_desc->state != TIVX_NODE_OBJ_DESC_STATE_IDLE)
+            {
+                /* previous node in pipeline is blocked, so block this pipeline node until previous pipeline
+                 * completes
+                 */
+                node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_BLOCKED;
+                prev_node_obj_desc->blocked_node_id = node_obj_desc->base.obj_desc_id;
+                is_prev_node_blocked = vx_true_e;
+            }
+        }
+        else
+        if(node_obj_desc->state == TIVX_NODE_OBJ_DESC_STATE_BLOCKED)
+        {
+            /* this is trigger from prev node or due to resource being released so proceed with execution */
+            node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_IDLE;
+        }
+    }
+    return is_prev_node_blocked;
+}
+
+
+static void tivxTargetNodeDescNodeMarkComplete(tivx_obj_desc_node_t *node_obj_desc, uint16_t *blocked_node_id)
+{
+    /* check if any node is blocked on this node to get unblocked and complete execution
+     * This will be a node from next pipeline instance
+     */
+    *blocked_node_id = node_obj_desc->blocked_node_id;
+    node_obj_desc->blocked_node_id = TIVX_OBJ_DESC_INVALID;
+    node_obj_desc->state = TIVX_NODE_OBJ_DESC_STATE_IDLE;
+    tivxFlagBitSet(&node_obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
+}
+
+static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node_t *node_obj_desc)
 {
     uint64_t beg_time, end_time;
+    uint16_t blocked_node_id = TIVX_OBJ_DESC_INVALID;
+    uint16_t prm_obj_desc_id[TIVX_KERNEL_MAX_PARAMS];
 
     /* if node is already executed do nothing */
     if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_EXECUTED) == vx_false_e )
     {
-        beg_time = tivxPlatformGetTimeInUsecs();
-
-        if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+        /* check if same node in previous pipeline instance is blocked, if yes then
+         * dont acquire parameters for this node
+         */
+        if(tivxTargetNodeDescIsPrevPipeNodeBlocked(node_obj_desc)==vx_false_e)
         {
-            tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc);
+            vx_bool is_node_blocked;
+
+            is_node_blocked = vx_false_e;
+
+            VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) acquiring parameters on target %08x\n",
+                                 node_obj_desc->base.obj_desc_id,
+                                 node_obj_desc->pipeline_id,
+                                 target->target_id
+                           );
+
+            tivxTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked);
+
+            if(is_node_blocked==vx_false_e)
+            {
+                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x\n",
+                                 node_obj_desc->base.obj_desc_id,
+                                 node_obj_desc->pipeline_id,
+                                 target->target_id
+                           );
+
+                beg_time = tivxPlatformGetTimeInUsecs();
+
+                tivxLogRtTraceNodeExeStart(beg_time, node_obj_desc);
+
+                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                {
+                    tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
+                }
+                else
+                {
+                    tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
+                }
+
+                end_time = tivxPlatformGetTimeInUsecs();
+
+                tivxLogRtTraceNodeExeEnd(end_time, node_obj_desc);
+
+                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) executing on target %08x ... DONE !!!\n",
+                                 node_obj_desc->base.obj_desc_id,
+                                 node_obj_desc->pipeline_id,
+                                 target->target_id
+                           );
+
+                tivx_uint64_to_uint32(
+                    beg_time,
+                    &node_obj_desc->exe_time_beg_h,
+                    &node_obj_desc->exe_time_beg_l
+                );
+
+                tivx_uint64_to_uint32(
+                    end_time,
+                    &node_obj_desc->exe_time_end_h,
+                    &node_obj_desc->exe_time_end_l
+                );
+
+                tivxTargetNodeDescNodeMarkComplete(node_obj_desc, &blocked_node_id);
+                tivxTargetNodeDescReleaseAllParameters(node_obj_desc, prm_obj_desc_id);
+                tivxTargetNodeDescSendComplete(node_obj_desc);
+                tivxTargetNodeDescTriggerNextNodes(node_obj_desc);
+
+                if(blocked_node_id!=TIVX_OBJ_DESC_INVALID)
+                {
+                    /* this will be same node in next pipeline to trigger it last */
+                    VX_PRINT(VX_ZONE_INFO,"Re-triggering (node=%d)\n",
+                             blocked_node_id
+                    );
+                    tivxTargetTriggerNode(blocked_node_id);
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for resrouces on target %08x\n",
+                                 node_obj_desc->base.obj_desc_id,
+                                 node_obj_desc->pipeline_id,
+                                 target->target_id
+                           );
+            }
         }
         else
         {
-            tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc);
+            VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for previous pipe instance node (node=%d) to complete !!!\n",
+                    node_obj_desc->base.obj_desc_id,
+                    node_obj_desc->pipeline_id,
+                    node_obj_desc->prev_pipe_node_id
+            );
         }
-
-        end_time = tivxPlatformGetTimeInUsecs();
-
-        tivx_uint64_to_uint32(
-                beg_time,
-                &node_obj_desc->exe_time_beg_h,
-                &node_obj_desc->exe_time_beg_l
-            );
-
-        tivx_uint64_to_uint32(
-                end_time,
-                &node_obj_desc->exe_time_end_h,
-                &node_obj_desc->exe_time_end_l
-            );
-
-        tivxFlagBitSet(&node_obj_desc->flags, TIVX_NODE_FLAG_IS_EXECUTED);
-
-        tivxTargetNodeDescSendComplete(node_obj_desc);
-        tivxTargetNodeDescTriggerNextNodes(node_obj_desc);
     }
 }
 
@@ -582,19 +703,34 @@ static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     }
 }
 
-static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc)
+static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_action action;
-    vx_node node = (vx_node)node_obj_desc->host_node_ref;
+    vx_node node = (vx_node)node_obj_desc->base.host_ref;
+    vx_bool is_send_graph_complete_event = vx_false_e;
 
     /* return action is ignored */
     action = ownNodeExecuteUserCallback(node);
 
-    /* if this is leaf node, send completion event */
+    /* if this is leaf node, check if graph is completed */
     if(ownNodeGetNumOutNodes(node)==0)
     {
-        /* post completeion event */
-        ownNodeSendCompletionEvent(node);
+        /* check if graph represetned by this node at this pipeline_id
+         * is completed and do graph
+         * completion handling
+         */
+        is_send_graph_complete_event = ownCheckGraphCompleted(node->graph, node_obj_desc->pipeline_id);
+
+    }
+
+    /* first do all booking keeping and then send event q events */
+    /* send completion event if enabled */
+    ownNodeCheckAndSendCompletionEvent(node_obj_desc, timestamp);
+
+    /* first we let any node events to go thru before sending graph events */
+    if(is_send_graph_complete_event)
+    {
+        ownSendGraphCompletedEvent(node->graph);
     }
 
     return (action);
@@ -603,9 +739,9 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
 static void tivxTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc)
 {
-    vx_node node = (vx_node)node_obj_desc->host_node_ref;
+    vx_node node = (vx_node)node_obj_desc->base.host_ref;
 
-    node->graph->state = VX_GRAPH_STATE_ABANDONED;
+    ownSetGraphState(node->graph, node_obj_desc->pipeline_id, VX_GRAPH_STATE_ABANDONED);
 }
 
 static void tivxTargetCmdDescSendAck(tivx_obj_desc_cmd_t *cmd_obj_desc, vx_status status)
@@ -677,7 +813,11 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
 
             if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
             {
-                action = tivxTargetCmdDescHandleUserCallback(node_obj_desc);
+                uint64_t timestamp;
+
+                tivx_uint32_to_uint64(&timestamp, cmd_obj_desc->timestamp_h, cmd_obj_desc->timestamp_l);
+
+                action = tivxTargetCmdDescHandleUserCallback(node_obj_desc, timestamp);
 
                 if (action == VX_ACTION_ABANDON)
                 {
@@ -685,6 +825,23 @@ static void tivxTargetCmdDescHandler(tivx_obj_desc_cmd_t *cmd_obj_desc)
                 }
             }
             /* No ack for user callback command */
+            break;
+        case TIVX_CMD_DATA_REF_CONSUMED:
+        {
+            tivx_data_ref_queue data_ref_q;
+
+            data_ref_q = (tivx_data_ref_queue)ownReferenceGetHandleFromObjDescId(cmd_obj_desc->obj_desc_id[0]);
+
+            if( data_ref_q != NULL )
+            {
+                uint64_t timestamp;
+
+                tivx_uint32_to_uint64(&timestamp, cmd_obj_desc->timestamp_h, cmd_obj_desc->timestamp_l);
+
+                tivxDataRefQueueSendRefConsumedEvent(data_ref_q, timestamp);
+            }
+            /* No ack for this command */
+        }
             break;
         default:
 
@@ -722,6 +879,8 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
             }
             else
             {
+                tivxLogRtTraceTargetExeStart(target, obj_desc);
+
                 switch(obj_desc->type)
                 {
                     case TIVX_OBJ_DESC_CMD:
@@ -733,13 +892,15 @@ static void VX_CALLBACK tivxTargetTaskMain(void *app_var)
                     case TIVX_OBJ_DESC_NODE:
                         if( tivxObjDescIsValidType( obj_desc, TIVX_OBJ_DESC_NODE) )
                         {
-                            tivxTargetNodeDescNodeExecute((tivx_obj_desc_node_t*)obj_desc);
+                            tivxTargetNodeDescNodeExecute(target, (tivx_obj_desc_node_t*)obj_desc);
                         }
                         break;
                     default:
                         /* unsupported obj_desc received at target */
                         break;
                 }
+
+                tivxLogRtTraceTargetExeEnd(target, obj_desc);
             }
         }
     }
@@ -828,6 +989,18 @@ vx_status tivxTargetDelete(vx_enum target_id)
     }
 
     return status;
+}
+
+void tivxTargetTriggerNode(uint16_t node_obj_desc_id)
+{
+    tivx_obj_desc_node_t *node_obj_desc;
+
+    node_obj_desc = (tivx_obj_desc_node_t*)tivxObjDescGet(node_obj_desc_id);
+
+    if( tivxObjDescIsValidType( (tivx_obj_desc_t*)node_obj_desc, TIVX_OBJ_DESC_NODE) )
+    {
+        tivxObjDescSend( node_obj_desc->target_id, node_obj_desc_id);
+    }
 }
 
 vx_status tivxTargetQueueObjDesc(vx_enum target_id, uint16_t obj_desc_id)

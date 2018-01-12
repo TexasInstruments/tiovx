@@ -519,6 +519,12 @@ void vx_tutorial_graph_image_gradients()
     status = vxVerifyGraph(graph);
     /** \endcode */
 
+    /** export graph to dot file, which can be coverted to jpg using dot tool
+     * \code
+     */
+    tivxExportGraphToDot(graph, ".", "vx_tutorial_graph_image_gradients");
+    /** \endcode */
+
     /**
      * - Show graph attributes.
      *

@@ -68,5 +68,6 @@ TESTCASE(tivxRemap)
 TESTCASE(tivxLaplacianPyramid)
 TESTCASE(tivxLaplacianReconstruct)
 TESTCASE(tivxMaxNodes)
+TESTCASE(tivxGraphPipeline)
 #endif
 

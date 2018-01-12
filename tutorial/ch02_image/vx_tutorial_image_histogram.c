@@ -224,6 +224,12 @@ void vx_tutorial_image_histogram()
     status = vxVerifyGraph(graph);
     /** \endcode */
 
+    /** export graph to dot file, which can be coverted to jpg using dot tool
+     * \code
+     */
+    tivxExportGraphToDot(graph, ".", "vx_tutorial_image_histogram");
+    /** \endcode */
+
     /**
      * - Show graph attributes.
      *

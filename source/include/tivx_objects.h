@@ -211,6 +211,13 @@ extern "C" {
 #define TIVX_PARAMETER_MAX_OBJECTS                  (48u)
 
 /*!
+ * \brief Max number data reference queue objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_DATA_REF_Q_MAX_OBJECTS                 (64u)
+
+/*!
  * \brief Structure to hold all framework objects
  *
  * \ingroup group_tivx_obj
@@ -311,6 +318,10 @@ typedef struct _tivx_object_t
     /**< Parameter objects */
     vx_bool                 isParameterUse[TIVX_PARAMETER_MAX_OBJECTS];
     /**< Flag indicating if Parameter object is use or not */
+    tivx_data_ref_queue_t   data_ref_q[TIVX_DATA_REF_Q_MAX_OBJECTS];
+    /**< Data ref queue objects */
+    vx_bool                 isDataRefQUse[TIVX_DATA_REF_Q_MAX_OBJECTS];
+    /**< Flag indicating if Data ref queue object is use or not */
 } tivx_object_t;
 
 /*! \brief Alloc memory for a reference of specified type

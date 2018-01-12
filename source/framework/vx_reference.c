@@ -79,6 +79,7 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {VX_TYPE_REMAP,         sizeof(tivx_remap_t)},
     {VX_TYPE_SCALAR,        sizeof(tivx_scalar_t)},
     {VX_TYPE_THRESHOLD,     sizeof(tivx_threshold_t)},
+    {TIVX_TYPE_DATA_REF_Q,  sizeof(tivx_data_ref_queue_t)},
 };
 
 vx_size ownSizeOfEnumType(vx_enum item_type)
@@ -369,6 +370,10 @@ vx_bool ownIsValidType(vx_enum type)
     {
         ret = vx_true_e;
     }
+    else if (TIVX_TYPE_IS_TI_OBJECT(type)) /* some object */
+    {
+        ret = vx_true_e;
+    }
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "Type 0x%08x is invalid!\n");
@@ -459,6 +464,17 @@ void ownReferenceSetScope(vx_reference ref, vx_reference scope)
             }
         }
     }
+}
+
+vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id)
+{
+    tivx_obj_desc_t *obj_desc = tivxObjDescGet(obj_desc_id);
+    vx_reference ref = NULL;
+
+    if(obj_desc!=NULL)
+        ref = (vx_reference)obj_desc->host_ref;
+
+    return ref;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxQueryReference(vx_reference ref, vx_enum attribute, void *ptr, vx_size size)

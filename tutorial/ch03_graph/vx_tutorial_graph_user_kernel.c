@@ -274,6 +274,12 @@ void vx_tutorial_graph_user_kernel(vx_bool add_as_target_kernel)
         show_graph_attributes(graph);
         show_node_attributes(node);
 
+        /** export graph to dot file, which can be coverted to jpg using dot tool
+         * \code
+         */
+        tivxExportGraphToDot(graph, ".", "vx_tutorial_graph_user_kernel");
+        /** \endcode */
+
         if(status==VX_SUCCESS)
         {
             printf(" Executing graph ...\n");

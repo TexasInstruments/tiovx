@@ -90,6 +90,9 @@ typedef enum {
     /*! \brief Lock the context during context create and delete */
     TIVX_PLATFORM_LOCK_CONTEXT,
 
+    /*! \brief Lock the data reference queue during enqueue and dequeue */
+    TIVX_PLATFORM_LOCK_DATA_REF_QUEUE,
+
     /*! \brief Max number of locks */
     TIVX_PLATFORM_LOCK_MAX
 

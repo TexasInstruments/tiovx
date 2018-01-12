@@ -356,6 +356,11 @@ vx_reference tivxObjectAlloc(vx_enum type)
                     (uint8_t *)g_tivx_objects.parameter, g_tivx_objects.isParameterUse,
                     TIVX_PARAMETER_MAX_OBJECTS, sizeof(tivx_parameter_t));
                 break;
+            case TIVX_TYPE_DATA_REF_Q:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.data_ref_q, g_tivx_objects.isDataRefQUse,
+                    TIVX_DATA_REF_Q_MAX_OBJECTS, sizeof(tivx_data_ref_queue_t));
+                break;
             default:
                 ref = NULL;
                 break;
@@ -566,6 +571,15 @@ vx_status tivxObjectFree(vx_reference ref)
                     if (VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free threshold object failed\n");
+                    }
+                    break;
+                case TIVX_TYPE_DATA_REF_Q:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.data_ref_q, g_tivx_objects.isDataRefQUse,
+                        TIVX_DATA_REF_Q_MAX_OBJECTS, sizeof(tivx_data_ref_queue_t));
+                    if (VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free data ref queue object failed\n");
                     }
                     break;
                 default:

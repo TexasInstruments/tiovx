@@ -111,6 +111,7 @@
 
 #include <stdio.h>
 #include <VX/vx.h>
+#include <TI/tivx.h>
 #include <utility.h>
 
 /** \brief Input file name */
@@ -256,6 +257,12 @@ void vx_tutorial_image_color_convert()
      * \code
      */
     status = vxVerifyGraph(graph);
+    /** \endcode */
+
+    /** export graph to dot file, which can be coverted to jpg using dot tool
+     * \code
+     */
+    tivxExportGraphToDot(graph, ".", "vx_tutorial_image_color_convert");
     /** \endcode */
 
     /**

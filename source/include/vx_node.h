@@ -54,10 +54,12 @@ typedef struct _vx_node {
     vx_kernel           kernel;
     /*! \brief The list of references which are the values to pass to the kernels */
     vx_reference        parameters[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief pipeline depth of graph this node belongs to */
+    uint32_t pipeline_depth;
     /*! \brief Node Object descriptor */
-    tivx_obj_desc_node_t  *obj_desc;
+    tivx_obj_desc_node_t  *obj_desc[TIVX_GRAPH_MAX_PIPELINE_DEPTH];
     /*! \brief Command Object descriptor */
-    tivx_obj_desc_cmd_t *obj_desc_cmd;
+    tivx_obj_desc_cmd_t *obj_desc_cmd[TIVX_GRAPH_MAX_PIPELINE_DEPTH];
     /*! \brief Node performance */
     vx_perf_t perf;
     /*! \brief parameter replicated flags */
@@ -68,26 +70,31 @@ typedef struct _vx_node {
     vx_nodecomplete_f user_callback;
     /*! \brief to check if kernel is created */
     vx_bool is_kernel_created;
-    /*! \brief event to indicate node competion
-     *         This is set by graph only for leaf nodes
-     */
-    tivx_event completion_event;
-    /*! local data pointer */
+    /*! \brief local data pointer */
     void *local_data_ptr;
-    /*! local data size */
+    /*! \brief local data size */
     vx_size local_data_size;
-    /*! flag to indicate if local_data_ptr is allocated by system
+    /*! \brief flag to indicate if local_data_ptr is allocated by system
      *  TRUE: allocated by system (TIOVX implementation)
      *  FALSE: allocated by user, or not allocated
      */
     vx_bool local_data_ptr_is_alloc;
 
-    /*! Flag to indicate if local data size and ptr set is allowed */
+    /*! \brief Flag to indicate if local data size and ptr set is allowed */
     vx_bool local_data_set_allow;
 
-    /*! used by graph topological sort for internal state keeping */
+    /*! \brief used by graph topological sort for internal state keeping */
     uint16_t incounter;
 
+    /*! \brief when true a event is sent when a node execution is completed */
+    vx_bool is_enable_send_complete_event;
+
+    /*! \brief number of buffer to allocate at a node parameter
+     *    Valid only for output parameters and when graph containing the
+     *    node is pipelined.
+     *    Default is 1
+     */
+    uint32_t parameter_index_num_buf[TIVX_KERNEL_MAX_PARAMS];
 } tivx_node_t;
 
 /**
@@ -132,12 +139,7 @@ vx_status ownNodeKernelInit(vx_node node);
  *         for execution
  * \ingroup group_vx_node
  */
-vx_status ownNodeKernelSchedule(vx_node node);
-
-/*! \brief Wait for completion event
- * \ingroup group_vx_node
- */
-vx_status ownNodeWaitCompletionEvent(vx_node node);
+vx_status ownNodeKernelSchedule(vx_node node, uint32_t pipeline_id);
 
 /*! \brief DeInit user kernel or target kernel associated with this node
  * \ingroup group_vx_node
@@ -152,7 +154,7 @@ vx_status ownResetNodePerf(vx_node node);
 /*! \brief Called by graph each time after node execution
  * \ingroup group_vx_node
  */
-vx_status ownUpdateNodePerf(vx_node node);
+vx_status ownUpdateNodePerf(vx_node node, uint32_t pipeline_id);
 
 /*! \brief Return number of node parameters
  * \ingroup group_vx_node
@@ -190,19 +192,12 @@ uint32_t ownNodeGetNumInNodes(vx_node node);
  */
 uint32_t ownNodeGetNumOutNodes(vx_node node);
 
-/*! \brief Create a completion event for this node
- *         Typically called by graph object for all leaf nodes inorder
- *         to wait for graph completion.
- * \ingroup group_vx_node
- */
-vx_status ownNodeCreateCompletionEvent(vx_node node);
-
 /*! \brief Create resources required to call a user callback
  *         If user callback is assigned then nothing is done
  *
  * \ingroup group_vx_node
  */
-vx_status ownNodeCreateUserCallbackCommand(vx_node node);
+vx_status ownNodeCreateUserCallbackCommand(vx_node node, uint32_t pipeline_id);
 
 /*! \brief Call user specified callback
  *
@@ -210,23 +205,17 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node);
  */
 vx_action ownNodeExecuteUserCallback(vx_node node);
 
-/*! \brief Send node completion event
- *
- * \ingroup group_vx_node
- */
-vx_status ownNodeSendCompletionEvent(vx_node node);
-
 /*! \brief clears execute status of the node
  *
  * \ingroup group_vx_node
  */
-void ownNodeClearExecuteState(vx_node node);
+void ownNodeClearExecuteState(vx_node node, uint32_t pipeline_id);
 
 /*! \brief Execute user kernel
  *
  * \ingroup group_vx_node
  */
-vx_status ownNodeUserKernelExecute(vx_node node);
+vx_status ownNodeUserKernelExecute(vx_node node, vx_reference prm_ref[]);
 
 
 /*! \brief Is prm_idx of node replicated
@@ -246,6 +235,66 @@ void ownNodeSetParameter(vx_node node, vx_uint32 index, vx_reference value);
  * \ingroup group_vx_node
  */
 vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index);
+
+
+/*! \brief Check if node is completed
+ *
+ *         Does not block for node completion.
+ *
+ * \ingroup group_vx_node
+ */
+vx_bool ownCheckNodeCompleted(vx_node node, uint32_t pipeline_id);
+
+
+/*! \brief Register node completion event
+ *
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type);
+
+
+/*! \brief Send node completion event if enabled
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp);
+
+
+/*! \brief Alloc additional node obj desc's for pipelining
+ *
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth);
+
+/*! \brief Set param direction for 0th node obj desc
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeSetObjDescParamDirection(vx_node node);
+
+/*! \brief Update in node id and out node id for node pipeline obj desc's
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeLinkObjDescForPipeline(vx_node node);
+
+
+/*! \brief Link data ref q to node at parameter index 'prm_id'
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue data_ref_q);
+
+
+/*! \brief Return number of buffers to alocate at a node,index
+ *
+ *  Valid only for output parameters
+ *
+ *  Returns 0 is user has not made any specific choice or invalid parameter
+ *
+ * \ingroup group_vx_node
+ */
+uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index);
 
 #ifdef __cplusplus
 }

@@ -65,6 +65,8 @@
 #include <vx_internal.h>
 #include <sys/time.h>
 
+static uint64_t g_start_time=0;
+
 uint64_t tivxPlatformGetTimeInUsecs(void)
 {
     uint64_t timeInUsecs = 0;
@@ -78,7 +80,11 @@ uint64_t tivxPlatformGetTimeInUsecs(void)
     {
         timeInUsecs = tv.tv_sec * 1000000ull + tv.tv_usec;
     }
+    if(g_start_time==0)
+    {
+        g_start_time = timeInUsecs;
+    }
 
-    return timeInUsecs;
+    return (timeInUsecs-g_start_time);
 }
 

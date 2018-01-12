@@ -36,6 +36,7 @@
 #include <stdlib.h>
 
 #include <VX/vx.h>
+#include <VX/vx_khr_pipelining.h>
 #include <TI/tivx.h>
 #include <TI/tivx_mem.h>
 #include <TI/tivx_obj_desc.h>
@@ -51,8 +52,11 @@
 #include <tivx_target.h>
 #include <tivx_target_kernel_priv.h>
 #include <tivx_target_kernel_instance.h>
+#include <tivx_obj_desc_queue.h>
+#include <tivx_event_queue.h>
 
 #include <vx_reference.h>
+#include <tivx_data_ref_queue.h>
 #include <vx_context.h>
 #include <vx_error.h>
 #include <vx_graph.h>
@@ -73,8 +77,8 @@
 #include <vx_delay.h>
 #include <vx_module.h>
 #include <vx_meta_format.h>
-
 #include <tivx_objects.h>
+#include <tivx_log_rt_trace.h>
 
 
 #ifdef __cplusplus
@@ -111,10 +115,15 @@ extern "C" {
  */
 #define TIVX_TYPE_IS_STRUCT(type) (((type) >= VX_TYPE_RECTANGLE) && ((type) < VX_TYPE_KHRONOS_STRUCT_MAX))
 
-/*! \brief Used to determine if a type is an object.
+/*! \brief Used to determine if a type is an Khronos defined object.
  * \ingroup group_vx_utils
  */
 #define TIVX_TYPE_IS_OBJECT(type) (((type) >= VX_TYPE_REFERENCE) && ((type) < VX_TYPE_KHRONOS_OBJECT_END))
+
+/*! \brief Used to determine if a type is TI defined object.
+ * \ingroup group_vx_utils
+ */
+#define TIVX_TYPE_IS_TI_OBJECT(type) (((type) >= VX_TYPE_VENDOR_OBJECT_START) && ((type) < VX_TYPE_VENDOR_OBJECT_END))
 
 /*! \brief A magic value to look for and set in references.
  * \ingroup group_vx_utils
@@ -126,6 +135,14 @@ extern "C" {
  * \ingroup group_vx_utils
  */
 #define TIVX_BAD_MAGIC        (42)
+
+/*! \brief TIVX defined reference types
+ * \ingroup group_vx_utils
+ */
+enum tivx_type_e {
+
+    TIVX_TYPE_DATA_REF_Q = VX_TYPE_VENDOR_OBJECT_START, /*! \brief Data reference queue type */
+};
 
 /*! \brief A parameter checker for size and alignment.
  * \ingroup group_vx_utils

@@ -194,6 +194,12 @@ void vx_tutorial_graph_image_gradients_pytiovx()
     show_graph_attributes(uc.graph_0);
     /** \endcode */
 
+    /** export graph to dot file, which can be coverted to jpg using dot tool
+     * \code
+     */
+    tivxExportGraphToDot(uc.graph_0, ".", "vx_tutorial_graph_image_gradients_pytiovx");
+    /** \endcode */
+
     if(status==VX_SUCCESS)
     {
         printf(" Executing graph ...\n");

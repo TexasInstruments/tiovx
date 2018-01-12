@@ -86,6 +86,8 @@ static vx_reference ownCreateRemapFromExemplar(
     vx_context context, vx_remap exemplar);
 static vx_reference ownCreateLutFromExemplar(
     vx_context context, vx_lut exemplar);
+static vx_reference ownCreateObjectArrayFromExemplar(
+    vx_context context, vx_object_array exemplar);
 
 
 vx_reference ownCreateReferenceFromExemplar(
@@ -135,6 +137,9 @@ vx_reference ownCreateReferenceFromExemplar(
             ref = ownCreateConvolutionFromExemplar(
                 context, (vx_convolution)exemplar);
             break;
+        case VX_TYPE_OBJECT_ARRAY:
+            ref = ownCreateObjectArrayFromExemplar(
+                context, (vx_object_array)exemplar);
         default:
             break;
     }
@@ -349,4 +354,30 @@ static vx_reference ownCreateConvolutionFromExemplar(
     }
 
     return (vx_reference)conv;
+}
+
+static vx_reference ownCreateObjectArrayFromExemplar(
+    vx_context context, vx_object_array exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_size count;
+    vx_reference objarr_item_exemplar;
+    vx_object_array objarr = NULL;
+
+    status |= vxQueryObjectArray(exemplar, VX_OBJECT_ARRAY_NUMITEMS, &count, sizeof(count));
+    if (VX_SUCCESS == status)
+    {
+        objarr_item_exemplar = vxGetObjectArrayItem(exemplar, 0);
+        if(objarr_item_exemplar==NULL)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+        else
+        {
+            objarr = vxCreateObjectArray(context, objarr_item_exemplar, count);
+            vxReleaseReference(&objarr_item_exemplar);
+        }
+    }
+
+    return (vx_reference)objarr;
 }
