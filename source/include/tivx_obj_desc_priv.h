@@ -209,14 +209,16 @@ typedef struct {
 /*!
  * \brief Allocate a Object descriptor
  *
- * \param type [in] Type of object descriptor to allcoate, see \ref tivx_obj_desc_type_e
+ * \param type [in] Type of object descriptor to allocate, see \ref tivx_obj_desc_type_e
+ * \param ref [in] vx_reference that is associated with this object descriptor.
+ *                  If not applicable set to NULL
  *
  * \return Pointer \ref tivx_obj_desc_t on success
  * \return NULL, if object descriptor could not be allocated
  *
  * \ingroup group_tivx_obj_desc_priv
  */
-tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type);
+tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref);
 
 /*!
  * \brief Free a previously allocated object descriptor

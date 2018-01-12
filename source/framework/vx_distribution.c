@@ -56,7 +56,7 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                     (tivx_reference_release_callback_f)&vxReleaseDistribution;
 
                 obj_desc = (tivx_obj_desc_distribution_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_DISTRIBUTION);
+                    TIVX_OBJ_DESC_DISTRIBUTION, (vx_reference)dist);
                 if(obj_desc==NULL)
                 {
                     vxReleaseDistribution(&dist);

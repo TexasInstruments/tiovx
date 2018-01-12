@@ -83,7 +83,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
                 obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_MATRIX);
+                    TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
                 if(obj_desc==NULL)
                 {
                     vxReleaseMatrix(&matrix);
@@ -180,7 +180,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 (tivx_reference_release_callback_f)&vxReleaseMatrix;
 
             obj_desc = (tivx_obj_desc_matrix_t*)tivxObjDescAlloc(
-                TIVX_OBJ_DESC_MATRIX);
+                TIVX_OBJ_DESC_MATRIX, (vx_reference)matrix);
             if(obj_desc==NULL)
             {
                 vxReleaseMatrix(&matrix);

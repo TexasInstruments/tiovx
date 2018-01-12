@@ -61,7 +61,7 @@ vx_convolution VX_API_CALL vxCreateConvolution(
                     (tivx_reference_release_callback_f)&vxReleaseConvolution;
 
                 obj_desc = (tivx_obj_desc_convolution_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_CONVOLUTION);
+                    TIVX_OBJ_DESC_CONVOLUTION, (vx_reference)cnvl);
                 if(obj_desc==NULL)
                 {
                     vxReleaseConvolution(&cnvl);

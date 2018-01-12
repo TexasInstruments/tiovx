@@ -91,7 +91,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                     (tivx_reference_release_callback_f)&vxReleaseLUT;
 
                 obj_desc = (tivx_obj_desc_lut_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_LUT);
+                    TIVX_OBJ_DESC_LUT, (vx_reference)lut);
                 if(obj_desc==NULL)
                 {
                     vxReleaseLUT(&lut);

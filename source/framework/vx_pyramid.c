@@ -122,7 +122,7 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
                     (tivx_reference_release_callback_f)&vxReleasePyramid;
 
                 obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_PYRAMID);
+                    TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
                 if(obj_desc==NULL)
                 {
                     vxReleasePyramid(&prmd);
@@ -215,7 +215,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 (tivx_reference_release_callback_f)&vxReleasePyramid;
 
             obj_desc = (tivx_obj_desc_pyramid_t*)tivxObjDescAlloc(
-                TIVX_OBJ_DESC_PYRAMID);
+                TIVX_OBJ_DESC_PYRAMID, (vx_reference)prmd);
             if(obj_desc==NULL)
             {
                 vxReleasePyramid(&prmd);

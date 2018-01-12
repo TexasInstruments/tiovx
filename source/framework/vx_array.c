@@ -150,7 +150,7 @@ vx_array VX_API_CALL vxCreateArray(
                     (tivx_reference_release_callback_f)&vxReleaseArray;
 
                 arr->base.obj_desc = (tivx_obj_desc_t *)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_ARRAY);
+                    TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
                 if(arr->base.obj_desc==NULL)
                 {
                     vxReleaseArray(&arr);
@@ -197,7 +197,7 @@ vx_array VX_API_CALL vxCreateVirtualArray(
                 (tivx_reference_release_callback_f)&vxReleaseArray;
 
             arr->base.obj_desc = (tivx_obj_desc_t*)tivxObjDescAlloc(
-                TIVX_OBJ_DESC_ARRAY);
+                TIVX_OBJ_DESC_ARRAY, (vx_reference)arr);
             if(arr->base.obj_desc==NULL)
             {
                 vxReleaseArray(&arr);

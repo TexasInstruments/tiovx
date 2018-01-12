@@ -131,7 +131,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                 remap->base.mem_alloc_callback = &ownAllocRemapBuffer;
                 remap->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseRemap;
 
-                obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_REMAP);
+                obj_desc = (tivx_obj_desc_remap_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_REMAP, (vx_reference)remap);
                 if(obj_desc==NULL)
                 {
                     vxReleaseRemap(&remap);

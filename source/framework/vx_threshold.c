@@ -66,7 +66,7 @@ vx_threshold VX_API_CALL vxCreateThreshold(
                     (tivx_reference_release_callback_f)&vxReleaseThreshold;
 
                 obj_desc = (tivx_obj_desc_threshold_t*)tivxObjDescAlloc(
-                    TIVX_OBJ_DESC_THRESHOLD);
+                    TIVX_OBJ_DESC_THRESHOLD, (vx_reference)thresh);
                 if(obj_desc==NULL)
                 {
                     vxReleaseThreshold(&thresh);

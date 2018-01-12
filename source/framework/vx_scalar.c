@@ -230,7 +230,7 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 scalar->base.destructor_callback = &ownDestructScalar;
                 scalar->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseScalar;
 
-                obj_desc = (tivx_obj_desc_scalar_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_SCALAR);
+                obj_desc = (tivx_obj_desc_scalar_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_SCALAR, (vx_reference)scalar);
                 if(obj_desc==NULL)
                 {
                     vxReleaseScalar(&scalar);
@@ -313,12 +313,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyScalar(vx_scalar scalar, void* user_ptr
             status = VX_ERROR_INVALID_PARAMETERS;
             if (NULL == user_ptr)
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user ptr is NULL\n");    
+                VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user ptr is NULL\n");
             }
-            
+
             if (VX_MEMORY_TYPE_HOST != user_mem_type)
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user mem type is not equal to VX_MEMORY_TYPE_HOST\n");     
+                VX_PRINT(VX_ZONE_ERROR, "vxCopyScalar: user mem type is not equal to VX_MEMORY_TYPE_HOST\n");
             }
         }
         else

@@ -341,7 +341,7 @@ vx_status ownNodeKernelInit(vx_node node)
                 tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
 
                 /* alloc obj desc for kernel name */
-                kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_KERNEL_NAME);
+                kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_KERNEL_NAME, NULL);
 
                 if(kernel_name_obj_desc!=NULL)
                 {
@@ -806,7 +806,7 @@ vx_status ownNodeCreateUserCallbackCommand(vx_node node)
     {
         if(node->obj_desc_cmd==NULL)
         {
-            node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
+            node->obj_desc_cmd = (tivx_obj_desc_cmd_t *)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD, NULL);
             if(node->obj_desc_cmd != NULL)
             {
                 node->obj_desc->node_complete_cmd_obj_desc_id
@@ -917,7 +917,7 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->base.mem_alloc_callback = NULL;
                     node->base.release_callback = (tivx_reference_release_callback_f)&vxReleaseNode;
 
-                    node->obj_desc = (tivx_obj_desc_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_NODE);
+                    node->obj_desc = (tivx_obj_desc_node_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_NODE, (vx_reference)node);
 
                     if(node->obj_desc == NULL)
                     {

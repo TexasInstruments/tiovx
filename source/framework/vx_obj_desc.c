@@ -121,7 +121,7 @@ void tivxObjDescInit(void)
     tivxIpcRegisterHandler(tivxObjDescIpcHandler);
 }
 
-tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type)
+tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
 {
     tivx_obj_desc_t *obj_desc = NULL, *tmp_obj_desc = NULL;
     uint32_t i, idx;
@@ -138,9 +138,10 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type)
         {
             memset(tmp_obj_desc, 0, sizeof(tivx_obj_desc_shm_entry_t));
 
-            /* free entry found */
+            /* init entry that is found */
             tmp_obj_desc->obj_desc_id = idx;
             tmp_obj_desc->type = type;
+            tmp_obj_desc->host_ref = (uintptr_t)ref;
 
             g_obj_desc_table.last_alloc_index
                 = (idx+1)%g_obj_desc_table.num_entries;

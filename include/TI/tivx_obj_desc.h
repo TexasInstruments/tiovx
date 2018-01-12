@@ -261,6 +261,12 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief reserved field to make this structure a multiple of 64b */
     uint16_t rsv[1];
 
+    /*! \brief Host reference, accessible only on HOST side */
+    uintptr_t host_ref;
+
+    /*! \brief reference flags */
+    uint32_t flags;
+
 } tivx_obj_desc_t;
 
 /*!

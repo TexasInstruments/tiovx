@@ -112,7 +112,7 @@ static vx_status ownContextCreateCmdObj(vx_context context)
     context->obj_desc_cmd = NULL;
     context->cmd_ack_event = NULL;
 
-    context->obj_desc_cmd = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD);
+    context->obj_desc_cmd = (tivx_obj_desc_cmd_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_CMD, NULL);
     if(context->obj_desc_cmd != NULL)
     {
         status = tivxEventCreate(&context->cmd_ack_event);
