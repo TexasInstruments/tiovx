@@ -242,7 +242,11 @@ VX_API_ENTRY vx_scalar VX_API_CALL vxCreateScalar(vx_context context, vx_enum da
                 {
                     obj_desc->data_type = data_type;
                     scalar->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
-                    vxCopyScalar(scalar, (void*)ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+                    /* User can pass a NULL ptr, but scalar will be initialized */
+                    if (NULL != ptr)
+                    {
+                        vxCopyScalar(scalar, (void*)ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+                    }
                 }
             }
         }
