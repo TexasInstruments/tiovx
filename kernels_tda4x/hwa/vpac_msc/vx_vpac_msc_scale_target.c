@@ -156,19 +156,15 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         uint32_t ih = src->imagepatch_addr[0].dim_y;
         uint32_t ow = dst->imagepatch_addr[0].dim_x;
         uint32_t oh = dst->imagepatch_addr[0].dim_y;
-        uint32_t hzScale = (float)(4096*iw)/(float)ow;
-        uint32_t vtScale = (float)(4096*ih)/(float)oh;
+        uint32_t hzScale = ((float)(4096*iw)/(float)ow) + 0.5f;
+        uint32_t vtScale = ((float)(4096*ih)/(float)oh) + 0.5f;
+        uint32_t i;
 
         imgInput[0] = prms->src16;
         imgOutput[0] = prms->dst16;
 
         prms->mmr.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
         prms->mmr.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
-
-        prms->mmr.unitParams[0].filter_mode = 0;
-
-        prms->mmr.unitParams[0].sp_hs_coef_sel = 0;
-        prms->mmr.unitParams[0].sp_vs_coef_sel = 0;
 
         prms->mmr.unitParams[0].threadMap = 0;
         prms->mmr.unitParams[0].coefShift = 8;
@@ -177,51 +173,65 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         prms->mmr.unitParams[0].hzScale = hzScale;
         prms->mmr.unitParams[0].vtScale = vtScale;
 
-        /* This implementation is primitive, in that it only supports 
-         * rescale by 1x, 1/2x, and 1/4x properly.  It also supports
-         * nearest neighbor 1/3x.  Need to add support for multiple phase
-         * situation and calculation based on non-integer rescale. */
+        prms->mmr.unitParams[0].filter_mode = 1;    /* multi phase */
+        prms->mmr.unitParams[0].phase_mode = 0;     /* 64 phases */
+        prms->mmr.unitParams[0].hs_coef_sel = 0;
+        prms->mmr.unitParams[0].vs_coef_sel = 0;
+        prms->mmr.unitParams[0].initPhaseX = (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        prms->mmr.unitParams[0].initPhaseY = (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
 
-        if(hzScale > (4096*2))
-        {
-            prms->mmr.unitParams[0].x_offset = 1;
-        }
-        else
-        {
-            prms->mmr.unitParams[0].x_offset = 0;
-        }
-        if(vtScale > (4096*2))
-        {
-            prms->mmr.unitParams[0].y_offset = 1;
-        }
-        else
-        {
-            prms->mmr.unitParams[0].y_offset = 0;
-        }
-        prms->mmr.unitParams[0].initPhaseX = 0;
-        prms->mmr.unitParams[0].initPhaseY = 0;
+        prms->mmr.unitParams[0].x_offset = 0;
+        prms->mmr.unitParams[0].y_offset = 0;
 
         prms->mmr.cfg_Kernel[0].Sz_height = 5;
         prms->mmr.cfg_Kernel[0].Tpad_sz = 2;
         prms->mmr.cfg_Kernel[0].Bpad_sz = 2;
 
-        if ((VX_INTERPOLATION_BILINEAR == sc->data.enm) &&
-            ((hzScale == 4096*2) || (hzScale == 4096*4))
-           )
+        /* The precision (64 phases) of the bilinear interpolation on the random
+         * conformance tests for ORB, 3_1, and DOWN_NEAR is not enough
+         * to pass these conformance tests.  It is expected that real images
+         * would have better results */
+
+        if (VX_INTERPOLATION_BILINEAR == sc->data.enm)
         {
-            prms->mmr.coef_sp[0][0] = 0;
-            prms->mmr.coef_sp[0][1] = 0;
-            prms->mmr.coef_sp[0][2] = 128;
-            prms->mmr.coef_sp[0][3] = 128;
-            prms->mmr.coef_sp[0][4] = 0;
+            uint32_t weight;
+            for(i=0; i<32; i++)
+            {
+                weight = i<<2;
+                prms->mmr.coef_mp[0].matrix[i][0] = 0;
+                prms->mmr.coef_mp[0].matrix[i][1] = 0;
+                prms->mmr.coef_mp[0].matrix[i][2] = 256-weight;
+                prms->mmr.coef_mp[0].matrix[i][3] = weight;
+                prms->mmr.coef_mp[0].matrix[i][4] = 0;
+            }
+            for(i=0; i<32; i++)
+            {
+                weight = (i+32)<<2;
+                prms->mmr.coef_mp[1].matrix[i][0] = 0;
+                prms->mmr.coef_mp[1].matrix[i][1] = 0;
+                prms->mmr.coef_mp[1].matrix[i][2] = 256-weight;
+                prms->mmr.coef_mp[1].matrix[i][3] = weight;
+                prms->mmr.coef_mp[1].matrix[i][4] = 0;
+            }
         }
-        else
+        else    /* Nearest Neighbor coefficients */
         {
-            prms->mmr.coef_sp[0][0] = 0;
-            prms->mmr.coef_sp[0][1] = 0;
-            prms->mmr.coef_sp[0][2] = 256;
-            prms->mmr.coef_sp[0][3] = 0;
-            prms->mmr.coef_sp[0][4] = 0;
+            for(i=0; i<32; i++)
+            {
+                prms->mmr.coef_mp[0].matrix[i][0] = 0;
+                prms->mmr.coef_mp[0].matrix[i][1] = 0;
+                prms->mmr.coef_mp[0].matrix[i][2] = 256;
+                prms->mmr.coef_mp[0].matrix[i][3] = 0;
+                prms->mmr.coef_mp[0].matrix[i][4] = 0;
+            }
+            for(i=0; i<32; i++)
+            {
+                prms->mmr.coef_mp[1].matrix[i][0] = 0;
+                prms->mmr.coef_mp[1].matrix[i][1] = 0;
+                prms->mmr.coef_mp[1].matrix[i][2] = 0;
+                prms->mmr.coef_mp[1].matrix[i][3] = 256;
+                prms->mmr.coef_mp[1].matrix[i][4] = 0;
+            }
         }
 
         scaler_top_processing(imgInput, imgOutput, &prms->mmr);
