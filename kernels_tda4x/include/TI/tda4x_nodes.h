@@ -216,7 +216,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
  *                                   When NULL, default value of 8 is used.
  * \param [out] flow_vector_rgb flow vector representated as 24 RGB image
  * \param [out] confidence_image confidence values represented as U8 grayscale image, 255 is high confidence
- * \see <tt>TIVX_KERNEL_DOF_VISUALIZE</tt>
+ * \see <tt>TIVX_KERNEL_DOF_VISUALIZE_NAME</tt>
  * \ingroup group_vision_function_dof_visualize
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>

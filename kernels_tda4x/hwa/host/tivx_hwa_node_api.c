@@ -198,10 +198,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
             (vx_reference)flow_vector_rgb,
             (vx_reference)confidence_image
     };
-    vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           TIVX_KERNEL_DOF_VISUALIZE,
-                                           prms,
-                                           dimof(prms));
+
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                      TIVX_KERNEL_DOF_VISUALIZE_NAME,
+                                      prms,
+                                      dimof(prms));
+
+
     return node;
 }
 

@@ -224,18 +224,27 @@ vx_status tivxAddKernelDofVisualize(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status!=VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
                 context,
-                "com.ti.hwa.dof_visualize",
-                TIVX_KERNEL_DOF_VISUALIZE,
+                TIVX_KERNEL_DOF_VISUALIZE_NAME,
+                kernel_id,
                 NULL,
                 TIVX_KERNEL_DOF_VISUALIZE_MAX_PARAMS,
                 tivxAddKernelDofVisualizeValidate,
                 tivxAddKernelDofVisualizeInitialize,
                 NULL);
 
-    status = vxGetStatus((vx_reference)kernel);
+        status = vxGetStatus((vx_reference)kernel);
+    }
     if (status == VX_SUCCESS)
     {
         index = 0;

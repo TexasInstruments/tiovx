@@ -235,8 +235,8 @@ void tivxAddTargetKernelDofVisualize()
 
     if (status == VX_SUCCESS)
     {
-        vx_dof_visualize_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_DOF_VISUALIZE,
+        vx_dof_visualize_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_DOF_VISUALIZE_NAME,
                             target_name,
                             tivxDofVisualizeProcess,
                             tivxDofVisualizeCreate,
