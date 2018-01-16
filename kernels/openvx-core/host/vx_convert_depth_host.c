@@ -222,13 +222,18 @@ static vx_status VX_CALLBACK tivxAddKernelConvertDepthValidate(vx_node node,
         {
             if (NULL != metas[i])
             {
-                /* Forcing user to set the format of potential virtual image */
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt[1U],
-                    sizeof(fmt[1U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                    sizeof(w[0U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                    sizeof(h[0U]));
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_IMAGE == type)
+                {
+                    /* Forcing user to set the format of potential virtual image */
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt[1U],
+                        sizeof(fmt[1U]));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
+                        sizeof(w[0U]));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
+                        sizeof(h[0U]));
+                }
             }
         }
     }

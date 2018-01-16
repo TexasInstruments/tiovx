@@ -171,12 +171,17 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
         {
             if (NULL != metas[i])
             {
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt[i],
-                    sizeof(fmt[i]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[i],
-                    sizeof(w[i]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[i],
-                    sizeof(h[i]));
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_IMAGE == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt[i],
+                        sizeof(fmt[i]));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[i],
+                        sizeof(w[i]));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[i],
+                        sizeof(h[i]));
+                }
             }
         }
     }

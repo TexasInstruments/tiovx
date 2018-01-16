@@ -246,7 +246,23 @@ static vx_status VX_CALLBACK tivxAddKernelFilt3x3Validate(vx_node node,
         out_w = w[TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
         out_h = h[TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
 
-        tivxKernelSetMetas(metas, TIVX_KERNEL_FILT3x3_MAX_PARAMS, out_fmt, out_w, out_h);
+        for (i = 0U; i < TIVX_KERNEL_FILT3x3_MAX_PARAMS; i ++)
+        {
+            if (NULL != metas[i])
+            {
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_IMAGE == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
+                        sizeof(out_fmt));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
+                        sizeof(out_w));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,
+                        sizeof(out_h));
+                }
+            }
+        }
     }
 
     return status;

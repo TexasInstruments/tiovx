@@ -88,7 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
     vx_scalar scalar;
     vx_df_image fmt[3U], out_fmt;
     vx_enum type;
-    vx_uint32 w[3U], h[3U];
+    vx_uint32 i, w[3U], h[3U];
 
     status = tivxKernelValidateParametersNotNull(parameters, TIVX_KERNEL_ADDSUB_MAX_PARAMS);
 
@@ -191,7 +191,23 @@ static vx_status VX_CALLBACK tivxAddKernelAddSubValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        tivxKernelSetMetas(metas, TIVX_KERNEL_ADDSUB_MAX_PARAMS, out_fmt, w[0U], h[0U]);
+        for (i = 0U; i < TIVX_KERNEL_ADDSUB_MAX_PARAMS; i ++)
+        {
+            if (NULL != metas[i])
+            {
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_IMAGE == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
+                        sizeof(out_fmt));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
+                        sizeof(w[0U]));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
+                        sizeof(h[0U]));
+                }
+            }
+        }
     }
 
     return status;

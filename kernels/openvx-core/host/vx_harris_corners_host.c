@@ -294,10 +294,15 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
         {
             if (NULL != metas[i])
             {
-                vxSetMetaFormatAttribute(metas[i], VX_ARRAY_ITEMTYPE, &arr_type,
-                    sizeof(arr_type));
-                vxSetMetaFormatAttribute(metas[i], VX_ARRAY_CAPACITY,
-                    &arr_capacity, sizeof(arr_capacity));
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_ARRAY == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_ARRAY_ITEMTYPE, &arr_type,
+                        sizeof(arr_type));
+                    vxSetMetaFormatAttribute(metas[i], VX_ARRAY_CAPACITY,
+                        &arr_capacity, sizeof(arr_capacity));
+                }
             }
         }
     }

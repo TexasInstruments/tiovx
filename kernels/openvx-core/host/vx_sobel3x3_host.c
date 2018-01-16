@@ -183,12 +183,17 @@ static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
         {
             if (NULL != metas[i])
             {
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                    sizeof(out_fmt));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                    sizeof(w[0U]));
-                vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                    sizeof(h[0U]));
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_IMAGE == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
+                        sizeof(out_fmt));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
+                        sizeof(w[0U]));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
+                        sizeof(h[0U]));
+                }
             }
         }
     }

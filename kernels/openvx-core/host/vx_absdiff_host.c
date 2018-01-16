@@ -211,12 +211,20 @@ static vx_status VX_CALLBACK tivxAddKernelAbsDiffValidate(vx_node node,
 
         for (i = 0U; i < TIVX_KERNEL_ABSDIFF_MAX_PARAMS; i ++)
         {
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                sizeof(out_fmt));
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
-                sizeof(out_w));
-            vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,
-                sizeof(out_h));
+            if (NULL != metas[i])
+            {
+                vx_enum type = 0;
+                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
+                if (VX_TYPE_IMAGE == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
+                        sizeof(out_fmt));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &out_w,
+                        sizeof(out_w));
+                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &out_h,
+                        sizeof(out_h));
+                }
+            }
         }
     }
 
