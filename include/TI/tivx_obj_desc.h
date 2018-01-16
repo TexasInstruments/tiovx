@@ -191,6 +191,10 @@ typedef enum _tivx_obj_desc_type_e {
         Object Array object */
     TIVX_OBJ_DESC_OBJARRAY      = 0xC,
 
+    /*! \brief Object desciptor that has information related to
+        kernel name */
+    TIVX_OBJ_DESC_KERNEL_NAME   = 0xD,
+
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID       = 0xFFFFu
 
@@ -279,6 +283,9 @@ typedef struct _tivx_obj_desc_node
 
     /*! \brief ID of kernel to execute on target */
     uint32_t kernel_id;
+
+    /*! \brief kernel name object descriptor ID */
+    uint32_t kernel_name_obj_desc_id;
 
     /*! \brief ID of target to execute on. Set by host */
     uint32_t target_id;

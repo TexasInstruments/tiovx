@@ -378,6 +378,8 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
     tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
     tivx_obj_desc_t *prm_obj_desc;
+    tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
+    char *kernel_name = NULL;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
         vx_true_e)
@@ -385,10 +387,15 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         loop_max = node_obj_desc->num_of_replicas;
     }
 
+    kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescGet(node_obj_desc->kernel_name_obj_desc_id);
+    if(kernel_name_obj_desc!=NULL)
+    {
+        kernel_name = kernel_name_obj_desc->kernel_name;
+    }
     for (cnt = 0; cnt < loop_max; cnt ++)
     {
         target_kernel_instance = tivxTargetKernelInstanceAlloc(
-            node_obj_desc->kernel_id, node_obj_desc->target_id);
+            node_obj_desc->kernel_id, kernel_name, node_obj_desc->target_id);
 
         if(target_kernel_instance == NULL)
         {

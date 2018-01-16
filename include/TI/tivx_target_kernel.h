@@ -130,6 +130,24 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_f control_func,
                              void *priv_arg);
 
+/*! \brief Allows users to add native kernels implementation to specific targets
+ *
+ *         Same as tivxAddTargetKernel except that it take a string name as input
+ *         instead of kernel_id
+ *
+ * \ingroup group_tivx_target_kernel
+ *
+ */
+VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
+                             char *kernel_name,
+                             char *target_name,
+                             tivx_target_kernel_f process_func,
+                             tivx_target_kernel_f create_func,
+                             tivx_target_kernel_f delete_func,
+                             tivx_target_kernel_f control_func,
+                             void *priv_arg);
+
+
 /*! \brief Allows users to remove native kernels implementation
  *         to specific targets
  *

@@ -91,6 +91,13 @@ extern "C" {
  */
 #define TIVX_TARGET_KERNEL_ID_INVALID       (0xFFFFu)
 
+/*!
+ * \brief Used to indicate kernel ID not used
+ *        and kernel name is used instead
+ * \ingroup group_tivx_target_kernel_priv
+ */
+#define TIVX_TARGET_KERNEL_ID_NOT_USED    (0xFFFEu)
+
 
 /*!
  * \brief Holds information about a target kernel instance
@@ -101,6 +108,7 @@ typedef struct _tivx_target_kernel {
     /*! kernel ID */
     vx_enum kernel_id;
     vx_enum target_id;
+    char    kernel_name[VX_MAX_KERNEL_NAME];
 
     tivx_target_kernel_f process_func;
     tivx_target_kernel_f create_func;
@@ -152,7 +160,7 @@ vx_status tivxTargetKernelControl(tivx_target_kernel_instance target_kernel_inst
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, vx_enum target_id);
+tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, char *kernel_name, vx_enum target_id);
 
 /*!
  * \brief Init target kernel module

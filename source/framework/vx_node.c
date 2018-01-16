@@ -336,15 +336,39 @@ vx_status ownNodeKernelInit(vx_node node)
 
             if (status == VX_SUCCESS)
             {
-                obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+                tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
 
-                status = ownContextSendCmd(node->base.context,
-                    node->obj_desc->target_id, TIVX_CMD_NODE_CREATE,
-                    1, obj_desc_id);
+                /* alloc obj desc for kernel name */
+                kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_KERNEL_NAME);
 
-                if(status!=VX_SUCCESS)
+                if(kernel_name_obj_desc!=NULL)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
+                    /* set kernel name */
+                    strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
+
+                    /* associated kernel name object descriptor with node object */
+                    node->obj_desc->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
+
+                    obj_desc_id[0] = node->obj_desc->base.obj_desc_id;
+
+                    status = ownContextSendCmd(node->base.context,
+                        node->obj_desc->target_id, TIVX_CMD_NODE_CREATE,
+                        1, obj_desc_id);
+
+                    if(status!=VX_SUCCESS)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
+                    }
+                    /* dis associate kernel name obj desc, since it not required anymore,
+                     * free object desc
+                     */
+                    node->obj_desc->kernel_name_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+                    tivxObjDescFree((tivx_obj_desc_t**)&kernel_name_obj_desc);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed, unable to alloc obj desc for kernel_name\n");
+                    status=VX_FAILURE;
                 }
             }
         }

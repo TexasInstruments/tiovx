@@ -108,6 +108,24 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
     return vxCreateNodeByStructure(graph, kernel, 0, params, num);
 }
 
+vx_node tivxCreateNodeByKernelName(vx_graph graph,
+                                char *kernel_name,
+                                vx_reference params[],
+                                vx_uint32 num)
+{
+    vx_node node = NULL;
+    vx_kernel kernel;
+    vx_context context = vxGetContext((vx_reference)graph);
+
+    kernel = vxGetKernelByName(context, kernel_name);
+    if(kernel!=NULL)
+    {
+        /* kernel is released inside vxCreateNodeByStructure */
+        node =  vxCreateNodeByStructure(graph, kernel, 0, params, num);
+    }
+    return node;
+}
+
 VX_API_ENTRY vx_node VX_API_CALL vxColorConvertNode(vx_graph graph, vx_image input, vx_image output)
 {
     vx_reference params[] = {

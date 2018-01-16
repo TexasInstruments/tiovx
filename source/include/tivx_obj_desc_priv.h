@@ -147,6 +147,21 @@ typedef struct _tivx_obj_desc_cmd
 } tivx_obj_desc_cmd_t;
 
 /*!
+ * \brief Command object descriptor
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_kernel_name
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief kernel name */
+    char kernel_name[VX_MAX_KERNEL_NAME];
+
+} tivx_obj_desc_kernel_name_t;
+
+/*!
  * \brief Object Descriptor Shared memory entry which can hold any of the
  *         supported object descriptor types
  *
@@ -167,6 +182,7 @@ typedef union {
     tivx_obj_desc_array_t array;
     tivx_obj_desc_objarray_t objarray;
     tivx_obj_desc_scalar_t scalar;
+    tivx_obj_desc_kernel_name_t kernel_name;
 
 } tivx_obj_desc_shm_entry_t;
 

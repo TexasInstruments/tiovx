@@ -353,6 +353,16 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
                                 vx_uint32 num);
 
 /*!
+ * \brief Utility function to create a node given parameter references and kernel name
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_node tivxCreateNodeByKernelName(vx_graph graph,
+                                char *kernel_name,
+                                vx_reference params[],
+                                vx_uint32 num);
+
+/*!
  * \brief Utility function to check if the given reference is virtual or not
  *
  * \ingroup group_tivx_ext

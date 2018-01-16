@@ -89,8 +89,10 @@ void tivxTargetKernelDeInit(void)
 }
 
 
-VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
+
+static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                              vx_enum kernel_id,
+                             char *kernel_name,
                              char *target_name,
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
@@ -113,9 +115,14 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
             for(i=0; i<dimof(g_target_kernel_table); i++)
             {
                 if (TIVX_TARGET_KERNEL_ID_INVALID ==
-                    g_target_kernel_table[i].target_id)
+                    g_target_kernel_table[i].kernel_id)
                 {
                     g_target_kernel_table[i].kernel_id = kernel_id;
+                    g_target_kernel_table[i].kernel_name[0] = 0;
+                    if(kernel_name!=NULL)
+                    {
+                        strncpy(g_target_kernel_table[i].kernel_name, kernel_name, VX_MAX_KERNEL_NAME);
+                    }
                     g_target_kernel_table[i].target_id =
                         tivxPlatformGetTargetId(target_name);
                     g_target_kernel_table[i].process_func = process_func;
@@ -135,6 +142,34 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
     }
 
     return (knl);
+}
+
+VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
+                             char *kernel_name,
+                             char *target_name,
+                             tivx_target_kernel_f process_func,
+                             tivx_target_kernel_f create_func,
+                             tivx_target_kernel_f delete_func,
+                             tivx_target_kernel_f control_func,
+                             void *priv_arg)
+{
+    return tivxAddTargetKernelInternal(
+                TIVX_TARGET_KERNEL_ID_NOT_USED,
+                kernel_name, target_name, process_func, create_func, delete_func, control_func, priv_arg);
+}
+
+VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
+                             vx_enum kernel_id,
+                             char *target_name,
+                             tivx_target_kernel_f process_func,
+                             tivx_target_kernel_f create_func,
+                             tivx_target_kernel_f delete_func,
+                             tivx_target_kernel_f control_func,
+                             void *priv_arg)
+{
+    return tivxAddTargetKernelInternal(
+                kernel_id,
+                NULL, target_name, process_func, create_func, delete_func, control_func, priv_arg);
 }
 
 VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
@@ -173,7 +208,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     return (status);
 }
 
-tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, vx_enum target_id)
+tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, char *kernel_name, vx_enum target_id)
 {
     uint32_t i;
     tivx_target_kernel knl = NULL;
@@ -183,12 +218,39 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, vx_enum target_id)
 
     if (VX_SUCCESS == status)
     {
+        tivx_target_kernel tmp_knl = NULL;
+
         for(i=0; i<dimof(g_target_kernel_table); i++)
         {
-            if ((kernel_id == g_target_kernel_table[i].kernel_id) &&
-                (target_id == g_target_kernel_table[i].target_id))
+            tmp_knl = &g_target_kernel_table[i];
+            if(tmp_knl->kernel_name[0]==0)
             {
-                knl = &g_target_kernel_table[i];
+                /* kernel is registered using kernel_id only */
+                if ((kernel_id == tmp_knl->kernel_id) &&
+                    (target_id == tmp_knl->target_id))
+                {
+                    knl = tmp_knl;
+                }
+            }
+            else
+            if(kernel_name!=NULL)
+            {
+                /* kernel registered using name, compare using kernel_name string */
+                if( (strncmp(kernel_name, tmp_knl->kernel_name, VX_MAX_KERNEL_NAME)==0)
+                    && (target_id == tmp_knl->target_id)
+                    )
+                {
+                    /* copy kernel_id into tmp_knl->kernel_id since it will used
+                     * later during tivxTargetKernelInstanceGet as a additional check
+                     * to make the correct target kernel instance is being referenced
+                     */
+                    tmp_knl->kernel_id = kernel_id;
+                    knl = tmp_knl;
+                }
+            }
+            if(knl!=NULL)
+            {
+                /* kernel found */
                 break;
             }
         }

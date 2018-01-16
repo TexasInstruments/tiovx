@@ -131,7 +131,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceGet(uint16_t target_kernel_i
  *
  * \ingroup group_tivx_target_kernel_instance
  */
-tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, vx_enum target_id);
+tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, char *kernel_name, vx_enum target_id);
 
 /*!
  * \brief Free previously allocate target kernel instance
