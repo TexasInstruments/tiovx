@@ -208,7 +208,15 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX],
                 VX_PYRAMID_SCALE, &scale, sizeof(scale));
         }
-        /* TODO: Need to set meta for low_img? */
+        if (NULL != metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX])
+        {
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX],
+                VX_IMAGE_WIDTH, &p_w, sizeof(p_w));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX],
+                VX_IMAGE_HEIGHT, &p_h, sizeof(p_h));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX],
+                VX_IMAGE_FORMAT, &p_fmt, sizeof(p_fmt));
+        }
     }
 
     return status;
