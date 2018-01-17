@@ -363,6 +363,9 @@ typedef struct _tivx_obj_desc_node
     /*! \brief parameter object descriptors */
     uint16_t in_node_id[TIVX_NODE_MAX_IN_NODES];
 
+    /*! \brief Reserved field to make struct aligned */
+    uint32_t rsv;
+
 } tivx_obj_desc_node_t;
 
 /*!

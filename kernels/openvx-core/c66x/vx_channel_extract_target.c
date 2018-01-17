@@ -458,7 +458,6 @@ vx_status VX_CALLBACK tivxChannelExtract(
              */
             rect = out_desc->valid_roi;
 
-            /* TODO: Do we require to move pointer even for destination image */
             dst_addr = (uint8_t *)((uintptr_t)out_desc->mem_ptr[0U].target_ptr +
                 tivxComputePatchOffset(rect.start_x, rect.start_y,
                 &out_desc->imagepatch_addr[0]));

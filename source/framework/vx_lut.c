@@ -277,7 +277,6 @@ vx_status VX_API_CALL vxMapLUT(
         if ((NULL != ptr) && (VX_SUCCESS == status))
         {
             obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
-            /* TODO: Need to properly set map_id and return it */
             tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
                 obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
                 VX_READ_AND_WRITE);
