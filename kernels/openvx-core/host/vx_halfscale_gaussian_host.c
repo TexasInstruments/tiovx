@@ -341,7 +341,7 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context)
                         index,
                         VX_INPUT,
                         VX_TYPE_SCALAR,
-                        VX_PARAMETER_STATE_OPTIONAL
+                        VX_PARAMETER_STATE_REQUIRED
             );
             index++;
         }
@@ -350,6 +350,8 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context)
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV03);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV04);
         }
         if (status == VX_SUCCESS)
         {

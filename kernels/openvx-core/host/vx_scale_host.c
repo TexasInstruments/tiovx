@@ -167,6 +167,24 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
+        char nodeTarget[TIVX_TARGET_MAX_NAME];
+
+        status = vxQueryNode(node, TIVX_NODE_TARGET_STRING, &nodeTarget, sizeof(nodeTarget));
+        
+        if((strncmp(nodeTarget, TIVX_TARGET_RESV03, TIVX_TARGET_MAX_NAME) == 0) ||
+           (strncmp(nodeTarget, TIVX_TARGET_RESV04, TIVX_TARGET_MAX_NAME) == 0))
+        {
+            if( (w[1U] > w[0U]) || (h[1U] > h[0U]) ||
+                ((4*w[1U]) < w[0U]) || ((4*h[1U]) < h[0U]) )
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Scale ratio out of range of selected target.\n");
+                status = VX_ERROR_NOT_SUPPORTED;
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
         for (i = 0U; i < 2U; i ++)
         {
             if (NULL != metas[i])
@@ -328,6 +346,8 @@ vx_status tivxAddKernelScale(vx_context context)
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV03);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_RESV04);
         }
 
         if ( status == VX_SUCCESS)

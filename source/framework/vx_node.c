@@ -1103,6 +1103,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case TIVX_NODE_TARGET_STRING:
+                if ((ptr != NULL) && (size >= TIVX_TARGET_MAX_NAME))
+                {
+                    tivxPlatformGetTargetName(node->obj_desc->target_id, ptr);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node target string failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Invalid query node attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;

@@ -107,6 +107,16 @@ typedef enum {
 vx_enum tivxPlatformGetTargetId(const char *target_name);
 
 /*!
+ * \brief Convert a specific target ID to a target name
+ *
+ * \param target_id [in] Target ID
+ * \param target_name [out] Target name
+ *
+ * \ingroup group_tivx_platform
+ */
+void tivxPlatformGetTargetName(vx_enum target_id, char *target_name);
+
+/*!
  * \brief Match a user specified target_string with kernel suported target name
  *
  * \param kernel_target_name [in] Kernel supported target name

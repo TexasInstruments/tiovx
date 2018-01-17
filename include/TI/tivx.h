@@ -216,6 +216,18 @@ typedef enum _tivx_cpu_id_e {
 
 } tivx_cpu_id_e;
 
+/*! \brief TI attribute extensions
+ *
+ *         TI attribute extensions to OpenVX
+ *
+ * \ingroup group_tivx_ext
+ */
+typedef enum _tivx_attribute_extensions_e {
+
+    /*! \brief Returns the target string corresponding to the node */
+    TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x0,
+
+} tivx_attribute_extensions_e;
 
 /*!
  * \brief Function to initialize OpenVX framework
