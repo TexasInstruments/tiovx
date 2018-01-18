@@ -171,7 +171,38 @@ vx_status VX_API_CALL vxQueryLUT(
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            /* case VX_LUT_OFFSET ?? */
+            case VX_LUT_OFFSET:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    if ( (VX_TYPE_UINT8 == obj_desc->item_type) ||
+                         (VX_TYPE_UINT16 == obj_desc->item_type) ||
+                         (VX_TYPE_UINT32 == obj_desc->item_type) ||
+                         (VX_TYPE_UINT64 == obj_desc->item_type) )
+                    {
+                        *(vx_uint32 *)ptr = 0;
+                    }
+                    else if ( (VX_TYPE_CHAR == obj_desc->item_type) ||
+                              (VX_TYPE_INT8 == obj_desc->item_type) ||
+                              (VX_TYPE_INT16 == obj_desc->item_type) ||
+                              (VX_TYPE_INT32 == obj_desc->item_type) ||
+                              (VX_TYPE_INT64 == obj_desc->item_type) ||
+                              (VX_TYPE_FLOAT32 == obj_desc->item_type) ||
+                              (VX_TYPE_FLOAT64 == obj_desc->item_type) )
+                    {
+                        *(vx_uint32 *)ptr = (vx_uint32)(obj_desc->num_items/2);
+                    }
+                    else
+                    {
+                        VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT offset failed. LUT has invalid type\n");
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Query LUT offset failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryLUT: Invalid query attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
