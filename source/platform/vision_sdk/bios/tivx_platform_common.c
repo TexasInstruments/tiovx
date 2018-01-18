@@ -29,7 +29,6 @@ typedef struct tivx_platform_info
     } target_info[TIVX_PLATFORM_MAX_TARGETS];
 
     /*! \brief Platform locks to protect access to the descriptor id
-     *   TODO: Replace this with the H/W spin lock
      */
     tivx_mutex g_platform_lock[TIVX_PLATFORM_LOCK_MAX];
 } tivx_platform_info_t;
