@@ -159,11 +159,20 @@ class KernelExportCode :
         self.host_c_code.write_line("vx_kernel kernel;")
         self.host_c_code.write_line("vx_status status;")
         self.host_c_code.write_line("uint32_t index;")
+        self.host_c_code.write_line("vx_enum kernel_id;")
         self.host_c_code.write_newline()
+        self.host_c_code.write_line("status = vxAllocateUserKernelId(context, &kernel_id);")
+        self.host_c_code.write_line("if(status != VX_SUCCESS)")
+        self.host_c_code.write_open_brace()
+        self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate user kernel ID\\n\");")
+        self.host_c_code.write_close_brace()
+        self.host_c_code.write_newline()
+        self.host_c_code.write_if_status()
+        self.host_c_code.write_open_brace()
         self.host_c_code.write_line("kernel = vxAddUserKernel(");
         self.host_c_code.write_line("            context,")
-        self.host_c_code.write_line("            \"%s%s.%s\"," % (self.kernel.name_str_prefix, self.module.lower(), self.kernel.name_lower))
-        self.host_c_code.write_line("            %s%s," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        self.host_c_code.write_line("            %s%s_NAME," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        self.host_c_code.write_line("            kernel_id," )
         self.host_c_code.write_line("            NULL,")
         self.host_c_code.write_line("            %s%s_MAX_PARAMS," % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
         self.host_c_code.write_line("            tivxAddKernel%sValidate," % (self.kernel.name_camel) )
@@ -171,6 +180,7 @@ class KernelExportCode :
         self.host_c_code.write_line("            NULL);")
         self.host_c_code.write_newline()
         self.host_c_code.write_line("status = vxGetStatus((vx_reference)kernel);")
+        self.host_c_code.write_close_brace()
         self.host_c_code.write_if_status()
         self.host_c_code.write_open_brace()
         self.host_c_code.write_line("index = 0;")
@@ -620,8 +630,8 @@ class KernelExportCode :
 
         self.target_c_code.write_if_status()
         self.target_c_code.write_open_brace()
-        self.target_c_code.write_line("vx_%s_target_kernel = tivxAddTargetKernel(" % self.kernel.name_lower)
-        self.target_c_code.write_line("                    %s%s," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        self.target_c_code.write_line("vx_%s_target_kernel = tivxAddTargetKernelByName(" % self.kernel.name_lower)
+        self.target_c_code.write_line("                    %s%s_NAME," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
         self.target_c_code.write_line("                    target_name,")
         self.target_c_code.write_line("                    tivx%sProcess," % self.kernel.name_camel)
         self.target_c_code.write_line("                    tivx%sCreate," % self.kernel.name_camel)
@@ -979,8 +989,8 @@ class KernelExportCode :
 
         self.bam_target_c_code.write_if_status()
         self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_%s_target_kernel = tivxAddTargetKernel(" % self.kernel.name_lower)
-        self.bam_target_c_code.write_line("                    %s%s," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
+        self.bam_target_c_code.write_line("vx_%s_target_kernel = tivxAddTargetKernelByName(" % self.kernel.name_lower)
+        self.bam_target_c_code.write_line("                    %s%s_NAME," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
         self.bam_target_c_code.write_line("                    target_name,")
         self.bam_target_c_code.write_line("                    tivx%sProcess," % self.kernel.name_camel)
         self.bam_target_c_code.write_line("                    tivx%sCreate," % self.kernel.name_camel)
@@ -1542,16 +1552,9 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line(" */")
             self.include_customer_kernels_code.write_line("#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"")
             self.include_customer_kernels_code.write_newline()
-            self.include_customer_kernels_code.write_line("/*! \\brief The list of available libraries in this extension */")
-            self.include_customer_kernels_code.write_line("enum " + self.top_header_name + "_library_e {")
-            self.include_customer_kernels_code.write_line("   /*! \\brief The set of kernels supported in " + self.module + " module  */")
-            self.include_customer_kernels_code.write_line("   TIVX_LIBRARY_" + self.module.upper() + "_BASE = 0,")
-            self.include_customer_kernels_code.write_line("};")
-            self.include_customer_kernels_code.write_newline()
-            self.include_customer_kernels_code.write_line("/*!")
-            self.include_customer_kernels_code.write_line(" * \\brief The list of kernels supported in " + self.module + " module")
+            self.include_customer_kernels_code.write_line("/*! \\brief The list of kernels supported in " + self.module + " module")
             self.include_customer_kernels_code.write_line(" *")
-            self.include_customer_kernels_code.write_line(" * Each kernel listed here can be used with the <tt>\\ref vxGetKernelByEnum</tt> call.")
+            self.include_customer_kernels_code.write_line(" * Each kernel listed here can be used with the <tt>\\ref vxGetKernelByName</tt> call.")
             self.include_customer_kernels_code.write_line(" * When programming the parameters, use")
             self.include_customer_kernels_code.write_line(" * \\arg <tt>\\ref VX_INPUT</tt> for [in]")
             self.include_customer_kernels_code.write_line(" * \\arg <tt>\\ref VX_OUTPUT</tt> for [out]")
@@ -1563,13 +1566,13 @@ class KernelExportCode :
             self.include_customer_kernels_code.write_line(" * \\arg or other appropriate types in \\ref vx_type_e.")
             self.include_customer_kernels_code.write_line(" * \\ingroup group_kernel")
             self.include_customer_kernels_code.write_line(" */")
-            self.include_customer_kernels_code.write_line("enum tivx_kernel_" + self.module + "_e {")
-            self.include_customer_kernels_code.write_line("    /*! \\brief The " + self.kernel.name_lower + " kernel")
-            self.include_customer_kernels_code.write_line("     * \\see group_vision_function_" + self.module)
-            self.include_customer_kernels_code.write_line("     */")
-            self.include_customer_kernels_code.write_line("    " + self.kernel.enum_str_prefix + self.kernel.name_upper + " = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_" + self.module.upper() + "_BASE) + 0,")
-            self.include_customer_kernels_code.write_line("    " + self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */")
-            self.include_customer_kernels_code.write_line("};")
+            self.include_customer_kernels_code.write_newline()
+            self.include_customer_kernels_code.write_line("/*! \\brief " + self.kernel.name_lower + " kernel name")
+            self.include_customer_kernels_code.write_line(" *  \\see group_vision_function_" + self.module)
+            self.include_customer_kernels_code.write_line(" */")
+            self.include_customer_kernels_code.write_line("#define " + self.kernel.enum_str_prefix + self.kernel.name_upper + "_NAME     \"%s%s.%s\"" % (self.kernel.name_str_prefix, self.module.lower(), self.kernel.name_lower))
+            self.include_customer_kernels_code.write_newline()
+            self.include_customer_kernels_code.write_line("/*! End of group_vision_function_" + self.module + " */")
             self.include_customer_kernels_code.write_newline()
             self.include_customer_kernels_code.write_line("/*!")
             self.include_customer_kernels_code.write_line(" * \\brief Used for the Application to load the " + self.module + " kernels into the context.")
@@ -1609,7 +1612,7 @@ class KernelExportCode :
                 else :
                     self.paramstate = ""
                 self.include_customer_nodes_code.write_line(" * \param [" + prm.direction.get_doxygen_name() + "] " + prm.name_lower + self.paramstate)
-            self.include_customer_nodes_code.write_line(" * \\see <tt>" + self.kernel.enum_str_prefix + self.kernel.name_upper + "</tt>")
+            self.include_customer_nodes_code.write_line(" * \\see <tt>" + self.kernel.enum_str_prefix + self.kernel.name_upper + "_NAME</tt>")
             self.include_customer_nodes_code.write_line(" * \\ingroup group_vision_function_" + self.kernel.name_lower)
             self.include_customer_nodes_code.write_line(" * \\return <tt>\\ref vx_node</tt>.")
             self.include_customer_nodes_code.write_line(" * \\retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\\ref vxGetStatus</tt>")
@@ -1684,8 +1687,8 @@ class KernelExportCode :
                 self.host_node_api_code.write_line("%-7s (vx_reference)%s," % ("", prm.name_lower))
             self.host_node_api_code.write_line("%-7s (vx_reference)%s" % ("", self.kernel.params[-1].name_lower))
             self.host_node_api_code.write_line("};")
-            self.host_node_api_code.write_line("vx_node node = tivxCreateNodeByKernelEnum(graph,")
-            self.host_node_api_code.write_line("%-38s %s," % ("", self.kernel.enum_str_prefix + self.kernel.name_upper))
+            self.host_node_api_code.write_line("vx_node node = tivxCreateNodeByKernelName(graph,")
+            self.host_node_api_code.write_line("%-38s %s_NAME," % ("", self.kernel.enum_str_prefix + self.kernel.name_upper))
             self.host_node_api_code.write_line("%-38s prms," % (""))
             self.host_node_api_code.write_line("%-38s dimof(prms));" % (""))
             self.host_node_api_code.write_line("return node;")
@@ -1844,27 +1847,11 @@ class KernelExportCode :
                         "#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"\n\n")
         CodeModify().block_insert(self.include_customer_kernels_filename,
                           "extern \"C\" {",
-                          "enum",
+                          "vxGetKernelByName",
                           "#define TIVX_MODULE_NAME_" + self.module.upper() + "    \"" + self.module + "\"",
-                          r"/*! \\brief The list of available libraries in this extension",
-                          r"/*! \\brief The list of available libraries in this extension",
+                          r"/*! \\brief The list of kernels supported",
+                          r"/*! \\brief The list of kernels supported",
                           self.insert)
-
-        self.prev_enum_value = CodeModify().block_search(self.include_customer_kernels_filename,
-                                                  "enum " + self.top_header_name + "_library_e",
-                                                  "};",
-                                                  " (\d)")
-        self.insert = (r"   /*! \\brief The set of kernels supported in " + self.module + " module  */\n" +
-                        "   TIVX_LIBRARY_" + self.module.upper() +
-                        "_BASE = %d,\n" % (int(self.prev_enum_value)+1))
-        CodeModify().block_insert(self.include_customer_kernels_filename,
-                          "enum " + self.top_header_name + "_library_e",
-                          "};",
-                          "TIVX_LIBRARY_" + self.module.upper() + "_BASE",
-                          "};",
-                          "};",
-                          self.insert)
-
 
         self.insert = (
             r" \\brief The list of kernels supported in " + self.module + " module" + "\n" +
@@ -1881,17 +1868,16 @@ class KernelExportCode :
             r" * \\arg or other appropriate types in \\ref vx_type_e." + "\n" +
             " * \\ingroup group_kernel" + "\n" +
             " */" + "\n" +
-            "enum tivx_kernel_" + self.module + "_e {" + "\n" +
-            r"    /*! \\brief The " + self.kernel.name_lower + " kernel" + "\n" +
-            "     * \\see group_vision_function_" + self.module + "\n" +
-            "     */" + "\n" +
-            "    " + self.kernel.enum_str_prefix + self.kernel.name_upper + " = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_" + self.module.upper() + "_BASE) + 0," + "\n" +
-            "    " + self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */" + "\n" +
-            "};" + "\n\n/*! \n")
+            r"/*! \\brief " + self.kernel.name_lower + " kernel name" + "\n" +
+            " * \\see group_vision_function_" + self.module + "\n" +
+            "*/" + "\n" +
+            "#define " + self.kernel.enum_str_prefix + self.kernel.name_upper + "_NAME \"" + self.kernel.name_str_prefix + self.module.lower() + "." + self.kernel.name_lower + "\"\n\n" +
+            "/*! End of group_vision_function_" + self.module + " */\n\n"
+            "/*! \n")
         CodeModify().block_insert(self.include_customer_kernels_filename,
-                          "enum " + self.top_header_name + "_library_e",
+                          "The list of kernels supported in",
                           " Used for the Application to load the",
-                          "enum tivx_kernel_" + self.module + "_e {",
+                          "The list of kernels supported in " + self.module + " module",
                           r" * \\brief Used for the Application to load the",
                           r" * \\brief Used for the Application to load the",
                           self.insert)
@@ -1922,23 +1908,17 @@ class KernelExportCode :
                           self.insert)
 
         # Update for new kernels
-        self.prev_enum_value = CodeModify().block_search(self.include_customer_kernels_filename,
-                                                  "enum tivx_kernel_" + self.module + "_e {",
-                                                  self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0",
-                                                  " (\d)")
-        self.insert = (r"/*! \\brief The " + self.kernel.name_lower + " kernel\n" +
-                        "     * \\see group_vision_function_" + self.module + "\n" +
-                        "     */\n" +
-                        "    " + self.kernel.enum_str_prefix + self.kernel.name_upper +
-                        " = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_" + self.module.upper() +
-                        "_BASE) + " + "%d,\n    " % (int(self.prev_enum_value)+1))
+        self.insert = (r"/*! \\brief " + self.kernel.name_lower + " kernel name\n" +
+                        " *  \\see group_vision_function_" + self.module + "\n" +
+                        " */\n" +
+                        "#define " + self.kernel.enum_str_prefix + self.kernel.name_upper + "_NAME     \"" + self.kernel.name_str_prefix + self.module.lower() + "." + self.kernel.name_lower + "\"\n\n")
         CodeModify().block_insert(self.include_customer_kernels_filename,
-                          "enum tivx_kernel_" + self.module + "_e {",
-                          self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0",
-                          " " +self.kernel.enum_str_prefix + self.kernel.name_upper + " = ",
-                          self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0",
-                          self.kernel.enum_str_prefix + self.module.upper() + "_MAX_1_0",
-                          self.insert)
+                        "The list of kernels supported in " + self.module + " module",
+                        " End of group_vision_function_" + self.module,
+                        " " +self.kernel.enum_str_prefix + self.kernel.name_upper + "_NAME",
+                        r"\/\*\! End of group_vision_function_" + self.module + " \*\/",
+                        r"/*! End of group_vision_function_" + self.module + " */",
+                        self.insert)
 
     def modify_node_header_file(self) :
         print("Modifying " + self.include_customer_nodes_filename)
@@ -1950,7 +1930,7 @@ class KernelExportCode :
             else :
                 self.paramstate = ""
             self.insert += (" * \param [" + prm.direction.get_doxygen_name() + "] " + prm.name_lower + self.paramstate + "\n")
-        self.insert += (r" * \\see <tt>" + self.kernel.enum_str_prefix + self.kernel.name_upper + "</tt>" + "\n")
+        self.insert += (r" * \\see <tt>" + self.kernel.enum_str_prefix + self.kernel.name_upper + "_NAME</tt>" + "\n")
         self.insert += (r" * \\ingroup group_vision_function_" + self.kernel.name_lower + "\n")
         self.insert += (r" * \\return <tt>\\ref vx_node</tt>.\n")
         self.insert += (r" * \\retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\\ref vxGetStatus</tt>\n")
@@ -1994,8 +1974,8 @@ class KernelExportCode :
                 self.insert += ("%-11s (vx_reference)%s,\n" % ("", prm.name_lower))
             self.insert += ("%-11s (vx_reference)%s\n" % ("", self.kernel.params[-1].name_lower))
             self.insert += ("    };\n")
-            self.insert += ("    vx_node node = tivxCreateNodeByKernelEnum(graph,\n")
-            self.insert += ("%-42s %s,\n" % ("", self.kernel.enum_str_prefix + self.kernel.name_upper))
+            self.insert += ("    vx_node node = tivxCreateNodeByKernelName(graph,\n")
+            self.insert += ("%-42s %s_NAME,\n" % ("", self.kernel.enum_str_prefix + self.kernel.name_upper))
             self.insert += ("%-42s prms,\n" % (""))
             self.insert += ("%-42s dimof(prms));\n" % (""))
             self.insert += ("    return node;\n}\n\n")
