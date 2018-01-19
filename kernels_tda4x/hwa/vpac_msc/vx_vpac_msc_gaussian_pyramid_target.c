@@ -413,7 +413,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdControl(
     return status;
 }
 
-void tivxAddTargetKernelVpacMscGaussianPyramid()
+void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;

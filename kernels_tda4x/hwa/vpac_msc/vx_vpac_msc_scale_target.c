@@ -350,7 +350,7 @@ static vx_status VX_CALLBACK tivxKernelScaleControl(
     return status;
 }
 
-void tivxAddTargetKernelVpacMscScale()
+void tivxAddTargetKernelVpacMscScale(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;

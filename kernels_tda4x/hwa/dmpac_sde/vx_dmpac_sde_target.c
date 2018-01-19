@@ -430,7 +430,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
     return status;
 }
 
-void tivxAddTargetKernelDmpacSde()
+void tivxAddTargetKernelDmpacSde(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -461,7 +461,7 @@ void tivxAddTargetKernelDmpacSde()
     }
 }
 
-void tivxRemoveTargetKernelDmpacSde()
+void tivxRemoveTargetKernelDmpacSde(void)
 {
     vx_status status = VX_SUCCESS;
     

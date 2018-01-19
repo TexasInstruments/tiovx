@@ -377,14 +377,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
     return status;
 }
 
-void tivxAddTargetKernelVpacNfGeneric()
+void tivxAddTargetKernelVpacNfGeneric(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    
+
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
@@ -394,7 +394,7 @@ void tivxAddTargetKernelVpacNfGeneric()
     {
         status = VX_FAILURE;
     }
-    
+
     if (status == VX_SUCCESS)
     {
         vx_vpac_nf_generic_target_kernel = tivxAddTargetKernelByName(
@@ -408,10 +408,10 @@ void tivxAddTargetKernelVpacNfGeneric()
     }
 }
 
-void tivxRemoveTargetKernelVpacNfGeneric()
+void tivxRemoveTargetKernelVpacNfGeneric(void)
 {
     vx_status status = VX_SUCCESS;
-    
+
     status = tivxRemoveTargetKernel(vx_vpac_nf_generic_target_kernel);
     if (status == VX_SUCCESS)
     {

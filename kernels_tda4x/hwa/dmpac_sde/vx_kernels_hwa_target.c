@@ -65,20 +65,20 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelDmpacSde();
+void tivxAddTargetKernelDmpacSde(void);
 
-void tivxRemoveTargetKernelDmpacSde();
+void tivxRemoveTargetKernelDmpacSde(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {tivxAddTargetKernelDmpacSde, tivxRemoveTargetKernelDmpacSde},
+    {&tivxAddTargetKernelDmpacSde, &tivxRemoveTargetKernelDmpacSde},
 };
 
-void tivxRegisterHwaTargetDmpacSdeKernels()
+void tivxRegisterHwaTargetDmpacSdeKernels(void)
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHwaTargetDmpacSdeKernels()
+void tivxUnRegisterHwaTargetDmpacSdeKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

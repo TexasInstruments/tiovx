@@ -317,7 +317,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianControl(
     return status;
 }
 
-void tivxAddTargetKernelVpacMscHalfScaleGaussian()
+void tivxAddTargetKernelVpacMscHalfScaleGaussian(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;

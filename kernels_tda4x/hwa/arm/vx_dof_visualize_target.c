@@ -215,7 +215,7 @@ static vx_status VX_CALLBACK tivxDofVisualizeControl(
     return status;
 }
 
-void tivxAddTargetKernelDofVisualize()
+void tivxAddTargetKernelDofVisualize(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -246,7 +246,7 @@ void tivxAddTargetKernelDofVisualize()
     }
 }
 
-void tivxRemoveTargetKernelDofVisualize()
+void tivxRemoveTargetKernelDofVisualize(void)
 {
     vx_status status = VX_SUCCESS;
 

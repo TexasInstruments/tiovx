@@ -65,26 +65,26 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelVpacMscGaussianPyramid();
-void tivxAddTargetKernelVpacMscHalfScaleGaussian();
-void tivxAddTargetKernelVpacMscScale();
+void tivxAddTargetKernelVpacMscGaussianPyramid(void);
+void tivxAddTargetKernelVpacMscHalfScaleGaussian(void);
+void tivxAddTargetKernelVpacMscScale(void);
 
-void tivxRemoveTargetKernelVpacMscGaussianPyramid();
-void tivxRemoveTargetKernelVpacMscHalfScaleGaussian();
-void tivxRemoveTargetKernelVpacMscScale();
+void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
+void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
+void tivxRemoveTargetKernelVpacMscScale(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {tivxAddTargetKernelVpacMscGaussianPyramid, tivxRemoveTargetKernelVpacMscGaussianPyramid},
-    {tivxAddTargetKernelVpacMscHalfScaleGaussian, tivxRemoveTargetKernelVpacMscHalfScaleGaussian},
-    {tivxAddTargetKernelVpacMscScale, tivxRemoveTargetKernelVpacMscScale},
+    {&tivxAddTargetKernelVpacMscGaussianPyramid, &tivxRemoveTargetKernelVpacMscGaussianPyramid},
+    {&tivxAddTargetKernelVpacMscHalfScaleGaussian, &tivxRemoveTargetKernelVpacMscHalfScaleGaussian},
+    {&tivxAddTargetKernelVpacMscScale, &tivxRemoveTargetKernelVpacMscScale},
 };
 
-void tivxRegisterHwaTargetVpacMscKernels()
+void tivxRegisterHwaTargetVpacMscKernels(void)
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHwaTargetVpacMscKernels()
+void tivxUnRegisterHwaTargetVpacMscKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

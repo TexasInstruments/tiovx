@@ -65,18 +65,17 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelDmpacDof();
+void tivxAddTargetKernelDmpacDof(void);
 
-void tivxRemoveTargetKernelDmpacDof();
+void tivxRemoveTargetKernelDmpacDof(void);
 
-void tivxRegisterHwaTargetDmpacDofKernels()
+void tivxRegisterHwaTargetDmpacDofKernels(void)
 {
     tivxAddTargetKernelDmpacDof();
 }
 
-void tivxUnRegisterHwaTargetDmpacDofKernels()
+void tivxUnRegisterHwaTargetDmpacDofKernels(void)
 {
     tivxRemoveTargetKernelDmpacDof();
 }
-
 

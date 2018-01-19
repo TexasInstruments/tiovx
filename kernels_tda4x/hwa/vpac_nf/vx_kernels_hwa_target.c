@@ -65,23 +65,23 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelVpacNfGeneric();
-void tivxAddTargetKernelVpacNfBilateral();
+void tivxAddTargetKernelVpacNfGeneric(void);
+void tivxAddTargetKernelVpacNfBilateral(void);
 
-void tivxRemoveTargetKernelVpacNfGeneric();
-void tivxRemoveTargetKernelVpacNfBilateral();
+void tivxRemoveTargetKernelVpacNfGeneric(void);
+void tivxRemoveTargetKernelVpacNfBilateral(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {tivxAddTargetKernelVpacNfGeneric, tivxRemoveTargetKernelVpacNfGeneric},
-    {tivxAddTargetKernelVpacNfBilateral, tivxRemoveTargetKernelVpacNfBilateral},
+    {&tivxAddTargetKernelVpacNfGeneric, &tivxRemoveTargetKernelVpacNfGeneric},
+    {&tivxAddTargetKernelVpacNfBilateral, &tivxRemoveTargetKernelVpacNfBilateral},
 };
 
-void tivxRegisterHwaTargetVpacNfKernels()
+void tivxRegisterHwaTargetVpacNfKernels(void)
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHwaTargetVpacNfKernels()
+void tivxUnRegisterHwaTargetVpacNfKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

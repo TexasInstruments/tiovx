@@ -65,22 +65,22 @@
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
 
-void tivxAddTargetKernelDofVisualize();
+void tivxAddTargetKernelDofVisualize(void);
 
-void tivxRemoveTargetKernelDofVisualize();
+void tivxRemoveTargetKernelDofVisualize(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     #ifdef BUILD_HWA_DMPAC_DOF
-    {tivxAddTargetKernelDofVisualize, tivxRemoveTargetKernelDofVisualize},
+    {&tivxAddTargetKernelDofVisualize, &tivxRemoveTargetKernelDofVisualize},
     #endif
 };
 
-void tivxRegisterHwaTargetArmKernels()
+void tivxRegisterHwaTargetArmKernels(void)
 {
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void tivxUnRegisterHwaTargetArmKernels()
+void tivxUnRegisterHwaTargetArmKernels(void)
 {
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }

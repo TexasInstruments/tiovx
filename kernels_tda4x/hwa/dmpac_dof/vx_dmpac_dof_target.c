@@ -522,7 +522,7 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
     return status;
 }
 
-void tivxAddTargetKernelDmpacDof()
+void tivxAddTargetKernelDmpacDof(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -553,7 +553,7 @@ void tivxAddTargetKernelDmpacDof()
     }
 }
 
-void tivxRemoveTargetKernelDmpacDof()
+void tivxRemoveTargetKernelDmpacDof(void)
 {
     vx_status status = VX_SUCCESS;
 
@@ -563,6 +563,5 @@ void tivxRemoveTargetKernelDmpacDof()
         vx_dmpac_dof_target_kernel = NULL;
     }
 }
-
 
 

@@ -388,14 +388,14 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
     return status;
 }
 
-void tivxAddTargetKernelVpacNfBilateral()
+void tivxAddTargetKernelVpacNfBilateral(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    
+
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_NF, TIVX_TARGET_MAX_NAME);
@@ -405,7 +405,7 @@ void tivxAddTargetKernelVpacNfBilateral()
     {
         status = VX_FAILURE;
     }
-    
+
     if (status == VX_SUCCESS)
     {
         vx_vpac_nf_bilateral_target_kernel = tivxAddTargetKernelByName(
@@ -419,10 +419,10 @@ void tivxAddTargetKernelVpacNfBilateral()
     }
 }
 
-void tivxRemoveTargetKernelVpacNfBilateral()
+void tivxRemoveTargetKernelVpacNfBilateral(void)
 {
     vx_status status = VX_SUCCESS;
-    
+
     status = tivxRemoveTargetKernel(vx_vpac_nf_bilateral_target_kernel);
     if (status == VX_SUCCESS)
     {
