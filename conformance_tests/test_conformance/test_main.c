@@ -17,6 +17,7 @@
 
 #include <VX/vx.h>
 #include "test_engine/test_list_helper.h"
+#include <TI/tivx_debug.h>
 
 #ifdef HAVE_VERSION_INC
 #include "openvx_cts_version.inc"
@@ -26,5 +27,6 @@
 
 int vx_conformance_test_main(int argc, char* argv[])
 {
+    tivx_clr_debug_zone(VX_ZONE_ERROR);
     return CT_main(argc, argv, VERSION_STR);
 }

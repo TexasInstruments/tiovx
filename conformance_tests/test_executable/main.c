@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 #include <TI/tivx.h>
-#include <TI/tivx_debug.h>
 
 int vx_conformance_test_main(int argc, char* argv[]);
 void TestModuleRegister();
@@ -23,7 +22,6 @@ void TestModuleRegister();
 int main(int argc, char* argv[])
 {
     tivxInit();
-    tivx_clr_debug_zone(VX_ZONE_ERROR);
     TestModuleRegister();
     vx_conformance_test_main(argc, argv);
     tivxDeInit();
