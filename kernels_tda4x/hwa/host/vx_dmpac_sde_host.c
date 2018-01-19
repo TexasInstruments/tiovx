@@ -272,18 +272,28 @@ vx_status tivxAddKernelDmpacSde(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
-                context,
-                "com.ti.hwa.dmpac_sde",
-                TIVX_KERNEL_DMPAC_SDE,
-                NULL,
-                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS,
-                tivxAddKernelDmpacSdeValidate,
-                tivxAddKernelDmpacSdeInitialize,
-                NULL);
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
 
-    status = vxGetStatus((vx_reference)kernel);
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    TIVX_KERNEL_DMPAC_SDE_NAME,
+                    kernel_id,
+                    NULL,
+                    TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS,
+                    tivxAddKernelDmpacSdeValidate,
+                    tivxAddKernelDmpacSdeInitialize,
+                    NULL);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
     if (status == VX_SUCCESS)
     {
         index = 0;

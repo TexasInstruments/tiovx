@@ -408,8 +408,8 @@ void tivxAddTargetKernelVpacNfBilateral()
     
     if (status == VX_SUCCESS)
     {
-        vx_vpac_nf_bilateral_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_VPAC_NF_BILATERAL,
+        vx_vpac_nf_bilateral_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_NF_BILATERAL_NAME,
                             target_name,
                             tivxVpacNfBilateralProcess,
                             tivxVpacNfBilateralCreate,

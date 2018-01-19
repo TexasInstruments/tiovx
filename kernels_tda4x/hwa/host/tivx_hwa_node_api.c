@@ -75,8 +75,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
             (vx_reference)conv,
             (vx_reference)output
     };
-    vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           TIVX_KERNEL_VPAC_NF_GENERIC,
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
                                            prms,
                                            dimof(prms));
     return node;
@@ -94,8 +94,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
             (vx_reference)sigmas,
             (vx_reference)output
     };
-    vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           TIVX_KERNEL_VPAC_NF_BILATERAL,
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VPAC_NF_BILATERAL_NAME,
                                            prms,
                                            dimof(prms));
     return node;
@@ -115,8 +115,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
             (vx_reference)output,
             (vx_reference)confidence_histogram
     };
-    vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           TIVX_KERNEL_DMPAC_SDE,
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_DMPAC_SDE_NAME,
                                            prms,
                                            dimof(prms));
     return node;
@@ -154,8 +154,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
             (vx_reference)out_3_chroma,
             (vx_reference)error_status
     };
-    vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           TIVX_KERNEL_VPAC_LDC,
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VPAC_LDC_NAME,
                                            prms,
                                            dimof(prms));
     return node;
@@ -179,8 +179,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
             (vx_reference)flow_vector_out,
             (vx_reference)confidence_histogram
     };
-    vx_node node = tivxCreateNodeByKernelEnum(graph,
-                                           TIVX_KERNEL_DMPAC_DOF,
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_DMPAC_DOF_NAME,
                                            prms,
                                            dimof(prms));
     return node;
@@ -198,13 +198,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
             (vx_reference)flow_vector_rgb,
             (vx_reference)confidence_image
     };
-
     vx_node node = tivxCreateNodeByKernelName(graph,
-                                      TIVX_KERNEL_DOF_VISUALIZE_NAME,
-                                      prms,
-                                      dimof(prms));
-
-
+                                           TIVX_KERNEL_DOF_VISUALIZE_NAME,
+                                           prms,
+                                           dimof(prms));
     return node;
 }
 

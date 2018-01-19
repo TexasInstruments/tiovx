@@ -75,7 +75,7 @@ extern "C" {
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.  Scale value is ignored.  Coefficients are 9-bit signed.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC</tt>
+ * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC_NAME</tt>
  * \ingroup group_vision_function_vpac_nf_generic
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
@@ -92,7 +92,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] sigmas The input array of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_sigmas_t</tt>.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \see <tt>TIVX_KERNEL_VPAC_NF_BILATERAL</tt>
+ * \see <tt>TIVX_KERNEL_VPAC_NF_BILATERAL_NAME</tt>
  * \ingroup group_vision_function_vpac_nf_bilateral
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
@@ -110,7 +110,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
  * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]
  * \param [out] confidence_histogram (optional) Histogram of the confidence scores.  Must be configured to 128 bins.
- * \see <tt>TIVX_KERNEL_DMPAC_SDE</tt>
+ * \see <tt>TIVX_KERNEL_DMPAC_SDE_NAME</tt>
  * \ingroup group_vision_function_dmpac_sde
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
@@ -150,7 +150,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
  * \param [out] out_3_chroma (optional) Additional output chroma interleaved plane (typically with different bit depth)
  *               in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] error_status (optional) Bit mask indicating error flags.  Use a <tt>\ref VX_TYPE_UINT32</tt> scalar.
- * \see <tt>TIVX_KERNEL_VPAC_LDC</tt>
+ * \see <tt>TIVX_KERNEL_VPAC_LDC_NAME</tt>
  * \ingroup group_vision_function_vpac_ldc
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
@@ -194,7 +194,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
  *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
  * \param [out] confidence_histogram   (optional) Confidence histogram.
  *                                                Distribution meta properties, num_bins = 16, offset = 0, range = 16.
- * \see <tt>TIVX_KERNEL_DMPAC_DOF</tt>
+ * \see <tt>TIVX_KERNEL_DMPAC_DOF_NAME</tt>
  * \ingroup group_vision_function_dmpac_dof
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>

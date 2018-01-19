@@ -397,8 +397,8 @@ void tivxAddTargetKernelVpacNfGeneric()
     
     if (status == VX_SUCCESS)
     {
-        vx_vpac_nf_generic_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_VPAC_NF_GENERIC,
+        vx_vpac_nf_generic_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
                             target_name,
                             tivxVpacNfGenericProcess,
                             tivxVpacNfGenericCreate,

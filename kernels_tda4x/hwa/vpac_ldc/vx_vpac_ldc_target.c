@@ -801,8 +801,8 @@ void tivxAddTargetKernelVpacLdc()
         strncpy(target_name, TIVX_TARGET_VPAC_LDC1,
             TIVX_TARGET_MAX_NAME);
 
-        vx_vpac_ldc_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_VPAC_LDC,
+        vx_vpac_ldc_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_LDC_NAME,
                             target_name,
                             tivxVpacLdcProcess,
                             tivxVpacLdcCreate,
@@ -817,8 +817,8 @@ void tivxAddTargetKernelVpacLdc()
         strncpy(target_name, TIVX_TARGET_VPAC_LDC2,
             TIVX_TARGET_MAX_NAME);
 
-        vx_vpac_ldc2_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_VPAC_LDC,
+        vx_vpac_ldc2_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_VPAC_LDC_NAME,
                             target_name,
                             tivxVpacLdcProcess,
                             tivxVpacLdcCreate,

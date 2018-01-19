@@ -80,16 +80,9 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME_HWA    "hwa"
 
-/*! \brief The list of available libraries in this extension */
-enum tda4x_library_e {
-   /*! \brief The set of kernels supported in hwa module  */
-   TIVX_LIBRARY_HWA_BASE = 0,
-};
-
-/*!
- * \brief The list of kernels supported in hwa module
+/*! \brief The list of kernels supported in hwa module
  *
- * Each kernel listed here can be used with the <tt>\ref vxGetKernelByEnum</tt> call.
+ * Each kernel listed here can be used with the <tt>\ref vxGetKernelByName</tt> call.
  * When programming the parameters, use
  * \arg <tt>\ref VX_INPUT</tt> for [in]
  * \arg <tt>\ref VX_OUTPUT</tt> for [out]
@@ -101,35 +94,43 @@ enum tda4x_library_e {
  * \arg or other appropriate types in \ref vx_type_e.
  * \ingroup group_kernel
  */
-enum tivx_kernel_hwa_e {
-    /*! \brief The vpac_nf_generic kernel
-     * \see group_vision_function_hwa
-     */
-    TIVX_KERNEL_VPAC_NF_GENERIC = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 0,
-    /*! \brief The vpac_nf_bilateral kernel
-     * \see group_vision_function_hwa
-     */
-    TIVX_KERNEL_VPAC_NF_BILATERAL = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 1,
-    /*! \brief The dmpac_sde kernel
-     * \see group_vision_function_hwa
-     */
-    TIVX_KERNEL_DMPAC_SDE = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 2,
-    /*! \brief The vpac_ldc kernel
-     * \see group_vision_function_hwa
-     */
-    TIVX_KERNEL_VPAC_LDC = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 3,
-    /*! \brief The dmpac_dof kernel
-     * \see group_vision_function_hwa
-     */
-    TIVX_KERNEL_DMPAC_DOF = VX_KERNEL_BASE(VX_ID_DEFAULT, TIVX_LIBRARY_HWA_BASE) + 4,
-    TIVX_KERNEL_HWA_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
-};
 
+/*! \brief vpac_nf_generic kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_VPAC_NF_GENERIC_NAME     "com.ti.hwa.vpac_nf_generic"
 
-/*! \brief DOF visualize kernel name
+/*! \brief vpac_nf_bilateral kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_VPAC_NF_BILATERAL_NAME     "com.ti.hwa.vpac_nf_bilateral"
+
+/*! \brief dmpac_sde kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_DMPAC_SDE_NAME     "com.ti.hwa.dmpac_sde"
+
+/*! \brief vpac_ldc kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_VPAC_LDC_NAME     "com.ti.hwa.vpac_ldc"
+
+/*! \brief vpac_msc kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_VPAC_MSC_NAME     "com.ti.hwa.vpac_msc"
+
+/*! \brief dmpac_dof kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_DMPAC_DOF_NAME     "com.ti.hwa.dmpac_dof"
+
+/*! \brief dof_visualize kernel name
  *  \see group_vision_function_hwa
  */
 #define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
+
+/*! End of group_vision_function_hwa */
 
 /*********************************
  *      VPAC_NF STRUCTURES

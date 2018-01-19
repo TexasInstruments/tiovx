@@ -450,8 +450,8 @@ void tivxAddTargetKernelDmpacSde()
     
     if (status == VX_SUCCESS)
     {
-        vx_dmpac_sde_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_DMPAC_SDE,
+        vx_dmpac_sde_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_DMPAC_SDE_NAME,
                             target_name,
                             tivxDmpacSdeProcess,
                             tivxDmpacSdeCreate,

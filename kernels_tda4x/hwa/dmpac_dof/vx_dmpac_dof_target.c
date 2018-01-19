@@ -542,8 +542,8 @@ void tivxAddTargetKernelDmpacDof()
 
     if (status == VX_SUCCESS)
     {
-        vx_dmpac_dof_target_kernel = tivxAddTargetKernel(
-                            TIVX_KERNEL_DMPAC_DOF,
+        vx_dmpac_dof_target_kernel = tivxAddTargetKernelByName(
+                            TIVX_KERNEL_DMPAC_DOF_NAME,
                             target_name,
                             tivxDmpacDofProcess,
                             tivxDmpacDofCreate,

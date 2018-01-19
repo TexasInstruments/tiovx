@@ -273,18 +273,28 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
-                context,
-                "com.ti.hwa.vpac_nf_generic",
-                TIVX_KERNEL_VPAC_NF_GENERIC,
-                NULL,
-                TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS,
-                tivxAddKernelVpacNfGenericValidate,
-                tivxAddKernelVpacNfGenericInitialize,
-                NULL);
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
 
-    status = vxGetStatus((vx_reference)kernel);
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    TIVX_KERNEL_VPAC_NF_GENERIC_NAME,
+                    kernel_id,
+                    NULL,
+                    TIVX_KERNEL_VPAC_NF_GENERIC_MAX_PARAMS,
+                    tivxAddKernelVpacNfGenericValidate,
+                    tivxAddKernelVpacNfGenericInitialize,
+                    NULL);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
     if (status == VX_SUCCESS)
     {
         index = 0;
