@@ -525,8 +525,16 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     uint16_t out_block_height = in_block_height;
     uint32_t dmaQue = 0U;
 
-    /* TODO: This may not work generically for different graphs ... perhaps need to reset output block of input DMA
-     *       after below computation is done. */
+    /* TIOVX-186:
+     * - This loop assumes that each node in the graph is sequential with respect propogating the block size reductions
+     * - If a graph is defined which this assumption is not true, then this may cause unexpected behaviors.
+     * - Additional logic would need to be put in place to traverse the graph topology more accuratly to account for 
+     *   topologies which are not strictly sequential.
+     * - Furthermore, this loop assumes that the output block width and height does not go below 1.  If it does, then
+     *   this may cause unexpected behaviors.
+     * - Additional logic would need to be put in place to handle this case (either return some error for the user
+     *   to break the graph up, or break the graph up internally are a couple of options)
+     */
     for(i = 1; i < graph_args->num_nodes - 1; i++)
     {
         if(kernel_details[i].kernel_info.nodeType == BAM_NODE_COMPUTE_NEIGHBORHOOD_OP) {
@@ -587,11 +595,15 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     }
     else if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAREAD_NULL, &node_index) != 0)
     {
-        // TODO
+        /* TIOVX-186:
+         * - This case is where a full-frame DMA read is needed for each frame before any block processing is done; perhaps an input
+         *   histogram, or lookup table.
+         * - Currently not supported for current release
+         */
     }
     else
     {
-        // There is no source DMA?  Maybe using cache for source
+        /* Do nothing.  There is no source DMA.  Graph inputs are perhaps using cache for source. */
     }
 
     /* Set parameters for each node */
@@ -718,7 +730,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     }
     else
     {
-        // There is no dest DMA?  Maybe using cache for destination
+        /* Do nothing.  There is no destination DMA.  Graph outputs are perhaps using cache for destination. */
     }
 
     return (status);
@@ -1318,20 +1330,31 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         graph_args.node_list          = node_list;
         graph_args.edge_list          = edge_list;
 
-        // TODO: Hack to assume autoinc_args
+        /*
+         * At this point, the specific kernelArgs for source node does not need to be known since 
+         * tivxBam_initKernelsArgsMulti() will figure this out.  In order to create the graph, we need
+         * to assign something, so we assign autoinc_args (even if the source is not using autoinc)
+         */
         node_list[0].kernelArgs = (void *)&graph_args.dma_read_autoinc_args;
         for(i = 1; i < num_nodes-1; i++)
         {
             graph_args.compute_kernel_args[i] = tivxMemAlloc(kernel_details[i].kernel_info.kernelArgSize, TIVX_MEM_EXTERNAL);
             node_list[i].kernelArgs = graph_args.compute_kernel_args[i];
-            // TODO: since node_list is in graph_args, perhaps the compute_kernel_args doesn't need to be there
+            /* TIOVX-186:
+             * - Although this works, may investigate more: since node_list is in graph_args, perhaps the compute_kernel_args
+             *   doesn't need to be there.
+             */
             if(NULL == graph_args.compute_kernel_args[i])
             {
                 status_v = VX_ERROR_NO_MEMORY;
                 break;
             }
         }
-        // TODO: Hack to assume autoinc_args
+        /*
+         * At this point, the specific kernelArgs for destination node does not need to be known since 
+         * tivxBam_initKernelsArgsMulti() will figure this out.  In order to create the graph, we need
+         * to assign something, so we assign autoinc_args (even if the destination is not using autoinc)
+         */
         node_list[i].kernelArgs = (void *)&graph_args.dma_write_autoinc_args;
     }
 
@@ -1360,7 +1383,9 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
 
     if(VX_SUCCESS == status_v)
     {
-        //TODO: update this based on node_list
+        /* TIOVX-186:
+         * - May need to update this based on node_list
+         */
         p_graph_handle->one_shot_flag = 0;
         p_graph_handle->multi_flag = 1;
         p_graph_handle->sink_node = num_nodes-1;
