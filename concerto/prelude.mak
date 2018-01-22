@@ -73,9 +73,8 @@ endif
 $(_MODULE)_IDIRS:= $($(_MODULE)_SDIR)
 
 # Route the output for each module into it's own folder
-$(_MODULE)_ODIR := $(TARGET_OBJ_OUT)/module/$(_MODULE_NAME)
+$(_MODULE)_ODIR := $(TARGET_OUT)/module/$(_MODULE_NAME)
 $(_MODULE)_TDIR := $(TARGET_OUT)
-$(_MODULE)_EXE_DIR := $(TARGET_EXE_OUT)
 
 # Set the initial linking directories to the target directory
 $(_MODULE)_LDIRS := $($(_MODULE)_TDIR)

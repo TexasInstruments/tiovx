@@ -4,9 +4,6 @@ tiovx_dev/
 *.o
 *.dll
 out/
-lib/TDAX
-libvx_*.a
-vx_*_exe*
 *.pp
 *.interfaces
 *.executables

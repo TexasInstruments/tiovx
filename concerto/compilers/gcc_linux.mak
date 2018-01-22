@@ -79,8 +79,7 @@ else
 endif
 
 $(_MODULE)_OUT  := $(BIN_PRE)$($(_MODULE)_TARGET)$(BIN_EXT)
-$(_MODULE)_BIN  := $($(_MODULE)_EXE_DIR)/$($(_MODULE)_OUT)
-$(_MODULE)_LIB  := $($(_MODULE)_TDIR)/$($(_MODULE)_OUT)
+$(_MODULE)_BIN  := $($(_MODULE)_TDIR)/$($(_MODULE)_OUT)
 $(_MODULE)_OBJS := $(ASSEMBLY:%.S=$($(_MODULE)_ODIR)/%.o) $(CPPSOURCES:%.cpp=$($(_MODULE)_ODIR)/%.o) $(CSOURCES:%.c=$($(_MODULE)_ODIR)/%.o)
 # Redefine the local static libs and shared libs with REAL paths and pre/post-fixes
 $(_MODULE)_STATIC_LIBS := $(foreach lib,$(STATIC_LIBS),$($(_MODULE)_TDIR)/lib$(lib).a)
@@ -188,7 +187,7 @@ endif
 
 $(_MODULE)_LN_DSO     := $(LINK) $($(_MODULE)_BIN).$($(_MODULE)_VERSION) $($(_MODULE)_BIN)
 $(_MODULE)_LN_INST_DSO:= $(LINK) $($(_MODULE)_INSTALL_LIB)/$($(_MODULE)_OUT).$($(_MODULE)_VERSION) $($(_MODULE)_INSTALL_LIB)/$($(_MODULE)_OUT)
-$(_MODULE)_LINK_LIB   := $(AR) -rsc $($(_MODULE)_LIB) $($(_MODULE)_OBJS)
+$(_MODULE)_LINK_LIB   := $(AR) -rsc $($(_MODULE)_BIN) $($(_MODULE)_OBJS)
 
 ifeq ($(HOST_OS),DARWIN)
 $(_MODULE)_LINK_DSO   := $(LD) -shared $($(_MODULE)_LDFLAGS) -all_load $($(_MODULE)_LIBRARIES) -lm -o $($(_MODULE)_BIN).$($(_MODULE)_VERSION) $($(_MODULE)_OBJS)
