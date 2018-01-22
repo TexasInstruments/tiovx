@@ -36,7 +36,7 @@ CONCERTO_TARGETS += $(if $(filter $(CONCERTO_TARGETS),$(TARGET)),,$($(_MODULE)_T
 
 # Add the paths from the makefile
 $(_MODULE)_IDIRS += $(SYSIDIRS) $(IDIRS)
-$(_MODULE)_LDIRS += $(LDIRS) $($(TARGET_COMBO_NAME)_LDIRS) $(SYSLDIRS)
+$(_MODULE)_LDIRS += $(LDIRS) $($(TARGET_COMBO_NAME)_LDIRS) $(SYSLDIRS) $(call TARGET_LIB_OUT, $(HOST_ROOT))
 
 # Add any additional libraries which are in this build system
 $(_MODULE)_STATIC_LIBS += $(STATIC_LIBS)

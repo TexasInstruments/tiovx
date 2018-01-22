@@ -25,10 +25,8 @@ endif
 # DEP_PROJECTS does not need to be set as the dependencies are contained in the build.
 
 SYSIDIRS := $(OVX_INC)
-SYSLDIRS := $(HOST_ROOT)/out/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-ifeq ($(BUILD_EMULATION_MODE),yes)
-SYSLDIRS += $(HOST_ROOT)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
-endif
+SYSLDIRS := 
+
 SYSDEFS  :=
 
 ifeq ($(TARGET_PLATFORM),TDAX)
@@ -55,3 +53,4 @@ ifeq ($(TARGET_PLATFORM),PC)
     SYSIDIRS += $(GCC_WINDOWS_ROOT)/include
     SYSLDIRS += $(GCC_WINDOWS_ROOT)/lib
 endif
+

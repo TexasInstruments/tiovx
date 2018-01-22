@@ -36,6 +36,8 @@ endif
 TARGET_OUT      := $(call MAKE_OUT,$(HOST_ROOT))
 TARGET_DOC      := $(call MAKE_OUT,$(HOST_ROOT))/docs
 
+CONCERTO_TARGET_LIB_OUTS      += $(call TARGET_LIB_OUT,$(HOST_ROOT))
+
 TCWC := $(words $(subst =,$(SPACE),$(HOST_COMPILER)))
 ifneq ($(TCWC),1)
 TARGET_CROSS_COMPILE := $(word 2,$(subst =, ,$(HOST_COMPILER)))

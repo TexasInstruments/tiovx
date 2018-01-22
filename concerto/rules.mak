@@ -77,10 +77,12 @@ $(info TARGET_MAKEFILES=$(TARGET_MAKEFILES))
 # These variables will be appended by each new submakefile included in the combo
 MODULES:=
 CONCERTO_TARGETS :=
+CONCERTO_TARGET_LIB_OUTS :=
 TESTABLE_MODULES :=
 
 # Define a macro to make the output target path
 MAKE_OUT = $(1)/$(BUILD_OUTPUT)/$(TARGET_PLATFORM)/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+TARGET_LIB_OUT = $(1)/lib/$(TARGET_PLATFORM)/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 
 # Define a macro to remove a combo from the combos list if it matches a value
 FILTER_COMBO = $(foreach combo,$(TARGET_COMBOS),$(if $(filter $(1),$(subst :, ,$(combo))),$(combo)))
@@ -100,7 +102,7 @@ include $(CONCERTO_ROOT)/combo_filters.mak
 $(foreach TARGET_COMBO,$(TARGET_COMBOS),$(eval $(call CONCERTO_BUILD)))
 
 ifndef NO_TARGETS
-.PHONY: all dir depend build install uninstall clean clean_target outputs modules targets scrub vars test docs clean_docs pdf
+.PHONY: all dir depend build install uninstall clean clean_target outputs modules targets scrub vars test docs clean_docs pdf release
 
 depend::
 
@@ -182,6 +184,8 @@ help:
 	$(PRINT) " $$ $(MAKE) todo"
 	$(PRINT) " # Shows any source lines which has a bug tag" 
 	$(PRINT) " $$ $(MAKE) bugs"
+	$(PRINT) " # Copies all libraries to the libs folder" 
+	$(PRINT) " $$ $(MAKE) release"
 	$(PRINT)
 	$(PRINT) "Concerto Environment Variables (can be passed on command line too)"
 	$(PRINT) "BUILD_DEBUG=1 - sets SHOW_COMMANDS and SHOW_MAKEDEBUG" 
@@ -200,6 +204,16 @@ help:
 	$(PRINT) "BUILD_PLATFORM - the location and name of the platform specializing makefile. Defaults to 'CONCERTO_ROOT'/platform.mak"
 	$(PRINT) "TARGET_BUILD - Either 'release' (default) or 'debug'."
 	$(PRINT) 
+
+define RELEASE_OUT
+	-$(PRINT) Copying built libraries to folder: $(1)
+	-$(Q)$(COPY) $(TARGET_OUT)/*.a $(1)/. $(QUIET)
+	-$(Q)$(COPY) $(TARGET_OUT)/*.lib $(1)/. $(QUIET)
+
+endef
+
+release:
+	$(foreach target_lib_out,$(CONCERTO_TARGET_LIB_OUTS),$(call RELEASE_OUT,$(target_lib_out)))
 
 -include $(CONCERTO_ROOT)/project.mak
 

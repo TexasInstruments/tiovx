@@ -37,6 +37,6 @@ TOUCH    := touch
 INSTALL  := install -C -m 755
 MKDIR    := mkdir -p
 CAT      := cat
-QUIET    := > /dev/null
+QUIET    := 2> /dev/null
 endif
 
