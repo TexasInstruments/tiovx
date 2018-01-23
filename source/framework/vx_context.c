@@ -85,16 +85,15 @@ static vx_status ownContextGetUniqueKernels( vx_context context, vx_kernel_info_
         for(idx=0; idx<dimof(context->kerneltable); idx++)
         {
             kernel = context->kerneltable[idx];
-
             if(ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e)
             {
                 kernel_info[num_kernel_info].enumeration = kernel->enumeration;
                 strncpy(kernel_info[num_kernel_info].name, kernel->name, VX_MAX_KERNEL_NAME);
                 num_kernel_info++;
             }
-            if(num_kernel_info >= max_kernels)
+            if(num_kernel_info > max_kernels)
             {
-                VX_PRINT(VX_ZONE_ERROR,"num kernel info is greater than or equal to max kernels\n");
+                VX_PRINT(VX_ZONE_ERROR,"num kernel info is greater than max kernels\n");
                 status = VX_ERROR_NO_RESOURCES;
                 break;
             }
