@@ -207,8 +207,8 @@ help:
 
 define RELEASE_OUT
 	-$(PRINT) Copying built libraries to folder: $(1)
-	-$(Q)$(COPY) $(TARGET_OUT)/*.a $(1)/. $(QUIET)
-	-$(Q)$(COPY) $(TARGET_OUT)/*.lib $(1)/. $(QUIET)
+	-$(Q)$(COPY) $(TARGET_OUT)/*.a $(1)/. $(QUIET) || true
+	-$(Q)$(COPY) $(TARGET_OUT)/*.lib $(1)/. $(QUIET) || true
 
 endef
 
