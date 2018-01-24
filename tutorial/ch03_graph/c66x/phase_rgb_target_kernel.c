@@ -81,8 +81,8 @@
  *  - vxTutorialRemoveTargetKernelPhaseRgb() MUST be called during TIOVX target framework system deinit
  *     - This is done by using function tivxUnRegisterTutorialTargetKernels() in \ref vx_tutorial_target_kernel.c
  *
- *  When registering a target kernel a unique static kernel ID MUST be used to register the
- *  kernel on target side and HOST side. See \ref vx_tutorial_kernels.h to understand how to define and use a static kernel ID.
+ *  When registering a target kernel a unique name MUST be used to register the
+ *  kernel on target side and HOST side.
  *
  *  Follow the comments for the different functions in the file to understand how a user/target kernel is implemented.
  */
@@ -299,19 +299,19 @@ void vxTutorialAddTargetKernelPhaseRgb(void)
         /**
          * - Register target kernel to TIOVX framework
          *
-         * "TIVX_TUTORIAL_KERNEL_PHASE_RGB" is static kernel ID.
+         * "TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME" is the name of the target kernel.
          * See also \ref vx_tutorial_kernels.h
          *
-         * This MUST match the kernel ID specified when registering the same kernel
-         * name on the HOST side.
+         * This MUST match the name specified when registering the same kernel
+         * on the HOST side.
          *
          * The registered target kernel handle is stored in a global variable.
          * This is used during vxTutorialRemoveTargetKernelPhaseRgb()
          *
          * \code
          */
-        phase_rgb_target_kernel = tivxAddTargetKernel(
-                    TIVX_TUTORIAL_KERNEL_PHASE_RGB,
+        phase_rgb_target_kernel = tivxAddTargetKernelByName(
+                    TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME,
                     target_name,
                     vxTutotrialPhaseRgb,
                     vxTutotrialPhaseRgbCreate,

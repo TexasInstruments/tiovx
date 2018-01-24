@@ -272,7 +272,9 @@ static vx_kernel phase_rgb_user_kernel_add_as_user_kernel(vx_context context)
          * - Register kernel to OpenVX context
          *
          * A kernel can be identified with its kernel ID (allocated above). \n
-         * A kernel can also be identified with its unique kernel name string. "vx_tutorial_graph.phase_rgb" in this case.
+         * A kernel can also be identified with its unique kernel name string.
+         * "vx_tutorial_graph.phase_rgb" or TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME defined in
+         * file vx_tutorial_kernels.h in this case.
          *
          * When calling vxAddUserKernel(), additional callbacks are registered
          * including the mandatory phase_rgb_user_kernel_run() function.
@@ -281,7 +283,7 @@ static vx_kernel phase_rgb_user_kernel_add_as_user_kernel(vx_context context)
          */
         kernel = vxAddUserKernel(
                     context,
-                    "vx_tutorial_graph.phase_rgb",
+                    TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME,
                     phase_rgb_user_kernel_id,
                     phase_rgb_user_kernel_run,
                     2, /* number of parameters objects for this user function */
@@ -303,56 +305,62 @@ static vx_kernel phase_rgb_user_kernel_add_as_user_kernel(vx_context context)
  */
 static vx_kernel phase_rgb_user_kernel_add_as_target_kernel(vx_context context)
 {
-    vx_kernel kernel;
+    vx_kernel kernel = NULL;
     vx_status status;
 
     /**
-     * - Statically allocate a kernel ID and store it in  the global 'phase_rgb_user_kernel_id'
+     * - Dynamically allocate a kernel ID and store it in  the global 'phase_rgb_user_kernel_id'
      *
-     * Unlike user kernel, for target kernel a pre-defined static kernel ID is
-     * assigned to the global variable 'phase_rgb_user_kernel_id'. The static kernel ID specified
-     * here MUST match the kernel ID specified on the target side.
-     *
+     * This is used later to create the node with this kernel function
      * \code
      */
-    phase_rgb_user_kernel_id = TIVX_TUTORIAL_KERNEL_PHASE_RGB;
+    status = vxAllocateUserKernelId(context, &phase_rgb_user_kernel_id);
     /** \endcode */
-    /**
-     * - Register kernel to OpenVX context
-     *
-     * A kernel can be identified with its kernel ID (statically allocated above). \n
-     * A kernel can also be identified with its unique kernel name string. "vx_tutorial_graph.phase_rgb" in this case.
-     *
-     * When calling vxAddUserKernel(), additional callbacks are registered.
-     * For target kernel, the 'run' callback is set to NULL.
-     * Typically 'init' and 'deinit' callbacks are also set to NULL.
-     * 'validate' callback is typically set
-     *
-     * \code
-     */
-    kernel = vxAddUserKernel(
-                context,
-                "vx_tutorial_graph.phase_rgb",
-                phase_rgb_user_kernel_id,
-                NULL,
-                2, /* number of parameters objects for this user function */
-                phase_rgb_user_kernel_validate,
-                NULL,
-                NULL);
-
-    status = vxGetStatus((vx_reference)kernel);
-    /** \endcode */
-
-    if ( status == VX_SUCCESS)
+    if(status!=VX_SUCCESS)
+    {
+        printf(" phase_rgb_user_kernel_add_as_target_kernel: ERROR: vxAllocateUserKernelId failed (%d)!!!\n", status);
+    }
+    if(status==VX_SUCCESS)
     {
         /**
-         * - Add supported target's on which this target kernel can be run
+         * - Register kernel to OpenVX context
+         *
+         * A kernel can be identified with its kernel ID (allocated above). \n
+         * A kernel can also be identified with its unique kernel name string.
+         * "vx_tutorial_graph.phase_rgb" or TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME defined in
+         * file vx_tutorial_kernels.h in this case.
+         *
+         * When calling vxAddUserKernel(), additional callbacks are registered.
+         * For target kernel, the 'run' callback is set to NULL.
+         * Typically 'init' and 'deinit' callbacks are also set to NULL.
+         * 'validate' callback is typically set
          *
          * \code
          */
-        tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
-        tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+        kernel = vxAddUserKernel(
+                    context,
+                    TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME,
+                    phase_rgb_user_kernel_id,
+                    NULL,
+                    2, /* number of parameters objects for this user function */
+                    phase_rgb_user_kernel_validate,
+                    NULL,
+                    NULL);
+
+        status = vxGetStatus((vx_reference)kernel);
         /** \endcode */
+
+        if ( status == VX_SUCCESS)
+        {
+            /**
+             * - Add supported target's on which this target kernel can be run
+             *
+             * \code
+             */
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
+            /** \endcode */
+        }
     }
     return kernel;
 }
