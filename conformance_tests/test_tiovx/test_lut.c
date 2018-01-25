@@ -285,6 +285,27 @@ TEST_WITH_ARG(tivxLUT, testGraphProcessing, Arg,
     node2 = vxTableLookupNode(graph, virt, lut2, dst_image);
     ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
 
+    vx_enum lut_type;
+    vx_uint32 lut_offset;
+    VX_CALL(vxQueryLUT(lut1, VX_LUT_TYPE, &lut_type, sizeof(lut_type)));
+    VX_CALL(vxQueryLUT(lut1, VX_LUT_OFFSET, &lut_offset, sizeof(lut_offset)));
+    if (VX_TYPE_UINT8 == lut_type)
+    {
+        if (lut_offset != 0)
+        {
+            CT_FAIL("check for LUT attribute VX_LUT_OFFSET failed\n");
+        }
+    }
+    else if (VX_TYPE_INT16 == lut_type)
+    {
+        vx_size lut_count;
+        VX_CALL(vxQueryLUT(lut1, VX_LUT_COUNT, &lut_count, sizeof(lut_count)));
+        if (lut_offset != (lut_count/2))
+        {
+            CT_FAIL("check for LUT attribute VX_LUT_OFFSET failed\n");
+        }
+    }
+
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 

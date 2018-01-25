@@ -281,6 +281,41 @@ TEST_WITH_ARG(tivxGraph, testParallelNodesDifferentTarget, fuzzy_arg, ARITHM_FUZ
     vx_perf_t perf_node1, perf_node2, perf_node3, perf_node4, perf_graph;
     vx_border_t border = { VX_BORDER_UNDEFINED, {{ 0 }} };
     int widthHardCoded = 640, heightHardCoded = 480;
+    vx_uint16 vendor_id, version;
+    vx_char implementation[VX_MAX_IMPLEMENTATION_NAME];
+    vx_size extensions_size, nonlinear_max_dim;
+    vx_uint32 nkernels = 0;
+    vx_kernel kernel   = 0;
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_VENDOR_ID, &vendor_id, sizeof(vendor_id)));
+    ASSERT(vendor_id == VX_ID_TI);
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_VERSION, &version, sizeof(version)));
+    ASSERT(version == VX_VERSION_1_1);
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_IMPLEMENTATION, &implementation, sizeof(implementation)));
+    ASSERT(strcmp(implementation, "tiovx") == 0);
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_EXTENSIONS_SIZE, &extensions_size, sizeof(extensions_size)));
+    ASSERT(extensions_size == 2);
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_NONLINEAR_MAX_DIMENSION, &nonlinear_max_dim, sizeof(nonlinear_max_dim)));
+    ASSERT(nonlinear_max_dim == 9);
+
+    vx_char *extensions = malloc(extensions_size*sizeof(vx_char));
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_EXTENSIONS, extensions, extensions_size*sizeof(vx_char)));
+    ASSERT(strcmp(extensions, " ") == 0);
+    free(extensions);
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNELS, &nkernels, sizeof(nkernels)));
+
+    vx_kernel_info_t *kernel_table = (vx_kernel_info_t *)malloc(nkernels*sizeof(vx_kernel_info_t));
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_UNIQUE_KERNEL_TABLE, kernel_table, nkernels*sizeof(vx_kernel_info_t)));
+    int i;
+    for (i = 0; i < nkernels; i++)
+    {
+        ASSERT_VX_OBJECT(kernel = vxGetKernelByEnum(context, kernel_table[i].enumeration), VX_TYPE_KERNEL);
+        VX_CALL(vxReleaseKernel(&kernel));
+        ASSERT_VX_OBJECT(kernel = vxGetKernelByName(context, kernel_table[i].name), VX_TYPE_KERNEL);
+        VX_CALL(vxReleaseKernel(&kernel));
+    }
+    free(kernel_table);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, arg_->result_format), VX_TYPE_IMAGE);
