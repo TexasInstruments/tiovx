@@ -78,6 +78,7 @@ $(info TARGET_MAKEFILES=$(TARGET_MAKEFILES))
 MODULES:=
 CONCERTO_TARGETS :=
 CONCERTO_TARGET_LIB_OUTS :=
+CONCERTO_TARGET_OUTS :=
 TESTABLE_MODULES :=
 
 # Define a macro to make the output target path
@@ -100,6 +101,11 @@ include $(CONCERTO_ROOT)/combo_filters.mak
 # Multi-core Build (Single Core is degenerative)
 # This actually invokes the above macro
 $(foreach TARGET_COMBO,$(TARGET_COMBOS),$(eval $(call CONCERTO_BUILD)))
+
+JOINED_OUTS         := $(join $(addsuffix ^,$(CONCERTO_TARGET_OUTS)),$(CONCERTO_TARGET_LIB_OUTS))
+LOCAL_TARGET_OUT     = $(word 1,$(subst ^, ,$(1)))
+LOCAL_TARGET_LIB_OUT = $(word 2,$(subst ^, ,$(1)))
+
 
 ifndef NO_TARGETS
 .PHONY: all dir depend build install uninstall clean clean_target outputs modules targets scrub vars test docs clean_docs pdf release
@@ -205,15 +211,16 @@ help:
 	$(PRINT) "TARGET_BUILD - Either 'release' (default) or 'debug'."
 	$(PRINT) 
 
+
 define RELEASE_OUT
-	-$(PRINT) Copying built libraries to folder: $(1)
-	-$(Q)$(COPY) $(TARGET_OUT)/*.a $(1)/. $(QUIET) || true
-	-$(Q)$(COPY) $(TARGET_OUT)/*.lib $(1)/. $(QUIET) || true
+	-$(PRINT) Copying built libraries: $(1)   to    $(2)
+	-$(Q)$(COPY) $(1)/*.a $(2)/. $(QUIET) || true
+	-$(Q)$(COPY) $(1)/*.lib $(2)/. $(QUIET) || true
 
 endef
 
 release:
-	$(foreach target_lib_out,$(CONCERTO_TARGET_LIB_OUTS),$(call RELEASE_OUT,$(target_lib_out)))
+	$(foreach joined,$(JOINED_OUTS),$(call RELEASE_OUT,$(call LOCAL_TARGET_OUT, $(joined)), $(call LOCAL_TARGET_LIB_OUT, $(joined)) ))
 
 -include $(CONCERTO_ROOT)/project.mak
 
