@@ -214,8 +214,8 @@ help:
 
 define RELEASE_OUT
 	-$(PRINT) Copying built libraries: $(1)   to    $(2)
-	-$(Q)$(COPY) $(1)/*.a $(2)/. $(QUIET) || true
-	-$(Q)$(COPY) $(1)/*.lib $(2)/. $(QUIET) || true
+	-$(Q)$(COPY) $(1)/*.a $(2) $(QUIET) || true
+	-$(Q)$(COPY) $(1)/*.lib $(2) $(QUIET) || true
 
 endef
 
