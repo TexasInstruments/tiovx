@@ -169,6 +169,22 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node
 
     if (VX_SUCCESS == status)
     {
+        if (w[1U] != ((w[0U]+1)/2))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (h[1U] != ((h[0U]+1)/2))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
         status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
         if (VX_SUCCESS == status)
         {
