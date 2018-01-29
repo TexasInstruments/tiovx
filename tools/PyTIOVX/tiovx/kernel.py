@@ -159,6 +159,7 @@ class Kernel  :
         prm_list = []
         required = 0
         optional = 0
+        first_required = 0
 
         # Get params from names
         for name in name_list :
@@ -167,6 +168,8 @@ class Kernel  :
                 if name.lower() == prm.name_lower :
                     prm_list.append(prm)
                     if prm.state == ParamState.REQUIRED :
+                        if first_required == 0 :
+                            first_required = prm
                         required += 1
                     elif prm.state == ParamState.OPTIONAL :
                         optional += 1
@@ -175,7 +178,6 @@ class Kernel  :
             assert found == True, "'%s' was not found in parameter list" % name
 
         # Divide list into multiple lists depending on if some of the parameters are optional or not
-        first_required = 0
         if required > 1 :
             if optional == 0 :
                 relationship = KernelParamRelationship(prm_list, attribute_list, type, ParamState.REQUIRED)
@@ -183,8 +185,6 @@ class Kernel  :
                 sub_prm_list = []
                 for prm in prm_list :
                     if prm.state == ParamState.REQUIRED :
-                        if first_required == 0 :
-                            first_required = prm
                         sub_prm_list.append(prm)
                         prm_list.remove(prm)
                 relationship = KernelParamRelationship(sub_prm_list, attribute_list, type, ParamState.REQUIRED)
