@@ -130,6 +130,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
 
+/*! \brief vpac_viss kernel name
+ *  \see group_vision_function_hwa
+ */
+#define TIVX_KERNEL_VPAC_VISS_NAME     "com.ti.hwa.vpac_viss"
+
 /*! End of group_vision_function_hwa */
 
 /*********************************
@@ -462,6 +467,62 @@ typedef struct {
     uint16_t  motion_direction;             /*!< 0 = Motion neutral 1 = Forward motion 2 = Reverse motion  */
 } tivx_dmpac_dof_params_t;
 
+/*********************************
+ *      VISS STRUCTURES
+ *********************************/
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    /* not needed from algo */
+    char      sensor_name[256];    /*!< Path to the root folder where the configuration files are located on the file system */
+    uint16_t  use_case;            /*!< Identifier corresponding to the sub-setting within the sensor configuration of the DCC file (not yet supported) */
+
+    /* Expected to not change in between frames */
+    uint16_t  mux_ee_port;         /*!< Apply edge enhancer to which luma channel:                      0: Y12,  1:Y8,   2:Neither */
+    uint16_t  mux_uv12_c1_out;     /*!< If uv12_c1 output port is not NULL, which signal is output:     0: UV12, 1:Resv, 2:C1 */
+    uint16_t  mux_y8_r8_c2_out;    /*!< If y8_r8_c2 output port is not NULL, which signal is output:    0: Y8,   1:R8,   2:C2 */
+    uint16_t  mux_uv8_g8_c3_out;   /*!< If uv8_g8_c3 output port is not NULL, which signal is output:   0: UV8,  1:G8,   2:C3 */
+    uint16_t  mux_s8_b8_c4_out;    /*!< If s8_b8_c4 output port is not NULL, which signal is output:    0: S8,   1:B8,   2:C4 */
+    uint16_t  chroma_out_mode;     /*!< Chooses the vertical sub-sampling mode of the chroma outputs:   0: 420,  1:422 */
+    uint16_t  bypass_glbce;        /*!< Bypasses GLBCE processing (internally fixed at '1' for now):    0: run,  1: bypass (not yet supported) */
+    uint16_t  bypass_nsf4;         /*!< Bypasses NSF4 processing:                                       0: run,  1: bypass */
+
+    /* May change in between frames */
+    uint16_t  mux_h3a_in;          /*!< If h3a_aew_af output port is not NULL, which data is input:     0: RAW0, 1: RAW1, 2: RAW2, 3: LSC, */
+    uint16_t  mux_h3a_out;         /*!< If h3a_aew_af output port is not NULL, which data is output:    0: AEW,  1:AF */
+} tivx_vpac_viss_params_t;
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    /* Data corresponding to result of 2A algorithm ... used to index into the appropriate photospace in the DCC files (resv) */
+    uint16_t  h3a_source_data;     /*!< Indicates the source data corresponding to this data: 0: RAW0, 1: RAW1, 2: RAW2, 3: LSC (not yet supported) */
+    uint32_t  exposure_time;       /*!< Measured in micro seconds (us) (not yet supported) */
+    uint16_t  analog_gain;         /*!< Analog Gain (not yet supported) */
+    uint16_t  digital_gain;        /*!< Digital Gain (not yet supported) */
+    uint16_t  wb_gains[4];         /*!< White Balance Gains (not yet supported) */
+    int16_t   wb_offsets[4];       /*!< White Balance Offsets (not yet supported) */
+    uint16_t  color_temperature;   /*!< Color Temperature (K) (not yet supported) */
+} tivx_ae_awb_params_t;
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ *
+ * \ingroup group_kernel
+ */
+typedef struct {
+    uint16_t  aew_af_mode;     /*!< Indicates the contents of this buffer:                0: AEW data, 1:AF data */
+    uint16_t  h3a_source_data; /*!< Indicates the source data corresponding to this data: 0: RAW0, 1: RAW1, 2: RAW2, 3: LSC */
+    uint32_t  size;            /*!< Total size of the data buffer in bytes */
+    uint16_t  data;            /*!< Payload of the AWE or AF data */
+} tivx_h3a_data_t;
 
 /*********************************
  *      Function Prototypes

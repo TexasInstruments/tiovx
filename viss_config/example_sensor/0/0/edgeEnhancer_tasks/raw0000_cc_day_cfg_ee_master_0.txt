@@ -1,0 +1,25 @@
+1280               # image width
+720                # image height
+
+1    # IPIPE_YEE_EN           Edge Enhancer OFF(0)/ON(1)
+4   # IPIPE_YEE_SHF          Shift down value of HPF (unsigned 6bits)
+
+48   # IPIPE_YEE_MUL_00       Edge Enhance 2D Coeff 00 (signed 10bits)
+2   # IPIPE_YEE_MUL_01       Edge Enhance 2D Coeff 01 (signed 10bits)
+-5   # IPIPE_YEE_MUL_02       Edge Enhance 2D Coeff 02 (signed 10bits)
+2   # IPIPE_YEE_MUL_10       Edge Enhance 2D Coeff 10 (signed 10bits)
+-2   # IPIPE_YEE_MUL_11       Edge Enhance 2D Coeff 11 (signed 10bits)
+-3   # IPIPE_YEE_MUL_12       Edge Enhance 2D Coeff 12 (signed 10bits)
+-5   # IPIPE_YEE_MUL_20       Edge Enhance 2D Coeff 20 (signed 10bits)
+-3   # IPIPE_YEE_MUL_21       Edge Enhance 2D Coeff 21 (signed 10bits)
+-1   # IPIPE_YEE_MUL_22       Edge Enhance 2D Coeff 22 (signed 10bits)
+
+0   # IPIPE_YEE_THR          Lower Threshold before referring to LUT (unsigned int 10)
+
+0     # IPIPE_YEE_TYP[SEL]     Edge Enhance Mergesel  OFF(0)/ON(1)
+1     # IPIPE_YEE_TYP[HAL]     HaloReduction;  OFF(0)/ON(1)
+0    # IPIPE_YEE_G_GAN        Edge Sharpener, gain value on gradient (U8Q6)
+0    # IPIPE_YEE_G_OFT        Edge Sharpener, offset value on gradient (unsigned int10)
+0    # IPIPE_YEE_E_GAN        Edge sharpener Gain (unsigned int 12), U12Q6
+0   # IPIPE_YEE_E_THR_1      EdgeEnhance Thres (unsigned int 16, U16Q6)
+0    # IPIPE_YEE_E_THR_2      EdgeEnhance limit (unsigned int 6) // upper limit

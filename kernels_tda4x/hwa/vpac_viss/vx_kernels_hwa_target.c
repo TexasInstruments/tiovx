@@ -60,19 +60,26 @@
  *
  */
 
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
-#endif
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
 
+void tivxAddTargetKernelVpacViss(void);
 
+void tivxRemoveTargetKernelVpacViss(void);
 
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelVpacViss, &tivxRemoveTargetKernelVpacViss},
+};
+
+void tivxRegisterHwaTargetVpacVissKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
+
+void tivxUnRegisterHwaTargetVpacVissKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

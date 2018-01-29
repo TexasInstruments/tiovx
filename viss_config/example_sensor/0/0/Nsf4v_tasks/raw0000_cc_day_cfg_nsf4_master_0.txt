@@ -1,0 +1,160 @@
+#=================================
+# Noise Filter Cmodel Config File
+#=================================
+# information for processing, in hardware MMR
+16    # mode: 0 => nsf3 2x2 mode, 1~31 => nsf4 2x2 mode
+0     # shading gain enable
+1280  # BLKW block width
+720  # BLKH block height
+2    # U1  knee points for U,  U0.6 (0 ~ 63)
+64    # Tn1 scaling factor,     U3.5 (1.0 = 32)
+32    # Tn2 scaling factor,     U3.5 (1.0 = 32)
+16    # Tn3 scaling factor,     U3.5 (1.0 = 32)
+
+# Threshold parameters
+# color 0: LL-to-Tn curve, LL=U16, Tn=U15, slope=S5.11
+0     16    128   # x0=0(LL) y0(Tn) s0(slope)
+64    20    192   # x1(LL)   y1(Tn) s1(slope)
+256   38    100   # x2(LL)   y2(Tn) s2(slope)
+1024  76    52    # x3(LL)   y3(Tn) s3(slope)
+4096  0     0     # x4(LL)    y4(Tn)  s4(slope)
+4096  0     0     # x5(LL)    y5(Tn)  s5(slope)
+4096  0     0     # x6(LL)    y6(Tn)  s6(slope)
+4096  0     0     # x7(LL)    y7(Tn)  s7(slope)
+4096  0     0     # x8(LL)    y8(Tn)  s8(slope)
+4096  0     0     # x9(LL)    y9(Tn)  s9(slope)
+4096 0    0    # x10(LL)   y10(Tn) s10(slope)
+4096 0    0    # x11(LL)   y11(Tn) s11(slope)
+
+# color 1: LL-to-Tn curve, LL=U16, Tn=U15, slope=S5.11
+0    16    128  # x0=0(LL) y0(Tn) s0(slope)
+64   20    192  # x1(LL)   y1(Tn) s1(slope)
+256  38    100  # x2(LL)   y2(Tn) s2(slope)
+1024 76    52   # x3(LL)   y3(Tn) s3(slope)
+4096  0     0     # x4(LL)    y4(Tn)  s4(slope)
+4096  0     0     # x5(LL)    y5(Tn)  s5(slope)
+4096  0     0     # x6(LL)    y6(Tn)  s6(slope)
+4096  0     0     # x7(LL)    y7(Tn)  s7(slope)
+4096  0     0     # x8(LL)    y8(Tn)  s8(slope)
+4096  0     0     # x9(LL)    y9(Tn)  s9(slope)
+4096 0    0    # x10(LL)   y10(Tn) s10(slope)
+4096 0    0    # x11(LL)   y11(Tn) s11(slope)
+
+# color 2: LL-to-Tn curve, LL=U16, Tn=U15, slope=S5.11
+0    16    128  # x0=0(LL) y0(Tn) s0(slope)
+64   20    192  # x1(LL)   y1(Tn) s1(slope)
+256  38    100  # x2(LL)   y2(Tn) s2(slope)
+1024 76    52   # x3(LL)   y3(Tn) s3(slope)
+4096  0     0     # x4(LL)    y4(Tn)  s4(slope)
+4096  0     0     # x5(LL)    y5(Tn)  s5(slope)
+4096  0     0     # x6(LL)    y6(Tn)  s6(slope)
+4096  0     0     # x7(LL)    y7(Tn)  s7(slope)
+4096  0     0     # x8(LL)    y8(Tn)  s8(slope)
+4096  0     0     # x9(LL)    y9(Tn)  s9(slope)
+4096 0    0    # x10(LL)   y10(Tn) s10(slope)
+4096 0    0    # x11(LL)   y11(Tn) s11(slope)
+
+# color 3: LL-to-Tn curve, LL=U16, Tn=U15, slope=S5.11
+0    16    128  # x0=0(LL) y0(Tn) s0(slope)
+64   20    192  # x1(LL)   y1(Tn) s1(slope)
+256  38    100  # x2(LL)   y2(Tn) s2(slope)
+1024 76    52   # x3(LL)   y3(Tn) s3(slope)
+4096  0     0     # x4(LL)    y4(Tn)  s4(slope)
+4096  0     0     # x5(LL)    y5(Tn)  s5(slope)
+4096  0     0     # x6(LL)    y6(Tn)  s6(slope)
+4096  0     0     # x7(LL)    y7(Tn)  s7(slope)
+4096  0     0     # x8(LL)    y8(Tn)  s8(slope)
+4096  0     0     # x9(LL)    y9(Tn)  s9(slope)
+4096 0    0    # x10(LL)   y10(Tn) s10(slope)
+4096 0    0    # x11(LL)   y11(Tn) s11(slope)
+
+
+# Shading gain parameters
+0           # horizontal center
+0           # vertical center
+0           # shd_T
+0          # shd_kh
+0          # shd_kv
+0        # shd_max_gain
+0     # shd_set_sel
+
+# shading lut set 0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+
+
+
+# shading lut set 1
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+0   0   0
+
+
+# WB gain
+512
+512
+512
+512
+
+#-------------------------------------------------
+# below are simulator only parameters (not on H/W)
+#-------------------------------------------------
+1     # left   border replication
+1     # right  border replication
+1     # top    border replication
+1     # bottom border replication
+0       # suppress all signals, for testing
+0          # bypass filtering so output = input
+
+# Suppression_max[color][subband], U1.7 (128: 1.0)
+128      # color 0 subband LH1 (=HL1)
+128      # color 0 subband HH1
+128      # color 0 subband LH2 (=HL2)
+128      # color 0 subband HH2
+128      # color 0 subband LH3 (=HL3)
+128      # color 0 subband HH3
+128      # color 1 subband LH1 (=HL1)
+128      # color 1 subband HH1
+128      # color 1 subband LH2 (=HL2)
+128      # color 1 subband HH2
+128      # color 1 subband LH3 (=HL3)
+128      # color 1 subband HH3
+128      # color 2 subband LH1 (=HL1)
+128      # color 2 subband HH1
+128      # color 2 subband LH2 (=HL2)
+128      # color 2 subband HH2
+128      # color 2 subband LH3 (=HL3)
+128      # color 2 subband HH3
+128      # color 3 subband LH1 (=HL1)
+128      # color 3 subband HH1
+128      # color 3 subband LH2 (=HL2)
+128      # color 3 subband HH2
+128      # color 3 subband LH3 (=HL3)
+128      # color 3 subband HH3

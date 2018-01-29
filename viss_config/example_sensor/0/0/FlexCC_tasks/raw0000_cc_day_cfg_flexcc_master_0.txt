@@ -1,0 +1,53 @@
+lut_flexcc_contrast_0.txt  #lut table for contrast
+lut_flexcc_contrast_1.txt  #lut table for contrast
+lut_flexcc_contrast_2.txt  #lut table for contrast
+lut_flexcc_12to8_0.txt #lut table for y8/r8
+lut_flexcc_12to8_1.txt #lut table for c8/g8
+lut_flexcc_12to8_2.txt #lut table for s8/n8
+1280   		# Width
+720    	# Height
+0		# MuxC1_4
+0     # MuxY12Out
+1     	# MuxY8Out
+0     # MuxRGBHSV
+0     	# HistMode (0->2, CCM1, 3-> output of M1 Mux, 4-> R+2G+B/4)
+0     	# HistEn (Not Modeled in C)
+0    # HistStartX
+0    # HistStartY
+500   	# HistSizeX
+500   	# HistSizeY
+#
+# ADD CCM-1 Parameters Below
+426  -166 -4 0 0
+-104  353 7 0 0
+7  -178 427 0 0
+#
+# ADD RGB2YUV Parameters Below
+77 150 29 0
+-44 -84 128 128
+128 -108 -20 128
+#
+0    # RGB2HSV MuxH1
+0    # RGB2HSV MuxH2
+#
+# HSV2Gray Matrix Below
+64 64 128 0
+0	#HSV Sat Mode  : 1->RGBMax-RGBMin, 0-> RGBSum - RGBMin
+2   #HSV Sat div Mode :Numerator 0 ->'1'; 1->'RGBMax'; 2->4095-'V'; 3->RGBSum
+0    	#SatLutEn
+0    	#RGBLutEn
+1    #ContrastEn
+10  #ContrastClip
+0    	#Y8LutEn
+10  #Y8inBitWidth
+0    	#C8LutEn
+#
+0    	# RGBHSV.linLogThr_0 -> R
+0    	# RGBHSV.linLogThr_1 -> G
+0    	# RGBHSV.linLogThr_2 -> B
+0    	# RGBHSV.Offset_0    -> R
+0    	# RGBHSV.Offset_1    -> G
+0    	# RGBHSV.Offset_2    -> B
+0    	# SatMinThr
+0    	    # Mux_V
+0		# ChromaMode 0 for 420; 1 for 422

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,19 +60,34 @@
  *
  */
 
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
+#ifndef _TIVX_KERNEL_VPAC_VISS_
+#define _TIVX_KERNEL_VPAC_VISS_
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
 
+#define TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX (0U)
+#define TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX (1U)
+#define TIVX_KERNEL_VPAC_VISS_RAW0_IDX (2U)
+#define TIVX_KERNEL_VPAC_VISS_RAW1_IDX (3U)
+#define TIVX_KERNEL_VPAC_VISS_RAW2_IDX (4U)
+#define TIVX_KERNEL_VPAC_VISS_Y12_IDX (5U)
+#define TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX (6U)
+#define TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX (7U)
+#define TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX (8U)
+#define TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX (9U)
+#define TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX (10U)
+#define TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX (11U)
+
+#define TIVX_KERNEL_VPAC_VISS_MAX_PARAMS (12U)
+
+#ifdef __cplusplus
+}
+#endif
+
+
+#endif /* _TIVX_KERNEL_VPAC_VISS_ */
 
 

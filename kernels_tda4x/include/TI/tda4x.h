@@ -83,8 +83,7 @@ extern "C" {
 #define TIVX_TARGET_VPAC_MSC2    "RESV04"
 #define TIVX_TARGET_DMPAC_SDE    "RESV05"
 #define TIVX_TARGET_DMPAC_DOF    "RESV06"
-#define TIVX_TARGET_VISS1        "RESV07"
-#define TIVX_TARGET_VISS2        "RESV08"
+#define TIVX_TARGET_VPAC_VISS1   "RESV07"
 
 /*! \brief Based on the VX_DF_IMAGE definition.
  * \note Use <tt>\ref vx_df_image</tt> to contain these values.

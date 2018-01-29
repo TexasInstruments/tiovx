@@ -30,6 +30,11 @@ STATIC_LIBS += vx_target_kernels_vpac_nf
 STATIC_LIBS += bl_filter_lib
 endif
 
+ifeq ($(BUILD_HWA_VPAC_VISS),yes)
+STATIC_LIBS += vx_target_kernels_vpac_viss
+STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils
+endif
+
 STATIC_LIBS += vx_vxu
 STATIC_LIBS += vx_target_kernels_tda4x_arm
 STATIC_LIBS += vx_utils

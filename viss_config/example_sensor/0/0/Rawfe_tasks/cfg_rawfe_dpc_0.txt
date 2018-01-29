@@ -1,0 +1,24 @@
+# LUT Defect Correction
+0      # DPC_LUT_EN     Eanble LUT DPC                                    (U1)      (0:OFF, 1:ON)
+0      # DPC_LUT_SEL    Replace dot selection on option                   (U1)      (0:black , 1: white)
+0      # DPC_LUT_SIZ    The number of valid entries - 1                   (U8)
+
+# OTFDPC (On the Fly) Defect Pixel Correction
+1      # DPC_OTF_EN     Enable OTF DPC                                    (U1)      (0:OFF, 1:ON)
+200    # U16   detection thr at 0
+0      # S12Q8 detection slp at 0
+200    # U16   detection thr at 512
+50     # S12Q8 detection slp at 512
+300    # U16   detection thr at 1024
+50     # S12Q8 detection slp at 1024
+500    # U16   detection thr at 2048
+37     # S12Q8 detection slp at 2048
+800    # U16   detection thr at 4096
+50     # S12Q8 detection slp at 4096
+1600   # U16   detection thr at 8192
+50     # S12Q8 detection slp at 8192
+3200   # U16   detection thr at 16384
+50     # S12Q8 detection slp at 16384
+6400   # U16   detection thr at 32768
+50     # S12Q8 detection slp at 32768
+

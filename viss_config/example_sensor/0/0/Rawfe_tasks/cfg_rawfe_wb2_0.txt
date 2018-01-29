@@ -1,0 +1,11 @@
+# WB2 offsets and gains
+0    # offset 00    S16
+0    # offset 01    S16
+0    # offset 10    S16
+0    # offset 11    S16
+
+694    # gain   00    U13Q9
+512    # gain   01    U13Q9
+512    # gain   10    U13Q9
+1028    # gain   11    U13Q9
+

@@ -1,0 +1,4 @@
+0       # lutEn
+16      # lutBitdepth
+1023    # lutClip
+

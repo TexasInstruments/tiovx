@@ -205,3 +205,38 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
+                                      vx_array             configuration,
+                                      vx_array             ae_awb_result,
+                                      vx_image             raw0,
+                                      vx_image             raw1,
+                                      vx_image             raw2,
+                                      vx_image             y12,
+                                      vx_image             uv12_c1,
+                                      vx_image             y8_r8_c2,
+                                      vx_image             uv8_g8_c3,
+                                      vx_image             s8_b8_c4,
+                                      vx_distribution      histogram,
+                                      vx_array             h3a_aew_af)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)ae_awb_result,
+            (vx_reference)raw0,
+            (vx_reference)raw1,
+            (vx_reference)raw2,
+            (vx_reference)y12,
+            (vx_reference)uv12_c1,
+            (vx_reference)y8_r8_c2,
+            (vx_reference)uv8_g8_c3,
+            (vx_reference)s8_b8_c4,
+            (vx_reference)histogram,
+            (vx_reference)h3a_aew_af
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VPAC_VISS_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

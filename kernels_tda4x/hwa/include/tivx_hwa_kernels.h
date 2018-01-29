@@ -159,6 +159,18 @@ void tivxRegisterHwaTargetArmKernels(void);
  */
 void tivxUnRegisterHwaTargetArmKernels(void);
 
+/*!
+ * \brief Function to register HWA Kernels on the vpac_viss Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterHwaTargetVpacVissKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the vpac_viss Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterHwaTargetVpacVissKernels(void);
+
 
 #ifdef __cplusplus
 }

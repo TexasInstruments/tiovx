@@ -1,0 +1,21 @@
+1280                       # image width
+720                      # image height
+0               # lut shadow enable for pwl vshort
+cfg_rawfe_pwl_long_0.txt             # pwl_lut cfg for Long
+lut_rawfe_pwl_long_0.txt             # lut for long
+cfg_rawfe_pwl_short_0.txt           # pwl_lut cfg for short
+lut_rawfe_pwl_short_0.txt          # lut for short
+cfg_rawfe_pwl_vshort_0.txt         # pwl_lut cfg for short
+lut_rawfe_pwl_vshort_0.txt         # lut for short
+cfg_rawfe_merge1_0.txt                 # merge 1 cfg
+cfg_rawfe_merge2_0.txt                 # merge 2 cfg
+cfg_rawfe_lut20to16_0.txt           # 20-to-16 lut cfg
+lut_rawfe_lut20to16_0.txt           # 20-to-16 lut
+cfg_rawfe_dpc_0.txt                       # dpc cfg
+lut_rawfe_dpc_0.txt                       # dpc lut
+cfg_rawfe_lsc_0.txt                       # lsc cfg
+lut_rawfe_lsc_0.txt                       # lsc lut
+cfg_rawfe_wb2_0.txt                       # WB2
+cfg_rawfe_h3amux_0.txt                 # MUX
+cfg_rawfe_luth3a_0.txt                 # LUT cfg for H3A
+lut_rawfe_luth3a_0.txt                 # LUT for H3A

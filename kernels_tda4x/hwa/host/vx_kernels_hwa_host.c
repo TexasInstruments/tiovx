@@ -76,6 +76,7 @@ vx_status tivxAddKernelDmpacSde(vx_context context);
 vx_status tivxAddKernelVpacLdc(vx_context context);
 vx_status tivxAddKernelDmpacDof(vx_context context);
 vx_status tivxAddKernelDofVisualize(vx_context context);
+vx_status tivxAddKernelVpacViss(vx_context context);
 
 vx_status tivxRemoveKernelVpacNfGeneric(vx_context context);
 vx_status tivxRemoveKernelVpacNfBilateral(vx_context context);
@@ -83,14 +84,16 @@ vx_status tivxRemoveKernelDmpacSde(vx_context context);
 vx_status tivxRemoveKernelVpacLdc(vx_context context);
 vx_status tivxRemoveKernelDmpacDof(vx_context context);
 vx_status tivxRemoveKernelDofVisualize(vx_context context);
+vx_status tivxRemoveKernelVpacViss(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
-    {tivxAddKernelVpacNfGeneric, tivxRemoveKernelVpacNfGeneric},
-    {tivxAddKernelVpacNfBilateral, tivxRemoveKernelVpacNfBilateral},
-    {tivxAddKernelDmpacSde, tivxRemoveKernelDmpacSde},
-    {tivxAddKernelVpacLdc, tivxRemoveKernelVpacLdc},
-    {tivxAddKernelDmpacDof, tivxRemoveKernelDmpacDof},
-    {tivxAddKernelDofVisualize, tivxRemoveKernelDofVisualize},
+    {&tivxAddKernelVpacNfGeneric, &tivxRemoveKernelVpacNfGeneric},
+    {&tivxAddKernelVpacNfBilateral, &tivxRemoveKernelVpacNfBilateral},
+    {&tivxAddKernelDmpacSde, &tivxRemoveKernelDmpacSde},
+    {&tivxAddKernelVpacLdc, &tivxRemoveKernelVpacLdc},
+    {&tivxAddKernelDmpacDof, &tivxRemoveKernelDmpacDof},
+    {&tivxAddKernelDofVisualize, &tivxRemoveKernelDofVisualize},
+    {&tivxAddKernelVpacViss, &tivxRemoveKernelVpacViss},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -141,6 +144,9 @@ void tivxHwaLoadKernels(vx_context context)
         tivxRegisterHwaTargetVpacMscKernels();
         #endif
         tivxRegisterHwaTargetArmKernels();
+        #ifdef BUILD_HWA_VPAC_VISS
+        tivxRegisterHwaTargetVpacVissKernels();
+        #endif
 
         tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
 
@@ -173,6 +179,9 @@ void tivxHwaUnLoadKernels(vx_context context)
         tivxUnRegisterHwaTargetVpacMscKernels();
         #endif
         tivxUnRegisterHwaTargetArmKernels();
+        #ifdef BUILD_HWA_VPAC_VISS
+        tivxUnRegisterHwaTargetVpacVissKernels();
+        #endif
 
         gIsHwaKernelsLoad = 0U;
     }

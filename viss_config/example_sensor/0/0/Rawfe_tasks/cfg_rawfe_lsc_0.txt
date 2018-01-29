@@ -1,0 +1,5 @@
+0           # lsccfg_ENABLE         0:disable, 1: enable
+5           # lsccfg_GAIN_MODE_M    3:8x, 4:16x, 5: 32x, 6: 64x, 7: 128x
+4           # lsccfg_GAIN_MODE_N    3:8x, 4:16x, 5: 32x, 6: 64x, 7: 128x
+0           # lsccfg_GAIN_FORMAT    0:Q8, 1:Q8+1, 2:Q7, 3:Q7+1, 4:Q6, 5:Q6+1, 6:Q5, 7:Q5+1
+
