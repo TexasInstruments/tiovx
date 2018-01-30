@@ -315,6 +315,55 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+#define NEGATIVE_ADD_KERNEL_SIZE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/k=1", __VA_ARGS__, 1))
+
+#define NEGATIVE_DIMENSIONS_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, NEGATIVE_ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
+
+TEST_WITH_ARG(tivxHalfScaleGaussian, negativeDimensionsTest, Arg,
+    NEGATIVE_DIMENSIONS_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    int dst_width = 0, dst_height = 0;
+    vx_image src_image = 0, dst0_image = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    CT_Image src = NULL, dst0 = NULL;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    dst_width = arg_->width;
+    dst_height = arg_->height;
+
+    ASSERT_VX_OBJECT(dst0_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node1 = vxHalfScaleGaussianNode(graph, src_image, dst0_image, arg_->kernel_size), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst0_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst0_image == 0);
+    ASSERT(src_image == 0);
+}
+
 #define NEGATIVE_PARAMETERS \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_18x18, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ARG, halfScaleGaussian_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
@@ -383,4 +432,5 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, negativeTestBorderMode, Arg,
 
 TESTCASE_TESTS(tivxHalfScaleGaussian,
         testGraphProcessing,
+        negativeDimensionsTest,
         negativeTestBorderMode)
