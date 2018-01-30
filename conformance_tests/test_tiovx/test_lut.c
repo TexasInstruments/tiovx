@@ -302,7 +302,7 @@ TEST_WITH_ARG(tivxLUT, testGraphProcessing, Arg,
         VX_CALL(vxQueryLUT(lut1, VX_LUT_COUNT, &lut_count, sizeof(lut_count)));
         if (lut_offset != (lut_count/2))
         {
-            CT_FAIL("check for LUT attribute VX_LUT_OFFSET failed\n");
+            CT_FAIL("check for LUT attribute VX_LUT_COUNT failed\n");
         }
     }
 
