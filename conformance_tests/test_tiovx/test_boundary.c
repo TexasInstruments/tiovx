@@ -540,6 +540,36 @@ TEST_WITH_ARG(tivxBoundary, testContext, Arg,
     vx_context context3 = vxCreateContext();
 }
 
+TEST(tivxBoundary, testMapImage)
+{
+    int i, w = 128, h = 128;
+    vx_df_image f = VX_DF_IMAGE_U8;
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_imagepatch_addressing_t addr;
+    vx_uint8 *pdata = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_map_id map_id;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+
+    /* image[0] gets 1 */
+
+    // Verifying that it is not restricted to max image maps as long as it frees memory in vxUnmapImagePatch
+    for (i = 0; i < 16+1; i++)
+    {
+        pdata = NULL;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        *pdata = 1;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id));
+    }
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
 TEST_WITH_ARG(tivxNegativeBoundary, negativeTestObjectArrayItems, Arg,
     PARAMETERS
 )
@@ -1082,7 +1112,8 @@ TESTCASE_TESTS(tivxBoundary,
         testVirtualObjectArray,
         testObjectArrayItems,
         testVirtualObjectArrayItems,
-        testContext
+        testContext,
+        testMapImage
         )
 
 TESTCASE_TESTS(tivxNegativeBoundary,
