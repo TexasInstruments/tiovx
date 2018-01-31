@@ -445,8 +445,89 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testGraphProcessing, Arg, LAPLACIAN_PYRAMID_
     ASSERT(tst_dst == 0);
 }
 
+TEST_WITH_ARG(tivxLaplacianPyramid, testVirtualOutput, Arg, LAPLACIAN_PYRAMID_PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_size levels = 0;
+    vx_uint32 i;
+    vx_uint32 new_w, new_h;
+    vx_image src = 0;
+    vx_image add_src = 0;
+    vx_image ref_dst = 0;
+    vx_image virt = 0;
+    vx_pyramid ref_pyr = 0;
+    vx_pyramid tst_pyr = 0;
+    int undefined_border = 2; // 5x5 kernel border
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = own_pyramid_calc_max_levels_count(input->width, input->height, VX_SCALE_PYRAMID_HALF);
+
+    {
+        vx_uint32 next_lev_width  = input->width;
+        vx_uint32 next_lev_height = input->height;
+
+        ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(tst_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+
+        for (i = 1; i < levels; i++)
+        {
+            next_lev_width  = (vx_uint32)ceilf(next_lev_width * VX_SCALE_PYRAMID_HALF);
+            next_lev_height = (vx_uint32)ceilf(next_lev_height * VX_SCALE_PYRAMID_HALF);
+        }
+
+        ASSERT_VX_OBJECT(add_src = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_NO_FAILURE(ct_fill_image_random(add_src, &CT()->seed_));
+        ASSERT_VX_OBJECT(ref_dst = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    }
+
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt  = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxLaplacianPyramidNode(graph, src, tst_pyr, virt), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxAddNode(graph, virt, add_src, VX_CONVERT_POLICY_SATURATE, ref_dst), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleasePyramid(&ref_pyr));
+    VX_CALL(vxReleasePyramid(&tst_pyr));
+    VX_CALL(vxReleaseImage(&add_src));
+    VX_CALL(vxReleaseImage(&ref_dst));
+    VX_CALL(vxReleaseImage(&virt));
+
+    ASSERT(src == 0);
+    ASSERT(ref_pyr == 0);
+    ASSERT(tst_pyr == 0);
+    ASSERT(add_src == 0);
+    ASSERT(ref_dst == 0);
+    ASSERT(virt == 0);
+}
+
 TESTCASE_TESTS(tivxLaplacianPyramid,
-        testGraphProcessing
+        testGraphProcessing,
+        testVirtualOutput
 )
 
 /* reconstruct image from laplacian pyramid */
