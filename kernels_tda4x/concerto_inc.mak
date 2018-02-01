@@ -3,6 +3,8 @@
 # to make it easier to add/extend kernels without needing to modify
 # several concerto.mak files which depend on kernel libraries.
 
+ifeq ($(TARGET_CPU),x86_64)
+
 STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa
 
 ifeq ($(BUILD_HWA_DMPAC_SDE),yes)
@@ -40,3 +42,4 @@ STATIC_LIBS += dl png
 LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/opencv
 
+endif
