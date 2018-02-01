@@ -56,6 +56,10 @@ CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 endif
 
+ifeq ($(TARGET_CPU),x86_64)
+CFLAGS      += -DTARGET_X86_64
+endif
+
 ifeq ($(TARGET_CPU),C66)
 SKIPBUILD=1
 endif
