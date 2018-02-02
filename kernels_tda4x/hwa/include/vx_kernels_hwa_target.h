@@ -75,7 +75,7 @@ extern "C" {
  */
 
 void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[]);
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, uint16_t dst16[]);
+void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, uint16_t dst16[], uint16_t input_bits);
 void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32);
 void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, int32_t *dst32);
 

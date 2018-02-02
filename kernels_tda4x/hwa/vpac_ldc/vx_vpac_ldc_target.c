@@ -214,7 +214,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     out_0_luma_or_422_desc->mem_size[0], out_0_luma_or_422_desc->mem_ptr[0].mem_type,
                     VX_WRITE_ONLY);
 
-                lse_reformat_out(in_luma_or_422_desc, out_0_luma_or_422_desc, prms->outY0_16);
+                lse_reformat_out(in_luma_or_422_desc, out_0_luma_or_422_desc, prms->outY0_16, 12);
 
                 tivxMemBufferUnmap(out_0_luma_or_422_desc->mem_ptr[0].target_ptr,
                     out_0_luma_or_422_desc->mem_size[0], out_0_luma_or_422_desc->mem_ptr[0].mem_type,
@@ -228,7 +228,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     out_1_chroma_desc->mem_size[0], out_1_chroma_desc->mem_ptr[0].mem_type,
                     VX_WRITE_ONLY);
 
-                lse_reformat_out(in_chroma_desc, out_1_chroma_desc, prms->outC1_16);
+                lse_reformat_out(in_chroma_desc, out_1_chroma_desc, prms->outC1_16, 12);
 
                 tivxMemBufferUnmap(out_1_chroma_desc->mem_ptr[0].target_ptr,
                     out_1_chroma_desc->mem_size[0], out_1_chroma_desc->mem_ptr[0].mem_type,
@@ -242,7 +242,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     out_2_luma_or_422_desc->mem_size[0], out_2_luma_or_422_desc->mem_ptr[0].mem_type,
                     VX_WRITE_ONLY);
 
-                lse_reformat_out(in_luma_or_422_desc, out_2_luma_or_422_desc, prms->outY2_16);
+                lse_reformat_out(in_luma_or_422_desc, out_2_luma_or_422_desc, prms->outY2_16, 12);
 
                 tivxMemBufferUnmap(out_2_luma_or_422_desc->mem_ptr[0].target_ptr,
                     out_2_luma_or_422_desc->mem_size[0], out_2_luma_or_422_desc->mem_ptr[0].mem_type,
@@ -256,7 +256,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     out_3_chroma_desc->mem_size[0], out_3_chroma_desc->mem_ptr[0].mem_type,
                     VX_WRITE_ONLY);
 
-                lse_reformat_out(in_chroma_desc, out_3_chroma_desc, prms->outC3_16);
+                lse_reformat_out(in_chroma_desc, out_3_chroma_desc, prms->outC3_16, 12);
 
                 tivxMemBufferUnmap(out_3_chroma_desc->mem_ptr[0].target_ptr,
                     out_3_chroma_desc->mem_size[0], out_3_chroma_desc->mem_ptr[0].mem_type,

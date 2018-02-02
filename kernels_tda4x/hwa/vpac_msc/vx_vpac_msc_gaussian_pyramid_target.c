@@ -264,7 +264,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        lse_reformat_out(&stub, dst, prms->dst16[0]);
+        lse_reformat_out(&stub, dst, prms->dst16[0], 12);
 
         tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
@@ -275,7 +275,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        lse_reformat_out(&stub, dst, prms->dst16[1]);
+        lse_reformat_out(&stub, dst, prms->dst16[1], 12);
 
         tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
@@ -304,7 +304,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-            lse_reformat_out(&stub, dst, prms->dst16[bufCnt^1]);
+            lse_reformat_out(&stub, dst, prms->dst16[bufCnt^1], 12);
 
             tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
                 dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);

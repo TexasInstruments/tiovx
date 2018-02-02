@@ -250,7 +250,7 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
-        lse_reformat_out(&stub, dst, prms->dst16);
+        lse_reformat_out(&stub, dst, prms->dst16, 12);
 
         tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
             dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);

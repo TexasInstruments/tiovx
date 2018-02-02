@@ -154,7 +154,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[])
     }
 }
 
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, uint16_t dst16[])
+void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, uint16_t dst16[], uint16_t input_bits)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -163,6 +163,9 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
     uint32_t w = dst->imagepatch_addr[0].dim_x;
     uint32_t h = dst->imagepatch_addr[0].dim_y;
     uint32_t stride = dst->imagepatch_addr[0].stride_y;
+    uint16_t downshift = input_bits-8;
+    uint16_t upshift = 12-input_bits;
+
 
     if (VX_DF_IMAGE_U8 == dst->format)
     {
@@ -174,8 +177,8 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
         {
             for(i=0; i < w; i++)
             {
-                /* Downshift from 12 to 8 bits */
-                dst_addr8[j*stride+i] = dst16[j*w+i] >> 4;
+                /* Downshift bits to align msb to bit 7 */
+                dst_addr8[j*stride+i] = dst16[j*w+i] >> downshift;
             }
         }
     }
@@ -190,8 +193,8 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
         {
             for(i=0; i < w; i++)
             {
-                /* Take 16 as is */
-                dst_addr16[j*stride+i] = dst16[j*w+i];
+                /* Upshift bits to align msb to bit 11 */
+                dst_addr16[j*stride+i] = dst16[j*w+i] << upshift;
             }
         }
     }
@@ -209,16 +212,16 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
             for(i=0; i < w; i+=8)
             {
                 /* 8 pixels are packed among 3 32-bit words */
-                dst_addr32[j*stride+k+0] =   (uint32_t)dst16[j*w+i+0] |
-                                            ((uint32_t)dst16[j*w+i+1] << 12) |
-                                           (((uint32_t)dst16[j*w+i+2] & 0xFF) << 24);
-                dst_addr32[j*stride+k+1] =  ((uint32_t)dst16[j*w+i+2] >> 8) |
-                                            ((uint32_t)dst16[j*w+i+3] << 4) |
-                                            ((uint32_t)dst16[j*w+i+4] << 16) |
-                                           (((uint32_t)dst16[j*w+i+5] & 0xF) << 28);
-                dst_addr32[j*stride+k+2] =  ((uint32_t)dst16[j*w+i+5] >> 4) |
-                                            ((uint32_t)dst16[j*w+i+6] << 8) |
-                                            ((uint32_t)dst16[j*w+i+7] << 20);
+                dst_addr32[j*stride+k+0] =   ((uint32_t)dst16[j*w+i+0] << upshift) |
+                                            (((uint32_t)dst16[j*w+i+1] << upshift) << 12) |
+                                           ((((uint32_t)dst16[j*w+i+2] << upshift) & 0xFF) << 24);
+                dst_addr32[j*stride+k+1] =  (((uint32_t)dst16[j*w+i+2] << upshift) >> 8) |
+                                            (((uint32_t)dst16[j*w+i+3] << upshift) << 4) |
+                                            (((uint32_t)dst16[j*w+i+4] << upshift) << 16) |
+                                           ((((uint32_t)dst16[j*w+i+5] << upshift) & 0xF) << 28);
+                dst_addr32[j*stride+k+2] =  (((uint32_t)dst16[j*w+i+5] << upshift) >> 4) |
+                                            (((uint32_t)dst16[j*w+i+6] << upshift) << 8) |
+                                            (((uint32_t)dst16[j*w+i+7] << upshift) << 20);
                 k+=3;
             }
         }
@@ -337,4 +340,3 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
         }
     }
 }
-

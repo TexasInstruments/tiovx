@@ -211,7 +211,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         if (VX_SUCCESS == status)
         {
 
-            lse_reformat_out(input_desc, output_desc, prms->dst16);
+            lse_reformat_out(input_desc, output_desc, prms->dst16, 12);
 
             tivxMemBufferUnmap(configuration_desc->mem_ptr.target_ptr,
                configuration_desc->mem_size, configuration_desc->mem_ptr.mem_type,

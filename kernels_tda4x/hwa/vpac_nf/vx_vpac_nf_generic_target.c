@@ -220,7 +220,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         if (VX_SUCCESS == status)
         {
 
-            lse_reformat_out(src, dst, prms->dst16);
+            lse_reformat_out(src, dst, prms->dst16, 12);
 
             tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
                 src->mem_ptr[0].mem_type, VX_READ_ONLY);
