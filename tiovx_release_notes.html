@@ -97,19 +97,17 @@ Refer to following documentation for further details:<p>
 <h2><a class="anchor" name="Whats_New"></a>What's New</h2>
 <p>
 <p>
-This is the first release of TIOVX. Here are a few of the features supported in this release: <ol>
+Here are a few of the new features supported in this release: <ol>
 <li>
-Conformant to OpenVX 1.1 Specification </li>
+[TIOVX-163] - Build: Add 64b emulation mode support</li>
 <li>
-DMA acceleration through BAM wrapper </li>
+[TIOVX-166] - Build: Support for TIOVX to optionally build separate workarea directories for both custom applications and custom kernels</li>
 <li>
-Sample EVE iVision kernel integration</li>
+[TIOVX-167] - Support for loading and saving PNG images to and from vx_image objects</li>
 <li>
-Sample Vision SDK camera/display use-case integration</li>
+[TIOVX-170] - Support ability for target kernel registration using kernel name string as input instead of kernel enumeration</li>
 <li>
-OpenVX tutorial to get started on TIOVX development</li>
-<li>
-Python-based tool for generating OpenVX code </li>
+[TIOVX-190] - Support ability for user to query node target</li>
 </ol>
 <p>
 <p>
@@ -251,23 +249,25 @@ Vision SDK version: 3.1.0.0 </li>
 <p>
 <ol>
 <li>
-TIOVX-160: channel combine and channel extract overflow VXLIB_bufParams2D_t in tivxInitBufParams 
+[TIOVX-157] - "make clean" does not clean generated libs in lib folder 
 <li>
-TIOVX-150: Replicate Node does not call host side initialize callback for each replication 
+[TIOVX-165] - Heterogeneous target support for the same kernel
 <li>
-TIOVX-151: vxMapImage when called more than 16 times fails 
+[TIOVX-180] - Error Logs in Conformance Tests
 <li>
-TIOVX-154: VX_Bool is 1 byte align on target which causes failures with some alignment checks 
+[TIOVX-181] - vxCreateScalar should allow for NULL pointers but throws error from vxCopyScalar
 <li>
-TIOVX-159: tivxQueueCreate on BIOS side does not return correct status 
+[TIOVX-182] - vxQueryLUT option VX_LUT_OFFSET is not supported
 <li>
-TIOVX-156: vxGetPyramidLevel returns error object when pyramid is virtual 
+[TIOVX-183] - vxSetMetaFormatAttribute in kernel host validate are called incorrectly
 <li>
-TIOVX-142: Test: Valid region 
+[TIOVX-185] - Metas not set for low image output of Laplacian Pyramid kernel
 <li>
-TIOVX-89: Platform: Linux x86 32b mode with GCC toolchain with Ubuntu 16.04 
+[TIOVX-194] - Remove error prints from target
 <li>
-TIOVX-153: Prebuilt PC emulation mode libaries for BAM cause segmentation fault. 
+[TIOVX-195] - Off-by-one error for querying VX_CONTEXT_UNIQUE_KERNEL_TABLE
+<li>
+[TIOVX-197] - Halfscale Gaussian Validate missing width/height verification
 </ol>
 <p>
 <hr>
@@ -279,11 +279,11 @@ VXLIB-371: Multiply iS16 iS16 oS16 with 1/255 as scaling factor fails for X86 ta
 <li>
 TIOVX-24: Some Harris Corners test cases fails for when running entire test suite </li>
 <li>
-TIOVX-157:"make clean" does not clean generated libs in lib folder.
+TIOVX-148: Performance numbers errors. There are some kernels that have graph performance faster than node performance.
 <li>
 TIOVX-155: Test case failures on TDA2 without BAM for Harris Corner test
 <li>
-TIOVX-148: Performance numbers errors. There are some kernels that have graph performance faster than node performance.
+TIOVX-164: In x86_64, some replicate with Pyramid testcases fail
 </ol>
 <p>
 <hr>
