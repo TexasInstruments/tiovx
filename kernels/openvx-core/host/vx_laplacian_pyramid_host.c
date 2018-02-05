@@ -66,6 +66,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_laplacian_pyramid.h>
 #include <TI/tivx_target_kernel.h>
+#include <math.h>
 
 static vx_kernel vx_laplacian_pyramid_kernel = NULL;
 
