@@ -119,9 +119,10 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if ((VX_DF_IMAGE_U8 != fmt) && (VX_DF_IMAGE_S16 != fmt))
+        if (VX_DF_IMAGE_U8 != fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR,"Due to a bug in the OpenVX 1.1 Spec, the U8 data type is the only data type supported for Laplacian Pyramid images\n");
         }
     }
 
@@ -175,6 +176,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
         if (fmt != p_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR,"Due to a bug in the OpenVX 1.1 Spec, the U8 data type is the only data type supported for Laplacian Pyramid images\n");
         }
     }
 
@@ -223,7 +225,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX],
                 VX_IMAGE_HEIGHT, &h, sizeof(h));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX],
-                VX_IMAGE_FORMAT, &p_fmt, sizeof(p_fmt));
+                VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
         }
     }
 

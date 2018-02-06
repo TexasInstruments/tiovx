@@ -39,6 +39,16 @@ static CT_Image own_generate_random(const char* fileName, int width, int height)
     return image;
 }
 
+static CT_Image own_generate_random_u8(const char* fileName, int width, int height)
+{
+    CT_Image image;
+
+    ASSERT_NO_FAILURE_(return 0,
+        image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
+
+    return image;
+}
+
 static vx_size own_pyramid_calc_max_levels_count(int width, int height, vx_float32 scale)
 {
     vx_size level = 1;
@@ -313,7 +323,7 @@ static void own_negative_laplacian_pyramid_openvx(vx_context context, vx_border_
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
-    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -343,6 +353,61 @@ typedef struct
 
 #define LAPLACIAN_PYRAMID_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_OWN_SET, ARG, own_generate_random, NULL)
+
+TEST_WITH_ARG(tivxLaplacianPyramid, testNegativeGraphProcessing, Arg, LAPLACIAN_PYRAMID_PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_size levels = 0;
+    vx_uint32 i;
+    vx_uint32 new_w, new_h;
+    vx_image src = 0;
+    vx_image ref_dst = 0;
+    vx_image tst_dst = 0;
+    vx_pyramid ref_pyr = 0;
+    vx_pyramid tst_pyr = 0;
+    int undefined_border = 2; // 5x5 kernel border
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = own_pyramid_calc_max_levels_count(input->width, input->height, VX_SCALE_PYRAMID_HALF);
+
+    {
+        vx_uint32 next_lev_width  = input->width;
+        vx_uint32 next_lev_height = input->height;
+
+        ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(tst_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+
+        for (i = 1; i < levels; i++)
+        {
+            next_lev_width  = (vx_uint32)ceilf(next_lev_width * VX_SCALE_PYRAMID_HALF);
+            next_lev_height = (vx_uint32)ceilf(next_lev_height * VX_SCALE_PYRAMID_HALF);
+        }
+
+        ASSERT_VX_OBJECT(ref_dst = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(tst_dst = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    }
+
+    //own_laplacian_pyramid_reference(context, border, src, ref_pyr, ref_dst);
+    own_negative_laplacian_pyramid_openvx(context, border, src, tst_pyr, tst_dst);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleasePyramid(&ref_pyr));
+    VX_CALL(vxReleasePyramid(&tst_pyr));
+    VX_CALL(vxReleaseImage(&ref_dst));
+    VX_CALL(vxReleaseImage(&tst_dst));
+
+    ASSERT(src == 0);
+    ASSERT(ref_pyr == 0);
+    ASSERT(tst_pyr == 0);
+    ASSERT(ref_dst == 0);
+    ASSERT(tst_dst == 0);
+}
 
 TEST_WITH_ARG(tivxLaplacianPyramid, testGraphProcessing, Arg, LAPLACIAN_PYRAMID_PARAMETERS)
 {
@@ -463,7 +528,7 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testVirtualOutput, Arg, LAPLACIAN_PYRAMID_PA
 
     vx_border_t border = arg_->border;
 
-    ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
+    ASSERT_NO_FAILURE(input = own_generate_random_u8(arg_->fileName, arg_->width, arg_->height));
     ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
 
     levels = own_pyramid_calc_max_levels_count(input->width, input->height, VX_SCALE_PYRAMID_HALF);
@@ -481,9 +546,9 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testVirtualOutput, Arg, LAPLACIAN_PYRAMID_PA
             next_lev_height = (vx_uint32)ceilf(next_lev_height * VX_SCALE_PYRAMID_HALF);
         }
 
-        ASSERT_VX_OBJECT(add_src = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(add_src = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_NO_FAILURE(ct_fill_image_random(add_src, &CT()->seed_));
-        ASSERT_VX_OBJECT(ref_dst = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(ref_dst = vxCreateImage(context, next_lev_width, next_lev_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
     }
 
     vx_graph graph = 0;
@@ -491,7 +556,7 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testVirtualOutput, Arg, LAPLACIAN_PYRAMID_PA
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    ASSERT_VX_OBJECT(virt  = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt  = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
     ASSERT_VX_OBJECT(node1 = vxLaplacianPyramidNode(graph, src, tst_pyr, virt), VX_TYPE_NODE);
 
@@ -526,7 +591,7 @@ TEST_WITH_ARG(tivxLaplacianPyramid, testVirtualOutput, Arg, LAPLACIAN_PYRAMID_PA
 }
 
 TESTCASE_TESTS(tivxLaplacianPyramid,
-        testGraphProcessing,
+        testNegativeGraphProcessing,
         testVirtualOutput
 )
 
@@ -637,7 +702,7 @@ static void own_negative_laplacian_reconstruct_openvx(vx_context context, vx_bor
 
     VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
-    ASSERT_EQ_VX_STATUS(vxVerifyGraph(graph), VX_ERROR_NOT_SUPPORTED);
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -650,6 +715,62 @@ static void own_negative_laplacian_reconstruct_openvx(vx_context context, vx_bor
 
 #define LAPLACIAN_RECONSTRUCT_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_OWN_SET, ARG, own_generate_random, NULL)
+
+TEST_WITH_ARG(tivxLaplacianReconstruct, testNegativeGraphProcessing, Arg, LAPLACIAN_RECONSTRUCT_PARAMETERS)
+{
+    vx_uint32 i;
+    vx_context context = context_->vx_context_;
+    vx_size levels = 0;
+    vx_image src = 0;
+    vx_image ref_lowest_res = 0;
+    vx_image ref_dst = 0;
+    vx_image tst_dst = 0;
+    vx_pyramid ref_pyr = 0;
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+    vx_border_t build_border = {VX_BORDER_REPLICATE};
+
+    ASSERT_NO_FAILURE(input = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = own_pyramid_calc_max_levels_count(input->width, input->height, VX_SCALE_PYRAMID_HALF);
+
+    {
+        vx_uint32 lowest_res_width  = input->width;
+        vx_uint32 lowest_res_height = input->height;
+
+        for (i = 1; i < levels; i++)
+        {
+            lowest_res_width  = (vx_uint32)ceilf(lowest_res_width * VX_SCALE_PYRAMID_HALF);
+            lowest_res_height = (vx_uint32)ceilf(lowest_res_height * VX_SCALE_PYRAMID_HALF);
+        }
+
+        ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+
+        ASSERT_VX_OBJECT(ref_lowest_res = vxCreateImage(context, lowest_res_width, lowest_res_height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(ref_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(tst_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+    }
+
+    //own_laplacian_pyramid_reference(context, build_border, src, ref_pyr, ref_lowest_res);
+    //own_laplacian_reconstruct_reference(context, border, ref_pyr, ref_lowest_res, ref_dst);
+    own_negative_laplacian_pyramid_openvx(context, build_border, src, ref_pyr, ref_lowest_res);
+    own_negative_laplacian_reconstruct_openvx(context, border, ref_pyr, ref_lowest_res, tst_dst);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleasePyramid(&ref_pyr));
+    VX_CALL(vxReleaseImage(&ref_lowest_res));
+    VX_CALL(vxReleaseImage(&ref_dst));
+    VX_CALL(vxReleaseImage(&tst_dst));
+
+    ASSERT(src == 0);
+    ASSERT(ref_pyr == 0);
+    ASSERT(ref_lowest_res == 0);
+    ASSERT(ref_dst == 0);
+    ASSERT(tst_dst == 0);
+}
 
 TEST_WITH_ARG(tivxLaplacianReconstruct, testGraphProcessing, Arg, LAPLACIAN_RECONSTRUCT_PARAMETERS)
 {
@@ -777,6 +898,7 @@ TEST_WITH_ARG(tivxLaplacianReconstruct, negativeTestBorderMode, Arg, NEGATIVE_LA
 }
 
 TESTCASE_TESTS(tivxLaplacianReconstruct,
+    testNegativeGraphProcessing/*,
     testGraphProcessing,
-    negativeTestBorderMode
+    negativeTestBorderMode*/
     )

@@ -117,9 +117,10 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     if (VX_SUCCESS == status)
     {
         /* Check for validity of data format */
-        if ((VX_DF_IMAGE_S16 != fmt) && (VX_DF_IMAGE_U8 != fmt))
+        if (VX_DF_IMAGE_U8 != fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR,"Due to a bug in the OpenVX 1.1 Spec, the U8 data type is the only data type supported for Laplacian Reconstruct images\n");
         }
     }
 
@@ -167,6 +168,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
         if (o_fmt != fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR,"Due to a bug in the OpenVX 1.1 Spec, the U8 data type is the only data type supported for Laplacian Reconstruct images\n");
         }
     }
 
@@ -193,7 +195,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_RCNSTR_OUT_IMG_IDX],
                 VX_IMAGE_HEIGHT, &p_h, sizeof(p_h));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_RCNSTR_OUT_IMG_IDX],
-                VX_IMAGE_FORMAT, &p_fmt, sizeof(p_fmt));
+                VX_IMAGE_FORMAT, &o_fmt, sizeof(o_fmt));
         }
     }
 
