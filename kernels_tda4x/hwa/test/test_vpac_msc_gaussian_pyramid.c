@@ -42,6 +42,7 @@ TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
     const vx_uint32 width    = 640;
     const vx_uint32 height   = 480;
     const vx_df_image format = VX_DF_IMAGE_U8;
+    char nodeTarget[TIVX_TARGET_MAX_NAME];
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_MSC1))
     {
@@ -90,6 +91,10 @@ TEST(tivxHwaVpacMscGaussianPyramid, testNodeCreation)
         ASSERT_VX_OBJECT(node = vxGaussianPyramidNode(graph, input, pyr), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
+
+        VX_CALL(vxQueryNode(node, TIVX_NODE_TARGET_STRING, &nodeTarget, sizeof(nodeTarget)));
+
+        ASSERT(strncmp(nodeTarget, TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_MAX_NAME) == 0);
 
         VX_CALL(vxVerifyGraph(graph));
 
