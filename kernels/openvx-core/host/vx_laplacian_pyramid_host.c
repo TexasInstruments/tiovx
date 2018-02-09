@@ -165,12 +165,29 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
         }
     }
 
+    if (VX_SUCCESS == status)
+    {
+        for (i = 0; i < num_levels; i++)
+        {
+            w = (vx_uint32)ceilf(w * scale);
+            h = (vx_uint32)ceilf(h * scale);
+        }
+    }
+
     if ((VX_SUCCESS == status) &&
         (vx_false_e == tivxIsReferenceVirtual((vx_reference)low_img)))
     {
         status = vxQueryImage(low_img, VX_IMAGE_WIDTH, &p_w, sizeof(p_w));
         status |= vxQueryImage(low_img, VX_IMAGE_HEIGHT, &p_h, sizeof(p_h));
         status |= vxQueryImage(low_img, VX_IMAGE_FORMAT, &p_fmt, sizeof(p_fmt));
+
+
+
+        /* Check for frame sizes */
+        if ((w != p_w) || (h != p_h))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
 
         /* Check for format */
         if (fmt != p_fmt)
@@ -197,7 +214,6 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         p_fmt = VX_DF_IMAGE_S16;
-        scale = VX_SCALE_PYRAMID_HALF;
         if (NULL != metas[TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX])
         {
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX],
@@ -210,12 +226,6 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
                 VX_PYRAMID_LEVELS, &num_levels, sizeof(num_levels));
             vxSetMetaFormatAttribute(metas[TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX],
                 VX_PYRAMID_SCALE, &scale, sizeof(scale));
-        }
-
-        for (i = 0; i < num_levels; i++)
-        {
-            w = (vx_uint32)ceilf(w * VX_SCALE_PYRAMID_HALF);
-            h = (vx_uint32)ceilf(h * VX_SCALE_PYRAMID_HALF);
         }
 
         if (NULL != metas[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX])

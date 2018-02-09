@@ -46,7 +46,7 @@ TEST(LaplacianPyramid, testNodeCreation)
     vx_size L = levels - 1;
 
     ASSERT_VX_OBJECT(input = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-    ASSERT_VX_OBJECT(laplacian = vxCreatePyramid(context, levels, scale, width, height, format), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(laplacian = vxCreatePyramid(context, L, scale, width, height, format), VX_TYPE_PYRAMID);
 
     while (L--)
     {
