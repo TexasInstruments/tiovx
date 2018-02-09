@@ -649,6 +649,53 @@ TESTCASE_TESTS(tivxLaplacianPyramid,
 
 TESTCASE(tivxLaplacianReconstruct, CT_VXContext, ct_setup_vx_context, 0)
 
+TEST(tivxLaplacianReconstruct, testNegativeNodeCreation)
+{
+    vx_context context = context_->vx_context_;
+    vx_pyramid laplacian = 0;
+    vx_image   input = 0;
+    vx_image   output = 0;
+    vx_graph   graph = 0;
+    vx_node    node = 0;
+    const vx_size levels = 4;
+    const vx_float32 scale = VX_SCALE_PYRAMID_HALF;
+    const vx_uint32 width = 640;
+    const vx_uint32 height = 480;
+    const vx_df_image format = VX_DF_IMAGE_U8;
+    vx_size num_levels = levels - 1;
+    vx_uint32 w = width;
+    vx_uint32 h = height;
+
+    while (num_levels--)
+    {
+        w = (vx_uint32)ceilf(w * scale);
+        h = (vx_uint32)ceilf(h * scale);
+    }
+
+    ASSERT_VX_OBJECT(input = vxCreateImage(context, w, h, format), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(output = vxCreateImage(context, width, height, format), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(laplacian = vxCreatePyramid(context, levels, scale, width, height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node = vxLaplacianReconstructNode(graph, laplacian, input, output), VX_TYPE_NODE);
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    VX_CALL(vxReleaseImage(&input));
+    VX_CALL(vxReleasePyramid(&laplacian));
+    VX_CALL(vxReleaseImage(&output));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(laplacian == 0);
+    ASSERT(input == 0);
+    ASSERT(output == 0);
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+}
+
 static void own_laplacian_reconstruct_reference(vx_context context, vx_border_t border, vx_pyramid laplacian, vx_image input, vx_image output)
 {
     vx_size i;
@@ -946,7 +993,8 @@ TEST_WITH_ARG(tivxLaplacianReconstruct, negativeTestBorderMode, Arg, NEGATIVE_LA
 }
 
 TESTCASE_TESTS(tivxLaplacianReconstruct,
-    testNegativeGraphProcessing/*,
+    testNegativeGraphProcessing,
+    testNegativeNodeCreation/*,
     testGraphProcessing,
     negativeTestBorderMode*/
     )

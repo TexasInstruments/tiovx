@@ -181,8 +181,6 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianPyramidValidate(vx_node node,
         status |= vxQueryImage(low_img, VX_IMAGE_HEIGHT, &p_h, sizeof(p_h));
         status |= vxQueryImage(low_img, VX_IMAGE_FORMAT, &p_fmt, sizeof(p_fmt));
 
-
-
         /* Check for frame sizes */
         if ((w != p_w) || (h != p_h))
         {

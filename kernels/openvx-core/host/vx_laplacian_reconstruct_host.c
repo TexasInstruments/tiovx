@@ -66,6 +66,7 @@
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_laplacian_reconstruct.h>
 #include <TI/tivx_target_kernel.h>
+#include <math.h>
 
 static vx_kernel vx_laplacian_reconstruct_kernel = NULL;
 
@@ -87,10 +88,12 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
     vx_image src_img, out_img;
     vx_pyramid pmd;
     vx_uint32 w, h, i;
+    vx_uint32 input_w, input_h;
     vx_uint32 p_w, p_h;
     vx_df_image fmt, o_fmt, p_fmt;
     vx_float32 scale;
     vx_border_t border;
+    vx_size levels;
 
     for (i = 0U; i < TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS; i ++)
     {
@@ -110,8 +113,8 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
         /* Get the image width/heigh and format */
         status = vxQueryImage(src_img, VX_IMAGE_FORMAT, &fmt, sizeof(fmt));
 
-        status |= vxQueryImage(src_img, VX_IMAGE_WIDTH, &w, sizeof(w));
-        status |= vxQueryImage(src_img, VX_IMAGE_HEIGHT, &h, sizeof(h));
+        status |= vxQueryImage(src_img, VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        status |= vxQueryImage(src_img, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
     }
 
     if (VX_SUCCESS == status)
@@ -142,6 +145,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
         status = vxQueryPyramid(pmd, VX_PYRAMID_WIDTH, &p_w, sizeof(p_w));
         status |= vxQueryPyramid(pmd, VX_PYRAMID_HEIGHT, &p_h, sizeof(p_h));
         status |= vxQueryPyramid(pmd, VX_PYRAMID_FORMAT, &p_fmt, sizeof(p_fmt));
+        status |= vxQueryPyramid(pmd, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
 
         /* Check for validity of data format */
         if (VX_DF_IMAGE_S16 != p_fmt)
@@ -170,6 +174,22 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR,"Due to a bug in the OpenVX 1.1 Spec, the U8 data type is the only data type supported for Laplacian Reconstruct images\n");
         }
+
+        if (VX_SUCCESS == status)
+        {
+            for (i = 0; i < levels; i++)
+            {
+                w = (vx_uint32)ceilf(w * scale);
+                h = (vx_uint32)ceilf(h * scale);
+            }
+
+            /* Check for frame sizes */
+            if ((w != input_w) || (h != input_h))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+            }
+        }
+
     }
 
     if (VX_SUCCESS == status)
