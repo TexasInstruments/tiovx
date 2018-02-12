@@ -502,23 +502,23 @@ static void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_w
     /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 1_3, 1, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 1_2, 1, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), */ \
     /* NN downscale with odd integer factor */\
-    SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 3_1, 1, ADD_SIZE_96x96, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 3_1, 1, ADD_SIZE_96x96, ADD_VX_BORDERS, ARG, 0), */\
     /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 5_1, 1, ADD_SIZE_100x100, ADD_VX_BORDERS, ARG, 0), */ \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_pattern3x3, "pattern3x3", 3_1, 1, ADD_SIZE_96x96, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 3_1, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_read_image, "lena.bmp", 3_1, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), */\
     /* other NN downscales */ \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 2_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 4_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
     /* BILINEAR upscale with integer factor */ \
     /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_3, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* BILINEAR downscales */ \
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 2_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 3_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 3_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0),*/ \
     SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 4_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
     /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 5_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* AREA tests */ \
     SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_gradient_16x16, "gradient16x16", 4_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_AREA,             scale_read_image, "lena.bmp", 4_1, 0, ADD_SIZE_NONE, ADD_VX_BORDERS, ARG, 0), \
@@ -529,9 +529,9 @@ static void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_w
     /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_NEAR_UP, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_NEAR_UP, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", SCALE_NEAR_UP, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
-    SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */\
+    /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */\
+    /* SCALE_TEST(VX_INTERPOLATION_AREA,             scale_generate_random, "random", SCALE_NEAR_DOWN, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */\
 
 TEST_WITH_ARG(tivxHwaVpacMscScale, testGraphProcessing, Arg,
     PARAMETERS

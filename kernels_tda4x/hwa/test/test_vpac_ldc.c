@@ -694,7 +694,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
         tivxHwaUnLoadKernels(context);
 
-        if((arg_->input_mode == 0 || arg_->input_mode == 1) && (arg_->mesh_mode == 0))
+        if((arg_->input_mode == 0 || arg_->input_mode == 1) && (arg_->mesh_mode == 0) &&
+           (arg_->matrix_type != VX_MATRIX_SCALE))
         {
             ASSERT_NO_FAILURE(warp_affine_check(input, output, arg_->interp_type, arg_->border, m));
         }
