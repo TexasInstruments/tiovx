@@ -42,7 +42,7 @@ STATIC_LIBS += vx_utils
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 STATIC_LIBS += vx_conformance_engine
 endif
-STATIC_LIBS += dl png
+STATIC_LIBS += rt dl png
 
 LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/opencv
