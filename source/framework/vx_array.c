@@ -328,12 +328,16 @@ vx_status VX_API_CALL vxAddArrayItems(
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((obj_desc->capacity < (obj_desc->num_items + count)) ||
-            (stride < obj_desc->item_size) ||
-            (stride == 0))
+        if (obj_desc->capacity < (obj_desc->num_items + count))
         {
             /* Array is full */
             VX_PRINT(VX_ZONE_ERROR,"Array is full\n");
+            status = VX_FAILURE;
+        }
+
+        if ((stride < obj_desc->item_size) || (stride == 0))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Stride should be >= item_size\n");
             status = VX_FAILURE;
         }
     }
