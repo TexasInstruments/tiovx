@@ -165,10 +165,11 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name)
             status = VX_SUCCESS;
             break;
         }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxUnRegisterModule: Publish and/or unpublish are NULL\n");
-        }
+    }
+
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxUnRegisterModule: Unable to unregister module [%s]\n", name);
     }
 
     return status;
