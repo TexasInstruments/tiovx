@@ -76,13 +76,37 @@ extern "C" {
  * \brief Interface to TI extension APIs
  */
 
+/*! \brief Target name for VPAC NF
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_VPAC_NF      "RESV00"
+/*! \brief Target name for VPAC LDC1
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_VPAC_LDC1    "RESV01"
+/*! \brief Target name for VPAC LDC2
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_VPAC_LDC2    "RESV02"
+/*! \brief Target name for VPAC MSC1
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_VPAC_MSC1    "RESV03"
+/*! \brief Target name for VPAC MSC2
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_VPAC_MSC2    "RESV04"
+/*! \brief Target name for VPAC SDE
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_DMPAC_SDE    "RESV05"
+/*! \brief Target name for VPAC DOF
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_DMPAC_DOF    "RESV06"
+/*! \brief Target name for VPAC VISS1
+ * \ingroup group_tivx_ext
+ */
 #define TIVX_TARGET_VPAC_VISS1   "RESV07"
 
 /*! \brief Based on the VX_DF_IMAGE definition.
@@ -100,3 +124,47 @@ enum tivx_df_image_e {
 #endif
 
 #endif
+
+/*!
+ * \defgroup group_tivx_api 1: TIOVX Interface Modules
+ */
+
+/*!
+ * \defgroup group_tivx_ext TI Extention APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_vision_function_hwa TI HWA Kernel APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_vision_function_vpac_nf TI VPAC NF (Noise filter) Kernel APIs
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
+ * \defgroup group_vision_function_vpac_msc TI VPAC MSC (Multi-scalar) Kernel APIs
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
+ * \defgroup group_vision_function_vpac_viss TI VPAC VISS (Vision Imaging Sub System) Kernel APIs
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
+ * \defgroup group_vision_function_vpac_ldc TI VPAC LDC (Lens Distortion Correction) Kernel APIs
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
+ * \defgroup group_vision_function_dmpac_dof TI DMPAC DOF (Dense Optical Flow) Kernel APIs
+ * \ingroup group_vision_function_hwa
+ */
+
+/*!
+ * \defgroup group_vision_function_dmpac_sde TI DMPAC SDE (Stereo Disparity Engine) Kernel APIs
+ * \ingroup group_vision_function_hwa
+ */

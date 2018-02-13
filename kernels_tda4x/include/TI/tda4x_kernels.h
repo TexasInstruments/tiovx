@@ -92,46 +92,46 @@ extern "C" {
  * \arg <tt>\ref VX_TYPE_IMAGE</tt> for a <tt>\ref vx_image</tt> in the size field of <tt>\ref vxGetParameterByIndex</tt> or <tt>\ref vxSetParameterByIndex</tt>
  * \arg <tt>\ref VX_TYPE_ARRAY</tt> for a <tt>\ref vx_array</tt> in the size field of <tt>\ref vxGetParameterByIndex</tt> or <tt>\ref vxSetParameterByIndex</tt>
  * \arg or other appropriate types in \ref vx_type_e.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_hwa
  */
 
 /*! \brief vpac_nf_generic kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_vpac_nf
  */
 #define TIVX_KERNEL_VPAC_NF_GENERIC_NAME     "com.ti.hwa.vpac_nf_generic"
 
 /*! \brief vpac_nf_bilateral kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_vpac_nf
  */
 #define TIVX_KERNEL_VPAC_NF_BILATERAL_NAME     "com.ti.hwa.vpac_nf_bilateral"
 
 /*! \brief dmpac_sde kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_dmpac_sde
  */
 #define TIVX_KERNEL_DMPAC_SDE_NAME     "com.ti.hwa.dmpac_sde"
 
 /*! \brief vpac_ldc kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_vpac_ldc
  */
 #define TIVX_KERNEL_VPAC_LDC_NAME     "com.ti.hwa.vpac_ldc"
 
 /*! \brief vpac_msc kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_vpac_msc
  */
 #define TIVX_KERNEL_VPAC_MSC_NAME     "com.ti.hwa.vpac_msc"
 
 /*! \brief dmpac_dof kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_dmpac_dof
  */
 #define TIVX_KERNEL_DMPAC_DOF_NAME     "com.ti.hwa.dmpac_dof"
 
 /*! \brief dof_visualize kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_dmpac_dof
  */
 #define TIVX_KERNEL_DOF_VISUALIZE_NAME     "com.ti.hwa.dof_visualize"
 
 /*! \brief vpac_viss kernel name
- *  \see group_vision_function_hwa
+ *  \ingroup group_vision_function_vpac_viss
  */
 #define TIVX_KERNEL_VPAC_VISS_NAME     "com.ti.hwa.vpac_viss"
 
@@ -145,7 +145,7 @@ extern "C" {
  * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_NF_GENERIC and TIVX_KERNEL_VPAC_NF_BILATERAL
  *         kernels.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_nf
  */
 typedef struct {
     uint16_t  input_interleaved;       /*!< 0: NonInterleaved input mode; 1: Interleaved input mode (i.e. chroma plane of NV12) */
@@ -161,7 +161,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_NF_BILATERAL kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_nf
  */
 typedef struct {
     tivx_vpac_nf_common_params_t params;    /*!< Common parameters for configuring vpac nf */
@@ -176,7 +176,7 @@ typedef struct {
 /*!
  * \brief The sigmas data structure used by the TIVX_KERNEL_VPAC_NF_BILATERAL kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_nf
  */
 typedef struct {
     /*! The number of sigmas given in each of the sigma_space and sigma_range arrays. Valid supported values are 1, 2, 4, or 8.
@@ -205,7 +205,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_DMPAC_SDE kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_dmpac_sde
  */
 typedef struct {
     uint16_t  median_filter_enable;         /*!< 0: Disabled; 1: Enable post-processing 5x5 median filter */
@@ -237,7 +237,7 @@ typedef struct {
 /*!
  * \brief The convert depth structure in the configuration data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
     uint16_t  in_bits;          /*!< Input bit depth [Range (8 - 12)] */
@@ -247,7 +247,7 @@ typedef struct {
 /*!
  * \brief The mesh data structure in the configuration data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
     uint16_t  frame_width;       /*!< Mesh table full-frame width before subsampling */
@@ -258,7 +258,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
     uint16_t  luma_interpolation_type;          /*!< Luma Interpolation Type, 0: Bicubic; 1: Bilinear */
@@ -274,7 +274,7 @@ typedef struct {
 /*!
  * \brief The region_params data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
     uint16_t  out_block_width;              /*!< Output block width (must be multiple of 8) [Range (8 - 255)] */
@@ -285,7 +285,7 @@ typedef struct {
 /*!
  * \brief The alternative region_params data structure used by the TIVX_KERNEL_VPAC_LDC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
     uint16_t column_width[3];               /*!< Width of each column of sub-frames [Range (1 - 8191)] */
@@ -299,7 +299,7 @@ typedef struct {
 /*!
  * \brief The bandwidth params structure used by the TIVX_KERNEL_VPAC_LDC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
     /*! Limits the mean bandwidth (computed over one block) that the LDC module can request for read from system memory. [Range (0 - 4095)]
@@ -332,7 +332,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_msc
  */
 typedef struct {
     /*! Single-phase horizontal filter coefficient source
@@ -364,7 +364,7 @@ typedef struct {
 /*!
  * \brief The multi_phase data structure in the configuration data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_msc
  */
 typedef struct {
     uint16_t  phase_mode;           /*!< Multi-phase Mode, 0: 64 phases, 1: 32 phases */
@@ -393,7 +393,7 @@ typedef struct {
 /*!
  * \brief The output config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_msc
  */
 typedef struct {
     uint16_t  input_map;          /*!< Specified which input port this output is mapped to [Range (0-1)] */
@@ -423,7 +423,7 @@ typedef struct {
 /*!
  * \brief The input config data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_msc
  */
 typedef struct {
     uint16_t  pixel_width;             /*!< Input pixel width, 0: 8-bit, 1: 12-bit, 3: 16-bit */
@@ -438,7 +438,7 @@ typedef struct {
 /*!
  * \brief The coefficients input data structure used by the TIVX_KERNEL_VPAC_MSC kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_msc
  */
 typedef struct {
     int16_t  single_phase_0[5];             /*!< Single phase coefficient set 0, signed 10-bit */
@@ -457,7 +457,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_DMPAC_DOF kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_dmpac_dof
  */
 typedef struct {
     uint16_t  vertical_search_range[2];     /*!< Range [0, 63] 	Recommended = 48, 48 (vertical_search_range[0] (upward) + vertical_search_range[1] (downward) <= 96) */
@@ -474,7 +474,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_viss
  */
 typedef struct {
     /* not needed from algo */
@@ -499,7 +499,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_viss
  */
 typedef struct {
     /* Data corresponding to result of 2A algorithm ... used to index into the appropriate photospace in the DCC files (resv) */
@@ -515,7 +515,7 @@ typedef struct {
 /*!
  * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
  *
- * \ingroup group_kernel
+ * \ingroup group_vision_function_vpac_viss
  */
 typedef struct {
     uint16_t  aew_af_mode;     /*!< Indicates the contents of this buffer:                0: AEW data, 1:AF data */
@@ -530,19 +530,19 @@ typedef struct {
 
 /*!
  * \brief Used for the Application to load the hwa kernels into the context.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_hwa
  */
 void tivxHwaLoadKernels(vx_context context);
 
 /*!
  * \brief Used for the Application to unload the hwa kernels from the context.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_hwa
  */
 void tivxHwaUnLoadKernels(vx_context context);
 
 /*!
  * \brief Used to print the performance of the kernels.
- * \ingroup group_kernel
+ * \ingroup group_vision_function_hwa
  */
 void tivxHwaPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
 

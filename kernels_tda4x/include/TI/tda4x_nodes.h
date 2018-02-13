@@ -76,7 +76,7 @@ extern "C" {
  * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.  Scale value is ignored.  Coefficients are 9-bit signed.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC_NAME</tt>
- * \ingroup group_vision_function_vpac_nf_generic
+ * \ingroup group_vision_function_vpac_nf
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
@@ -93,7 +93,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
  * \param [in] sigmas The input array of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_sigmas_t</tt>.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \see <tt>TIVX_KERNEL_VPAC_NF_BILATERAL_NAME</tt>
- * \ingroup group_vision_function_vpac_nf_bilateral
+ * \ingroup group_vision_function_vpac_nf
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
@@ -217,7 +217,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
  * \param [out] flow_vector_rgb flow vector representated as 24 RGB image
  * \param [out] confidence_image confidence values represented as U8 grayscale image, 255 is high confidence
  * \see <tt>TIVX_KERNEL_DOF_VISUALIZE_NAME</tt>
- * \ingroup group_vision_function_dof_visualize
+ * \ingroup group_vision_function_dmpac_dof
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
