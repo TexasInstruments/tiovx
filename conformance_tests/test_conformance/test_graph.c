@@ -2021,7 +2021,7 @@ static void test_laplacianpyramid(vx_context context)
         vx_image src = 0;
         vx_image out = 0;
         vx_pyramid dst = 0;
-        vx_size levels = 2;
+        vx_size levels = 1;
         vx_float32 scale = VX_SCALE_PYRAMID_HALF;
         vx_graph graph = 0;
         vx_node node = 0;
@@ -2074,7 +2074,7 @@ static void test_laplacianreconstruct(vx_context context)
         vx_pyramid src = 0;
         vx_image in = 0;
         vx_image dst = 0;
-        vx_size levels = 2;
+        vx_size levels = 1;
         vx_float32 scale = VX_SCALE_PYRAMID_HALF;
         vx_graph graph = 0;
         vx_node node = 0;
