@@ -165,48 +165,58 @@
 <a name="l00216"></a>00216 
 <a name="l00217"></a>00217 } <a class="code" href="group__group__tivx__ext.html#ga56b14c79b967d7f5f4170aab3befca6f" title="CPU ID for supported CPUs.">tivx_cpu_id_e</a>;
 <a name="l00218"></a>00218 
-<a name="l00219"></a>00219 
-<a name="l00231"></a>00231 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#gad7aa0fdded06205fb515f77c60e8cac7" title="Function to initialize OpenVX framework.">tivxInit</a>(<span class="keywordtype">void</span>);
-<a name="l00232"></a>00232 
-<a name="l00244"></a>00244 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#gafe743fcbf54158387579a1f36ec1070b" title="Function to de-initialize OpenVX framework.">tivxDeInit</a>(<span class="keywordtype">void</span>);
-<a name="l00245"></a>00245 
-<a name="l00257"></a>00257 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#ga31ae176c89afc45e20c15ed60b0023d0" title="Function to initialize OpenVX HOST side functionality.">tivxHostInit</a>(<span class="keywordtype">void</span>);
-<a name="l00258"></a>00258 
-<a name="l00270"></a>00270 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#gafa17594a1ffb93ab47b3da495242bfd1" title="Function to de-initialize OpenVX HOST side functionality.">tivxHostDeInit</a>(<span class="keywordtype">void</span>);
-<a name="l00271"></a>00271 
-<a name="l00290"></a>00290 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__ext.html#gada61688ef8d7e4dbfc343b3152ec7219" title="Associate a target with a kernel.">tivxAddKernelTarget</a>(<a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel, <span class="keywordtype">char</span> *target_name);
-<a name="l00291"></a>00291 
-<a name="l00292"></a>00292 
-<a name="l00311"></a>00311 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__ext.html#ga7194f59e8a633e8ffb01b2780c4fa2e3" title="Register publish and unpublish functions against a module name.">tivxRegisterModule</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, <a class="code" href="vx__types_8h.html#a3d14bc552df0c0dc582ec082310c2fd8" title="The entry point into modules loaded by vxLoadKernels.">vx_publish_kernels_f</a> publish, <a class="code" href="vx__types_8h.html#a939c334c93669e3754b671381eab5042" title="The entry point into modules unloaded by vxUnloadKernels.">vx_unpublish_kernels_f</a> unpublish);
-<a name="l00312"></a>00312 
-<a name="l00318"></a>00318 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__ext.html#ga120fa188b0eda727d86e907b645f5d61" title="UnRegister publish and unpublish functions if previously registered.">tivxUnRegisterModule</a>(<span class="keywordtype">char</span> *name);
-<a name="l00319"></a>00319 
-<a name="l00325"></a>00325 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__tivx__ext.html#ga391ddeb83fbd4d6cffead6536fe8fd22" title="Return CPU ID of the CPU on which this API is called.">tivxGetSelfCpuId</a>(<span class="keywordtype">void</span>);
-<a name="l00326"></a>00326 
-<a name="l00327"></a>00327 
-<a name="l00331"></a>00331 <span class="preprocessor">#ifndef dimof</span>
-<a name="l00332"></a><a class="code" href="group__group__tivx__ext.html#ga077bde7b4af50f959972477bba9569ef">00332</a> <span class="preprocessor"></span><span class="preprocessor">#define dimof(x) (sizeof(x)/sizeof(x[0]))</span>
-<a name="l00333"></a>00333 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
-<a name="l00334"></a>00334 <span class="preprocessor"></span>
-<a name="l00340"></a>00340 <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a> <a class="code" href="group__group__tivx__ext.html#gaf9e2b985c0e14a513c924ff421857178" title="Utility function to create a node given parameter references and kernel enum.">tivxCreateNodeByKernelEnum</a>(<a class="code" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451" title="An opaque reference to a graph.">vx_graph</a> graph,
-<a name="l00341"></a>00341                                 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> kernelenum,
-<a name="l00342"></a>00342                                 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> params[],
-<a name="l00343"></a>00343                                 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> num);
-<a name="l00344"></a>00344 
-<a name="l00350"></a>00350 <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a> <a class="code" href="group__group__tivx__ext.html#ga9d9ccababb2be7012ffbad3b44713aaf" title="Utility function to create a node given parameter references and kernel reference...">tivxCreateNodeByKernelRef</a>(<a class="code" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451" title="An opaque reference to a graph.">vx_graph</a> graph,
-<a name="l00351"></a>00351                                 <a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel,
-<a name="l00352"></a>00352                                 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> params[],
-<a name="l00353"></a>00353                                 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> num);
-<a name="l00354"></a>00354 
-<a name="l00360"></a>00360 <a class="code" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100" title="A formal boolean type with known fixed size.">vx_bool</a> <a class="code" href="group__group__tivx__ext.html#ga3aa39fe04bca71942913962c3b46a8e7" title="Utility function to check if the given reference is virtual or not.">tivxIsReferenceVirtual</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
-<a name="l00361"></a>00361 
-<a name="l00367"></a>00367 <a class="code" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100" title="A formal boolean type with known fixed size.">vx_bool</a> <a class="code" href="group__group__tivx__ext.html#ga9fcb9b76ac3436d468f7cdd76088a5f2" title="Utility function to know if target is enabled or not.">tivxIsTargetEnabled</a>(<span class="keywordtype">char</span> target_name[]);
-<a name="l00368"></a>00368 
-<a name="l00369"></a>00369 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00370"></a>00370 <span class="preprocessor"></span>}
-<a name="l00371"></a>00371 <span class="preprocessor">#endif</span>
-<a name="l00372"></a>00372 <span class="preprocessor"></span>
-<a name="l00373"></a>00373 <span class="preprocessor">#endif</span>
+<a name="l00225"></a><a class="code" href="group__group__tivx__ext.html#ga5478f3aed4e2ced0a1840931b741c620">00225</a> <span class="keyword">typedef</span> <span class="keyword">enum</span> _tivx_attribute_extensions_e {
+<a name="l00226"></a>00226 
+<a name="l00228"></a><a class="code" href="group__group__tivx__ext.html#gga5478f3aed4e2ced0a1840931b741c620a8d8035b00b4ef18d7901b0a9c0248dad">00228</a>     <a class="code" href="group__group__tivx__ext.html#gga5478f3aed4e2ced0a1840931b741c620a8d8035b00b4ef18d7901b0a9c0248dad" title="Returns the target string corresponding to the node.">TIVX_NODE_TARGET_STRING</a> = <a class="code" href="vx__types_8h.html#aa3d7c5da21e23c3b0747091591fe1afa" title="Defines the manner in which to combine the Vendor and Object IDs to get the base...">VX_ATTRIBUTE_BASE</a>(VX_ID_TI, 0) + 0x0,
+<a name="l00229"></a>00229 
+<a name="l00230"></a>00230 } <a class="code" href="group__group__tivx__ext.html#ga5478f3aed4e2ced0a1840931b741c620" title="TI attribute extensions.">tivx_attribute_extensions_e</a>;
+<a name="l00231"></a>00231 
+<a name="l00243"></a>00243 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#gad7aa0fdded06205fb515f77c60e8cac7" title="Function to initialize OpenVX framework.">tivxInit</a>(<span class="keywordtype">void</span>);
+<a name="l00244"></a>00244 
+<a name="l00256"></a>00256 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#gafe743fcbf54158387579a1f36ec1070b" title="Function to de-initialize OpenVX framework.">tivxDeInit</a>(<span class="keywordtype">void</span>);
+<a name="l00257"></a>00257 
+<a name="l00269"></a>00269 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#ga31ae176c89afc45e20c15ed60b0023d0" title="Function to initialize OpenVX HOST side functionality.">tivxHostInit</a>(<span class="keywordtype">void</span>);
+<a name="l00270"></a>00270 
+<a name="l00282"></a>00282 <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__ext.html#gafa17594a1ffb93ab47b3da495242bfd1" title="Function to de-initialize OpenVX HOST side functionality.">tivxHostDeInit</a>(<span class="keywordtype">void</span>);
+<a name="l00283"></a>00283 
+<a name="l00302"></a>00302 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__ext.html#gada61688ef8d7e4dbfc343b3152ec7219" title="Associate a target with a kernel.">tivxAddKernelTarget</a>(<a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel, <span class="keywordtype">char</span> *target_name);
+<a name="l00303"></a>00303 
+<a name="l00304"></a>00304 
+<a name="l00323"></a>00323 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__ext.html#ga7194f59e8a633e8ffb01b2780c4fa2e3" title="Register publish and unpublish functions against a module name.">tivxRegisterModule</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *name, <a class="code" href="vx__types_8h.html#a3d14bc552df0c0dc582ec082310c2fd8" title="The entry point into modules loaded by vxLoadKernels.">vx_publish_kernels_f</a> publish, <a class="code" href="vx__types_8h.html#a939c334c93669e3754b671381eab5042" title="The entry point into modules unloaded by vxUnloadKernels.">vx_unpublish_kernels_f</a> unpublish);
+<a name="l00324"></a>00324 
+<a name="l00330"></a>00330 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__ext.html#ga120fa188b0eda727d86e907b645f5d61" title="UnRegister publish and unpublish functions if previously registered.">tivxUnRegisterModule</a>(<span class="keywordtype">char</span> *name);
+<a name="l00331"></a>00331 
+<a name="l00337"></a>00337 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> <a class="code" href="group__group__tivx__ext.html#ga391ddeb83fbd4d6cffead6536fe8fd22" title="Return CPU ID of the CPU on which this API is called.">tivxGetSelfCpuId</a>(<span class="keywordtype">void</span>);
+<a name="l00338"></a>00338 
+<a name="l00339"></a>00339 
+<a name="l00343"></a>00343 <span class="preprocessor">#ifndef dimof</span>
+<a name="l00344"></a><a class="code" href="group__group__tivx__ext.html#ga077bde7b4af50f959972477bba9569ef">00344</a> <span class="preprocessor"></span><span class="preprocessor">#define dimof(x) (sizeof(x)/sizeof(x[0]))</span>
+<a name="l00345"></a>00345 <span class="preprocessor"></span><span class="preprocessor">#endif</span>
+<a name="l00346"></a>00346 <span class="preprocessor"></span>
+<a name="l00352"></a>00352 <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a> <a class="code" href="group__group__tivx__ext.html#gaf9e2b985c0e14a513c924ff421857178" title="Utility function to create a node given parameter references and kernel enum.">tivxCreateNodeByKernelEnum</a>(<a class="code" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451" title="An opaque reference to a graph.">vx_graph</a> graph,
+<a name="l00353"></a>00353                                 <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85" title="Sets the standard enumeration type size to be a fixed quantity.">vx_enum</a> kernelenum,
+<a name="l00354"></a>00354                                 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> params[],
+<a name="l00355"></a>00355                                 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> num);
+<a name="l00356"></a>00356 
+<a name="l00362"></a>00362 <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a> <a class="code" href="group__group__tivx__ext.html#ga9d9ccababb2be7012ffbad3b44713aaf" title="Utility function to create a node given parameter references and kernel reference...">tivxCreateNodeByKernelRef</a>(<a class="code" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451" title="An opaque reference to a graph.">vx_graph</a> graph,
+<a name="l00363"></a>00363                                 <a class="code" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a" title="An opaque reference to the descriptor of a kernel.">vx_kernel</a> kernel,
+<a name="l00364"></a>00364                                 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> params[],
+<a name="l00365"></a>00365                                 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> num);
+<a name="l00366"></a>00366 
+<a name="l00372"></a>00372 <a class="code" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96" title="An opaque reference to a kernel node.">vx_node</a> <a class="code" href="group__group__tivx__ext.html#ga825495aae1b743563807bdddd68dd278" title="Utility function to create a node given parameter references and kernel name.">tivxCreateNodeByKernelName</a>(<a class="code" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451" title="An opaque reference to a graph.">vx_graph</a> graph,
+<a name="l00373"></a>00373                                 <span class="keywordtype">char</span> *kernel_name,
+<a name="l00374"></a>00374                                 <a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> params[],
+<a name="l00375"></a>00375                                 <a class="code" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c" title="A 32-bit unsigned value.">vx_uint32</a> num);
+<a name="l00376"></a>00376 
+<a name="l00382"></a>00382 <a class="code" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100" title="A formal boolean type with known fixed size.">vx_bool</a> <a class="code" href="group__group__tivx__ext.html#ga3aa39fe04bca71942913962c3b46a8e7" title="Utility function to check if the given reference is virtual or not.">tivxIsReferenceVirtual</a>(<a class="code" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3" title="A generic opaque reference to any object within OpenVX.">vx_reference</a> ref);
+<a name="l00383"></a>00383 
+<a name="l00389"></a>00389 <a class="code" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100" title="A formal boolean type with known fixed size.">vx_bool</a> <a class="code" href="group__group__tivx__ext.html#ga9fcb9b76ac3436d468f7cdd76088a5f2" title="Utility function to know if target is enabled or not.">tivxIsTargetEnabled</a>(<span class="keywordtype">char</span> target_name[]);
+<a name="l00390"></a>00390 
+<a name="l00391"></a>00391 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00392"></a>00392 <span class="preprocessor"></span>}
+<a name="l00393"></a>00393 <span class="preprocessor">#endif</span>
+<a name="l00394"></a>00394 <span class="preprocessor"></span>
+<a name="l00395"></a>00395 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>

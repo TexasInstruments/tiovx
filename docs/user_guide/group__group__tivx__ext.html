@@ -50,6 +50,8 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Utility function to create a node given parameter references and kernel enum.  <a href="#gaf9e2b985c0e14a513c924ff421857178"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext.html#ga9d9ccababb2be7012ffbad3b44713aaf">tivxCreateNodeByKernelRef</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, <a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> params[], <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> num)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Utility function to create a node given parameter references and kernel reference.  <a href="#ga9d9ccababb2be7012ffbad3b44713aaf"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext.html#ga825495aae1b743563807bdddd68dd278">tivxCreateNodeByKernelName</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, char *kernel_name, <a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> params[], <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> num)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Utility function to create a node given parameter references and kernel name.  <a href="#ga825495aae1b743563807bdddd68dd278"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext.html#ga3aa39fe04bca71942913962c3b46a8e7">tivxIsReferenceVirtual</a> (<a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> ref)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Utility function to check if the given reference is virtual or not.  <a href="#ga3aa39fe04bca71942913962c3b46a8e7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext.html#ga9fcb9b76ac3436d468f7cdd76088a5f2">tivxIsTargetEnabled</a> (char target_name[])</td></tr>
@@ -76,6 +78,10 @@
  }</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><p>CPU ID for supported CPUs. </p>
  <a href="group__group__tivx__ext.html#ga56b14c79b967d7f5f4170aab3befca6f">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">enum &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext.html#ga5478f3aed4e2ced0a1840931b741c620">tivx_attribute_extensions_e</a> { <a class="el" href="group__group__tivx__ext.html#gga5478f3aed4e2ced0a1840931b741c620a8d8035b00b4ef18d7901b0a9c0248dad">TIVX_NODE_TARGET_STRING</a> =  VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x0
+ }</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><p>TI attribute extensions. </p>
+ <a href="group__group__tivx__ext.html#ga5478f3aed4e2ced0a1840931b741c620">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext.html#gab68210419fad8fb7be1a93197de2c106">TIVX_TARGET_DSP1</a>&nbsp;&nbsp;&nbsp;&quot;DSP-1&quot;</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Name for DSP target class, instance 1.  <a href="#gab68210419fad8fb7be1a93197de2c106"></a><br/></td></tr>
@@ -368,6 +374,29 @@
 
 </div>
 </div>
+<a class="anchor" id="ga5478f3aed4e2ced0a1840931b741c620"></a><!-- doxytag: member="tivx.h::tivx_attribute_extensions_e" ref="ga5478f3aed4e2ced0a1840931b741c620" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__group__tivx__ext.html#ga5478f3aed4e2ced0a1840931b741c620">tivx_attribute_extensions_e</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>TI attribute extensions. </p>
+<p>TI attribute extensions to OpenVX </p>
+<dl><dt><b>Enumerator: </b></dt><dd><table border="0" cellspacing="2" cellpadding="0">
+<tr><td valign="top"><em><a class="anchor" id="gga5478f3aed4e2ced0a1840931b741c620a8d8035b00b4ef18d7901b0a9c0248dad"></a><!-- doxytag: member="TIVX_NODE_TARGET_STRING" ref="gga5478f3aed4e2ced0a1840931b741c620a8d8035b00b4ef18d7901b0a9c0248dad" args="" -->TIVX_NODE_TARGET_STRING</em>&nbsp;</td><td>
+<p>Returns the target string corresponding to the node. </p>
+</td></tr>
+</table>
+</dd>
+</dl>
+
+</div>
+</div>
 <hr/><h2>Function Documentation</h2>
 <a class="anchor" id="gad7aa0fdded06205fb515f77c60e8cac7"></a><!-- doxytag: member="tivx.h::tivxInit" ref="gad7aa0fdded06205fb515f77c60e8cac7" args="(void)" -->
 <div class="memitem">
@@ -649,6 +678,47 @@
 <div class="memdoc">
 
 <p>Utility function to create a node given parameter references and kernel reference. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga825495aae1b743563807bdddd68dd278"></a><!-- doxytag: member="tivx.h::tivxCreateNodeByKernelName" ref="ga825495aae1b743563807bdddd68dd278" args="(vx_graph graph, char *kernel_name, vx_reference params[], vx_uint32 num)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a> tivxCreateNodeByKernelName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a>&nbsp;</td>
+          <td class="paramname"> <em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramname"> <em>kernel_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a>&nbsp;</td>
+          <td class="paramname"> <em>params</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>&nbsp;</td>
+          <td class="paramname"> <em>num</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Utility function to create a node given parameter references and kernel name. </p>
 
 </div>
 </div>

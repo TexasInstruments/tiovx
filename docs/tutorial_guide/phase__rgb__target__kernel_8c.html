@@ -50,7 +50,7 @@
 </ul>
 </li>
 </ul>
-<p>When registering a target kernel a unique static kernel ID MUST be used to register the kernel on target side and HOST side. See <a class="el" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a> to understand how to define and use a static kernel ID.</p>
+<p>When registering a target kernel a unique name MUST be used to register the kernel on target side and HOST side.</p>
 <p>Follow the comments for the different functions in the file to understand how a user/target kernel is implemented. </p>
 
 <p>Definition in file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
@@ -383,12 +383,12 @@
 </pre></div><ul>
 <li>Register target kernel to TIOVX framework</li>
 </ul>
-<p>"TIVX_TUTORIAL_KERNEL_PHASE_RGB" is static kernel ID. See also <a class="el" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a></p>
-<p>This MUST match the kernel ID specified when registering the same kernel name on the HOST side.</p>
+<p>"TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME" is the name of the target kernel. See also <a class="el" href="vx__tutorial__kernels_8h.html">vx_tutorial_kernels.h</a></p>
+<p>This MUST match the name specified when registering the same kernel on the HOST side.</p>
 <p>The registered target kernel handle is stored in a global variable. This is used during <a class="el" href="phase__rgb__target__kernel_8c.html#a19db36fd62a30ed433d818de092094ee" title="Remove target kernel from TIOVX framework.">vxTutorialRemoveTargetKernelPhaseRgb()</a></p>
 <div class="fragment"><pre class="fragment">         */
-        <a class="code" href="phase__rgb__target__kernel_8c.html#af39e389b0e30c41e703a7100ad025fbe" title="Target kernel handle [static global].">phase_rgb_target_kernel</a> = tivxAddTargetKernel(
-                    <a class="code" href="vx__tutorial__kernels_8h.html#ad313f6307d27fea48432e16f1577d7bea81087035def5daa8186e02bc1f41979e" title="Converts Phase output to RGB image.">TIVX_TUTORIAL_KERNEL_PHASE_RGB</a>,
+        <a class="code" href="phase__rgb__target__kernel_8c.html#af39e389b0e30c41e703a7100ad025fbe" title="Target kernel handle [static global].">phase_rgb_target_kernel</a> = tivxAddTargetKernelByName(
+                    <a class="code" href="vx__tutorial__kernels_8h.html#a57f90a795458884e7d8f1571e8ff36f1" title="Converts Phase output to RGB image.">TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME</a>,
                     target_name,
                     <a class="code" href="phase__rgb__target__kernel_8c.html#aa7f2b3c5cb1853a9e491483616a93fe8" title="Target kernel run function.">vxTutotrialPhaseRgb</a>,
                     <a class="code" href="phase__rgb__target__kernel_8c.html#ab934a0610fc7f8ddaac5e4956694965f" title="Target kernel create function.">vxTutotrialPhaseRgbCreate</a>,

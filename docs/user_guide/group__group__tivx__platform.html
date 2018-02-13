@@ -32,6 +32,8 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__platform.html#ga163eb793acabcf9c228318bd9112b8d8">tivxPlatformGetTargetId</a> (const char *target_name)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Convert a target name to a specific target ID.  <a href="#ga163eb793acabcf9c228318bd9112b8d8"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__platform.html#gaee443bc84c911575a11dcfbe03531cc4">tivxPlatformGetTargetName</a> (<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> target_id, char *target_name)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Convert a specific target ID to a target name.  <a href="#gaee443bc84c911575a11dcfbe03531cc4"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__platform.html#gae52b4fec9fe9fc881217f834b16e4772">tivxPlatformTargetMatch</a> (const char *kernel_target_name, const char *target_string)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Match a user specified target_string with kernel suported target name.  <a href="#gae52b4fec9fe9fc881217f834b16e4772"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__platform.html#gac6bb6eb426a15e8805041746492a42dd">tivxPlatformGetObjDescTableInfo</a> (<a class="el" href="structtivx__obj__desc__table__info__t.html">tivx_obj_desc_table_info_t</a> *table_info)</td></tr>
@@ -118,6 +120,42 @@
   </dd>
 </dl>
 <dl class="return"><dt><b>Returns:</b></dt><dd>target ID </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaee443bc84c911575a11dcfbe03531cc4"></a><!-- doxytag: member="tivx_platform.h::tivxPlatformGetTargetName" ref="gaee443bc84c911575a11dcfbe03531cc4" args="(vx_enum target_id, char *target_name)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tivxPlatformGetTargetName </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&nbsp;</td>
+          <td class="paramname"> <em>target_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramname"> <em>target_name</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Convert a specific target ID to a target name. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>target_id</em>&nbsp;</td><td>[in] Target ID </td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>target_name</em>&nbsp;</td><td>[out] Target name </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

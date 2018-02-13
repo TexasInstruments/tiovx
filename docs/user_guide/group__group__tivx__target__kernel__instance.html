@@ -35,8 +35,8 @@
 <tr><td colspan="2"><h2>Functions</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel__instance.html#gaaa106f58ef027d41c44aa5592d0bfb71">tivxTargetKernelInstanceGet</a> (uint16_t target_kernel_index, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> kernel_id)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Given a target_kernel_index and kernel_id return the handle to target kernel.  <a href="#gaaa106f58ef027d41c44aa5592d0bfb71"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel__instance.html#gacfb7b887f376d124a76a18e97218efdd">tivxTargetKernelInstanceAlloc</a> (<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> kernel_id, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> target_id)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a target kernel instance for given kernel_id.  <a href="#gacfb7b887f376d124a76a18e97218efdd"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel__instance.html#ga926565fdbb03bc0128ba8e1c224d79a7">tivxTargetKernelInstanceAlloc</a> (<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> kernel_id, char *kernel_name, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> target_id)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create a target kernel instance for given kernel_id.  <a href="#ga926565fdbb03bc0128ba8e1c224d79a7"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel__instance.html#gac1e8b559ce69f76402bec82af72cd1b5">tivxTargetKernelInstanceFree</a> (<a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a> *target_kernel_instance)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Free previously allocate target kernel instance.  <a href="#gac1e8b559ce69f76402bec82af72cd1b5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel__instance.html#ga9ef96cbb47593774cdb647817ef1b315">tivxTargetKernelInstanceGetIndex</a> (<a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a> target_kernel_instance)</td></tr>
@@ -81,7 +81,7 @@
 
 </div>
 </div>
-<a class="anchor" id="gacfb7b887f376d124a76a18e97218efdd"></a><!-- doxytag: member="tivx_target_kernel_instance.h::tivxTargetKernelInstanceAlloc" ref="gacfb7b887f376d124a76a18e97218efdd" args="(vx_enum kernel_id, vx_enum target_id)" -->
+<a class="anchor" id="ga926565fdbb03bc0128ba8e1c224d79a7"></a><!-- doxytag: member="tivx_target_kernel_instance.h::tivxTargetKernelInstanceAlloc" ref="ga926565fdbb03bc0128ba8e1c224d79a7" args="(vx_enum kernel_id, char *kernel_name, vx_enum target_id)" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -90,6 +90,12 @@
           <td>(</td>
           <td class="paramtype"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&nbsp;</td>
           <td class="paramname"> <em>kernel_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char *&nbsp;</td>
+          <td class="paramname"> <em>kernel_name</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>

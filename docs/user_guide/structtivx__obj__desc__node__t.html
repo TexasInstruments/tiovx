@@ -39,6 +39,8 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">node flags see TIVX_NODE_FLAG_xxx  <a href="#a66ba208b764dfc33957afa50eab4c826"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a59a452da1f524aa79c391775495105f3">kernel_id</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ID of kernel to execute on target.  <a href="#a59a452da1f524aa79c391775495105f3"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#ad1dd7f376f6a3895a9b8d80dba324d9f">kernel_name_obj_desc_id</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">kernel name object descriptor ID  <a href="#ad1dd7f376f6a3895a9b8d80dba324d9f"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#add873605442c16e5ba4e89d1114652ca">target_id</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">ID of target to execute on. Set by host.  <a href="#add873605442c16e5ba4e89d1114652ca"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a7848e5269eca552c4a58bc7e26bbc66c">node_complete_cmd_obj_desc_id</a></td></tr>
@@ -75,8 +77,8 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">parameter object descriptors  <a href="#a4589184bf8aea905a30686b9552fa434"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">uint16_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a6978fe4f16c4b3af539ff2b13ca270cb">in_node_id</a> [TIVX_NODE_MAX_IN_NODES]</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">parameter object descriptors  <a href="#a6978fe4f16c4b3af539ff2b13ca270cb"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a51155a9e2c23f7505b5dd5a7fc308a8a">dummy</a></td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Added dummy variable to keep structure size 8byte aligned.  <a href="#a51155a9e2c23f7505b5dd5a7fc308a8a"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">uint32_t&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a05731fc893c28889a1140ae9f0a683f0">rsv</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Reserved field to make struct aligned.  <a href="#a05731fc893c28889a1140ae9f0a683f0"></a><br/></td></tr>
 </table>
 <hr/><h2>Field Documentation</h2>
 <a class="anchor" id="a03b652a236d7adc1a8472a3f3568055f"></a><!-- doxytag: member="tivx_obj_desc_node_t::base" ref="a03b652a236d7adc1a8472a3f3568055f" args="" -->
@@ -121,6 +123,21 @@
 <div class="memdoc">
 
 <p>ID of kernel to execute on target. </p>
+
+</div>
+</div>
+<a class="anchor" id="ad1dd7f376f6a3895a9b8d80dba324d9f"></a><!-- doxytag: member="tivx_obj_desc_node_t::kernel_name_obj_desc_id" ref="ad1dd7f376f6a3895a9b8d80dba324d9f" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t <a class="el" href="structtivx__obj__desc__node__t.html#ad1dd7f376f6a3895a9b8d80dba324d9f">tivx_obj_desc_node_t::kernel_name_obj_desc_id</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>kernel name object descriptor ID </p>
 
 </div>
 </div>
@@ -401,18 +418,18 @@
 
 </div>
 </div>
-<a class="anchor" id="a51155a9e2c23f7505b5dd5a7fc308a8a"></a><!-- doxytag: member="tivx_obj_desc_node_t::dummy" ref="a51155a9e2c23f7505b5dd5a7fc308a8a" args="" -->
+<a class="anchor" id="a05731fc893c28889a1140ae9f0a683f0"></a><!-- doxytag: member="tivx_obj_desc_node_t::rsv" ref="a05731fc893c28889a1140ae9f0a683f0" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint32_t <a class="el" href="structtivx__obj__desc__node__t.html#a51155a9e2c23f7505b5dd5a7fc308a8a">tivx_obj_desc_node_t::dummy</a></td>
+          <td class="memname">uint32_t <a class="el" href="structtivx__obj__desc__node__t.html#a05731fc893c28889a1140ae9f0a683f0">tivx_obj_desc_node_t::rsv</a></td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Added dummy variable to keep structure size 8byte aligned. </p>
+<p>Reserved field to make struct aligned. </p>
 
 </div>
 </div>

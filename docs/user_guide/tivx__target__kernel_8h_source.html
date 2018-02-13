@@ -111,26 +111,36 @@
 <a name="l00130"></a>00130                              <a class="code" href="group__group__tivx__target__kernel.html#gaa32576c061941da6b7ad3dd05d8c9569" title="The target kernel callback.">tivx_target_kernel_f</a> control_func,
 <a name="l00131"></a>00131                              <span class="keywordtype">void</span> *priv_arg);
 <a name="l00132"></a>00132 
-<a name="l00139"></a>00139 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e" title="Allows users to remove native kernels implementation to specific targets.">tivxRemoveTargetKernel</a>(
-<a name="l00140"></a>00140     tivx_target_kernel target_kernel);
-<a name="l00141"></a>00141 
-<a name="l00149"></a>00149 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9" title="Associate a kernel function context or handle with a target kernel instance.">tivxSetTargetKernelInstanceContext</a>(
-<a name="l00150"></a>00150             tivx_target_kernel_instance target_kernel_instance,
-<a name="l00151"></a>00151             <span class="keywordtype">void</span> *kernel_context, uint32_t kernel_context_size);
-<a name="l00152"></a>00152 
-<a name="l00160"></a>00160 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga08730671086c805df9f4e00d4a4ef383" title="Get a kernel function context or handle with a target kernel instance.">tivxGetTargetKernelInstanceContext</a>(
-<a name="l00161"></a>00161             tivx_target_kernel_instance target_kernel_instance,
-<a name="l00162"></a>00162             <span class="keywordtype">void</span> **kernel_context, uint32_t *kernel_context_size);
-<a name="l00163"></a>00163 
-<a name="l00171"></a>00171 VX_API_ENTRY <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target__kernel.html#gac6174a4e92a4bf4a19ab77a78963ddf5" title="Get the border mode for the target kernel instance.">tivxGetTargetKernelInstanceBorderMode</a>(
-<a name="l00172"></a>00172     tivx_target_kernel_instance target_kernel_instance,
-<a name="l00173"></a>00173     <a class="code" href="structvx__border__t.html" title="Use with the enumeration VX_NODE_BORDER to set the border mode behavior of a node...">vx_border_t</a> *border_mode);
-<a name="l00174"></a>00174 
-<a name="l00175"></a>00175 <span class="preprocessor">#ifdef __cplusplus</span>
-<a name="l00176"></a>00176 <span class="preprocessor"></span>}
-<a name="l00177"></a>00177 <span class="preprocessor">#endif</span>
-<a name="l00178"></a>00178 <span class="preprocessor"></span>
-<a name="l00179"></a>00179 <span class="preprocessor">#endif</span>
+<a name="l00141"></a>00141 VX_API_ENTRY tivx_target_kernel <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga559dc4703ffb9032b00d6d4b38d01b30" title="Allows users to add native kernels implementation to specific targets.">tivxAddTargetKernelByName</a>(
+<a name="l00142"></a>00142                              <span class="keywordtype">char</span> *kernel_name,
+<a name="l00143"></a>00143                              <span class="keywordtype">char</span> *target_name,
+<a name="l00144"></a>00144                              <a class="code" href="group__group__tivx__target__kernel.html#gaa32576c061941da6b7ad3dd05d8c9569" title="The target kernel callback.">tivx_target_kernel_f</a> process_func,
+<a name="l00145"></a>00145                              <a class="code" href="group__group__tivx__target__kernel.html#gaa32576c061941da6b7ad3dd05d8c9569" title="The target kernel callback.">tivx_target_kernel_f</a> create_func,
+<a name="l00146"></a>00146                              <a class="code" href="group__group__tivx__target__kernel.html#gaa32576c061941da6b7ad3dd05d8c9569" title="The target kernel callback.">tivx_target_kernel_f</a> delete_func,
+<a name="l00147"></a>00147                              <a class="code" href="group__group__tivx__target__kernel.html#gaa32576c061941da6b7ad3dd05d8c9569" title="The target kernel callback.">tivx_target_kernel_f</a> control_func,
+<a name="l00148"></a>00148                              <span class="keywordtype">void</span> *priv_arg);
+<a name="l00149"></a>00149 
+<a name="l00150"></a>00150 
+<a name="l00157"></a>00157 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e" title="Allows users to remove native kernels implementation to specific targets.">tivxRemoveTargetKernel</a>(
+<a name="l00158"></a>00158     tivx_target_kernel target_kernel);
+<a name="l00159"></a>00159 
+<a name="l00167"></a>00167 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9" title="Associate a kernel function context or handle with a target kernel instance.">tivxSetTargetKernelInstanceContext</a>(
+<a name="l00168"></a>00168             tivx_target_kernel_instance target_kernel_instance,
+<a name="l00169"></a>00169             <span class="keywordtype">void</span> *kernel_context, uint32_t kernel_context_size);
+<a name="l00170"></a>00170 
+<a name="l00178"></a>00178 VX_API_ENTRY <a class="code" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0" title="A formal status type with known fixed size.">vx_status</a> <a class="code" href="vx__types_8h.html#aafbf3083f20518b915e89d73e26fe237">VX_API_CALL</a> <a class="code" href="group__group__tivx__target__kernel.html#ga08730671086c805df9f4e00d4a4ef383" title="Get a kernel function context or handle with a target kernel instance.">tivxGetTargetKernelInstanceContext</a>(
+<a name="l00179"></a>00179             tivx_target_kernel_instance target_kernel_instance,
+<a name="l00180"></a>00180             <span class="keywordtype">void</span> **kernel_context, uint32_t *kernel_context_size);
+<a name="l00181"></a>00181 
+<a name="l00189"></a>00189 VX_API_ENTRY <span class="keywordtype">void</span> <a class="code" href="group__group__tivx__target__kernel.html#gac6174a4e92a4bf4a19ab77a78963ddf5" title="Get the border mode for the target kernel instance.">tivxGetTargetKernelInstanceBorderMode</a>(
+<a name="l00190"></a>00190     tivx_target_kernel_instance target_kernel_instance,
+<a name="l00191"></a>00191     <a class="code" href="structvx__border__t.html" title="Use with the enumeration VX_NODE_BORDER to set the border mode behavior of a node...">vx_border_t</a> *border_mode);
+<a name="l00192"></a>00192 
+<a name="l00193"></a>00193 <span class="preprocessor">#ifdef __cplusplus</span>
+<a name="l00194"></a>00194 <span class="preprocessor"></span>}
+<a name="l00195"></a>00195 <span class="preprocessor">#endif</span>
+<a name="l00196"></a>00196 <span class="preprocessor"></span>
+<a name="l00197"></a>00197 <span class="preprocessor">#endif</span>
 </pre></div></div>
 
 <html>
