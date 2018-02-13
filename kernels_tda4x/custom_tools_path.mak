@@ -3,8 +3,6 @@
 # used to overwrite environment variables from the psdk_tools_path.mak
 # and vsdk_tools_path.mak files from the tiovx directory.
 
-TDA4x_C_MODELS_PATH ?= $(TIOVX_PATH)/tiovx_dev/tda4x_c_models/
-
 # set values of below to yes or no to include or exclude the modules from compile and link
 BUILD_HWA_VPAC_LDC=yes
 BUILD_HWA_VPAC_NF=yes

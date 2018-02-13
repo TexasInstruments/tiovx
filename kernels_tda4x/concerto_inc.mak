@@ -18,8 +18,8 @@ endif
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 STATIC_LIBS += vx_target_kernels_dmpac_dof
 STATIC_LIBS += libDOF DOFalgo DOFcommon
-STATIC_LIBS += opencv_highgui opencv_imgcodecs opencv_imgproc opencv_ml opencv_core opencv_hal
-STATIC_LIBS += libjasper libjpeg libtiff zlib vx_kernels_hwa_tests
+STATIC_LIBS += opencv_highgui opencv_imgproc opencv_ml opencv_core
+STATIC_LIBS += vx_kernels_hwa_tests
 endif
 ifeq ($(BUILD_HWA_VPAC_MSC),yes)
 STATIC_LIBS += vx_target_kernels_vpac_msc
@@ -44,7 +44,7 @@ STATIC_LIBS += vx_conformance_engine
 endif
 STATIC_LIBS += rt dl png
 
-LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
-LDIRS+=$(TDA4x_C_MODELS_PATH)/lib/PC/x86_64/LINUX/opencv
+LDIRS+=$(TDA4X_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
+LDIRS+=$(OPENCV_LIB_PATH)
 
 endif
