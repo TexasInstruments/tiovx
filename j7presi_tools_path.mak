@@ -2,8 +2,8 @@
 TIOVX_PATH = $(abspath .)
 PSDK_PATH = $(abspath ..)
 
-CUSTOM_KERNEL_PATH = $(TIOVX_PATH)/tiovx_dev/kernels_tda4x
-CUSTOM_APPLICATION_PATH = $(TIOVX_PATH)/tiovx_dev/demos
+CUSTOM_KERNEL_PATH = $(TIOVX_PATH)/kernels_tda4x
+CUSTOM_APPLICATION_PATH = $(TIOVX_PATH)/demos
 
 CGT7X_PATH ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0A18023
 VXLIB_PATH ?= $(PSDK_PATH)/vxlib_c66x_1_1_1_0
