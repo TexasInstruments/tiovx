@@ -174,10 +174,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
 /*! \brief [Graph] Creates a DMPAC_DOF Node.
  *
  * - The dataformat of image within pyramid MUST be <tt>\ref VX_DF_IMAGE_U8</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * The pyramid MUST use scale of VX_SCALE_PYRAMID_HALF
- * The max number of pyramid levels can be 5
- * The width and height of base level MUST be interger multiple of 2^pyramidlevels
- * The meta properties of input_current, input_ref MUST be identical
+ * - The pyramid MUST use scale of VX_SCALE_PYRAMID_HALF
+ * - The max number of pyramid levels can be 5
+ * - The width and height of base level MUST be interger multiple of 2^pyramidlevels
+ * - The meta properties of input_current, input_ref MUST be identical
  *
  * \param [in] graph                              The reference to the graph.
  * \param [in] configuration                      The input array of a single params structure of
@@ -228,14 +228,15 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             confidence_image);
 
 /*! \brief [Graph] Creates a VPAC_VISS Node.
- * For single exposure processing, raw0 should be used.
- * For dual exposure processing, raw0 should be the short exposure, and raw1 should be the long exposure.
- * For triple exposure processing, raw0 should be the shortest exposure, raw1 should be the medium exposure, and raw2 should be the longest exposure.
+ *
+ * - For single exposure processing, raw0 should be used.
+ * - For dual exposure processing, raw0 should be the short exposure, and raw1 should be the long exposure.
+ * - For triple exposure processing, raw0 should be the shortest exposure, raw1 should be the medium exposure, and raw2 should be the longest exposure.
  * raw1 can not be set to NULL if both raw0 and raw2 are non-NULL.
- * The ae_awb_results typically would come from a 2A algorithm node.  Although this is a required input, the contents of this structure are currently
+ * - The ae_awb_results typically would come from a 2A algorithm node.  Although this is a required input, the contents of this structure are currently
  * ignored (not yet supported).  For now, the configuration files pointed to by the configuration->sensor_name parameter is used and the ae_awb_result
  * is not yet used to modify these settings.
- * The resolution of all the image ports should have the same width and height.  The only exception to this is if the configuration->chroma_out_mode
+ * - The resolution of all the image ports should have the same width and height.  The only exception to this is if the configuration->chroma_out_mode
  * is set to 0:420 and the uv12 or uv8 multiplexors are selected on enabled ports, then the height is half of the input for these 2 ports.
  * \param [in] graph The reference to the graph.
  * \param [in] configuration             The input array of a single params structure of type <tt>\ref tivx_vpac_viss_params_t</tt>.
