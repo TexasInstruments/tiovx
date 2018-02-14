@@ -3,7 +3,7 @@ TARGET      := vx_kernels_hwa
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
-IDIRS       += $(TDA4x_C_MODELS_PATH)/include
+IDIRS       += $(TDA4X_C_MODELS_PATH)/include
 
 ifeq ($(BUILD_HWA_VPAC_NF),yes)
 DEFS += BUILD_HWA_VPAC_NF
