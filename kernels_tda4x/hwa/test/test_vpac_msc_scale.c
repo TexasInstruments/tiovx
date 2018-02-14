@@ -509,7 +509,7 @@ static void dst_size_generator_SCALE_NEAR_DOWN(int width, int height, int* dst_w
     /* other NN downscales */ \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 2_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
     SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", 4_1, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
-    /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), \
+    /* SCALE_TEST(VX_INTERPOLATION_NEAREST_NEIGHBOR, scale_generate_random, "random", SCALE_PYRAMID_ORB, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* BILINEAR upscale with integer factor */ \
     /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_2, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \
     /* SCALE_TEST(VX_INTERPOLATION_BILINEAR,         scale_generate_random, "random", 1_3, 0, ADD_SIZE_SMALL_SET, ADD_VX_BORDERS, ARG, 0), */ \

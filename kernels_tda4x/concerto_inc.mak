@@ -18,7 +18,7 @@ endif
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 STATIC_LIBS += vx_target_kernels_dmpac_dof
 STATIC_LIBS += libDOF DOFalgo DOFcommon
-STATIC_LIBS += opencv_highgui opencv_imgproc opencv_ml opencv_core
+STATIC_LIBS += opencv_imgproc opencv_ml opencv_core
 STATIC_LIBS += vx_kernels_hwa_tests
 endif
 ifeq ($(BUILD_HWA_VPAC_MSC),yes)
