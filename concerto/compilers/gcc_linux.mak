@@ -153,13 +153,23 @@ $(_MODULE)_COPT += -m32 -fno-stack-protector
 endif
 endif
 
+ifeq ($(BUILD_IGNORE_LIB_ORDER),yes)
+LINK_START_GROUP=-Wl,--start-group
+LINK_END_GROUP=-Wl,--end-group
+else
+LINK_START_GROUP=
+LINK_END_GROUP=
+endif
+
 $(_MODULE)_MAP      := $($(_MODULE)_BIN).map
 $(_MODULE)_INCLUDES := $(foreach inc,$($(_MODULE)_IDIRS),-I$(inc))
 $(_MODULE)_DEFINES  := $(foreach def,$($(_MODULE)_DEFS),-D$(def))
 $(_MODULE)_LIBRARIES:= $(foreach ldir,$($(_MODULE)_LDIRS),-L$(ldir)) \
 					   -Wl,-Bstatic \
+					   $(LINK_START_GROUP) \
 					   $(foreach lib,$(STATIC_LIBS),-l$(lib)) \
 					   $(foreach lib,$(SYS_STATIC_LIBS),-l$(lib)) \
+					   $(LINK_END_GROUP) \
 					   -Wl,-Bdynamic \
 					   $(foreach lib,$(SHARED_LIBS),-l$(lib)) \
 					   $(foreach lib,$(SYS_SHARED_LIBS),-l$(lib)) \

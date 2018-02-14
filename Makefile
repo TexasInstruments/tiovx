@@ -15,6 +15,7 @@ BUILD_TUTORIAL?=yes
 BUILD_BAM?=yes
 BUILD_LINUX_A15?=yes
 BUILD_EVE?=yes
+BUILD_IGNORE_LIB_ORDER?=no
 
 # Kernel Library Extensions
 BUILD_IVISION_KERNELS?=yes
