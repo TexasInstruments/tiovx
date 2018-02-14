@@ -68,11 +68,15 @@ from . import *
 #
 # \ingroup PYTIOVX_API
 
-## \defgroup DATA 2: Data Object APIs
+## \defgroup ATTRIBUTES 2: Attribute APIs
 #
 # \ingroup PYTIOVX_API
 
-## \defgroup FRAMEWORK 3: Framework Object APIs
+## \defgroup DATA 3: Data Object APIs
+#
+# \ingroup PYTIOVX_API
+
+## \defgroup FRAMEWORK 4: Framework Object APIs
 #
 # \ingroup PYTIOVX_API
 
