@@ -126,7 +126,7 @@ enum tivx_df_image_e {
 #endif
 
 /*!
- * \defgroup group_tivx_api 1: TIOVX Interface Modules
+ * \defgroup group_tivx_api TIOVX Interface Modules
  */
 
 /*!

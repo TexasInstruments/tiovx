@@ -478,7 +478,14 @@ typedef struct {
  */
 typedef struct {
     /* not needed from algo */
-    char      sensor_name[256];    /*!< Path to the root folder where the configuration files are located on the file system */
+    char      sensor_name[256];    /*!< Path to the root folder where the configuration files are located on the file system. 
+                                    *   TAn example set of configuration files is located in the path tiovx\conformance_tests\test_data\viss_config\example_sensor\0\0\.
+                                    *   New sensor configs can be provided using the same format. If any of the optional parameters are disabled,
+                                    *   the corresponding configuration files are not needed. The provided configuration files are examples; however,
+                                    *   they can be modified as needed. A GUI tuning tool is in development which allows these configuration files to
+                                    *   be generated.  The configuration files are used for the edge enhancer, the FlexCC (color conversion), FlexCFA, 
+                                    *   H3A (Auto-Exposure, Auto-white balance, Auto-focus), Nsf4 (noise filter), and Rawfe. Please contact your local 
+                                    *   TI representative for more information. */
     uint16_t  use_case;            /*!< Identifier corresponding to the sub-setting within the sensor configuration of the DCC file (not yet supported) */
 
     /* Expected to not change in between frames */
