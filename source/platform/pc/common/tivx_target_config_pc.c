@@ -65,7 +65,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_pc.h>
 
-#define TIVX_TARGET_DEFAULT_STACK_SIZE      (64U * 1024U)
+#define TIVX_TARGET_DEFAULT_STACK_SIZE      ((2U * 1024U) * 1024U)
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY   (8u)
 
 
