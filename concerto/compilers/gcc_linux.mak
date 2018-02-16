@@ -40,17 +40,17 @@ $(error TARGET_OS $(TARGET_OS) is not supported by this compiler)
 endif
 
 ifneq ($(GCC_LINUX_ROOT),)
-CC = $(GCC_LINUX_ROOT)/bin/gcc
-CP = $(GCC_LINUX_ROOT)/bin/g++
-AS = $(GCC_LINUX_ROOT)/bin/as
-AR = $(GCC_LINUX_ROOT)/bin/ar
-LD = $(GCC_LINUX_ROOT)/bin/g++
+CC = $(GCC_LINUX_ROOT)/bin/gcc-5
+CP = $(GCC_LINUX_ROOT)/bin/g++-5
+AS = $(GCC_LINUX_ROOT)/bin/as-5
+AR = $(GCC_LINUX_ROOT)/bin/gcc-ar-5
+LD = $(GCC_LINUX_ROOT)/bin/g++-5
 else
-CC = gcc
-CP = g++
-AS = as
-AR = ar
-LD = g++
+CC = gcc-5
+CP = g++-5
+AS = as-5
+AR = gcc-ar-5
+LD = g++-5
 endif
 
 ifdef LOGFILE
