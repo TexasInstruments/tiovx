@@ -157,8 +157,10 @@ $(_MODULE)_MAP      := $($(_MODULE)_BIN).map
 $(_MODULE)_INCLUDES := $(foreach inc,$($(_MODULE)_IDIRS),-I$(inc))
 $(_MODULE)_DEFINES  := $(foreach def,$($(_MODULE)_DEFS),-D$(def))
 $(_MODULE)_LIBRARIES:= $(foreach ldir,$($(_MODULE)_LDIRS),-L$(ldir)) \
+					   -Wl,-Bstatic \
 					   $(foreach lib,$(STATIC_LIBS),-l$(lib)) \
 					   $(foreach lib,$(SYS_STATIC_LIBS),-l$(lib)) \
+					   -Wl,-Bdynamic \
 					   $(foreach lib,$(SHARED_LIBS),-l$(lib)) \
 					   $(foreach lib,$(SYS_SHARED_LIBS),-l$(lib)) \
 					   $(foreach lib,$(PLATFORM_LIBS),-l$(lib))
