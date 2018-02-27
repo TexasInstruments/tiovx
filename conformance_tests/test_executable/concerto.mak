@@ -26,6 +26,9 @@ CSOURCES    := $(call all-c-files)
 LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 
 STATIC_LIBS := vx_conformance_tests
+
+include $(HOST_ROOT)/kernels/concerto_inc.mak
+
 STATIC_LIBS += vx_tiovx_tests
 
 STATIC_LIBS += vx_conformance_engine vx_conformance_tests_testmodule
@@ -33,8 +36,6 @@ STATIC_LIBS += vx_vxu vx_framework
 STATIC_LIBS += vx_platform_pc vx_framework
 
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
-
-include $(HOST_ROOT)/kernels/concerto_inc.mak
 
 ifeq ($(BUILD_TUTORIAL),yes)
 STATIC_LIBS += vx_target_kernels_tutorial
