@@ -35,13 +35,9 @@ STATIC_LIBS += vx_target_kernels_vpac_viss
 STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils
 endif
 
-STATIC_LIBS += vx_vxu
 STATIC_LIBS += vx_target_kernels_tda4x_arm
 STATIC_LIBS += vx_utils
 
-ifeq ($(BUILD_CONFORMANCE_TEST),yes)
-STATIC_LIBS += vx_conformance_engine
-endif
 SYS_SHARED_LIBS += rt dl png
 
 LDIRS+=$(TDA4X_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
