@@ -1,6 +1,4 @@
 
-ifeq ($(BUILD_HWA_VPAC_LDC),yes)
-
 include $(PRELUDE)
 TARGET      := vx_target_kernels_vpac_ldc
 TARGETTYPE  := library
@@ -30,6 +28,3 @@ SKIPBUILD=1
 endif
 
 include $(FINALE)
-
-endif
-# ifeq ($(BUILD_HWA_VPAC_LDC),yes)

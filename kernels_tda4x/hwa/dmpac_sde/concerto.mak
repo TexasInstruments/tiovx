@@ -1,6 +1,4 @@
 
-ifeq ($(BUILD_HWA_DMPAC_SDE),yes)
-
 include $(PRELUDE)
 TARGET      := vx_target_kernels_dmpac_sde
 TARGETTYPE  := library
@@ -31,6 +29,3 @@ SKIPBUILD=1
 endif
 
 include $(FINALE)
-
-endif
-# ifeq ($(BUILD_HWA_DMPAC_SDE),yes)
