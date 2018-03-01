@@ -109,16 +109,6 @@ extern "C" {
  */
 #define TIVX_TARGET_VPAC_VISS1   "RESV07"
 
-/*! \brief Based on the VX_DF_IMAGE definition.
- * \note Use <tt>\ref vx_df_image</tt> to contain these values.
- * \ingroup group_tivx_ext
- */
-enum tivx_df_image_e {
-    /*! \brief A single plane of packed 12-bit data.
-     */
-    TIVX_DF_IMAGE_P12 = VX_DF_IMAGE('P','0','1','2'),
-};
-
 #ifdef __cplusplus
 }
 #endif
