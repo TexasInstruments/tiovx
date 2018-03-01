@@ -231,6 +231,21 @@ typedef enum _tivx_attribute_extensions_e {
 
 } tivx_attribute_extensions_e;
 
+
+/*! \brief Based on the VX_DF_IMAGE definition.
+ * \note Use <tt>\ref tivx_df_image</tt> to contain these values.
+ * \ingroup group_tivx_ext
+ */
+typedef enum _tivx_df_image_e {
+
+    /*! \brief A single plane of packed 12-bit data.
+     * 
+     * The stride_x for this data format must be set to 0 */
+    TIVX_DF_IMAGE_P12 = VX_DF_IMAGE('P','0','1','2'),
+
+} tivx_df_image_e;
+
+
 /*!
  * \brief Function to initialize OpenVX framework
  *

@@ -254,17 +254,29 @@ class DfImage(Enum) :
     U32  = 13
     ## OpenVX equivalent = VX_DF_IMAGE_S32
     S32  = 14
+    ## OpenVX equivalent = TIVX_DF_IMAGE_P12
+    P12  = 15
 
     def get_vx_enum_name(df_format) :
-        return "VX_DF_IMAGE_" + df_format.name
+        if df_format == DfImage.P12 :
+            return "TIVX_DF_IMAGE_" + df_format.name
+        else :
+            return "VX_DF_IMAGE_" + df_format.name
 
     def get_vx_name(df_format) :
-        return "vx_df_image_e"
+        if df_format == DfImage.P12 :
+            return "tivx_df_image_e"
+        else :
+            return "vx_df_image_e"
 
     def get_df_enum_from_string(full_df_name) :
         index = full_df_name.find("VX_DF_IMAGE_")
         if index == 0 :
             newstr = full_df_name.replace("VX_DF_IMAGE_", "")
+            if newstr in DfImage.__members__ :
+                return DfImage[newstr]
+        elif index == 2 :
+            newstr = full_df_name.replace("TIVX_DF_IMAGE_", "")
             if newstr in DfImage.__members__ :
                 return DfImage[newstr]
         return DfImage.INVALID
