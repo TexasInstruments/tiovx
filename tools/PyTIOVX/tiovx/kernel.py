@@ -91,7 +91,22 @@ class KernelParamRelationship :
     def __str__(self):
         return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + type + " " + state
 
+## Kernel class containing parameter information
+#
+# \par Example Usage: Initializing kernel object with specified kernel name
+#
+# \code
+# from tiovx import *
+#
+# kernel = Kernel("<kernel_name>")
+# \endcode
+#
+# \ingroup KERNEL
+#
 class Kernel  :
+    ## Constructor used to create this object
+    #
+    # \param name [in] [optional] Name of the kernel (by default, the name is set to "default")
     def __init__(self, name="default") :
         self.name_lower = name.lower()
         self.name_upper = name.upper()
@@ -108,6 +123,15 @@ class Kernel  :
         self.name_str_prefix = name_str_prefix
         self.enum_str_prefix = enum_str_prefix
 
+    ## Method used to set a possible target of the kernel
+    #
+    # \par Example Usage: Setting a new parameter of the kernel
+    #
+    # \code
+    # kernel.setTarget(Target.DSP1)
+    # \endcode
+    #
+    # \param target [in] Possible target for the kernel to run on (use Target object as input)
     def setTarget(self, target) :
         self.targets.append(target)
 
@@ -121,6 +145,22 @@ class Kernel  :
             kernel_str += str(prm) + "\n"
         return kernel_str
 
+    ## Method used to set a parameter of the kernel; called for as many parameters as necessary
+    #
+    # \par Example Usage: Setting a new parameter of the kernel
+    #
+    # \code
+    # kernel.setParameter(Type.IMAGE, Direction.INPUT, ParamState.REQUIRED, "IN", do_map=False, do_unmap=False)
+    # \endcode
+    #
+    # \param type                    [in] OpenVX data type of this parameter (use Type object as input)
+    # \param direction               [in] Direction of the parameter (use Direction object as input)
+    # \param state                   [in] Required/optional state of this parameter
+    # \param name                    [in] Name of this parameter
+    # \param data_types              [in] [optional] Possible data types for a given data object; Default=[]
+    # \param do_map                  [in] [optional] Flag to indicate whether or not to do buffer mapping in target kernel; Default=True
+    # \param do_unmap                [in] [optional] Flag to indicate whether or not to do buffer unmapping in target kernel; Default=True
+    # \param do_map_unmap_all_planes [in] [optional] Flag to indicate whether or not to do buffer unmapping for all planes in target kernel; Default=False
     def setParameter(self, type, direction, state, name, data_types=[], do_map=True, do_unmap=True, do_map_unmap_all_planes=False):
         params = KernelParams(self.index, type, direction, state, name, data_types, do_map, do_unmap, do_map_unmap_all_planes);
         self.params.append(params)
@@ -154,6 +194,19 @@ class Kernel  :
                 num_output_images += 1
         return num_output_images
 
+    ## Method used to set the relationship between two parameters of a kernels
+    #  Information from this method used in validate stage
+    #  Note: these parameters must have already been set prior to the invocation of this method
+    #
+    # \par Example Usage: Setting the relationship between two parameter
+    #
+    # \code
+    # kernel.setParameterRelationship(["INPUT", "OUTPUT"], [Attribute.Image.Width, Attribute.Image.HEIGHT])
+    # \endcode
+    #
+    # \param name_list      [in] List of parameters that are to be connected
+    # \param attribute_list [in] [optional] Attributes to connect between parameters; default=["all"]
+    # \param type           [in] [optional] Relationship type; default=equal
     def setParameterRelationship(self, name_list=[], attribute_list=["all"], type="equal") :
         assert len(name_list) > 1, "There should be more than 1 parameter in name_list"
         prm_list = []

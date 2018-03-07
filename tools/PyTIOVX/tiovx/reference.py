@@ -80,6 +80,14 @@ from . import *
 #
 # \ingroup PYTIOVX_API
 
+## \defgroup KERNEL_CODE 5: Kernel Code APIs
+#
+# \ingroup PYTIOVX_API
+
+## \defgroup KERNEL 6: Kernel APIs
+#
+# \ingroup PYTIOVX_API
+
 # Reference object (OpenVX equivalent = vx_reference)
 #
 # NOT used by user directly.

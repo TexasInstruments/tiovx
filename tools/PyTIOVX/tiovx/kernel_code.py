@@ -64,7 +64,95 @@ import os, sys, re
 from . import *
 from glob import glob
 
+## Code object used to generate custom kernel
+#
+# \par Example Usage: Setting up file paths for custom kernel
+# Note: if leaving the optional field for env_var blank, you must set CUSTOM_KERNEL_PATH
+#
+# \code
+# from tiovx import *
+#
+# code = KernelExportCode("TI", "extv", "ext1", "c66", "CUSTOM_KERNEL_PATH")
+# <set up kernel parameters>
+# code.export(kernel)
+# \endcode
+#
+# Output files from the above parameters:
+# \code
+# <CUSTOM_KERNEL_PATH>/DEVELOPER_TODO.txt
+# <CUSTOM_KERNEL_PATH>/include/TI/extvx.h
+# <CUSTOM_KERNEL_PATH>/include/TI/extvx_kernels.h
+# <CUSTOM_KERNEL_PATH>/include/TI/extvx_nodes.h
+# \endcode
+#
+# Output folder from the above parameters:
+# \code
+# <CUSTOM_KERNEL_PATH>/ext1/
+# \endcode
+#
+# This folder contains the following:
+# \code
+# c66/concerto.mak (generated first time only for given parameters)
+# c66/vx_<kernel_name>_target.c
+# c66/vx_kernels_ext1_target.c (generated first time only for given parameters)
+# host/concerto.mak (generated first time only for given parameters)
+# tivx_ext1_node_api.c (generated first time only for given parameters)
+# host/vx_<kernel_name>_host.c
+# host/vx_kernels_ext1_host.c (generated first time only for given parameters)
+# include/tivx_ext1_kernels.h (generated first time only for given parameters)
+# include/tivx_kernel_<kernel_name>.h
+# test/concerto.mak (generated first time only for given parameters)
+# test/test_main.h (generated first time only for given parameters)
+# \endcode
+#
+# \par Below is an example using the CUSTOM_APPLICATION_PATH
+#
+# \code
+# from tiovx import *
+#
+# code = KernelExportCode("TI", "extv", "ext1", "c66", "CUSTOM_APPLICATION_PATH")
+# <set up kernel parameters>
+# code.export(kernel)
+# \endcode
+#
+# Output files from the above parameters:
+# \code
+# <CUSTOM_APPLICATION_PATH>/DEVELOPER_TODO.txt
+# <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx.h
+# <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx_kernels.h
+# <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx_nodes.h
+# \endcode
+#
+# Output folder from the above parameters:
+# \code
+# <CUSTOM_APPLICATION_PATH>/ext1/
+# \endcode
+#
+# This folder contains the following:
+# \code
+# c66/concerto.mak (generated first time only for given parameters)
+# c66/vx_<kernel_name>_target.c
+# c66/vx_kernels_ext1_target.c (generated first time only for given parameters)
+# host/concerto.mak (generated first time only for given parameters)
+# tivx_ext1_node_api.c (generated first time only for given parameters)
+# host/vx_<kernel_name>_host.c
+# host/vx_kernels_ext1_host.c (generated first time only for given parameters)
+# include/tivx_ext1_kernels.h (generated first time only for given parameters)
+# include/tivx_kernel_<kernel_name>.h
+# test/concerto.mak (generated first time only for given parameters)
+# test/test_main.h (generated first time only for given parameters)
+# \endcode
+#
+# \ingroup KERNEL_CODE
+#
 class KernelExportCode :
+    ## Constructor used to create this object
+    #
+    # \param include_subpath  [in] [optional] Company name which serves as a subpath for an include directory; Default="TI"
+    # \param include_filename [in] [optional] Name used for kernel include path; Default="extvx"
+    # \param module           [in] [optional] Module name for the kernel; Default="ext1"
+    # \param core             [in] [optional] Name of the core for the kernel to run on; Default="c66"
+    # \param env_var          [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_KERNEL_PATH"
     def __init__(self, include_subpath="TI", include_filename="extvx", module="ext1", core="c66", env_var='CUSTOM_KERNEL_PATH') :
         self.company = include_subpath
         self.top_header_name = include_filename
@@ -2121,6 +2209,9 @@ class KernelExportCode :
         self.todo_code.close()
 
 
+    ## Method for generating files from kernel
+    #
+    # \param kernel  [in] Kernel to be exported to a file
     def export(self, kernel) :
         self.kernel = kernel
         self.h_filename = "tivx_kernel_" + kernel.name_lower + ".h";

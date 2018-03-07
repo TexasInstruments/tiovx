@@ -71,6 +71,8 @@ Here is a list of all documented class members with links to the class documenta
 , <a class="el" href="classtiovx_1_1node_1_1Node.html#af51001bc8d3ca4c2f7731d34bfb07df2">tiovx.node.Node</a>
 , <a class="el" href="classtiovx_1_1matrix_1_1Matrix.html#ac344d5e4f7ffe7c740ac94f8ce6aab04">tiovx.matrix.Matrix</a>
 , <a class="el" href="classtiovx_1_1lut_1_1Lut.html#a71183932b1df64ad5567d722591ed4dd">tiovx.lut.Lut</a>
+, <a class="el" href="classtiovx_1_1kernel__code_1_1KernelExportCode.html#a0089634556f1ba30c4a7375e86b8a440">tiovx.kernel_code.KernelExportCode</a>
+, <a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#ad2dc68cb2a286660d9d1f948d465b75d">tiovx.kernel.Kernel</a>
 , <a class="el" href="classtiovx_1_1image_1_1ImageFromHandle.html#a4b9502358756171566bf5494fcfe8942">tiovx.image.ImageFromHandle</a>
 , <a class="el" href="classtiovx_1_1image_1_1ImageFromChannel.html#a4ce37d006f0f32338c51ad4e633c93ba">tiovx.image.ImageFromChannel</a>
 , <a class="el" href="classtiovx_1_1image_1_1Image.html#aad260b1c6a5037cf0eaaaa0bf9fe891e">tiovx.image.Image</a>
@@ -228,8 +230,9 @@ Here is a list of all documented class members with links to the class documenta
 : <a class="el" href="classtiovx_1_1enums_1_1Target.html#ae2788dcf3971a10f6bbea32760db8838">tiovx.enums.Target</a>
 </li>
 <li>export()
-: <a class="el" href="classtiovx_1_1export__image_1_1ExportImage.html#a4bcff481de65c90e23cd38b91d9a73bc">tiovx.export_image.ExportImage</a>
+: <a class="el" href="classtiovx_1_1kernel__code_1_1KernelExportCode.html#a24fd84d1259761bf084c3d019291b69d">tiovx.kernel_code.KernelExportCode</a>
 , <a class="el" href="classtiovx_1_1export__code_1_1ExportCode.html#aaa16520d33439fe5d56c53141d8ce723">tiovx.export_code.ExportCode</a>
+, <a class="el" href="classtiovx_1_1export__image_1_1ExportImage.html#a4bcff481de65c90e23cd38b91d9a73bc">tiovx.export_image.ExportImage</a>
 </li>
 </ul>
 
@@ -479,19 +482,26 @@ Here is a list of all documented class members with links to the class documenta
 <li>setKernelEnumName()
 : <a class="el" href="classtiovx_1_1node_1_1Node.html#a9b4bb3e06fb159fbde85dbb9a5d58f3e">tiovx.node.Node</a>
 </li>
+<li>setParameter()
+: <a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#a32a4913e87c6c29fad0421dcb89995cf">tiovx.kernel.Kernel</a>
+</li>
+<li>setParameterRelationship()
+: <a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#a318b5feffc879b8f8166c76308a6b996">tiovx.kernel.Kernel</a>
+</li>
 <li>setParams()
 : <a class="el" href="classtiovx_1_1node_1_1Node.html#a395dd2a112772d424b0a6e6098d3f4af">tiovx.node.Node</a>
 </li>
 <li>setTarget()
-: <a class="el" href="classtiovx_1_1node_1_1Node.html#a6c04144e25e1d42987b5cd715d480d7a">tiovx.node.Node</a>
+: <a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#a971702a506584377c13ab8cef0b684a6">tiovx.kernel.Kernel</a>
+, <a class="el" href="classtiovx_1_1node_1_1Node.html#a6c04144e25e1d42987b5cd715d480d7a">tiovx.node.Node</a>
 </li>
 <li>SIZE
-: <a class="el" href="classtiovx_1_1attribute_1_1ConvolutionAttribute.html#a2b57f29ec38b8abf9d95dad033a32895">tiovx.attribute.ConvolutionAttribute</a>
-, <a class="el" href="classtiovx_1_1enums_1_1Type.html#a6933e27f77b79335a229a5d7ad213d8f">tiovx.enums.Type</a>
-, <a class="el" href="classtiovx_1_1attribute_1_1ImageAttribute.html#abb474ccc0015bd32a2f29ca9ca31c890">tiovx.attribute.ImageAttribute</a>
-, <a class="el" href="classtiovx_1_1attribute_1_1DistributionAttribute.html#ac9b01207253bd7b5bddaee20da594fcc">tiovx.attribute.DistributionAttribute</a>
-, <a class="el" href="classtiovx_1_1attribute_1_1MatrixAttribute.html#a3069498eeafad172ae689bd8d2156668">tiovx.attribute.MatrixAttribute</a>
+: <a class="el" href="classtiovx_1_1attribute_1_1MatrixAttribute.html#a3069498eeafad172ae689bd8d2156668">tiovx.attribute.MatrixAttribute</a>
 , <a class="el" href="classtiovx_1_1attribute_1_1LutAttribute.html#adba4d15ecf580805f3ac8a0f47fa2044">tiovx.attribute.LutAttribute</a>
+, <a class="el" href="classtiovx_1_1enums_1_1Type.html#a6933e27f77b79335a229a5d7ad213d8f">tiovx.enums.Type</a>
+, <a class="el" href="classtiovx_1_1attribute_1_1DistributionAttribute.html#ac9b01207253bd7b5bddaee20da594fcc">tiovx.attribute.DistributionAttribute</a>
+, <a class="el" href="classtiovx_1_1attribute_1_1ConvolutionAttribute.html#a2b57f29ec38b8abf9d95dad033a32895">tiovx.attribute.ConvolutionAttribute</a>
+, <a class="el" href="classtiovx_1_1attribute_1_1ImageAttribute.html#abb474ccc0015bd32a2f29ca9ca31c890">tiovx.attribute.ImageAttribute</a>
 </li>
 <li>SOURCE_HEIGHT
 : <a class="el" href="classtiovx_1_1attribute_1_1RemapAttribute.html#a14551c75c6ea3501aa8cf53aef00d52a">tiovx.attribute.RemapAttribute</a>
