@@ -79,10 +79,10 @@ from glob import glob
 #
 # Output files from the above parameters:
 # \code
-# <CUSTOM_KERNEL_PATH>/DEVELOPER_TODO.txt
-# <CUSTOM_KERNEL_PATH>/include/TI/extvx.h
-# <CUSTOM_KERNEL_PATH>/include/TI/extvx_kernels.h
-# <CUSTOM_KERNEL_PATH>/include/TI/extvx_nodes.h
+# <CUSTOM_KERNEL_PATH>/DEVELOPER_TODO.txt (generated first time only for given parameters)
+# <CUSTOM_KERNEL_PATH>/include/TI/extvx.h (generated first time only for given parameters)
+# <CUSTOM_KERNEL_PATH>/include/TI/extvx_kernels.h (generated first time only for given parameters)
+# <CUSTOM_KERNEL_PATH>/include/TI/extvx_nodes.h (generated first time only for given parameters)
 # \endcode
 #
 # Output folder from the above parameters:
@@ -110,7 +110,7 @@ from glob import glob
 # \code
 # from tiovx import *
 #
-# code = KernelExportCode("TI", "extv", "ext1", "c66", "CUSTOM_APPLICATION_PATH")
+# code = KernelExportCode("TI", "extvx", "ext1", "c66", "CUSTOM_APPLICATION_PATH")
 # <set up kernel parameters>
 # code.export(kernel)
 # \endcode
@@ -118,6 +118,8 @@ from glob import glob
 # Output files from the above parameters:
 # \code
 # <CUSTOM_APPLICATION_PATH>/DEVELOPER_TODO.txt
+# <CUSTOM_APPLICATION_PATH>/concerto_inc.mak
+# <CUSTOM_APPLICATION_PATH>/custom_tools_path.mak
 # <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx.h
 # <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx_kernels.h
 # <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx_nodes.h
@@ -125,7 +127,7 @@ from glob import glob
 #
 # Output folder from the above parameters:
 # \code
-# <CUSTOM_APPLICATION_PATH>/ext1/
+# <CUSTOM_APPLICATION_PATH>/kernels/ext1/
 # \endcode
 #
 # This folder contains the following:

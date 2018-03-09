@@ -88,6 +88,10 @@ from . import *
 #
 # \ingroup PYTIOVX_API
 
+## \defgroup NODE 7: Node APIs
+#
+# \ingroup PYTIOVX_API
+
 # Reference object (OpenVX equivalent = vx_reference)
 #
 # NOT used by user directly.

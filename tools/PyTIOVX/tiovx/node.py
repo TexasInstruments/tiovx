@@ -357,7 +357,20 @@ class Node (Reference) :
     def get_vx_kernel_enum(self) :
         return self.vx_kernel_enum
 
+## Node object used to generate an absdiff node
+#
+# \par Example Usage: Creating absdiff node
+#
+# \ingroup NODE
+#
 class NodeAbsDiff (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.absdiff", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -372,7 +385,19 @@ class NodeAbsDiff (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 or self.ref[0].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
 
 #TODO BIDI
+## Node object used to generate an accumulate node
+#
+# \par Example Usage: Creating accumulate node
+#
+# \ingroup NODE
+#
 class NodeAccumulateImage (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_inout2   [in] In/out accumulate image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_inout2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.accumulate", image_in1, image_inout2, image_inout2)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -386,7 +411,20 @@ class NodeAccumulateImage (Node) :
         assert ( self.ref[1].df_image == DfImage.S16 ), "In/out image data format must be S16"
 
 #TODO BIDI
+## Node object used to generate an accumulate square node
+#
+# \par Example Usage: Creating accumulate square node
+#
+# \ingroup NODE
+#
 class NodeAccumulateSquareImage (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param shift_in2      [in] Scalar input
+    # \param image_inout3   [in] In/out accumulate image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, shift_in2, image_inout3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.accumulate_square", image_in1, shift_in2, image_inout3, image_inout3)
         self.setParams(3, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE, Type.IMAGE)
@@ -400,7 +438,20 @@ class NodeAccumulateSquareImage (Node) :
         assert ( self.ref[2].df_image == DfImage.S16 ), "In/out image data format must be S16"
 
 #TODO BIDI
+## Node object used to generate an accumulate weighted node
+#
+# \par Example Usage: Creating accumulate weighted node
+#
+# \ingroup NODE
+#
 class NodeAccumulateWeightedImage (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param alpha_in2      [in] Alpha scalar input
+    # \param image_inout3   [in] In/out accumulate image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, alpha_in2, image_inout3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.accumulate_weighted", image_in1, alpha_in2, image_inout3, image_inout3)
         self.setParams(3, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE, Type.IMAGE)
@@ -413,7 +464,21 @@ class NodeAccumulateWeightedImage (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input image data format must be U8"
         assert ( self.ref[2].df_image == DfImage.U8 ), "In/out image data format must be U8"
 
+## Node object used to generate an add node
+#
+# \par Example Usage: Creating add node
+#
+# \ingroup NODE
+#
 class NodeAdd (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param policy3        [in] Addition policy
+    # \param image_out4     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, policy3, image_out4, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, policy3)
         Node.__init__(self, "org.khronos.openvx.add", image_in1, image_in2, scalar, image_out4)
@@ -429,7 +494,21 @@ class NodeAdd (Node) :
         assert ( self.ref[3].df_image == DfImage.U8 or self.ref[3].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
         assert ( not((self.ref[0].df_image == DfImage.S16 or self.ref[1].df_image == DfImage.S16) and self.ref[3].df_image == DfImage.U8) ), "Output must be S16 if either input is S16"
 
+## Node object used to generate a subtract node
+#
+# \par Example Usage: Creating subtract node
+#
+# \ingroup NODE
+#
 class NodeSubtract (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param policy3        [in] Subtraction policy
+    # \param image_out4     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, policy, image_out3, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, policy)
         Node.__init__(self, "org.khronos.openvx.subtract", image_in1, image_in2, scalar, image_out3)
@@ -445,7 +524,20 @@ class NodeSubtract (Node) :
         assert ( self.ref[3].df_image == DfImage.U8 or self.ref[3].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
         assert ( not((self.ref[0].df_image == DfImage.S16 or self.ref[1].df_image == DfImage.S16) and self.ref[3].df_image == DfImage.U8) ), "Output must be S16 if either input is S16"
 
+## Node object used to generate an AND node
+#
+# \par Example Usage: Creating AND node
+#
+# \ingroup NODE
+#
 class NodeAnd (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.and", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -459,7 +551,20 @@ class NodeAnd (Node) :
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate an XOR node
+#
+# \par Example Usage: Creating XOR node
+#
+# \ingroup NODE
+#
 class NodeXor (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.xor", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -473,7 +578,20 @@ class NodeXor (Node) :
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate an OR node
+#
+# \par Example Usage: Creating OR node
+#
+# \ingroup NODE
+#
 class NodeOr (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.or", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -487,7 +605,19 @@ class NodeOr (Node) :
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a NOT node
+#
+# \par Example Usage: Creating NOT node
+#
+# \ingroup NODE
+#
 class NodeNot (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.not", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -500,7 +630,19 @@ class NodeNot (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a Box3x3 node
+#
+# \par Example Usage: Creating Box3x3 node
+#
+# \ingroup NODE
+#
 class NodeBox3x3 (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.box_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -513,7 +655,22 @@ class NodeBox3x3 (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a Canny Edge Detector node
+#
+# \par Example Usage: Creating Canny Edge Detector node
+#
+# \ingroup NODE
+#
 class NodeCannyEdgeDetector (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param hyst_in2       [in] Threshold input
+    # \param grad_size_in3  [in] Gradient scalar input
+    # \param norm_type_in4  [in] Norm type scalar image
+    # \param image_out5     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, hyst_in2, grad_size_in3, norm_type_in4, image_out5, name="default", target=Target.DEFAULT) :
         scalar3 = Scalar(Type.INT32, grad_size_in3)
         scalar4 = Scalar(Type.ENUM, norm_type_in4)
@@ -529,7 +686,22 @@ class NodeCannyEdgeDetector (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO how to handle optional parameters?
+## Node object used to generate a Channel Combine node
+#
+# \par Example Usage: Creating Channel Combine node
+#
+# \ingroup NODE
+#
 class NodeChannelCombine (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] [optional] Second input image
+    # \param image_in3      [in] [optional] Third input image
+    # \param image_in4      [in] [optional] Fourth input image
+    # \param image_out5     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_in3, image_in4, image_out5, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.channel_combine", image_in1, image_in2, image_in3, image_in4, image_out5)
         self.setParams(4, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -544,7 +716,20 @@ class NodeChannelCombine (Node) :
         assert ( self.ref[2].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[3].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a Channel Extract node
+#
+# \par Example Usage: Creating Channel Extract node
+#
+# \ingroup NODE
+#
 class NodeChannelExtract (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param channel2       [in] Channel to extract
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, channel2, image_out3, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, channel2)
         Node.__init__(self, "org.khronos.openvx.channel_extract", image_in1, scalar, image_out3)
@@ -557,7 +742,19 @@ class NodeChannelExtract (Node) :
         # additional error conditions over the basic ones
         assert ( self.ref[2].df_image == DfImage.U8 ), "Output format must be U8"
 
+## Node object used to generate a Color Convert node
+#
+# \par Example Usage: Creating Color Convert node
+#
+# \ingroup NODE
+#
 class NodeColorConvert (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.color_convert", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -569,7 +766,21 @@ class NodeColorConvert (Node) :
         # additional error conditions over the basic ones
 
 #TODO Order of params
+## Node object used to generate a Convert Depth node
+#
+# \par Example Usage: Creating Convert Depth node
+#
+# \ingroup NODE
+#
 class NodeConvertDepth (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param policy3        [in] Depth policy
+    # \param shift4         [in] Scalar shift value
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, policy3, shift4, name="default", target=Target.DEFAULT) :
         scalar3 = Scalar(Type.ENUM, policy3)
         Node.__init__(self, "org.khronos.openvx.convertdepth", image_in1, image_out2, scalar3, shift4)
@@ -585,7 +796,20 @@ class NodeConvertDepth (Node) :
         Node.checkParams(self, *param_type_args)
         # additional error conditions over the basic ones
 
+## Node object used to generate a Custom Convolution node
+#
+# \par Example Usage: Creating Custom Convolution node
+#
+# \ingroup NODE
+#
 class NodeConvolve (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param conv2          [in] Convolution input
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, conv2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.custom_convolution", image_in1, conv2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.CONVOLUTION, Type.IMAGE)
@@ -598,7 +822,19 @@ class NodeConvolve (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input format must be U8"
         assert ( self.ref[2].df_image == DfImage.S16 ), "Output format must be S16"
 
+## Node object used to generate a Dilate3x3 node
+#
+# \par Example Usage: Creating Dilate3x3 node
+#
+# \ingroup NODE
+#
 class NodeDilate3x3 (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.dilate_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -611,7 +847,19 @@ class NodeDilate3x3 (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate an Equalize Histogram node
+#
+# \par Example Usage: Creating Equalize Histogram node
+#
+# \ingroup NODE
+#
 class NodeEqualizeHist (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.equalize_histogram", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -624,7 +872,19 @@ class NodeEqualizeHist (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate an Erode3x3 node
+#
+# \par Example Usage: Creating Erode3x3 node
+#
+# \ingroup NODE
+#
 class NodeErode3x3 (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.erode_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -638,7 +898,22 @@ class NodeErode3x3 (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO, this one also has an optional parameter (corners5)
+## Node object used to generate a Fast Corners node
+#
+# \par Example Usage: Creating Fast Corners node
+#
+# \ingroup NODE
+#
 class NodeFastCorners (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1        [in] Input image
+    # \param strengh_thresh2  [in] Strength threshold scalar input
+    # \param nonmax3          [in] Nonmax suppression boolean input
+    # \param arr_out4         [in] Output array
+    # \param corners5         [in] Number of corners scalar output
+    # \param name             [in] [optional] Name of the node; Default="default"
+    # \param target           [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, strengh_thresh2, nonmax3, arr_out4, corners5, name="default", target=Target.DEFAULT) :
         scalar3 = Scalar(Type.ENUM, nonmax3)
         Node.__init__(self, "org.khronos.openvx.fast_corners", image_in1, strengh_thresh2, scalar3, arr_out4, corners5)
@@ -652,7 +927,19 @@ class NodeFastCorners (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input image data format must be U8"
         assert ( self.ref[1].data_type == Type.FLOAT32 ), "Strength scalar format must be F32"
 
+## Node object used to generate a Gaussian3x3 node
+#
+# \par Example Usage: Creating Gaussian3x3 node
+#
+# \ingroup NODE
+#
 class NodeGaussian3x3 (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.gaussian_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -665,7 +952,21 @@ class NodeGaussian3x3 (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a Nonlinear Filter node
+#
+# \par Example Usage: Creating Nonlinear Filter node
+#
+# \ingroup NODE
+#
 class NodeNonLinearFilter (Node) :
+    ## Constructor used to create this object
+    #
+    # \param function1       [in] Scalar input of nonlinear function
+    # \param image_in2       [in] Input image
+    # \param matrix_in3      [in] Matrix mask input
+    # \param image_out4      [in] Output array
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, function1, image_in2, matrix_in3, image_out4, name="default", target=Target.DEFAULT) :
         scalar1 = Scalar(Type.ENUM, function1)
         Node.__init__(self, "org.khronos.openvx.non_linear_filter", scalar1, image_in2, matrix_in3, image_out4)
@@ -680,7 +981,25 @@ class NodeNonLinearFilter (Node) :
         assert ( self.ref[3].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO, this one also has an optional parameter (num_corners8)
+## Node object used to generate a Harris Corners node
+#
+# \par Example Usage: Creating Harris Corners node
+#
+# \ingroup NODE
+#
 class NodeHarrisCorners (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1        [in] Input image
+    # \param strengh_thresh2  [in] Strength threshold scalar input
+    # \param dist3            [in] Min distance scalar input
+    # \param sensitivity4     [in] Sensitivity scalar input
+    # \param gradient_size5   [in] Gradient size scalar input
+    # \param block_size6      [in] Block window size scalar input
+    # \param arr_out7         [in] Output corners array
+    # \param num_corners8     [in] Output number of corners scalar
+    # \param name             [in] [optional] Name of the node; Default="default"
+    # \param target           [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, strengh_thresh2, dist3, sensitivity4, gradient_size5, block_size6, arr_out7, num_corners8, name="default", target=Target.DEFAULT) :
         scalar5 = Scalar(Type.ENUM, gradient_size5)
         scalar6 = Scalar(Type.ENUM, block_size6)
@@ -697,7 +1016,19 @@ class NodeHarrisCorners (Node) :
         assert ( self.ref[2].data_type == Type.FLOAT32 ), "Distance scalar format must be F32"
         assert ( self.ref[3].data_type == Type.FLOAT32 ), "Sensitivity scalar format must be F32"
 
+## Node object used to generate a Histogram node
+#
+# \par Example Usage: Creating Histogram node
+#
+# \ingroup NODE
+#
 class NodeHistogram (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1   [in] Input image
+    # \param dist2       [in] Output histogram distribution
+    # \param name        [in] [optional] Name of the node; Default="default"
+    # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, dist2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.histogram", image_in1, dist2)
         self.setParams(1, 1, Type.IMAGE, Type.DISTRIBUTION)
@@ -709,7 +1040,19 @@ class NodeHistogram (Node) :
         # additional error conditions over the basic ones
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input image data format must be U8"
 
+## Node object used to generate a Gaussian Pyramid node
+#
+# \par Example Usage: Creating Gaussian Pyramid node
+#
+# \ingroup NODE
+#
 class NodeGaussianPyramid (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1   [in] Input image
+    # \param dist2       [in] Output histogram distribution
+    # \param name        [in] [optional] Name of the node; Default="default"
+    # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, pyr_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.gaussian_pyramid", image_in1, pyr_out2)
         self.setParams(1, 1, Type.IMAGE, Type.PYRAMID)
@@ -722,7 +1065,20 @@ class NodeGaussianPyramid (Node) :
         assert ( self.ref[0].df_image == self.ref[1].format ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a Laplacian Pyramid node
+#
+# \par Example Usage: Creating Laplacian Pyramid node
+#
+# \ingroup NODE
+#
 class NodeLaplacianPyramid (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1   [in] Input image
+    # \param pyr_out2    [in] Output pyramid
+    # \param image_in1   [in] Output image
+    # \param name        [in] [optional] Name of the node; Default="default"
+    # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, pyr_out2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.laplacian_pyramid", image_in1, pyr_out2, image_out3)
         self.setParams(1, 2, Type.IMAGE, Type.PYRAMID, Type.IMAGE)
@@ -736,7 +1092,20 @@ class NodeLaplacianPyramid (Node) :
         assert ( self.ref[1].format == DfImage.S16 ), "Output pyramid image data format must be S16"
         assert ( self.ref[2].df_image == DfImage.S16 ), "Output image data format must be S16"
 
+## Node object used to generate a Laplacian Reconstruct node
+#
+# \par Example Usage: Creating Laplacian Reconstruct node
+#
+# \ingroup NODE
+#
 class NodeLaplacianReconstruct (Node) :
+    ## Constructor used to create this object
+    #
+    # \param pyr_in1     [in] Input pyramid
+    # \param image_in2   [in] Input image
+    # \param image_out3  [in] Output image
+    # \param name        [in] [optional] Name of the node; Default="default"
+    # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, pyr_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.laplacian_reconstruct", pyr_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.PYRAMID, Type.IMAGE, Type.IMAGE)
@@ -750,7 +1119,19 @@ class NodeLaplacianReconstruct (Node) :
         assert ( self.ref[1].df_image == DfImage.S16 ), "Input image data format must be S16"
         assert ( self.ref[2].df_image == DfImage.U8 ), "Output image data format must be U8"
 
+## Node object used to generate an Integral Image node
+#
+# \par Example Usage: Creating Integral Image node
+#
+# \ingroup NODE
+#
 class NodeIntegralImage (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.integral_image", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -763,7 +1144,20 @@ class NodeIntegralImage (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input image data format must be U8"
         assert ( self.ref[1].df_image == DfImage.U32 ), "Output image data format must be U32"
 
+## Node object used to generate a Magnitude node
+#
+# \par Example Usage: Creating Magnitude node
+#
+# \ingroup NODE
+#
 class NodeMagnitude (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] First input image
+    # \param image_in2      [in] Second input image
+    # \param image_out3     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.magnitude", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -777,7 +1171,20 @@ class NodeMagnitude (Node) :
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Inputs and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.S16 ), "Image data format must be S16"
 
+## Node object used to generate a Mean Standard Deviation node
+#
+# \par Example Usage: Creating Mean Standard Deviation node
+#
+# \ingroup NODE
+#
 class NodeMeanStdDev (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1   [in] Input image
+    # \param mean2       [in] Mean scalar output
+    # \param stddev3     [in] Standard Deviation scalar output
+    # \param name        [in] [optional] Name of the node; Default="default"
+    # \param target      [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, mean2, stddev3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.mean_stddev", image_in1, mean2, stddev3)
         self.setParams(1, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR)
@@ -791,7 +1198,19 @@ class NodeMeanStdDev (Node) :
         assert ( self.ref[1].data_type == Type.FLOAT32 ), "Mean scalar format must be F32"
         assert ( self.ref[2].data_type == Type.FLOAT32 ), "Standard Deviation scalar format must be F32"
 
+## Node object used to generate a Median3x3 node
+#
+# \par Example Usage: Creating Median3x3 node
+#
+# \ingroup NODE
+#
 class NodeMedian3x3 (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.median_3x3", image_in1, image_out2)
         self.setParams(1, 1, Type.IMAGE, Type.IMAGE)
@@ -805,7 +1224,24 @@ class NodeMedian3x3 (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO Optional Parameters
+## Node object used to generate a Min Max Location node
+#
+# \par Example Usage: Creating Min Max Location node
+#
+# \ingroup NODE
+#
 class NodeMinMaxLoc (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1    [in] Input image
+    # \param min2         [in] Min output scalar
+    # \param max3         [in] Max output scalar
+    # \param array_out4   [in] Min loc output array
+    # \param array_out5   [in] Max loc output array
+    # \param minCnt6      [in] Min count output scalar
+    # \param maxCnt7      [in] Max count output scalar
+    # \param name         [in] [optional] Name of the node; Default="default"
+    # \param target       [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, min2, max3, array_out4, array_out5, minCnt6, maxCnt7, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.minmaxloc", image_in1, min2, max3, array_out4, array_out5, minCnt6, maxCnt7)
         self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR)
@@ -818,11 +1254,31 @@ class NodeMinMaxLoc (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 or self.ref[0].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
 
 #TODO Order of parameters
+## Node object used to generate an Optical Flow node
+#
+# \par Example Usage: Creating Optical Flow node
+#
+# \ingroup NODE
+#
 class NodeOpticalFlowPyrLK (Node) :
-    def __init__(self, pyr_in1, pyr_in2, array_in3, array_in4, array_in5, termination6, epsilon7, num_iters8, use_initial_estimate9, window_dim10, name="default", target=Target.DEFAULT) :
+    ## Constructor used to create this object
+    #
+    # \param pyr_in1                 [in] First input pyramid
+    # \param pyr_in2                 [in] Second input pyramid
+    # \param array_in3               [in] First input points array
+    # \param array_in4               [in] Second input points array
+    # \param array_out5              [in] Output points array
+    # \param termination6            [in] Input scalar termination value
+    # \param epsilon7                [in] Input scalar epsilon value
+    # \param num_iters8              [in] Number of iterations scalar input
+    # \param use_initial_estimate9   [in] Boolean input
+    # \param window_dim10            [in] Window size scalar input
+    # \param name                    [in] [optional] Name of the node; Default="default"
+    # \param target                  [in] [optional] Default core to run on; Default="Target.DEFAULT"
+    def __init__(self, pyr_in1, pyr_in2, array_in3, array_in4, array_out5, termination6, epsilon7, num_iters8, use_initial_estimate9, window_dim10, name="default", target=Target.DEFAULT) :
         scalar6 = Scalar(Type.ENUM, termination6)
         scalar10 = Scalar(Type.ENUM, window_dim10)
-        Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10, array_in5)
+        Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10, array_out5)
         self.setParams(9, 1, Type.PYRAMID, Type.PYRAMID, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_OPTICAL_FLOW_PYR_LK");
@@ -834,7 +1290,20 @@ class NodeOpticalFlowPyrLK (Node) :
         assert ( self.ref[1].format == DfImage.U8 ), "Input pyramid image data format must be U8"
         assert ( self.ref[5].data_type == Type.FLOAT32 ), "Epsilon scalar format must be F32"
 
+## Node object used to generate a Phase node
+#
+# \par Example Usage: Creating Phase node
+#
+# \ingroup NODE
+#
 class NodePhase (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] First input image
+    # \param image_in2       [in] Second input image
+    # \param image_out3      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.phase", image_in1, image_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -848,7 +1317,23 @@ class NodePhase (Node) :
         assert ( self.ref[0].df_image == DfImage.S16 ), "Input image data format must be S16"
         assert ( self.ref[2].df_image == DfImage.U8 ), "Output image data format must be U8"
 
+## Node object used to generate a Multiply node
+#
+# \par Example Usage: Creating Multiply node
+#
+# \ingroup NODE
+#
 class NodeMultiply (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] First input image
+    # \param image_in2       [in] Second input image
+    # \param scale3          [in] Input scalar
+    # \param overflow4       [in] Input scalar overflow policy
+    # \param rounding5       [in] Input scalar rounding policy
+    # \param image_out6      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, scale3, overflow4, rounding5, image_out6, name="default", target=Target.DEFAULT) :
         scalar4 = Scalar(Type.ENUM, overflow4)
         scalar5 = Scalar(Type.ENUM, rounding5)
@@ -865,7 +1350,21 @@ class NodeMultiply (Node) :
         assert ( self.ref[5].df_image == DfImage.U8 or self.ref[5].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
         assert ( not((self.ref[0].df_image == DfImage.S16 or self.ref[1].df_image == DfImage.S16) and self.ref[5].df_image == DfImage.U8) ), "Output must be S16 if either input is S16"
 
+## Node object used to generate a Remap node
+#
+# \par Example Usage: Creating Remap node
+#
+# \ingroup NODE
+#
 class NodeRemap (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] First input image
+    # \param table_in2       [in] Input remap table
+    # \param policy3         [in] Interpolation policy input scalar
+    # \param image_out4      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, table_in2, policy3, image_out4, name="default", target=Target.DEFAULT) :
         scalar3 = Scalar(Type.ENUM, policy3)
         Node.__init__(self, "org.khronos.openvx.remap", image_in1, table_in2, scalar3, image_out4)
@@ -880,7 +1379,21 @@ class NodeRemap (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO Order of params
+## Node object used to generate a Scale node
+#
+# \par Example Usage: Creating Scale node
+#
+# \ingroup NODE
+#
 class NodeScaleImage (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] First input image
+    # \param image_out2      [in] Input remap table
+    # \param interp3         [in] Interpolation policy input scalar
+    # \param image_out4      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, interp3, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, interp3)
         Node.__init__(self, "org.khronos.openvx.scale_image", image_in1, scalar, image_out2)
@@ -895,7 +1408,20 @@ class NodeScaleImage (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO Order of params
+## Node object used to generate a Half Scale Gaussian node
+#
+# \par Example Usage: Creating Half Scale Gaussian node
+#
+# \ingroup NODE
+#
 class NodeHalfScaleGaussian (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] Output image
+    # \param kernel_size    [in] Scalar kernel size
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, kernel_size, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, kernel_size)
         Node.__init__(self, "org.khronos.openvx.halfscale_gaussian", image_in1, scalar, image_out2)
@@ -909,7 +1435,20 @@ class NodeHalfScaleGaussian (Node) :
         assert ( self.ref[0].df_image == self.ref[2].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
+## Node object used to generate a Sobel3x3 node
+#
+# \par Example Usage: Creating Sobel3x3 node
+#
+# \ingroup NODE
+#
 class NodeSobel3x3 (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1      [in] Input image
+    # \param image_out2     [in] First output image
+    # \param image_out3     [in] Second output image
+    # \param name           [in] [optional] Name of the node; Default="default"
+    # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.sobel_3x3", image_in1, image_out2, image_out3)
         self.setParams(1, 2, Type.IMAGE, Type.IMAGE, Type.IMAGE)
@@ -923,7 +1462,20 @@ class NodeSobel3x3 (Node) :
         assert ( self.ref[1].df_image == self.ref[2].df_image ), "Output images MUST have same image data format"
         assert ( self.ref[1].df_image == DfImage.S16 ), "Output image data format must be S16"
 
+## Node object used to generate a Table Lookup node
+#
+# \par Example Usage: Creating Table Lookup node
+#
+# \ingroup NODE
+#
 class NodeTableLookup (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] First input image
+    # \param lut_in2         [in] Input lookup table
+    # \param image_out3      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, lut_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.table_lookup", image_in1, lut_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.LUT, Type.IMAGE)
@@ -936,7 +1488,20 @@ class NodeTableLookup (Node) :
         assert ( self.ref[0].df_image == self.ref[2].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 or self.ref[0].df_image == DfImage.S16 ), "Image data format must be either U8 or S16"
 
+## Node object used to generate a Threshold node
+#
+# \par Example Usage: Creating Threshold node
+#
+# \ingroup NODE
+#
 class NodeThreshold (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] First input image
+    # \param thresh_in2      [in] Input threshold
+    # \param image_out3      [in] Interpolation policy input scalar
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, thresh_in2, image_out3, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.threshold", image_in1, thresh_in2, image_out3)
         self.setParams(2, 1, Type.IMAGE, Type.THRESHOLD, Type.IMAGE)
@@ -948,7 +1513,21 @@ class NodeThreshold (Node) :
         # additional error conditions over the basic ones
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input image data format must be U8"
 
+## Node object used to generate a Warp Affine node
+#
+# \par Example Usage: Creating Warp Affine node
+#
+# \ingroup NODE
+#
 class NodeWarpAffine (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] Input image
+    # \param matrix_in2      [in] Input affine matrix
+    # \param interp3         [in] Interpolation type input scalar
+    # \param image_out4      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, matrix_in2, interp3, image_out4, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, interp3)
         Node.__init__(self, "org.khronos.openvx.warp_affine", image_in1, matrix_in2, scalar, image_out4)
@@ -963,7 +1542,21 @@ class NodeWarpAffine (Node) :
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[1].data_type == Type.FLOAT32 ), "Matrix data format must be F32"
 
+## Node object used to generate a Warp Perspective node
+#
+# \par Example Usage: Creating Warp Perspective node
+#
+# \ingroup NODE
+#
 class NodeWarpPerspective (Node) :
+    ## Constructor used to create this object
+    #
+    # \param image_in1       [in] Input image
+    # \param matrix_in2      [in] Input perspective matrix
+    # \param interp3         [in] Interpolation type input scalar
+    # \param image_out4      [in] Output image
+    # \param name            [in] [optional] Name of the node; Default="default"
+    # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, matrix_in2, interp3, image_out4, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, interp3)
         Node.__init__(self, "org.khronos.openvx.warp_perspective", image_in1, matrix_in2, scalar, image_out4)

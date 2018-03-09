@@ -1,0 +1,33 @@
+digraph uc_sample_07 {
+
+  label = "uc_sample_07"
+  ColorScheme [shape=none, margin=0, label=<
+        <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+        <TR><TD bgcolor="palegreen">DSP1</TD></TR>        <TR><TD bgcolor="gold">EVE2</TD></TR>        </TABLE>>];
+
+
+
+  /* DATA OBJECTS */
+  image_1 [color=GhostWhite, style=filled]
+  scalar_3 [color=GhostWhite, style=filled]
+  image_2 [color=GhostWhite, style=filled]
+  convolution_6 [color=GhostWhite, style=filled]
+  image_5 [color=GhostWhite, style=filled]
+
+
+  /* NODE OBJECTS */
+  node_4 [label="node_4 (org.khronos.openvx.accumulate_weighted)", color=palegreen, style=filled]
+  node_7 [label="node_7 (org.khronos.openvx.custom_convolution)", color=gold, style=filled]
+
+
+  /* NODE CONNECTIONS */
+  image_1 -> node_4 [taillabel=0, labeldistance=3]
+  scalar_3 -> node_4 [taillabel=1, labeldistance=3]
+  image_2 -> node_4 [taillabel=2, labeldistance=3]
+  node_4 -> image_2 [headlabel=3, labeldistance=3]
+  image_2 -> node_7 [taillabel=0, labeldistance=3]
+  convolution_6 -> node_7 [taillabel=1, labeldistance=3]
+  node_7 -> image_5 [headlabel=2, labeldistance=3]
+
+
+}

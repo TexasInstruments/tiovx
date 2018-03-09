@@ -39,10 +39,10 @@
  &lt;set up kernel parameters&gt;
  code.export(kernel)
 </pre></div><p>Output files from the above parameters: </p>
-<div class="fragment"><pre class="fragment"> &lt;CUSTOM_KERNEL_PATH&gt;/DEVELOPER_TODO.txt
- &lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx.h
- &lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx_kernels.h
- &lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx_nodes.h
+<div class="fragment"><pre class="fragment"> &lt;CUSTOM_KERNEL_PATH&gt;/DEVELOPER_TODO.txt (generated first time only <span class="keywordflow">for</span> given parameters)
+ &lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx.h (generated first time only <span class="keywordflow">for</span> given parameters)
+ &lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx_kernels.h (generated first time only <span class="keywordflow">for</span> given parameters)
+ &lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx_nodes.h (generated first time only <span class="keywordflow">for</span> given parameters)
 </pre></div><p>Output folder from the above parameters: </p>
 <div class="fragment"><pre class="fragment"> &lt;CUSTOM_KERNEL_PATH&gt;/ext1/
 </pre></div><p>This folder contains the following: </p>
@@ -60,16 +60,18 @@
 </pre></div><dl class="user"><dt><b>Below is an example using the CUSTOM_APPLICATION_PATH</b></dt><dd></dd></dl>
 <div class="fragment"><pre class="fragment"> <span class="keyword">from</span> tiovx <span class="keyword">import</span> *
 
- code = KernelExportCode(<span class="stringliteral">&quot;TI&quot;</span>, <span class="stringliteral">&quot;extv&quot;</span>, <span class="stringliteral">&quot;ext1&quot;</span>, <span class="stringliteral">&quot;c66&quot;</span>, <span class="stringliteral">&quot;CUSTOM_APPLICATION_PATH&quot;</span>)
+ code = KernelExportCode(<span class="stringliteral">&quot;TI&quot;</span>, <span class="stringliteral">&quot;extvx&quot;</span>, <span class="stringliteral">&quot;ext1&quot;</span>, <span class="stringliteral">&quot;c66&quot;</span>, <span class="stringliteral">&quot;CUSTOM_APPLICATION_PATH&quot;</span>)
  &lt;set up kernel parameters&gt;
  code.export(kernel)
 </pre></div><p>Output files from the above parameters: </p>
 <div class="fragment"><pre class="fragment"> &lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt
+ &lt;CUSTOM_APPLICATION_PATH&gt;/concerto_inc.mak
+ &lt;CUSTOM_APPLICATION_PATH&gt;/custom_tools_path.mak
  &lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/TI/extvx.h
  &lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/TI/extvx_kernels.h
  &lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/TI/extvx_nodes.h
 </pre></div><p>Output folder from the above parameters: </p>
-<div class="fragment"><pre class="fragment"> &lt;CUSTOM_APPLICATION_PATH&gt;/ext1/
+<div class="fragment"><pre class="fragment"> &lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/
 </pre></div><p>This folder contains the following: </p>
 <div class="fragment"><pre class="fragment"> c66/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)
  c66/vx_&lt;kernel_name&gt;_target.c
