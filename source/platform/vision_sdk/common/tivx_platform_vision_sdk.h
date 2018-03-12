@@ -50,6 +50,11 @@ extern "C" {
  */
 #define TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN      (8U)
 
+/*! \brief HW spinlock ID to use for locking data ref queue
+ * \ingroup group_tivx_platform
+ */
+#define TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID    (255u)
+
 /*! \brief Macros for build time check
  * \ingroup group_tivx_platform
  */

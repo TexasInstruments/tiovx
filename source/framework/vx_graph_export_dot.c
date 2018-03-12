@@ -63,7 +63,11 @@
 #include <vx_internal.h>
 
 /* set to 1 only if 'dot' tool can be invoke with "system" command */
+#ifdef PC /* PC host emulation mode */
 #define TIVX_EXPORT_GRAPH_AS_JPG    (1u)
+#else
+#define TIVX_EXPORT_GRAPH_AS_JPG    (0u)
+#endif
 
 #define TIVX_EXPORT_MAX_FILENAME    (256u)
 #define TIVX_EXPORT_MAX_LINE_SIZE   (1024u)
@@ -143,17 +147,17 @@ static void getNodeColor(vx_node node, char *node_color_name)
 
 static int exportAsJpg(char *output_file_path, char *output_file_prefix, char *out_file_id_str, char *in_filename)
 {
+    int status = 0;
     #if TIVX_EXPORT_GRAPH_AS_JPG
     char command[4096];
-    int status;
 
     snprintf(command, 4096, "dot -Tjpg -o%s/%s%s_img.jpg %s",
         output_file_path, output_file_prefix, out_file_id_str,
         in_filename);
     status = system(command);
 
-    return status;
     #endif
+    return status;
 }
 
 static void exportDataRef(FILE *fp, vx_reference ref, vx_bool is_replicated)

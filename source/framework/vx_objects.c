@@ -126,6 +126,8 @@ vx_status tivxObjectInit(void)
             TIVX_OBJ_ARRAY_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isParameterUse,
             TIVX_PARAMETER_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isDataRefQUse,
+            TIVX_DATA_REF_Q_MAX_OBJECTS);
     }
 
     return (status);
@@ -240,6 +242,12 @@ vx_status tivxObjectDeInit(void)
         if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is error use failed\n");
+        }
+        status = ownCheckUseFlag(g_tivx_objects.isDataRefQUse,
+            TIVX_DATA_REF_Q_MAX_OBJECTS);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is data ref q use failed\n");
         }
     }
 

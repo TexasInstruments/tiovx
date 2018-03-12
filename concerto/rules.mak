@@ -87,7 +87,7 @@ TARGET_LIB_OUT = $(1)/lib/$(TARGET_PLATFORM)/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET
 
 # Define a macro to remove a combo from the combos list if it matches a value
 FILTER_COMBO = $(foreach combo,$(TARGET_COMBOS),$(if $(filter $(1),$(subst :, ,$(combo))),$(combo)))
-FILTER_OUT_COMBO = $(foreach combo,$(TARGET_COMBOS),$(if $(filter $(1),$(subst :, ,$(combo))), ,$(combo))) 
+FILTER_OUT_COMBO = $(foreach combo,$(TARGET_COMBOS),$(if $(filter $(1),$(subst :, ,$(combo))), ,$(combo)))
 
 # Macro to include the combo rules
 define CONCERTO_BUILD
@@ -127,7 +127,7 @@ modules::
 	$(foreach mod,$(MODULES),$(info MODULES+=$(mod)))
 
 targets::
-	$(PRINT) Concerto targets are the names of the binaries generated. 
+	$(PRINT) Concerto targets are the names of the binaries generated.
 	$(PRINT) Targets are invokable makefile rules. However, each combo version will be built.
 	$(foreach target,$(CONCERTO_TARGETS),$(info CONCERTO_TARGETS+=$(target)))
 
@@ -159,7 +159,7 @@ bugs:
 									 --exclude-dir=$(BUILD_FOLDER) \
 									 --exclude-dir=$(BUILD_OUTPUT)
 
-help: 
+help:
 	$(PRINT)
 	$(PRINT) Available top level rules:
 	$(PRINT) " # Build all outputs."
@@ -172,29 +172,29 @@ help:
 	$(PRINT) " $$ $(MAKE) install"
 	$(PRINT) " # Removes build outputs only"
 	$(PRINT) " $$ $(MAKE) clean"
-	$(PRINT) " # Removes $(BUILD_OUTPUT)/ folder completely." 
+	$(PRINT) " # Removes $(BUILD_OUTPUT)/ folder completely."
 	$(PRINT) " $$ $(MAKE) scrub"
 	$(PRINT) " # Builds all Doxygen Documentation targets"
 	$(PRINT) " $$ $(MAKE) docs"
-	$(PRINT) " # Removes all Doxygen Documentation only." 
+	$(PRINT) " # Removes all Doxygen Documentation only."
 	$(PRINT) " $$ $(MAKE) clean_docs"
-	$(PRINT) " # Shows build module variables" 
+	$(PRINT) " # Shows build module variables"
 	$(PRINT) " $$ $(MAKE) vars"
-	$(PRINT) " # Shows buildable modules" 
+	$(PRINT) " # Shows buildable modules"
 	$(PRINT) " $$ $(MAKE) modules"
-	$(PRINT) " # Shows build targets variables" 
+	$(PRINT) " # Shows build targets variables"
 	$(PRINT) " $$ $(MAKE) targets"
-	$(PRINT) " # Shows actual build output files" 
+	$(PRINT) " # Shows actual build output files"
 	$(PRINT) " $$ $(MAKE) outputs"
-	$(PRINT) " # Shows any source lines which has a todo tag" 
+	$(PRINT) " # Shows any source lines which has a todo tag"
 	$(PRINT) " $$ $(MAKE) todo"
-	$(PRINT) " # Shows any source lines which has a bug tag" 
+	$(PRINT) " # Shows any source lines which has a bug tag"
 	$(PRINT) " $$ $(MAKE) bugs"
-	$(PRINT) " # Copies all libraries to the libs folder" 
+	$(PRINT) " # Copies all libraries to the libs folder"
 	$(PRINT) " $$ $(MAKE) release"
 	$(PRINT)
 	$(PRINT) "Concerto Environment Variables (can be passed on command line too)"
-	$(PRINT) "BUILD_DEBUG=1 - sets SHOW_COMMANDS and SHOW_MAKEDEBUG" 
+	$(PRINT) "BUILD_DEBUG=1 - sets SHOW_COMMANDS and SHOW_MAKEDEBUG"
 	$(PRINT) "SHOW_COMMANDS=1 - shows all commands given the shell"
 	$(PRINT) "SHOW_MAKEDEBUG=1 - shows extra makefile debugging"
 	$(PRINT) "NO_OPTIMIZE=1 - Controls setting of TARGET_BUILD default. When set to '1', TARGET_BUILD=debug, else the default."
@@ -209,11 +209,12 @@ help:
 	$(PRINT) "BUILD_OUTPUT - the location to place the outputs of the build system. Defaults to 'out'"
 	$(PRINT) "BUILD_PLATFORM - the location and name of the platform specializing makefile. Defaults to 'CONCERTO_ROOT'/platform.mak"
 	$(PRINT) "TARGET_BUILD - Either 'release' (default) or 'debug'."
-	$(PRINT) 
+	$(PRINT)
 
 
 define RELEASE_OUT
 	-$(PRINT) Copying built libraries: $(1)   to    $(2)
+	-$(Q)$(MKDIR) $(2) $(QUIET) || true
 	-$(Q)$(COPY) $(1)/*.a $(2) $(QUIET) || true
 	-$(Q)$(COPY) $(1)/*.lib $(2) $(QUIET) || true
 
