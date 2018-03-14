@@ -61,7 +61,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_USER_STRUCTS   (16u)
+#define TIVX_CONTEXT_MAX_USER_STRUCTS   (32u)
 
 /*! \brief The largest convolution matrix the specification requires support for is 15x15.
  * \ingroup group_vx_context_cfg
