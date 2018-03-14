@@ -397,6 +397,11 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
                     }
                     else
                     {
+                        TIVX_EXPORT_WRITELN(fp, "null_%s_%d [label=\"NULL\"]",
+                                node->base.name,
+                                data_id
+                                );
+
                         /* optional parameter */
                         if(dir==VX_INPUT)
                         {
@@ -788,22 +793,34 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                             {
                                 if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
                                 {
-                                    TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_ref_q_id[data_id], node_desc->base.obj_desc_id, replicated_label);
+                                    if(node_desc->data_ref_q_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                    {
+                                        TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_ref_q_id[data_id], node_desc->base.obj_desc_id, replicated_label);
+                                    }
                                 }
                                 else
                                 {
-                                    TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_id[data_id], node_desc->base.obj_desc_id, replicated_label);
+                                    if(node_desc->data_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                    {
+                                        TIVX_EXPORT_WRITELN(fp, "d_%d -> n_%d %s", node_desc->data_id[data_id], node_desc->base.obj_desc_id, replicated_label);
+                                    }
                                 }
                             }
                             else
                             {
                                 if(tivxFlagIsBitSet(node_desc->is_prm_data_ref_q, (1<<data_id)))
                                 {
-                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
+                                    if(node_desc->data_ref_q_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                    {
+                                        TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_ref_q_id[data_id], replicated_label);
+                                    }
                                 }
                                 else
                                 {
-                                    TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
+                                    if(node_desc->data_id[data_id]!=TIVX_OBJ_DESC_INVALID)
+                                    {
+                                        TIVX_EXPORT_WRITELN(fp, "n_%d -> d_%d %s", node_desc->base.obj_desc_id, node_desc->data_id[data_id], replicated_label);
+                                    }
                                 }
                             }
                         }

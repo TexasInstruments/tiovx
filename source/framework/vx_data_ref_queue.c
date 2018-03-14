@@ -207,6 +207,32 @@ vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_u
     return status;
 }
 
+vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(data_ref_q == NULL || count == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "'data_ref_q' is invalid or 'count' is invalid or 'queue_id' is invalid\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    else
+    {
+        uint16_t queue_obj_desc_id;
+
+        /* get queue object descriptor */
+        queue_obj_desc_id = data_ref_q->ready_q_obj_desc_id;
+
+        tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+
+        status = tivxObjDescQueueGetCount(queue_obj_desc_id, count);
+
+        tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+    }
+    return status;
+}
+
 uint16_t tivxDataRefQueueGetObjDescId(tivx_data_ref_queue ref, uint32_t pipeline_id)
 {
     uint16_t obj_desc_id = TIVX_OBJ_DESC_INVALID;

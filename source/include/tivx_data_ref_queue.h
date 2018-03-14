@@ -210,6 +210,12 @@ vx_status tivxDataRefQueueWaitDoneRef(tivx_data_ref_queue data_ref_q, vx_uint32 
  */
 vx_status tivxDataRefQueueGetDoneQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count);
 
+/*!
+ * \brief Return number of elements in 'READY' queue
+ *
+ * \ingroup group_tivx_data_ref_queue
+ */
+vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_uint32 *count);
 
 /*!
  * \brief Send 'ref consumed event' if event send is enabled

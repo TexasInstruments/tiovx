@@ -62,6 +62,9 @@ typedef struct {
 #define ADD_LOOP_1(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loop_count=1", __VA_ARGS__, 1))
 
+#define ADD_LOOP_10(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/loop_count=10", __VA_ARGS__, 10))
+
 #define ADD_LOOP_1000(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loop_count=1000", __VA_ARGS__, 1000))
 
@@ -87,6 +90,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
 
@@ -103,6 +107,56 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
 
 #endif
+
+/*
+ * Utility API used to add a graph parameter from a node, node parameter index
+ */
+static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node, vx_uint32 node_parameter_index)
+{
+    vx_parameter parameter = vxGetParameterByIndex(node, node_parameter_index);
+
+    vxAddParameterToGraph(graph, parameter);
+    vxReleaseParameter(&parameter);
+}
+
+/*
+ * Utility API to set number of buffers at a node parameter
+ * The parameter MUST be a output or bidirectonal parameter for the setting
+ * to take effect
+ */
+static vx_status set_num_buf_by_node_index(vx_node node, vx_uint32 node_parameter_index, vx_uint32 num_buf)
+{
+    return tivxSetNodeParameterNumBufByIndex(node, node_parameter_index, num_buf);
+}
+
+/*
+ * Utility API to set pipeline depth for a graph
+ */
+static vx_status set_graph_pipeline_depth(vx_graph graph, vx_uint32 pipeline_depth)
+{
+    return tivxSetGraphPipelineDepth(graph, pipeline_depth);
+}
+
+/*
+ * Utility API to export graph information to file for debug and visualization
+ */
+static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
+{
+    return tivxExportGraphToDot(graph, ct_get_test_file_path(), filename_prefix);
+}
+
+/*
+ * Utility API to log graph run-time trace
+ */
+static vx_status log_graph_rt_trace(vx_graph graph)
+{
+    vx_status status = VX_SUCCESS;
+
+    #if LOG_RT_TRACE_ENABLE
+    status = tivxLogRtTrace(graph);
+    #endif
+    return status;
+}
 
 static void printGraphPipelinePerformance(vx_graph graph,
             vx_node nodes[], uint32_t num_nodes,
@@ -124,9 +178,11 @@ static void printGraphPipelinePerformance(vx_graph graph,
          printPerformance(perf_ref, numPixels, ref_name);
     }
 
+    #if 0
     vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_ref, sizeof(perf_ref));
     snprintf(ref_name,MAX_TEST_NAME, "G0 ");
     printPerformance(perf_ref, numPixels, ref_name);
+    #endif
 
     printf("[ SYS ] Execution time (avg = %4d.%03d ms, sum = %4d.%03d ms, num = %d)\n",
         (uint32_t)(avg_exe_time/1000u), (uint32_t)(avg_exe_time%1000u),
@@ -205,54 +261,246 @@ static void fillSquence(CT_Image dst, uint32_t seq_init)
             dst->data.y[i * dst->stride + j] = val;
 }
 
-/*
- * Utility API used to add a graph parameter from a node, node parameter index
- */
-static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node, vx_uint32 node_parameter_index)
-{
-    vx_parameter parameter = vxGetParameterByIndex(node, node_parameter_index);
+#define TEST_USER_KERNEL_NAME          "test_graph_pipeline.user_kernel"
+#define TEST_USER_KERNEL_NUM_PARAMS     (4u)
+static vx_kernel test_user_kernel = NULL;
 
-    vxAddParameterToGraph(graph, parameter);
-    vxReleaseParameter(&parameter);
-}
-
-/*
- * Utility API to set number of buffers at a node parameter
- * The parameter MUST be a output or bidirectonal parameter for the setting
- * to take effect
- */
-static vx_status set_num_buf_by_node_index(vx_node node, vx_uint32 node_parameter_index, vx_uint32 num_buf)
-{
-    return tivxSetNodeParameterNumBufByIndex(node, node_parameter_index, num_buf);
-}
-
-/*
- * Utility API to set pipeline depth for a graph
- */
-static vx_status set_graph_pipeline_depth(vx_graph graph, vx_uint32 pipeline_depth)
-{
-    return tivxSetGraphPipelineDepth(graph, pipeline_depth);
-}
-
-/*
- * Utility API to export graph information to file for debug and visualization
- */
-static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
-{
-    return tivxExportGraphToDot(graph, ct_get_test_file_path(), filename_prefix);
-}
-
-/*
- * Utility API to log graph run-time trace
- */
-static vx_status log_graph_rt_trace(vx_graph graph)
+static vx_status test_user_kernel_validate(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num,
+            vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
+    vx_scalar scalar[TEST_USER_KERNEL_NUM_PARAMS];
+    vx_enum scalar_type[TEST_USER_KERNEL_NUM_PARAMS];
+    vx_uint32 i;
 
-    #if LOG_RT_TRACE_ENABLE
-    status = tivxLogRtTrace(graph);
-    #endif
+    if (num != TEST_USER_KERNEL_NUM_PARAMS)
+    {
+        printf(" ERROR: Test user kernel: Number of parameters dont match !!!\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    for (i = 0U; i < TEST_USER_KERNEL_NUM_PARAMS; i ++)
+    {
+        scalar[i] = (vx_scalar)parameters[i];
+
+        if(scalar[i] != NULL)
+        {
+            /* i.e not a optional parameter */
+            status = vxQueryScalar(scalar[i],
+                VX_SCALAR_TYPE, &scalar_type[i],
+                sizeof(vx_enum));
+            if(status==VX_SUCCESS)
+            {
+                if(scalar_type[i] != VX_TYPE_UINT32)
+                {
+                    printf(" ERROR: Test user kernel: Scalar type MUST be VX_TYPE_UINT32 !!!\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+            }
+            if(status!=VX_SUCCESS)
+            {
+                printf(" ERROR: Test user kernel: validate failed !!!\n");
+                break;
+            }
+        }
+    }
+
     return status;
+}
+
+static vx_status test_user_kernel_run(vx_node node,
+            const vx_reference parameters[ ],
+            vx_uint32 num)
+{
+    vx_status status = VX_SUCCESS;
+    vx_scalar in1, in2, out1, out2;
+    vx_uint32 in1_value = 0, in2_value = 0;
+    vx_uint32 out1_value = 0, out2_value = 0;
+
+    /* Any of the parameter can be NULL since parameter is marked
+     * as optional during kernel register */
+    in1  = (vx_scalar)parameters[0];
+    in2  = (vx_scalar)parameters[1];
+    out1 = (vx_scalar)parameters[2];
+    out2 = (vx_scalar)parameters[3];
+
+    if(in1!=NULL)
+    {
+        vxCopyScalar(in1,
+            &in1_value,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST
+            );
+    }
+    if(in2!=NULL)
+    {
+        vxCopyScalar(in2,
+            &in2_value,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST
+            );
+    }
+
+    /* just for test
+     * out1_value = in1_value + in2_value
+     * out2_value = out1_value * 2
+     * when in1 reference is not specified (since its optional), in1_value is considered to be 0
+     * when in2 reference is not specified (since its optional), in2_value is considered to be 0
+     */
+    out1_value = in1_value + in2_value;
+    out2_value = out1_value*2;
+
+    if(out1!=NULL)
+    {
+        vxCopyScalar(out1,
+            &out1_value,
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST
+            );
+    }
+    if(out2!=NULL)
+    {
+        vxCopyScalar(out2,
+            &out2_value,
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST
+            );
+    }
+
+    return status;
+}
+
+static vx_status test_user_kernel_register(vx_context context)
+{
+    vx_kernel kernel = NULL;
+    vx_status status;
+    uint32_t index;
+    vx_enum test_user_kernel_id = 0;
+
+    status = vxAllocateUserKernelId(context, &test_user_kernel_id);
+    if(status!=VX_SUCCESS)
+    {
+        printf(" ERROR: Test user kernel: vxAllocateUserKernelId failed (%d)!!!\n", status);
+    }
+    if(status==VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    TEST_USER_KERNEL_NAME,
+                    test_user_kernel_id,
+                    test_user_kernel_run,
+                    TEST_USER_KERNEL_NUM_PARAMS, /* number of parameters objects for this user function */
+                    test_user_kernel_validate,
+                    NULL,
+                    NULL);
+    }
+
+    status = vxGetStatus((vx_reference)kernel);
+    if ( status == VX_SUCCESS)
+    {
+        index = 0;
+
+        if ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_INPUT,
+                VX_TYPE_SCALAR,
+                VX_PARAMETER_STATE_OPTIONAL
+                );
+            index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_INPUT,
+                VX_TYPE_SCALAR,
+                VX_PARAMETER_STATE_OPTIONAL
+                );
+            index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_OUTPUT,
+                VX_TYPE_SCALAR,
+                VX_PARAMETER_STATE_OPTIONAL
+                );
+            index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                index,
+                VX_OUTPUT,
+                VX_TYPE_SCALAR,
+                VX_PARAMETER_STATE_OPTIONAL
+                );
+            index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+            status = vxFinalizeKernel(kernel);
+        }
+        if( status != VX_SUCCESS)
+        {
+            printf(" ERROR: Test user kernel: vxAddParameterToKernel, vxFinalizeKernel failed (%d)!!!\n", status);
+            vxReleaseKernel(&kernel);
+            kernel = NULL;
+        }
+    }
+    else
+    {
+        kernel = NULL;
+        printf(" ERROR: Test user kernel: vxAddUserKernel failed (%d)!!!\n", status);
+    }
+    if(status==VX_SUCCESS)
+    {
+        test_user_kernel = kernel;
+    }
+
+    return status;
+}
+
+static vx_status test_user_kernel_unregister(vx_context context)
+{
+    vx_status status;
+
+    status = vxRemoveKernel(test_user_kernel);
+    test_user_kernel = NULL;
+
+    if(status!=VX_SUCCESS)
+    {
+        printf(" ERROR: Test user kernel: Unable to remove kernel (%d)!!!\n", status);
+    }
+
+    return status;
+}
+
+static vx_node test_user_kernel_node(vx_graph graph,
+            vx_scalar in1,
+            vx_scalar in2,
+            vx_scalar out1,
+            vx_scalar out2)
+{
+    vx_node node;
+
+    vx_reference refs[] = {
+        (vx_reference)in1,
+        (vx_reference)in2,
+        (vx_reference)out1,
+        (vx_reference)out2};
+
+    node = tivxCreateNodeByKernelName(graph,
+                TEST_USER_KERNEL_NAME,
+                refs, sizeof(refs)/sizeof(refs[0])
+                );
+
+    return node;
 }
 
 /*
@@ -367,7 +615,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "one_node");
+    export_graph_to_file(graph, "test_graph_pipeline_one_node");
     log_graph_rt_trace(graph);
 
     #if 1
@@ -548,7 +796,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "two_nodes_basic");
+    export_graph_to_file(graph, "test_graph_pipeline_two_nodes_basic");
     log_graph_rt_trace(graph);
     #if 1
 
@@ -732,7 +980,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "two_nodes");
+    export_graph_to_file(graph, "test_graph_pipeline_two_nodes");
     log_graph_rt_trace(graph);
 
     #if 1
@@ -953,7 +1201,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "four_nodes");
+    export_graph_to_file(graph, "test_graph_pipeline_four_nodes");
     log_graph_rt_trace(graph);
     #if 1
     /* fill reference data into input data reference */
@@ -1159,7 +1407,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "uniform");
+    export_graph_to_file(graph, "test_graph_pipeline_uniform_img");
     log_graph_rt_trace(graph);
     #if 1
     /* fill reference data into input data reference */
@@ -1387,7 +1635,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "replicate");
+    export_graph_to_file(graph, "test_graph_pipeline_replicate_node");
     log_graph_rt_trace(graph);
     #if 1
     /* fill reference data into input data reference */
@@ -1618,7 +1866,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "scalar_output");
+    export_graph_to_file(graph, "test_graph_pipeline_scalar_output");
     log_graph_rt_trace(graph);
     #if 1
     /* fill reference data into input data reference */
@@ -1824,7 +2072,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "event_handling");
+    export_graph_to_file(graph, "test_graph_pipeline_event_handling");
     log_graph_rt_trace(graph);
     #if 1
     /* clear pending events */
@@ -2030,6 +2278,366 @@ TEST(tivxGraphPipeline, testEventHandlingDisableEvents)
     ASSERT(vxWaitEvent(context, &event, vx_true_e) != VX_SUCCESS);
 }
 
+/*
+ *  d0           n0           d1            n1         d2
+ * SCALAR -- USER_KERNEL -- SCALAR -- USER_KERNEL -- SCALAR
+ *                            |            |
+ *                            + -----------+
+ *
+ * This test case test the below
+ * - User kernel nodes
+ * - Nodes with optional parameters
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_scalar in_scalar, out_scalar;
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
+    vx_uint32 tmp_value = 0;
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+        ref_out_value[buf_id] = 2 * in_value[buf_id];
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+    ASSERT_VX_OBJECT(d1    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n0    = test_user_kernel_node(graph, d0[0], NULL, d1, NULL), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = test_user_kernel_node(graph, d1, d1, d2[0], NULL), VX_TYPE_NODE);
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 2, num_buf));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_user_kernel");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(d0[buf_id],
+            &in_value[buf_id],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+
+        /* compare output */
+        ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
+
+        /* clear value in output */
+        tmp_value = 0;
+        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseScalar(&d1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0     n0     d1     n1     d2
+ * IMG -- NOT -- IMG -- NOT -- IMG
+ *
+ * This test case test the below
+ * - Single input, single output nodes
+ * - Two nodes on two different targets
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+
+    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE({
+            ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+    ASSERT_VX_OBJECT(d1    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(n0    = vxNotNode(graph, d0[0], d1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d1, d2[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode manual is used, here we need to call vxScheduleGraph
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_manual_schedule_mode");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(d0[buf_id], ref_src[buf_id]));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    loop_cnt = (loop_cnt + num_buf) / num_buf;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt); loop_id++)
+    {
+        vx_image out_img[MAX_NUM_BUF], in_img[MAX_NUM_BUF];
+        uint32_t num_refs_in, num_refs_out;
+
+        /* enqueue input and output references,
+         * input and output can be enqueued in any order
+         * can be enqueued all together, here they are enqueue one by one just as a example
+         */
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        }
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)out_img, num_buf, &num_refs_in);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)in_img, num_buf, &num_refs_out);
+
+        ASSERT_EQ_INT(num_refs_in, num_buf);
+        ASSERT_EQ_INT(num_refs_out, num_buf);
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt);
+            }
+
+            for(buf_id=0; buf_id<num_buf; buf_id++)
+            {
+                ASSERT_NO_FAILURE({
+                    vxdst = ct_image_from_vx_image(out_img[buf_id]);
+                });
+
+                /* compare output */
+                ASSERT_EQ_CTIMAGE(ref_src[buf_id], vxdst);
+            }
+        }
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt*num_buf, arg_->width*arg_->height);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&d1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
@@ -2039,7 +2647,9 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testScalarOutput,
     testEventHandling,
     testEventHandlingDisableEvents,
-    testReplicateImage
+    testReplicateImage,
+    testUserKernel,
+    testManualSchedule
     )
 
 

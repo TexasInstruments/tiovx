@@ -637,12 +637,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
                      (graph->state == VX_GRAPH_STATE_ABANDONED)
                     ))
             {
-                /* schedule graph one time */
-                ownGraphScheduleGraph(graph, 1);
+                if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_NORMAL)
+                {
+                    /* schedule graph one time */
+                    ownGraphScheduleGraph(graph, 1);
+                }
+                else
+                if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
+                {
+                    uint32_t num_schedule = ownGraphGetNumSchedule(graph);
+
+                    if(num_schedule>0)
+                    {
+                        /* schedule graph 'num_schedule' times */
+                        ownGraphScheduleGraph(graph, num_schedule);
+                    }
+                }
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph verify failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph is not in a state required to be scheduled\n");
             }
         }
     }

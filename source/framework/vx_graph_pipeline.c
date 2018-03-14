@@ -478,7 +478,7 @@ vx_bool ownCheckGraphCompleted(vx_graph graph, uint32_t pipeline_id)
                 ownUpdateNodePerf(graph->nodes[i], graph_obj_desc->pipeline_id);
             }
 
-            if(graph->schedule_mode != VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
+            if(graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_NORMAL)
             {
                 uint32_t i;
 
@@ -724,4 +724,38 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;
+}
+
+uint32_t ownGraphGetNumSchedule(vx_graph graph)
+{
+    uint32_t num_schedule = 0;
+
+    if(graph != NULL)
+    {
+        if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
+        {
+            uint32_t min_count = (uint32_t)-1;
+            uint32_t count, i;
+
+            for(i=0; i<graph->num_params; i++)
+            {
+                if(graph->parameters[i].queue_enable)
+                {
+                    count = 0;
+
+                    tivxDataRefQueueGetReadyQueueCount(
+                            graph->parameters[i].data_ref_queue, &count);
+
+                    if(count<min_count)
+                        min_count = count;
+                }
+            }
+            if(min_count == (uint32_t)-1)
+            {
+                min_count = 0;
+            }
+            num_schedule = min_count;
+        }
+    }
+    return num_schedule;
 }

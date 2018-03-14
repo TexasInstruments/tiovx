@@ -375,9 +375,19 @@ void ownSendGraphCompletedEvent(vx_graph graph);
  *  'ref' is compared against pre-registered ref's that can be enqueued
  *  to confirm that ref can be enqueued.
  *
- * \ingroup group_tivx_data_ref_queue
+ * \ingroup group_vx_graph
  */
 vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_parameter_index, vx_reference ref);
+
+/*!
+ * \brief Counts number of enqueued 'refs' and returns number of times graph can be scheduled sucessfully
+ *
+ *  Value returned is minimum of number of refs enqueued at each graph parameter
+ *  Valid only in VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL mode
+ *
+ * \ingroup group_vx_graph
+ */
+uint32_t ownGraphGetNumSchedule(vx_graph graph);
 
 #ifdef __cplusplus
 }
