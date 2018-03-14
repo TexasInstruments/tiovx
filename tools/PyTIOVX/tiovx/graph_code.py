@@ -89,12 +89,12 @@ class GraphCode (ReferenceCode) :
         code_gen.write_newline()
 
     def call_delete(self, code_gen) :
+        for node in self.ref.ref :
+            NodeCode(node).call_delete(code_gen)
         code_gen.write_if_status();
         code_gen.write_open_brace()
         code_gen.write_line("status = vxReleaseGraph(&graph);");
         code_gen.write_close_brace()
-        for node in self.ref.ref :
-            NodeCode(node).call_delete(code_gen)
         code_gen.write_newline()
 
 
