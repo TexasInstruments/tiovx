@@ -193,8 +193,9 @@ class ExportImage (Export) :
 
         try :
             command_str = 'dot %s -Tjpg -o%s' % (self.filename, self.filenameJpg)
+            command_args = ['dot', self.filename, '-Tjpg','-o%s' % self.filenameJpg] 
             print('Executing dot tool command ... [' + command_str + ']')
-            subprocess.call(command_str)
+            subprocess.call(command_args)
             print ('Generating image from OpenVX context ... DONE !!!')
         except FileNotFoundError:
             print('ERROR: \'dot\' tool not found. Make sure \'graphviz\' is installed and \'dot\' command is added to system PATH !!!')
