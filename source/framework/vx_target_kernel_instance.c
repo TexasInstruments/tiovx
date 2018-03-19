@@ -101,6 +101,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, cha
     {
         /* there is no kernel registered with this kernel ID on this CPU, hence return
         NULL */
+        VX_PRINT(VX_ZONE_WARNING, "tivxTargetKernelInstanceAlloc: there is no kernel with this kernel ID on this CPU\n");
     }
     else
     {
