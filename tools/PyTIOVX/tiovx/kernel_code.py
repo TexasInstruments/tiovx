@@ -599,6 +599,12 @@ class KernelExportCode :
         self.host_c_code.write_comment_line("                  covered by the code-generation script.) >")
         self.host_c_code.write_newline()
 
+        self.host_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) If intending to use a virtual data object, set metas using appropriate TI API.")
+        self.host_c_code.write_comment_line("                  For a code example, please refer to the validate callback of the follow file:")
+        self.host_c_code.write_comment_line("                  tiovx/kernels/openvx-core/host/vx_absdiff_host.c. For further information regarding metas,")
+        self.host_c_code.write_comment_line("                  please refer to the OpenVX 1.1 spec p. 260, or search for vx_kernel_validate_f. >")
+        self.host_c_code.write_newline()
+
         self.host_c_code.write_line("return status;")
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
