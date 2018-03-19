@@ -493,6 +493,7 @@ class KernelExportCode :
                     self.host_c_code.write_line("if (NULL != %s)" % (prm.name_lower))
                     self.host_c_code.write_open_brace()
                 if len(prm.data_types) == 0 :
+                    self.host_c_code.write_comment_line("< DEVELOPER_TODO: Replace <Add type here> with correct data type >")
                     self.print_data_type = ['<Add type here>']
                 else :
                     self.print_data_type = prm.data_types
