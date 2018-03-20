@@ -267,12 +267,12 @@ vx_status tivxObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,
 
         blocked_nodes = &obj_desc->blocked_nodes;
 
-        out_blocked_nodes->num_nodes = blocked_nodes->num_nodes;
-
-        for(node_id = 0; node_id<out_blocked_nodes->num_nodes; node_id++)
+        for(node_id = 0; node_id<blocked_nodes->num_nodes; node_id++)
         {
-            out_blocked_nodes->node_id[node_id] = blocked_nodes->node_id[node_id];
+            out_blocked_nodes->node_id[out_blocked_nodes->num_nodes+node_id] = blocked_nodes->node_id[node_id];
         }
+
+        out_blocked_nodes->num_nodes += blocked_nodes->num_nodes;
 
         /* since nodes are extracted make num_nodes as zero */
         blocked_nodes->num_nodes = 0;

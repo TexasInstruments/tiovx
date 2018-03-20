@@ -753,69 +753,66 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
     return status;
 }
 
+static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph,
+                    tivx_data_ref_queue data_ref_q,
+                    vx_node node, uint32_t index)
+{
+    uint32_t node_id, prm_id;
+    vx_reference node_prm_ref;
+
+    node_prm_ref = ownNodeGetParameterRef(node, index);
+
+    /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
+     * and insert data ref q handle at those (nodes,index)
+     * Also enable data ref queue at those (nodes,index)
+     */
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
+    {
+        node = graph->nodes[node_id];
+
+        for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
+        {
+            vx_reference ref;
+
+            ref = ownNodeGetParameterRef(node, prm_id);
+            if(ref==node_prm_ref)
+            {
+                ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+            }
+        }
+    }
+}
+
 static void ownGraphLinkDataReferenceQueues(vx_graph graph)
 {
-    uint32_t i, node_id, prm_id;
+    uint32_t i;
 
     for(i=0; i<graph->num_params; i++)
     {
         if(graph->parameters[i].queue_enable)
         {
-            vx_reference node_prm_ref;
-            tivx_data_ref_queue data_ref_q;
-            vx_node node;
-
-            data_ref_q = graph->parameters[i].data_ref_queue;
-            node_prm_ref = ownNodeGetParameterRef(graph->parameters[i].node, graph->parameters[i].index);
-
-            /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
-             * and insert data ref q handle at those (nodes,index)
-             * Also enable data ref queue at those (nodes,index)
-             */
-            for(node_id=0; node_id<graph->num_nodes; node_id++)
-            {
-                node = graph->nodes[node_id];
-
-                for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
-                {
-                    vx_reference ref;
-
-                    ref = ownNodeGetParameterRef(node, prm_id);
-                    if(ref==node_prm_ref)
-                    {
-                        ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
-                    }
-                }
-            }
+            ownGraphLinkDataReferenceQueuesToNodeIndex(graph,
+                        graph->parameters[i].data_ref_queue,
+                        graph->parameters[i].node,
+                        graph->parameters[i].index);
         }
     }
     for(i=0; i<graph->num_data_ref_q; i++)
     {
-        vx_reference node_prm_ref;
-        tivx_data_ref_queue data_ref_q;
-        vx_node node;
+        ownGraphLinkDataReferenceQueuesToNodeIndex(graph,
+                    graph->data_ref_q_list[i].data_ref_queue,
+                    graph->data_ref_q_list[i].node,
+                    graph->data_ref_q_list[i].index);
 
-        data_ref_q = graph->data_ref_q_list[i].data_ref_queue;
-        node_prm_ref = ownNodeGetParameterRef(graph->data_ref_q_list[i].node, graph->data_ref_q_list[i].index);
-
-        /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
-         * and insert data ref q handle at those (nodes,index)
-         * Also enable data ref queue at those (nodes,index)
-         */
-        for(node_id=0; node_id<graph->num_nodes; node_id++)
+    }
+    for(i=0; i<graph->num_delay_data_ref_q; i++)
+    {
+        if(graph->delay_data_ref_q_list[i].node!=NULL)
         {
-            node = graph->nodes[node_id];
-
-            for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
-            {
-                vx_reference ref;
-
-                ref = ownNodeGetParameterRef(node, prm_id);
-                if(ref==node_prm_ref)
-                {
-                    ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
-                }
-            }
+            ownGraphLinkDataReferenceQueuesToNodeIndex(graph,
+                    graph->delay_data_ref_q_list[i].data_ref_queue,
+                    graph->delay_data_ref_q_list[i].node,
+                    graph->delay_data_ref_q_list[i].index);
         }
     }
 }
@@ -854,6 +851,145 @@ static vx_status ownGraphPrimeDataReferenceQueues(vx_graph graph)
             }
         }
     }
+    for(i=0; i<graph->num_delay_data_ref_q; i++)
+    {
+        tivx_data_ref_queue data_ref_q;
+
+        data_ref_q = graph->delay_data_ref_q_list[i].data_ref_queue;
+
+        if(graph->delay_data_ref_q_list[i].node)
+        {
+            ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[i].node, graph->delay_data_ref_q_list[i].index);
+            if(ref && ref->obj_desc)
+            {
+                ref_obj_desc_id = ref->obj_desc->obj_desc_id;
+
+                status = tivxObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
+            if(status!=VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Unable to prime delay data ref queue\n");
+            }
+        }
+        else
+        {
+            vx_delay delay = graph->delay_data_ref_q_list[i].delay_ref;
+            uint32_t delay_slot_index = graph->delay_data_ref_q_list[i].delay_slot_index;
+
+            /* data reference queue with no node as input */
+            ref = delay->refs[delay_slot_index];
+            if(ref && ref->obj_desc)
+            {
+                ref_obj_desc_id = ref->obj_desc->obj_desc_id;
+
+                status = tivxObjDescQueueEnqueue(data_ref_q->acquire_q_obj_desc_id, ref_obj_desc_id);
+            }
+            else
+            {
+                status = VX_FAILURE;
+            }
+            if(status!=VX_SUCCESS)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Unable to prime delay data ref queue\n");
+            }
+        }
+    }
+    return status;
+}
+
+static vx_status ownGraphCheckAndCreateDelayDataReferenceQueues(vx_graph graph,
+            vx_node node,
+            uint32_t index,
+            tivx_data_ref_queue data_ref_q)
+{
+    vx_status status = VX_SUCCESS;
+    vx_reference ref = ownNodeGetParameterRef(
+                            node,
+                            index);
+
+    if(ref->delay != NULL && ownIsValidSpecificReference((vx_reference)ref->delay, VX_TYPE_DELAY))
+    {
+        uint32_t delay_slot_index;
+        vx_delay delay = (vx_delay)ref->delay;
+        tivx_data_ref_queue delay_data_ref_q_list[TIVX_DELAY_MAX_OBJECT];
+        vx_bool auto_age_delay_slot[TIVX_DELAY_MAX_OBJECT];
+
+        for(delay_slot_index=0; delay_slot_index<delay->count; delay_slot_index++)
+        {
+            auto_age_delay_slot[delay_slot_index] = vx_false_e;
+            if((delay->set[delay_slot_index].node ==
+                node)
+                &&
+               ( delay->set[delay_slot_index].index ==
+                index))
+            {
+                delay_data_ref_q_list[delay_slot_index] = data_ref_q;
+            }
+            else
+            {
+                if(graph->num_delay_data_ref_q<TIVX_GRAPH_MAX_DATA_REF_QUEUE)
+                {
+                    tivx_data_ref_queue_create_params_t data_ref_create_prms;
+
+                    graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].node = delay->set[delay_slot_index].node;
+                    graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].index = delay->set[delay_slot_index].index;
+                    graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].delay_ref = delay;
+                    graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].delay_slot_index = delay_slot_index;
+
+                    data_ref_create_prms.pipeline_depth = graph->pipeline_depth;
+                    data_ref_create_prms.enable_user_queueing = vx_false_e;
+                    if(delay->set[delay_slot_index].node!=NULL)
+                    {
+                        data_ref_create_prms.num_in_nodes = ownGraphGetNumInNodes(
+                                    graph, delay->set[delay_slot_index].node, delay->set[delay_slot_index].index);
+                    }
+                    else
+                    {
+                        /* this is a data ref q at a delay slot which is not used as input
+                         * by any node.
+                         * Such a delay slot needs to be auto aged.
+                         */
+                        data_ref_create_prms.num_in_nodes = 0;
+                        auto_age_delay_slot[delay_slot_index] = vx_true_e;
+                    }
+                    data_ref_create_prms.is_enable_send_ref_consumed_event =
+                                    vx_false_e;
+                    data_ref_create_prms.graph_parameter_index = (uint32_t)-1;
+
+                    graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue =
+                        tivxDataRefQueueCreate(graph, &data_ref_create_prms);
+
+                    if(graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue == NULL)
+                    {
+                        status = VX_ERROR_NO_RESOURCES;
+                        VX_PRINT(VX_ZONE_ERROR,"Unable to allocate data ref queue for delay \n");
+                    }
+                    if(status == VX_SUCCESS)
+                    {
+                        delay_data_ref_q_list[delay_slot_index] = graph->delay_data_ref_q_list[graph->num_delay_data_ref_q].data_ref_queue;
+                        graph->num_delay_data_ref_q++;
+                    }
+                }
+                else
+                {
+                    status = VX_ERROR_NO_RESOURCES;
+                    VX_PRINT(VX_ZONE_ERROR,"Exceed number of data reference queue list for delays \n");
+                }
+            }
+            if(status!=VX_SUCCESS)
+            {
+                break;
+            }
+        }
+        if(status==VX_SUCCESS)
+        {
+            tivxDataRefQueueLinkDelayDataRefQueues(delay_data_ref_q_list, auto_age_delay_slot, delay->count);
+        }
+    }
     return status;
 }
 
@@ -878,6 +1014,15 @@ static vx_status ownGraphCreateIntermediateDataReferenceQueues(vx_graph graph)
         if(graph->data_ref_q_list[i].data_ref_queue == NULL)
         {
             status = VX_ERROR_NO_RESOURCES;
+        }
+        /* check for and handle delay's */
+        if(status==VX_SUCCESS)
+        {
+            status = ownGraphCheckAndCreateDelayDataReferenceQueues(graph,
+                graph->data_ref_q_list[i].node,
+                graph->data_ref_q_list[i].index,
+                graph->data_ref_q_list[i].data_ref_queue
+                );
         }
         if(status==VX_SUCCESS)
         {
@@ -938,6 +1083,15 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
             if(graph->parameters[i].data_ref_queue == NULL)
             {
                 status = VX_ERROR_NO_RESOURCES;
+            }
+            /* check for and handle delay's */
+            if(status==VX_SUCCESS)
+            {
+                status = ownGraphCheckAndCreateDelayDataReferenceQueues(graph,
+                    graph->parameters[i].node,
+                    graph->parameters[i].index,
+                    graph->parameters[i].data_ref_queue
+                    );
             }
             if(status==VX_SUCCESS)
             {
@@ -1150,8 +1304,11 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
     }
     if(status==VX_SUCCESS)
     {
-        /* make data references at graph parameter only if graph is pipelined */
-        if(graph->pipeline_depth>1)
+        /* make data references at graph parameter only if graph is in queuing mode */
+        if(graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO
+            ||
+            graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL
+            )
         {
             for(node_id=0; node_id<graph->num_nodes; node_id++)
             {

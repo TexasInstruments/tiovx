@@ -125,6 +125,9 @@ vx_status tivxObjDescQueueAddBlockedNode(uint16_t obj_desc_q_id, uint16_t node_i
 /*!
  * \brief Extract nodes blocked on this object descritor queue ID
  *
+ * Adds to out_blocked_nodes, make sure out_blocked_nodes->num_nodes is set to 0
+ * before calling this API
+ *
  * \ingroup tivx_obj_desc_queue
  */
 vx_status tivxObjDescQueueExtractBlockedNodes(uint16_t obj_desc_q_id,

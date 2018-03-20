@@ -142,6 +142,22 @@ typedef struct _vx_graph {
     /*! \brief The number of graph parameters. */
     uint32_t      num_data_ref_q;
 
+    /*! \brief The list of data refs other than graph parameters. */
+    struct {
+        /*! \brief The reference to the node which has the data ref queue */
+        vx_node node;
+        /*! \brief The index to the parameter on the node. */
+        uint32_t  index;
+        /*! \brief data ref queue handle */
+        tivx_data_ref_queue data_ref_queue;
+        /*! \brief delay associated with this data ref queue */
+        vx_delay delay_ref;
+        /*! \brief delay slot index associated with this data ref queue */
+        uint32_t delay_slot_index;
+    } delay_data_ref_q_list[TIVX_GRAPH_MAX_DATA_REF_QUEUE];
+    /*! \brief The number of graph parameters. */
+    uint32_t      num_delay_data_ref_q;
+
     /*! \brief The state of the graph (vx_graph_state_e) */
     vx_enum        state;
 

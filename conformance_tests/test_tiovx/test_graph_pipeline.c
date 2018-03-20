@@ -92,6 +92,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000000, MEASURE_PERF_ON, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
 
 #if 0
@@ -2638,6 +2639,955 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/*
+ *  d0                        n0           d2
+ * SCALAR -- delay (0) --  USER_KERNEL -- SCALAR
+ *               |            |
+ *           delay (-1) ------+
+ *
+ *
+ * This test case test the below
+ * - Delay objects
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_delay delay;
+    vx_scalar in_scalar, out_scalar;
+    vx_node n0;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
+    vx_uint32 tmp_value = 0;
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    /* since delay is of 2 slots, num_buf MUST be >= 2 at input atleast */
+    if(num_buf < 2)
+    {
+        num_buf = 2;
+    }
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ref_out_value[buf_id] = in_value[buf_id]
+                          + in_value[ (num_buf + buf_id-1)%num_buf ];
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+
+    /* allocate output, delay slot 0 is d0[0], delay slot -1 is d0[num_buf-1]
+     * allocate other objects in between
+     */
+    ASSERT_VX_OBJECT(exemplar  = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(delay     = vxCreateDelay(context, (vx_reference)exemplar, 2), VX_TYPE_DELAY);
+    d0[0] = (vx_scalar)vxGetReferenceFromDelay(delay, 0);
+    for(buf_id=1; buf_id<num_buf-1; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+    d0[num_buf-1] = (vx_scalar)vxGetReferenceFromDelay(delay, -1);
+    vxReleaseScalar(&exemplar);
+
+    ASSERT_VX_OBJECT(n0    = test_user_kernel_node(graph, d0[0], d0[num_buf-1], d2[0], NULL), VX_TYPE_NODE);
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n0 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    /* always auto age delay in pipelined graph */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_delay1");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(d0[buf_id],
+            &in_value[buf_id],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+    }
+    /* last buf is already set at the delay slot -1 so dont enqueue that ref */
+    for(buf_id=0; buf_id<num_buf-1; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf-1); loop_id++)
+    {
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+
+        /* compare output */
+        //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value[buf_id]);
+        ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
+
+        /* clear value in output */
+        tmp_value = 0;
+        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0 };
+
+        printGraphPipelinePerformance(graph, nodes, 1, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    for(buf_id=1; buf_id<num_buf-1; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0                        n0           d2
+ * SCALAR -- delay (0) --  USER_KERNEL -- SCALAR
+ *               |            |
+ *           delay (-1) ------+--- USER_KERNEL -- null
+ *               |                     n1
+ *               |                     |
+ *           delay (-2) ---------------+
+ *
+ * This test case test the below
+ * - Delay objects with 3 delay slots
+ * - Delay slot connected to two inputs
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_delay delay;
+    vx_scalar in_scalar, out_scalar;
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
+    vx_uint32 tmp_value = 0;
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, k;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    /* since delay is of 3 slots, num_buf MUST be >= 3 at input atleast */
+    if(num_buf < 3)
+    {
+        num_buf = 3;
+    }
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+    }
+    k=0;
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ref_out_value[buf_id] = in_value[k]
+                          + in_value[ (num_buf + k - 2)%num_buf ];
+        k = (k+2)%num_buf;
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+
+    /* allocate output, delay slot 0 is d0[0], delay slot -1 is d0[num_buf-1]
+     * allocate other objects in between
+     */
+    ASSERT_VX_OBJECT(exemplar  = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(delay     = vxCreateDelay(context, (vx_reference)exemplar, 3), VX_TYPE_DELAY);
+    d0[0] = (vx_scalar)vxGetReferenceFromDelay(delay, 0);
+    for(buf_id=1; buf_id<num_buf-2; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+    d0[num_buf-2] = (vx_scalar)vxGetReferenceFromDelay(delay, -1);
+    d0[num_buf-1] = (vx_scalar)vxGetReferenceFromDelay(delay, -2);
+    vxReleaseScalar(&exemplar);
+
+    ASSERT_VX_OBJECT(n0    = test_user_kernel_node(graph, d0[0], d0[num_buf-2], d2[0], NULL), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = test_user_kernel_node(graph, d0[num_buf-1], d0[num_buf-2], NULL, NULL), VX_TYPE_NODE);
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n0 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    /* always auto age delay in pipelined graph */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_delay2");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(d0[buf_id],
+            &in_value[buf_id],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+    }
+    /* last buf is already set at the delay slot -1 so dont enqueue that ref */
+    for(buf_id=0; buf_id<num_buf-2; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf-2); loop_id++)
+    {
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+
+        /* compare output */
+        //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value[buf_id]);
+        ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
+
+        /* clear value in output */
+        tmp_value = 0;
+        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=1; buf_id<num_buf-2; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0           n0                           n1            d2
+ * SCALAR -- USER_KERNEL -- delay (-1) --  USER_KERNEL -- SCALAR
+ *                             |            |
+ *                         delay (-2) ------+--- USER_KERNEL -- null
+ *                             |                     n2
+ *                             |                     |
+ *                         delay (0)  ---------------+
+ *
+ * This test case test the below
+ * - Delay objects with 3 delay slots
+ * - Delay slot connected to two inputs
+ * - Delay intermeidiate to a graph, no graph parameter at any delay slot
+ * - node output to delay slot -1 (instead of typical slot 0)
+ * - multiple buffers at output of n0 i.e delay slot -1
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_delay delay;
+    vx_scalar in_scalar, out_scalar;
+    vx_node n0, n1, n2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF], ref_out_value[MAX_NUM_BUF];
+    vx_uint32 tmp_value = 0;
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, k;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    /* since delay is of 3 slots, num_buf MUST be >= 3 at input atleast */
+    if(num_buf < 3)
+    {
+        num_buf = 3;
+    }
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+    }
+
+    {
+        uint32_t tmp_value[3];
+
+        tmp_value[0] = 0;
+        tmp_value[1] = in_value[num_buf-1];
+        tmp_value[2] = in_value[num_buf-2];
+
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            ref_out_value[buf_id] = in_value[buf_id]
+                              + tmp_value[ 1 ];
+
+            tmp_value[ 0 ] = tmp_value[ 2 ];
+            tmp_value[ 2 ] = tmp_value[ 1 ];
+            tmp_value[ 1 ] = in_value[buf_id];
+        }
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+
+    /* allocate delay
+     */
+    ASSERT_VX_OBJECT(exemplar  = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(delay     = vxCreateDelay(context, (vx_reference)exemplar, 3), VX_TYPE_DELAY);
+    vxReleaseScalar(&exemplar);
+
+    ASSERT_VX_OBJECT(
+        n0 = test_user_kernel_node( graph,
+                d0[0], NULL,
+                (vx_scalar)vxGetReferenceFromDelay(delay, -1), NULL),
+                VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(
+        n1 = test_user_kernel_node(graph,
+                (vx_scalar)vxGetReferenceFromDelay(delay, -1), (vx_scalar)vxGetReferenceFromDelay(delay, -2),
+                d2[0], NULL),
+                VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(
+        n2 = test_user_kernel_node(graph,
+                (vx_scalar)vxGetReferenceFromDelay(delay, -2), (vx_scalar)vxGetReferenceFromDelay(delay, 0),
+                NULL, NULL),
+                VX_TYPE_NODE);
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 2, 2));
+
+    /* always auto age delay in pipelined graph */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_delay3");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(d0[buf_id],
+            &in_value[buf_id],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+    {
+        vx_scalar tmp_scalar;
+
+        tmp_scalar = (vx_scalar)vxGetReferenceFromDelay(delay, 0);
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(tmp_scalar,
+            &in_value[num_buf-2],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+
+        tmp_scalar = (vx_scalar)vxGetReferenceFromDelay(delay, -2);
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(tmp_scalar,
+            &in_value[num_buf-1],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+
+        /* compare output */
+        //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value[buf_id]);
+        ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
+
+        /* clear value in output */
+        tmp_value = 0;
+        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1, n2 };
+
+        printGraphPipelinePerformance(graph, nodes, 3, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0           n0                           n1            d2
+ * SCALAR -- USER_KERNEL -- delay (0) --  USER_KERNEL -- SCALAR
+ *                             |            |
+ *                          delay (-1)      |
+ *                             |            |
+ *                          delay (-2)      |
+ *                             |            |
+ *                          delay (-3) -----+
+ *
+ * This test case test the below
+ * - Delay objects with 4 delay slots
+ * - Delay intermeidiate to a graph, no graph parameter at any delay slot
+ * - Delay with slot's not connected to any input - tests auto age at these slots
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_scalar d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], exemplar;
+    vx_delay delay;
+    vx_scalar in_scalar, out_scalar;
+    vx_node n0, n1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+    vx_uint32 in_value[MAX_NUM_BUF], ref_out_value;
+    vx_uint32 ref_delay_value[MAX_NUM_BUF];
+    vx_uint32 tmp_value = 0;
+
+    uint32_t pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, k;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    test_user_kernel_register(context);
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    /* since delay is of 4 slots, num_buf MUST be >= 4 at input atleast */
+    if(num_buf < 4)
+    {
+        num_buf = 4;
+    }
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        in_value[buf_id] = 10*(buf_id+1);
+    }
+
+    ref_delay_value[0] = 0;
+    ref_delay_value[1] = in_value[num_buf-3];
+    ref_delay_value[2] = in_value[num_buf-2];
+    ref_delay_value[3] = in_value[num_buf-1];
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    }
+
+    /* allocate delay
+     */
+    ASSERT_VX_OBJECT(exemplar  = vxCreateScalar(context, VX_TYPE_UINT32, &tmp_value), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(delay     = vxCreateDelay(context, (vx_reference)exemplar, 4), VX_TYPE_DELAY);
+    vxReleaseScalar(&exemplar);
+
+    ASSERT_VX_OBJECT(
+        n0 = test_user_kernel_node( graph,
+                d0[0], NULL,
+                (vx_scalar)vxGetReferenceFromDelay(delay, 0), NULL),
+                VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(
+        n1 = test_user_kernel_node(graph,
+                (vx_scalar)vxGetReferenceFromDelay(delay, 0), (vx_scalar)vxGetReferenceFromDelay(delay, -3),
+                d2[0], NULL),
+                VX_TYPE_NODE);
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n1 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 2);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    /* always auto age delay in pipelined graph */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_delay4");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(d0[buf_id],
+            &in_value[buf_id],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+    }
+    {
+        vx_scalar tmp_scalar;
+
+        tmp_scalar = (vx_scalar)vxGetReferenceFromDelay(delay, -1);
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(tmp_scalar,
+            &in_value[num_buf-3],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+
+        tmp_scalar = (vx_scalar)vxGetReferenceFromDelay(delay, -2);
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(tmp_scalar,
+            &in_value[num_buf-2],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+
+        tmp_scalar = (vx_scalar)vxGetReferenceFromDelay(delay, -3);
+        ASSERT_NO_FAILURE(
+            vxCopyScalar(tmp_scalar,
+            &in_value[num_buf-1],
+            VX_WRITE_ONLY,
+            VX_MEMORY_TYPE_HOST));
+
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+        }
+
+        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+
+        ref_out_value = in_value[buf_id] + ref_delay_value[ 3 ];
+
+        ref_delay_value[ 3 ] = ref_delay_value[ 2 ];
+        ref_delay_value[ 2 ] = ref_delay_value[ 1 ];
+        ref_delay_value[ 1 ] = in_value[buf_id];
+
+        /* compare output */
+        //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value);
+        ASSERT_EQ_INT(tmp_value, ref_out_value);
+
+        /* clear value in output */
+        tmp_value = 0;
+        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt+num_buf, 1);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&d0[buf_id]));
+        VX_CALL(vxReleaseScalar(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    test_user_kernel_unregister(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
@@ -2649,7 +3599,11 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testEventHandlingDisableEvents,
     testReplicateImage,
     testUserKernel,
-    testManualSchedule
+    testManualSchedule,
+    testDelay1,
+    testDelay2,
+    testDelay3,
+    testDelay4
     )
 
 

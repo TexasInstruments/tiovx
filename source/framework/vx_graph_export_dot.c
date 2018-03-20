@@ -244,7 +244,8 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref, vx_bool is_replicat
     }
 }
 
-static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref, uint32_t num_buf, vx_bool is_graph_parameter)
+static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref,
+            uint32_t num_buf, vx_bool is_graph_parameter, vx_bool show_delay_links)
 {
     if(ref)
     {
@@ -265,14 +266,48 @@ static void exportDataRefQueueObjDesc(FILE *fp, tivx_data_ref_queue ref, uint32_
         {
             if(ref->obj_desc[pipe_id])
             {
-                TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record, style=filled %s, label=\"{%s|bufs %d|pipe %d|in_nodes %d|desc %d}\"]",
+                char auto_age_delay_string[64]="";
+                uint32_t flags;
+
+                flags = ref->obj_desc[pipe_id]->flags;
+
+                if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+                {
+                    if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
+                    {
+                        snprintf(auto_age_delay_string, 64, "|delay_slot_auto_age");
+                    }
+                }
+                TIVX_EXPORT_WRITELN(fp, "d_%d [shape=record, style=filled %s, label=\"{%s|bufs %d|pipe %d|in_nodes %d|desc %d %s}\"]",
                     ref->obj_desc[pipe_id]->base.obj_desc_id,
                     graph_parameter_label,
                     ref->base.name,
                     num_buf,
                     pipe_id,
                     ref->obj_desc[pipe_id]->num_in_nodes,
-                    ref->obj_desc[pipe_id]->base.obj_desc_id);
+                    ref->obj_desc[pipe_id]->base.obj_desc_id,
+                    auto_age_delay_string
+                    );
+
+                if(show_delay_links)
+                {
+                    if(tivxFlagIsBitSet(ref->obj_desc[pipe_id]->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+                    {
+                        tivx_obj_desc_data_ref_q_t *next_obj_desc;
+
+                        next_obj_desc = (tivx_obj_desc_data_ref_q_t *)
+                                            tivxObjDescGet(ref->obj_desc[pipe_id]->next_obj_desc_id_in_delay);
+
+                        if(next_obj_desc)
+                        {
+                            TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%d [label = %d, style=dashed, color=gray]",
+                                ref->obj_desc[pipe_id]->base.obj_desc_id,
+                                next_obj_desc->base.obj_desc_id,
+                                -((ref->obj_desc[pipe_id]->delay_slot_index+1)%ref->obj_desc[pipe_id]->delay_slots)
+                                );
+                        }
+                    }
+                }
             }
         }
     }
@@ -352,6 +387,33 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
             ref = graph->data_ref[data_id];
 
             exportDataRef(fp, ref, vx_false_e);
+
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+        /* link delays */
+        data_id = 0;
+        while(graph->delays[data_id]!=NULL)
+        {
+            vx_delay delay = graph->delays[data_id];
+            uint32_t slot_id;
+
+            for(slot_id=0; slot_id<delay->count; slot_id++)
+            {
+                if(delay->refs[slot_id]!=NULL
+                    &&
+                    (delay->refs[(slot_id+1)%delay->count] != NULL)
+                )
+                {
+                    exportDataRef(fp, delay->refs[slot_id], vx_false_e);
+
+                    TIVX_EXPORT_WRITELN(fp, "%s -> %s [label = %d, style=dashed, color=gray]\n",
+                        delay->refs[slot_id]->name,
+                        delay->refs[(slot_id+1)%delay->count]->name,
+                        -((slot_id+1)%delay->count)
+                        );
+                }
+            }
+            data_id++;
         }
         TIVX_EXPORT_WRITELN(fp, "");
 
@@ -450,16 +512,16 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
         {
             if(data_ref_q->obj_desc[pipe_id]!=NULL)
             {
-                if(data_ref_q->obj_desc_cmd[pipe_id]!=NULL)
+                if(data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id!=TIVX_OBJ_DESC_INVALID)
                 {
                     TIVX_EXPORT_WRITELN(fp, "dq_cmd_%d [shape=record, label=\"{response cmd|desc %d}\", style=filled]",
-                        data_ref_q->obj_desc_cmd[pipe_id]->base.obj_desc_id,
+                        data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id,
                         data_ref_q->obj_desc[pipe_id]->base.obj_desc_id
                     );
 
                     TIVX_EXPORT_WRITELN(fp, "d_%d -> dq_cmd_%d\n",
                         data_ref_q->obj_desc[pipe_id]->base.obj_desc_id,
-                        data_ref_q->obj_desc_cmd[pipe_id]->base.obj_desc_id
+                        data_ref_q->obj_desc[pipe_id]->ref_consumed_cmd_obj_desc_id
                         );
                 }
                 if(data_ref_q->obj_desc[pipe_id]->release_q_obj_desc_id!=TIVX_OBJ_DESC_INVALID)
@@ -545,15 +607,21 @@ static vx_status tivxExportGraphDataRefQueuesToDot(vx_graph graph, char *output_
         {
             if(graph->parameters[i].queue_enable)
             {
-                exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf, vx_true_e);
+                exportDataRefQueueObjDesc(fp, graph->parameters[i].data_ref_queue, graph->parameters[i].num_buf, vx_true_e, vx_false_e);
                 tivxExportGraphDataRefQueueToDot(fp, graph, graph->parameters[i].data_ref_queue, i);
             }
         }
         for(i=0; i<graph->num_data_ref_q; i++)
         {
-            exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf, vx_false_e);
+            exportDataRefQueueObjDesc(fp, graph->data_ref_q_list[i].data_ref_queue, graph->data_ref_q_list[i].num_buf, vx_false_e, vx_false_e);
             tivxExportGraphDataRefQueueToDot(fp, graph, graph->data_ref_q_list[i].data_ref_queue,
                 graph->num_params+i);
+        }
+        for(i=0; i<graph->num_delay_data_ref_q; i++)
+        {
+            exportDataRefQueueObjDesc(fp, graph->delay_data_ref_q_list[i].data_ref_queue, 1, vx_false_e, vx_false_e);
+            tivxExportGraphDataRefQueueToDot(fp, graph, graph->delay_data_ref_q_list[i].data_ref_queue,
+                graph->num_params+graph->num_data_ref_q+i);
         }
 
         TIVX_EXPORT_WRITELN(fp, "");
@@ -744,6 +812,56 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
         }
         TIVX_EXPORT_WRITELN(fp, "");
 
+        for(prm_id=0; prm_id<graph->num_delay_data_ref_q; prm_id++)
+        {
+            if(graph->delay_data_ref_q_list[prm_id].data_ref_queue)
+            {
+                exportDataRefQueue(fp,
+                    graph->delay_data_ref_q_list[prm_id].data_ref_queue,
+                    1,
+                    vx_false_e);
+
+                if(graph->delay_data_ref_q_list[prm_id].node)
+                {
+                    ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[prm_id].node,
+                            graph->delay_data_ref_q_list[prm_id].index);
+
+                    is_replicated = ownNodeIsPrmReplicated(
+                            graph->delay_data_ref_q_list[prm_id].node,
+                            graph->delay_data_ref_q_list[prm_id].index);
+
+                    exportDataRefObjDesc(fp, ref, is_replicated);
+                    if(ref && ref->obj_desc)
+                    {
+                        TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
+                            ref->obj_desc->obj_desc_id,
+                            graph->delay_data_ref_q_list[prm_id].data_ref_queue->base.name);
+                    }
+                }
+                else
+                {
+                    vx_delay delay = graph->delay_data_ref_q_list[prm_id].delay_ref;
+                    uint32_t delay_slot_index = graph->delay_data_ref_q_list[prm_id].delay_slot_index;
+
+                    if(delay)
+                    {
+                        ref = delay->refs[delay_slot_index];
+                        if(ref)
+                        {
+                            exportDataRefObjDesc(fp, ref, vx_false_e);
+                            if(ref && ref->obj_desc)
+                            {
+                                TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
+                                    ref->obj_desc->obj_desc_id,
+                                    graph->delay_data_ref_q_list[prm_id].data_ref_queue->base.name);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+
         TIVX_EXPORT_WRITELN(fp, "/* List of data reference queues */");
         for(data_id=0; data_id<graph->num_params; data_id++)
         {
@@ -752,7 +870,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 uint32_t num_buf = graph->parameters[data_id].num_buf;
                 tivx_data_ref_queue ref = graph->parameters[data_id].data_ref_queue;
 
-                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e);
+                exportDataRefQueueObjDesc(fp, ref, num_buf, vx_true_e, vx_true_e);
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -761,7 +879,14 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             uint32_t num_buf = graph->data_ref_q_list[data_id].num_buf;
             tivx_data_ref_queue ref = graph->data_ref_q_list[data_id].data_ref_queue;
 
-            exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e);
+            exportDataRefQueueObjDesc(fp, ref, num_buf, vx_false_e, vx_true_e);
+        }
+        TIVX_EXPORT_WRITELN(fp, "");
+        for(data_id=0; data_id<graph->num_delay_data_ref_q; data_id++)
+        {
+            tivx_data_ref_queue ref = graph->delay_data_ref_q_list[data_id].data_ref_queue;
+
+            exportDataRefQueueObjDesc(fp, ref, 1, vx_false_e, vx_true_e);
         }
         TIVX_EXPORT_WRITELN(fp, "");
 

@@ -184,6 +184,61 @@ static void tivxTargetNodeDescAcquireParameter(
     tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 }
 
+static void tivxTargetNodeDescReleaseParameterInDelay(
+                        tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc,
+                        tivx_obj_desc_queue_blocked_nodes_t *blocked_nodes)
+{
+    tivx_obj_desc_data_ref_q_t *next_data_ref_q, *cur_data_ref_q;
+    uint16_t obj_desc_q_id, ref_obj_desc_id;
+    uint16_t delay_slots, i;
+
+    delay_slots = data_ref_q_obj_desc->delay_slots;
+
+    cur_data_ref_q = data_ref_q_obj_desc;
+
+    for(i=0; i<delay_slots-1; i++)
+    {
+        next_data_ref_q = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(cur_data_ref_q->next_obj_desc_id_in_delay);
+
+        if(next_data_ref_q!=NULL)
+        {
+            if(tivxFlagIsBitSet(next_data_ref_q->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE))
+            {
+                /* acquire a ref and release it immediately to rotate the ref at this slot */
+                obj_desc_q_id = next_data_ref_q->acquire_q_obj_desc_id;
+
+                tivxObjDescQueueDequeue(
+                    obj_desc_q_id,
+                    &ref_obj_desc_id
+                    );
+
+                if(ref_obj_desc_id!=TIVX_OBJ_DESC_INVALID)
+                {
+                    obj_desc_q_id = next_data_ref_q->release_q_obj_desc_id;
+
+                    tivxObjDescQueueEnqueue(
+                        obj_desc_q_id,
+                        ref_obj_desc_id
+                        );
+                    /* check if anyone was blocked on this buffer being available
+                     * if yes then get the node IDs and trigger them
+                     */
+                    tivxObjDescQueueExtractBlockedNodes(
+                        obj_desc_q_id,
+                        blocked_nodes
+                        );
+                }
+            }
+            cur_data_ref_q = next_data_ref_q;
+        }
+        else
+        {
+            /* invalid descriptor found */
+            break;
+        }
+    }
+}
+
 static void tivxTargetNodeDescReleaseParameter(
                     tivx_obj_desc_node_t *node_obj_desc,
                     tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc, /* data ref q obj desc */
@@ -241,6 +296,17 @@ static void tivxTargetNodeDescReleaseParameter(
             );
 
         *is_prm_released = vx_true_e;
+
+        /* handle ref auto age for delay
+         * if delay is connected to some input node then acquire/release
+         * at the node takes care of ref ageing at the delay slot
+         * However if a delay slot is not connected to any node then
+         * ageing must be done explicitly here.
+         */
+        if(tivxFlagIsBitSet(data_ref_q_obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+        {
+            tivxTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
+        }
 
         VX_PRINT(VX_ZONE_INFO,"Parameter released (node=%d, pipe=%d, data_ref_q=%d, queue=%d, ref=%d)\n",
                              node_obj_desc->base.obj_desc_id,

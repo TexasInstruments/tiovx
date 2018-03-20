@@ -119,6 +119,8 @@ typedef struct _tivx_data_ref_queue {
     uint32_t pipeline_depth;
     /*! \brief send event to user when data ref is consumed */
     vx_bool is_enable_send_ref_consumed_event;
+    /*! \brief will user do enqueing/dequeueing or will graph rotate buffers internally */
+    vx_bool enable_user_queueing;
     /*! \brief graph parameter index which is associated with this data ref */
     uint32_t graph_parameter_index;
     /*! \brief graph associated with this data reference */
@@ -223,6 +225,17 @@ vx_status tivxDataRefQueueGetReadyQueueCount(tivx_data_ref_queue data_ref_q, vx_
  * \ingroup group_tivx_data_ref_queue
  */
 vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t timestamp);
+
+
+/*!
+ * \brief Link data ref queues that participate in a delay in a circular manner
+ *
+ * \ingroup group_tivx_data_ref_queue
+ */
+vx_status tivxDataRefQueueLinkDelayDataRefQueues(
+            tivx_data_ref_queue delay_data_ref_q_list[],
+            vx_bool auto_age_delay_slot[],
+            uint32_t delay_slots);
 
 #ifdef __cplusplus
 }

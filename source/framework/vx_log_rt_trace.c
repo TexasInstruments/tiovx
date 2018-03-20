@@ -28,6 +28,7 @@
 
 
 #include <vx_internal.h>
+#include <inttypes.h>
 
 #define BYTE_TO_BINARY_PATTERN "%c%c%c%c"
 #define BYTE_TO_BINARY(byte)  \
@@ -40,7 +41,7 @@ void tivxLogRtTraceNodeExeStart(uint64_t time, tivx_obj_desc_node_t *node_obj_de
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
-        printf("#%llu\n" "b"BYTE_TO_BINARY_PATTERN" n_%d\n",
+        printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" n_%" PRIuPTR "\n",
             time,
             BYTE_TO_BINARY(node_obj_desc->pipeline_id),
             node_obj_desc->base.host_ref);
@@ -51,7 +52,7 @@ void tivxLogRtTraceNodeExeEnd(uint64_t time, tivx_obj_desc_node_t *node_obj_desc
 {
     if(tivxFlagIsBitSet(node_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
-        printf("#%llu\n" "bZ n_%d\n",
+        printf("#%" PRIu64 "\n" "bZ n_%" PRIuPTR "\n",
             time,
             node_obj_desc->base.host_ref);
     }
@@ -61,7 +62,7 @@ void tivxLogRtTraceGraphExeStart(uint64_t time, tivx_obj_desc_graph_t *graph_obj
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
-        printf("#%llu\n" "b"BYTE_TO_BINARY_PATTERN" g_%d\n",
+        printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" g_%d\n",
             time,
             BYTE_TO_BINARY(graph_obj_desc->pipeline_id),
             graph_obj_desc->base.obj_desc_id);
@@ -72,7 +73,7 @@ void tivxLogRtTraceGraphExeEnd(uint64_t time, tivx_obj_desc_graph_t *graph_obj_d
 {
     if(tivxFlagIsBitSet(graph_obj_desc->base.flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
-        printf("#%llu\n" "bZ g_%d\n",
+        printf("#%" PRIu64 "\n" "bZ g_%d\n",
             time,
             graph_obj_desc->base.obj_desc_id);
     }
@@ -82,7 +83,7 @@ void tivxLogRtTraceTargetExeStart(tivx_target target, tivx_obj_desc_t *obj_desc)
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
-        printf("#%llu\n" "b1 t_%d\n",
+        printf("#%" PRIu64 "\n" "b1 t_%d\n",
             tivxPlatformGetTimeInUsecs(),
             target->target_id);
     }
@@ -92,7 +93,7 @@ void tivxLogRtTraceTargetExeEnd(tivx_target target, tivx_obj_desc_t *obj_desc)
 {
     if(tivxFlagIsBitSet(obj_desc->flags, TIVX_REF_FLAG_LOG_RT_TRACE))
     {
-        printf("#%llu\n" "b0 t_%d\n",
+        printf("#%" PRIu64 "\n" "b0 t_%d\n",
             tivxPlatformGetTimeInUsecs(),
             target->target_id);
     }
@@ -123,7 +124,7 @@ vx_status tivxLogRtTrace(vx_graph graph)
 
             if(node)
             {
-                printf("$var reg 4 n_%d %s $end\n",
+                printf("$var reg 4 n_%" PRIuPTR " %s $end\n",
                     (uintptr_t)node,
                     node->base.name);
 

@@ -75,6 +75,13 @@ static vx_status ownDestructGraph(vx_reference ref)
                 }
             }
         }
+        for(i=0; i<graph->num_delay_data_ref_q; i++)
+        {
+            if(graph->delay_data_ref_q_list[i].data_ref_queue != NULL)
+            {
+                tivxDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
+            }
+        }
     }
 
     while (graph->num_nodes)
@@ -295,6 +302,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->submitted_count = 0;
             graph->num_data_ref = 0;
             graph->num_data_ref_q = 0;
+            graph->num_delay_data_ref_q = 0;
 
 
             ownResetGraphPerf(graph);

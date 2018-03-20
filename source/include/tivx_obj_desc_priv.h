@@ -115,6 +115,20 @@ extern "C" {
  */
 #define TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED                   (0x00000002u)
 
+/*! \brief Data Ref Q flag to determine if this obj desc is part of some delay
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY                       (0x00000004u)
+
+/*! \brief Data Ref Q flag to determine if delay slot to which
+ *          this obj desc belongs should be auto aged
+ *
+ * Valid only when TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+#define TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE               (0x00000008u)
+
 /*! \brief Shift for storing Object Descriptor id in 32bit variable
  * \ingroup group_tivx_obj_desc_priv
  */
@@ -270,6 +284,30 @@ typedef struct _tivx_obj_desc_data_ref_q
 
     /*! \brief number of nodes take this data ref as input */
     uint16_t num_in_nodes;
+
+    /*! \brief Next obj desc in a delay.
+     *
+     * Valid only when
+     * TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
+     */
+    uint16_t next_obj_desc_id_in_delay;
+
+    /*! \brief slot in delay for this obj desc.
+     *
+     * Valid only when
+     * TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
+     */
+    uint16_t delay_slot_index;
+
+    /*! \brief Number of slots in delay.
+     *
+     * Valid only when
+     * TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
+     */
+    uint16_t delay_slots;
+
+    /*! \brief reserved fields for alignment */
+    uint16_t rsv[1];
 
 } tivx_obj_desc_data_ref_q_t;
 

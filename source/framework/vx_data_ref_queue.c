@@ -92,6 +92,8 @@ vx_status tivxDataRefQueueEnqueueReadyRef(tivx_data_ref_queue data_ref_q, vx_ref
         status = tivxObjDescQueueEnqueue(queue_obj_desc_id, ref_obj_desc_id);
         if(status==VX_SUCCESS)
         {
+            blocked_nodes.num_nodes = 0;
+
             /* if any node is blocked on ref enqueued to this queue, then get the list of blocked nodes */
             tivxObjDescQueueExtractBlockedNodes(queue_obj_desc_id,
                 &blocked_nodes);
@@ -338,6 +340,7 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
             ref->release_q_obj_desc_id = TIVX_OBJ_DESC_INVALID;
 
             ref->is_enable_send_ref_consumed_event = prms->is_enable_send_ref_consumed_event;
+            ref->enable_user_queueing = prms->enable_user_queueing;
             ref->graph = graph;
             ref->graph_parameter_index = prms->graph_parameter_index;
 
@@ -416,6 +419,9 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
                     obj_desc->ref_obj_desc_id = TIVX_OBJ_DESC_INVALID;
                     obj_desc->in_node_done_cnt = 0;
                     obj_desc->num_in_nodes = prms->num_in_nodes;
+                    obj_desc->next_obj_desc_id_in_delay = TIVX_OBJ_DESC_INVALID;
+                    obj_desc->delay_slot_index = 0;
+                    obj_desc->delay_slots = 0;
 
                     if(prms->enable_user_queueing)
                     {
@@ -461,4 +467,67 @@ tivx_data_ref_queue tivxDataRefQueueCreate(vx_graph graph, tivx_data_ref_queue_c
 vx_status tivxDataRefQueueRelease(tivx_data_ref_queue *ref)
 {
     return ownReleaseReferenceInt((vx_reference *)ref, TIVX_TYPE_DATA_REF_Q, VX_INTERNAL, NULL);
+}
+
+vx_status tivxDataRefQueueLinkDelayDataRefQueues(
+            tivx_data_ref_queue delay_data_ref_q_list[],
+            vx_bool auto_age_delay_slot[],
+            uint32_t delay_slots)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t pipe_id, i;
+    tivx_data_ref_queue cur_data_ref_q, next_data_ref_q;
+
+    for(i=0; i<delay_slots; i++)
+    {
+        cur_data_ref_q = delay_data_ref_q_list[i];
+        next_data_ref_q = delay_data_ref_q_list[(i+1) % delay_slots];
+
+        if(next_data_ref_q->enable_user_queueing)
+        {
+            cur_data_ref_q->release_q_obj_desc_id = next_data_ref_q->done_q_obj_desc_id;
+        }
+        else
+        {
+            cur_data_ref_q->release_q_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+        }
+
+        for(pipe_id=0; pipe_id<cur_data_ref_q->pipeline_depth; pipe_id++)
+        {
+            tivx_obj_desc_data_ref_q_t *obj_desc, *next_obj_desc;
+
+            obj_desc = cur_data_ref_q->obj_desc[pipe_id];
+            next_obj_desc = next_data_ref_q->obj_desc[pipe_id];
+
+            tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY);
+            obj_desc->next_obj_desc_id_in_delay = next_obj_desc->base.obj_desc_id;
+            obj_desc->delay_slot_index = i;
+            obj_desc->delay_slots = delay_slots;
+
+            if(auto_age_delay_slot[i])
+            {
+                tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE);
+            }
+
+            if(next_data_ref_q->enable_user_queueing)
+            {
+                obj_desc->release_q_obj_desc_id = next_data_ref_q->done_q_obj_desc_id;
+            }
+            else
+            {
+                obj_desc->release_q_obj_desc_id = next_data_ref_q->acquire_q_obj_desc_id;
+            }
+            if(next_data_ref_q->enable_user_queueing)
+            {
+                tivxFlagBitSet(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT);
+                obj_desc->ref_consumed_cmd_obj_desc_id = next_data_ref_q->obj_desc_cmd[pipe_id]->base.obj_desc_id;
+            }
+            else
+            {
+                tivxFlagBitClear(&obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT);
+                obj_desc->ref_consumed_cmd_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+            }
+        }
+    }
+    return status;
 }
