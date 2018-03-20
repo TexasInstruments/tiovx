@@ -2187,33 +2187,33 @@ class KernelExportCode :
         self.todo_code.write_line("# lines from showing up in this file the next time KernelExportCode.todo() is run.")
         self.all_files = [y for x in os.walk(self.workarea) for y in glob(os.path.join(x[0], '*.*'))]
         for file in self.all_files :
-            with open(file) as f:
+            with open(file, 'rb') as f:
                 for num, line in enumerate(f, 1):
-                    if 'DEVELOPER_TODO' in line:
-                        if '>' in line:
+                    if 'DEVELOPER_TODO'.encode() in line:
+                        if '>'.encode() in line:
                             self.state = False
                         else:
                             self.state = True
-                        self.modLine = re.sub("^.*?DEVELOPER_TODO:","", line)
-                        self.modLine = re.sub("^\s+","", self.modLine)
-                        self.modLine = re.sub("\*\/","", self.modLine)
-                        self.modLine = re.sub("\>","", self.modLine)
+                        self.modLine = re.sub("^.*?DEVELOPER_TODO:".encode(),"".encode(), line)
+                        self.modLine = re.sub("^\s+".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\*\/".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\>".encode(),"".encode(), self.modLine)
                         if self.fileName != file :
                             self.todo_code.write_line("\n" + file, new_line=False)
-                        self.todo_code.write_line("\n    " + str(num) + ": " + self.modLine, new_line=False)
+                        self.todo_code.write_line("\n    " + str(num) + ": " + self.modLine.decode('utf-8'), new_line=False)
                         self.lineNum = num
                         self.fileName = file
                     elif self.state :
-                        if '>' in line :
+                        if '>'.encode() in line :
                             self.state = False
-                        self.modLine = re.sub("^.*?DEVELOPER_TODO:","", line)
-                        self.modLine = re.sub("#","", self.modLine)
-                        self.modLine = re.sub("\/\/","", self.modLine)
-                        self.modLine = re.sub("\/\*","", self.modLine)
-                        self.modLine = re.sub("\*\/","", self.modLine)
-                        self.modLine = re.sub("^\s+","", self.modLine)
-                        self.modLine = re.sub("\>","", self.modLine)
-                        self.todo_code.write_line("    " + str(num) + ": " + self.modLine, new_line=False)
+                        self.modLine = re.sub("^.*?DEVELOPER_TODO:".encode(),"".encode(), line)
+                        self.modLine = re.sub("#".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\/\/".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\/\*".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\*\/".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("^\s+".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\>".encode(),"".encode(), self.modLine)
+                        self.todo_code.write_line("    " + str(num) + ": " + self.modLine.decode('utf-8'), new_line=False)
                         self.lineNum = num
         self.todo_code.close()
 
