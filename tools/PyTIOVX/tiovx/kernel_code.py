@@ -347,9 +347,11 @@ class KernelExportCode :
             if prm.type == Type.IMAGE :
                 self.host_c_code.write_line("vx_df_image %s_fmt;" % prm.name_lower)
                 self.host_c_code.write_line("vx_uint32 %s_w, %s_h;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_size %s_planes, %s_size;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_enum  %s_space, %s_range, %s_memory_type;" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif prm.type == Type.ARRAY :
                 self.host_c_code.write_line("vx_enum %s_item_type;" % prm.name_lower)
-                self.host_c_code.write_line("vx_size %s_capacity, %s_item_size;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_size %s_capacity, %s_item_size, %s_num_items;" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif prm.type == Type.PYRAMID :
                 self.host_c_code.write_line("vx_df_image %s_fmt;" % prm.name_lower)
                 self.host_c_code.write_line("vx_size %s_levels;" % prm.name_lower)
@@ -357,18 +359,24 @@ class KernelExportCode :
                 self.host_c_code.write_line("vx_uint32 %s_w, %s_h;" % (prm.name_lower, prm.name_lower))
             elif prm.type == Type.MATRIX :
                 self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
-                self.host_c_code.write_line("vx_size %s_w, %s_h;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_size %s_w, %s_h, %s_size;" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_coordinates2d_t %s_origin;" % prm.name_lower)
+                self.host_c_code.write_line("vx_enum %s_pattern;" % prm.name_lower)
             elif prm.type == Type.CONVOLUTION :
-                self.host_c_code.write_line("vx_size %s_col, %s_row;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_size %s_col, %s_row, %s_size;" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_uint32 %s_scale;" % prm.name_lower)
             elif prm.type == Type.DISTRIBUTION :
                 self.host_c_code.write_line("vx_int32 %s_offset = 0;" % prm.name_lower)
-                self.host_c_code.write_line("vx_uint32 %s_range = 0;" % prm.name_lower)
-                self.host_c_code.write_line("vx_size %s_numBins = 0;" % prm.name_lower)
+                self.host_c_code.write_line("vx_uint32 %s_range = 0, %s_win;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_size %s_bins = 0, %s_dims, %s_size;" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif prm.type == Type.LUT :
                 self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
-                self.host_c_code.write_line("vx_size %s_count;" % prm.name_lower)
+                self.host_c_code.write_line("vx_uint32 %s_offset;" % prm.name_lower)
+                self.host_c_code.write_line("vx_size %s_count, %s_size;" % (prm.name_lower, prm.name_lower))
             elif prm.type == Type.THRESHOLD:
                 self.host_c_code.write_line("vx_enum %s_threshold_type, %s_threshold_data_type;" % (prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_int32 %s_value, %s_upper, %s_lower;" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("vx_int32 %s_true_value, %s_false_value;" % (prm.name_lower, prm.name_lower))
             elif prm.type == Type.OBJECT_ARRAY:
                 self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
                 self.host_c_code.write_line("vx_size %s_num_items;" % prm.name_lower)
@@ -439,14 +447,23 @@ class KernelExportCode :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_FORMAT, &%s_fmt, sizeof(%s_fmt)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_WIDTH, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_HEIGHT, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_PLANES, &%s_planes, sizeof(%s_planes)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_SPACE, &%s_space, sizeof(%s_space)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_RANGE, &%s_range, sizeof(%s_range)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_MEMORY_TYPE, &%s_memory_type, sizeof(%s_memory_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.ARRAY == prm.type :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_ITEMTYPE, &%s_item_type, sizeof(%s_item_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_CAPACITY, &%s_capacity, sizeof(%s_capacity)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_ITEMSIZE, &%s_item_size, sizeof(%s_item_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.MATRIX == prm.type :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_TYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_COLUMNS, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_ROWS, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_ORIGIN, &%s_origin, sizeof(%s_origin)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_PATTERN, &%s_pattern, sizeof(%s_pattern)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.PYRAMID == prm.type :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_FORMAT, &%s_fmt, sizeof(%s_fmt)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_LEVELS, &%s_levels, sizeof(%s_levels)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
@@ -456,16 +473,28 @@ class KernelExportCode :
             elif Type.CONVOLUTION == prm.type :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_COLUMNS, &%s_col, sizeof(%s_col)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_ROWS, &%s_row, sizeof(%s_row)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_SCALE, &%s_scale, sizeof(%s_scale)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.DISTRIBUTION == prm.type :
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_BINS, &%s_numBins, sizeof(%s_numBins)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_BINS, &%s_bins, sizeof(%s_bins)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_RANGE, &%s_range, sizeof(%s_range)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_OFFSET, &%s_offset, sizeof(%s_offset)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_DIMENSIONS, &%s_dims, sizeof(%s_dims)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_WINDOW, &%s_win, sizeof(%s_win)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.LUT == prm.type:
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_TYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_COUNT, &%s_count, sizeof(%s_count)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_OFFSET, &%s_offset, sizeof(%s_offset)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.THRESHOLD == prm.type:
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_TYPE, &%s_threshold_type, sizeof(%s_threshold_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_DATA_TYPE, &%s_threshold_data_type, sizeof(%s_threshold_data_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_THRESHOLD_VALUE, &%s_value, sizeof(%s_value)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_THRESHOLD_LOWER, &%s_lower, sizeof(%s_lower)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_THRESHOLD_UPPER, &%s_upper, sizeof(%s_upper)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_TRUE_VALUE, &%s_true_value, sizeof(%s_true_value)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_FALSE_VALUE, &%s_false_value, sizeof(%s_false_value)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             elif Type.OBJECT_ARRAY == prm.type:
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryObjectArray(%s, VX_OBJECT_ARRAY_ITEMTYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryObjectArray(%s, VX_OBJECT_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
@@ -571,13 +600,17 @@ class KernelExportCode :
                     self.host_c_code.write_line("if (NULL != %s)" % (rel.prm_list[0].name_lower))
                     self.host_c_code.write_open_brace()
                 for attr in rel.attribute_list :
-                    if len(rel.prm_list) > 2 :
-                        self.host_c_code.write_line("if( (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
-                        for prm in rel.prm_list[2:-1] :
-                            self.host_c_code.write_line("    (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, prm.name_lower, attr.value))
-                        self.host_c_code.write_line("    (%s_%s != %s_%s))" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[-1].name_lower, attr.value))
-                    elif len(rel.prm_list) == 2 :
-                        self.host_c_code.write_line("if (%s_%s != %s_%s)" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                    if attr.vx_enum_name() == "VX_MATRIX_ORIGIN":
+                        self.host_c_code.write_line("if( (%s_%s.x != %s_%s.x) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                        self.host_c_code.write_line("    (%s_%s.y != %s_%s.y) )" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                    else :
+                        if len(rel.prm_list) > 2 :
+                            self.host_c_code.write_line("if( (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                            for prm in rel.prm_list[2:-1] :
+                                self.host_c_code.write_line("    (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, prm.name_lower, attr.value))
+                            self.host_c_code.write_line("    (%s_%s != %s_%s))" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[-1].name_lower, attr.value))
+                        elif len(rel.prm_list) == 2 :
+                            self.host_c_code.write_line("if (%s_%s != %s_%s)" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
 
                     self.host_c_code.write_open_brace()
                     self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
@@ -872,7 +905,7 @@ class KernelExportCode :
                     if prm.state is ParamState.OPTIONAL:
                         self.target_c_code.write_line("if( %s != NULL)" % desc)
                         self.target_c_code.write_open_brace()
-                    if Type.IMAGE == prm.type or Type.PYRAMID == prm.type:
+                    if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.OBJECT_ARRAY == prm.type:
                         # Check if data type has multi-planes
                         self.multiplane = False
                         if len(prm.data_types) > 1 :
@@ -898,10 +931,16 @@ class KernelExportCode :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[0].target_ptr," % desc )
                                     self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
                                     self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                        elif prm.type == Type.PYRAMID :
-                            self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_levels);" % (desc, desc, desc) )
+                        elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY:
+                            if prm.type == Type.PYRAMID :
+                                self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_levels);" % (desc, desc, desc) )
+                            else :
+                                self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_items);" % (desc, desc, desc) )
                             if self.multiplane :
-                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                if prm.type == Type.PYRAMID :
+                                    self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                else :
+                                    self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
                                 self.target_c_code.write_open_brace()
                                 self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                                 self.target_c_code.write_open_brace()
@@ -914,7 +953,10 @@ class KernelExportCode :
                                 self.target_c_code.write_close_brace()
                                 self.target_c_code.write_close_brace()
                             else :
-                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                if prm.type == Type.PYRAMID :
+                                    self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                                else :
+                                    self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
                                 self.target_c_code.write_open_brace()
                                 self.target_c_code.write_line("img_%s[i]->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
                                 self.target_c_code.write_line("  img_%s[i]->mem_ptr[0].shared_ptr, img_%s[i]->mem_ptr[0].mem_type);" % (desc, desc))
@@ -923,7 +965,7 @@ class KernelExportCode :
                                     self.target_c_code.write_line("   img_%s[i]->mem_size[0], img_%s[i]->mem_ptr[0].mem_type," % (desc, desc))
                                     self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
-                    else :
+                    elif prm.type != Type.THRESHOLD:
                         self.target_c_code.write_line("%s->mem_ptr.target_ptr = tivxMemShared2TargetPtr(" % desc )
                         self.target_c_code.write_line("  %s->mem_ptr.shared_ptr, %s->mem_ptr.mem_type);" % (desc, desc))
                         if prm.do_map :
@@ -942,7 +984,11 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                self.target_c_code.write_line("%s_value = %s->data.%s;" % (prm.name_lower, desc, Type.get_scalar_obj_desc_data_name(prm.type)))
+                if "invalid" != Type.get_scalar_obj_desc_data_name(prm.type):
+                    self.target_c_code.write_line("%s_value = %s->data.%s;" % (prm.name_lower, desc, Type.get_scalar_obj_desc_data_name(prm.type)))
+                else :
+                    self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Modify 'scalar data type' below to be correct type >")
+                    self.target_c_code.write_line("/*%s_value = %s->data.<scalar data type>;*/" % (prm.name_lower, desc))
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
@@ -961,7 +1007,7 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_line("if( %s != NULL)" % desc)
                     self.target_c_code.write_open_brace()
-                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type:
+                if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.OBJECT_ARRAY == prm.type:
                     # Check if data type has multi-planes
                     self.multiplane = False
                     if len(prm.data_types) > 1 :
@@ -981,9 +1027,12 @@ class KernelExportCode :
                             self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[0].target_ptr," % desc )
                             self.target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
                             self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    elif prm.type == Type.PYRAMID :
+                    elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY :
                         if self.multiplane :
-                            self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                            if prm.type == Type.PYRAMID :
+                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                            else :
+                                self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
                             self.target_c_code.write_open_brace()
                             self.target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
                             self.target_c_code.write_open_brace()
@@ -993,13 +1042,16 @@ class KernelExportCode :
                             self.target_c_code.write_close_brace()
                             self.target_c_code.write_close_brace()
                         else :
-                            self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                            if prm.type == Type.PYRAMID :
+                                self.target_c_code.write_line("for(i=0; i<%s->num_levels; i++)" % desc )
+                            else :
+                                self.target_c_code.write_line("for(i=0; i<%s->num_items; i++)" % desc )
                             self.target_c_code.write_open_brace()
                             self.target_c_code.write_line("tivxMemBufferUnmap(img_%s[i]->mem_ptr[0].target_ptr," % desc )
                             self.target_c_code.write_line("   img_%s[i]->mem_size[0], img_%s[i]->mem_ptr[0].mem_type," % (desc, desc))
                             self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
                             self.target_c_code.write_close_brace()
-                else :
+                elif prm.type != Type.THRESHOLD :
                     self.target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr.target_ptr," % desc )
                     self.target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
                     self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
@@ -1012,7 +1064,11 @@ class KernelExportCode :
         for prm in self.kernel.params :
             desc = prm.name_lower + "_desc"
             if (Type.is_scalar_type(prm.type) is True) and prm.direction != Direction.INPUT :
-                self.target_c_code.write_line("%s->data.%s = %s_value;" % (desc, Type.get_scalar_obj_desc_data_name(prm.type), prm.name_lower))
+                if "invalid" != Type.get_scalar_obj_desc_data_name(prm.type):
+                    self.target_c_code.write_line("%s->data.%s = %s_value;" % (desc, Type.get_scalar_obj_desc_data_name(prm.type), prm.name_lower))
+                else :
+                    self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Modify 'scalar data type' below to be correct type >")
+                    self.target_c_code.write_line("/*%s->data.<scalar data type> = %s_value;*/" % (prm.name_lower, desc))
         self.target_c_code.write_newline()
 
         self.target_c_code.write_close_brace()
@@ -1190,7 +1246,7 @@ class KernelExportCode :
                         if prm.type == Type.IMAGE : #TODO: test with other types
                             self.bam_target_c_code.write_line("%s->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(" % desc )
                             self.bam_target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_type);" % (desc, desc))
-                        else:
+                        elif prm.type != Type.THRESHOLD :
                             self.bam_target_c_code.write_line("%s->mem_ptr.target_ptr = tivxMemShared2TargetPtr(" % desc )
                             self.bam_target_c_code.write_line("  %s->mem_ptr.shared_ptr, %s->mem_ptr.mem_type);" % (desc, desc))
                 if prm.state is ParamState.OPTIONAL:
@@ -1216,7 +1272,7 @@ class KernelExportCode :
                         self.bam_target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr[0].target_ptr," % desc )
                         self.bam_target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
                         self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    else:
+                    elif prm.type != Type.THRESHOLD :
                         self.bam_target_c_code.write_line("tivxMemBufferMap(%s->mem_ptr.target_ptr," % desc )
                         self.bam_target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
                         self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
@@ -1232,7 +1288,11 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.bam_target_c_code.write_line("if( %s != NULL)" % desc)
                     self.bam_target_c_code.write_open_brace()
-                self.bam_target_c_code.write_line("%s_value = %s->data.%s;" % (prm.name_lower, desc, Type.get_scalar_obj_desc_data_name(prm.type)))
+                if "invalid" != Type.get_scalar_obj_desc_data_name(prm.type):
+                    self.bam_target_c_code.write_line("%s_value = %s->data.%s;" % (prm.name_lower, desc, Type.get_scalar_obj_desc_data_name(prm.type)))
+                else :
+                    self.bam_target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Modify 'scalar data type' below to be correct type >")
+                    self.bam_target_c_code.write_line("/*%s_value = %s->data.<scalar data type>;*/" % (prm.name_lower, desc))
                 if prm.state is ParamState.OPTIONAL:
                     self.bam_target_c_code.write_close_brace()
         self.bam_target_c_code.write_newline()
@@ -1263,7 +1323,7 @@ class KernelExportCode :
                         self.bam_target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr[0].target_ptr," % desc )
                         self.bam_target_c_code.write_line("   %s->mem_size[0], %s->mem_ptr[0].mem_type," % (desc, desc))
                         self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    else:
+                    elif prm.type != Type.THRESHOLD :
                         self.bam_target_c_code.write_line("tivxMemBufferUnmap(%s->mem_ptr.target_ptr," % desc )
                         self.bam_target_c_code.write_line("   %s->mem_size, %s->mem_ptr.mem_type," % (desc, desc))
                         self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
@@ -1716,7 +1776,10 @@ class KernelExportCode :
             self.include_customer_nodes_code.write_line(" */")
             self.include_customer_nodes_code.write_line("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,")
             for prm in self.kernel.params[:-1] :
-                self.include_customer_nodes_code.write_line("%-37s %-20s %s," % ("", prm.type.get_vx_name(), prm.name_lower))
+                if Type.is_scalar_type(prm.type) :
+                    self.include_customer_nodes_code.write_line("%-37s %-20s %s," % ("", "vx_scalar", prm.name_lower))
+                else :
+                    self.include_customer_nodes_code.write_line("%-37s %-20s %s," % ("", prm.type.get_vx_name(), prm.name_lower))
             self.include_customer_nodes_code.write_line("%-37s %-20s %s);" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
             self.include_customer_nodes_code.write_newline()
             self.include_customer_nodes_code.write_extern_c_bottom()
@@ -1776,7 +1839,10 @@ class KernelExportCode :
             self.host_node_api_code.write_newline()
             self.host_node_api_code.write_line("VX_API_ENTRY vx_node VX_API_CALL tivx" + self.kernel.name_camel + "Node(vx_graph graph,")
             for prm in self.kernel.params[:-1] :
-                self.host_node_api_code.write_line("%-37s %-20s %s," % ("", prm.type.get_vx_name(), prm.name_lower))
+                if Type.is_scalar_type(prm.type) :
+                    self.host_node_api_code.write_line("%-37s %-20s %s," % ("", "vx_scalar", prm.name_lower))
+                else :
+                    self.host_node_api_code.write_line("%-37s %-20s %s," % ("", prm.type.get_vx_name(), prm.name_lower))
             self.host_node_api_code.write_line("%-37s %-20s %s)" % ("", self.kernel.params[-1].type.get_vx_name(), self.kernel.params[-1].name_lower))
             self.host_node_api_code.write_open_brace()
             self.host_node_api_code.write_line("vx_reference prms[] = {")

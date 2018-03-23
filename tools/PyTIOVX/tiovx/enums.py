@@ -184,9 +184,9 @@ class Type(Enum):
             if type is Type.CHAR :
                 return "chr"
             if type is Type.INT8 :
-                return "s8"
+                return "s08"
             if type is Type.UINT8 :
-                return "u8"
+                return "u08"
             if type is Type.INT16:
                 return "s16"
             if type is Type.UINT16:
@@ -349,7 +349,10 @@ class Cpu(Enum) :
     IPU2    = 11
 
     def get_vx_enum_name(type) :
-        return "TIVX_CPU_ID_" + type.name
+        if type.name == "IPU2" :
+            return "TIVX_CPU_ID_IPU2_0"
+        else :
+            return "TIVX_CPU_ID_" + type.name
 
 
 ## Target on which to execute a node (TIOVX equivalent = TIVX_TARGET_xxxx)
