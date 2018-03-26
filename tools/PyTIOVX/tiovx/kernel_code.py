@@ -154,8 +154,8 @@ class KernelExportCode :
     # \param include_filename [in] [optional] Name used for kernel include path; Default="extvx"
     # \param module           [in] [optional] Module name for the kernel; Default="ext1"
     # \param core             [in] [optional] Name of the core for the kernel to run on; Default="c66"
-    # \param env_var          [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_KERNEL_PATH"
-    def __init__(self, include_subpath="TI", include_filename="extvx", module="ext1", core="c66", env_var='CUSTOM_KERNEL_PATH') :
+    # \param env_var          [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH"
+    def __init__(self, include_subpath="TI", include_filename="extvx", module="ext1", core="c66", env_var='CUSTOM_APPLICATON_PATH') :
         self.company = include_subpath
         self.top_header_name = include_filename
         self.module = module
