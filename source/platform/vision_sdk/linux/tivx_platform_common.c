@@ -102,6 +102,16 @@ void tivxPlatformSystemLock(vx_enum lock_id)
     if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
     {
         tivxMutexLock(g_tivx_platform_info.g_platform_lock[(uint32_t)lock_id]);
+
+        if(lock_id==TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+        {
+            /* for data ref queue lock, need to take a multi processor lock,
+             * since multiple CPUs could be trying to queue/dequeue from the same
+             * data ref queue.
+             * This lock in this platform is implemented via HW spinlock
+             */
+            System_openvxHwSpinLockAcquire(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+        }
     }
 }
 
@@ -109,6 +119,12 @@ void tivxPlatformSystemUnlock(vx_enum lock_id)
 {
     if ((uint32_t)lock_id < TIVX_PLATFORM_LOCK_MAX)
     {
+        if(lock_id==TIVX_PLATFORM_LOCK_DATA_REF_QUEUE)
+        {
+            /* release the lock taken during tivxPlatformSystemLock */
+            System_openvxHwSpinLockRelease(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE_HW_SPIN_LOCK_ID);
+        }
+
         tivxMutexUnlock(g_tivx_platform_info.g_platform_lock[
             (uint32_t)lock_id]);
     }

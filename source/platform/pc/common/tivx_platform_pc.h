@@ -116,8 +116,8 @@ typedef enum _tivx_target_id_e {
  */
 #define TIVX_TARGET_INFO                                                       \
 {                                                                              \
-    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU2},                                   \
-    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU3},                                   \
+    {TIVX_TARGET_DSP1, TIVX_TARGET_ID_CPU1},                                   \
+    {TIVX_TARGET_DSP2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_EVE1, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_EVE2, TIVX_TARGET_ID_CPU1},                                   \
     {TIVX_TARGET_EVE3, TIVX_TARGET_ID_CPU1},                                   \

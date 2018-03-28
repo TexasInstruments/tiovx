@@ -22,6 +22,7 @@ void tivxInit(void)
     tivx_set_debug_zone(VX_ZONE_INIT);
     tivx_set_debug_zone(VX_ZONE_ERROR);
     tivx_set_debug_zone(VX_ZONE_WARNING);
+    tivx_clr_debug_zone(VX_ZONE_INFO);
 
     /* Initialize platform */
     tivxPlatformInit();
