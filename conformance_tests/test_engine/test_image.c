@@ -18,6 +18,7 @@
 #include "test.h"
 #include "test_bmp.h"
 
+#include <TI/tivx.h>
 #include <VX/vx.h>
 #include <string.h>
 
@@ -29,6 +30,8 @@ uint32_t ct_image_bits_per_pixel(vx_df_image format)
     {
         case VX_DF_IMAGE_U8:
             return 8 * 1;
+        case TIVX_DF_IMAGE_P12:
+            return 12;
         case VX_DF_IMAGE_U16:
         case VX_DF_IMAGE_S16:
         case VX_DF_IMAGE_UYVY:
