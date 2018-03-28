@@ -79,7 +79,7 @@ extern "C" {
 /*! \brief Maximum possible modules in system \
  * \ingroup group_vx_module_cfg
  */
-#define TIVX_MODULE_MAX        (8u)
+#define TIVX_MODULE_MAX        (16u)
 
 /*! \brief Maximum possible name of a module in system
  * \ingroup group_vx_module_cfg
