@@ -570,6 +570,81 @@ TEST(tivxBoundary, testMapImage)
     VX_CALL(vxReleaseImage(&image));
 }
 
+static
+void* own_alloc_init_data_items(vx_enum item_type, vx_size num_items)
+{
+    vx_size i;
+    vx_size item_size;
+    void* p = 0;
+
+    switch (item_type)
+    {
+    case VX_TYPE_KEYPOINT:          item_size = sizeof(vx_keypoint_t); break;
+
+    default:
+        break;
+    }
+
+    p = ct_alloc_mem(num_items * item_size);
+    if (NULL == p)
+        return p;
+
+    for (i = 0; i < num_items; i++)
+    {
+        switch (item_type)
+        {
+
+        case VX_TYPE_KEYPOINT:
+            {
+                vx_keypoint_t kp = { (vx_int32)i, (vx_int32)(num_items - i), (1.0f / i), (1.0f / i), (1.0f / i), (vx_int32)i, (1.0f / i) };
+                ((vx_keypoint_t*)p)[i] = kp;
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+    return p;
+}
+
+TEST(tivxBoundary, testMapArray)
+{
+    int i;
+    vx_context context = context_->vx_context_;
+    vx_array array;
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size num_items = 10;
+    vx_size item_size = 0;
+    void* array_items = 0;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, 10), VX_TYPE_ARRAY);
+
+    /* 3. check if array's actual item_size corresponds to requested item_type size */
+    VX_CALL(vxQueryArray(array, VX_ARRAY_ITEMSIZE, &item_size, sizeof(item_size)));
+
+    array_items = own_alloc_init_data_items(item_type, num_items);
+    ASSERT(NULL != array_items);
+
+    VX_CALL(vxAddArrayItems(array, num_items, array_items, item_size));
+
+    // Verifying that it is not restricted to max array maps as long as it frees memory in vxUnmapArrayRange
+    for (i = 0; i < 16+1; i++)
+    {
+        vx_size stride = 0;
+        void* ptr = 0;
+        vx_map_id map_id;
+        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+        VX_CALL(vxUnmapArrayRange(array, map_id));
+    }
+
+    VX_CALL(vxReleaseArray(&array));
+}
+
 TEST_WITH_ARG(tivxNegativeBoundary, negativeTestObjectArrayItems, Arg,
     PARAMETERS
 )
@@ -1113,7 +1188,8 @@ TESTCASE_TESTS(tivxBoundary,
         testObjectArrayItems,
         testVirtualObjectArrayItems,
         testContext,
-        testMapImage
+        testMapImage,
+        testMapArray
         )
 
 TESTCASE_TESTS(tivxNegativeBoundary,
