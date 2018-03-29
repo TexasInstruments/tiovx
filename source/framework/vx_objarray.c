@@ -104,8 +104,8 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                 }
                 else
                 {
-                    tivx_obj_desc_objarray_t *obj_desc =
-                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+                    tivx_obj_desc_object_array_t *obj_desc =
+                        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
                     obj_desc->item_type = exemplar->type;
                     obj_desc->num_items = count;
@@ -170,8 +170,8 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
                 }
                 else
                 {
-                    tivx_obj_desc_objarray_t *obj_desc =
-                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+                    tivx_obj_desc_object_array_t *obj_desc =
+                        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
                     obj_desc->item_type = exemplar->type;
                     obj_desc->num_items = count;
@@ -192,8 +192,8 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     vx_object_array objarr, vx_uint32 index)
 {
     vx_reference ref = NULL;
-    tivx_obj_desc_objarray_t *obj_desc =
-        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+    tivx_obj_desc_object_array_t *obj_desc =
+        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
     if ((ownIsValidSpecificReference(&objarr->base, VX_TYPE_OBJECT_ARRAY) ==
             vx_true_e) && (obj_desc != NULL) &&
@@ -227,8 +227,8 @@ vx_status VX_API_CALL vxQueryObjectArray(
             case VX_OBJECT_ARRAY_ITEMTYPE:
                 if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
                 {
-                    tivx_obj_desc_objarray_t *obj_desc =
-                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+                    tivx_obj_desc_object_array_t *obj_desc =
+                        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
                     *(vx_enum *)ptr = obj_desc->item_type;
                 }
@@ -241,8 +241,8 @@ vx_status VX_API_CALL vxQueryObjectArray(
             case VX_OBJECT_ARRAY_NUMITEMS:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    tivx_obj_desc_objarray_t *obj_desc =
-                        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+                    tivx_obj_desc_object_array_t *obj_desc =
+                        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
                     *(vx_size *)ptr = obj_desc->num_items;
                 }
@@ -267,8 +267,8 @@ static vx_status ownInitObjArrayFromObject(
 {
     vx_status status = VX_SUCCESS;
     vx_reference ref;
-    tivx_obj_desc_objarray_t *obj_desc =
-        (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+    tivx_obj_desc_object_array_t *obj_desc =
+        (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
     vx_uint32 num_items, i;
 
     num_items = obj_desc->num_items;
@@ -306,8 +306,8 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
 
     if (vxGetStatus(ref) == VX_SUCCESS)
     {
-        tivx_obj_desc_objarray_t *obj_desc =
-            (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+        tivx_obj_desc_object_array_t *obj_desc =
+            (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
         objarr->ref[i] = ref;
         obj_desc->obj_desc_id[i] =
@@ -355,8 +355,8 @@ static vx_status ownDestructObjArray(vx_reference ref)
     {
         if(objarr->base.obj_desc!=NULL)
         {
-            tivx_obj_desc_objarray_t *obj_desc =
-                (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+            tivx_obj_desc_object_array_t *obj_desc =
+                (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
 
             ownReleaseRefFromObjArray(objarr, obj_desc->num_items);
 
@@ -371,14 +371,14 @@ static vx_status ownAllocObjectArrayBuffer(vx_reference objarr_ref)
     vx_status status = VX_SUCCESS;
     vx_uint32 i=0;
     vx_object_array objarr = (vx_object_array)objarr_ref;
-    tivx_obj_desc_objarray_t *obj_desc = NULL;
+    tivx_obj_desc_object_array_t *obj_desc = NULL;
     vx_reference ref;
 
     if(objarr->base.type == VX_TYPE_OBJECT_ARRAY)
     {
         if(objarr->base.obj_desc != NULL)
         {
-            obj_desc = (tivx_obj_desc_objarray_t *)objarr->base.obj_desc;
+            obj_desc = (tivx_obj_desc_object_array_t *)objarr->base.obj_desc;
             for (i = 0u; i < obj_desc->num_items; i++)
             {
                 ref = objarr->ref[i];

@@ -696,7 +696,7 @@ typedef struct _tivx_obj_desc_array
  *
  * \ingroup group_tivx_obj_desc
  */
-typedef struct _tivx_obj_desc_objarray
+typedef struct _tivx_obj_desc_object_array
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
@@ -709,7 +709,7 @@ typedef struct _tivx_obj_desc_objarray
 
     /*! \brief array of descriptor ids of the objects */
     uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_ITEMS];
-} tivx_obj_desc_objarray_t;
+} tivx_obj_desc_object_array_t;
 
 /*!
  * \brief Scalar object descriptor as placed in shared memory

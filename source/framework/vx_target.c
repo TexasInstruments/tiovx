@@ -306,7 +306,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                     if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_OBJARRAY)
                     {
                         params[i] = tivxObjDescGet(
-                            ((tivx_obj_desc_objarray_t*)parent_obj_desc[i])->
+                            ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
                                 obj_desc_id[cnt]);
                     }
                     else
@@ -556,7 +556,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                         if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_OBJARRAY)
                         {
                             params[i] = tivxObjDescGet(
-                                ((tivx_obj_desc_objarray_t*)parent_obj_desc[i])->
+                                ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
                                     obj_desc_id[cnt]);
                         }
                         else
