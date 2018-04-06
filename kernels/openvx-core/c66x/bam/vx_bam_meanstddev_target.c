@@ -144,9 +144,6 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-
         tivxSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
@@ -164,9 +161,6 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
 
         sc[0U]->data.f32 = mean_val;
         sc[1U]->data.f32 = stddev_val;
-
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
     }
 
     return (status);

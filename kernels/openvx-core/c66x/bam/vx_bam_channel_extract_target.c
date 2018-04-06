@@ -486,9 +486,6 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
         src->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[plane_idx].shared_ptr,
             src->mem_ptr[plane_idx].mem_type);
-        tivxMemBufferMap(src->mem_ptr[plane_idx].target_ptr,
-            src->mem_size[plane_idx], src->mem_ptr[plane_idx].mem_type,
-            VX_READ_ONLY);
         src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[plane_idx].target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[plane_idx]));
@@ -497,8 +494,6 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_READ_ONLY);
         dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
@@ -508,12 +503,6 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
         tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
-
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        tivxMemBufferUnmap(src->mem_ptr[plane_idx].target_ptr,
-            src->mem_size[plane_idx], src->mem_ptr[plane_idx].mem_type,
-            VX_READ_ONLY);
     }
     else
     {

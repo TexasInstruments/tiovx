@@ -129,20 +129,14 @@ static vx_status VX_CALLBACK tivxKernelBitwiseOrProcess(
 
         src0->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
-            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
 
         src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
-            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
 
         tivxSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src0_addr;
@@ -151,13 +145,6 @@ static vx_status VX_CALLBACK tivxKernelBitwiseOrProcess(
         tivxBamUpdatePointers(prms->graph_handle, 2U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
-
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        tivxMemBufferUnmap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
-            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
-            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
     }
     else
     {

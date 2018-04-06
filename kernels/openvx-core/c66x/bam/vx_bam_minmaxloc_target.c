@@ -156,9 +156,6 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-
         tivxSetPointerLocation(src, &src_addr);
 
         img_ptrs[0] = src_addr;
@@ -240,8 +237,6 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
             }
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         if (NULL != arr[0u])
         {
             tivxMemBufferUnmap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,

@@ -142,11 +142,6 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
         dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
-
         tivxSetPointerLocation(src, &src_addr);
         tivxSetPointerLocation(dst, &dst_addr);
 
@@ -173,11 +168,6 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
             hist_params.minValue);
 
         status  = tivxBamProcessGraph(prms->lut_graph_handle);
-
-        tivxMemBufferUnmap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
     }
 
     return (status);

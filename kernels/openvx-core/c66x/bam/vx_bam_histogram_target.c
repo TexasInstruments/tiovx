@@ -133,8 +133,6 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
         dst->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxMemBufferMap(dst->mem_ptr.target_ptr, dst->mem_size,
             dst->mem_ptr.mem_type, VX_WRITE_ONLY);
 
@@ -149,8 +147,6 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(dst->mem_ptr.target_ptr, dst->mem_size,
             dst->mem_ptr.mem_type, VX_WRITE_ONLY);
     }

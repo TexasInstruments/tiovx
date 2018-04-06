@@ -195,8 +195,6 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
         arr->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
             arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxMemBufferMap(arr->mem_ptr.target_ptr, arr->mem_size,
             arr->mem_ptr.mem_type, VX_WRITE_ONLY);
 
@@ -274,9 +272,6 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
                 kp ++;
             }
         }
-
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(arr->mem_ptr.target_ptr, arr->mem_size,
             arr->mem_ptr.mem_type, VX_WRITE_ONLY);
     }

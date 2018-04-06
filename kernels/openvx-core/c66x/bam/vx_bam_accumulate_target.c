@@ -128,14 +128,10 @@ static vx_status VX_CALLBACK tivxKernelAccumulateProcess(
 
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxSetPointerLocation(src, &src_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_READ_AND_WRITE);
         tivxSetPointerLocation(dst, &dst_addr);
 
         img_ptrs[0] = src_addr;
@@ -144,11 +140,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateProcess(
         tivxBamUpdatePointers(prms->graph_handle, 2U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
-
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_READ_AND_WRITE);
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
     }
     else
     {

@@ -151,12 +151,6 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
@@ -218,11 +212,6 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
         {
             status = VX_FAILURE;
         }
-
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
     }
 
     return (status);

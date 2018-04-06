@@ -146,18 +146,12 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-
         tivxSetPointerLocation(src, &src_addr);
 
         if(dstx != NULL)
         {
             dstx->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
                 dstx->mem_ptr[0].shared_ptr, dstx->mem_ptr[0].mem_type);
-
-            tivxMemBufferMap(dstx->mem_ptr[0].target_ptr, dstx->mem_size[0],
-                dstx->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
             tivxSetPointerLocation(dstx, (uint8_t **)&dstx_addr);
         }
@@ -166,9 +160,6 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         {
             dsty->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
                 dsty->mem_ptr[0].shared_ptr, dsty->mem_ptr[0].mem_type);
-
-            tivxMemBufferMap(dsty->mem_ptr[0].target_ptr, dsty->mem_size[0],
-                dsty->mem_ptr[0].mem_type, VX_WRITE_ONLY);
 
             tivxSetPointerLocation(dsty, (uint8_t **)&dsty_addr);
         }
@@ -203,21 +194,6 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
-
-        if(dstx != NULL)
-        {
-            tivxMemBufferUnmap(dstx->mem_ptr[0].target_ptr, dstx->mem_size[0],
-                dstx->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        }
-
-        if(dsty != NULL)
-        {
-            tivxMemBufferUnmap(dsty->mem_ptr[0].target_ptr, dsty->mem_size[0],
-                dsty->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        }
-
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
 
     }
     else

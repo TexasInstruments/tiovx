@@ -149,11 +149,6 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
         dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
-
         /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
@@ -208,11 +203,6 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
             status  = tivxBamProcessGraph(prms->graph_handleScale);
         }
 #endif
-
-        tivxMemBufferUnmap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
     }
 
     return (status);

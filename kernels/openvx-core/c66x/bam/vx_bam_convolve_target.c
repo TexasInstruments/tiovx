@@ -135,12 +135,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         conv->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
             conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_type);
 
-        tivxMemBufferMap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
         tivxMemBufferMap(conv->mem_ptr.target_ptr, conv->mem_size,
             conv->mem_ptr.mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
 
         tivxSetPointerLocation(src, &src_addr);
         tivxSetPointerLocation(dst, &dst_addr);
@@ -151,12 +147,8 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 
-        tivxMemBufferUnmap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
         tivxMemBufferUnmap(conv->mem_ptr.target_ptr, conv->mem_size,
             conv->mem_ptr.mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
     }
 
     return (status);

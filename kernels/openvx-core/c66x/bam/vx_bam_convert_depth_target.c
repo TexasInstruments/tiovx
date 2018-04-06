@@ -135,14 +135,10 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
 
         src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxSetPointerLocation(src, &src_addr);
 
         dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxSetPointerLocation(dst, &dst_addr);
 
         if (VX_DF_IMAGE_S16 == dst->format)
@@ -176,11 +172,6 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
 
             status  = tivxBamProcessGraph(prms->graph_handle);
         }
-
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
     }
     else
     {

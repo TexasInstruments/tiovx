@@ -144,40 +144,27 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
         /* Get the correct offset of the images from the valid roi parameter */
         src0->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
-            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxSetPointerLocation(src0, &src0_addr);
 
         src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
             src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
-            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
         tivxSetPointerLocation(src1, &src1_addr);
         if( src2 != NULL)
         {
             src2->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
               src2->mem_ptr[0].shared_ptr, src2->mem_ptr[0].mem_type);
-            tivxMemBufferMap(src2->mem_ptr[0].target_ptr,
-               src2->mem_size[0], src2->mem_ptr[0].mem_type,
-                VX_READ_ONLY);
             tivxSetPointerLocation(src2, &src2_addr);
         }
         if( src3 != NULL)
         {
             src3->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
               src3->mem_ptr[0].shared_ptr, src3->mem_ptr[0].mem_type);
-            tivxMemBufferMap(src3->mem_ptr[0].target_ptr,
-               src3->mem_size[0], src3->mem_ptr[0].mem_type,
-                VX_READ_ONLY);
             tivxSetPointerLocation(src3, &src3_addr);
         }
         for(plane_idx=0; plane_idx<dst->planes; plane_idx++)
         {
             dst->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(
               dst->mem_ptr[plane_idx].shared_ptr, dst->mem_ptr[plane_idx].mem_type);
-            tivxMemBufferMap(dst->mem_ptr[plane_idx].target_ptr,
-               dst->mem_size[plane_idx], dst->mem_ptr[plane_idx].mem_type,
-                VX_WRITE_ONLY);
         }
         tivxSetPointerLocation(dst, (uint8_t**)&dst_addr);
 
@@ -262,29 +249,6 @@ static vx_status VX_CALLBACK tivxKernelChannelCombineProcess(
             tivxBamUpdatePointers(prms->graph_handle, 2U, 1U, img_ptrs);
 
             status  = tivxBamProcessGraph(prms->graph_handle);
-        }
-
-        tivxMemBufferUnmap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
-            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
-            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
-        if( src2 != NULL)
-        {
-            tivxMemBufferUnmap(src2->mem_ptr[0].target_ptr,
-               src2->mem_size[0], src2->mem_ptr[0].mem_type,
-                VX_READ_ONLY);
-        }
-        if( NULL != src3)
-        {
-            tivxMemBufferUnmap(src3->mem_ptr[0].target_ptr,
-               src3->mem_size[0], src3->mem_ptr[0].mem_type,
-                VX_READ_ONLY);
-        }
-        for(plane_idx=0; plane_idx<dst->planes; plane_idx++)
-        {
-            tivxMemBufferUnmap(dst->mem_ptr[plane_idx].target_ptr,
-               dst->mem_size[plane_idx], dst->mem_ptr[plane_idx].mem_type,
-                VX_WRITE_ONLY);
         }
     }
     else
