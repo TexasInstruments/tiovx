@@ -80,35 +80,35 @@ extern "C" {
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_CONVERT_DEPTH_IN_IMG_IDX      (0U)
 
 /*!
  * \brief Index of the output image
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_CONVERT_DEPTH_OUT_IMG_IDX      (1U)
 
 /*!
  * \brief Index of scalar input
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_CONVERT_DEPTH_IN0_SCALAR_IDX    (2U)
 
 /*!
  * \brief Index of scalar input
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_CONVERT_DEPTH_IN1_SCALAR_IDX    (3U)
 
 /*!
  * \brief Max parameters supported by the kernel
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_CONVERT_DEPTH_MAX_PARAMS       (4U)
 

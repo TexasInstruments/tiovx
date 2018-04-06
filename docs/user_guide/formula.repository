@@ -1,0 +1,7 @@
+\form#0:$ [0,2^{8}-1] $
+\form#1:$ [0,2^{12}-1] $
+\form#2:$ f $
+\form#3:$ scale = \frac{unity}{f} $
+\form#4:$ scale = unity * f $
+\form#5:$ unity $
+\form#6:$ \frac{1}{\root 4 \of {2}} $

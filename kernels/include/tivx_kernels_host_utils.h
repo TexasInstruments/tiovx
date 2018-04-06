@@ -84,11 +84,13 @@ typedef struct {
 
 /*!
  * \brief Publishes the kernels list on the host side
+ * \ingroup group_tivx_ext_host_kernel
  */
 vx_status tivxPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Unpublishes the kernels list on the host side
+ * \ingroup group_tivx_ext_host_kernel
  */
 vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel_list, uint32_t num_kernels);
 
@@ -96,6 +98,8 @@ vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel
 /*!
  * \brief Maximum number of images (input/output) supported in
  *        calculating valid rectangles
+ *
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE        (5u)
 
@@ -118,19 +122,36 @@ typedef struct
     vx_enum border_mode;
 } tivxKernelValidRectParams;
 
-
+/*!
+ * \ingroup group_tivx_ext_host_kernel
+ */
 vx_status tivxKernelValidateParametersNotNull(const vx_reference *parameters, vx_uint8 maxParams);
 
+/*!
+ * \ingroup group_tivx_ext_host_kernel
+ */
 vx_status tivxKernelValidateInputSize(vx_uint32 inputWidth0, vx_uint32 inputWidth1,
                             vx_uint32 inputHeight0, vx_uint32 inputHeight1);
 
+/*!
+ * \ingroup group_tivx_ext_host_kernel
+ */
 vx_status tivxKernelValidatePossibleFormat(vx_df_image inputFormat, vx_df_image possibleFormat);
 
+/*!
+ * \ingroup group_tivx_ext_host_kernel
+ */
 vx_status tivxKernelValidateScalarType(vx_enum scalarType, vx_enum expectedScalarType);
 
+/*!
+ * \ingroup group_tivx_ext_host_kernel
+ */
 vx_status tivxKernelValidateOutputSize(vx_uint32 expectedWidth, vx_uint32 outputWidth, vx_uint32 expectedHeight,
                              vx_uint32 outputHeight, vx_image outputImage);
 
+/*!
+ * \ingroup group_tivx_ext_host_kernel
+ */
 void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image fmt, vx_uint32 width, vx_uint32 height);
 
 /*!
@@ -138,6 +159,8 @@ void tivxKernelSetMetas(vx_meta_format *metas, vx_uint8 maxParams, vx_df_image f
  *        Currently the entire structure is memset to 0
  *
  * \param prms [in] Valid Rectange Parameters
+ *
+ * \ingroup group_tivx_ext_host_kernel
  */
 static inline void tivxKernelValidRectParams_init(
     tivxKernelValidRectParams *prms)
@@ -155,6 +178,8 @@ static inline void tivxKernelValidRectParams_init(
  *
  * \param status [in,out] status variable
  * \param status_temp [in] temporary status variable
+ *
+ * \ingroup group_tivx_ext_host_kernel
  */
 static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
 {
@@ -177,6 +202,8 @@ static inline void tivxCheckStatus(vx_status *status, vx_status status_temp)
  *        This is utility API.
  *
  * \param prms [in] Valid Rectange Parameters
+ *
+ * \ingroup group_tivx_ext_host_kernel
  */
 vx_status tivxKernelConfigValidRect(tivxKernelValidRectParams *prms);
 

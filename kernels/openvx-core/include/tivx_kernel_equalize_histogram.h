@@ -80,21 +80,21 @@ extern "C" {
 /*!
  * \brief Index of the input image for integral Image operation
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_EQUALIZE_HISTOGRAM_IN_IMG_IDX          (0U)
 
 /*!
  * \brief Index of the output image for integral Image operation
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUT_IMG_IDX         (1U)
 
 /*!
  * \brief Max Parameter for bitwise integral Image operation
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_EQUALIZE_HISTOGRAM_MAX_PARAMS           (2U)
 

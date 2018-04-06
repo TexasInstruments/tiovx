@@ -151,7 +151,11 @@ typedef struct _tivx_shared_mem_ptr_t {
 
 } tivx_shared_mem_ptr_t;
 
-
+/*!
+ * \brief Structure describing a memory stats pointer
+ *
+ * \ingroup group_tivx_mem
+ */
 typedef struct _tivx_mem_stats_t {
 
     /*! \brief Total size of memory segment

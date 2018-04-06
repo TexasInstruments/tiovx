@@ -80,21 +80,21 @@ extern "C" {
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_G_PYD_IN_IMG_IDX            (0U)
 
 /*!
  * \brief Index of the output image
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_G_PYD_OUT_PYT_IDX           (1U)
 
 /*!
  * \brief Max Params supported by gaussian pyramid kernel
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_G_PYD_MAX_PARAMS            (2U)
 

@@ -27,7 +27,7 @@
 <div class="contents">
 <h1>Object Descriptor APIs<br/>
 <small>
-[<a class="el" href="group__group__tivx__api.html">1: TIOVX Interface Modules</a>]</small>
+[<a class="el" href="group__group__tivx__api.html">1: TIOVX External APIs</a>]</small>
 </h1><table border="0" cellpadding="0" cellspacing="0">
 <tr><td colspan="2"><h2>Data Structures</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__remap__point__t.html">tivx_remap_point_t</a></td></tr>
@@ -54,8 +54,8 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">distribution object descriptor as placed in shared memory  <a href="structtivx__obj__desc__distribution__t.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__array__t.html">tivx_obj_desc_array_t</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">array object descriptor as placed in shared memory  <a href="structtivx__obj__desc__array__t.html#_details">More...</a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__objarray__t.html">tivx_obj_desc_objarray_t</a></td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">object array object descriptor as placed in shared memory  <a href="structtivx__obj__desc__objarray__t.html#_details">More...</a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__object__array__t.html">tivx_obj_desc_object_array_t</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">object array object descriptor as placed in shared memory  <a href="structtivx__obj__desc__object__array__t.html#_details">More...</a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">struct &nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__scalar__t.html">tivx_obj_desc_scalar_t</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Scalar object descriptor as placed in shared memory.  <a href="structtivx__obj__desc__scalar__t.html#_details">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2>Enumerations</h2></td></tr>
@@ -77,6 +77,10 @@
 <br/>
 &nbsp;&nbsp;<a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d">TIVX_OBJ_DESC_OBJARRAY</a> =  0xC, 
 <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8690f05f9cd447fffa74bc7133759f62">TIVX_OBJ_DESC_KERNEL_NAME</a> =  0xD, 
+<a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ad71e4afe6b079dd7732594b45aa4e525">TIVX_OBJ_DESC_QUEUE</a> =  0xE, 
+<a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec">TIVX_OBJ_DESC_DATA_REF_Q</a> =  0xF, 
+<br/>
+&nbsp;&nbsp;<a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154">TIVX_OBJ_DESC_GRAPH</a> =  0x10, 
 <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f">TIVX_OBJ_DESC_INVALID</a> =  0xFFFFu
 <br/>
  }</td></tr>
@@ -95,6 +99,14 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><p>Method by which image is created. </p>
  <a href="group__group__tivx__obj__desc.html#ga25fa81b14d1e21751503d0b836ff5d77">More...</a><br/></td></tr>
 <tr><td colspan="2"><h2>Defines</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#gaa345cc795baa95e1d5ff39694700ad87">TIVX_GRAPH_MAX_NODES</a>&nbsp;&nbsp;&nbsp;(32u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Max possible nodes in graph.  <a href="#gaa345cc795baa95e1d5ff39694700ad87"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#gae5d32d340ee632f0c72e0a757fbdf0d6">TIVX_GRAPH_MAX_PIPELINE_DEPTH</a>&nbsp;&nbsp;&nbsp;(8u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Max possible pipeline depth of a graph.  <a href="#gae5d32d340ee632f0c72e0a757fbdf0d6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293">TIVX_NODE_MAX_REPLICATE</a>&nbsp;&nbsp;&nbsp;(32u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Max number of replicated nodes.  <a href="#ga5851041910fe499bd7839500a534a293"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#gad862cb4bc5aa68f2856c1e76b0d4b744">TIVX_REF_FLAG_LOG_RT_TRACE</a>&nbsp;&nbsp;&nbsp;(0x00000001u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Flag to indicate if run-time trace should be logged.  <a href="#gad862cb4bc5aa68f2856c1e76b0d4b744"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#ga412e9ff53c1a69e16a33ac511366f742">TIVX_NODE_FLAG_IS_REPLICATED</a>&nbsp;&nbsp;&nbsp;(0x00000001u)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Flag to indicate if node is replicated.  <a href="#ga412e9ff53c1a69e16a33ac511366f742"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#gaf7ae2fec33c7997a3106f061624d9add">TIVX_NODE_FLAG_IS_EXECUTED</a>&nbsp;&nbsp;&nbsp;(0x00000002u)</td></tr>
@@ -103,12 +115,72 @@
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Flag to indicate if user callback is requested after node complete.  <a href="#ga2f5e855e1a88921989451ebf30b70778"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#ga4a01ab216dbd031e89a5b4367bb33881">TIVX_NODE_FLAG_IS_TARGET_KERNEL</a>&nbsp;&nbsp;&nbsp;(0x00000008u)</td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Flag to indicate if kernel associated with this node is a user kernel or target kernel.  <a href="#ga4a01ab216dbd031e89a5b4367bb33881"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#gaa345cc795baa95e1d5ff39694700ad87">TIVX_GRAPH_MAX_NODES</a>&nbsp;&nbsp;&nbsp;(32u)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Max possible nodes in graph.  <a href="#gaa345cc795baa95e1d5ff39694700ad87"></a><br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293">TIVX_NODE_MAX_REPLICATE</a>&nbsp;&nbsp;&nbsp;(32u)</td></tr>
-<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Max number of replicated nodes.  <a href="#ga5851041910fe499bd7839500a534a293"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#ga262f17dda73a487c34a1f4db86dae51d">TIVX_NODE_OBJ_DESC_STATE_IDLE</a>&nbsp;&nbsp;&nbsp;(0x0u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">State of a node object descriptor to indicate it is IDLE.  <a href="#ga262f17dda73a487c34a1f4db86dae51d"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">#define&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc.html#ga089eba87daffa24b751335adec623d07">TIVX_NODE_OBJ_DESC_STATE_BLOCKED</a>&nbsp;&nbsp;&nbsp;(0x1u)</td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">State of a node object descriptor to indicate it is BLOCKED.  <a href="#ga089eba87daffa24b751335adec623d07"></a><br/></td></tr>
 </table>
 <hr/><h2>Define Documentation</h2>
+<a class="anchor" id="gaa345cc795baa95e1d5ff39694700ad87"></a><!-- doxytag: member="tivx_config.h::TIVX_GRAPH_MAX_NODES" ref="gaa345cc795baa95e1d5ff39694700ad87" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TIVX_GRAPH_MAX_NODES&nbsp;&nbsp;&nbsp;(32u)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Max possible nodes in graph. </p>
+
+</div>
+</div>
+<a class="anchor" id="gae5d32d340ee632f0c72e0a757fbdf0d6"></a><!-- doxytag: member="tivx_config.h::TIVX_GRAPH_MAX_PIPELINE_DEPTH" ref="gae5d32d340ee632f0c72e0a757fbdf0d6" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TIVX_GRAPH_MAX_PIPELINE_DEPTH&nbsp;&nbsp;&nbsp;(8u)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Max possible pipeline depth of a graph. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga5851041910fe499bd7839500a534a293"></a><!-- doxytag: member="tivx_config.h::TIVX_NODE_MAX_REPLICATE" ref="ga5851041910fe499bd7839500a534a293" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TIVX_NODE_MAX_REPLICATE&nbsp;&nbsp;&nbsp;(32u)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Max number of replicated nodes. </p>
+
+</div>
+</div>
+<a class="anchor" id="gad862cb4bc5aa68f2856c1e76b0d4b744"></a><!-- doxytag: member="tivx_obj_desc.h::TIVX_REF_FLAG_LOG_RT_TRACE" ref="gad862cb4bc5aa68f2856c1e76b0d4b744" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TIVX_REF_FLAG_LOG_RT_TRACE&nbsp;&nbsp;&nbsp;(0x00000001u)</td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Flag to indicate if run-time trace should be logged. </p>
+
+</div>
+</div>
 <a class="anchor" id="ga412e9ff53c1a69e16a33ac511366f742"></a><!-- doxytag: member="tivx_obj_desc.h::TIVX_NODE_FLAG_IS_REPLICATED" ref="ga412e9ff53c1a69e16a33ac511366f742" args="" -->
 <div class="memitem">
 <div class="memproto">
@@ -169,33 +241,34 @@
 
 </div>
 </div>
-<a class="anchor" id="gaa345cc795baa95e1d5ff39694700ad87"></a><!-- doxytag: member="tivx_obj_desc.h::TIVX_GRAPH_MAX_NODES" ref="gaa345cc795baa95e1d5ff39694700ad87" args="" -->
+<a class="anchor" id="ga262f17dda73a487c34a1f4db86dae51d"></a><!-- doxytag: member="tivx_obj_desc.h::TIVX_NODE_OBJ_DESC_STATE_IDLE" ref="ga262f17dda73a487c34a1f4db86dae51d" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define TIVX_GRAPH_MAX_NODES&nbsp;&nbsp;&nbsp;(32u)</td>
+          <td class="memname">#define TIVX_NODE_OBJ_DESC_STATE_IDLE&nbsp;&nbsp;&nbsp;(0x0u)</td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Max possible nodes in graph. </p>
+<p>State of a node object descriptor to indicate it is IDLE. </p>
 
 </div>
 </div>
-<a class="anchor" id="ga5851041910fe499bd7839500a534a293"></a><!-- doxytag: member="tivx_obj_desc.h::TIVX_NODE_MAX_REPLICATE" ref="ga5851041910fe499bd7839500a534a293" args="" -->
+<a class="anchor" id="ga089eba87daffa24b751335adec623d07"></a><!-- doxytag: member="tivx_obj_desc.h::TIVX_NODE_OBJ_DESC_STATE_BLOCKED" ref="ga089eba87daffa24b751335adec623d07" args="" -->
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define TIVX_NODE_MAX_REPLICATE&nbsp;&nbsp;&nbsp;(32u)</td>
+          <td class="memname">#define TIVX_NODE_OBJ_DESC_STATE_BLOCKED&nbsp;&nbsp;&nbsp;(0x1u)</td>
         </tr>
       </table>
 </div>
 <div class="memdoc">
 
-<p>Max number of replicated nodes. </p>
+<p>State of a node object descriptor to indicate it is BLOCKED. </p>
+<p>There are two condition for which a node can be block 1. prev node obj desc in pipeline is waiting to be executed 2. parameters could not be acquired </p>
 
 </div>
 </div>
@@ -254,6 +327,15 @@
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="gga4858f5eeb4edfc862b9b8b2039ed8109a8690f05f9cd447fffa74bc7133759f62"></a><!-- doxytag: member="TIVX_OBJ_DESC_KERNEL_NAME" ref="gga4858f5eeb4edfc862b9b8b2039ed8109a8690f05f9cd447fffa74bc7133759f62" args="" -->TIVX_OBJ_DESC_KERNEL_NAME</em>&nbsp;</td><td>
 <p>Object desciptor that has information related to kernel name. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga4858f5eeb4edfc862b9b8b2039ed8109ad71e4afe6b079dd7732594b45aa4e525"></a><!-- doxytag: member="TIVX_OBJ_DESC_QUEUE" ref="gga4858f5eeb4edfc862b9b8b2039ed8109ad71e4afe6b079dd7732594b45aa4e525" args="" -->TIVX_OBJ_DESC_QUEUE</em>&nbsp;</td><td>
+<p>Object desciptor queue. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec"></a><!-- doxytag: member="TIVX_OBJ_DESC_DATA_REF_Q" ref="gga4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec" args="" -->TIVX_OBJ_DESC_DATA_REF_Q</em>&nbsp;</td><td>
+<p>Object desciptor data ref queue. </p>
+</td></tr>
+<tr><td valign="top"><em><a class="anchor" id="gga4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154"></a><!-- doxytag: member="TIVX_OBJ_DESC_GRAPH" ref="gga4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154" args="" -->TIVX_OBJ_DESC_GRAPH</em>&nbsp;</td><td>
+<p>Object desciptor graph. </p>
 </td></tr>
 <tr><td valign="top"><em><a class="anchor" id="gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f"></a><!-- doxytag: member="TIVX_OBJ_DESC_INVALID" ref="gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f" args="" -->TIVX_OBJ_DESC_INVALID</em>&nbsp;</td><td>
 <p>Value of a invalid object descriptor. </p>

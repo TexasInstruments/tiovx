@@ -94,7 +94,7 @@
  *         or \ref tivxBamCreateHandleMultiNode, and can destroy it by
  *         calling \ref tivxBamDestroyHandle.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 typedef void *tivx_bam_graph_handle;
 
@@ -116,7 +116,7 @@ typedef void *tivx_bam_graph_handle;
  *         this structure should be filled as an input to the
  *         \ref tivxBamCreateHandleMultiNode function.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 typedef struct _tivx_bam_kernel_details
 {
@@ -147,7 +147,7 @@ typedef struct _tivx_bam_kernel_details
  *        This function should be called before any calls to
  *        tivxBamCreateHandleSingleNode or tivxBamCreateHandleMultiNode.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
                           void *wbuf_mem, uint32_t wbuf_size);
@@ -172,7 +172,7 @@ vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
  *        The user should pass the graph_handle to other functions in this
  *        wrapper related to BAM graph wrappers.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
                                         VXLIB_bufParams2D_t *buf_params[],
@@ -202,7 +202,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
  *        The user should pass the graph_handle to other functions in this
  *        wrapper related to BAM graph wrappers.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                                        uint32_t max_nodes,
@@ -225,7 +225,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
  *        Upon success, vx_status will be VX_SUCCESS.
  *        Upon failure, vx_status will be VX_FAILURE.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
                                 uint32_t num_inputs,
@@ -247,7 +247,7 @@ vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
  *        Upon success, vx_status will be VX_SUCCESS.
  *        Upon failure, vx_status will be VX_FAILURE.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
                              uint32_t node_id,
@@ -267,7 +267,7 @@ vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
  *        Upon success, vx_status will be VX_SUCCESS.
  *        Upon failure, vx_status will be VX_FAILURE.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle);
 
@@ -280,7 +280,7 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle);
  *        This is typically called if the user releases a graph or makes
  *        changes to the graph that require a reverification of the graph.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle);
 

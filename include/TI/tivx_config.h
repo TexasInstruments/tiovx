@@ -95,17 +95,17 @@ extern "C" {
 #define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32u)
 
 /*! \brief Max possible nodes in graph
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_GRAPH_MAX_NODES               (32u)
 
 /*! \brief Max possible pipeline depth of a graph
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (8u)
 
 /*! \brief Max number of replicated nodes
- * \ingroup group_tivx_obj_desc
+ * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_NODE_MAX_REPLICATE            (32u)
 
@@ -298,7 +298,7 @@ extern "C" {
  * \brief Max levels supported for the pyramid
  *        Note: If this macro is changed, change #gOrbScaleFactor also
  *              in vx_pyramid file.
- * \ingroup group_vx_pyramid
+ * \ingroup group_vx_pyramid_cfg
  */
 #define TIVX_PYRAMID_MAX_LEVELS_ORB             (17u)
 

@@ -59,6 +59,12 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>ownAddReferenceToContext()
 : <a class="el" href="group__group__vx__context.html#gad3df22b80d553454ff8bb9c080b0a72e">vx_context.h</a>
 </li>
+<li>ownCheckGraphCompleted()
+: <a class="el" href="group__group__vx__graph.html#gad6e0a2a9c916873547170186d4f03ae0">vx_graph.h</a>
+</li>
+<li>ownCheckNodeCompleted()
+: <a class="el" href="group__group__vx__node.html#gaf02478e398de8f3c27bd24b224788d85">vx_node.h</a>
+</li>
 <li>ownContextGetKernelRemoveLock()
 : <a class="el" href="group__group__vx__context.html#gac71a0ee04223ee7402c5fe4cf11772f2">vx_context.h</a>
 </li>
@@ -95,11 +101,47 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>ownGraphAddNode()
 : <a class="el" href="group__group__vx__graph.html#ga3cdd9e3db44e005e8f327756fd47d9dc">vx_graph.h</a>
 </li>
+<li>ownGraphAllocAndEnqueueObjDescForPipeline()
+: <a class="el" href="group__group__vx__graph.html#ga7f2b56be40845d86bbf4c40d2720ec67">vx_graph.h</a>
+</li>
+<li>ownGraphClearState()
+: <a class="el" href="group__group__vx__graph.html#ga284243f896741dacba5facf92be2a8fb">vx_graph.h</a>
+</li>
+<li>ownGraphCreateQueues()
+: <a class="el" href="group__group__vx__graph.html#gab451cc8cdf76f3702af058d7efa55ed9">vx_graph.h</a>
+</li>
+<li>ownGraphDeleteQueues()
+: <a class="el" href="group__group__vx__graph.html#gaff9c56d8749195e086b694ceee205d2b">vx_graph.h</a>
+</li>
+<li>ownGraphDoScheduleGraphAfterEnqueue()
+: <a class="el" href="group__group__vx__graph.html#ga7b606c52b87112cad75ef3903a7b903e">vx_graph.h</a>
+</li>
+<li>ownGraphFreeObjDesc()
+: <a class="el" href="group__group__vx__graph.html#gae3431482401f42af15be2fbac65637de">vx_graph.h</a>
+</li>
 <li>ownGraphGetFreeNodeIndex()
 : <a class="el" href="group__group__vx__graph.html#ga382c7c56a26c11ef3ab4d53ee067a801">vx_graph.h</a>
 </li>
+<li>ownGraphGetNumSchedule()
+: <a class="el" href="group__group__vx__graph.html#ga4b59dbdd09defe2e9a6aa5f5a79a4fd1">vx_graph.h</a>
+</li>
+<li>ownGraphGetParameterDataRefQueue()
+: <a class="el" href="group__group__vx__graph.html#ga9c754a767f2953d2c8c81e5b96e60614">vx_graph.h</a>
+</li>
+<li>ownGraphParameterCheckValidEnqueueRef()
+: <a class="el" href="group__group__vx__graph.html#gaa8642d9fe2b74c08d7149e1347e9e00a">vx_graph.h</a>
+</li>
+<li>ownGraphRegisterCompletionEvent()
+: <a class="el" href="group__group__vx__graph.html#ga510f9d595467f00cd0450d7e7c935628">vx_graph.h</a>
+</li>
+<li>ownGraphRegisterParameterConsumedEvent()
+: <a class="el" href="group__group__vx__graph.html#ga582be929e846bcf52eb72b094d3990f2">vx_graph.h</a>
+</li>
 <li>ownGraphRemoveNode()
 : <a class="el" href="group__group__vx__graph.html#ga9830a8a2a45de2cdc01865061fb59ed8">vx_graph.h</a>
+</li>
+<li>ownGraphScheduleGraph()
+: <a class="el" href="group__group__vx__graph.html#ga260641f346179abbbde7068e51138e65">vx_graph.h</a>
 </li>
 <li>ownGraphSetReverify()
 : <a class="el" href="group__group__vx__graph.html#ga8f66ba30fd30e78b86621bafd1b5b04c">vx_graph.h</a>
@@ -161,14 +203,17 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>ownNodeAddOutNode()
 : <a class="el" href="group__group__vx__node.html#ga6bfce40df7b58f4ae6788160d00d692e">vx_node.h</a>
 </li>
-<li>ownNodeClearExecuteState()
-: <a class="el" href="group__group__vx__node.html#ga8701f3a86954a5f74abfef6bd3756579">vx_node.h</a>
+<li>ownNodeAllocObjDescForPipeline()
+: <a class="el" href="group__group__vx__node.html#gab75a96c43f8eae022477682d13a4cf91">vx_node.h</a>
 </li>
-<li>ownNodeCreateCompletionEvent()
-: <a class="el" href="group__group__vx__node.html#ga31adaea81c40ecb6d143ff807eb2415a">vx_node.h</a>
+<li>ownNodeCheckAndSendCompletionEvent()
+: <a class="el" href="group__group__vx__node.html#gaa8197e713a1cc96169d4c621eadac39e">vx_node.h</a>
+</li>
+<li>ownNodeClearExecuteState()
+: <a class="el" href="group__group__vx__node.html#ga9c07c0267aec869c36987a705dae0276">vx_node.h</a>
 </li>
 <li>ownNodeCreateUserCallbackCommand()
-: <a class="el" href="group__group__vx__node.html#ga382d6191891a85419d71bb446961de68">vx_node.h</a>
+: <a class="el" href="group__group__vx__node.html#ga20140ae17b311db71324e57640d5c13f">vx_node.h</a>
 </li>
 <li>ownNodeExecuteUserCallback()
 : <a class="el" href="group__group__vx__node.html#gaf49ad710f2f1015732aad0d2224d0ecb">vx_node.h</a>
@@ -188,6 +233,9 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>ownNodeGetParameterDir()
 : <a class="el" href="group__group__vx__node.html#ga4df3a9daf021c8890d9c35bf08163120">vx_node.h</a>
 </li>
+<li>ownNodeGetParameterNumBuf()
+: <a class="el" href="group__group__vx__node.html#gad35a8f23855393d8288c5488a694d172">vx_node.h</a>
+</li>
 <li>ownNodeGetParameterRef()
 : <a class="el" href="group__group__vx__node.html#ga0d67a618d2f2e725209769dc194f087f">vx_node.h</a>
 </li>
@@ -201,22 +249,28 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__vx__node.html#gabd0685f1f78c0dac0cfc39aa5e7cdd68">vx_node.h</a>
 </li>
 <li>ownNodeKernelSchedule()
-: <a class="el" href="group__group__vx__node.html#ga2afec8a9f96c76097f76f86f166822ba">vx_node.h</a>
+: <a class="el" href="group__group__vx__node.html#ga2fbefcabe60f884a0dd81098a634ebe5">vx_node.h</a>
 </li>
 <li>ownNodeKernelValidate()
 : <a class="el" href="group__group__vx__node.html#ga2cda0c09f0283ba5ae1da465a7854b4a">vx_node.h</a>
 </li>
-<li>ownNodeSendCompletionEvent()
-: <a class="el" href="group__group__vx__node.html#ga1fa01cfa84593b156556fae8136b41be">vx_node.h</a>
+<li>ownNodeLinkDataRefQueue()
+: <a class="el" href="group__group__vx__node.html#ga857e5d476c6318a389b381ed7f847e5b">vx_node.h</a>
+</li>
+<li>ownNodeLinkObjDescForPipeline()
+: <a class="el" href="group__group__vx__node.html#ga7cd7696b18559246d7477c36f7285341">vx_node.h</a>
+</li>
+<li>ownNodeRegisterEvent()
+: <a class="el" href="group__group__vx__node.html#gac3b8a6cdee32d11569b54dde95668546">vx_node.h</a>
+</li>
+<li>ownNodeSetObjDescParamDirection()
+: <a class="el" href="group__group__vx__node.html#gaa07e6eeb3da5bfadc80a370ee57deb61">vx_node.h</a>
 </li>
 <li>ownNodeSetParameter()
 : <a class="el" href="group__group__vx__node.html#ga29df5b8a5db460fe6edc05fb36d9bebf">vx_node.h</a>
 </li>
 <li>ownNodeUserKernelExecute()
-: <a class="el" href="group__group__vx__node.html#ga96573e89e3c09eb1731194312418b921">vx_node.h</a>
-</li>
-<li>ownNodeWaitCompletionEvent()
-: <a class="el" href="group__group__vx__node.html#gae353287731c9c0fb243a4d158d974068">vx_node.h</a>
+: <a class="el" href="group__group__vx__node.html#ga5f9ac5ceb8806a296af08bac4d36b0b2">vx_node.h</a>
 </li>
 <li>ownPrintImage()
 : <a class="el" href="group__group__vx__image.html#ga82769f15a146e1609fdaf2bae5416132">vx_image.h</a>
@@ -232,6 +286,9 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>ownReferenceAllocMem()
 : <a class="el" href="group__group__vx__reference.html#gad42635678483ae9c930688bb56b9cf90">vx_reference.h</a>
+</li>
+<li>ownReferenceGetHandleFromObjDescId()
+: <a class="el" href="group__group__vx__reference.html#ga20a4c0ff7398c053c4ae4e38ee49b740">vx_reference.h</a>
 </li>
 <li>ownReferenceLock()
 : <a class="el" href="group__group__vx__reference.html#ga46261af73a663a9ced354739f57100d1">vx_reference.h</a>
@@ -257,6 +314,12 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>ownResetNodePerf()
 : <a class="el" href="group__group__vx__node.html#ga1dd26d7b21e1d3cb9f41a0f1ceebb0d8">vx_node.h</a>
 </li>
+<li>ownSendGraphCompletedEvent()
+: <a class="el" href="group__group__vx__graph.html#ga37ba04c351e97a9aeeab9be00ee53c82">vx_graph.h</a>
+</li>
+<li>ownSetGraphState()
+: <a class="el" href="group__group__vx__graph.html#gada4a9cf1fc467e83504e2ca38cf52092">vx_graph.h</a>
+</li>
 <li>ownSetNodeAttributeValidRectReset()
 : <a class="el" href="group__group__vx__node.html#ga7a81114a7f3c3c88c3c5645fbf4906cf">vx_node.h</a>
 </li>
@@ -269,8 +332,11 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>ownTotalReferenceCount()
 : <a class="el" href="group__group__vx__reference.html#gabf65108598010b9690afdbc4893fb36c">vx_reference.h</a>
 </li>
+<li>ownUpdateGraphPerf()
+: <a class="el" href="group__group__vx__graph.html#ga37b2a9dd8a4178b479ba8aadf17863ff">vx_graph.h</a>
+</li>
 <li>ownUpdateNodePerf()
-: <a class="el" href="group__group__vx__node.html#ga49453e6c9fcae493ab78ac21dff6740a">vx_node.h</a>
+: <a class="el" href="group__group__vx__node.html#gaabd02eb2bd4376b36bbf3ec5d610d4e6">vx_node.h</a>
 </li>
 </ul>
 </div>

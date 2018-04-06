@@ -79,21 +79,21 @@ extern "C" {
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_FILT3x3_IN_IMG_IDX        (0U)
 
 /*!
  * \brief Index of the output image
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_FILT3x3_OUT_IMG_IDX       (1U)
 
 /*!
  * \brief Max number of params
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_common_kernel
  */
 #define TIVX_KERNEL_FILT3x3_MAX_PARAMS        (2U)
 

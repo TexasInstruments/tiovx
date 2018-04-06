@@ -210,56 +210,151 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
 #endif
 
 /*!
- * \defgroup group_tivx_api 1: TIOVX Interface Modules
+ * \defgroup group_tivx_api 1: TIOVX External APIs
  */
 
 /*!
- * \defgroup group_tivx_ext TI Extention APIs
+ * \defgroup group_tivx_ext_common a: TIOVX Common APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_vx_framework_config TIOVX Configuration Parameters
+ * \ingroup group_tivx_ext_common
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc_priv Object Descriptor APIs
+ * \ingroup group_tivx_ext_common
+ */
+
+/*!
+ * \defgroup group_tivx_ext_common_kernel Kernel Helper APIs
+ * \ingroup group_tivx_ext_common
+ */
+
+/*!
+ * \defgroup group_tivx_ext_target_kernel Kernel Helper APIs
+ * \ingroup group_tivx_ext_target
+ */
+
+/*!
+ * \defgroup group_tivx_ext_host_kernel Kernel Helper APIs
+ * \ingroup group_tivx_ext_host
+ */
+
+/*!
+ * \defgroup group_vx_context_cfg Context Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_graph_cfg Graph Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_target_cfg Target Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_target_kernel_cfg Target Kernel Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_target_kernel_instance_cfg Target Kernel Instance Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_module_cfg Module Configuration Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc_cfg Object Descriptor Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_image_cfg Data Object: Image Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_array_cfg Data Object: Array Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_delay_cfg Data Object: Delay Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_vx_pyramid_cfg Data Object: Pyramid Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_obj_cfg Object Configuration
+ * \ingroup group_vx_framework_config
+ */
+
+/*!
+ * \defgroup group_tivx_ext_host b: TIOVX Host APIs
+ * \ingroup group_tivx_api
+ */
+
+/*!
+ * \defgroup group_tivx_ext_target c: TIOVX Target APIs
  * \ingroup group_tivx_api
  */
 
 /*!
  * \defgroup group_tivx_mem Memory APIs
- * \ingroup group_tivx_api
- */
-
-/*!
- * \defgroup group_tivx_obj_desc Object Descriptor APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_common
  */
 
 /*!
  * \defgroup group_tivx_target_kernel Target Kernel APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_host
  */
 
 /*!
  * \defgroup group_tivx_queue Queue APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_host
  */
 
 /*!
  * \defgroup group_tivx_mutex Mutex APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_host
  */
 
 /*!
  * \defgroup group_tivx_event Event APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_host
  */
 
 /*!
  * \defgroup group_tivx_task Task APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_host
  */
 
 /*!
  * \defgroup group_vx_debug Debug APIs
- * \ingroup group_tivx_api
+ * \ingroup group_tivx_ext_host
  */
 
 /*!
- * \defgroup group_vx_framework 3: TIOVX Implementation Modules
+ * \defgroup group_vx_internal 2: TIOVX Internal APIs
+ */
+
+/*!
+ * \defgroup group_vx_framework a: TIOVX Implementation Modules
+ * \ingroup group_vx_internal
  */
 
 /*!
@@ -314,11 +409,6 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
 
 /*!
  * \defgroup group_tivx_target_kernel_instance Target Kernel Instance APIs
- * \ingroup group_vx_framework_object
- */
-
-/*!
- * \defgroup group_tivx_obj_desc_priv Object Descriptor APIs
  * \ingroup group_vx_framework_object
  */
 
@@ -393,67 +483,6 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_framework_config TIOVX Configuration Parameters
- * \ingroup group_vx_framework
- */
-
-/*!
- * \defgroup group_vx_context_cfg Context Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_vx_graph_cfg Graph Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_tivx_target_cfg Target Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_tivx_target_kernel_cfg Target Kernel Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_tivx_target_kernel_instance_cfg Target Kernel Instance Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_vx_module_cfg Module Configuration Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_tivx_obj_desc_cfg Object Descriptor Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_vx_image_cfg Data Object: Image Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_vx_array_cfg Data Object: Array Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_vx_delay_cfg Data Object: Delay Configuration
- * \ingroup group_vx_framework_config
- */
-
-/*!
- * \defgroup group_tivx_obj_cfg Object Configuration
- * \ingroup group_vx_framework_config
- */
-
-
-/*!
  * \defgroup group_vx_framework_utils Utility and Debug Modules
  * \ingroup group_vx_framework
  */
@@ -469,7 +498,8 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_vx_platform 2: TIOVX Platform Modules
+ * \defgroup group_vx_platform b: TIOVX Platform Modules
+ * \ingroup group_vx_internal
  */
 
 

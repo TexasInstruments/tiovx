@@ -54,10 +54,10 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__vx__utils.html#ga3ce34986ae4e8bb261f86e769fbbc167">vx_internal.h</a>
 </li>
 <li>TIVX_ARRAY_MAX_MAPS
-: <a class="el" href="group__group__vx__array__cfg.html#gabbd167c37dae1c0efaf80b88ce66d870">vx_array.h</a>
+: <a class="el" href="group__group__vx__array__cfg.html#gabbd167c37dae1c0efaf80b88ce66d870">tivx_config.h</a>
 </li>
 <li>TIVX_ARRAY_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11">tivx_config.h</a>
 </li>
 <li>tivx_attribute_extensions_e
 : <a class="el" href="group__group__tivx__ext.html#ga5478f3aed4e2ced0a1840931b741c620">tivx.h</a>
@@ -67,6 +67,9 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>tivx_clr_debug_zone()
 : <a class="el" href="group__group__vx__debug.html#gabe8239f2d4f812db4c3d345fd9d898da">tivx_debug.h</a>
+</li>
+<li>TIVX_CMD_DATA_REF_CONSUMED
+: <a class="el" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a5faf925461a685ea9b04e09859154c0d">tivx_target.h</a>
 </li>
 <li>TIVX_CMD_FLAG_IS_ACK
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#ga778ff616ae76e7139f1d5b3b83312754">tivx_obj_desc_priv.h</a>
@@ -89,29 +92,32 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>TIVX_CMD_NODE_USER_CALLBACK
 : <a class="el" href="group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a4683622e1c5471b8f2a581addbe19c7c">tivx_target.h</a>
 </li>
+<li>TIVX_CONFIG_PATH_LENGTH
+: <a class="el" href="group__group__tivx__ext.html#ga38e7064937506c8ae840dc6eb779dda9">tivx.h</a>
+</li>
 <li>TIVX_CONTEXT_MAX_CONVOLUTION_DIM
 : <a class="el" href="group__group__vx__context__cfg.html#ga11d4362b71d976c4afd524640e106589">vx_context.h</a>
 </li>
 <li>TIVX_CONTEXT_MAX_KERNELS
-: <a class="el" href="group__group__vx__context__cfg.html#gacd1ea761dc0074a1db3b8a6df60cbab4">vx_context.h</a>
+: <a class="el" href="group__group__vx__context__cfg.html#gacd1ea761dc0074a1db3b8a6df60cbab4">tivx_config.h</a>
 </li>
 <li>TIVX_CONTEXT_MAX_NONLINEAR_DIM
 : <a class="el" href="group__group__vx__context__cfg.html#gabb812deddf0a24bc11d4ed50da04c587">vx_context.h</a>
 </li>
 <li>TIVX_CONTEXT_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gadbbf14b9b8f29677dcf0cdd501e40d88">tivx_config.h</a>
 </li>
 <li>TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM
 : <a class="el" href="group__group__vx__context__cfg.html#ga4b9667fb9e749205b073c781711c6138">vx_context.h</a>
 </li>
 <li>TIVX_CONTEXT_MAX_REFERENCES
-: <a class="el" href="group__group__vx__context__cfg.html#ga8b616d3db87de29c3193b7849096b239">vx_context.h</a>
+: <a class="el" href="group__group__vx__context__cfg.html#ga8b616d3db87de29c3193b7849096b239">tivx_config.h</a>
 </li>
 <li>TIVX_CONTEXT_MAX_USER_STRUCTS
-: <a class="el" href="group__group__vx__context__cfg.html#gad60b64f2628a9a829d0b91ff39bbb35c">vx_context.h</a>
+: <a class="el" href="group__group__vx__context__cfg.html#gad60b64f2628a9a829d0b91ff39bbb35c">tivx_config.h</a>
 </li>
 <li>TIVX_CONVOLUTION_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67">tivx_config.h</a>
 </li>
 <li>TIVX_CPU_ID_A15_0
 : <a class="el" href="group__group__tivx__ext.html#gga56b14c79b967d7f5f4170aab3befca6fa0d3eb119dccb236356d894852a2d4677">tivx.h</a>
@@ -161,6 +167,12 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>TIVX_CPU_ID_SHIFT
 : <a class="el" href="group__group__tivx__target.html#ga325e1041e0add3a92e0ff1c210320dc7">tivx_target.h</a>
 </li>
+<li>TIVX_DATA_REF_Q_MAX_OBJECTS
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga84db31cd5dc974572cbacdc877723b32">tivx_config.h</a>
+</li>
+<li>tivx_data_ref_queue
+: <a class="el" href="tivx__data__ref__queue_8h.html#a14612438df7f37cc7fb78576efe27b66">tivx_data_ref_queue.h</a>
+</li>
 <li>tivx_debug_zone_e
 : <a class="el" href="group__group__vx__debug.html#ga73f8b7d2888a862fd66f8f479eead7e6">tivx_debug.h</a>
 </li>
@@ -168,22 +180,31 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__vx__utils.html#gafed0fc37f24bfac4e4593ee9d3b87c8e">vx_internal.h</a>
 </li>
 <li>TIVX_DELAY_MAX_OBJECT
-: <a class="el" href="group__group__vx__delay__cfg.html#gaa945633d04f86c392278ca20867eac85">vx_delay.h</a>
+: <a class="el" href="group__group__vx__delay__cfg.html#gaa945633d04f86c392278ca20867eac85">tivx_config.h</a>
 </li>
 <li>TIVX_DELAY_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30">tivx_config.h</a>
 </li>
 <li>TIVX_DELAY_MAX_PRM_OBJECT
-: <a class="el" href="group__group__vx__delay__cfg.html#ga4e91cbe375e45cb4403dca2f72d60ab1">vx_delay.h</a>
+: <a class="el" href="group__group__vx__delay__cfg.html#ga4e91cbe375e45cb4403dca2f72d60ab1">tivx_config.h</a>
+</li>
+<li>tivx_df_image_e
+: <a class="el" href="group__group__tivx__ext.html#ga2934cd1d530431f23bb7c461abc528df">tivx.h</a>
+</li>
+<li>TIVX_DF_IMAGE_P12
+: <a class="el" href="group__group__tivx__ext.html#gga2934cd1d530431f23bb7c461abc528dfa3f7d7ab076f3762b91df963819d57bd7">tivx.h</a>
 </li>
 <li>TIVX_DISTRIBUTION_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74">tivx_config.h</a>
 </li>
 <li>TIVX_ERROR_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be">tivx_config.h</a>
 </li>
 <li>tivx_event
 : <a class="el" href="group__group__tivx__event.html#ga514eff6364ee72cf3a07ded0a7cd17b0">tivx_event.h</a>
+</li>
+<li>TIVX_EVENT_QUEUE_MAX_SIZE
+: <a class="el" href="tivx__event__queue_8h.html#a0b745cee6f1a786c1a6c374879ef4a7f">tivx_event_queue.h</a>
 </li>
 <li>TIVX_EVENT_TIMEOUT_NO_WAIT
 : <a class="el" href="group__group__tivx__event.html#ga95bd7e3d3721fe96fe9c27bb0405d5b3">tivx_event.h</a>
@@ -203,56 +224,65 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>TIVX_GET_TARGET_INST
 : <a class="el" href="group__group__tivx__target.html#ga40dc0ddb4196d504ef538f958fef26cd">tivx_target.h</a>
 </li>
+<li>TIVX_GRAPH_MAX_DATA_REF
+: <a class="el" href="group__group__vx__graph__cfg.html#ga5e9f0c5fe40da2d65950f145274e5a14">tivx_config.h</a>
+</li>
+<li>TIVX_GRAPH_MAX_DATA_REF_QUEUE
+: <a class="el" href="group__group__vx__graph__cfg.html#gaed6315ea75bfbfb79546e585c084c755">tivx_config.h</a>
+</li>
 <li>TIVX_GRAPH_MAX_DELAYS
-: <a class="el" href="group__group__vx__graph__cfg.html#ga328a381d97286ef5ef025be1e9471437">vx_graph.h</a>
+: <a class="el" href="group__group__vx__graph__cfg.html#ga328a381d97286ef5ef025be1e9471437">tivx_config.h</a>
 </li>
 <li>TIVX_GRAPH_MAX_HEAD_NODES
-: <a class="el" href="group__group__vx__graph__cfg.html#ga98742f4b8c0d0aefaa0e0a3b8a08c223">vx_graph.h</a>
+: <a class="el" href="group__group__vx__graph__cfg.html#ga98742f4b8c0d0aefaa0e0a3b8a08c223">tivx_config.h</a>
 </li>
 <li>TIVX_GRAPH_MAX_LEAF_NODES
-: <a class="el" href="group__group__vx__graph__cfg.html#gaa4e83abd40c45fbd296008ad79d8d9b9">vx_graph.h</a>
+: <a class="el" href="group__group__vx__graph__cfg.html#gaa4e83abd40c45fbd296008ad79d8d9b9">tivx_config.h</a>
 </li>
 <li>TIVX_GRAPH_MAX_NODES
-: <a class="el" href="group__group__tivx__obj__desc.html#gaa345cc795baa95e1d5ff39694700ad87">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__config_8h.html#aa345cc795baa95e1d5ff39694700ad87">tivx_config.h</a>
 </li>
 <li>TIVX_GRAPH_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gaefecd88b6c4917eda1e8a40b08955912">tivx_config.h</a>
 </li>
 <li>TIVX_GRAPH_MAX_PARAMS
-: <a class="el" href="group__group__vx__graph__cfg.html#ga1e90c432483f28c0c32b249577b46dde">vx_graph.h</a>
+: <a class="el" href="group__group__vx__graph__cfg.html#ga1e90c432483f28c0c32b249577b46dde">tivx_config.h</a>
+</li>
+<li>TIVX_GRAPH_MAX_PIPELINE_DEPTH
+: <a class="el" href="tivx__config_8h.html#ae5d32d340ee632f0c72e0a757fbdf0d6">tivx_config.h</a>
 </li>
 <li>tivx_image_create_type_e
-: <a class="el" href="group__group__tivx__obj__desc.html#ga25fa81b14d1e21751503d0b836ff5d77">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_FROM_CHANNEL
-: <a class="el" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ace7f7be141ec95c72d6b25bd4cf6b18a">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77ace7f7be141ec95c72d6b25bd4cf6b18a">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_FROM_HANDLE
-: <a class="el" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac6e8c647daf958ce6f40152d5de93907">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77ac6e8c647daf958ce6f40152d5de93907">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_FROM_ROI
-: <a class="el" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ab0934aa925c10c43c11560e58ef59cbf">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77ab0934aa925c10c43c11560e58ef59cbf">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_MAX_MAPS
-: <a class="el" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb">vx_image.h</a>
+: <a class="el" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb">tivx_config.h</a>
 </li>
 <li>TIVX_IMAGE_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff">tivx_config.h</a>
 </li>
 <li>TIVX_IMAGE_MAX_PLANES
 : <a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_MAX_SUBIMAGES
-: <a class="el" href="group__group__vx__image__cfg.html#gabc882a238706fb219028758eebe19daf">vx_image.h</a>
+: <a class="el" href="group__group__vx__image__cfg.html#gabc882a238706fb219028758eebe19daf">tivx_config.h</a>
 </li>
 <li>TIVX_IMAGE_NORMAL
-: <a class="el" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77abdae207642f6d4eac4885ff53e3a1042">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77abdae207642f6d4eac4885ff53e3a1042">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_UNIFORM
-: <a class="el" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77a532f5e03024de0f3c8ce71bfb55b5de4">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77a532f5e03024de0f3c8ce71bfb55b5de4">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_IMAGE_VIRTUAL
-: <a class="el" href="group__group__tivx__obj__desc.html#gga25fa81b14d1e21751503d0b836ff5d77ac1cc0f02de444d51546f8b2d565f4f35">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77ac1cc0f02de444d51546f8b2d565f4f35">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_INVALID_CPU_ID
 : <a class="el" href="group__group__tivx__ext.html#gga56b14c79b967d7f5f4170aab3befca6fa4e23aec1caf5cfa2e3ca2f9feede9b48">tivx.h</a>
@@ -261,13 +291,13 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__ipc.html#gacc3aafc4391374132cd010e43c48fa14">tivx_ipc.h</a>
 </li>
 <li>TIVX_KERNEL_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904">tivx_config.h</a>
 </li>
 <li>TIVX_KERNEL_MAX_PARAMS
-: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">tivx_config.h</a>
 </li>
 <li>TIVX_LUT_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be">tivx_config.h</a>
 </li>
 <li>TIVX_MAGIC
 : <a class="el" href="group__group__vx__utils.html#ga41ea76fbd9c3d52fa0dd25e3b0152b3e">vx_internal.h</a>
@@ -276,10 +306,10 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__target.html#ga033ec5e18b5d4cebbed152cd01086ecc">tivx_target.h</a>
 </li>
 <li>TIVX_MATRIX_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708">tivx_config.h</a>
 </li>
 <li>TIVX_MAX_TARGETS_PER_KERNEL
-: <a class="el" href="vx__kernel_8h.html#aa020e2b6ed4b2b168bcfecb1f52eba86">vx_kernel.h</a>
+: <a class="el" href="group__group__tivx__target__kernel__cfg.html#gaa020e2b6ed4b2b168bcfecb1f52eba86">tivx_config.h</a>
 </li>
 <li>TIVX_MAX_TASK_NAME
 : <a class="el" href="group__group__tivx__task.html#ga73fc183a96e06488bf13c656f9b86ea3">tivx_task.h</a>
@@ -297,10 +327,10 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__mem.html#ga16613a56b37f0bda2cc3fef86f40518e">tivx_mem.h</a>
 </li>
 <li>TIVX_META_FORMAT_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gad21395292e711903b30d20a0ebfba881">tivx_config.h</a>
 </li>
 <li>TIVX_MODULE_MAX
-: <a class="el" href="group__group__vx__module__cfg.html#ga631951e7493f96e072deace767d33269">vx_module.h</a>
+: <a class="el" href="group__group__vx__module__cfg.html#ga631951e7493f96e072deace767d33269">tivx_config.h</a>
 </li>
 <li>TIVX_MODULE_MAX_NAME
 : <a class="el" href="group__group__vx__module__cfg.html#ga822e9e70bb9a23fb5da89354d8eb9390">vx_module.h</a>
@@ -309,46 +339,70 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__mutex.html#gaca8bf54b8519ecd4c6aa8368286bde45">tivx_mutex.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_EXECUTED
-: <a class="el" href="group__group__tivx__obj__desc.html#gaf7ae2fec33c7997a3106f061624d9add">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#af7ae2fec33c7997a3106f061624d9add">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_REPLICATED
-: <a class="el" href="group__group__tivx__obj__desc.html#ga412e9ff53c1a69e16a33ac511366f742">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a412e9ff53c1a69e16a33ac511366f742">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_TARGET_KERNEL
-: <a class="el" href="group__group__tivx__obj__desc.html#ga4a01ab216dbd031e89a5b4367bb33881">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4a01ab216dbd031e89a5b4367bb33881">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_USER_CALLBACK
-: <a class="el" href="group__group__tivx__obj__desc.html#ga2f5e855e1a88921989451ebf30b70778">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a2f5e855e1a88921989451ebf30b70778">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_MAX_IN_NODES
-: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b">tivx_config.h</a>
 </li>
 <li>TIVX_NODE_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gacafdc8b7549448d5ccd0c780c6680f5b">tivx_config.h</a>
 </li>
 <li>TIVX_NODE_MAX_OUT_NODES
-: <a class="el" href="group__group__tivx__obj__desc__cfg.html#gad70fbfdc1f0c57ecc19a1d29878cbe18">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#gad70fbfdc1f0c57ecc19a1d29878cbe18">tivx_config.h</a>
 </li>
 <li>TIVX_NODE_MAX_REPLICATE
-: <a class="el" href="group__group__tivx__obj__desc.html#ga5851041910fe499bd7839500a534a293">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__config_8h.html#a5851041910fe499bd7839500a534a293">tivx_config.h</a>
+</li>
+<li>TIVX_NODE_OBJ_DESC_STATE_BLOCKED
+: <a class="el" href="tivx__obj__desc_8h.html#a089eba87daffa24b751335adec623d07">tivx_obj_desc.h</a>
+</li>
+<li>TIVX_NODE_OBJ_DESC_STATE_IDLE
+: <a class="el" href="tivx__obj__desc_8h.html#a262f17dda73a487c34a1f4db86dae51d">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_TARGET_STRING
 : <a class="el" href="group__group__tivx__ext.html#gga5478f3aed4e2ced0a1840931b741c620a8d8035b00b4ef18d7901b0a9c0248dad">tivx.h</a>
 </li>
 <li>TIVX_OBJ_ARRAY_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56">tivx_config.h</a>
 </li>
 <li>TIVX_OBJ_DESC_ARRAY
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a97895f8da837d0d5993433abf0b2394c">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a97895f8da837d0d5993433abf0b2394c">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_CMD
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2c2ef770b3f13586c650244a0c5f6313">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a2c2ef770b3f13586c650244a0c5f6313">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_CONVOLUTION
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ae19fb3ab5bc0f60b07e7c7739f676ea3">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ae19fb3ab5bc0f60b07e7c7739f676ea3">tivx_obj_desc.h</a>
+</li>
+<li>TIVX_OBJ_DESC_DATA_REF_Q
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec">tivx_obj_desc.h</a>
+</li>
+<li>TIVX_OBJ_DESC_DATA_REF_Q_FLAG_DELAY_SLOT_AUTO_AGE
+: <a class="el" href="group__group__tivx__obj__desc__priv.html#ga0b9afc80e3da6f09110506f092615708">tivx_obj_desc_priv.h</a>
+</li>
+<li>TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_ENABLE_REF_CONSUMED_EVENT
+: <a class="el" href="group__group__tivx__obj__desc__priv.html#ga003557369680cc9735e815eb57a6192d">tivx_obj_desc_priv.h</a>
+</li>
+<li>TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY
+: <a class="el" href="group__group__tivx__obj__desc__priv.html#ga3522670ba8b871d318441af1cba68a7f">tivx_obj_desc_priv.h</a>
+</li>
+<li>TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED
+: <a class="el" href="group__group__tivx__obj__desc__priv.html#ga2d06a4672b7b67a97c245588c2bf2f20">tivx_obj_desc_priv.h</a>
 </li>
 <li>TIVX_OBJ_DESC_DISTRIBUTION
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a890a0906323b92d8258238c3afe03c9a">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a890a0906323b92d8258238c3afe03c9a">tivx_obj_desc.h</a>
+</li>
+<li>TIVX_OBJ_DESC_GRAPH
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_ID_MASK
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#gaa6e5cb564ae207e34e389ded7fbf1de2">tivx_obj_desc_priv.h</a>
@@ -357,49 +411,61 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#ga986852f6569bebf0af3bbba4c7456dfc">tivx_obj_desc_priv.h</a>
 </li>
 <li>TIVX_OBJ_DESC_IMAGE
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a39d38c49ae7032501ac90a53c38535d6">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a39d38c49ae7032501ac90a53c38535d6">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_INVALID
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_KERNEL_NAME
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8690f05f9cd447fffa74bc7133759f62">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a8690f05f9cd447fffa74bc7133759f62">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_LUT
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109af5a9c8ac33f96f177cd3728247c9ea6a">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109af5a9c8ac33f96f177cd3728247c9ea6a">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_MATRIX
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109acd14a950c029d02bd12b014dc487d808">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109acd14a950c029d02bd12b014dc487d808">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_NODE
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0862c59114385a892326038f1c102bf1">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a0862c59114385a892326038f1c102bf1">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_OBJARRAY
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a4b1687cd6ceb79de00a7af48ade5e69d">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_PYRAMID
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109ac3a0cf06df9653de61a3364a43e63f79">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ac3a0cf06df9653de61a3364a43e63f79">tivx_obj_desc.h</a>
+</li>
+<li>TIVX_OBJ_DESC_QUEUE
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ad71e4afe6b079dd7732594b45aa4e525">tivx_obj_desc.h</a>
+</li>
+<li>TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#gacd73566fb39f56cfa766bf62a42f0c0a">tivx_obj_desc_priv.h</a>
+</li>
+<li>TIVX_OBJ_DESC_QUEUE_MAX_DEPTH
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga693b49189a3b5d97028e540fcca065a7">tivx_obj_desc_priv.h</a>
 </li>
 <li>TIVX_OBJ_DESC_REMAP
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a0e0a126cc88b7030ec9c2fed3de86b36">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a0e0a126cc88b7030ec9c2fed3de86b36">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_SCALAR
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a8eda0effb9ba17eb34edd8e764d6d902">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a8eda0effb9ba17eb34edd8e764d6d902">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_DESC_THRESHOLD
-: <a class="el" href="group__group__tivx__obj__desc.html#gga4858f5eeb4edfc862b9b8b2039ed8109a2756ef47debca4917e1d00337270ae2d">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a2756ef47debca4917e1d00337270ae2d">tivx_obj_desc.h</a>
 </li>
 <li>tivx_obj_desc_type_e
-: <a class="el" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc.h</a>
+: <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJECT_ARRAY_MAX_ITEMS
-: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga1d57be13326dfee5ccb50f6bfae364da">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga1d57be13326dfee5ccb50f6bfae364da">tivx_config.h</a>
 </li>
 <li>TIVX_PARAMETER_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga8ba61e21b0aba3731813712668e5d6be">tivx_config.h</a>
 </li>
 <li>TIVX_PLATFORM_LOCK_CONTEXT
 : <a class="el" href="group__group__tivx__platform.html#gga60dd5b4e5393c3efae0b37bfd51122dbac2106ead9f185154f784a3effe61006e">tivx_platform.h</a>
+</li>
+<li>TIVX_PLATFORM_LOCK_DATA_REF_QUEUE
+: <a class="el" href="group__group__tivx__platform.html#gga60dd5b4e5393c3efae0b37bfd51122dbae89faeed512f5c17d1100d49bba00d47">tivx_platform.h</a>
 </li>
 <li>TIVX_PLATFORM_LOCK_MAX
 : <a class="el" href="group__group__tivx__platform.html#gga60dd5b4e5393c3efae0b37bfd51122dba23fdd08418e39aac36e92a5add8f467b">tivx_platform.h</a>
@@ -414,19 +480,22 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__vx__debug.html#ga0e8f0fde3cb77b439a7959c81be96eae">tivx_debug.h</a>
 </li>
 <li>TIVX_PYRAMID_MAX_LEVEL_OBJECTS
-: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga9394c906b6f2581dcbfe1b830d31eee5">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga9394c906b6f2581dcbfe1b830d31eee5">tivx_config.h</a>
 </li>
 <li>TIVX_PYRAMID_MAX_LEVELS_ORB
-: <a class="el" href="group__group__vx__pyramid.html#ga631b626be04e080b287b6ba8bb951143">vx_pyramid.h</a>
+: <a class="el" href="group__group__vx__pyramid.html#ga631b626be04e080b287b6ba8bb951143">tivx_config.h</a>
 </li>
 <li>TIVX_PYRAMID_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f">tivx_config.h</a>
 </li>
 <li>TIVX_QUEUE_FLAG_BLOCK_ON_GET
 : <a class="el" href="group__group__tivx__queue.html#gaf76bc1eb122ceadf7c239d4c726ee226">tivx_queue.h</a>
 </li>
 <li>TIVX_QUEUE_FLAG_BLOCK_ON_PUT
 : <a class="el" href="group__group__tivx__queue.html#ga4736bb537f0bc9b2b9cc14689da5c0e2">tivx_queue.h</a>
+</li>
+<li>TIVX_REF_FLAG_LOG_RT_TRACE
+: <a class="el" href="tivx__obj__desc_8h.html#ad862cb4bc5aa68f2856c1e76b0d4b744">tivx_obj_desc.h</a>
 </li>
 <li>tivx_reference_callback_f
 : <a class="el" href="group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b">vx_reference.h</a>
@@ -435,10 +504,16 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__vx__reference.html#gacd45d0c17bdc4c34ffc0c1c00c000617">vx_reference.h</a>
 </li>
 <li>TIVX_REMAP_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e">tivx_config.h</a>
+</li>
+<li>TIVX_RESOURCE_LOG_ENABLE
+: <a class="el" href="tivx__log__resource_8h.html#ab70157a88ca096e2fcefa4978c7ba3a2">tivx_log_resource.h</a>
+</li>
+<li>TIVX_RESOURCE_NAME_MAX
+: <a class="el" href="group__group__tivx__ext.html#gab2061417ad9e438e813a33341f443275">tivx.h</a>
 </li>
 <li>TIVX_SCALAR_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga9e110e9e54f454873a220d4d8dff20f2">tivx_config.h</a>
 </li>
 <li>tivx_set_debug_zone()
 : <a class="el" href="group__group__vx__debug.html#ga5797ddae3c7bdb48c9ebb0e466f841f4">tivx_debug.h</a>
@@ -513,10 +588,10 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel.h</a>
 </li>
 <li>TIVX_TARGET_KERNEL_INSTANCE_MAX
-: <a class="el" href="group__group__tivx__target__kernel__instance__cfg.html#gac307474d850020473abe32898aa1759c">tivx_target_kernel_instance.h</a>
+: <a class="el" href="group__group__tivx__target__kernel__instance__cfg.html#gac307474d850020473abe32898aa1759c">tivx_config.h</a>
 </li>
 <li>TIVX_TARGET_KERNEL_MAX
-: <a class="el" href="group__group__tivx__target__kernel__cfg.html#gae392680631db17e50dff61e0f8bdc273">tivx_target_kernel_priv.h</a>
+: <a class="el" href="group__group__tivx__target__kernel__cfg.html#gae392680631db17e50dff61e0f8bdc273">tivx_config.h</a>
 </li>
 <li>TIVX_TARGET_KERNEL_PRIV_H_
 : <a class="el" href="tivx__target__kernel__priv_8h.html#ac065dc5faa22d3716740e58099f9f20e">tivx_target_kernel_priv.h</a>
@@ -528,7 +603,7 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__ext.html#ga0731c235cd560c819c84532ca108f8f2">tivx.h</a>
 </li>
 <li>TIVX_TARGET_MAX_TARGETS_IN_CPU
-: <a class="el" href="group__group__tivx__target__cfg.html#ga672f053a5c680cf8ae0938477686dc5e">tivx_target.h</a>
+: <a class="el" href="group__group__tivx__target__cfg.html#ga672f053a5c680cf8ae0938477686dc5e">tivx_config.h</a>
 </li>
 <li>TIVX_TARGET_RESV00
 : <a class="el" href="tivx_8h.html#a4ed05998ba396aa5b57ea33016d67823">tivx.h</a>
@@ -573,7 +648,13 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__task.html#gaf56e776da306397705c872d6aeccf886">tivx_task.h</a>
 </li>
 <li>TIVX_THRESHOLD_MAX_OBJECTS
-: <a class="el" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5">tivx_objects.h</a>
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga8f194fb4275f05c241b790f441bd0eb5">tivx_config.h</a>
+</li>
+<li>TIVX_TYPE_DATA_REF_Q
+: <a class="el" href="group__group__vx__utils.html#ggac41c6212f51bf5f6166093c0984981cfa617a31912f82c4775360a72cdf1423d9">vx_internal.h</a>
+</li>
+<li>tivx_type_e
+: <a class="el" href="group__group__vx__utils.html#gac41c6212f51bf5f6166093c0984981cf">vx_internal.h</a>
 </li>
 <li>TIVX_TYPE_IS_OBJECT
 : <a class="el" href="group__group__vx__utils.html#ga93a451188d2830ed50d094120433500d">vx_internal.h</a>
@@ -583,6 +664,9 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>TIVX_TYPE_IS_STRUCT
 : <a class="el" href="group__group__vx__utils.html#ga8046b2f6f99302f66e9e8153a230baf6">vx_internal.h</a>
+</li>
+<li>TIVX_TYPE_IS_TI_OBJECT
+: <a class="el" href="group__group__vx__utils.html#gab26e165d5dc9c3c9e058dd44f4ac5979">vx_internal.h</a>
 </li>
 <li>tivx_uint32_to_uint64()
 : <a class="el" href="group__group__vx__utils.html#ga9bed7333f57423a1af3cc2c624016efa">vx_internal.h</a>
@@ -608,6 +692,36 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>tivxCreateNodeByKernelRef()
 : <a class="el" href="group__group__tivx__ext.html#ga9d9ccababb2be7012ffbad3b44713aaf">tivx.h</a>
 </li>
+<li>tivxDataRefQueueCreate()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a817c67bb47fb338dc06730f8a0f92d0c">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueDequeueDoneRef()
+: <a class="el" href="tivx__data__ref__queue_8h.html#abf0f27b8513cc74f6d792e1603c010f9">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueEnqueueReadyRef()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a4f9cbf7897dc82defb90e9e02fc04d3d">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueGetDoneQueueCount()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a83bf03f3bbd5362ed73e6ae9190c3a0b">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueGetObjDescId()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a8bad77e4ee629ce59371f2b6fd0fb066">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueGetReadyQueueCount()
+: <a class="el" href="tivx__data__ref__queue_8h.html#ae874a5725274a0bc014af27b9782d1e9">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueLinkDelayDataRefQueues()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a20c9f5e96a6b3a7765df2d881009228c">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueRelease()
+: <a class="el" href="tivx__data__ref__queue_8h.html#ac5591b28f0fcbea58d7fbe9d50cce4a7">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueSendRefConsumedEvent()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a98c51ee5512e6ecaa292a660b04205af">tivx_data_ref_queue.h</a>
+</li>
+<li>tivxDataRefQueueWaitDoneRef()
+: <a class="el" href="tivx__data__ref__queue_8h.html#a8548af8a1345423f84bda3f1d3f1c9ca">tivx_data_ref_queue.h</a>
+</li>
 <li>tivxDeInit()
 : <a class="el" href="group__group__tivx__ext.html#gafe743fcbf54158387579a1f36ec1070b">tivx.h</a>
 </li>
@@ -623,8 +737,23 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>tivxEventPost()
 : <a class="el" href="group__group__tivx__event.html#gad927ee36bfd675b340952338567dd87c">tivx_event.h</a>
 </li>
+<li>tivxEventQueueAddEvent()
+: <a class="el" href="tivx__event__queue_8h.html#a44b5ef820f55f598d4327278c12a98d7">tivx_event_queue.h</a>
+</li>
+<li>tivxEventQueueCreate()
+: <a class="el" href="tivx__event__queue_8h.html#aa7e0f7d48d25a2b112be7e2b3aea9674">tivx_event_queue.h</a>
+</li>
+<li>tivxEventQueueDelete()
+: <a class="el" href="tivx__event__queue_8h.html#a647b2e501150fa0302fc41e724fb5f39">tivx_event_queue.h</a>
+</li>
 <li>tivxEventWait()
 : <a class="el" href="group__group__tivx__event.html#ga826c9dce98759d1ec7bd2ecaa94c113e">tivx_event.h</a>
+</li>
+<li>tivxExportAllResourceMaxUsedValueToFile()
+: <a class="el" href="group__group__tivx__ext.html#gacec1d8b4551b392ec5a114e3205ca42d">tivx.h</a>
+</li>
+<li>tivxExportGraphToDot()
+: <a class="el" href="group__group__tivx__ext.html#gafb786712529ce201cfd91f9cd12cd08a">tivx.h</a>
 </li>
 <li>tivxFlagBitClear()
 : <a class="el" href="group__group__vx__utils.html#ga534109d6c33d7c81285c09c9e1bd9892">vx_internal.h</a>
@@ -674,6 +803,42 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>tivxIsTargetEnabled()
 : <a class="el" href="group__group__tivx__ext.html#ga9fcb9b76ac3436d468f7cdd76088a5f2">tivx.h</a>
 </li>
+<li>tivxLogResourceAlloc()
+: <a class="el" href="tivx__log__resource_8h.html#abf8a870d760181fbe8d8f837ad6f32ce">tivx_log_resource.h</a>
+</li>
+<li>tivxLogResourceDeInit()
+: <a class="el" href="tivx__log__resource_8h.html#af900dbde108d3cffe3ab75ae359a9e06">tivx_log_resource.h</a>
+</li>
+<li>tivxLogResourceFree()
+: <a class="el" href="tivx__log__resource_8h.html#a921fbee0181b7166e8ca214143a11d6e">tivx_log_resource.h</a>
+</li>
+<li>tivxLogResourceInit()
+: <a class="el" href="tivx__log__resource_8h.html#af2d3eba4a89419765d83e2fee246bf60">tivx_log_resource.h</a>
+</li>
+<li>tivxLogRtTrace()
+: <a class="el" href="group__group__tivx__ext.html#ga188cd5bd63a13725e64ff5dc89bd952e">tivx.h</a>
+</li>
+<li>tivxLogRtTraceGraphExeEnd()
+: <a class="el" href="tivx__log__rt__trace_8h.html#a1d1532ec2f516c00f936e7ebaa59ba1e">tivx_log_rt_trace.h</a>
+</li>
+<li>tivxLogRtTraceGraphExeStart()
+: <a class="el" href="tivx__log__rt__trace_8h.html#a5cc72a16368f87b4de832cce9aaaa04c">tivx_log_rt_trace.h</a>
+</li>
+<li>tivxLogRtTraceNodeExeEnd()
+: <a class="el" href="tivx__log__rt__trace_8h.html#a6fca927e12ca99f3e9c666592f22d4e0">tivx_log_rt_trace.h</a>
+</li>
+<li>tivxLogRtTraceNodeExeStart()
+: <a class="el" href="tivx__log__rt__trace_8h.html#a0d655f3913a5334a21b3cdfd2996ffb3">tivx_log_rt_trace.h</a>
+</li>
+<li>tivxLogRtTraceTargetExeEnd()
+: <a class="el" href="tivx__log__rt__trace_8h.html#a1480dffb571d7f0577392a18bcbb96da">tivx_log_rt_trace.h</a>
+</li>
+<li>tivxLogRtTraceTargetExeStart()
+: <a class="el" href="tivx__log__rt__trace_8h.html#a6dbddee7fa8b5e077d34300c746445ae">tivx_log_rt_trace.h</a>
+</li>
+<li>tivxLogSetResourceUsedValue()
+: <a class="el" href="tivx__log__resource_8h.html#a9db4e2a2881ee751474565fbacf6b251">tivx_log_resource.h</a>
+</li>
 <li>tivxMemAlloc()
 : <a class="el" href="group__group__tivx__mem.html#gaf73adaa236689353ff173b268d49bf4b">tivx_mem.h</a>
 </li>
@@ -720,7 +885,7 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__mutex.html#gada5fda7d78c592af5151c18e08cebc0f">tivx_mutex.h</a>
 </li>
 <li>tivxObjDescAlloc()
-: <a class="el" href="group__group__tivx__obj__desc__priv.html#ga473e11e04aa7dd29797f3cb1bf9b1ba3">tivx_obj_desc_priv.h</a>
+: <a class="el" href="group__group__tivx__obj__desc__priv.html#ga8183cfad7692223676101a98c06d0af7">tivx_obj_desc_priv.h</a>
 </li>
 <li>tivxObjDescFree()
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#ga422c0dd5f70c5cf5bf21e8a22344b5e0">tivx_obj_desc_priv.h</a>
@@ -733,6 +898,27 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>tivxObjDescIsValidType()
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#ga7a5db8d3c1c9582edec01558e6d38152">tivx_obj_desc_priv.h</a>
+</li>
+<li>tivxObjDescQueueAddBlockedNode()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#a10b4622868a734790c8f3c1ad8bb25fc">tivx_obj_desc_queue.h</a>
+</li>
+<li>tivxObjDescQueueCreate()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#aaa7fd31f859e0c620caaeea6f6b7a8c5">tivx_obj_desc_queue.h</a>
+</li>
+<li>tivxObjDescQueueDequeue()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#ab9309c957f135e1eeeda9dbe381e8137">tivx_obj_desc_queue.h</a>
+</li>
+<li>tivxObjDescQueueEnqueue()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#ac323a878d040b3c9a8c785fd1a8e6336">tivx_obj_desc_queue.h</a>
+</li>
+<li>tivxObjDescQueueExtractBlockedNodes()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#a92bfc288253414e1a2345ddadbbd7322">tivx_obj_desc_queue.h</a>
+</li>
+<li>tivxObjDescQueueGetCount()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#a91be0f0cb9a6a403827b931dcbdc4468">tivx_obj_desc_queue.h</a>
+</li>
+<li>tivxObjDescQueueRelease()
+: <a class="el" href="tivx__obj__desc__queue_8h.html#a03ce8a177a5f3cc5cb8d56f02eedef2b">tivx_obj_desc_queue.h</a>
 </li>
 <li>tivxObjDescSend()
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#gacbe637a2134841596d5565877d33d8b3">tivx_obj_desc_priv.h</a>
@@ -775,6 +961,7 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>tivxPlatformGetTimeInUsecs()
 : <a class="el" href="group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180">tivx_platform.h</a>
+, <a class="el" href="group__group__tivx__ext.html#gafe9199791da44e9a0b0a26c81cf49180">tivx.h</a>
 </li>
 <li>tivxPlatformInit()
 : <a class="el" href="group__group__tivx__platform.html#gadfc3155b433c4d7d5327803d984abfd4">tivx_platform.h</a>
@@ -790,6 +977,12 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>tivxPlatformTargetMatch()
 : <a class="el" href="group__group__tivx__platform.html#gae52b4fec9fe9fc881217f834b16e4772">tivx_platform.h</a>
+</li>
+<li>tivxPrintAllResourceStats()
+: <a class="el" href="group__group__tivx__ext.html#gae50b437b3e537563735be9f33972425c">tivx.h</a>
+</li>
+<li>tivxQueryResourceStats()
+: <a class="el" href="group__group__tivx__ext.html#ga8f74ad9ea8dc296609e07a7101d94e1a">tivx.h</a>
 </li>
 <li>tivxQueueCreate()
 : <a class="el" href="group__group__tivx__queue.html#ga220fbb97bef3acbbb17f55b02ba4e386">tivx_queue.h</a>
@@ -817,6 +1010,12 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 </li>
 <li>tivxRemoveTargetKernel()
 : <a class="el" href="group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e">tivx_target_kernel.h</a>
+</li>
+<li>tivxSetGraphPipelineDepth()
+: <a class="el" href="group__group__tivx__ext.html#ga24b3d2d4a691c652efa0399803164b23">tivx.h</a>
+</li>
+<li>tivxSetNodeParameterNumBufByIndex()
+: <a class="el" href="group__group__tivx__ext.html#ga6916eb6d3932500e5732d02e85b8b591">tivx.h</a>
 </li>
 <li>tivxSetTargetKernelInstanceContext()
 : <a class="el" href="group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9">tivx_target_kernel.h</a>
@@ -878,11 +1077,20 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 <li>tivxTargetKernelInstanceInit()
 : <a class="el" href="group__group__tivx__target__kernel__instance.html#gabc98338e5a4bd250e675dca2d73d6ef8">tivx_target_kernel_instance.h</a>
 </li>
+<li>tivxTargetNodeDescAcquireAllParameters()
+: <a class="el" href="group__group__tivx__target.html#gad2f6e6b0d101644ab0c841d579b7f990">tivx_target.h</a>
+</li>
+<li>tivxTargetNodeDescReleaseAllParameters()
+: <a class="el" href="group__group__tivx__target.html#gadd1c6b17a9332f56facaec73bebe66a9">tivx_target.h</a>
+</li>
 <li>tivxTargetQueueObjDesc()
 : <a class="el" href="group__group__tivx__target.html#ga75b9a3e518e3eff982210fb179a5c35c">tivx_target.h</a>
 </li>
 <li>tivxTargetSetDefaultCreateParams()
 : <a class="el" href="group__group__tivx__target.html#ga5e59a1fe631ed63d7a225af8dcf6aa44">tivx_target.h</a>
+</li>
+<li>tivxTargetTriggerNode()
+: <a class="el" href="group__group__tivx__target.html#gaa9ec0462c0d317f02c1949197d4599a9">tivx_target.h</a>
 </li>
 <li>tivxTaskCreate()
 : <a class="el" href="group__group__tivx__task.html#gae7df8005aad76cd598146b82cddadc7b">tivx_task.h</a>
@@ -900,11 +1108,11 @@ Here is a list of all functions, variables, defines, enums, and typedefs with li
 : <a class="el" href="group__group__tivx__ext.html#ga120fa188b0eda727d86e907b645f5d61">tivx.h</a>
 </li>
 <li>to
-: <a class="el" href="tiovx__performance__TDA2Ex__LINUX_8html.html#a511f28d8d7a57b349eed6dbc4638911e">tiovx_performance_TDA2Ex_LINUX.html</a>
+: <a class="el" href="tiovx__performance__TDA2Ex__BIOS_8html.html#abbc43ef69f541dca5e2ca497cfdaeb9f">tiovx_performance_TDA2Ex_BIOS.html</a>
 , <a class="el" href="tiovx__performance__TDA3x__BIOS_8html.html#a511f28d8d7a57b349eed6dbc4638911e">tiovx_performance_TDA3x_BIOS.html</a>
-, <a class="el" href="tiovx__performance__TDA2x__LINUX_8html.html#a511f28d8d7a57b349eed6dbc4638911e">tiovx_performance_TDA2x_LINUX.html</a>
-, <a class="el" href="tiovx__performance__TDA2Ex__BIOS_8html.html#abbc43ef69f541dca5e2ca497cfdaeb9f">tiovx_performance_TDA2Ex_BIOS.html</a>
+, <a class="el" href="tiovx__performance__TDA2Ex__LINUX_8html.html#a511f28d8d7a57b349eed6dbc4638911e">tiovx_performance_TDA2Ex_LINUX.html</a>
 , <a class="el" href="tiovx__performance__TDA2x__BIOS_8html.html#a511f28d8d7a57b349eed6dbc4638911e">tiovx_performance_TDA2x_BIOS.html</a>
+, <a class="el" href="tiovx__performance__TDA2x__LINUX_8html.html#a511f28d8d7a57b349eed6dbc4638911e">tiovx_performance_TDA2x_LINUX.html</a>
 </li>
 </ul>
 </div>

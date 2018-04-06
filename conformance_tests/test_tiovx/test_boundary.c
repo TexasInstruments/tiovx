@@ -1628,6 +1628,7 @@ TEST(tivxBoundary, testVirtualObjectArrayItems)
 }
 
 // Doesn't fail
+// Modify test case to check to see if these are the same reference
 /* TIVX_CONTEXT_MAX_OBJECTS */
 TEST(tivxBoundary, testContext)
 {

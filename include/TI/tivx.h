@@ -82,52 +82,52 @@ extern "C" {
  */
 
 /*! \brief Name for DSP target class, instance 1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_DSP1        "DSP-1"
 
 /*! \brief Name for DSP target class, instance 2
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_DSP2        "DSP-2"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_EVE1        "EVE-1"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_EVE2        "EVE-2"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_EVE3        "EVE-3"
 
 /*! \brief Name for EVE target class, instance 1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_EVE4        "EVE-4"
 
 /*! \brief Name for A15 target class, core 0
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_A15_0       "A15-0"
 
 /*! \brief Name for IPU1 target class, core 0
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_IPU1_0      "IPU1-0"
 
 /*! \brief Name for IPU1 target class, core 1
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_IPU1_1      "IPU1-1"
 
 /*! \brief Name for IPU2 target class
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_IPU2        "IPU2"
 
@@ -145,7 +145,7 @@ extern "C" {
 /*!
  * \brief Max possible name of a target
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_MAX_NAME            (16u)
 
@@ -155,21 +155,21 @@ extern "C" {
  *         At system config "HOST" will map to one
  *         of available targets
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_TARGET_HOST        "HOST"
 
 /*!
  * \brief Max size of macro
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_RESOURCE_NAME_MAX (39u)
 
 /*!
  * \brief Max size of config file path
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #define TIVX_CONFIG_PATH_LENGTH   (512u)
 
@@ -186,7 +186,7 @@ extern "C" {
  *         change in this array as well.
  *
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 typedef enum _tivx_cpu_id_e {
 
@@ -233,7 +233,7 @@ typedef enum _tivx_cpu_id_e {
 
 /*! \brief Struct containing config parameters of given static value
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 typedef struct _tivx_resource_stats_t {
 
@@ -255,7 +255,7 @@ typedef struct _tivx_resource_stats_t {
  *
  *         TI attribute extensions to OpenVX
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 typedef enum _tivx_attribute_extensions_e {
 
@@ -267,7 +267,7 @@ typedef enum _tivx_attribute_extensions_e {
 
 /*! \brief Based on the VX_DF_IMAGE definition.
  * \note Use <tt>\ref tivx_df_image</tt> to contain these values.
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 typedef enum _tivx_df_image_e {
 
@@ -288,7 +288,7 @@ typedef enum _tivx_df_image_e {
  *        NOTE: In Vision SDK, this function is called during VIsion SDK
  *              system init so user need not call this explicitly
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 void tivxInit(void);
 
@@ -301,7 +301,7 @@ void tivxInit(void);
  *        NOTE: In Vision SDK, this function is called during VIsion SDK
  *              system init so user need not call this explicitly
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 void tivxDeInit(void);
 
@@ -314,7 +314,7 @@ void tivxDeInit(void);
  *        NOTE: In Vision SDK, this function is called during VIsion SDK
  *              system init so user need not call this explicitly
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 void tivxHostInit(void);
 
@@ -327,7 +327,7 @@ void tivxHostInit(void);
  *        NOTE: In Vision SDK, this function is called during VIsion SDK
  *              system init so user need not call this explicitly
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 void tivxHostDeInit(void);
 
@@ -347,7 +347,7 @@ void tivxHostDeInit(void);
  *        error and graph cannot execute.
  *
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *target_name);
 
@@ -368,48 +368,48 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
  *        Modules registered against TIVX_MODULE_NAME are called during vxCreateContext
  *        so user MUST ensure tivxRegisterModule() is called for TIVX_MODULE_NAME module
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publish_kernels_f publish, vx_unpublish_kernels_f unpublish);
 
 /*!
  * \brief UnRegister publish and unpublish functions if previously registered
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
 
 /*!
  * \brief Return CPU ID of the CPU on which this API is called
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_enum tivxGetSelfCpuId(void);
 
 /*!
  * \brief Query resource for resource stats
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stat);
 
 /*!
  * \brief Prints out resource stats
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 void tivxPrintAllResourceStats();
 
 /*!
  * \brief Exports the max used values to a file
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_status tivxExportAllResourceMaxUsedValueToFile();
 
 
 /*! \brief Macro to find size of array
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 #ifndef dimof
 #define dimof(x) (sizeof(x)/sizeof(x[0]))
@@ -418,7 +418,7 @@ vx_status tivxExportAllResourceMaxUsedValueToFile();
 /*!
  * \brief Utility function to create a node given parameter references and kernel enum
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
                                 vx_enum kernelenum,
@@ -428,7 +428,7 @@ vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
 /*!
  * \brief Utility function to create a node given parameter references and kernel reference
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_node tivxCreateNodeByKernelRef(vx_graph graph,
                                 vx_kernel kernel,
@@ -438,7 +438,7 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
 /*!
  * \brief Utility function to create a node given parameter references and kernel name
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_node tivxCreateNodeByKernelName(vx_graph graph,
                                 char *kernel_name,
@@ -448,21 +448,21 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
 /*!
  * \brief Utility function to check if the given reference is virtual or not
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_bool tivxIsReferenceVirtual(vx_reference ref);
 
 /*!
  * \brief Utility function to know if target is enabled or not
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_bool tivxIsTargetEnabled(char target_name[]);
 
 /*!
  * \brief Get the time in micro seconds
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 uint64_t tivxPlatformGetTimeInUsecs(void);
 
@@ -473,7 +473,7 @@ uint64_t tivxPlatformGetTimeInUsecs(void);
  * using 'output_file_prefix' as filename prefix.
  * The output files are stored at path 'output_file_path'
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
 
@@ -481,7 +481,7 @@ vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, char *output_file_pat
 /*!
  * \brief Enable run-time logging of graph trace to 'stdout'
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxLogRtTrace(vx_graph graph);
 
@@ -497,13 +497,13 @@ vx_status VX_API_CALL tivxLogRtTrace(vx_graph graph);
  * This API acts as a hint and framework may overide user specified settings
  * in case any of above conditions are not met.
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf);
 
 /*! \brief Indicates to the implementation the depth of the graph pipeline
  *
- * \ingroup group_tivx_ext
+ * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
 
