@@ -645,6 +645,35 @@ TEST(tivxBoundary, testMapArray)
     VX_CALL(vxReleaseArray(&array));
 }
 
+TEST(tivxBoundary, testHeadLeafNodes)
+{
+    int i;
+    vx_image src_image[8], dst_image[8];
+    vx_node node[8];
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < 8; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(node[i]      = vxNotNode(graph, src_image[i], dst_image[i]), VX_TYPE_NODE);
+    }
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    for (i = 0; i < 8; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        VX_CALL(vxReleaseImage(&dst_image[i]));
+        VX_CALL(vxReleaseNode(&node[i]));
+    }
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TEST_WITH_ARG(tivxNegativeBoundary, negativeTestObjectArrayItems, Arg,
     PARAMETERS
 )
@@ -1163,6 +1192,89 @@ TEST_WITH_ARG(tivxNegativeBoundary, negativeTestVirtualPyramidLevelBoundary, Arg
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* TIVX_GRAPH_MAX_HEAD_NODES = 8 */
+TEST(tivxNegativeBoundary, negativeTestHeadNodes)
+{
+    int i;
+    vx_image src_image[9], dst_image[9];
+    vx_node node[9];
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for (i = 0; i < 9; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(node[i]      = vxNotNode(graph, src_image[i], dst_image[i]), VX_TYPE_NODE);
+    }
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    for (i = 0; i < 9; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        VX_CALL(vxReleaseImage(&dst_image[i]));
+        VX_CALL(vxReleaseNode(&node[i]));
+    }
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* TIVX_GRAPH_MAX_LEAF_NODES = 8 */
+TEST(tivxNegativeBoundary, negativeTestLeafNodes)
+{
+    int i;
+    vx_image src_image[8], dst_image[10], sobel_x, sobel_y;
+    vx_scalar scalar_shift;
+    vx_node node[10];
+    vx_int32 tmp = 0;
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar_shift = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
+
+    for (i = 0; i < 7; i++)
+    {
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(node[i]      = vxNotNode(graph, src_image[i], dst_image[i]), VX_TYPE_NODE);
+    }
+    ASSERT_VX_OBJECT(src_image[7] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(sobel_x      = vxCreateImage(context, 16, 16, VX_DF_IMAGE_S16),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(sobel_y      = vxCreateImage(context, 16, 16, VX_DF_IMAGE_S16),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image[7] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image[8] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8),   VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node[7] = vxSobel3x3Node(graph, src_image[7], sobel_x, sobel_y), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node[8] = vxConvertDepthNode(graph, sobel_x, dst_image[7], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node[9] = vxConvertDepthNode(graph, sobel_y, dst_image[8], VX_CONVERT_POLICY_WRAP, scalar_shift), VX_TYPE_NODE);
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    VX_CALL(vxReleaseScalar(&scalar_shift));
+    for (i = 0; i < 7; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        VX_CALL(vxReleaseImage(&dst_image[i]));
+        VX_CALL(vxReleaseNode(&node[i]));
+    }
+    VX_CALL(vxReleaseImage(&src_image[7]));
+    VX_CALL(vxReleaseImage(&sobel_x));
+    VX_CALL(vxReleaseImage(&sobel_y));
+    VX_CALL(vxReleaseImage(&dst_image[7]));
+    VX_CALL(vxReleaseImage(&dst_image[8]));
+    VX_CALL(vxReleaseNode(&node[7]));
+    VX_CALL(vxReleaseNode(&node[8]));
+    VX_CALL(vxReleaseNode(&node[9]));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxBoundary,
         testImageBoundary,
         testVirtualImageBoundary,
@@ -1189,7 +1301,8 @@ TESTCASE_TESTS(tivxBoundary,
         testVirtualObjectArrayItems,
         testContext,
         testMapImage,
-        testMapArray
+        testMapArray,
+        testHeadLeafNodes
         )
 
 TESTCASE_TESTS(tivxNegativeBoundary,
@@ -1215,6 +1328,8 @@ TESTCASE_TESTS(tivxNegativeBoundary,
         negativeTestPyramidBoundary,
         negativeTestImageBoundary,
         negativeTestVirtualPyramidBoundary,
-        negativeTestVirtualImageBoundary
+        negativeTestVirtualImageBoundary,
+        negativeTestHeadNodes,
+        negativeTestLeafNodes
         )
 

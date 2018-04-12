@@ -620,6 +620,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
 {
+    vx_status status = VX_SUCCESS;
     vx_node node;
     uint32_t i;
     uint32_t num_in, num_out;
@@ -636,17 +637,31 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
 
         if(num_in==0)
         {
+            if (graph->num_head_nodes >= TIVX_GRAPH_MAX_HEAD_NODES)
+            {
+                graph->num_head_nodes = TIVX_GRAPH_MAX_HEAD_NODES;
+                status = VX_ERROR_NO_RESOURCES;
+                VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
+                break;
+            }
             graph->head_nodes[graph->num_head_nodes] = node;
             graph->num_head_nodes++;
         }
         if(num_out==0)
         {
+            if (graph->num_leaf_nodes >= TIVX_GRAPH_MAX_LEAF_NODES)
+            {
+                graph->num_leaf_nodes = TIVX_GRAPH_MAX_LEAF_NODES;
+                status = VX_ERROR_NO_RESOURCES;
+                VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
+                break;
+            }
             graph->leaf_nodes[graph->num_leaf_nodes] = node;
             graph->num_leaf_nodes++;
         }
     }
 
-    return VX_SUCCESS;
+    return status;
 }
 
 static vx_status ownGraphAllocateDataObject(vx_graph graph, vx_node node_cur, uint32_t prm_cur_idx, vx_reference ref)
