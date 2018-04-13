@@ -112,6 +112,9 @@
  */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
 #include <VX/vx.h>
 #include <bmp_rd_wr.h>
 #include <utility.h>
@@ -525,3 +528,112 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
     return status;
 }
 
+
+void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum data_type){
+    FILE* ptr_file;
+
+    // Initialize buffer for reading each line of file
+    int nbytes = sizeof(float);
+    char* buff = malloc(nbytes);
+
+    // Initialize variables for tokenizing each line based on delimiter values
+    char* token;
+    char* delim = " \n\t,";
+    float val;
+
+    // Initialize different data type arrays
+    vx_uint8* u8;
+    vx_int32* i32;
+    vx_float32* f32;
+
+    // Try reading in file
+    ptr_file = fopen(filename, "r");
+    if(!ptr_file){
+        printf("FAILED READING FILE");
+    }
+
+    // If file read is successful, try to populate matrix
+    int i = 0;
+    while(fgets(buff, nbytes, ptr_file) > 0){
+        // Split string into tokens at whitespaces, commas, newlines, or tabs
+        for(token = strtok(buff, delim); token != NULL; token = strtok(NULL, delim)){
+            val = strtod(token, NULL);
+
+            switch(data_type){
+                case VX_TYPE_FLOAT32:
+                    f32 = buffer;
+                    f32[i] = val;
+                    break;
+
+                case VX_TYPE_UINT8:
+                    u8 = buffer;
+                    uint8_t val_u8 = val;
+                    u8[i] = val_u8;
+                    break;
+
+                case VX_TYPE_INT32:
+                    i32 = buffer;
+                    int32_t val_int32 = val;
+                    i32[i] = val_int32;
+                    break;
+
+                default:
+                    break;
+            }
+
+            i++;
+            if (i >= num_elements){
+                break;
+            }
+        }
+        // Need to break out of both loops when this condition is met
+        if (i >= num_elements){
+            break;
+        }
+    }
+    fclose(ptr_file);
+    //printf("val of first element: %d\n", u8[0]);
+}
+
+
+vx_matrix create_matrix_from_file(vx_context context, vx_enum data_type, int cols, int rows, char *filename){
+    // Create vx_float32 buffer object
+    vx_float32 mat[rows*cols];
+
+    // Call generic function that will populate data object
+    ascii_file_read(filename, rows*cols, mat, data_type);
+
+    // Create vx_matrix object
+    vx_matrix matrix = vxCreateMatrix(context, data_type, cols, rows);
+
+    // Set pointer reference between vx_float32 data object and
+    vxCopyMatrix(matrix, mat, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+    return matrix;
+}
+
+vx_status save_pyramid_to_file(char *filename, vx_pyramid pyr, vx_size levels){
+    vx_status status = VX_SUCCESS;
+    vx_uint32 index;
+    vx_image image;
+
+    printf("Saving pyramid object...\n");
+    for (index=0; index<levels; index++){
+        // Create buffer for filename
+        char img_filename[1000] = "";
+        strcat(img_filename, filename);
+
+        // Create new filename for each level
+        char img_index[10] = "";
+        sprintf(img_index, "%d.bmp", index);
+        strcat(img_filename, img_index);
+        printf("New filename: %s", img_filename);
+
+        // Save each level
+        image = vxGetPyramidLevel(pyr, index);
+        status = save_image_to_file(img_filename, image);
+        status = vxReleaseImage(&image);
+    }
+
+    return status;
+}

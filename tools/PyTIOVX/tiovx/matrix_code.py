@@ -72,7 +72,7 @@ class MatrixCode (ReferenceCode) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
         if self.ref.in_file != "./":
-            code_gen.write_line('usecase->%s = create_matrix_from_file(context, %s, %d, %d, "%s");' % (self.ref.name, Type.get_vx_enum_name(self.ref.data_type), self.ref.column, self.ref.rows, self.ref.in_file));
+            code_gen.write_line('//usecase->%s = create_matrix_from_file(context, %s, %d, %d, "%s");' % (self.ref.name, Type.get_vx_enum_name(self.ref.data_type), self.ref.column, self.ref.rows, self.ref.in_file));
         else:
             code_gen.write_line("usecase->%s = vxCreateMatrix(context, %s, %d, %d);" % (self.ref.name, Type.get_vx_enum_name(self.ref.data_type), self.ref.column, self.ref.rows));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));

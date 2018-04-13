@@ -85,4 +85,7 @@ void show_image_attributes(vx_image image);
 void show_graph_attributes(vx_graph graph);
 void show_node_attributes(vx_node node);
 
+vx_matrix create_matrix_from_file(vx_context context, vx_enum data_type, int cols, int rows, char *filename);
+void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum data_type);
+
 #endif
