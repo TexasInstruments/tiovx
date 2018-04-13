@@ -715,6 +715,7 @@ class NodeChannelCombine (Node) :
         assert ( self.ref[1].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[2].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[3].df_image == DfImage.U8 ), "Image data format must be U8"
+        assert ( self.ref[4].df_image != DfImage.U8 ), "Image data format must not be U8"
 
 ## Node object used to generate a Channel Extract node
 #
@@ -820,7 +821,7 @@ class NodeConvolve (Node) :
         Node.checkParams(self, *param_type_args)
         # additional error conditions over the basic ones
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input format must be U8"
-        assert ( self.ref[2].df_image == DfImage.S16 ), "Output format must be S16"
+        assert ( self.ref[2].df_image == DfImage.U8 or self.ref[2].df_image == DfImage.S16 ), "Output format must be either U8 or S16"
 
 ## Node object used to generate a Dilate3x3 node
 #
@@ -908,15 +909,14 @@ class NodeFastCorners (Node) :
     ## Constructor used to create this object
     #
     # \param image_in1        [in] Input image
-    # \param strengh_thresh2  [in] Strength threshold scalar input
+    # \param strength_thresh2  [in] Strength threshold scalar input
     # \param nonmax3          [in] Nonmax suppression boolean input
     # \param arr_out4         [in] Output array
     # \param corners5         [in] Number of corners scalar output
     # \param name             [in] [optional] Name of the node; Default="default"
     # \param target           [in] [optional] Default core to run on; Default="Target.DEFAULT"
-    def __init__(self, image_in1, strengh_thresh2, nonmax3, arr_out4, corners5, name="default", target=Target.DEFAULT) :
-        scalar3 = Scalar(Type.ENUM, nonmax3)
-        Node.__init__(self, "org.khronos.openvx.fast_corners", image_in1, strengh_thresh2, scalar3, arr_out4, corners5)
+    def __init__(self, image_in1, strength_thresh2, nonmax3, arr_out4, corners5, name="default", target=Target.DEFAULT) :
+        Node.__init__(self, "org.khronos.openvx.fast_corners", image_in1, strength_thresh2, nonmax3, arr_out4, corners5)
         self.setParams(3, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_FAST_CORNERS");
@@ -1000,10 +1000,10 @@ class NodeHarrisCorners (Node) :
     # \param num_corners8     [in] Output number of corners scalar
     # \param name             [in] [optional] Name of the node; Default="default"
     # \param target           [in] [optional] Default core to run on; Default="Target.DEFAULT"
-    def __init__(self, image_in1, strengh_thresh2, dist3, sensitivity4, gradient_size5, block_size6, arr_out7, num_corners8, name="default", target=Target.DEFAULT) :
-        scalar5 = Scalar(Type.ENUM, gradient_size5)
-        scalar6 = Scalar(Type.ENUM, block_size6)
-        Node.__init__(self, "org.khronos.openvx.harris_corners", image_in1, strengh_thresh2, dist3, sensitivity4, scalar5, scalar6, arr_out7, num_corners8)
+    def __init__(self, image_in1, strength_thresh2, dist3, sensitivity4, gradient_size5, block_size6, arr_out7, num_corners8, name="default", target=Target.DEFAULT) :
+        scalar5 = Scalar(Type.INT32, gradient_size5)
+        scalar6 = Scalar(Type.INT32, block_size6)
+        Node.__init__(self, "org.khronos.openvx.harris_corners", image_in1, strength_thresh2, dist3, sensitivity4, scalar5, scalar6, arr_out7, num_corners8)
         self.setParams(6, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR, )
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_HARRIS_CORNERS");
@@ -1090,7 +1090,7 @@ class NodeLaplacianPyramid (Node) :
         # additional error conditions over the basic ones
         assert ( self.ref[0].df_image == DfImage.U8 ), "Input image data format must be U8"
         assert ( self.ref[1].format == DfImage.S16 ), "Output pyramid image data format must be S16"
-        assert ( self.ref[2].df_image == DfImage.S16 ), "Output image data format must be S16"
+        assert ( self.ref[2].df_image == DfImage.S16 or self.ref[2].df_image == DfImage.U8 ), "Output image data format must be either U8 or S16"
 
 ## Node object used to generate a Laplacian Reconstruct node
 #
@@ -1116,7 +1116,7 @@ class NodeLaplacianReconstruct (Node) :
         Node.checkParams(self, *param_type_args)
         # additional error conditions over the basic ones
         assert ( self.ref[0].format == DfImage.S16 ), "Input pyramid image data format must be S16"
-        assert ( self.ref[1].df_image == DfImage.S16 ), "Input image data format must be S16"
+        assert ( self.ref[1].df_image == DfImage.S16 or self.ref[1].df_image == DfImage.U8), "Input image data format must be either U8 or S16"
         assert ( self.ref[2].df_image == DfImage.U8 ), "Output image data format must be U8"
 
 ## Node object used to generate an Integral Image node
@@ -1277,9 +1277,12 @@ class NodeOpticalFlowPyrLK (Node) :
     # \param target                  [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, pyr_in1, pyr_in2, array_in3, array_in4, array_out5, termination6, epsilon7, num_iters8, use_initial_estimate9, window_dim10, name="default", target=Target.DEFAULT) :
         scalar6 = Scalar(Type.ENUM, termination6)
-        scalar10 = Scalar(Type.ENUM, window_dim10)
-        Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10, array_out5)
-        self.setParams(9, 1, Type.PYRAMID, Type.PYRAMID, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY)
+        epsilon7 = Scalar(Type.FLOAT32, epsilon7)
+        num_iters8 = Scalar(Type.UINT32, num_iters8)
+        use_initial_estimate9 = Scalar(Type.BOOL, use_initial_estimate9)
+        scalar10 = Scalar(Type.SIZE, window_dim10)
+        Node.__init__(self, "org.khronos.openvx.optical_flow_pyr_lk", pyr_in1, pyr_in2, array_in3, array_in4, array_in5, scalar6, epsilon7, num_iters8, use_initial_estimate9, scalar10)
+        self.setParams(9, 1, Type.PYRAMID, Type.PYRAMID, Type.ARRAY, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_OPTICAL_FLOW_PYR_LK");
 
@@ -1288,7 +1291,7 @@ class NodeOpticalFlowPyrLK (Node) :
         # additional error conditions over the basic ones
         assert ( self.ref[0].format == DfImage.U8 ), "Input pyramid image data format must be U8"
         assert ( self.ref[1].format == DfImage.U8 ), "Input pyramid image data format must be U8"
-        assert ( self.ref[5].data_type == Type.FLOAT32 ), "Epsilon scalar format must be F32"
+        assert ( self.ref[6].data_type == Type.FLOAT32 ), "Epsilon scalar format must be F32"
 
 ## Node object used to generate a Phase node
 #
@@ -1396,15 +1399,15 @@ class NodeScaleImage (Node) :
     # \param target          [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_out2, interp3, name="default", target=Target.DEFAULT) :
         scalar = Scalar(Type.ENUM, interp3)
-        Node.__init__(self, "org.khronos.openvx.scale_image", image_in1, scalar, image_out2)
-        self.setParams(2, 1, Type.IMAGE, Type.SCALAR, Type.IMAGE)
+        Node.__init__(self, "org.khronos.openvx.scale_image", image_in1, image_out2, scalar)
+        self.setParams(2, 1, Type.IMAGE, Type.IMAGE, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_SCALE_IMAGE");
 
     def checkParams(self, *param_type_args) :
         Node.checkParams(self, *param_type_args)
         # additional error conditions over the basic ones
-        assert ( self.ref[0].df_image == self.ref[2].df_image ), "Input and Output MUST have same image data format"
+        assert ( self.ref[0].df_image == self.ref[1].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
 #TODO Order of params
