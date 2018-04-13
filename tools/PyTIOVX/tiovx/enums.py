@@ -145,6 +145,10 @@ class Type(Enum):
     META_FORMAT  = 35
     ## OpenVX equivalent = VX_TYPE_OBJECT_ARRAY
     OBJECT_ARRAY = 36
+    ## OpenVX equivalent = VX_TYPE_KEYPOINT
+    KEYPOINT     = 37
+    ## OpenVX equivalent = VX_TYPE_COORDINATES2D
+    COORDINATES2D = 38
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:
@@ -464,6 +468,27 @@ class Policy(Enum) :
     def get_vx_name(type) :
         return "vx_convert_policy_e"
 
+## Round Policy (OpenVX equivalent = vx_round_policy_e)
+#
+# \par Example usage:
+# \code
+# Round.TO_ZERO
+# Round.TO_NEAREST_EVEN
+# \endcode
+# \ingroup ENUMS
+#
+class Round(Enum) :
+    ## OpenVX equivalent = VX_ROUND_POLICY_TO_ZERO
+    TO_ZERO          = 1
+    ## OpenVX equivalent = VX_ROUND_POLICY_TO_NEAREST_EVEN
+    TO_NEAREST_EVEN  = 2
+
+    def get_vx_enum_name(type) :
+        return "VX_ROUND_POLICY_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_round_policy_e"
+
 ## Non linear filter type (OpenVX equivalent = vx_non_linear_filter_e)
 #
 # \par Example usage:
@@ -512,7 +537,7 @@ class Pattern(Enum) :
     def get_vx_name(type) :
         return "vx_pattern_e"
 
-## Interpollation type (OpenVX equivalent = vx_interpolation_type_e)
+## Interpolation type (OpenVX equivalent = vx_interpolation_type_e)
 #
 # \par Example usage:
 # \code
@@ -678,3 +703,27 @@ class ThresholdType(Enum):
 
     def get_vx_name(type) :
         return "vx_threshold_type_e"
+
+## Termination Criteria (OpenVX equivalent = vx_termination_criteria_e)
+#
+# \par Example usage:
+# \code
+# TermCriteria.ITERATIONS
+# TermCriteria.EPSILON
+# TermCriteria.BOTH
+# \endcode
+# \ingroup ENUMS
+#
+class TermCriteria(Enum):
+    ## OpenVX equivalent = VX_TERM_CRITERIA_ITERATIONS
+    ITERATIONS = 1
+    ## OpenVX equivalent = VX_TERM_CRITERIA_EPSILON
+    EPSILON = 2
+    ## OpenVX equivalent = VX_TERM_CRITERIA_BOTH
+    BOTH = 3
+
+    def get_vx_enum_name(type) :
+        return "VX_TERM_CRITERIA_" + type.name
+
+    def get_vx_name(type) :
+        return "vx_termination_criteria_e"

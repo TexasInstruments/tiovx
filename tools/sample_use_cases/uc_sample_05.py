@@ -91,7 +91,7 @@ sc_max_cnt = Scalar(Type.UINT32, 100)
 
 node_minmaxloc = NodeMinMaxLoc(img_out_conv, sc_min1, sc_max1, arr_minmax_out1, arr_minmax_out2, sc_min_cnt, sc_max_cnt);
 
-gaussian_pyr = Pyramid(5, 1, 640, 480, DfImage.U8)
+gaussian_pyr = Pyramid(5, PyramidScale.HALF, 640, 480, DfImage.U8)
 node_gaussian_pyramid = NodeGaussianPyramid(img_out_acc_w, gaussian_pyr, target=Target.EVE3);
 
 img_out_phase = Image(640, 480, DfImage.U8)
@@ -104,9 +104,9 @@ node_remap = NodeRemap(img_out_phase, remap, InterpolationType.BILINEAR, img_out
 img_out_laplacian = Image(1280, 720, DfImage.U8)
 node_remap = NodeRemap(img_out_phase, remap, InterpolationType.BILINEAR, img_out_remap, target=Target.DSP2);
 
-thr_canny = Threshold(0, Type.UINT8)
+thr_canny = Threshold(ThresholdType.BINARY, Type.UINT8)
 img_out_canny = Image(1280, 720, DfImage.U8);
-node_canny_edge_detect = NodeCannyEdgeDetector(img_out_remap, thr_canny, 100, Norm.L1, img_out_canny, target=Target.EVE3)
+node_canny_edge_detect = NodeCannyEdgeDetector(img_out_remap, thr_canny, 3, Norm.L1, img_out_canny, target=Target.EVE3)
 
 img_out_nonlinear_filter = Image(1280, 720, DfImage.U8);
 nonlinear_matrix = Matrix(Type.UINT8, 3, 3)

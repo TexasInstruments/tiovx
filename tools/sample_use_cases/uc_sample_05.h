@@ -71,9 +71,9 @@ typedef struct _uc_sample_05_t *uc_sample_05;
 typedef struct _uc_sample_05_t
 {
     vx_context context;
-    
+
     vx_graph graph_0;
-    
+
     vx_image image_1;
     vx_image image_2;
     vx_scalar scalar_5;
@@ -103,7 +103,7 @@ typedef struct _uc_sample_05_t
     vx_lut lut_42;
     vx_image image_41;
     vx_image image_44;
-    
+
     vx_node node_3;
     vx_node node_6;
     vx_node node_9;
@@ -117,7 +117,7 @@ typedef struct _uc_sample_05_t
     vx_node node_40;
     vx_node node_43;
     vx_node node_45;
-    
+
 } uc_sample_05_t;
 
 vx_status uc_sample_05_data_create(uc_sample_05 usecase);

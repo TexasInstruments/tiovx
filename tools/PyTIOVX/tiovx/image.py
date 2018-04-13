@@ -109,12 +109,18 @@ class Image (Reference) :
     # \param width [in] Width of image
     # \param height [in] Height of image
     # \param df_image [in] Image data format. tiovx::enums::DfImage
+    # \param access_type [in] [optional] Memory access type
+    # \param in_file_addr [in] [optional] In the case of memory accessed from file, the path to the input file
+    # \param out_file_addr [in] [optional] In the case of memory outputted to file, the path to the output file
     # \param name [in] [optional] Name of the object
-    def __init__(self, width, height, df_image, name="default") :
+    def __init__(self, width, height, df_image, access_type="Host", in_file_addr="./", out_file_addr="./", name="default") :
         Reference.__init__(self, Type.IMAGE, name)
         self.width = width
         self.height = height
         self.df_image = df_image
+        self.access_type = access_type;
+        self.in_file = in_file_addr;
+        self.out_file = out_file_addr;
 
     def __str__(self):
         return Reference.__str__(self) + ' [ ' + str(self.width) + 'x' + str(self.height) + ':' + self.df_image.name + ' ]'

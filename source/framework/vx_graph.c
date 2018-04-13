@@ -173,6 +173,10 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph)
         {
             free_index = graph->num_nodes;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownGraphGetFreeNodeIndex: Max nodes per graph (%d) has been exceeded\n", TIVX_GRAPH_MAX_NODES);
+        }
     }
 
     return free_index;

@@ -70,5 +70,5 @@ class ReferenceCode :
        code_gen.write_newline()
 
     def set_ref_name(self, code_gen) :
-        code_gen.write_line('vxSetReferenceName( (vx_reference)usecase->%s, "%s");' % (self.ref.name, self.ref.name))
+        code_gen.write_line('status = vxSetReferenceName( (vx_reference)usecase->%s, "%s");' % (self.ref.name, self.ref.name))
 

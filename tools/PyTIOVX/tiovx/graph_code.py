@@ -69,14 +69,6 @@ class GraphCode (ReferenceCode) :
         code_gen.write_line('vx_graph %s;' % self.ref.name)
 
     def call_create(self, code_gen) :
-        code_gen.write_if_status();
-        code_gen.write_open_brace()
-        code_gen.write_line("graph = vxCreateGraph(context);");
-        code_gen.write_line("if (graph == NULL)");
-        code_gen.write_open_brace()
-        code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
-        code_gen.write_close_brace()
-        code_gen.write_close_brace()
         for node in self.ref.ref :
             NodeCode(node).call_create(code_gen)
         code_gen.write_newline()

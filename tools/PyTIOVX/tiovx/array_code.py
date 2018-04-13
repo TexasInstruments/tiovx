@@ -72,7 +72,12 @@ class ArrayCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreateArray(context, %s, %d);" % (self.ref.name, Type.get_vx_enum_name(self.ref.item_type), self.ref.capacity));
+        if self.ref.access_type == "Virtual":
+            code_gen.write_line("usecase->%s = vxCreateVirtualArray(graph, %s, %d);" % (self.ref.name, Type.get_vx_enum_name(self.ref.item_type), self.ref.capacity));
+        elif self.ref.in_file != "./":
+            code_gen.write_line('//usecase->%s = create_array_from_file(context, "%s", vx_false_e);' % (self.ref.name, self.ref.in_file));
+        else:
+            code_gen.write_line("usecase->%s = vxCreateArray(context, %s, %d);" % (self.ref.name, Type.get_vx_enum_name(self.ref.item_type), self.ref.capacity));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");

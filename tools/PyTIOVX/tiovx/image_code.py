@@ -71,10 +71,18 @@ class ImageCode (ReferenceCode) :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreateImage(context, %d, %d, %s);" % (self.ref.name, self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.df_image)));
+        if self.ref.access_type == "Virtual":
+            code_gen.write_line("usecase->%s = vxCreateVirtualImage(graph, %d, %d, %s);" % (self.ref.name, self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.df_image)));
+        elif self.ref.in_file != "./":
+            code_gen.write_line('usecase->%s = create_image_from_file(context, "%s", vx_false_e);' % (self.ref.name, self.ref.in_file));
+        else:
+            code_gen.write_line("usecase->%s = vxCreateImage(context, %d, %d, %s);" % (self.ref.name, self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.df_image)));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");
         code_gen.write_close_brace()
+        code_gen.write_if_status();
+        code_gen.write_open_brace();
         self.set_ref_name(code_gen)
+        code_gen.write_close_brace()
         code_gen.write_close_brace()

@@ -82,12 +82,18 @@ class Matrix (Reference) :
     # \param data_type [in] Data type. tiovx::enums::Type
     # \param coloumns [in] Coloumns
     # \param rows [in] Rows
+    # \param access_type [in] [optional] Memory access type
+    # \param in_file_addr [in] [optional] In the case of memory accessed from file, the path to the input file
+    # \param out_file_addr [in] [optional] In the case of memory outputted to file, the path to the output file
     # \param name [in] [optional] Name of the object
-    def __init__(self, data_type, column, rows, name="default") :
+    def __init__(self, data_type, column, rows, access_type="Host", in_file_addr="./", out_file_addr="./", name="default") :
         Reference.__init__(self, Type.MATRIX, name)
         self.data_type = data_type
         self.column = column
         self.rows = rows
+        self.access_type = access_type;
+        self.in_file = in_file_addr;
+        self.out_file = out_file_addr;
 
     def __str__(self):
         return Reference.__str__(self) + ' [ ' + self.data_type.name + ':' + str(self.rows) + 'x' + str(self.column) + ' ]'

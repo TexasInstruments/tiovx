@@ -71,8 +71,14 @@ class PyramidCode :
     def call_create(self, code_gen) :
         code_gen.write_if_status();
         code_gen.write_open_brace();
-        code_gen.write_line("usecase->%s = vxCreatePyramid(context, %d, %d, %d, %d, %s);"
-            % (self.ref.name, self.ref.num_levels, PyramidScale.get_vx_enum_name(self.ref.scale), self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.format)));
+        if self.ref.access_type == "Virtual":
+            code_gen.write_line("usecase->%s = vxCreateVirtualPyramid(graph, %d, %s, %d, %d, %s);"
+                % (self.ref.name, self.ref.num_levels, PyramidScale.get_vx_enum_name(self.ref.scale), self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.format)));
+        elif self.ref.in_file != "./":
+            code_gen.write_line('//usecase->%s = create_pyramid_from_file(context, "%s", vx_false_e);' % (self.ref.name, self.ref.in_file));
+        else:
+            code_gen.write_line("usecase->%s = vxCreatePyramid(context, %d, %s, %d, %d, %s);"
+                % (self.ref.name, self.ref.num_levels, PyramidScale.get_vx_enum_name(self.ref.scale), self.ref.width, self.ref.height, DfImage.get_vx_enum_name(self.ref.format)));
         code_gen.write_line("if (usecase->%s == NULL)" % (self.ref.name));
         code_gen.write_open_brace()
         code_gen.write_line("status = VX_ERROR_NO_RESOURCES;");

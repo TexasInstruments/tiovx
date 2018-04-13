@@ -79,11 +79,17 @@ class Array (Reference) :
     #
     # \param item_type [in] Data type. tiovx::enums::Type
     # \param capacity [in] Number of elements that can be stored in the Array
+    # \param access_type [in] [optional] Memory access type
+    # \param in_file_addr [in] [optional] In the case of memory accessed from file, the path to the input file
+    # \param out_file_addr [in] [optional] In the case of memory outputted to file, the path to the output file
     # \param name [in] [optional] Name of the object
-    def __init__(self, item_type, capacity, name="default") :
+    def __init__(self, item_type, capacity, access_type="Host", in_file_addr="./", out_file_addr="./", name="default") :
         Reference.__init__(self, Type.ARRAY, name)
         self.item_type = item_type
         self.capacity = capacity
+        self.access_type = access_type;
+        self.in_file = in_file_addr;
+        self.out_file = out_file_addr;
 
     def __str__(self):
         return Reference.__str__(self) + ' [ ' + self.item_type.name + ', ' + str(self.capacity) + ' ]'

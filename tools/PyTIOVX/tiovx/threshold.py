@@ -68,8 +68,8 @@ from . import *
 # \code
 # from tiovx import *
 #
-# my_threshold1 = Threshold(10, ThresholdType.BINARY, Type.UINT8, name="mythreshold")
-# my_threshold2 = Threshold(10, ThresholdType.RANGE, Type.UINT16)
+# my_threshold1 = Threshold(ThresholdType.BINARY, Type.UINT8, name="mythreshold")
+# my_threshold2 = Threshold(ThresholdType.RANGE, Type.UINT16)
 # \endcode
 #
 # \ingroup DATA
