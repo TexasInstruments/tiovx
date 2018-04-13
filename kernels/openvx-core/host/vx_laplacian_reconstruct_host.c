@@ -228,7 +228,10 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
 {
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
+    vx_uint32 i;
     vx_image img;
+    vx_size levels;
+    vx_pyramid pyr;
 
     if (num_params != TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS)
     {
@@ -237,12 +240,21 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
 
     if (VX_SUCCESS == status)
     {
+        pyr = (vx_pyramid)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX];
+
+        status |= vxQueryPyramid(pyr, VX_PYRAMID_LEVELS, &levels, sizeof(levels));
+
+    }
+
+    if (VX_SUCCESS == status)
+    {
         tivxKernelValidRectParams_init(&prms);
         img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX], 0);
         prms.in_img[0] = img;
+        prms.in_img[1] = (vx_image)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_IMG_IDX];
         prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_LPL_RCNSTR_OUT_IMG_IDX];
 
-        prms.num_input_images = 1;
+        prms.num_input_images = 2;
         prms.num_output_images = 1;
 
         prms.top_pad = 0;
@@ -255,6 +267,49 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
         status = tivxKernelConfigValidRect(&prms);
         status |= vxReleaseImage(&img);
     }
+
+    if (VX_SUCCESS == status)
+    {
+        for (i = 1; i < levels-1; i++)
+        {
+            img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX], i);
+            prms.in_img[0] = img;
+
+            prms.num_input_images = 1;
+            prms.num_output_images = 0;
+
+            prms.top_pad = 0;
+            prms.bot_pad = 0;
+            prms.left_pad = 0;
+            prms.right_pad = 0;
+
+            prms.border_mode = VX_BORDER_UNDEFINED;
+
+            status = tivxKernelConfigValidRect(&prms);
+            status |= vxReleaseImage(&img);
+        }
+    }
+
+    /*if (VX_SUCCESS == status)
+    {
+        tivxKernelValidRectParams_init(&prms);
+        img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX], (levels-1));
+        prms.in_img[0] = img;
+        prms.in_img[1] = (vx_image)parameters[TIVX_KERNEL_LPL_RCNSTR_IN_IMG_IDX];
+
+        prms.num_input_images = 2;
+        prms.num_output_images = 0;
+
+        prms.top_pad = 0;
+        prms.bot_pad = 0;
+        prms.left_pad = 0;
+        prms.right_pad = 0;
+
+        prms.border_mode = VX_BORDER_UNDEFINED;
+
+        status = tivxKernelConfigValidRect(&prms);
+        status |= vxReleaseImage(&img);
+    }*/
 
     return status;
 }
@@ -285,7 +340,7 @@ vx_status tivxAddKernelLaplacianReconstruct(vx_context context)
         {
             status = vxAddParameterToKernel(kernel,
                 index,
-                VX_OUTPUT,
+                VX_INPUT,
                 VX_TYPE_PYRAMID,
                 VX_PARAMETER_STATE_REQUIRED
                 );

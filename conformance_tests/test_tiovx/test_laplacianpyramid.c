@@ -933,6 +933,57 @@ TEST_WITH_ARG(tivxLaplacianReconstruct, testGraphProcessing, Arg, LAPLACIAN_RECO
     ASSERT(tst_dst == 0);
 }
 
+TEST_WITH_ARG(tivxLaplacianReconstruct, testGraphConnection, Arg, LAPLACIAN_RECONSTRUCT_PARAMETERS)
+{
+    vx_uint32 i;
+    vx_context context = context_->vx_context_;
+    vx_size levels = 0;
+    vx_image src = 0;
+    vx_image ref_lowest_res = 0;
+    vx_image tst_dst = 0;
+    vx_pyramid ref_pyr = 0;
+
+    CT_Image input = NULL;
+
+    vx_border_t border = arg_->border;
+    vx_border_t build_border = {VX_BORDER_REPLICATE};
+
+    ASSERT_NO_FAILURE(input = own_generate_random_u8(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    levels = own_pyramid_calc_max_levels_count(input->width, input->height, VX_SCALE_PYRAMID_HALF);
+
+    {
+        vx_uint32 lowest_res_width  = input->width;
+        vx_uint32 lowest_res_height = input->height;
+
+        for (i = 1; i < levels; i++)
+        {
+            lowest_res_width  = (vx_uint32)ceilf(lowest_res_width * VX_SCALE_PYRAMID_HALF);
+            lowest_res_height = (vx_uint32)ceilf(lowest_res_height * VX_SCALE_PYRAMID_HALF);
+        }
+
+        ASSERT_VX_OBJECT(ref_pyr = vxCreatePyramid(context, levels-1, VX_SCALE_PYRAMID_HALF, input->width, input->height, VX_DF_IMAGE_S16), VX_TYPE_PYRAMID);
+
+        ASSERT_VX_OBJECT(ref_lowest_res = vxCreateImage(context, lowest_res_width, lowest_res_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(tst_dst = vxCreateImage(context, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    own_laplacian_pyramid_openvx(context, build_border, src, ref_pyr, ref_lowest_res);
+    own_laplacian_reconstruct_openvx(context, border, ref_pyr, ref_lowest_res, tst_dst);
+
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleasePyramid(&ref_pyr));
+    VX_CALL(vxReleaseImage(&ref_lowest_res));
+    VX_CALL(vxReleaseImage(&tst_dst));
+
+    ASSERT(src == 0);
+    ASSERT(ref_pyr == 0);
+    ASSERT(ref_lowest_res == 0);
+    ASSERT(tst_dst == 0);
+}
+
 #define NEGATIVE_LAPLACIAN_RECONSTRUCT_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_OWN_SET, ARG, own_generate_random, NULL)
 
@@ -993,8 +1044,9 @@ TEST_WITH_ARG(tivxLaplacianReconstruct, negativeTestBorderMode, Arg, NEGATIVE_LA
 }
 
 TESTCASE_TESTS(tivxLaplacianReconstruct,
-    testNegativeGraphProcessing,
-    testNegativeNodeCreation/*,
-    testGraphProcessing,
-    negativeTestBorderMode*/
+    /*testNegativeGraphProcessing,
+    testNegativeNodeCreation,
+    negativeTestBorderMode,*/
+    testGraphConnection/*,
+    testGraphProcessing*/
     )
