@@ -48,6 +48,7 @@
 #include <TI/tivx_event.h>
 #include <TI/tivx_task.h>
 #include <TI/tivx_queue.h>
+#include <TI/tivx_config.h>
 #include <tivx_obj_desc_priv.h>
 #include <tivx_target.h>
 #include <tivx_target_kernel_priv.h>

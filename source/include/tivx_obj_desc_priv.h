@@ -67,6 +67,7 @@
 #define TIVX_OBJ_DESC_PRIV_H_
 
 #include <TI/tivx_obj_desc.h>
+#include <TI/tivx_config.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,17 +78,10 @@ extern "C" {
  * \brief Internal private implementation of object descriptor
  */
 
-/*! \brief Max object descriptors than be parameters in a command object
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_CMD_MAX_OBJ_DESCS        (16u)
-
-
 /*! \brief Max nodes that can be blocked on object descriptor queue not empty
  * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES       (8u)
-
 
 /*! \brief Max elements in a object descriptor queue
  * \ingroup group_tivx_obj_desc_cfg

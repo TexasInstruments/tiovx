@@ -77,12 +77,6 @@ extern "C" {
  */
 
 /*!
- * \brief Max number of Target that can exist on a CPU
- * \ingroup group_tivx_target_cfg
- */
-#define TIVX_TARGET_MAX_TARGETS_IN_CPU  (16u)
-
-/*!
  * \brief Max depth of queue associated with target
  * \ingroup group_tivx_target_cfg
  */

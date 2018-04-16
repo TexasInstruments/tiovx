@@ -41,32 +41,10 @@ extern "C" {
  * \brief Implementation of Context object
  */
 
-/*!
- * \brief Max possible references in a context
- *
+/*! \brief The largest convolution matrix the specification requires support for is 9x9.
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_REFERENCES     (512u)
-
-
-/*!
- * \brief Max possible unique kernels in a context
- *
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_KERNELS     (128u)
-
-/*!
- * \brief Max possible user structs in a context
- *
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_USER_STRUCTS   (32u)
-
-/*! \brief The largest convolution matrix the specification requires support for is 15x15.
- * \ingroup group_vx_context_cfg
- */
-#define TIVX_CONTEXT_MAX_CONVOLUTION_DIM (15)
+#define TIVX_CONTEXT_MAX_CONVOLUTION_DIM (9)
 
 /*! \brief The largest optical flow pyr LK window.
  * \ingroup group_vx_context_cfg

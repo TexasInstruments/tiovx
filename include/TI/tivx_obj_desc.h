@@ -66,6 +66,7 @@
 #define TIVX_OBJ_DESC_H_
 
 #include <TI/tivx_mem.h>
+#include <TI/tivx_config.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -82,31 +83,6 @@ extern "C" {
  * \ingroup group_tivx_obj_desc_cfg
  */
 #define TIVX_IMAGE_MAX_PLANES   (3u)
-
-/*! \brief Max parameters in a kernel
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_KERNEL_MAX_PARAMS      (16u)
-
-/*! \brief Max nodes taking output form a given node
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_NODE_MAX_OUT_NODES      (8u)
-
-/*! \brief Max nodes feeding input to a given node
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_NODE_MAX_IN_NODES      (8u)
-
-/*! \brief Maximum number of objects supported in pyramid
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32)
-
-/*! \brief Maximum number of objects supported in object array
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32)
 
 /*! \brief Flag to indicate if run-time trace should be logged
  * \ingroup group_tivx_obj_desc
@@ -153,21 +129,6 @@ extern "C" {
  * \ingroup group_tivx_obj_desc
  */
 #define TIVX_NODE_OBJ_DESC_STATE_BLOCKED                  (0x1u)
-
-/*! \brief Max possible nodes in graph
- * \ingroup group_tivx_obj_desc
- */
-#define TIVX_GRAPH_MAX_NODES               (32u)
-
-/*! \brief Max possible pipeline depth of a graph
- * \ingroup group_tivx_obj_desc
- */
-#define TIVX_GRAPH_MAX_PIPELINE_DEPTH      (8u)
-
-/*! \brief Max number of replicated nodes
- * \ingroup group_tivx_obj_desc
- */
-#define TIVX_NODE_MAX_REPLICATE            (32u)
 
 /*!
  * \brief Enum that list all possible object descriptor type's

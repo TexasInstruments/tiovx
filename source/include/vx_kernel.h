@@ -42,9 +42,6 @@ extern "C" {
  */
 
 
-/*! \brief Maximum targets a kernel can run on */
-#define TIVX_MAX_TARGETS_PER_KERNEL     (8u)
-
 /*! \brief The internal representation of the attributes associated with a run-time parameter.
  * \ingroup group_vx_kernel
  */

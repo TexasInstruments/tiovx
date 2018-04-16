@@ -41,14 +41,6 @@ extern "C" {
  * \brief Implementation of Pyramid object
  */
 
-/*!
- * \brief Max levels supported for the pyramid
- *        Note: If this macro is changed, change #gOrbScaleFactor also
- *              in vx_pyramid file.
- * \ingroup group_vx_pyramid
- */
-#define TIVX_PYRAMID_MAX_LEVELS_ORB             (17u)
-
 
 /*!
  * \brief Pyramid object internal state

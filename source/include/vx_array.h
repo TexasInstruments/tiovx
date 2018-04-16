@@ -42,13 +42,6 @@ extern "C" {
  */
 
 /*!
- * \brief Max possible mapping via vxMapArray supported
- *
- * \ingroup group_vx_array_cfg
- */
-#define TIVX_ARRAY_MAX_MAPS     (16u)
-
-/*!
  * \brief Information about a array mapping
  *
  * \ingroup group_vx_array

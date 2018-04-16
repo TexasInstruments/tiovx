@@ -79,13 +79,6 @@ extern "C" {
  */
 
 /*!
- * \brief Max target kernel that will be active on a CPU
- *       at the same time
- * \ingroup group_tivx_target_kernel_cfg
- */
-#define TIVX_TARGET_KERNEL_MAX     (128u)
-
-/*!
  * \brief Used to indicate invalid kernel ID
  * \ingroup group_tivx_target_kernel_priv
  */

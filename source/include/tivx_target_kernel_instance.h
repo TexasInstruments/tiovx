@@ -79,13 +79,6 @@ extern "C" {
  */
 
 /*!
- * \brief Max target kernel instances that will be active on a CPU
- *       at the same time
- * \ingroup group_tivx_target_kernel_instance_cfg
- */
-#define TIVX_TARGET_KERNEL_INSTANCE_MAX     (64u)
-
-/*!
  * \brief Holds information about a target kernel instance
  * \ingroup group_tivx_target_kernel_instance
  */

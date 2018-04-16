@@ -41,16 +41,6 @@ extern "C" {
  * \brief Implementation of Delay object
  */
 
-/*! \brief Maximum number of objects supported inside delay object
- * \ingroup group_vx_delay_cfg
- */
-#define TIVX_DELAY_MAX_OBJECT           (8)
-
-/*! \brief Maximum number of paramter objects that can be associated with a delay
- * \ingroup group_vx_delay_cfg
- */
-#define TIVX_DELAY_MAX_PRM_OBJECT       (16)
-
 /*! \brief The internal representation of the delay parameters as a list.
  * \ingroup group_vx_delay
  */

@@ -41,39 +41,6 @@ extern "C" {
  * \brief Implementation of Graph object
  */
 
-
-/*! \brief Max possible head nodes in graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_HEAD_NODES          (8u)
-
-/*! \brief Max possible leaf nodes in graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_LEAF_NODES          (8u)
-
-/*! \brief Max possible parameters in graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_PARAMS              (8u)
-
-
-/*! \brief Max data ref queue in graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_DATA_REF_QUEUE      (16u)
-
-/*! \brief Max possible delays in graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_DELAYS              (8u)
-
-
-/*! \brief Max possible data referencecs in a graph
- * \ingroup group_vx_graph_cfg
- */
-#define TIVX_GRAPH_MAX_DATA_REF            (128u)
-
 /*! \brief The top level data for graph object
  * \ingroup group_vx_graph
  */
