@@ -23,7 +23,7 @@
 TESTCASE(tivxNonLinearFilter, CT_VXContext, ct_setup_vx_context, 0)
 
 
-#define MASK_SIZE_MAX (5)
+#define MASK_SIZE_MAX (9)
 
 #ifndef MIN
 #define MIN(_a,_b) (((_a) < (_b)) ? (_a) : (_b))
@@ -243,7 +243,8 @@ typedef struct {
     const char* testName;
     CT_Image(*generator)(const char* fileName, int width, int height);
     const char* fileName;
-    vx_size mask_size;
+    vx_size mask_width;
+    vx_size mask_height;
     vx_enum function;
     vx_enum pattern;
     vx_border_t border;
@@ -266,9 +267,22 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/VX_PATTERN_CROSS", __VA_ARGS__, VX_PATTERN_CROSS))
 
 #define FILTER_PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, generate_random, NULL, 5), \
-    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, generate_random, NULL, 5), \
-    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, generate_random, NULL, 5)
+    CT_GENERATE_PARAMETERS("randomInput/mask=3x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 3, 5), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=3x7", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 3, 7), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=3x9", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 3, 9), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x3", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 5, 3), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x7", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 5, 7), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x9", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 5, 9), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=7x3", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 7, 3), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=7x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 7, 5), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=7x7", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 7, 7), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=7x9", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 7, 9), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=9x3", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 9, 3), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=9x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 9, 5), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=9x7", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 9, 7), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=9x9", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_640x480, ARG, generate_random, NULL, 9, 9), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, generate_random, NULL, 5, 5), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", ADD_FUNCTIONS, ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, generate_random, NULL, 5, 5)
 
 
 TEST_WITH_ARG(tivxNonLinearFilter, testVirtualImage, Filter_Arg,
@@ -295,7 +309,7 @@ TEST_WITH_ARG(tivxNonLinearFilter, testVirtualImage, Filter_Arg,
     dst_image = ct_create_similar_image(src_image);
     ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
 
-    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_size, arg_->mask_size);
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_width, arg_->mask_height);
     ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
     VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
     ASSERT_EQ_INT(arg_->pattern, pattern);
@@ -377,7 +391,7 @@ TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
     dst1_image = ct_create_similar_image(src1_image);
     ASSERT_VX_OBJECT(dst1_image, VX_TYPE_IMAGE);
 
-    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_size, arg_->mask_size);
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_width, arg_->mask_height);
     ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
     VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
     ASSERT_EQ_INT(arg_->pattern, pattern);
@@ -405,8 +419,8 @@ TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
     ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
     ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
 
-    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (arg_->width - (arg_->mask_size-1) ));
-    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (arg_->height - (arg_->mask_size-1) ));
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (arg_->width - (arg_->mask_width-1) ));
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (arg_->height - (arg_->mask_height-1) ));
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
@@ -450,8 +464,8 @@ TEST_WITH_ARG(tivxNonLinearFilter, testGraphProcessing, Filter_Arg,
     CT_EXPAND(nextmacro(testArgName "/VX_PATTERN_BOX", __VA_ARGS__, VX_PATTERN_BOX))
 
 #define NEGATIVE_FILTER_PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NEGATIVE_ADD_FUNCTIONS, NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_18x18, ARG, generate_random, NULL, 5), \
-    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NEGATIVE_ADD_FUNCTIONS, NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_644x258, ARG, generate_random, NULL, 5)
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NEGATIVE_ADD_FUNCTIONS, NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_CONSTANT_ONLY, ADD_SIZE_18x18, ARG, generate_random, NULL, 5, 5), \
+    CT_GENERATE_PARAMETERS("randomInput/mask=5x5", NEGATIVE_ADD_FUNCTIONS, NEGATIVE_ADD_PATTERNS_BOX_CROSS_DISK, ADD_VX_BORDERS_REQUIRE_REPLICATE_ONLY, ADD_SIZE_644x258, ARG, generate_random, NULL, 5, 5)
 
 TEST_WITH_ARG(tivxNonLinearFilter, negativeTestBorderMode, Filter_Arg,
     NEGATIVE_FILTER_PARAMETERS
@@ -476,7 +490,7 @@ TEST_WITH_ARG(tivxNonLinearFilter, negativeTestBorderMode, Filter_Arg,
     dst_image = ct_create_similar_image(src_image);
     ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
 
-    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_size, arg_->mask_size);
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_width, arg_->mask_height);
     ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
     VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
     ASSERT_EQ_INT(arg_->pattern, pattern);
