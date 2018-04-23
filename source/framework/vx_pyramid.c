@@ -196,7 +196,9 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     /* levels can not be 0 even in virtual prmd */
     if ((ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) ==
             vx_true_e) &&
-        (levels > 0) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS))
+        (levels > 0) && (levels <= TIVX_PYRAMID_MAX_LEVEL_OBJECTS) &&
+        ( ((scale == VX_SCALE_PYRAMID_ORB) && (levels <= TIVX_PYRAMID_MAX_LEVELS_ORB)) ||
+           (scale == VX_SCALE_PYRAMID_HALF) ) )
     {
         context = graph->base.context;
 

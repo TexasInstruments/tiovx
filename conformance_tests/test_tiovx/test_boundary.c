@@ -203,9 +203,17 @@ TEST(tivxBoundary2, testOrbPyramidLevelBoundary)
 {
     vx_context context = context_->vx_context_;
     vx_pyramid   src_pyr;
+    vx_graph graph = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, TIVX_PYRAMID_MAX_LEVELS_ORB, VX_SCALE_PYRAMID_ORB, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     VX_CALL(vxReleasePyramid(&src_pyr));
+
+    ASSERT_VX_OBJECT(src_pyr = vxCreateVirtualPyramid(graph, TIVX_PYRAMID_MAX_LEVELS_ORB, VX_SCALE_PYRAMID_ORB, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    VX_CALL(vxReleasePyramid(&src_pyr));
+
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 /* TIVX_PYRAMID_MAX_LEVEL_OBJECTS */
@@ -2405,8 +2413,15 @@ TEST(tivxNegativeBoundary, negativeTestOrbPyramidLevelBoundary)
 {
     vx_context context = context_->vx_context_;
     vx_pyramid   src_pyr;
+    vx_graph graph = 0;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     EXPECT_VX_ERROR(src_pyr = vxCreatePyramid(context, TIVX_PYRAMID_MAX_LEVELS_ORB+1, VX_SCALE_PYRAMID_ORB, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
+
+    EXPECT_VX_ERROR(src_pyr = vxCreateVirtualPyramid(graph, TIVX_PYRAMID_MAX_LEVELS_ORB+1, VX_SCALE_PYRAMID_ORB, 16, 16, VX_DF_IMAGE_U8), VX_ERROR_NO_RESOURCES);
+
+    VX_CALL(vxReleaseGraph(&graph));
 }
 
 /* TIVX_PYRAMID_MAX_LEVEL_OBJECTS */
