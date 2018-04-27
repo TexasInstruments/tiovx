@@ -1386,6 +1386,13 @@ TEST(tivxBoundary, testMapImage)
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id));
     }
 
+    for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
+    {
+        pdata = NULL;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    }
+
     VX_CALL(vxReleaseImage(&image));
 }
 
@@ -1460,6 +1467,14 @@ TEST(tivxBoundary, testMapArray)
         VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
 
         VX_CALL(vxUnmapArrayRange(array, map_id));
+    }
+
+    for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
+    {
+        vx_size stride = 0;
+        void* ptr = 0;
+        vx_map_id map_id;
+        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
     }
 
     VX_CALL(vxReleaseArray(&array));
@@ -1577,6 +1592,73 @@ TEST(tivxBoundary2, testUserStructBoundary)
 
     item_type = vxRegisterUserStruct(context, sizeof(own_struct));
     ASSERT(item_type == VX_TYPE_INVALID);
+}
+
+/* TIVX_IMAGE_MAX_MAPS */
+TEST(tivxNegativeBoundary, negativeTestMapImage)
+{
+    int i, w = 128, h = 128;
+    vx_df_image f = VX_DF_IMAGE_U8;
+    vx_context context = context_->vx_context_;
+    vx_image image;
+    vx_imagepatch_addressing_t addr;
+    vx_uint8 *pdata = 0;
+    vx_rectangle_t rect = {0, 0, 1, 1};
+    vx_map_id map_id;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(image = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+
+    /* image[0] gets 1 */
+
+    for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
+    {
+        pdata = NULL;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    }
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    VX_CALL(vxReleaseImage(&image));
+}
+
+/* TIVX_ARRAY_MAX_MAPS */
+TEST(tivxNegativeBoundary, negativeTestMapArray)
+{
+    int i;
+    vx_context context = context_->vx_context_;
+    vx_array array;
+    vx_enum item_type = VX_TYPE_KEYPOINT;
+    vx_size num_items = 10;
+    vx_size item_size = 0;
+    void* array_items = 0;
+    vx_size stride = 0;
+    void* ptr = 0;
+    vx_map_id map_id;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, 10), VX_TYPE_ARRAY);
+
+    /* 3. check if array's actual item_size corresponds to requested item_type size */
+    VX_CALL(vxQueryArray(array, VX_ARRAY_ITEMSIZE, &item_size, sizeof(item_size)));
+
+    array_items = own_alloc_init_data_items(item_type, num_items);
+    ASSERT(NULL != array_items);
+
+    VX_CALL(vxAddArrayItems(array, num_items, array_items, item_size));
+
+    for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
+    {
+        VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    }
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+
+    VX_CALL(vxReleaseArray(&array));
 }
 
 /* TIVX_OBJECT_ARRAY_MAX_ITEMS */
@@ -2624,7 +2706,9 @@ TESTCASE_TESTS(tivxNegativeBoundary,
         negativeTestLeafNodes,
         negativeTestReferenceBoundary,
         negativeTestOrbPyramidLevelBoundary,
-        negativeTestSubImageBoundary
+        negativeTestSubImageBoundary,
+        negativeTestMapImage,
+        negativeTestMapArray
         )
 
 TESTCASE_TESTS(tivxNegativeBoundary2,

@@ -585,26 +585,34 @@ vx_status VX_API_CALL vxMapArrayRange(
         }
     }
 
-    if ((VX_SUCCESS == status) && (i < TIVX_ARRAY_MAX_MAPS))
+    if (VX_SUCCESS == status)
     {
-        /* Get the offset to the free memory */
-        start_offset = (vx_uint8 *)obj_desc->mem_ptr.host_ptr +
-            (range_start * obj_desc->item_size);
-        inst = range_end - range_start;
-
-        if ((NULL != ptr) && (NULL != map_id))
+        if (i < TIVX_ARRAY_MAX_MAPS)
         {
-            arr->maps[i].map_addr = start_offset;
-            arr->maps[i].map_size = inst*obj_desc->item_size;
-            arr->maps[i].usage = usage;
+            /* Get the offset to the free memory */
+            start_offset = (vx_uint8 *)obj_desc->mem_ptr.host_ptr +
+                (range_start * obj_desc->item_size);
+            inst = range_end - range_start;
 
-            tivxMemBufferMap(start_offset, arr->maps[i].map_size,
-                obj_desc->mem_ptr.mem_type, usage);
+            if ((NULL != ptr) && (NULL != map_id))
+            {
+                arr->maps[i].map_addr = start_offset;
+                arr->maps[i].map_size = inst*obj_desc->item_size;
+                arr->maps[i].usage = usage;
 
-            *ptr = (vx_uint8 *)start_offset;
-            *stride = obj_desc->item_size;
+                tivxMemBufferMap(start_offset, arr->maps[i].map_size,
+                    obj_desc->mem_ptr.mem_type, usage);
 
-            *map_id = i;
+                *ptr = (vx_uint8 *)start_offset;
+                *stride = obj_desc->item_size;
+
+                *map_id = i;
+            }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "vxMapArrayRange: No available array maps\n");
+            status = VX_ERROR_NO_RESOURCES;
         }
     }
 
