@@ -49,14 +49,17 @@ TEST(tivxBoundary, testImageBoundary)
     {
         VX_CALL(vxReleaseImage(&src_image[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_OBJECTS);
 }
 
 /* TIVX_IMAGE_MAX_SUBIMAGES */
 TEST(tivxBoundary2, testSubImageBoundary)
 {
     vx_context context = context_->vx_context_;
-    vx_image   src_image;
-    vx_image   subimage[TIVX_IMAGE_MAX_SUBIMAGES];
+    vx_image   src_image, src_image2;
+    vx_image   subimage[TIVX_IMAGE_MAX_SUBIMAGES], subimage2[TIVX_IMAGE_MAX_SUBIMAGES];
     int fullimage_size = 640;
     int subimage_size = sqrt((fullimage_size*fullimage_size)/TIVX_IMAGE_MAX_SUBIMAGES);
     int startx = 0;
@@ -66,6 +69,8 @@ TEST(tivxBoundary2, testSubImageBoundary)
     int i;
 
     ASSERT_VX_OBJECT(src_image = vxCreateImage(context, fullimage_size, fullimage_size, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_image2 = vxCreateImage(context, fullimage_size, fullimage_size, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
     for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
     {
@@ -119,9 +124,64 @@ TEST(tivxBoundary2, testSubImageBoundary)
 
     for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
     {
+        if (i == 0)
+        {
+            startx = 0;
+            starty = 0;
+            endx   = subimage_size;
+            endy   = subimage_size;
+        }
+        else if (i < (TIVX_IMAGE_MAX_SUBIMAGES / 2) )
+        {
+            if ( (i % 2) == 0 )
+            {
+                startx += subimage_size;
+                endx   += subimage_size;
+                starty -= subimage_size;
+                endy   -= subimage_size;
+            }
+            else
+            {
+                starty += subimage_size;
+                endy   += subimage_size;
+            }
+        }
+        else
+        {
+            if (i == (TIVX_IMAGE_MAX_SUBIMAGES / 2) )
+            {
+                startx = 0;
+                starty = 2*subimage_size;
+                endx   = subimage_size;
+                endy   = 2*subimage_size + subimage_size;
+            }
+            else if ( (i % 2) == 0 )
+            {
+                startx += subimage_size;
+                endx   += subimage_size;
+                starty -= subimage_size;
+                endy   -= subimage_size;
+            }
+            else
+            {
+                starty += subimage_size;
+                endy   += subimage_size;
+            }
+        }
+        vx_rectangle_t rect = {startx, starty, endx, endy};
+        ASSERT_VX_OBJECT(subimage2[i] = vxCreateImageFromROI(src_image2, &rect), VX_TYPE_IMAGE);
+    }
+
+    for (i = 0; i < TIVX_IMAGE_MAX_SUBIMAGES; i++)
+    {
+        VX_CALL(vxReleaseImage(&subimage2[i]));
         VX_CALL(vxReleaseImage(&subimage[i]));
     }
+    VX_CALL(vxReleaseImage(&src_image2));
     VX_CALL(vxReleaseImage(&src_image));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_SUBIMAGES", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_SUBIMAGES);
 }
 
 /* TIVX_IMAGE_MAX_OBJECTS */
@@ -145,6 +205,9 @@ TEST(tivxBoundary, testVirtualImageBoundary)
     }
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_OBJECTS);
 }
 
 /* TIVX_PYRAMID_MAX_OBJECTS */
@@ -163,6 +226,9 @@ TEST(tivxBoundary, testPyramidBoundary)
     {
         VX_CALL(vxReleasePyramid(&src_pyr[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PYRAMID_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_PYRAMID_MAX_OBJECTS);
 }
 
 /* TIVX_PYRAMID_MAX_OBJECTS */
@@ -186,6 +252,9 @@ TEST(tivxBoundary, testVirtualPyramidBoundary)
     }
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PYRAMID_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_PYRAMID_MAX_OBJECTS);
 }
 
 /* TIVX_PYRAMID_MAX_LEVEL_OBJECTS */
@@ -196,6 +265,9 @@ TEST(tivxBoundary, testPyramidLevelBoundary)
 
     ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, TIVX_PYRAMID_MAX_LEVEL_OBJECTS, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
     VX_CALL(vxReleasePyramid(&src_pyr));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_PYRAMID_MAX_LEVEL_OBJECTS);
 }
 
 /* TIVX_PYRAMID_MAX_LEVELS_ORB */
@@ -214,6 +286,9 @@ TEST(tivxBoundary2, testOrbPyramidLevelBoundary)
     VX_CALL(vxReleasePyramid(&src_pyr));
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PYRAMID_MAX_LEVELS_ORB", &stats));
+    ASSERT(stats.max_used_value == TIVX_PYRAMID_MAX_LEVELS_ORB);
 }
 
 /* TIVX_PYRAMID_MAX_LEVEL_OBJECTS */
@@ -229,6 +304,9 @@ TEST(tivxBoundary, testVirtualPyramidLevelBoundary)
     VX_CALL(vxReleasePyramid(&src_pyr));
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_PYRAMID_MAX_LEVEL_OBJECTS);
 }
 
 /* TIVX_ARRAY_MAX_OBJECTS */
@@ -247,6 +325,9 @@ TEST(tivxBoundary, testArrayBoundary)
     {
         VX_CALL(vxReleaseArray(&src_array[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_ARRAY_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_ARRAY_MAX_OBJECTS);
 }
 
 /* TIVX_ARRAY_MAX_OBJECTS */
@@ -270,6 +351,9 @@ TEST(tivxBoundary, testVirtualArrayBoundary)
     }
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_ARRAY_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_ARRAY_MAX_OBJECTS);
 }
 
 /* TIVX_CONVOLUTION_MAX_OBJECTS */
@@ -288,6 +372,9 @@ TEST(tivxBoundary, testConvolutionBoundary)
     {
         VX_CALL(vxReleaseConvolution(&src_conv[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_CONVOLUTION_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_CONVOLUTION_MAX_OBJECTS);
 }
 
 /* TIVX_DISTRIBUTION_MAX_OBJECTS */
@@ -306,6 +393,9 @@ TEST(tivxBoundary, testDistributionBoundary)
     {
         VX_CALL(vxReleaseDistribution(&src_dist[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_DISTRIBUTION_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_DISTRIBUTION_MAX_OBJECTS);
 }
 
 /* TIVX_LUT_MAX_OBJECTS */
@@ -324,6 +414,9 @@ TEST(tivxBoundary, testLUTBoundary)
     {
         VX_CALL(vxReleaseLUT(&src_lut[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_LUT_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_LUT_MAX_OBJECTS);
 }
 
 /* TIVX_DELAY_MAX_OBJECTS */
@@ -338,7 +431,7 @@ TEST(tivxBoundary, testDelayBoundary)
 
     for (i = 0; i < TIVX_DELAY_MAX_OBJECTS; i++)
     {
-        ASSERT_VX_OBJECT(src_delay[i] = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
+        ASSERT_VX_OBJECT(src_delay[i] = vxCreateDelay(context, (vx_reference)image, 4), VX_TYPE_DELAY);
     }
 
     for (i = 0; i < TIVX_DELAY_MAX_OBJECTS; i++)
@@ -347,6 +440,9 @@ TEST(tivxBoundary, testDelayBoundary)
     }
 
     VX_CALL(vxReleaseImage(&image));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_DELAY_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_DELAY_MAX_OBJECTS);
 }
 
 /* TIVX_GRAPH_MAX_DELAYS */
@@ -397,6 +493,9 @@ TEST(tivxBoundary2, testGraphDelayBoundary)
     }
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_DELAYS", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_DELAYS);
 }
 
 /* TIVX_DELAY_MAX_PRM_OBJECT */
@@ -404,8 +503,88 @@ TEST(tivxBoundary2, testGraphDelayBoundary)
  * Therefore, asserting that it must be >= to these values */
 TEST(tivxBoundary2, testDelayMaxPrmBoundary)
 {
-    ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
-    ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES); 
+    if ( (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_IN_NODES) &&
+         (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_OUT_NODES) )
+    {
+
+        vx_context context = context_->vx_context_;
+        vx_delay   src_delay;
+        vx_graph   graph = 0;
+        vx_image   image, in_image, out_image, out_image2[TIVX_DELAY_MAX_PRM_OBJECT];
+        vx_node    box_nodes, med_nodes, med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT];
+        int i;
+
+        ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        vx_kernel kernels[] = {
+            vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3),
+            vxGetKernelByEnum(context, VX_KERNEL_MEDIAN_3x3)
+        };
+
+        ASSERT_VX_OBJECT(in_image  = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(out_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+        {
+            ASSERT_VX_OBJECT(out_image2[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+
+        box_nodes = vxCreateGenericNode(graph, kernels[0]);
+        med_nodes = vxCreateGenericNode(graph, kernels[1]);
+
+        VX_CALL(vxSetParameterByIndex(box_nodes, 0, (vx_reference)in_image));
+        VX_CALL(vxSetParameterByIndex(box_nodes, 1, (vx_reference)vxGetReferenceFromDelay(src_delay, 0)));
+        VX_CALL(vxSetParameterByIndex(med_nodes, 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+        VX_CALL(vxSetParameterByIndex(med_nodes, 1, (vx_reference)out_image));
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+        {
+            med_nodes2[i] = vxCreateGenericNode(graph, kernels[1]);
+            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 1, (vx_reference)out_image2[i]));
+        }
+
+        VX_CALL(vxRegisterAutoAging(graph, src_delay));
+
+        VX_CALL(vxReleaseImage(&in_image));
+        VX_CALL(vxReleaseImage(&out_image));
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+        {
+            VX_CALL(vxReleaseImage(&out_image2[i]));
+        }
+
+        VX_CALL(vxReleaseDelay(&src_delay));
+
+        for (i = 0; i < dimof(kernels); i++)
+        {
+            VX_CALL(vxReleaseKernel(&kernels[i]));
+        }
+
+        VX_CALL(vxReleaseNode(&box_nodes));
+        VX_CALL(vxReleaseNode(&med_nodes));
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+        {
+            VX_CALL(vxReleaseNode(&med_nodes2[i]));
+        }
+
+        VX_CALL(vxReleaseImage(&image));
+
+        VX_CALL(vxReleaseGraph(&graph));
+
+    }
+    else
+    {
+        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
+        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES);
+        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
+    }
+
 }
 
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 2)
@@ -843,7 +1022,13 @@ TEST(tivxBoundary2, testKernelParamsBoundary)
     ASSERT_NO_FAILURE(own_register_kernel(context, TIVX_KERNEL_MAX_PARAMS));
     ASSERT_VX_OBJECT(user_kernel = vxGetKernelByName(context, VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME), VX_TYPE_KERNEL);
     VX_CALL(vxRemoveKernel(user_kernel));
-
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_KERNEL_MAX_PARAMS", &stats));
+    ASSERT(stats.max_used_value == TIVX_KERNEL_MAX_PARAMS);
+#ifdef DEBUG_PRINT_RESOURCES
+    tivxPrintAllResourceStats();
+    tivxExportAllResourceMaxUsedValueToFile();
+#endif
 }
 
 /* TIVX_GRAPH_MAX_DATA_REF */
@@ -951,11 +1136,15 @@ TEST(tivxBoundary2, testGraphDataRefBoundary)
         VX_CALL(vxReleaseNode(&node[i]));
     }
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_DATA_REF", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_DATA_REF);
     }
     else
     {
         printf("To fully test the TIVX_GRAPH_MAX_DATA_REF value, set it to 64 in include/tivx_config.h and re-run this test case\n");
     }
+
 }
 
 /* TIVX_DELAY_MAX_OBJECT */
@@ -973,6 +1162,10 @@ TEST(tivxBoundary2, testDelayMaxObjectBoundary)
     VX_CALL(vxReleaseDelay(&src_delay));
 
     VX_CALL(vxReleaseImage(&image));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_DELAY_MAX_OBJECT", &stats));
+    ASSERT(stats.max_used_value == TIVX_DELAY_MAX_OBJECT);
+
 }
 
 /* TIVX_MATRIX_MAX_OBJECTS */
@@ -991,6 +1184,9 @@ TEST(tivxBoundary, testMatrixBoundary)
     {
         VX_CALL(vxReleaseMatrix(&src_matrix[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_MATRIX_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_MATRIX_MAX_OBJECTS);
 }
 
 /* TIVX_REMAP_MAX_OBJECTS */
@@ -1009,6 +1205,10 @@ TEST(tivxBoundary, testRemapBoundary)
     {
         VX_CALL(vxReleaseRemap(&src_remap[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_REMAP_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_REMAP_MAX_OBJECTS);
+
 }
 
 /* TIVX_SCALAR_MAX_OBJECTS */
@@ -1028,6 +1228,10 @@ TEST(tivxBoundary, testScalarBoundary)
     {
         VX_CALL(vxReleaseScalar(&src_scalar[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_SCALAR_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_SCALAR_MAX_OBJECTS);
+
 }
 
 /* TIVX_THRESHOLD_MAX_OBJECTS */
@@ -1046,9 +1250,14 @@ TEST(tivxBoundary, testThresholdBoundary)
     {
         VX_CALL(vxReleaseThreshold(&src_threshold[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_THRESHOLD_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_THRESHOLD_MAX_OBJECTS);
+
 }
 
 /* TIVX_GRAPH_MAX_NODES */
+/* TIVX_NODE_MAX_OBJECTS */
 TEST(tivxBoundary, testNodeBoundary)
 {
     vx_context context = context_->vx_context_;
@@ -1056,6 +1265,8 @@ TEST(tivxBoundary, testNodeBoundary)
     vx_node   src_node[TIVX_GRAPH_MAX_NODES];
     int i;
     vx_graph graph = 0;
+
+    ASSERT(TIVX_GRAPH_MAX_NODES == TIVX_NODE_MAX_OBJECTS);
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -1073,9 +1284,12 @@ TEST(tivxBoundary, testNodeBoundary)
 
     VX_CALL(vxReleaseKernel(&src_kernel));
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_NODES", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_NODES);
+
 }
 
-/* TIVX_NODE_MAX_REPLICATE */
 TEST(tivxBoundary2, testReplicateBoundary)
 {
     vx_context context = context_->vx_context_;
@@ -1148,6 +1362,45 @@ TEST(tivxBoundary2, testReplicateBoundary)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/* TIVX_NODE_MAX_REPLICATE */
+TEST(tivxBoundary2, testReplicateNodeBoundary)
+{
+    vx_context context = context_->vx_context_;
+    vx_node   src_node;
+    vx_image  src_image, dst_image;
+    int i;
+    vx_graph graph = 0;
+    /* Splitting up into pyramid and object array due to limitations on each */
+    vx_pyramid   src_pyr, dst_pyr;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+
+    ASSERT_VX_OBJECT(src_pyr = vxCreatePyramid(context, TIVX_NODE_MAX_REPLICATE, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+    ASSERT_VX_OBJECT(dst_pyr = vxCreatePyramid(context, TIVX_NODE_MAX_REPLICATE, VX_SCALE_PYRAMID_HALF, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+    /* Replicating nodes */
+    ASSERT_VX_OBJECT(src_image = vxGetPyramidLevel((vx_pyramid)src_pyr, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image = vxGetPyramidLevel((vx_pyramid)dst_pyr, 0), VX_TYPE_IMAGE);
+    vx_bool replicate[] = { vx_true_e, vx_true_e };
+    ASSERT_VX_OBJECT(src_node = vxBox3x3Node(graph, src_image, dst_image), VX_TYPE_NODE);
+    VX_CALL(vxReplicateNode(graph, src_node, replicate, 2));
+
+    /* Releasing objects */
+    VX_CALL(vxReleasePyramid(&src_pyr));
+    VX_CALL(vxReleasePyramid(&dst_pyr));
+
+    VX_CALL(vxReleaseImage(&src_image));
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseNode(&src_node));
+
+    VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_NODE_MAX_REPLICATE", &stats));
+    ASSERT(stats.max_used_value == TIVX_NODE_MAX_REPLICATE);
+
+}
+
 /* TIVX_GRAPH_MAX_PARAMS */
 TEST(tivxBoundary2, testGraphParamBoundary)
 {
@@ -1205,6 +1458,9 @@ TEST(tivxBoundary2, testGraphParamBoundary)
         ASSERT(parameters[i] == NULL);
     }
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_PARAMS", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_PARAMS);
 
 }
 
@@ -1244,6 +1500,10 @@ TEST(tivxBoundary, testParameterBoundary)
 
     VX_CALL(vxReleaseKernel(&src_kernel));
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_PARAMETER_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_PARAMETER_MAX_OBJECTS);
+
 }
 
 /* TIVX_GRAPH_MAX_OBJECTS */
@@ -1262,6 +1522,10 @@ TEST(tivxBoundary, testGraphBoundary)
     {
         VX_CALL(vxReleaseGraph(&src_graph[i]));
     }
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_OBJECTS);
+
 }
 
 /* TIVX_OBJ_ARRAY_MAX_OBJECTS */
@@ -1284,6 +1548,10 @@ TEST(tivxBoundary, testObjectArray)
     }
 
     VX_CALL(vxReleaseImage(&image));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_OBJ_ARRAY_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_OBJ_ARRAY_MAX_OBJECTS);
+
 }
 
 /* TIVX_OBJ_ARRAY_MAX_OBJECTS */
@@ -1311,6 +1579,10 @@ TEST(tivxBoundary, testVirtualObjectArray)
 
     VX_CALL(vxReleaseImage(&image));
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_OBJ_ARRAY_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_OBJ_ARRAY_MAX_OBJECTS);
+
 }
 
 /* TIVX_OBJECT_ARRAY_MAX_ITEMS */
@@ -1326,6 +1598,10 @@ TEST(tivxBoundary, testObjectArrayItems)
     VX_CALL(vxReleaseObjectArray(&src_object_array));
 
     VX_CALL(vxReleaseImage(&image));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_OBJECT_ARRAY_MAX_ITEMS", &stats));
+    ASSERT(stats.max_used_value == TIVX_OBJECT_ARRAY_MAX_ITEMS);
+
 }
 
 /* TIVX_OBJECT_ARRAY_MAX_ITEMS */
@@ -1345,6 +1621,10 @@ TEST(tivxBoundary, testVirtualObjectArrayItems)
 
     VX_CALL(vxReleaseImage(&image));
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_OBJECT_ARRAY_MAX_ITEMS", &stats));
+    ASSERT(stats.max_used_value == TIVX_OBJECT_ARRAY_MAX_ITEMS);
+
 }
 
 // Doesn't fail
@@ -1356,6 +1636,9 @@ TEST(tivxBoundary, testContext)
     vx_context context2 = vxCreateContext(); // Might be a build option, might return a reference to the single context
 
     vx_context context3 = vxCreateContext();
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_CONTEXT_MAX_OBJECTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_CONTEXT_MAX_OBJECTS);
 }
 
 /* TIVX_IMAGE_MAX_MAPS */
@@ -1364,7 +1647,7 @@ TEST(tivxBoundary, testMapImage)
     int i, w = 128, h = 128;
     vx_df_image f = VX_DF_IMAGE_U8;
     vx_context context = context_->vx_context_;
-    vx_image image;
+    vx_image image, image2;
     vx_imagepatch_addressing_t addr;
     vx_uint8 *pdata = 0;
     vx_rectangle_t rect = {0, 0, 1, 1};
@@ -1372,7 +1655,8 @@ TEST(tivxBoundary, testMapImage)
 
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
-    ASSERT_VX_OBJECT(image = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image  = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image2 = vxCreateImage(context, w, h, f), VX_TYPE_IMAGE);
 
     /* image[0] gets 1 */
 
@@ -1382,8 +1666,11 @@ TEST(tivxBoundary, testMapImage)
         pdata = NULL;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image2, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
         *pdata = 1;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image, map_id));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(image2, map_id));
     }
 
     for (i = 0; i < TIVX_IMAGE_MAX_MAPS; i++)
@@ -1391,9 +1678,16 @@ TEST(tivxBoundary, testMapImage)
         pdata = NULL;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(image2, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     }
 
     VX_CALL(vxReleaseImage(&image));
+    VX_CALL(vxReleaseImage(&image2));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_MAPS", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_MAPS);
+
 }
 
 static
@@ -1440,7 +1734,7 @@ TEST(tivxBoundary, testMapArray)
 {
     int i;
     vx_context context = context_->vx_context_;
-    vx_array array;
+    vx_array array, array2;
     vx_enum item_type = VX_TYPE_KEYPOINT;
     vx_size num_items = 10;
     vx_size item_size = 0;
@@ -1449,6 +1743,7 @@ TEST(tivxBoundary, testMapArray)
     VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
 
     ASSERT_VX_OBJECT(array = vxCreateArray(context, item_type, 10), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(array2 = vxCreateArray(context, item_type, 10), VX_TYPE_ARRAY);
 
     /* 3. check if array's actual item_size corresponds to requested item_type size */
     VX_CALL(vxQueryArray(array, VX_ARRAY_ITEMSIZE, &item_size, sizeof(item_size)));
@@ -1457,6 +1752,7 @@ TEST(tivxBoundary, testMapArray)
     ASSERT(NULL != array_items);
 
     VX_CALL(vxAddArrayItems(array, num_items, array_items, item_size));
+    VX_CALL(vxAddArrayItems(array2, num_items, array_items, item_size));
 
     // Verifying that it is not restricted to max array maps as long as it frees memory in vxUnmapArrayRange
     for (i = 0; i < TIVX_ARRAY_MAX_MAPS+1; i++)
@@ -1465,8 +1761,10 @@ TEST(tivxBoundary, testMapArray)
         void* ptr = 0;
         vx_map_id map_id;
         VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array2, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
 
         VX_CALL(vxUnmapArrayRange(array, map_id));
+        VX_CALL(vxUnmapArrayRange(array2, map_id));
     }
 
     for (i = 0; i < TIVX_ARRAY_MAX_MAPS; i++)
@@ -1475,9 +1773,15 @@ TEST(tivxBoundary, testMapArray)
         void* ptr = 0;
         vx_map_id map_id;
         VX_CALL(vxMapArrayRange(array, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
+        VX_CALL(vxMapArrayRange(array2, 0, num_items, &map_id, &stride, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
     }
 
     VX_CALL(vxReleaseArray(&array));
+    VX_CALL(vxReleaseArray(&array2));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_ARRAY_MAX_MAPS", &stats));
+    ASSERT(stats.max_used_value == TIVX_ARRAY_MAX_MAPS);
+
 }
 
 /* TIVX_GRAPH_MAX_HEAD_NODES */
@@ -1509,6 +1813,12 @@ TEST(tivxBoundary, testHeadLeafNodes)
     }
 
     VX_CALL(vxReleaseGraph(&graph));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_HEAD_NODES", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_HEAD_NODES);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_GRAPH_MAX_LEAF_NODES", &stats));
+    ASSERT(stats.max_used_value == TIVX_GRAPH_MAX_LEAF_NODES);
+
 }
 
 /* TIVX_CONTEXT_MAX_CONVOLUTION_DIM */
@@ -1563,11 +1873,15 @@ TEST(tivxBoundary, testReferenceBoundary)
         {
             VX_CALL(vxReleaseImage(&src_image[i]));
         }
+        tivx_resource_stats_t stats;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_CONTEXT_MAX_REFERENCES", &stats));
+        ASSERT(stats.max_used_value == TIVX_CONTEXT_MAX_REFERENCES);
     }
     else
     {
         printf("To fully test the TIVX_CONTEXT_MAX_REFERENCES value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_IMAGE_MAX_OBJECTS+TIVX_INTERNAL_REFS);
     }
+
 }
 
 /* TIVX_CONTEXT_MAX_USER_STRUCTS */
@@ -1592,6 +1906,10 @@ TEST(tivxBoundary2, testUserStructBoundary)
 
     item_type = vxRegisterUserStruct(context, sizeof(own_struct));
     ASSERT(item_type == VX_TYPE_INVALID);
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_CONTEXT_MAX_USER_STRUCTS", &stats));
+    ASSERT(stats.max_used_value == TIVX_CONTEXT_MAX_USER_STRUCTS);
+
 }
 
 /* TIVX_IMAGE_MAX_MAPS */
@@ -1830,6 +2148,98 @@ TEST(tivxNegativeBoundary, negativeTestNodeBoundary)
 
     VX_CALL(vxReleaseKernel(&src_kernel));
     VX_CALL(vxReleaseGraph(&graph));
+}
+
+/* TIVX_DELAY_MAX_PRM_OBJECT */
+/* Note: TIVX_NODE_MAX_IN_NODES and TIVX_NODE_MAX_OUT_NODES restrict this from being fully tested
+ * Therefore, asserting that it must be >= to these values */
+TEST(tivxNegativeBoundary2, negativeTestDelayMaxPrmBoundary)
+{
+    if ( (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_IN_NODES) &&
+         (TIVX_DELAY_MAX_PRM_OBJECT == TIVX_NODE_MAX_OUT_NODES) )
+    {
+
+        vx_context context = context_->vx_context_;
+        vx_delay   src_delay;
+        vx_graph   graph = 0;
+        vx_image   image, in_image, out_image, out_image2[TIVX_DELAY_MAX_PRM_OBJECT+1];
+        vx_node    box_nodes, med_nodes, med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT+1];
+        int i;
+
+        ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        vx_kernel kernels[] = {
+            vxGetKernelByEnum(context, VX_KERNEL_BOX_3x3),
+            vxGetKernelByEnum(context, VX_KERNEL_MEDIAN_3x3)
+        };
+
+        ASSERT_VX_OBJECT(in_image  = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(out_image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(src_delay = vxCreateDelay(context, (vx_reference)image, 2), VX_TYPE_DELAY);
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
+        {
+            ASSERT_VX_OBJECT(out_image2[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+
+        box_nodes = vxCreateGenericNode(graph, kernels[0]);
+        med_nodes = vxCreateGenericNode(graph, kernels[1]);
+
+        VX_CALL(vxSetParameterByIndex(box_nodes, 0, (vx_reference)in_image));
+        VX_CALL(vxSetParameterByIndex(box_nodes, 1, (vx_reference)vxGetReferenceFromDelay(src_delay, 0)));
+        VX_CALL(vxSetParameterByIndex(med_nodes, 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+        VX_CALL(vxSetParameterByIndex(med_nodes, 1, (vx_reference)out_image));
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT; i++)
+        {
+            med_nodes2[i] = vxCreateGenericNode(graph, kernels[1]);
+            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+            VX_CALL(vxSetParameterByIndex(med_nodes2[i], 1, (vx_reference)out_image2[i]));
+        }
+
+        med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT] = vxCreateGenericNode(graph, kernels[1]);
+        EXPECT_NE_VX_STATUS(VX_SUCCESS, vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 0, (vx_reference)vxGetReferenceFromDelay(src_delay, -1)));
+        //VX_CALL(vxSetParameterByIndex(med_nodes2[TIVX_DELAY_MAX_PRM_OBJECT], 1, (vx_reference)out_image2[i]));
+
+        VX_CALL(vxRegisterAutoAging(graph, src_delay));
+
+        VX_CALL(vxReleaseImage(&in_image));
+        VX_CALL(vxReleaseImage(&out_image));
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
+        {
+            VX_CALL(vxReleaseImage(&out_image2[i]));
+        }
+
+        VX_CALL(vxReleaseDelay(&src_delay));
+
+        for (i = 0; i < dimof(kernels); i++)
+        {
+            VX_CALL(vxReleaseKernel(&kernels[i]));
+        }
+
+        VX_CALL(vxReleaseNode(&box_nodes));
+        VX_CALL(vxReleaseNode(&med_nodes));
+
+        for (i = 0; i < TIVX_DELAY_MAX_PRM_OBJECT+1; i++)
+        {
+            VX_CALL(vxReleaseNode(&med_nodes2[i]));
+        }
+
+        VX_CALL(vxReleaseImage(&image));
+
+        VX_CALL(vxReleaseGraph(&graph));
+
+    }
+    else
+    {
+        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
+        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES); 
+        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
+    }
 }
 
 /* TIVX_NODE_MAX_REPLICATE */
@@ -2454,6 +2864,10 @@ TEST(tivxNegativeBoundary, negativeTestSubImageBoundary)
         VX_CALL(vxReleaseImage(&subimage[i]));
     }
     VX_CALL(vxReleaseImage(&src_image));
+    tivx_resource_stats_t stats;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_IMAGE_MAX_SUBIMAGES", &stats));
+    ASSERT(stats.max_used_value == TIVX_IMAGE_MAX_SUBIMAGES);
+
 }
 
 /* TIVX_IMAGE_MAX_OBJECTS */
@@ -2669,6 +3083,7 @@ TESTCASE_TESTS(tivxBoundary2,
         testOrbPyramidLevelBoundary,
         testSubImageBoundary,
         testReplicateBoundary,
+        testReplicateNodeBoundary,
         testGraphParamBoundary,
         testGraphDelayBoundary,
         testDelayMaxObjectBoundary,
@@ -2717,6 +3132,7 @@ TESTCASE_TESTS(tivxNegativeBoundary2,
         negativeTestGraphDelayBoundary,
         negativeTestDelayMaxObjectBoundary,
         negativeTestGraphDataRefBoundary,
-        negativeTestKernelParamsBoundary
+        negativeTestKernelParamsBoundary,
+        negativeTestDelayMaxPrmBoundary
         )
 

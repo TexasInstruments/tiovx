@@ -122,6 +122,9 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, cha
                     tmp_kernel_instance->kernel = kernel;
 
                     kernel_instance = tmp_kernel_instance;
+
+                    tivxLogResourceAlloc("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
+
                     break;
                 }
             }
@@ -139,6 +142,8 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
     {
         (*target_kernel_instance)->kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
         *target_kernel_instance = NULL;
+
+        tivxLogResourceFree("TIVX_TARGET_KERNEL_INSTANCE_MAX", 1);
 
         status = VX_SUCCESS;
     }

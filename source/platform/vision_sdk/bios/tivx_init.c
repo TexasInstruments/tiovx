@@ -24,6 +24,9 @@ void tivxInit(void)
     tivx_set_debug_zone(VX_ZONE_WARNING);
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
+    /* Initialize resource logging */
+    tivxLogResourceInit();
+
     /* Initialize platform */
     tivxPlatformInit();
 
@@ -70,6 +73,9 @@ void tivxDeInit(void)
 
     /* DeInitialize platform */
     tivxPlatformDeInit();
+
+    /* DeInitialize resource logging */
+    tivxLogResourceDeInit();
 
     VX_PRINT(VX_ZONE_INIT, "De-Initialization Done !!!\n");
 }

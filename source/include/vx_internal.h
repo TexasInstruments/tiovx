@@ -80,6 +80,7 @@
 #include <vx_meta_format.h>
 #include <tivx_objects.h>
 #include <tivx_log_rt_trace.h>
+#include <tivx_log_resource.h>
 
 
 #ifdef __cplusplus

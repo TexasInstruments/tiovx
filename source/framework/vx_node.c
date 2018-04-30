@@ -710,6 +710,7 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
             node->obj_desc[0]->out_node_id[num_out_nodes] = out_node_id;
             num_out_nodes++;
             node->obj_desc[0]->num_out_nodes = num_out_nodes;
+            tivxLogSetResourceUsedValue("TIVX_NODE_MAX_OUT_NODES", num_out_nodes);
         }
         else
         {
@@ -745,6 +746,7 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
             node->obj_desc[0]->in_node_id[num_in_nodes] = in_node_id;
             num_in_nodes++;
             node->obj_desc[0]->num_in_nodes = num_in_nodes;
+            tivxLogSetResourceUsedValue("TIVX_NODE_MAX_IN_NODES", num_in_nodes);
         }
         else
         {
@@ -1442,6 +1444,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is greater than maximum allowed\n");
                                 status = VX_FAILURE;
+                            }
+                            else
+                            {
+                                tivxLogSetResourceUsedValue("TIVX_NODE_MAX_REPLICATE", num_of_replicas);
                             }
                         }
                     }

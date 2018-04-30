@@ -710,6 +710,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             if (pipeline_depth < TIVX_GRAPH_MAX_PIPELINE_DEPTH)
             {
                 graph->pipeline_depth = pipeline_depth;
+                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PIPELINE_DEPTH", graph->pipeline_depth+1);
             }
             else
             {

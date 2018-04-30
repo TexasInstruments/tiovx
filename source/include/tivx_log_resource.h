@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -62,76 +62,61 @@
 
 
 
-#include <vx_internal.h>
-#include <tivx_platform_pc.h>
 
-void tivxRegisterOpenVXCoreTargetKernels(void);
-void tivxUnRegisterOpenVXCoreTargetKernels(void);
+#ifndef TIVX_LOG_RESOURCE_H_
+#define TIVX_LOG_RESOURCE_H_
 
-void tivxRegisterTutorialTargetKernels(void);
-void tivxUnRegisterTutorialTargetKernels(void);
 
-void tivxInit(void)
-{
-    tivx_set_debug_zone(VX_ZONE_INIT);
-    tivx_set_debug_zone(VX_ZONE_ERROR);
-    tivx_set_debug_zone(VX_ZONE_WARNING);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-    /* Initialize resource logging */
-    tivxLogResourceInit();
+#define TIVX_RESOURCE_LOG_ENABLE
 
-    /* Initialize platform */
-    tivxPlatformInit();
+/*!
+ * \file
+ * \brief Implementation of resource log API
+ * \ingroup group_tivx_log_rt_trace
+ */
 
-    /* Initialize Target */
-    tivxTargetInit();
+/*!
+ * \brief Initialize max value structs
+ *
+ * \ingroup group_tivx_log_resource
+ */
+void tivxLogResourceInit();
 
-    /* Initialize Host */
+/*!
+ * \brief De-Initialize max value structs
+ *
+ * \ingroup group_tivx_log_resource
+ */
+void tivxLogResourceDeInit();
 
-    /* trick target kernel used in DSP emulation mode to think
-     * they are being invoked from a DSP
-     */
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
-    tivxRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_TUTORIAL
-    tivxRegisterTutorialTargetKernels();
-    #endif
+/*!
+ * \brief Allocate new resource
+ *
+ * \ingroup group_tivx_log_resource
+ */
+void tivxLogResourceAlloc(const char *resource_name, uint16_t num_allocs);
 
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
-    tivxRegisterOpenVXCoreTargetKernels();
-    #ifdef BUILD_TUTORIAL
-    tivxRegisterTutorialTargetKernels();
-    #endif
+/*!
+ * \brief Free resource
+ *
+ * \ingroup group_tivx_log_resource
+ */
+void tivxLogResourceFree(const char *resource_name, uint16_t num_frees);
 
-    /* let rest of system think it is running on DSP1 */
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+/*!
+ * \brief Set max value of resource
+ *
+ * \ingroup group_tivx_log_resource
+ */
+void tivxLogSetResourceUsedValue(const char *resource_name, uint16_t value);
 
-    tivxHostInit();
 
-    tivxObjDescInit();
-
-    tivxPlatformCreateTargets();
+#ifdef __cplusplus
 }
+#endif
 
-void tivxDeInit(void)
-{
-    tivxPlatformDeleteTargets();
-
-    /* DeInitialize Host */
-    tivxUnRegisterOpenVXCoreTargetKernels();
-
-    #ifdef BUILD_TUTORIAL
-    tivxUnRegisterTutorialTargetKernels();
-    #endif
-
-    tivxHostDeInit();
-
-    /* DeInitialize Target */
-    tivxTargetDeInit();
-
-    /* DeInitialize platform */
-    tivxPlatformDeInit();
-
-    /* DeInitialize resource logging */
-    tivxLogResourceDeInit();
-}
+#endif

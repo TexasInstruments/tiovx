@@ -607,6 +607,8 @@ vx_status VX_API_CALL vxMapArrayRange(
                 *stride = obj_desc->item_size;
 
                 *map_id = i;
+
+                tivxLogSetResourceUsedValue("TIVX_ARRAY_MAX_MAPS", i+1);
             }
         }
         else

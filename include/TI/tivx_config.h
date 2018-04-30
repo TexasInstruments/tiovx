@@ -87,12 +87,12 @@ extern "C" {
 /*! \brief Maximum number of objects supported in pyramid
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32)
+#define TIVX_PYRAMID_MAX_LEVEL_OBJECTS       (32u)
 
 /*! \brief Maximum number of objects supported in object array
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32)
+#define TIVX_OBJECT_ARRAY_MAX_ITEMS           (32u)
 
 /*! \brief Max possible nodes in graph
  * \ingroup group_tivx_obj_desc
@@ -249,11 +249,6 @@ extern "C" {
  */
 #define TIVX_DATA_REF_Q_MAX_OBJECTS                 (64u)
 
-/*! \brief Max object descriptors than be parameters in a command object
- * \ingroup group_tivx_obj_desc_cfg
- */
-#define TIVX_CMD_MAX_OBJ_DESCS        (16u)
-
 /*!
  * \brief Max number of Target that can exist on a CPU
  * \ingroup group_tivx_target_cfg
@@ -282,7 +277,9 @@ extern "C" {
  */
 #define TIVX_CONTEXT_MAX_USER_STRUCTS   (32u)
 
-/*! \brief Maximum targets a kernel can run on */
+/*! \brief Maximum targets a kernel can run on
+ * \ingroup group_tivx_target_kernel_cfg
+ */
 #define TIVX_MAX_TARGETS_PER_KERNEL     (8u)
 
 /*! \brief Maximum possible modules in system \
@@ -369,12 +366,12 @@ extern "C" {
 /*! \brief Maximum number of objects supported inside delay object
  * \ingroup group_vx_delay_cfg
  */
-#define TIVX_DELAY_MAX_OBJECT           (8)
+#define TIVX_DELAY_MAX_OBJECT           (8u)
 
 /*! \brief Maximum number of parameter objects that can be associated with a delay
  * \ingroup group_vx_delay_cfg
  */
-#define TIVX_DELAY_MAX_PRM_OBJECT       (16)
+#define TIVX_DELAY_MAX_PRM_OBJECT       (16u)
 
 #ifdef __cplusplus
 }

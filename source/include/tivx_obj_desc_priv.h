@@ -88,6 +88,11 @@ extern "C" {
  */
 #define TIVX_OBJ_DESC_QUEUE_MAX_DEPTH               (32u)
 
+/*! \brief Max object descriptors than be parameters in a command object
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_CMD_MAX_OBJ_DESCS        (16u)
+
 /*! \brief Flag to indicate if command receiver needs to ACK this command
  * \ingroup group_tivx_obj_desc_priv
  */

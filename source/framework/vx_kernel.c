@@ -220,6 +220,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
                 kern->signature.directions[index] = dir;
                 kern->signature.types[index] = data_type;
                 kern->signature.states[index] = state;
+                tivxLogSetResourceUsedValue("TIVX_KERNEL_MAX_PARAMS", kern->signature.num_parameters);
                 status = VX_SUCCESS;
             }
         }
@@ -370,6 +371,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
                     TIVX_TARGET_MAX_NAME
                 );
             kernel->num_targets++;
+            tivxLogSetResourceUsedValue("TIVX_MAX_TARGETS_PER_KERNEL", kernel->num_targets);
         }
         else
         {

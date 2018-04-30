@@ -111,7 +111,12 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
             tmp_target->target_id = target_id;
 
             target = tmp_target;
+            tivxLogResourceAlloc("TIVX_TARGET_MAX_TARGETS_IN_CPU", 1);
         }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetAllocHandle: Exceeded max targets in CPU. Modify TIVX_TARGET_MAX_TARGETS_IN_CPU value in tivx_config.h\n");
     }
 
     return target;

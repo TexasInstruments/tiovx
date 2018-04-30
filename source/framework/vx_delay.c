@@ -89,6 +89,7 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
             prm = &delay->prm_pool[i];
             prm->next = NULL;
             prm->index = 0;
+            tivxLogSetResourceUsedValue("TIVX_DELAY_MAX_PRM_OBJECT", i+1);
             break;
         }
     }
@@ -366,6 +367,10 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     {
                         break;
                     }
+                }
+                if(status == VX_SUCCESS)
+                {
+                    tivxLogSetResourceUsedValue("TIVX_DELAY_MAX_OBJECT", count);
                 }
                 if ( (status == VX_SUCCESS) && (exemplar->type == VX_TYPE_PYRAMID) )
                 {

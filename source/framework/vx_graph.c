@@ -197,6 +197,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
             graph->nodes[graph->num_nodes] = node;
             graph->num_nodes++;
             ownGraphSetReverify(graph);
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_NODES", graph->num_nodes);
         }
         else
         {
@@ -452,6 +453,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].data_ref_queue = NULL;
             graph->parameters[graph->num_params].num_buf = 0;
             graph->num_params++;
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
             status = VX_SUCCESS;
         }
         else
@@ -470,6 +472,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
             graph->parameters[graph->num_params].index = 0;
             graph->parameters[graph->num_params].queue_enable = vx_false_e;
             graph->num_params++;
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_PARAMS", graph->num_params);
             status = VX_SUCCESS;
         }
         else
@@ -565,6 +568,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                     {
                         is_full = vx_false_e;
                         graph->delays[i] = delay;
+                        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DELAYS", i+1);
                         break;
                     }
                 }

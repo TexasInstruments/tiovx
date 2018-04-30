@@ -213,6 +213,7 @@ static void ownLinkParentSubimage(vx_image parent, vx_image subimage)
         if (parent->subimages[p] == NULL)
         {
             parent->subimages[p] = subimage;
+            tivxLogSetResourceUsedValue("TIVX_IMAGE_MAX_SUBIMAGES", p+1);
             break;
         }
     }
@@ -1933,6 +1934,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 map_size = end_addr - host_addr;
                 tivxMemBufferMap(map_addr, map_size,
                     obj_desc->mem_ptr[plane_index].mem_type, usage);
+
+                tivxLogSetResourceUsedValue("TIVX_IMAGE_MAX_MAPS", map_idx+1);
             }
             else
             {

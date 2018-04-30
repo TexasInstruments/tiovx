@@ -133,6 +133,8 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
 
                     knl = &g_target_kernel_table[i];
 
+                    tivxLogResourceAlloc("TIVX_TARGET_KERNEL_MAX", 1);
+
                     break;
                 }
             }
@@ -196,6 +198,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
                     g_target_kernel_table[i].create_func = NULL;
                     g_target_kernel_table[i].delete_func = NULL;
                     g_target_kernel_table[i].control_func = NULL;
+
+                    tivxLogResourceFree("TIVX_TARGET_KERNEL_MAX", 1);
 
                     break;
                 }

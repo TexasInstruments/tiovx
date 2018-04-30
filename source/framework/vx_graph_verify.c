@@ -117,6 +117,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
             graph->data_ref_num_out_nodes[i]++;
         }
         graph->num_data_ref++;
+        tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", graph->num_data_ref);
         status = VX_SUCCESS;
     }
     return status;
@@ -646,6 +647,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
             }
             graph->head_nodes[graph->num_head_nodes] = node;
             graph->num_head_nodes++;
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", graph->num_head_nodes);
         }
         if(num_out==0)
         {
@@ -658,6 +660,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
             }
             graph->leaf_nodes[graph->num_leaf_nodes] = node;
             graph->num_leaf_nodes++;
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", graph->num_leaf_nodes);
         }
     }
 
@@ -1280,6 +1283,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
             if(status==VX_SUCCESS)
             {
                 graph->num_data_ref_q++;
+                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF_QUEUE", graph->num_data_ref_q);
             }
         }
         else

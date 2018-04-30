@@ -110,6 +110,8 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
                     obj_desc->item_type = exemplar->type;
                     obj_desc->num_items = count;
 
+                    tivxLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", obj_desc->num_items);
+
                     status = ownInitObjArrayFromObject(context, objarr, exemplar);
 
                     if(status != VX_SUCCESS)
@@ -175,6 +177,8 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     obj_desc->item_type = exemplar->type;
                     obj_desc->num_items = count;
+
+                    tivxLogSetResourceUsedValue("TIVX_OBJECT_ARRAY_MAX_ITEMS", obj_desc->num_items);
 
                     ownInitObjArrayFromObject(context, objarr, exemplar);
 

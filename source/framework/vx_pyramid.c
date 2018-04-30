@@ -107,6 +107,17 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
             status = VX_FAILURE;
         }
 
+        if ((VX_SUCCESS == status) &&
+            (scale == VX_SCALE_PYRAMID_ORB))
+        {
+            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", levels);
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", levels);
+        }
+
         if (VX_SUCCESS == status)
         {
             prmd = (vx_pyramid)ownCreateReference(context, VX_TYPE_PYRAMID,
@@ -244,6 +255,13 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
                 {
                     prmd->img[i] = NULL;
                 }
+
+                if (scale == VX_SCALE_PYRAMID_ORB)
+                {
+                    tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVELS_ORB", levels);
+                }
+
+                tivxLogSetResourceUsedValue("TIVX_PYRAMID_MAX_LEVEL_OBJECTS", levels);
             }
         }
 

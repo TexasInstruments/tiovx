@@ -159,6 +159,19 @@ extern "C" {
  */
 #define TIVX_TARGET_HOST        "HOST"
 
+/*!
+ * \brief Max size of macro
+ *
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_RESOURCE_NAME_MAX (39u)
+
+/*!
+ * \brief Max size of config file path
+ *
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_CONFIG_PATH_LENGTH   (512u)
 
 /*! \brief CPU ID for supported CPUs
  *
@@ -217,6 +230,26 @@ typedef enum _tivx_cpu_id_e {
     TIVX_INVALID_CPU_ID = 0xFF
 
 } tivx_cpu_id_e;
+
+/*! \brief Struct containing config parameters of given static value
+ *
+ * \ingroup group_tivx_ext
+ */
+typedef struct _tivx_resource_stats_t {
+
+    /**< Maximum value of a macro */
+    uint32_t  max_value;
+
+    /**< Value currently being used by a statically allocated array */
+    uint32_t  cur_used_value;
+
+    /**< Highest value used at any point of the application */
+    uint32_t  max_used_value;
+
+    /**< Name of the macro */
+    char name[TIVX_RESOURCE_NAME_MAX];
+
+} tivx_resource_stats_t;
 
 /*! \brief TI attribute extensions
  *
@@ -352,6 +385,27 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnRegisterModule(char *name);
  * \ingroup group_tivx_ext
  */
 vx_enum tivxGetSelfCpuId(void);
+
+/*!
+ * \brief Query resource for resource stats
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status tivxQueryResourceStats(const char *resource_name, tivx_resource_stats_t *stat);
+
+/*!
+ * \brief Prints out resource stats
+ *
+ * \ingroup group_tivx_ext
+ */
+void tivxPrintAllResourceStats();
+
+/*!
+ * \brief Exports the max used values to a file
+ *
+ * \ingroup group_tivx_ext
+ */
+vx_status tivxExportAllResourceMaxUsedValueToFile();
 
 
 /*! \brief Macro to find size of array

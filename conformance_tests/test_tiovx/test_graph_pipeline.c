@@ -18,6 +18,7 @@
 #include <VX/vx.h>
 #include <VX/vx_khr_pipelining.h>
 #include <TI/tivx.h>
+#include <TI/tivx_config.h>
 #include "math.h"
 #include <limits.h>
 
@@ -56,6 +57,9 @@ typedef struct {
 #define ADD_PIPE_6(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/pipe_depth=6", __VA_ARGS__, 6))
 
+#define ADD_PIPE_MAX(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/pipe_depth=MAX", __VA_ARGS__, TIVX_GRAPH_MAX_PIPELINE_DEPTH-1))
+
 #define ADD_LOOP_0(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loop_count=0", __VA_ARGS__, 0))
 
@@ -88,6 +92,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_MAX, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
@@ -1300,6 +1305,401 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     VX_CALL(vxReleaseImage(&d2));
     VX_CALL(vxReleaseImage(&d3));
     VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ *  d0     n0     d1
+ * IMG -- NOT -- IMG -- NOT --, etc. for TIVX_GRAPH_MAX_DATA_REF_QUEUE length
+ *
+ *
+ * This test case test the below
+ * - Tests the limit of TIVX_GRAPH_MAX_DATA_REF_QUEUE
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF], d_virt[TIVX_GRAPH_MAX_DATA_REF_QUEUE], d1[MAX_NUM_BUF];
+    vx_node  n[TIVX_GRAPH_MAX_DATA_REF_QUEUE+1];
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, i;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE({
+            ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d1[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE; i++)
+    {
+        ASSERT_VX_OBJECT(d_virt[i]    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(n[0]    = vxNotNode(graph, d0[0], d_virt[0]), VX_TYPE_NODE);
+
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE-1; i++)
+    {
+        ASSERT_VX_OBJECT(n[i+1]    = vxNotNode(graph, d_virt[i], d_virt[i+1]), VX_TYPE_NODE);
+    }
+    ASSERT_VX_OBJECT(n[TIVX_GRAPH_MAX_DATA_REF_QUEUE]    = vxNotNode(graph, d_virt[TIVX_GRAPH_MAX_DATA_REF_QUEUE-1], d1[0]), VX_TYPE_NODE);
+
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE+1; i++)
+    {
+        VX_CALL(vxSetNodeTarget(n[i], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    }
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n[0], 0);
+    /* input @ n3 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n[TIVX_GRAPH_MAX_DATA_REF_QUEUE], 1);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1, 2 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d1[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_four_nodes");
+    log_graph_rt_trace(graph);
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(d0[buf_id], ref_src[buf_id]));
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(d1[buf_id], ref_src[buf_id]));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d1[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        vx_image out_img, in_img;
+        uint32_t num_refs;
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1);
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    #endif
+
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE+1; i++)
+    {
+        VX_CALL(vxReleaseNode(&n[i]));
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d1[buf_id]));
+    }
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE; i++)
+    {
+        VX_CALL(vxReleaseImage(&d_virt[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ * This test case test the below
+ * - Negative test for the limit of TIVX_GRAPH_MAX_DATA_REF_QUEUE
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, negativeTestGraphMaxDataRef, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF], d_virt[TIVX_GRAPH_MAX_DATA_REF_QUEUE+1], d1[MAX_NUM_BUF];
+    vx_node  n[TIVX_GRAPH_MAX_DATA_REF_QUEUE+2];
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, i;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE({
+            ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d1[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE+1; i++)
+    {
+        ASSERT_VX_OBJECT(d_virt[i]    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(n[0]    = vxNotNode(graph, d0[0], d_virt[0]), VX_TYPE_NODE);
+
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE; i++)
+    {
+        ASSERT_VX_OBJECT(n[i+1]    = vxNotNode(graph, d_virt[i], d_virt[i+1]), VX_TYPE_NODE);
+    }
+    ASSERT_VX_OBJECT(n[TIVX_GRAPH_MAX_DATA_REF_QUEUE+1]    = vxNotNode(graph, d_virt[TIVX_GRAPH_MAX_DATA_REF_QUEUE], d1[0]), VX_TYPE_NODE);
+
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE+2; i++)
+    {
+        VX_CALL(vxSetNodeTarget(n[i], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    }
+
+    /* input @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n[0], 0);
+    /* input @ n3 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n[TIVX_GRAPH_MAX_DATA_REF_QUEUE+1], 1);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1, 2 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d1[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            2,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE+2; i++)
+    {
+        VX_CALL(vxReleaseNode(&n[i]));
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d1[buf_id]));
+    }
+    for (i = 0; i < TIVX_GRAPH_MAX_DATA_REF_QUEUE+1; i++)
+    {
+        VX_CALL(vxReleaseImage(&d_virt[i]));
+    }
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+/*
+ * This test case test the below
+ * - Negative test for the limit of TIVX_DATA_REF_Q_MAX_OBJECTS
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, negativeTestMaxDataRefQ, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_image d0[MAX_NUM_BUF], d_virt[TIVX_DATA_REF_Q_MAX_OBJECTS], d1[MAX_NUM_BUF];
+    vx_node  n[TIVX_DATA_REF_Q_MAX_OBJECTS+1];
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    CT_Image ref_src[MAX_NUM_BUF], vxdst;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
+    uint32_t buf_id, loop_id, loop_cnt, i;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    if (TIVX_DATA_REF_Q_MAX_OBJECTS == 16)
+    {
+
+        seq_init = 1;
+        width = arg_->width;
+        height = arg_->height;
+        pipeline_depth = arg_->pipe_depth;
+        num_buf = arg_->num_buf;
+        loop_cnt = arg_->loop_count;
+
+        ASSERT(num_buf <= MAX_NUM_BUF);
+
+        /* fill reference data */
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            ASSERT_NO_FAILURE({
+                ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+                fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            });
+        }
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+        /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(d1[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+        for (i = 0; i < TIVX_DATA_REF_Q_MAX_OBJECTS; i++)
+        {
+            ASSERT_VX_OBJECT(d_virt[i]    = vxCreateVirtualImage(graph, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        }
+
+        ASSERT_VX_OBJECT(n[0]    = vxNotNode(graph, d0[0], d_virt[0]), VX_TYPE_NODE);
+
+        for (i = 0; i < TIVX_DATA_REF_Q_MAX_OBJECTS-1; i++)
+        {
+            ASSERT_VX_OBJECT(n[i+1]    = vxNotNode(graph, d_virt[i], d_virt[i+1]), VX_TYPE_NODE);
+        }
+        ASSERT_VX_OBJECT(n[TIVX_DATA_REF_Q_MAX_OBJECTS]    = vxNotNode(graph, d_virt[TIVX_DATA_REF_Q_MAX_OBJECTS-1], d1[0]), VX_TYPE_NODE);
+
+        for (i = 0; i < TIVX_DATA_REF_Q_MAX_OBJECTS+1; i++)
+        {
+            VX_CALL(vxSetNodeTarget(n[i], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        }
+
+        /* input @ n0 index 0, becomes graph parameter 0 */
+        add_graph_parameter_by_node_index(graph, n[0], 0);
+        /* input @ n3 index 1, becomes graph parameter 1 */
+        add_graph_parameter_by_node_index(graph, n[TIVX_DATA_REF_Q_MAX_OBJECTS], 1);
+
+        /* set graph schedule config such that graph parameter @ index 0, 1, 2 are enqueuable */
+        graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+        graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+        graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+        graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d1[0];
+
+        /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+         * Graph gets scheduled automatically as refs are enqueued to it
+         */
+        vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                );
+
+        /* explicitly set graph pipeline depth */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+        EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+        for (i = 0; i < TIVX_DATA_REF_Q_MAX_OBJECTS+1; i++)
+        {
+            VX_CALL(vxReleaseNode(&n[i]));
+        }
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            VX_CALL(vxReleaseImage(&d0[buf_id]));
+            VX_CALL(vxReleaseImage(&d1[buf_id]));
+        }
+        for (i = 0; i < TIVX_DATA_REF_Q_MAX_OBJECTS; i++)
+        {
+            VX_CALL(vxReleaseImage(&d_virt[i]));
+        }
+        VX_CALL(vxReleaseGraph(&graph));
+    }
+    else
+    {
+        printf("In order to properly test the value of TIVX_DATA_REF_Q_MAX_OBJECTS, set it to 16 in tivx_config.h\n");
+    }
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
@@ -3586,11 +3986,27 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST(tivxGraphPipeline, negativeTestPipelineDepth)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_NE_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, TIVX_GRAPH_MAX_PIPELINE_DEPTH));
+
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
     testTwoNodes,
     testFourNodes,
+    testMaxDataRef,
+    negativeTestGraphMaxDataRef,
+    negativeTestMaxDataRefQ,
     testUniformImage,
     testScalarOutput,
     testEventHandling,
@@ -3601,7 +4017,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay1,
     testDelay2,
     testDelay3,
-    testDelay4
+    testDelay4,
+    negativeTestPipelineDepth
     )
 
 

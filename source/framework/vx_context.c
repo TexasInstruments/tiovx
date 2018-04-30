@@ -181,6 +181,8 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                 context->num_references++;
                 is_success = vx_true_e;
 
+                tivxLogResourceAlloc("TIVX_CONTEXT_MAX_REFERENCES", 1);
+
                 switch(ref->type)
                 {
                     case VX_TYPE_DELAY:
@@ -259,6 +261,7 @@ vx_bool ownRemoveReferenceFromContext(vx_context context, vx_reference ref)
                 context->reftable[ref_idx] = NULL;
                 context->num_references--;
                 is_success = vx_true_e;
+                tivxLogResourceFree("TIVX_CONTEXT_MAX_REFERENCES", 1);
                 break;
             }
         }
@@ -308,6 +311,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
                 context->kerneltable[idx] = kernel;
                 context->num_unique_kernels++;
                 ownIncrementReference(&kernel->base, VX_INTERNAL);
+                tivxLogResourceAlloc("TIVX_CONTEXT_MAX_KERNELS", 1);
                 break;
             }
         }
@@ -351,6 +355,7 @@ vx_status ownRemoveKernelFromContext(vx_context context, vx_kernel kernel)
                 context->kerneltable[idx] = NULL;
                 context->num_unique_kernels--;
                 ownDecrementReference(&kernel->base, VX_INTERNAL);
+                tivxLogResourceFree("TIVX_CONTEXT_MAX_KERNELS", 1);
                 break;
             }
         }
@@ -972,6 +977,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
                 context->user_structs[i].type = VX_TYPE_USER_STRUCT_START + i;
                 context->user_structs[i].size = size;
                 type = context->user_structs[i].type;
+                tivxLogResourceAlloc("TIVX_CONTEXT_MAX_USER_STRUCTS", 1);
                 break;
             }
         }
