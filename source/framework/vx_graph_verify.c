@@ -1308,6 +1308,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         if(status!=VX_SUCCESS)
         {
             VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj descriptors at node for pipelining\n");
+            break;
         }
     }
 
@@ -1342,7 +1343,12 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
                     if(status!=VX_SUCCESS)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"Unable to add data ref q to graph\n");
+                        break;
                     }
+                }
+                if(status!=VX_SUCCESS)
+                {
+                    break;
                 }
             }
         }

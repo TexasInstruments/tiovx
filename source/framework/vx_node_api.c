@@ -125,6 +125,10 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
         /* kernel is released inside vxCreateNodeByStructure */
         node =  vxCreateNodeByStructure(graph, kernel, 0, params, num);
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxCreateNodeByKernelName: Call to vxGetKernelByName failed; kernel may not be registered\n");
+    }
     return node;
 }
 
