@@ -36,6 +36,7 @@ LINK     := ln -s -f
 TOUCH    := touch
 INSTALL  := install -C -m 755
 MKDIR    := mkdir -p
+DOXYGEN  := doxygen
 CAT      := cat
 QUIET    := 2> /dev/null
 endif
