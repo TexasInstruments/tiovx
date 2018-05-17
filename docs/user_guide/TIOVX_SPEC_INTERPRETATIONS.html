@@ -45,7 +45,12 @@ $(document).ready(function(){initNavTree('TIOVX_SPEC_INTERPRETATIONS.html','');}
 <div class="title">OpenVX Specification Interpretations </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><dl class="section user"><dt>Valid Region</dt><dd><ul>
+<div class="textblock"><dl class="section user"><dt>Context Creation</dt><dd><ul>
+<li>The TI Implementation of OpenVX supports the creation of a single context. Additional calls to vxCreateContext beyond the initial call simply return a reference to the initially created context.</li>
+<li>Furthermore, the TIVX_CONTEXT_MAX_OBJECTS does not take effect. It merely provides the value of the amount of contexts that are allowed, namely 1. </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Valid Region</dt><dd><ul>
 <li>The valid regions for each kernel are set prior to graph verification and restrictions to valid regions are propagated to downstream kernels during the initialize callbacks of each kernel.</li>
 <li>After graph verification, the valid regions for each kernel have been set.</li>
 <li>Therefore, following graph verification, changes to the valid region using vxSetImageValidRectangle must not be made. </li>

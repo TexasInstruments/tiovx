@@ -1627,19 +1627,16 @@ TEST(tivxBoundary, testVirtualObjectArrayItems)
 
 }
 
-// Doesn't fail
-// Modify test case to check to see if these are the same reference
 /* TIVX_CONTEXT_MAX_OBJECTS */
 TEST(tivxBoundary, testContext)
 {
     vx_context context = context_->vx_context_;
 
-    vx_context context2 = vxCreateContext(); // Might be a build option, might return a reference to the single context
+    vx_context context2 = vxCreateContext();
 
-    vx_context context3 = vxCreateContext();
-    tivx_resource_stats_t stats;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxQueryResourceStats("TIVX_CONTEXT_MAX_OBJECTS", &stats));
-    ASSERT(stats.max_used_value == TIVX_CONTEXT_MAX_OBJECTS);
+    ASSERT_EQ_PTR(context, context2);
+
+    VX_CALL(vxReleaseContext(&context2));
 }
 
 /* TIVX_IMAGE_MAX_MAPS */
