@@ -52,52 +52,52 @@ $(document).ready(function(){initNavTree('build__instructions_8h_source.html',''
 </div><!--header-->
 <div class="contents">
 <a href="build__instructions_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment"> &lt;BR&gt;&lt;HR&gt;</span></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;<span class="comment">/*</span></div>
 <div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment"> \section BUILD_WINDOWS Build instructions for x86 Win32 Platform (HOST Emulation Mode)</span></div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;<span class="comment"> &lt;BR&gt;&lt;HR&gt;</span></div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="comment"> \par Requirements</span></div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment">  - GCC and Windows</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment">    - Currently the build is tested with &quot;mingw&quot; that is installed as part of CodeBlocks IDE</span></div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">    - Install &quot;CodeBlocks IDE&quot; 16.01 or higher [http://www.codeblocks.org/]</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">    - GCC compiler with 32b mode support is required for using TIOVX</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">      - GCC compiler included as part of Codeblocks is 32b compiler</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">    - Make sure xdctools_x_xx_xx_xx_core/bin/gmake available as part</span></div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">      of XDC package (included in Vision SDK) is visible in the system path.</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment"> \par Setup</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment">  - Edit $TIOVX_PATH/vsdk_tools_path.mak</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment">    - Modify &quot;GCC_WINDOWS_ROOT := C:/CodeBlocks/MinGW&quot; to match your environment if needed</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="comment">    - The following paths are the only paths that must be set correctly for host emulation mode. (If paths have been already set for build for Vision SDK Platform, they do not need to be changed.)</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment">      - VXLIB_PATH</span></div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment">      - DMAUTILS_PATH (must only be set if BUILD_BAM option is enabled)</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment">      - ALGFRAMEWORK_PATH (must only be set if BUILD_BAM option is enabled)</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment">      - EVE_SW_PATH (must only be set if BUILD_IVISION_KERNELS is enabled)</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment">  - Edit $TIOVX_PATH/Makefile</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">    - set BUILD_EMULATION_MODE=yes and BUILD_TARGET_MODE=no</span></div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment"> \par Build</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment">  - Open a windows command prompt at $TIOVX_PATH</span></div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment">  - Type &quot;gmake&quot; to build TIOVX and associated libraries</span></div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="comment">    - This builds the TIOVX libraries, conformance test executable and tutorial executable</span></div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment">  - Conformance test, tutorial executable is output at</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment">    - &quot;$TIOVX_PATH\out\PC\X86\WINDOWS\debug\vx_conformance_tests_exe.exe&quot;</span></div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">    - &quot;$TIOVX_PATH\out\PC\X86\WINDOWS\debug\vx_tutorial_exe.exe&quot;</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment"> \par Running the conformance test and tutorial</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment">  - Open a command prompt at the folder &quot;$TIOVX_PATH\out\PC\X86\WINDOWS\$PROFILE\&quot;</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment">  - Set environment variable below to specify the path of the test data. This is used by both</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment">    the conformance test and tutorial executables</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment">    \code</span></div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="comment">    set VX_TEST_DATA_PATH=../../../../../conformance_tests/test_data</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment">    \endcode</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">  - Execute &quot;vx_conformance_tests_exe.exe&quot; to run the conformance test</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment">  - Execute &quot;vx_tutorial_exe.exe&quot; to run the tutorial</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment">  - NOTE: Output .bmp files generated by the tutorial will be present in the folder $VX_TEST_DATA_PATH</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment"></span></div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment">*/</span></div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;<span class="comment"> \section BUILD_WINDOWS Build instructions for x86 Win32 Platform (HOST Emulation Mode)</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="comment"> \par Requirements</span></div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="comment">  - GCC and Windows</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;<span class="comment">    - Currently the build is tested with &quot;mingw&quot; that is installed as part of CodeBlocks IDE</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;<span class="comment">    - Install &quot;CodeBlocks IDE&quot; 16.01 or higher [http://www.codeblocks.org/]</span></div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;<span class="comment">    - GCC compiler with 32b mode support is required for using TIOVX</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="comment">      - GCC compiler included as part of Codeblocks is 32b compiler</span></div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;<span class="comment">    - Make sure xdctools_x_xx_xx_xx_core/bin/gmake available as part</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="comment">      of XDC package (included in Vision SDK) is visible in the system path.</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="comment"> \par Setup</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;<span class="comment">  - Edit $TIOVX_PATH/vsdk_tools_path.mak</span></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;<span class="comment">    - Modify &quot;GCC_WINDOWS_ROOT := C:/CodeBlocks/MinGW&quot; to match your environment if needed</span></div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;<span class="comment">    - The following paths are the only paths that must be set correctly for host emulation mode. (If paths have been already set for build for Vision SDK Platform, they do not need to be changed.)</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="comment">      - VXLIB_PATH</span></div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;<span class="comment">      - DMAUTILS_PATH (must only be set if BUILD_BAM option is enabled)</span></div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="comment">      - ALGFRAMEWORK_PATH (must only be set if BUILD_BAM option is enabled)</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;<span class="comment">      - EVE_SW_PATH (must only be set if BUILD_IVISION_KERNELS is enabled)</span></div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="comment">  - Edit $TIOVX_PATH/Makefile</span></div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;<span class="comment">    - set BUILD_EMULATION_MODE=yes and BUILD_TARGET_MODE=no</span></div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="comment"> \par Build</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;<span class="comment">  - Open a windows command prompt at $TIOVX_PATH</span></div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;<span class="comment">  - Type &quot;gmake&quot; to build TIOVX and associated libraries</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="comment">    - This builds the TIOVX libraries, conformance test executable and tutorial executable</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;<span class="comment">  - Conformance test, tutorial executable is output at</span></div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="comment">    - &quot;$TIOVX_PATH\out\PC\X86\WINDOWS\debug\vx_conformance_tests_exe.exe&quot;</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="comment">    - &quot;$TIOVX_PATH\out\PC\X86\WINDOWS\debug\vx_tutorial_exe.exe&quot;</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="comment"> \par Running the conformance test and tutorial</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="comment">  - Open a command prompt at the folder &quot;$TIOVX_PATH\out\PC\X86\WINDOWS\$PROFILE\&quot;</span></div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;<span class="comment">  - Set environment variable below to specify the path of the test data. This is used by both</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;<span class="comment">    the conformance test and tutorial executables</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;<span class="comment">    \code</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="comment">    set VX_TEST_DATA_PATH=../../../../../conformance_tests/test_data</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;<span class="comment">    \endcode</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="comment">  - Execute &quot;vx_conformance_tests_exe.exe&quot; to run the conformance test</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="comment">  - Execute &quot;vx_tutorial_exe.exe&quot; to run the tutorial</span></div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="comment">  - NOTE: Output .bmp files generated by the tutorial will be present in the folder $VX_TEST_DATA_PATH</span></div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="comment"></span></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;<span class="comment">*/</span></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 
@@ -110,11 +110,11 @@ $(document).ready(function(){initNavTree('build__instructions_8h_source.html',''
 </tr>
 <tr bgcolor="#CCCCCC">
       <td bgcolor="#FFFFFF"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#000000"><b><i>
-        &copy Copyright 2017 Texas Instruments Incorporated. All rights reserved. </i></b></font></td>
+        &copy Copyright 2018 Texas Instruments Incorporated. All rights reserved. </i></b></font></td>
 </tr>
 <tr bgcolor="#CCCCCC">
       <td bgcolor="#FFFFFF"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#000000">
-        Document generated by <b><i> doxygen </i></b> 1.6.1
+        Document generated by <b><i> doxygen </i></b> 1.8.6
   </font></td>
 </tr>
 </table>

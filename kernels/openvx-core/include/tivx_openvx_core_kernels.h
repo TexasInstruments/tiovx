@@ -82,28 +82,28 @@ extern "C" {
 /*!
  * \brief Function to register core OpenVx Kernels on the Host
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 void tivxRegisterOpenVXCoreKernels(void);
 
 /*!
  * \brief Function to un-register core OpenVx Kernels on the Host
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 void tivxUnRegisterOpenVXCoreKernels(void);
 
 /*!
  * \brief Function to register OpenVx Kernels on the Target
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 void tivxRegisterOpenVXCoreTargetKernels(void);
 
 /*!
  * \brief Function to register OpenVx Kernels on the Target
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
 

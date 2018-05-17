@@ -9,10 +9,10 @@ var NAVTREE =
       [ "Deleting all generated files", "BUILD_INSTRUCTIONS.html#BUILD_CLEAN", null ]
     ] ],
     [ "TI Disclaimer", "TI_DISCLAIMER.html", null ],
-    [ "TI Vendor-Specific Implementation", "TIOVX_VENDOR_IMPLEMENTATION.html", null ],
+    [ "API Reference", "API_REFERENCE.html", null ],
     [ "TI Extensions to the OpenVX Specification", "TIOVX_EXTENSIONS.html", null ],
     [ "TIOVX Usage Recommendations", "TIOVX_USAGE.html", null ],
-    [ "OpenVX Specification Interpretations", "TIOVX_SPEC_INTERPRETATIONS.html", null ],
+    [ "OpenVX Standard Specification Interpretations", "TIOVX_SPEC_INTERPRETATIONS.html", null ],
     [ "TIOVX Package Contents", "TIOVX_PACKAGE_CONTENTS.html", null ],
     [ "TIOVX Performance", "TIOVX_PERFORMANCE.html", null ],
     [ "TDA3x BIOS ONLY Performance Report", "TIOVX_PERFORMANCE_TDA3x_BIOS.html", null ],
@@ -47,18 +47,18 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"BUILD_INSTRUCTIONS.html",
-"group__group__tivx__ext__common__kernel.html#gadc6eb4515674ad438c96fec0d3cccb0a",
-"group__group__tivx__target__kernel.html#gaa32576c061941da6b7ad3dd05d8c9569",
-"structTivx__Target__Kernel__List.html",
-"structtivx__node__t.html#a8bff1817014630a7f22df39c988b0a2d",
-"structtivx__parameter__t.html#aa83a224854f48a5885db14696703dea1",
-"tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655ca26d4507dd18b50460ecd0459290fb954",
-"tivx__kernel__canny_8h.html",
-"tivx__log__rt__trace_8h.html#a6fca927e12ca99f3e9c666592f22d4e0",
-"vx__context_8h.html#gabb812deddf0a24bc11d4ed50da04c587",
-"vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a",
-"vx__types_8h.html#ab2904d3eaeaa2034307cff4848fddc1da059a0b2492b50a8b93d2b060fba5794b"
+"API_REFERENCE.html",
+"group__group__tivx__int__common__kernel.html#ga5e3013b4f409cfe628c1cd2851cf5e04",
+"group__group__tivx__target__kernel__instance.html#ga9ef96cbb47593774cdb647817ef1b315",
+"structtivxKernelValidRectParams.html#ac51f528dd766f962b941296fdd775e09",
+"structtivx__obj__desc__array__t.html#a09e8729e0d2cb1225e1b189b90afa6e9",
+"structtivx__queue.html#a5745579be2021958d718994524c2bd9a",
+"tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655ca42616ae9460dbf19893adfafc80754fc",
+"tivx__kernel__channel__combine_8h.html#a0e825ea7cf277645100b0b96d44239fa",
+"tivx__mem_8h.html#ga87a9c979d1fe5fb5dca1f127bb843d8d",
+"vx__delay_8h.html#gaebf2b68648ae0503ed5ba08e9696bbce",
+"vx__types_8h.html#a44aa67e15168e5912a0800090a120be6a080bd3dd807437832cf3575388911a33",
+"vx__types_8h.html#ac04b5df1e74eb9ead96589ca863f1977a366b66a98cd918db6a8925cd3165a50a"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

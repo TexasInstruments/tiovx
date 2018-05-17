@@ -1,6 +1,6 @@
 var group__group__tivx__ext__target =
 [
-    [ "Kernel Helper APIs", "group__group__tivx__ext__target__kernel.html", null ],
+    [ "Target Kernel APIs", "group__group__tivx__target__kernel.html", "group__group__tivx__target__kernel" ],
     [ "tivxRegisterTargetKernels", "group__group__tivx__ext__target.html#gaba2564629170d41fbcc1afedbbcee2f1", null ],
     [ "tivxUnRegisterTargetKernels", "group__group__tivx__ext__target.html#ga4cc127dcd179ac1d7ac0543e290e2ce7", null ],
     [ "tivxComputePatchOffset", "group__group__tivx__ext__target.html#ga54a709cf722871173e41d58142f13ec5", null ],

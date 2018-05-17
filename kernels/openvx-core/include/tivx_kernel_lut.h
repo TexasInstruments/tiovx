@@ -80,28 +80,28 @@ extern "C" {
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LUT_IN_IMG_IDX      (0U)
 
 /*!
  * \brief Index of the output image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LUT_OUT_IMG_IDX     (2U)
 
 /*!
  * \brief Index of the input Lut
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LUT_IN_LUT_IDX      (1U)
 
 /*!
  * \brief Max parameters supported by Lut kernel
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LUT_MAX_PARAMS      (3U)
 

@@ -70,34 +70,334 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ga5369ede527d87e790f51b8321d9171c4"><td class="memItemLeft" align="right" valign="top">typedef void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a></td></tr>
-<tr class="memdesc:ga5369ede527d87e790f51b8321d9171c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Graph handle.  <a href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">More...</a><br/></td></tr>
-<tr class="separator:ga5369ede527d87e790f51b8321d9171c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5369ede527d87e790f51b8321d9171c4"><td class="memItemLeft" align="right" valign="top">typedef void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a></td></tr>
+<tr class="memdesc:a5369ede527d87e790f51b8321d9171c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Graph handle.  <a href="#a5369ede527d87e790f51b8321d9171c4">More...</a><br/></td></tr>
+<tr class="separator:a5369ede527d87e790f51b8321d9171c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga76c3983ab77b3cd04ad14ea40cc813f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#ga76c3983ab77b3cd04ad14ea40cc813f0">tivxBamMemInit</a> (void *ibuf_mem, uint32_t ibuf_size, void *wbuf_mem, uint32_t wbuf_size)</td></tr>
-<tr class="memdesc:ga76c3983ab77b3cd04ad14ea40cc813f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize memory block for BAM usage.  <a href="group__group__tivx__ext__common__kernel.html#ga76c3983ab77b3cd04ad14ea40cc813f0">More...</a><br/></td></tr>
-<tr class="separator:ga76c3983ab77b3cd04ad14ea40cc813f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab6871b893f219f4834d3cf5dd3644089"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#gab6871b893f219f4834d3cf5dd3644089">tivxBamCreateHandleSingleNode</a> (<a class="el" href="tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655c">BAM_TI_KernelID</a> kernel_id, VXLIB_bufParams2D_t *buf_params[], <a class="el" href="structtivx__bam__kernel__details__t.html">tivx_bam_kernel_details_t</a> *kernel_details, <a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> *graph_handle)</td></tr>
-<tr class="memdesc:gab6871b893f219f4834d3cf5dd3644089"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Create Graph Handle for Single Node.  <a href="group__group__tivx__ext__common__kernel.html#gab6871b893f219f4834d3cf5dd3644089">More...</a><br/></td></tr>
-<tr class="separator:gab6871b893f219f4834d3cf5dd3644089"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaee80c364aae262cf6410202804c2e6cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#gaee80c364aae262cf6410202804c2e6cc">tivxBamCreateHandleMultiNode</a> (BAM_NodeParams node_list[], uint32_t max_nodes, BAM_EdgeParams edge_list[], uint32_t max_edges, VXLIB_bufParams2D_t *buf_params[], <a class="el" href="structtivx__bam__kernel__details__t.html">tivx_bam_kernel_details_t</a> kernel_details[], <a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> *graph_handle)</td></tr>
-<tr class="memdesc:gaee80c364aae262cf6410202804c2e6cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Create Graph Handle for Multiple Nodes.  <a href="group__group__tivx__ext__common__kernel.html#gaee80c364aae262cf6410202804c2e6cc">More...</a><br/></td></tr>
-<tr class="separator:gaee80c364aae262cf6410202804c2e6cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga61b1617856179fbca756a9c2becd83f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#ga61b1617856179fbca756a9c2becd83f7">tivxBamUpdatePointers</a> (<a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle, uint32_t num_inputs, uint32_t num_outputs, void *ptrs[])</td></tr>
-<tr class="memdesc:ga61b1617856179fbca756a9c2becd83f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Update Pointers.  <a href="group__group__tivx__ext__common__kernel.html#ga61b1617856179fbca756a9c2becd83f7">More...</a><br/></td></tr>
-<tr class="separator:ga61b1617856179fbca756a9c2becd83f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1435c9f136cd0e8d9a76c748187ba8b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#ga1435c9f136cd0e8d9a76c748187ba8b7">tivxBamControlNode</a> (<a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle, uint32_t node_id, uint32_t cmd, void *payload)</td></tr>
-<tr class="memdesc:ga1435c9f136cd0e8d9a76c748187ba8b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Node Control.  <a href="group__group__tivx__ext__common__kernel.html#ga1435c9f136cd0e8d9a76c748187ba8b7">More...</a><br/></td></tr>
-<tr class="separator:ga1435c9f136cd0e8d9a76c748187ba8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaad1a1743669b45857343edf12c6194e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#gaad1a1743669b45857343edf12c6194e4">tivxBamProcessGraph</a> (<a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle)</td></tr>
-<tr class="memdesc:gaad1a1743669b45857343edf12c6194e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Process Graph.  <a href="group__group__tivx__ext__common__kernel.html#gaad1a1743669b45857343edf12c6194e4">More...</a><br/></td></tr>
-<tr class="separator:gaad1a1743669b45857343edf12c6194e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaedf417c789eae8c266d9bae3dc7e0dee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__common__kernel.html#gaedf417c789eae8c266d9bae3dc7e0dee">tivxBamDestroyHandle</a> (<a class="el" href="group__group__tivx__ext__common__kernel.html#ga5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle)</td></tr>
-<tr class="memdesc:gaedf417c789eae8c266d9bae3dc7e0dee"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Destroy Handle.  <a href="group__group__tivx__ext__common__kernel.html#gaedf417c789eae8c266d9bae3dc7e0dee">More...</a><br/></td></tr>
-<tr class="separator:gaedf417c789eae8c266d9bae3dc7e0dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a76c3983ab77b3cd04ad14ea40cc813f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a76c3983ab77b3cd04ad14ea40cc813f0">tivxBamMemInit</a> (void *ibuf_mem, uint32_t ibuf_size, void *wbuf_mem, uint32_t wbuf_size)</td></tr>
+<tr class="memdesc:a76c3983ab77b3cd04ad14ea40cc813f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize memory block for BAM usage.  <a href="#a76c3983ab77b3cd04ad14ea40cc813f0">More...</a><br/></td></tr>
+<tr class="separator:a76c3983ab77b3cd04ad14ea40cc813f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6871b893f219f4834d3cf5dd3644089"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#ab6871b893f219f4834d3cf5dd3644089">tivxBamCreateHandleSingleNode</a> (<a class="el" href="tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655c">BAM_TI_KernelID</a> kernel_id, VXLIB_bufParams2D_t *buf_params[], <a class="el" href="structtivx__bam__kernel__details__t.html">tivx_bam_kernel_details_t</a> *kernel_details, <a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> *graph_handle)</td></tr>
+<tr class="memdesc:ab6871b893f219f4834d3cf5dd3644089"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Create Graph Handle for Single Node.  <a href="#ab6871b893f219f4834d3cf5dd3644089">More...</a><br/></td></tr>
+<tr class="separator:ab6871b893f219f4834d3cf5dd3644089"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee80c364aae262cf6410202804c2e6cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#aee80c364aae262cf6410202804c2e6cc">tivxBamCreateHandleMultiNode</a> (BAM_NodeParams node_list[], uint32_t max_nodes, BAM_EdgeParams edge_list[], uint32_t max_edges, VXLIB_bufParams2D_t *buf_params[], <a class="el" href="structtivx__bam__kernel__details__t.html">tivx_bam_kernel_details_t</a> kernel_details[], <a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> *graph_handle)</td></tr>
+<tr class="memdesc:aee80c364aae262cf6410202804c2e6cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Create Graph Handle for Multiple Nodes.  <a href="#aee80c364aae262cf6410202804c2e6cc">More...</a><br/></td></tr>
+<tr class="separator:aee80c364aae262cf6410202804c2e6cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b1617856179fbca756a9c2becd83f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a61b1617856179fbca756a9c2becd83f7">tivxBamUpdatePointers</a> (<a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle, uint32_t num_inputs, uint32_t num_outputs, void *ptrs[])</td></tr>
+<tr class="memdesc:a61b1617856179fbca756a9c2becd83f7"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Update Pointers.  <a href="#a61b1617856179fbca756a9c2becd83f7">More...</a><br/></td></tr>
+<tr class="separator:a61b1617856179fbca756a9c2becd83f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1435c9f136cd0e8d9a76c748187ba8b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a1435c9f136cd0e8d9a76c748187ba8b7">tivxBamControlNode</a> (<a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle, uint32_t node_id, uint32_t cmd, void *payload)</td></tr>
+<tr class="memdesc:a1435c9f136cd0e8d9a76c748187ba8b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Node Control.  <a href="#a1435c9f136cd0e8d9a76c748187ba8b7">More...</a><br/></td></tr>
+<tr class="separator:a1435c9f136cd0e8d9a76c748187ba8b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad1a1743669b45857343edf12c6194e4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#aad1a1743669b45857343edf12c6194e4">tivxBamProcessGraph</a> (<a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle)</td></tr>
+<tr class="memdesc:aad1a1743669b45857343edf12c6194e4"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Process Graph.  <a href="#aad1a1743669b45857343edf12c6194e4">More...</a><br/></td></tr>
+<tr class="separator:aad1a1743669b45857343edf12c6194e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aedf417c789eae8c266d9bae3dc7e0dee"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#aedf417c789eae8c266d9bae3dc7e0dee">tivxBamDestroyHandle</a> (<a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> graph_handle)</td></tr>
+<tr class="memdesc:aedf417c789eae8c266d9bae3dc7e0dee"><td class="mdescLeft">&#160;</td><td class="mdescRight">BAM Destroy Handle.  <a href="#aedf417c789eae8c266d9bae3dc7e0dee">More...</a><br/></td></tr>
+<tr class="separator:aedf417c789eae8c266d9bae3dc7e0dee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a class="anchor" id="a5369ede527d87e790f51b8321d9171c4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void* <a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Graph handle. </p>
+<p>Handle associated with an instance of a BAM graph.</p>
+<p>The structure this handle represents is internally defined and not needed by the user.</p>
+<p>The user is given this handle when calling <a class="el" href="tivx__bam__kernel__wrapper_8h.html#ab6871b893f219f4834d3cf5dd3644089">tivxBamCreateHandleSingleNode</a>, or <a class="el" href="tivx__bam__kernel__wrapper_8h.html#aee80c364aae262cf6410202804c2e6cc">tivxBamCreateHandleMultiNode</a>, and can destroy it by calling <a class="el" href="tivx__bam__kernel__wrapper_8h.html#aedf417c789eae8c266d9bae3dc7e0dee">tivxBamDestroyHandle</a>. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Function Documentation</h2>
+<a class="anchor" id="a76c3983ab77b3cd04ad14ea40cc813f0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> tivxBamMemInit </td>
+          <td>(</td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ibuf_mem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>ibuf_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>wbuf_mem</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>wbuf_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize memory block for BAM usage. </p>
+<p>This function is used by the application to assign blocks of internal memory for use by BAM. This memory is typically on-chip RAM (L2SRAM, L1DRAM, or OCM RAM).</p>
+<p>BAM uses the ibuf memory to temporarily store the input block buffers from the DMA source nodes, the intermediate block buffers within kernels of the graph, and the output block buffers to the DMA sink nodes.</p>
+<p>BAM uses the wbuf memory to temporarily store internal scratch memory requested by the kernels of the graph.</p>
+<p>All of this memory is considered scratch memory, meaning that the BAM does not use it for persistent memory, and it can be overwritten by the application when in between calls to tivxBamProcessGraph.</p>
+<p>This function should be called before any calls to tivxBamCreateHandleSingleNode or tivxBamCreateHandleMultiNode. </p>
+
+</div>
+</div>
+<a class="anchor" id="ab6871b893f219f4834d3cf5dd3644089"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> tivxBamCreateHandleSingleNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655c">BAM_TI_KernelID</a>&#160;</td>
+          <td class="paramname"><em>kernel_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VXLIB_bufParams2D_t *&#160;</td>
+          <td class="paramname"><em>buf_params</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structtivx__bam__kernel__details__t.html">tivx_bam_kernel_details_t</a> *&#160;</td>
+          <td class="paramname"><em>kernel_details</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> *&#160;</td>
+          <td class="paramname"><em>graph_handle</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BAM Create Graph Handle for Single Node. </p>
+<p>This function will create a BAM graph of 1 node, given the kernel_id, array of pointers to buf_params, and computation kernel_details, containing kernel info and parameters.</p>
+<p>Upon success, a non-NULL graph_handle will be returned and vx_status will be VX_SUCCESS.</p>
+<p>If there is not enough memory to allocate the handle for the given kernel and block size, then the VX_ERROR_NO_MEMORY error will be returned and the graph_handle will be set to NULL.</p>
+<p>Any other failure will return a VX_FAILURE and the graph_handle will be set to NULL.</p>
+<p>The user should pass the graph_handle to other functions in this wrapper related to BAM graph wrappers. </p>
+
+</div>
+</div>
+<a class="anchor" id="aee80c364aae262cf6410202804c2e6cc"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> tivxBamCreateHandleMultiNode </td>
+          <td>(</td>
+          <td class="paramtype">BAM_NodeParams&#160;</td>
+          <td class="paramname"><em>node_list</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_nodes</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">BAM_EdgeParams&#160;</td>
+          <td class="paramname"><em>edge_list</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>max_edges</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">VXLIB_bufParams2D_t *&#160;</td>
+          <td class="paramname"><em>buf_params</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structtivx__bam__kernel__details__t.html">tivx_bam_kernel_details_t</a>&#160;</td>
+          <td class="paramname"><em>kernel_details</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a> *&#160;</td>
+          <td class="paramname"><em>graph_handle</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BAM Create Graph Handle for Multiple Nodes. </p>
+<p>This function will create a BAM graph of multiple nodes, given the node list, edge list, array of pointers to buf_params, and array of the computation kernel_details, containing kernel info and parameters. This function expects the array size of kernel_details to be equal to the full number of nodes in the node_list, including SOURCE and SINK nodes.</p>
+<p>Upon success, a non-NULL graph_handle will be returned and vx_status will be VX_SUCCESS.</p>
+<p>If there is not enough memory to allocate the handle for the given kernel and block size, then the VX_ERROR_NO_MEMORY error will be returned and the graph_handle will be set to NULL.</p>
+<p>Any other failure will return a VX_FAILURE and the graph_handle will be set to NULL.</p>
+<p>The user should pass the graph_handle to other functions in this wrapper related to BAM graph wrappers. </p>
+
+</div>
+</div>
+<a class="anchor" id="a61b1617856179fbca756a9c2becd83f7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> tivxBamUpdatePointers </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a>&#160;</td>
+          <td class="paramname"><em>graph_handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_inputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_outputs</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>ptrs</em>[]&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BAM Update Pointers. </p>
+<p>This function will update the external memory pointers for the associated graph_handle. This is typically called before processing each frame in case the pointer values have changed.</p>
+<p>If the pointer values have not changed since the previous time they were set, there is no reason to call this function.</p>
+<p>Upon success, vx_status will be VX_SUCCESS. Upon failure, vx_status will be VX_FAILURE. </p>
+
+</div>
+</div>
+<a class="anchor" id="a1435c9f136cd0e8d9a76c748187ba8b7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> tivxBamControlNode </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a>&#160;</td>
+          <td class="paramname"><em>graph_handle</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>node_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>cmd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *&#160;</td>
+          <td class="paramname"><em>payload</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BAM Node Control. </p>
+<p>Some kernel have a control interface to set information or get information back from the kernel context.</p>
+<p>This API allows the application to send control commands to a specific node. The commands and control interface is defined in the bam_plugin for each kernel.</p>
+<p>In the case of single node handle, node_id is ignored.</p>
+<p>Upon success, vx_status will be VX_SUCCESS. Upon failure, vx_status will be VX_FAILURE. </p>
+
+</div>
+</div>
+<a class="anchor" id="aad1a1743669b45857343edf12c6194e4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> tivxBamProcessGraph </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a>&#160;</td>
+          <td class="paramname"><em>graph_handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BAM Process Graph. </p>
+<p>This function will execute the kernel within the BAM graph.</p>
+<p>This is called once per frame. The BAM wrapper internally will manage the sequencing of DMA fetches and DSP processing for each block during this call.</p>
+<p>Upon success, vx_status will be VX_SUCCESS. Upon failure, vx_status will be VX_FAILURE. </p>
+
+</div>
+</div>
+<a class="anchor" id="aedf417c789eae8c266d9bae3dc7e0dee"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tivxBamDestroyHandle </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="tivx__bam__kernel__wrapper_8h.html#a5369ede527d87e790f51b8321d9171c4">tivx_bam_graph_handle</a>&#160;</td>
+          <td class="paramname"><em>graph_handle</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>BAM Destroy Handle. </p>
+<p>This function will destroy the BAM graph handle, effectivly releasing the memory to the system.</p>
+<p>This is typically called if the user releases a graph or makes changes to the graph that require a reverification of the graph. </p>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 
@@ -110,11 +410,11 @@ Functions</h2></td></tr>
 </tr>
 <tr bgcolor="#CCCCCC">
       <td bgcolor="#FFFFFF"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#000000"><b><i>
-        &copy Copyright 2017 Texas Instruments Incorporated. All rights reserved. </i></b></font></td>
+        &copy Copyright 2018 Texas Instruments Incorporated. All rights reserved. </i></b></font></td>
 </tr>
 <tr bgcolor="#CCCCCC">
       <td bgcolor="#FFFFFF"><font face="Verdana, Arial, Helvetica, sans-serif" size="1" color="#000000">
-        Document generated by <b><i> doxygen </i></b> 1.6.1
+        Document generated by <b><i> doxygen </i></b> 1.8.6
   </font></td>
 </tr>
 </table>

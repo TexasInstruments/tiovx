@@ -80,21 +80,21 @@ extern "C" {
 /*!
  * \brief Index of the input image for histogram operation
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_HISTOGRAM_IN_IMG_IDX          (0U)
 
 /*!
  * \brief Index of the output image for histogram operation
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_HISTOGRAM_OUT_IMG_IDX         (1U)
 
 /*!
  * \brief Max Parameter for histogram operation
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_HISTOGRAM_MAX_PARAMS           (2U)
 

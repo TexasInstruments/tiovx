@@ -1,5 +1,0 @@
-<map id="G" name="G">
-<area shape="rect" id="node1" href="$classtiovx_1_1image_1_1Image.html" title="Image object (OpenVX equivalent = vx_image, vxCreateImage)." alt="" coords="5,31,132,57"/>
-<area shape="rect" id="node2" href="$classtiovx_1_1image_1_1ImageFromChannel.html" title="Image from channel object (OpenVX equivalent = vx_image, vxCreateImageFromChannel)..." alt="" coords="180,5,383,32"/>
-<area shape="rect" id="node3" href="$classtiovx_1_1image_1_1ImageFromHandle.html" title="Image from handle object (OpenVX equivalent = vx_image, vxCreateImageFromHandle)..." alt="" coords="183,56,379,83"/>
-</map>

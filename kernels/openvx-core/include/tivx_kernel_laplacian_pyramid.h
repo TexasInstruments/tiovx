@@ -79,28 +79,28 @@ extern "C" {
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LPL_PMD_IN_IMG_IDX            (0U)
 
 /*!
  * \brief Index of the output image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX           (1U)
 
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX            (2U)
 
 /*!
  * \brief Max Params supported by gaussian pyramid kernel
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_LPL_PMD_MAX_PARAMS            (3U)
 

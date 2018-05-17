@@ -80,28 +80,28 @@ extern "C" {
 /*!
  * \brief Index of the input image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_ACCUMULATE_SQUARE_IN_IMG_IDX      (0U)
 
 /*!
  * \brief Index of scalar input
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_ACCUMULATE_SQUARE_IN_SCALAR_IDX    (1U)
 
 /*!
  * \brief Index of the output image
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_ACCUMULATE_SQUARE_OUT_IMG_IDX      (2U)
 
 /*!
  * \brief Max parameters supported by the kernel
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_int_common_kernel
  */
 #define TIVX_KERNEL_ACCUMULATE_SQUARE_MAX_PARAMS       (3U)
 

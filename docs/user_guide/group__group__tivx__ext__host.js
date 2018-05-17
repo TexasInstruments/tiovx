@@ -5,7 +5,6 @@ var group__group__tivx__ext__host =
     [ "Kernel Helper APIs", "group__group__tivx__ext__host__kernel.html", "group__group__tivx__ext__host__kernel" ],
     [ "Mutex APIs", "group__group__tivx__mutex.html", "group__group__tivx__mutex" ],
     [ "Queue APIs", "group__group__tivx__queue.html", "group__group__tivx__queue" ],
-    [ "Target Kernel APIs", "group__group__tivx__target__kernel.html", "group__group__tivx__target__kernel" ],
     [ "Task APIs", "group__group__tivx__task.html", "group__group__tivx__task" ],
     [ "tivx_resource_stats_t", "structtivx__resource__stats__t.html", [
       [ "max_value", "structtivx__resource__stats__t.html#a75d0941ebfec728b51041bc47fe706a2", null ],

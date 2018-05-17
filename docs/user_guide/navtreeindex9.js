@@ -1,15 +1,5 @@
 var NAVTREEINDEX9 =
 {
-"vx__context_8h.html#gabb812deddf0a24bc11d4ed50da04c587":[18,0,77,2],
-"vx__context_8h.html#gac71a0ee04223ee7402c5fe4cf11772f2":[18,0,77,10],
-"vx__context_8h.html#gad3df22b80d553454ff8bb9c080b0a72e":[18,0,77,4],
-"vx__context_8h.html#gae4eed3b6e9eda1a840b91b0fa7c786fd":[18,0,77,3],
-"vx__context_8h.html#gaf2872762bd0e2573a87245ea34636481":[18,0,77,8],
-"vx__context_8h_source.html":[18,0,77],
-"vx__convolution_8h.html":[18,0,78],
-"vx__convolution_8h_source.html":[18,0,78],
-"vx__delay_8h.html":[18,0,79],
-"vx__delay_8h.html#gab11f80173ad6066184537c264c647feb":[18,0,79,0],
 "vx__delay_8h.html#gaebf2b68648ae0503ed5ba08e9696bbce":[18,0,79,1],
 "vx__delay_8h_source.html":[18,0,79],
 "vx__distribution_8h.html":[18,0,80],
@@ -249,5 +239,15 @@ var NAVTREEINDEX9 =
 "vx__types_8h.html#a39fd08c4e2f3fea1a30caf312245f5c6":[18,0,98,93],
 "vx__types_8h.html#a39fd08c4e2f3fea1a30caf312245f5c6a655428370d89bb281ae5fb1acf20ad5d":[18,0,98,93,2],
 "vx__types_8h.html#a39fd08c4e2f3fea1a30caf312245f5c6ab1898e77c9890f309c99db4151e96fb4":[18,0,98,93,1],
-"vx__types_8h.html#a39fd08c4e2f3fea1a30caf312245f5c6ac86d8c5683b96d49760f733ec61c7ddd":[18,0,98,93,0]
+"vx__types_8h.html#a39fd08c4e2f3fea1a30caf312245f5c6ac86d8c5683b96d49760f733ec61c7ddd":[18,0,98,93,0],
+"vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a":[18,0,98,53],
+"vx__types_8h.html#a3d14bc552df0c0dc582ec082310c2fd8":[18,0,98,73],
+"vx__types_8h.html#a408dfa61ca7a43e185d16180ea4b7ebb":[18,0,98,116],
+"vx__types_8h.html#a408dfa61ca7a43e185d16180ea4b7ebba4937594075e016f7d9ab136bbe01f0f5":[18,0,98,116,0],
+"vx__types_8h.html#a408dfa61ca7a43e185d16180ea4b7ebba58ea5c09e249d0ed1c28f8a9f734701b":[18,0,98,116,2],
+"vx__types_8h.html#a408dfa61ca7a43e185d16180ea4b7ebbaabb53443342028fcf7a453bc1c6e9e83":[18,0,98,116,1],
+"vx__types_8h.html#a408dfa61ca7a43e185d16180ea4b7ebbaacdb0f804e65801a4e4b9316e6cec631":[18,0,98,116,3],
+"vx__types_8h.html#a44aa67e15168e5912a0800090a120be6":[18,0,98,82],
+"vx__types_8h.html#a44aa67e15168e5912a0800090a120be6a00a9d7647bc52d3848fdc84c0e14b295":[18,0,98,82,23],
+"vx__types_8h.html#a44aa67e15168e5912a0800090a120be6a07a03f21f1325c60f7f2102486baf745":[18,0,98,82,22]
 };

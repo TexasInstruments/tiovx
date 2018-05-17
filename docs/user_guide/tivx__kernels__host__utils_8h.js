@@ -2,7 +2,7 @@ var tivx__kernels__host__utils_8h =
 [
     [ "Tivx_Host_Kernel_List", "structTivx__Host__Kernel__List.html", "structTivx__Host__Kernel__List" ],
     [ "tivxKernelValidRectParams", "structtivxKernelValidRectParams.html", "structtivxKernelValidRectParams" ],
-    [ "TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE", "tivx__kernels__host__utils_8h.html#gaa4568fddc7f18d5c81852b22b56e0eeb", null ],
+    [ "TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE", "tivx__kernels__host__utils_8h.html#aa4568fddc7f18d5c81852b22b56e0eeb", null ],
     [ "tivxHostKernel_Fxn", "tivx__kernels__host__utils_8h.html#a33aacbef9c937419cb1d3a52b11cc163", null ],
     [ "tivxPublishKernels", "tivx__kernels__host__utils_8h.html#ga441f6060b4bc6434ffa60cc1b4e7de0b", null ],
     [ "tivxUnPublishKernels", "tivx__kernels__host__utils_8h.html#gac6cce6ec183ee78c82c773d30e692387", null ],
