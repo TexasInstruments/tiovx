@@ -142,14 +142,14 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_KERNEL_MAX_OBJECTS                       (64u)
+#define TIVX_KERNEL_MAX_OBJECTS                     (64u)
 
 /*!
  * \brief Max number array objects supported
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_ARRAY_MAX_OBJECTS                      (48u)
+#define TIVX_ARRAY_MAX_OBJECTS                      (96u)
 
 /*!
  * \brief Max number convolution objects supported
@@ -275,7 +275,7 @@ extern "C" {
  *
  * \ingroup group_vx_context_cfg
  */
-#define TIVX_CONTEXT_MAX_USER_STRUCTS   (32u)
+#define TIVX_CONTEXT_MAX_USER_STRUCTS   (64u)
 
 /*! \brief Maximum targets a kernel can run on
  * \ingroup group_tivx_target_kernel_cfg
