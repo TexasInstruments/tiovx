@@ -226,21 +226,25 @@ release:
 doxy_docs:
 	-$(Q)$(MKDIR) docs/user_guide/ $(QUIET) || true
 	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/*.gif docs/user_guide $(QUIET) || true
+	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide/*.png docs/user_guide $(QUIET) || true
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
 
 doxy_docs_j7:
 	-$(Q)$(MKDIR) docs/user_guide_j7_presi/ $(QUIET) || true
 	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/*.gif docs/user_guide_j7_presi $(QUIET) || true
+	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/*.png docs/user_guide_j7_presi $(QUIET) || true
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7presi_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/doxy_warnings.txt
 
 doxy_docs_pytiovx:
 	-$(Q)$(MKDIR) docs/pytiovx_guide/ $(QUIET) || true
 	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_pytiovx/*.gif docs/pytiovx_guide $(QUIET) || true
+	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_pytiovx/*.png docs/pytiovx_guide $(QUIET) || true
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_pytiovx/pytiovx_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_pytiovx/doxy_warnings.txt
 
 doxy_docs_tutorial:
 	-$(Q)$(MKDIR) docs/tutorial_guide/ $(QUIET) || true
 	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/*.gif docs/tutorial_guide $(QUIET) || true
+	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/*.png docs/tutorial_guide $(QUIET) || true
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/tutorial_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/doxy_warnings.txt
 
 -include $(CONCERTO_ROOT)/project.mak
