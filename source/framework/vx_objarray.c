@@ -45,6 +45,7 @@ static vx_bool ownIsValidObject(vx_enum type)
     vx_bool status = vx_false_e;
 
     if ((VX_TYPE_IMAGE == type) ||
+        (VX_TYPE_TENSOR == type) ||
         (VX_TYPE_ARRAY == type) ||
         (VX_TYPE_SCALAR == type) ||
         (VX_TYPE_DISTRIBUTION == type) ||

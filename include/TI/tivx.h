@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017 - 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -71,6 +71,7 @@
 #include <TI/tivx_kernels.h>
 #include <TI/tivx_nodes.h>
 #include <TI/tivx_mem.h>
+#include <TI/tivx_tensor.h>
 
 #ifdef __cplusplus
 extern "C" {

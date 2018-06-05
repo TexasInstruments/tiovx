@@ -781,6 +781,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryContext(vx_context context, vx_enum at
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case VX_CONTEXT_MAX_TENSOR_DIMS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    *(vx_size *)ptr = TIVX_CONTEXT_MAX_TENSOR_DIMS;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"query context max tensor dimensions failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             case VX_CONTEXT_NONLINEAR_MAX_DIMENSION:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {

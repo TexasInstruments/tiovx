@@ -120,6 +120,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_IMAGE_MAX_OBJECTS, 0, 0, "TIVX_IMAGE_MAX_OBJECTS"
     },
     {
+        TIVX_TENSOR_MAX_OBJECTS, 0, 0, "TIVX_TENSOR_MAX_OBJECTS"
+    },
+    {
         TIVX_LUT_MAX_OBJECTS, 0, 0, "TIVX_LUT_MAX_OBJECTS"
     },
     {
@@ -202,6 +205,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_IMAGE_MAX_MAPS, 0, 0, "TIVX_IMAGE_MAX_MAPS"
+    },
+    {
+        TIVX_TENSOR_MAX_MAPS, 0, 0, "TIVX_TENSOR_MAX_MAPS"
     },
     {
         TIVX_DELAY_MAX_OBJECT, 0, 0, "TIVX_DELAY_MAX_OBJECT"

@@ -84,6 +84,13 @@ extern "C" {
  */
 #define TIVX_IMAGE_MAX_PLANES   (3u)
 
+/*!
+ * \brief Max possible dimensions of data in a tensor
+ *
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_CONTEXT_MAX_TENSOR_DIMS (4)
+
 /*! \brief Flag to indicate if run-time trace should be logged
  * \ingroup group_tivx_obj_desc
  */
@@ -194,6 +201,10 @@ typedef enum _tivx_obj_desc_type_e {
 
     /*! \brief Object desciptor graph */
     TIVX_OBJ_DESC_GRAPH         = 0x10,
+
+    /*! \brief Object desciptor that has information related to
+        tensor object */
+    TIVX_OBJ_DESC_TENSOR        = 0x11,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID       = 0xFFFFu
@@ -516,7 +527,7 @@ typedef struct _tivx_obj_desc_lut
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
-    /*! \brief matrix memory address */
+    /*! \brief lut memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_lut_t;
 
@@ -566,7 +577,7 @@ typedef struct _tivx_obj_desc_convolution
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
-    /*! \brief matrix memory address */
+    /*! \brief convolution memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_convolution_t;
 
@@ -622,7 +633,7 @@ typedef struct _tivx_obj_desc_distribution
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
-    /*! \brief matrix memory address */
+    /*! \brief distribution memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_distribution_t;
 
@@ -637,7 +648,7 @@ typedef struct _tivx_obj_desc_array
     tivx_obj_desc_t base;
     /*! \brief The source width */
 
-    /*! \brief The item type of the lut. */
+    /*! \brief The item type of the array. */
     vx_enum item_type;
     /*! \brief Size of the array item */
     uint32_t item_size;
@@ -648,7 +659,7 @@ typedef struct _tivx_obj_desc_array
 
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
-    /*! \brief matrix memory address */
+    /*! \brief array memory address */
     tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_array_t;
 
@@ -727,6 +738,48 @@ typedef struct _tivx_obj_desc_scalar
 
 } tivx_obj_desc_scalar_t;
 
+/*!
+ * \brief Tensor object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_tensor
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief Number of dimensions in the tensor */
+    uint32_t number_of_dimensions;
+    /*! \brief Data type of tensor */
+    uint32_t data_type;
+    /*! \brief Fixed point precision of the tensor */
+    uint32_t fixed_point_position;
+
+    /*! \brief Size of all dimensions */
+    uint32_t dimensions[TIVX_CONTEXT_MAX_TENSOR_DIMS];
+
+    /*! \brief Stride of all dimensions
+     *
+     * stride[0] is more like bytes per element
+     * stride[1] is offset in bytes from one line to next
+     * stride[2] is offset in bytes from one frame/channel to next
+     * stride[3] is offset in bytes from one batch to next
+     * 
+     * How to calculate:
+     * 
+     * stride[0] = sizeof(data_type)
+     * stride[1] = stride[0] * dimensions[0], rounded up to nearest multiple of 16
+     * for (i > 1)
+     *    stride[i] = stride[i-1] * dimensions[i-1]
+     */
+    uint32_t stride[TIVX_CONTEXT_MAX_TENSOR_DIMS];
+    /*! \brief Buffer size */
+    uint32_t mem_size;
+
+    /*! \brief buffer address */
+    tivx_shared_mem_ptr_t mem_ptr;
+
+} tivx_obj_desc_tensor_t;
 
 /*!
  * \brief Function to get the pointer to object descriptors for the

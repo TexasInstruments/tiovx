@@ -73,6 +73,7 @@ static vx_enum_type_size_t g_reference_enum_type_sizes[] = {
     {VX_TYPE_DELAY,         sizeof(tivx_delay_t)},
     {VX_TYPE_DISTRIBUTION,  sizeof(tivx_distribution_t)},
     {VX_TYPE_IMAGE,         sizeof(tivx_image_t)},
+    {VX_TYPE_TENSOR,        sizeof(tivx_tensor_t)},
     {VX_TYPE_LUT,           sizeof(tivx_lut_t)},
     {VX_TYPE_MATRIX,        sizeof(tivx_matrix_t)},
     {VX_TYPE_PYRAMID,       sizeof(tivx_pyramid_t)},

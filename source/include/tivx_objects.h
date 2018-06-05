@@ -169,6 +169,11 @@ typedef struct _tivx_object_t
     vx_bool                 isObjArrUse[TIVX_OBJ_ARRAY_MAX_OBJECTS];
     /**< Flag indicating if object array is in use or not */
 
+    tivx_tensor_t           tensor[TIVX_TENSOR_MAX_OBJECTS];
+    /**< Tensor Objects */
+    vx_bool                 isTensorUse[TIVX_TENSOR_MAX_OBJECTS];
+    /**< Flag indicating if Tensor object is in use or not */
+
     tivx_parameter_t        parameter[TIVX_PARAMETER_MAX_OBJECTS];
     /**< Parameter objects */
     vx_bool                 isParameterUse[TIVX_PARAMETER_MAX_OBJECTS];

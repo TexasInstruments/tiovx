@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -108,6 +108,8 @@ vx_status tivxObjectInit(void)
             TIVX_DISTRIBUTION_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isImageUse,
             TIVX_IMAGE_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isTensorUse,
+            TIVX_TENSOR_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isLutUse,
             TIVX_LUT_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isMatrixUse,
@@ -200,6 +202,12 @@ vx_status tivxObjectDeInit(void)
         if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is image use failed\n");
+        }
+        status = ownCheckUseFlag(g_tivx_objects.isTensorUse,
+            TIVX_TENSOR_MAX_OBJECTS);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is tensor use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isLutUse,
             TIVX_LUT_MAX_OBJECTS);
@@ -328,6 +336,12 @@ vx_reference tivxObjectAlloc(vx_enum type)
                     (uint8_t *)g_tivx_objects.image, g_tivx_objects.isImageUse,
                     TIVX_IMAGE_MAX_OBJECTS, sizeof(tivx_image_t),
                     "TIVX_IMAGE_MAX_OBJECTS");
+                break;
+            case VX_TYPE_TENSOR:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.tensor, g_tivx_objects.isTensorUse,
+                    TIVX_TENSOR_MAX_OBJECTS, sizeof(tivx_tensor_t),
+                    "TIVX_TENSOR_MAX_OBJECTS");
                 break;
             case VX_TYPE_LUT:
                 ref = (vx_reference)ownAllocObject(
@@ -554,6 +568,16 @@ vx_status tivxObjectFree(vx_reference ref)
                     if (VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free image object failed\n");
+                    }
+                    break;
+                case VX_TYPE_TENSOR:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.tensor, g_tivx_objects.isTensorUse,
+                        TIVX_TENSOR_MAX_OBJECTS, sizeof(tivx_tensor_t),
+                        "TIVX_TENSOR_MAX_OBJECTS");
+                    if (VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free tensor object failed\n");
                     }
                     break;
                 case VX_TYPE_LUT:

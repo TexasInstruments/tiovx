@@ -180,6 +180,13 @@ extern "C" {
 #define TIVX_IMAGE_MAX_OBJECTS                      (384u)
 
 /*!
+ * \brief Max number tensor objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_TENSOR_MAX_OBJECTS                     (48u)
+
+/*!
  * \brief Max number lut objects supported
  *
  * \ingroup group_tivx_obj_cfg
@@ -362,6 +369,13 @@ extern "C" {
  * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_MAPS     (16u)
+
+/*!
+ * \brief Max possible mapping via vxMapTensorPatch supported
+ *
+ * \ingroup group_vx_tensor_cfg
+ */
+#define TIVX_TENSOR_MAX_MAPS     (16u)
 
 /*! \brief Maximum number of objects supported inside delay object
  * \ingroup group_vx_delay_cfg

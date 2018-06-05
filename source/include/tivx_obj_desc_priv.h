@@ -362,6 +362,7 @@ typedef union {
     tivx_obj_desc_distribution_t distribution;
     tivx_obj_desc_array_t array;
     tivx_obj_desc_object_array_t objarray;
+    tivx_obj_desc_tensor_t tensor;
     tivx_obj_desc_scalar_t scalar;
     tivx_obj_desc_kernel_name_t kernel_name;
     tivx_obj_desc_queue_t obj_desc_queue;
