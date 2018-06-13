@@ -3999,6 +3999,325 @@ TEST(tivxGraphPipeline, negativeTestPipelineDepth)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
+/*
+ *  d0     n0     d2     n1     d3     n2     d4
+ * IMG -- ADD -- IMG -- NOT -- IMG -- NOT -- IMG
+ *         |                    |
+ *         |                    |
+ *         +--------------------+
+ *
+ * This test case test for loop carried dependency functional correctness
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_delay delay;
+    vx_image delay_image;
+    vx_image d0[MAX_NUM_BUF], d2[MAX_NUM_BUF], d4[MAX_NUM_BUF];
+    vx_node n0, n1, n2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+
+    int i;
+    vx_df_image f = VX_DF_IMAGE_U8;
+    vx_graph graph_1 = 0;
+    vx_image images[4];
+    vx_node nodes[3];
+    vx_delay delay_1 = 0;
+    vx_image delay_image_0 = 0;
+    vx_image delay_image_1 = 0;
+    vx_image delay_image_2 = 0;
+    vx_image delay_image_0_nopipeline = 0;
+    vx_image delay_image_1_nopipeline = 0;
+    vx_image delay_image_2_nopipeline = 0;
+    vx_image node_image = 0;
+    vx_parameter param = 0;
+    vx_imagepatch_addressing_t addr;
+    vx_uint8 *pdata = 0;
+    vx_rectangle_t rect = {0, 0, arg_->width, arg_->height};
+    vx_map_id map_id;
+
+    CT_Image ref_src[MAX_NUM_BUF], ref_src1[MAX_NUM_BUF], vxdst0, vxdst1, vxsrc0, vxsrc1;
+    uint32_t width, height, seq_init, pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    /* fill reference data */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE({
+            ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+        ASSERT_NO_FAILURE({
+            ref_src1[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+            fillSquence(ref_src1[buf_id], (uint32_t)(seq_init+buf_id*10));
+        });
+    }
+
+    /* Non-pipelining graph */
+    ASSERT_VX_OBJECT(graph_1 = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(images[0] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(images[1] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(images[2] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(images[3] = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(images[0], ref_src[0]));
+
+    ASSERT_VX_OBJECT(delay_1 = vxCreateDelay(context, (vx_reference)images[3], 2), VX_TYPE_DELAY);
+
+    ASSERT_VX_OBJECT(delay_image_0_nopipeline = (vx_image)vxGetReferenceFromDelay(delay_1, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(delay_image_1_nopipeline = (vx_image)vxGetReferenceFromDelay(delay_1,-1), VX_TYPE_IMAGE);
+
+    /* Filling reference data */
+    pdata = NULL;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_0_nopipeline, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    for (i = 0; i < width*height; i++)
+    {
+        *(pdata+i) = 1;
+    }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_0_nopipeline, map_id));
+
+    pdata = NULL;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_1_nopipeline, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    for (i = 0; i < width*height; i++)
+    {
+        *(pdata+i) = 1;
+    }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_1_nopipeline, map_id));
+
+    ASSERT_VX_OBJECT(nodes[0] = vxAddNode(graph_1, images[0], (vx_image)vxGetReferenceFromDelay(delay_1, -1), VX_CONVERT_POLICY_WRAP, images[1]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(nodes[1] = vxNotNode(graph_1, images[1], (vx_image)vxGetReferenceFromDelay(delay_1, 0)), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(nodes[2] = vxNotNode(graph_1, (vx_image)vxGetReferenceFromDelay(delay_1, 0), images[2]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(nodes[0], VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(nodes[1], VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    VX_CALL(vxRegisterAutoAging(graph_1, delay_1));
+    VX_CALL(vxVerifyGraph(graph_1));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(d4[buf_id]    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(delay_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(delay = vxCreateDelay(context, (vx_reference)delay_image, 2), VX_TYPE_DELAY);
+
+    ASSERT_VX_OBJECT(delay_image_0 = (vx_image)vxGetReferenceFromDelay(delay, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(delay_image_1 = (vx_image)vxGetReferenceFromDelay(delay, -1), VX_TYPE_IMAGE);
+
+    /* Filling reference data */
+    pdata = NULL;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_0, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    for (i = 0; i < width*height; i++)
+    {
+        *(pdata+i) = 1;
+    }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_0, map_id));
+
+    pdata = NULL;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_1, &rect, 0, &map_id, &addr, (void **)&pdata,
+                                                    VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
+    for (i = 0; i < width*height; i++)
+    {
+        *(pdata+i) = 1;
+    }
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_1, map_id));
+    
+
+    ASSERT_VX_OBJECT(n0    = vxAddNode(graph, d0[0], (vx_image)vxGetReferenceFromDelay(delay, -1), VX_CONVERT_POLICY_WRAP, d2[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d2[0], (vx_image)vxGetReferenceFromDelay(delay, 0)), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n2    = vxNotNode(graph, (vx_image)vxGetReferenceFromDelay(delay, 0), d4[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* input0 @ n0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ n0 index 2, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n0, 2);
+    /* output @ n2 index 1, becomes graph parameter 2 */
+    add_graph_parameter_by_node_index(graph, n2, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0, 1, 2 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&d0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&d2[0];
+
+    graph_parameters_queue_params_list[2].graph_parameter_index = 2;
+    graph_parameters_queue_params_list[2].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&d4[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            3,
+            graph_parameters_queue_params_list
+            );
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    /* always auto age delay in pipelined graph */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_two_nodes");
+    log_graph_rt_trace(graph);
+
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_NO_FAILURE(ct_image_copyto_vx_image(d0[buf_id], ref_src[0]));
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d4[buf_id], 1);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        vx_image add_in0_img, add_in1_img, add_out_img, not_out0_img, not_out1_img;
+        uint32_t num_refs;
+        CT_Image add_out_ctimg, add_out_ctimg_nopipeline;
+
+        VX_CALL(vxProcessGraph(graph_1));
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&not_out1_img, 1, &num_refs);
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&add_out_img, 1, &num_refs);
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&add_in0_img, 1, &num_refs);
+
+        /* when measuring performance dont check output since it affects graph performance numbers
+         */
+
+        if(loop_cnt > 100)
+        {
+            ct_update_progress(loop_id, loop_cnt+num_buf);
+        }
+
+        if(arg_->measure_perf==0)
+        {
+            ASSERT_NO_FAILURE({
+                vxdst0 = ct_image_from_vx_image(not_out1_img);
+            });
+
+            ASSERT_NO_FAILURE({
+                vxdst1 = ct_image_from_vx_image(images[2]);
+            });
+
+            ASSERT_EQ_CTIMAGE(vxdst1, vxdst0);
+        }
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&add_out_img, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&add_in0_img, 1);
+            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&not_out1_img, 1);
+        }
+
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1, n2 };
+
+        printGraphPipelinePerformance(graph, nodes, 3, exe_time, loop_cnt+num_buf, arg_->width*arg_->height);
+    }
+    #endif
+
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&d0[buf_id]));
+        VX_CALL(vxReleaseImage(&d2[buf_id]));
+        VX_CALL(vxReleaseImage(&d4[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&delay_image));
+    VX_CALL(vxReleaseDelay(&delay));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    for (i = 0; i < (sizeof(nodes)/sizeof(nodes[0])); i++)
+    {
+        VX_CALL(vxReleaseNode(&nodes[i]));
+    }
+
+    for (i = 0; i < (sizeof(images)/sizeof(images[0])); i++)
+    {
+        VX_CALL(vxReleaseImage(&images[i]));
+    }
+
+    VX_CALL(vxReleaseGraph(&graph_1));
+    VX_CALL(vxReleaseDelay(&delay_1));
+
+    ASSERT(graph_1 == 0);
+    ASSERT(delay_1 == 0);
+
+    CT_CollectGarbage(CT_GC_ALL);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
 TESTCASE_TESTS(tivxGraphPipeline,
     testOneNode,
     testTwoNodesBasic,
@@ -4018,7 +4337,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay2,
     testDelay3,
     testDelay4,
-    negativeTestPipelineDepth
+    negativeTestPipelineDepth,
+    testLoopCarriedDependency
     )
 
 
