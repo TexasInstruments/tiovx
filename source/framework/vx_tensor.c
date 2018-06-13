@@ -44,11 +44,13 @@ static vx_bool ownIsValidTensorFormat(vx_enum data_type, vx_uint8 fixed_point_po
 {
     vx_bool res = vx_false_e;
 
-    if( (data_type == VX_TYPE_INT32)  ||
-        (data_type == VX_TYPE_UINT32) ||
-        (data_type == VX_TYPE_INT16)  ||
-        (data_type == VX_TYPE_UINT16) ||
-        (data_type == VX_TYPE_INT8)   ||
+    if(
+        (data_type == VX_TYPE_FLOAT32) ||
+        (data_type == VX_TYPE_INT32)   ||
+        (data_type == VX_TYPE_UINT32)  ||
+        (data_type == VX_TYPE_INT16)   ||
+        (data_type == VX_TYPE_UINT16)  ||
+        (data_type == VX_TYPE_INT8)    ||
         (data_type == VX_TYPE_UINT8) )
     {
         res = vx_true_e;
