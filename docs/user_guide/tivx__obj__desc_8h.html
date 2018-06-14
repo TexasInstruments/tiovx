@@ -108,12 +108,18 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__scalar__t.html">tivx_obj_desc_scalar_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Scalar object descriptor as placed in shared memory.  <a href="structtivx__obj__desc__scalar__t.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__tensor__t.html">tivx_obj_desc_tensor_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tensor object descriptor as placed in shared memory.  <a href="structtivx__obj__desc__tensor__t.html#details">More...</a><br/></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
 Macros</h2></td></tr>
 <tr class="memitem:gad471d737678c451088d2904a41c53bc4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">TIVX_IMAGE_MAX_PLANES</a>&#160;&#160;&#160;(3u)</td></tr>
 <tr class="memdesc:gad471d737678c451088d2904a41c53bc4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max possible planes of data in an image.  <a href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">More...</a><br/></td></tr>
 <tr class="separator:gad471d737678c451088d2904a41c53bc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf5364e8e14f6d868523d9624d51c98da"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc__cfg.html#gaf5364e8e14f6d868523d9624d51c98da">TIVX_CONTEXT_MAX_TENSOR_DIMS</a>&#160;&#160;&#160;(4)</td></tr>
+<tr class="memdesc:gaf5364e8e14f6d868523d9624d51c98da"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max possible dimensions of data in a tensor.  <a href="group__group__tivx__obj__desc__cfg.html#gaf5364e8e14f6d868523d9624d51c98da">More...</a><br/></td></tr>
+<tr class="separator:gaf5364e8e14f6d868523d9624d51c98da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad862cb4bc5aa68f2856c1e76b0d4b744"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__obj__desc_8h.html#ad862cb4bc5aa68f2856c1e76b0d4b744">TIVX_REF_FLAG_LOG_RT_TRACE</a>&#160;&#160;&#160;(0x00000001u)</td></tr>
 <tr class="memdesc:ad862cb4bc5aa68f2856c1e76b0d4b744"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to indicate if run-time trace should be logged.  <a href="#ad862cb4bc5aa68f2856c1e76b0d4b744">More...</a><br/></td></tr>
 <tr class="separator:ad862cb4bc5aa68f2856c1e76b0d4b744"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -160,6 +166,7 @@ Enumerations</h2></td></tr>
 <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec">TIVX_OBJ_DESC_DATA_REF_Q</a> = 0xF, 
 <br/>
 &#160;&#160;<a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154">TIVX_OBJ_DESC_GRAPH</a> = 0x10, 
+<a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109aa5133d756d69058342b8ce290c4e43e5">TIVX_OBJ_DESC_TENSOR</a> = 0x11, 
 <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f">TIVX_OBJ_DESC_INVALID</a> = 0xFFFFu
 <br/>
  }</td></tr>
@@ -353,6 +360,9 @@ Functions</h2></td></tr>
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154"></a>TIVX_OBJ_DESC_GRAPH</em>&#160;</td><td class="fielddoc">
 <p>Object desciptor graph. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a4858f5eeb4edfc862b9b8b2039ed8109aa5133d756d69058342b8ce290c4e43e5"></a>TIVX_OBJ_DESC_TENSOR</em>&#160;</td><td class="fielddoc">
+<p>Object desciptor that has information related to tensor object. </p>
 </td></tr>
 <tr><td class="fieldname"><em><a class="anchor" id="a4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f"></a>TIVX_OBJ_DESC_INVALID</em>&#160;</td><td class="fielddoc">
 <p>Value of a invalid object descriptor. </p>

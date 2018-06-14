@@ -56,6 +56,23 @@ $(document).ready(function(){initNavTree('TIOVX_SPEC_INTERPRETATIONS.html','');}
 <li>Therefore, following graph verification, changes to the valid region using vxSetImageValidRectangle must not be made. </li>
 </ul>
 </dd></dl>
+<dl class="section user"><dt>Data Object Mapping</dt><dd><ul>
+<li>The following functions are used for mapping of specific data objects:<ul>
+<li>vxMapArrayRange</li>
+<li>vxMapImagePatch</li>
+<li>tivxMapTensorPatch</li>
+</ul>
+</li>
+<li>The types of mapping supported for these functions are the following:<ul>
+<li>VX_READ_ONLY</li>
+<li>VX_READ_AND_WRITE</li>
+<li>VX_WRITE_ONLY</li>
+</ul>
+</li>
+<li>The framework allows multiple mappings of the same region of a given data object.</li>
+<li>Therefore, the user must be aware of the regions that have been mapped and the read/write privileges that each mapping has been granted. </li>
+</ul>
+</dd></dl>
 </div></div><!-- contents -->
 </div><!-- doc-content -->
 

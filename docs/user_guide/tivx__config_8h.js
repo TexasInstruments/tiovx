@@ -18,6 +18,7 @@ var tivx__config_8h =
     [ "TIVX_DELAY_MAX_OBJECTS", "tivx__config_8h.html#gaa203c9efa0d3d12a6ebe2876533bde30", null ],
     [ "TIVX_DISTRIBUTION_MAX_OBJECTS", "tivx__config_8h.html#ga02ea4b092003272d24cdc3ac81ab1d74", null ],
     [ "TIVX_IMAGE_MAX_OBJECTS", "tivx__config_8h.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff", null ],
+    [ "TIVX_TENSOR_MAX_OBJECTS", "tivx__config_8h.html#gac4b9761e4136b744a411dea78c14b70d", null ],
     [ "TIVX_LUT_MAX_OBJECTS", "tivx__config_8h.html#ga5da5a4c3678b7693c7b0f7e45eb649be", null ],
     [ "TIVX_MATRIX_MAX_OBJECTS", "tivx__config_8h.html#ga99cf2af519d45421e148d69f98ea5708", null ],
     [ "TIVX_PYRAMID_MAX_OBJECTS", "tivx__config_8h.html#gaaf05021d4ce29266be1968c41433f57f", null ],
@@ -46,6 +47,7 @@ var tivx__config_8h =
     [ "TIVX_GRAPH_MAX_DATA_REF", "tivx__config_8h.html#ga5e9f0c5fe40da2d65950f145274e5a14", null ],
     [ "TIVX_IMAGE_MAX_SUBIMAGES", "tivx__config_8h.html#gabc882a238706fb219028758eebe19daf", null ],
     [ "TIVX_IMAGE_MAX_MAPS", "tivx__config_8h.html#gaef582205a6921f7a3a4e8cddb5db47cb", null ],
+    [ "TIVX_TENSOR_MAX_MAPS", "tivx__config_8h.html#afe9e94a8988c60e1dc743e985fcf7beb", null ],
     [ "TIVX_DELAY_MAX_OBJECT", "tivx__config_8h.html#gaa945633d04f86c392278ca20867eac85", null ],
     [ "TIVX_DELAY_MAX_PRM_OBJECT", "tivx__config_8h.html#ga4e91cbe375e45cb4403dca2f72d60ab1", null ]
 ];

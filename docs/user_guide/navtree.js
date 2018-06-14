@@ -49,16 +49,16 @@ var NAVTREEINDEX =
 [
 "API_REFERENCE.html",
 "group__group__tivx__int__common__kernel.html#ga5e3013b4f409cfe628c1cd2851cf5e04",
-"group__group__tivx__target__kernel__instance.html#ga9ef96cbb47593774cdb647817ef1b315",
-"structtivxKernelValidRectParams.html#ac51f528dd766f962b941296fdd775e09",
-"structtivx__obj__desc__array__t.html#a09e8729e0d2cb1225e1b189b90afa6e9",
-"structtivx__queue.html#a5745579be2021958d718994524c2bd9a",
-"tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655ca42616ae9460dbf19893adfafc80754fc",
-"tivx__kernel__channel__combine_8h.html#a0e825ea7cf277645100b0b96d44239fa",
-"tivx__mem_8h.html#ga87a9c979d1fe5fb5dca1f127bb843d8d",
-"vx__delay_8h.html#gaebf2b68648ae0503ed5ba08e9696bbce",
-"vx__types_8h.html#a44aa67e15168e5912a0800090a120be6a080bd3dd807437832cf3575388911a33",
-"vx__types_8h.html#ac04b5df1e74eb9ead96589ca863f1977a366b66a98cd918db6a8925cd3165a50a"
+"group__group__tivx__target__kernel__instance.html#ga3b14be7e87e6c02f763f61b01bf3a8b9",
+"structtivxKernelValidRectParams.html#a6a95ab8250778b3d651a4df52e96a092",
+"structtivx__node__t.html#af72de0f7d6d4542d102e63977ba9d45a",
+"structtivx__parameter__t.html#a352a2b9989e9d4bdec5e415012bc14a7",
+"tivx_8h_source.html",
+"tivx__kernel__addsub_8h.html#gab1c1a2cfc658fa2c673a0ddae21f6575",
+"tivx__log__resource_8h.html#a8a1b9e258862fe495de069d88783e002",
+"uniontivx__obj__desc__shm__entry__t.html#a6bca91bb1cd9a7cf0998462873cabe71",
+"vx__types_8h.html#a26286b5d5a731b56d4a593d80ccfb302a19f04df7a8fc245ca4d0a822d0912e26",
+"vx__types_8h.html#aa2387ff4d3e967f124fb316300503f92a6ff0ba249347e7fd9fe6d43f06e282cc"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

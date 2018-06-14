@@ -10,6 +10,7 @@ var group__group__tivx__obj__cfg =
     [ "TIVX_DELAY_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30", null ],
     [ "TIVX_DISTRIBUTION_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74", null ],
     [ "TIVX_IMAGE_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga0e7d11cb94d9bd8cd7b9c53317b5e6ff", null ],
+    [ "TIVX_TENSOR_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#gac4b9761e4136b744a411dea78c14b70d", null ],
     [ "TIVX_LUT_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga5da5a4c3678b7693c7b0f7e45eb649be", null ],
     [ "TIVX_MATRIX_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga99cf2af519d45421e148d69f98ea5708", null ],
     [ "TIVX_PYRAMID_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#gaaf05021d4ce29266be1968c41433f57f", null ],

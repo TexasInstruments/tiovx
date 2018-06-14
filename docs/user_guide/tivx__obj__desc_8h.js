@@ -14,7 +14,9 @@ var tivx__obj__desc_8h =
     [ "tivx_obj_desc_array_t", "structtivx__obj__desc__array__t.html", "structtivx__obj__desc__array__t" ],
     [ "tivx_obj_desc_object_array_t", "structtivx__obj__desc__object__array__t.html", "structtivx__obj__desc__object__array__t" ],
     [ "tivx_obj_desc_scalar_t", "structtivx__obj__desc__scalar__t.html", "structtivx__obj__desc__scalar__t" ],
+    [ "tivx_obj_desc_tensor_t", "structtivx__obj__desc__tensor__t.html", "structtivx__obj__desc__tensor__t" ],
     [ "TIVX_IMAGE_MAX_PLANES", "tivx__obj__desc_8h.html#gad471d737678c451088d2904a41c53bc4", null ],
+    [ "TIVX_CONTEXT_MAX_TENSOR_DIMS", "tivx__obj__desc_8h.html#gaf5364e8e14f6d868523d9624d51c98da", null ],
     [ "TIVX_REF_FLAG_LOG_RT_TRACE", "tivx__obj__desc_8h.html#ad862cb4bc5aa68f2856c1e76b0d4b744", null ],
     [ "TIVX_NODE_FLAG_IS_REPLICATED", "tivx__obj__desc_8h.html#a412e9ff53c1a69e16a33ac511366f742", null ],
     [ "TIVX_NODE_FLAG_IS_EXECUTED", "tivx__obj__desc_8h.html#af7ae2fec33c7997a3106f061624d9add", null ],
@@ -40,6 +42,7 @@ var tivx__obj__desc_8h =
       [ "TIVX_OBJ_DESC_QUEUE", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ad71e4afe6b079dd7732594b45aa4e525", null ],
       [ "TIVX_OBJ_DESC_DATA_REF_Q", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec", null ],
       [ "TIVX_OBJ_DESC_GRAPH", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154", null ],
+      [ "TIVX_OBJ_DESC_TENSOR", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109aa5133d756d69058342b8ce290c4e43e5", null ],
       [ "TIVX_OBJ_DESC_INVALID", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f", null ]
     ] ],
     [ "tivx_image_create_type_e", "tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77", [

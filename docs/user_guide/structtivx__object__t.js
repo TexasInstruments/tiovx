@@ -36,6 +36,8 @@ var structtivx__object__t =
     [ "isErrorUse", "structtivx__object__t.html#a3e66075dcf4dbc74ca7446c353171055", null ],
     [ "obj_array", "structtivx__object__t.html#a7bfb2e2c78e7a794adbc5707d5129cc0", null ],
     [ "isObjArrUse", "structtivx__object__t.html#a2d7af334ec68a8d0706c79f153a6cc5c", null ],
+    [ "tensor", "structtivx__object__t.html#a2a59e7a48e0f4138a4d00f27d66025b5", null ],
+    [ "isTensorUse", "structtivx__object__t.html#aac8d4551b034f9bdd42aefaad942a71e", null ],
     [ "parameter", "structtivx__object__t.html#a641d91aeebfe8f4bc4c60e398e6443a8", null ],
     [ "isParameterUse", "structtivx__object__t.html#adc9d4e03b77ece80b4566826772c6161", null ],
     [ "data_ref_q", "structtivx__object__t.html#ab881f0861c26055b96b3235e0d135ebe", null ],

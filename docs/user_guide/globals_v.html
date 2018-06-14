@@ -252,6 +252,9 @@ $(document).ready(function(){initNavTree('globals_v.html','');});
 <li>VX_CONTEXT_IMPLEMENTATION
 : <a class="el" href="vx__types_8h.html#a7f849c7db71cc56b2a554d7d342ff421ac2240ed46532e60666cbebd69c735f17">vx_types.h</a>
 </li>
+<li>VX_CONTEXT_MAX_TENSOR_DIMS
+: <a class="el" href="tivx__tensor_8h.html#adfe8586a9695fe87f506328380b6f5e3aea23d5d5482410f9d69726e52d742f53">tivx_tensor.h</a>
+</li>
 <li>VX_CONTEXT_MODULES
 : <a class="el" href="vx__types_8h.html#a7f849c7db71cc56b2a554d7d342ff421a880d1fb9f1f4070b6001d27251d0ebff">vx_types.h</a>
 </li>
@@ -566,6 +569,12 @@ $(document).ready(function(){initNavTree('globals_v.html','');});
 </li>
 <li>VX_ERROR_REFERENCE_NONZERO
 : <a class="el" href="vx__types_8h.html#aa2387ff4d3e967f124fb316300503f92aadb3c999418d2a36f28c5792be08c410">vx_types.h</a>
+</li>
+<li>vx_ext_context_attribute_e
+: <a class="el" href="tivx__tensor_8h.html#adfe8586a9695fe87f506328380b6f5e3">tivx_tensor.h</a>
+</li>
+<li>vx_ext_type_e
+: <a class="el" href="tivx__tensor_8h.html#aece4dd65d76a7144d46116620c311796">tivx_tensor.h</a>
 </li>
 <li>VX_EXTERNAL
 : <a class="el" href="group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a8625931f75a452b1522c56c4efa859ab">vx_reference.h</a>
@@ -1053,6 +1062,24 @@ $(document).ready(function(){initNavTree('globals_v.html','');});
 <li>VX_TARGET_VENDOR_BEGIN
 : <a class="el" href="vx__types_8h.html#a39fd08c4e2f3fea1a30caf312245f5c6a655428370d89bb281ae5fb1acf20ad5d">vx_types.h</a>
 </li>
+<li>vx_tensor
+: <a class="el" href="tivx__tensor_8h.html#a47c2439a15cba11109e80adbbeb5bb66">tivx_tensor.h</a>
+</li>
+<li>vx_tensor_attribute_e
+: <a class="el" href="tivx__tensor_8h.html#a284570428744ab05195daa2707dcb688">tivx_tensor.h</a>
+</li>
+<li>VX_TENSOR_DATA_TYPE
+: <a class="el" href="tivx__tensor_8h.html#a284570428744ab05195daa2707dcb688a69071022451108c3e0dd6e6c978f30f7">tivx_tensor.h</a>
+</li>
+<li>VX_TENSOR_DIMS
+: <a class="el" href="tivx__tensor_8h.html#a284570428744ab05195daa2707dcb688a589cd47c54ab8a962b46ae0f8a9e67be">tivx_tensor.h</a>
+</li>
+<li>VX_TENSOR_FIXED_POINT_POSITION
+: <a class="el" href="tivx__tensor_8h.html#a284570428744ab05195daa2707dcb688a91a7dd79b3edc62350c41a7e4d4e3a2d">tivx_tensor.h</a>
+</li>
+<li>VX_TENSOR_NUMBER_OF_DIMS
+: <a class="el" href="tivx__tensor_8h.html#a284570428744ab05195daa2707dcb688af6ff97ec376d5a12f8e66a6ce84f28d9">tivx_tensor.h</a>
+</li>
 <li>VX_TERM_CRITERIA_BOTH
 : <a class="el" href="vx__types_8h.html#a7bac21ccaea103200bf81451e069312eaaa291c02e34fc6f4616e0ee380bbbe59">vx_types.h</a>
 </li>
@@ -1230,6 +1257,9 @@ $(document).ready(function(){initNavTree('globals_v.html','');});
 <li>VX_TYPE_SIZE
 : <a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6a46abaab8e11a3846b2774c6c6b5f32c2">vx_types.h</a>
 </li>
+<li>VX_TYPE_TENSOR
+: <a class="el" href="tivx__tensor_8h.html#aece4dd65d76a7144d46116620c311796a3e7a11e829790d23ca1d02b81eeeea80">tivx_tensor.h</a>
+</li>
 <li>VX_TYPE_THRESHOLD
 : <a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6ac8438bc12917490e7f8de1c31c6ebcce">vx_types.h</a>
 </li>
@@ -1350,11 +1380,23 @@ $(document).ready(function(){initNavTree('globals_v.html','');});
 <li>VX_ZONE_WARNING
 : <a class="el" href="group__group__vx__debug.html#gga73f8b7d2888a862fd66f8f479eead7e6ace77c1c6899d7c6c59d400e4e4994e8a">tivx_debug.h</a>
 </li>
+<li>vxCopyTensorPatch()
+: <a class="el" href="tivx__tensor_8h.html#abee62d7d3d87f516c2a175e61866f56b">tivx_tensor.h</a>
+</li>
 <li>vxCreateMetaFormat()
 : <a class="el" href="vx__meta__format_8h.html#a87b348423748d94e37775e4fe8e8470a">vx_meta_format.h</a>
 </li>
+<li>vxCreateTensor()
+: <a class="el" href="tivx__tensor_8h.html#aa9a8be8114c35b9852653896e6633328">tivx_tensor.h</a>
+</li>
+<li>vxQueryTensor()
+: <a class="el" href="tivx__tensor_8h.html#a723001bce8b53ba153f4f76b907d512e">tivx_tensor.h</a>
+</li>
 <li>vxReleaseMetaFormat()
 : <a class="el" href="vx__meta__format_8h.html#acf128060353911d685e302c52748fe95">vx_meta_format.h</a>
+</li>
+<li>vxReleaseTensor()
+: <a class="el" href="tivx__tensor_8h.html#a678a8bcddad77e22736ab1f0fb08c59d">tivx_tensor.h</a>
 </li>
 </ul>
 </div><!-- contents -->

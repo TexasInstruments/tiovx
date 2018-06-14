@@ -13,6 +13,11 @@ var group__group__vx__image =
       [ "mem_offset", "structtivx__image__t.html#a5723b8f5dcd3bce020a438a75aca554e", null ],
       [ "channel_plane", "structtivx__image__t.html#a5888822ce0316edc9c65b5d2e89dbac8", null ]
     ] ],
+    [ "tivx_tensor_map_info_t", "structtivx__tensor__map__info__t.html", [
+      [ "map_addr", "structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c", null ],
+      [ "map_size", "structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b", null ],
+      [ "usage", "structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a", null ]
+    ] ],
     [ "ownPrintImageAddressing", "group__group__vx__image.html#gab68727411ea99e2640bc5d9d25f7cc56", null ],
     [ "ownPrintImage", "group__group__vx__image.html#ga82769f15a146e1609fdaf2bae5416132", null ]
 ];

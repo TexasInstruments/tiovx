@@ -76,6 +76,7 @@ var files =
     [ "tivx_target_kernel_instance.h", "tivx__target__kernel__instance_8h.html", "tivx__target__kernel__instance_8h" ],
     [ "tivx_target_kernel_priv.h", "tivx__target__kernel__priv_8h.html", "tivx__target__kernel__priv_8h" ],
     [ "tivx_task.h", "tivx__task_8h.html", "tivx__task_8h" ],
+    [ "tivx_tensor.h", "tivx__tensor_8h.html", "tivx__tensor_8h" ],
     [ "vx_array.h", "vx__array_8h.html", "vx__array_8h" ],
     [ "vx_context.h", "vx__context_8h.html", "vx__context_8h" ],
     [ "vx_convolution.h", "vx__convolution_8h.html", null ],
@@ -97,6 +98,9 @@ var files =
     [ "vx_reference.h", "vx__reference_8h.html", "vx__reference_8h" ],
     [ "vx_remap.h", "vx__remap_8h.html", null ],
     [ "vx_scalar.h", "vx__scalar_8h.html", "vx__scalar_8h" ],
+    [ "vx_tensor.h", "vx__tensor_8h.html", [
+      [ "tivx_tensor_t", "structtivx__tensor__t.html", "structtivx__tensor__t" ]
+    ] ],
     [ "vx_threshold.h", "vx__threshold_8h.html", null ],
     [ "vx_types.h", "vx__types_8h.html", "vx__types_8h" ]
 ];
