@@ -367,12 +367,6 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         }
     }
 
-    if (VX_SUCCESS == status)
-    {
-        /* output image format is U32 and WxH equal to pyramid base WxH */
-        tivxKernelSetMetas(metas, TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS, VX_DF_IMAGE_U32, input_current_w, input_current_h);
-    }
-
     return status;
 }
 
