@@ -197,7 +197,8 @@ static vx_status ownTensorCheckSizes(uint32_t *dimensions, const vx_size * view_
 static vx_size ownComputePatchSize (const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions)
 {
     vx_size total_size = 1;
-    for (vx_size i = 0; i < number_of_dimensions; i++)
+    vx_size i;
+    for (i = 0; i < number_of_dimensions; i++)
     {
         total_size *= view_end[i] - view_start[i];
     }
@@ -213,7 +214,8 @@ static void ownComputePositionsFromIndex(vx_size index, const vx_size * start, c
     *patch_pos = 0;
     vx_size index_leftover = index;
     int divisor = 1;
-    for (vx_size i = 0; i < number_of_dimensions; i++)
+    vx_size i;
+    for (i = 0; i < number_of_dimensions; i++)
     {
         divisor = end[i] - start[i];
         vx_size curr_dim_index = index_leftover%divisor;
