@@ -100,7 +100,6 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     vx_status status = VX_SUCCESS;
     tivxNonLinearFiltParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
-    tivx_obj_desc_matrix_t *mask;
     vx_uint8 *src_addr, *dst_addr;
     uint32_t size;
 
@@ -110,7 +109,6 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
-        mask = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
@@ -126,28 +124,22 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_type);
-        dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
-        mask->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            mask->mem_ptr.shared_ptr, mask->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
 
-        tivxMemBufferMap(mask->mem_ptr.target_ptr, mask->mem_size,
-            mask->mem_ptr.mem_type, VX_READ_ONLY);
-
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
-
-        tivxMemBufferUnmap(mask->mem_ptr.target_ptr, mask->mem_size,
-            mask->mem_ptr.mem_type, VX_READ_ONLY);
     }
 
     return (status);
@@ -168,6 +160,8 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
 
     if (VX_SUCCESS == status)
     {
+        void *mask_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
@@ -177,11 +171,11 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
 
-        mask->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            mask->mem_ptr.shared_ptr, mask->mem_ptr.mem_type);
+        mask_target_ptr = tivxMemShared2TargetPtr(
+            mask->mem_ptr.shared_ptr, mask->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(mask->mem_ptr.target_ptr, mask->mem_size,
-            mask->mem_ptr.mem_type, VX_READ_ONLY);
+        tivxMemBufferMap(mask_target_ptr, mask->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
 
@@ -205,7 +199,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
             {
                 BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params kernel_params;
 
-                kernel_params.mask_addr = mask->mem_ptr.target_ptr;
+                kernel_params.mask_addr = mask_target_ptr;
                 kernel_params.mask.dim_x    = mask->columns;
                 kernel_params.mask.dim_y    = mask->rows;
                 kernel_params.mask.stride_y = mask->columns;
@@ -225,7 +219,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
             {
                 BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params kernel_params;
 
-                kernel_params.mask_addr = mask->mem_ptr.target_ptr;
+                kernel_params.mask_addr = mask_target_ptr;
                 kernel_params.mask.dim_x    = mask->columns;
                 kernel_params.mask.dim_y    = mask->rows;
                 kernel_params.mask.stride_y = mask->columns;
@@ -244,7 +238,7 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
             {
                 BAM_VXLIB_median_MxN_i8u_i8u_o8u_params kernel_params;
 
-                kernel_params.mask_addr = mask->mem_ptr.target_ptr;
+                kernel_params.mask_addr = mask_target_ptr;
                 kernel_params.mask.dim_x    = mask->columns;
                 kernel_params.mask.dim_y    = mask->rows;
                 kernel_params.mask.stride_y = mask->columns;

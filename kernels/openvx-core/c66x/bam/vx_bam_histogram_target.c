@@ -127,28 +127,30 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[1];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        dst->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(dst->mem_ptr.target_ptr, dst->mem_size,
-            dst->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
 
         tivxBamControlNode(prms->graph_handle, 0,
                            VXLIB_HISTOGRAM_I8U_O32U_CMD_SET_DIST_PTR,
-                           dst->mem_ptr.target_ptr);
+                           dst_target_ptr);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
 
-        tivxMemBufferUnmap(dst->mem_ptr.target_ptr, dst->mem_size,
-            dst->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

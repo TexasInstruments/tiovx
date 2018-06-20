@@ -138,18 +138,21 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[3];
+        void *src0_target_ptr;
+        void *src1_target_ptr;
+        void *dst_target_ptr;
 
-        src0->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
+        src0_target_ptr = tivxMemShared2TargetPtr(
+            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);
 
-        src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
+        src1_target_ptr = tivxMemShared2TargetPtr(
+            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_heap_region);
 
-        tivxSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
+        tivxSetTwoPointerLocation(src0, src1, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
 
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxSetPointerLocation(dst, &dst_addr);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         img_ptrs[0] = src0_addr;
         img_ptrs[1] = src1_addr;

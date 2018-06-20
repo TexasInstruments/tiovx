@@ -198,21 +198,25 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
 
     if (VX_SUCCESS == status)
     {
-        prevpts_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-          prevpts_desc->mem_ptr.shared_ptr, prevpts_desc->mem_ptr.mem_type);
-        estimatedpts_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-          estimatedpts_desc->mem_ptr.shared_ptr, estimatedpts_desc->mem_ptr.mem_type);
-        nextpts_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-          nextpts_desc->mem_ptr.shared_ptr, nextpts_desc->mem_ptr.mem_type);
+        void *prevpts_target_ptr;
+        void *estimatedpts_target_ptr;
+        void *nextpts_target_ptr;
 
-        tivxMemBufferMap(prevpts_desc->mem_ptr.target_ptr,
-           prevpts_desc->mem_size, prevpts_desc->mem_ptr.mem_type,
+        prevpts_target_ptr = tivxMemShared2TargetPtr(
+          prevpts_desc->mem_ptr.shared_ptr, prevpts_desc->mem_ptr.mem_heap_region);
+        estimatedpts_target_ptr = tivxMemShared2TargetPtr(
+          estimatedpts_desc->mem_ptr.shared_ptr, estimatedpts_desc->mem_ptr.mem_heap_region);
+        nextpts_target_ptr = tivxMemShared2TargetPtr(
+          nextpts_desc->mem_ptr.shared_ptr, nextpts_desc->mem_ptr.mem_heap_region);
+
+        tivxMemBufferMap(prevpts_target_ptr,
+           prevpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(estimatedpts_desc->mem_ptr.target_ptr,
-           estimatedpts_desc->mem_size, estimatedpts_desc->mem_ptr.mem_type,
+        tivxMemBufferMap(estimatedpts_target_ptr,
+           estimatedpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(nextpts_desc->mem_ptr.target_ptr,
-           nextpts_desc->mem_size, nextpts_desc->mem_ptr.mem_type,
+        tivxMemBufferMap(nextpts_target_ptr,
+           nextpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
         termination_value = termination_desc->data.u08;
@@ -225,15 +229,15 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         pyramid_scale = old_pyramid_desc->scale;
         list_length = prevpts_desc->num_items;
 
-        oldPts_addr = (vx_keypoint_t *)prevpts_desc->mem_ptr.target_ptr;
+        oldPts_addr = (vx_keypoint_t *)prevpts_target_ptr;
         estPts_addr = oldPts_addr;
-        newPts_addr = (vx_keypoint_t *)nextpts_desc->mem_ptr.target_ptr;
+        newPts_addr = (vx_keypoint_t *)nextpts_target_ptr;
         nextpts_desc->num_items = prevpts_desc->num_items;
 
         /* if Use initial estimate is true, use the estimated pts */
         if (0 != use_initial_estimate_value)
         {
-            estPts_addr = (vx_keypoint_t *)estimatedpts_desc->mem_ptr.target_ptr;
+            estPts_addr = (vx_keypoint_t *)estimatedpts_target_ptr;
         }
 
         /* Before processing any levels, copy from data structure to arrays for kernel processing (also cast to float) */
@@ -246,11 +250,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         }
 
         /* We are done with external prevpts and estimatedpts buffers since we have copied what we need internally s*/
-        tivxMemBufferUnmap(prevpts_desc->mem_ptr.target_ptr,
-           prevpts_desc->mem_size, prevpts_desc->mem_ptr.mem_type,
+        tivxMemBufferUnmap(prevpts_target_ptr,
+           prevpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(estimatedpts_desc->mem_ptr.target_ptr,
-           estimatedpts_desc->mem_size, estimatedpts_desc->mem_ptr.mem_type,
+        tivxMemBufferUnmap(estimatedpts_target_ptr,
+           estimatedpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
         /* Set the scale for the lowest resolution level for first iteration */
@@ -262,30 +266,32 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
             vx_uint32 width;
             vx_uint32 height;
             vx_rectangle_t rect;
+            void *old_image_target_ptr;
+            void *new_image_target_ptr;
 
             old_image = prms->img_obj_desc_old[level];
             new_image = prms->img_obj_desc_new[level];
 
             /* Map Old image */
-            old_image->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
+            old_image_target_ptr = tivxMemShared2TargetPtr(
                 old_image->mem_ptr[0].shared_ptr,
-                old_image->mem_ptr[0].mem_type);
-            tivxMemBufferMap(old_image->mem_ptr[0].target_ptr,
-                old_image->mem_size[0], old_image->mem_ptr[0].mem_type,
+                old_image->mem_ptr[0].mem_heap_region);
+            tivxMemBufferMap(old_image_target_ptr,
+                old_image->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
 
-            old_image_addr = (uint8_t *)((uintptr_t)old_image->mem_ptr[0U].target_ptr +
+            old_image_addr = (uint8_t *)((uintptr_t)old_image_target_ptr +
                 tivxComputePatchOffset(0, 0, &old_image->imagepatch_addr[0U]));
 
             /* Map New image */
-            new_image->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
+            new_image_target_ptr = tivxMemShared2TargetPtr(
                 new_image->mem_ptr[0].shared_ptr,
-                new_image->mem_ptr[0].mem_type);
-            tivxMemBufferMap(new_image->mem_ptr[0].target_ptr,
-                new_image->mem_size[0], new_image->mem_ptr[0].mem_type,
+                new_image->mem_ptr[0].mem_heap_region);
+            tivxMemBufferMap(new_image_target_ptr,
+                new_image->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY); /* Not sure if this is READ_ONLY */
 
-            new_image_addr = (uint8_t *)((uintptr_t)new_image->mem_ptr[0U].target_ptr +
+            new_image_addr = (uint8_t *)((uintptr_t)new_image_target_ptr +
                 tivxComputePatchOffset(0, 0, &new_image->imagepatch_addr[0U]));
 
             /* Fetch ROI */
@@ -331,11 +337,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
                                                  num_iterations_value, epsilon_value, scale, window_dimension_value, level,
                                                  termination_value, prms->scratch, prms->scratch_buff_size);
 
-            tivxMemBufferUnmap(old_image->mem_ptr[0].target_ptr,
-               old_image->mem_size[0], old_image->mem_ptr[0].mem_type,
+            tivxMemBufferUnmap(old_image_target_ptr,
+               old_image->mem_size[0], VX_MEMORY_TYPE_HOST,
                VX_READ_ONLY);
-            tivxMemBufferUnmap(new_image->mem_ptr[0].target_ptr,
-               new_image->mem_size[0], new_image->mem_ptr[0].mem_type,
+            tivxMemBufferUnmap(new_image_target_ptr,
+               new_image->mem_size[0], VX_MEMORY_TYPE_HOST,
                VX_READ_ONLY);
 
         }
@@ -349,8 +355,8 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
         }
 
         /* kernel processing function complete */
-        tivxMemBufferUnmap(nextpts_desc->mem_ptr.target_ptr,
-           nextpts_desc->mem_size, nextpts_desc->mem_ptr.mem_type,
+        tivxMemBufferUnmap(nextpts_target_ptr,
+           nextpts_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
     }
 

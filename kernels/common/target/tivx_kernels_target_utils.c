@@ -275,13 +275,14 @@ void tivxInitTwoBufParams(
 
 void tivxSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,
+    void *target_ptr[],
     uint8_t *addr[])
 {
     uint32_t i;
 
     for (i = 0; i < obj_desc->planes; i ++)
     {
-        addr[i] = (uint8_t *)((uintptr_t)obj_desc->mem_ptr[i].target_ptr +
+        addr[i] = (uint8_t *)((uintptr_t)target_ptr[i] +
             tivxComputePatchOffset(obj_desc->valid_roi.start_x,
             obj_desc->valid_roi.start_y,
             &obj_desc->imagepatch_addr[i]));
@@ -291,6 +292,8 @@ void tivxSetPointerLocation(
 void tivxSetTwoPointerLocation(
     tivx_obj_desc_image_t *obj_desc0,
     tivx_obj_desc_image_t *obj_desc1,
+    void *target_ptr0[],
+    void *target_ptr1[],
     uint8_t *addr0[],
     uint8_t *addr1[])
 {
@@ -319,11 +322,11 @@ void tivxSetTwoPointerLocation(
 
     for (i = 0; i < obj_desc0->planes; i ++)
     {
-        addr0[i] = (uint8_t *)((uintptr_t)obj_desc0->mem_ptr[i].target_ptr +
+        addr0[i] = (uint8_t *)((uintptr_t)target_ptr0[i] +
             tivxComputePatchOffset(rect.start_x,
             rect.start_y,
             &obj_desc0->imagepatch_addr[i]));
-        addr1[i] = (uint8_t *)((uintptr_t)obj_desc1->mem_ptr[i].target_ptr +
+        addr1[i] = (uint8_t *)((uintptr_t)target_ptr1[i] +
             tivxComputePatchOffset(rect.start_x,
             rect.start_y,
             &obj_desc1->imagepatch_addr[i]));

@@ -83,7 +83,7 @@ extern "C" {
  *
  * \ingroup group_tivx_mem
  */
-typedef enum _tivx_mem_type_e
+typedef enum _tivx_mem_heap_region_e
 {
     /*! \brief External memory.
      *
@@ -119,7 +119,15 @@ typedef enum _tivx_mem_type_e
      */
     TIVX_MEM_INTERNAL_L2
 
-} tivx_mem_type_e;
+} tivx_mem_heap_region_e;
+
+/*! \brief An enumeration of TI extension memory import types.
+ * \ingroup group_tivx_mem
+ */
+typedef enum _tivx_memory_type_e {
+    /*! \brief Memory type when a DMA will access the memory rather than the HOST. */
+    TIVX_MEMORY_TYPE_DMA = VX_ENUM_BASE(VX_ID_TI, VX_ENUM_MEMORY_TYPE) + 0x0,
+} tivx_memory_type_e;
 
 /*!
  * \brief Structure describing a shared memory pointer
@@ -128,8 +136,8 @@ typedef enum _tivx_mem_type_e
  */
 typedef struct _tivx_shared_mem_ptr_t {
 
-    /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_type_e */
-    vx_enum mem_type;
+    /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e */
+    vx_enum mem_heap_region;
 
     /*! \brief Value of pointer as seen in shared memory
      *         All CPUs will have method to convert from shared memory pointer
@@ -142,12 +150,6 @@ typedef struct _tivx_shared_mem_ptr_t {
      *         pointer
      */
     void *host_ptr;
-
-    /*! \brief Value of pointer as seen as by target CPU
-     *         Target CPU will have method to convert to/from shared memory
-     *         pointer
-     */
-    void *target_ptr;
 
 } tivx_shared_mem_ptr_t;
 
@@ -173,13 +175,13 @@ typedef struct _tivx_mem_stats_t {
 /*!
  * \brief Alloc buffer from shared memory
  *
- * \param [in] mem_type Memory type to which this allocation belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_heap_region Memory region to which this allocation belongs, see \ref tivx_mem_heap_region_e
  * \param [out] mem_ptr Allocated memory pointer
  * \param [in] size Size of memory to allocate in bytes
  *
  * \ingroup group_tivx_mem
  */
-vx_status tivxMemBufferAlloc(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_type);
+vx_status tivxMemBufferAlloc(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region);
 
 /*!
  * \brief Free buffer from shared memory
@@ -199,7 +201,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size);
  *
  * \param [in] host_ptr Buffer memory to map
  * \param [in] size Size of memory to map in units of bytes
- * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref vx_memory_type_e and \ref tivx_memory_type_e
  * \param [in] maptype Mapping type as defined by \ref vx_accessor_e
  *
  * \ingroup group_tivx_mem
@@ -214,7 +216,7 @@ void tivxMemBufferMap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum m
  *
  * \param [in] host_ptr Buffer memory to unmap
  * \param [in] size Size of memory to unmap in units of bytes
- * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_type Memory type to which this pointer belongs, see \ref vx_memory_type_e and \ref tivx_memory_type_e
  * \param [in] maptype Mapping type as defined by \ref vx_accessor_e
  *
  * \ingroup group_tivx_mem
@@ -225,49 +227,49 @@ void tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum
  * \brief Convert Host pointer to shared pointer
  *
  * \param [in] host_ptr Host memory pointer
- * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
  *
  * \return Converted shared memory pointer
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type);
+void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Convert Shared memory pointer to host pointer
  *
  * \param [in] shared_ptr Shared memory pointer
- * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
  *
  * \return Converted host memory pointer
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type);
+void* tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Convert shared pointer to target pointer
  *
  * \param [in] shared_ptr Host memory pointer
- * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
  *
  * \return Converted shared memory pointer
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type);
+void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Convert target memory pointer to shared pointer
  *
  * \param [in] target_ptr Target memory pointer
- * \param [in] mem_type Memory type to which this pointer belongs, see \ref tivx_mem_type_e
+ * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
  *
  * \return Converted host memory pointer
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type);
+void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Allocates memory of given size
@@ -278,23 +280,24 @@ void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type);
  *
  * \ingroup group_tivx_mem
  */
-void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type);
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region);
 
 /*!
  * \brief Frees already allocated memory
  *
  * \param [in] ptr  Pointer to the memory
  * \param [in] size size of the memory to be freed
+ * \param [in] mem_heap_region Memory segment ID
  *
  * \ingroup group_tivx_mem
  */
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type);
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region);
 
 /*!
  * \brief Get memory segement information
  *
  * \param [out] stats Memory segment information
- * \param [in] mem_type Memory segment ID
+ * \param [in] mem_heap_region Memory segment ID
  *
  * \ingroup group_tivx_mem
  */

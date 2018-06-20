@@ -143,21 +143,23 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_type);
-        dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
 
         /* Get the correct offset of the images from the valid roi parameter,
            Assuming valid Roi is same for src0 and src1 images */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0]));
 

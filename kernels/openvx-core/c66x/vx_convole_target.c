@@ -102,27 +102,31 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *dst_target_ptr;
+        void *conv_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_IN_IMG_IDX];
         conv = (tivx_obj_desc_convolution_t *)obj_desc[
             TIVX_KERNEL_CONVOLVE_IN_CONVOLVE_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_OUT_IMG_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        conv->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        conv_target_ptr = tivxMemShared2TargetPtr(
+            conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(conv->mem_ptr.target_ptr, conv->mem_size,
-            conv->mem_ptr.mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(conv_target_ptr, conv->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -130,13 +134,13 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         if (vxlib_dst.data_type == VXLIB_UINT8)
         {
             status = VXLIB_convolve_i8u_c16s_o8u(src_addr, &vxlib_src,
-                dst_addr, &vxlib_dst, conv->mem_ptr.target_ptr,
+                dst_addr, &vxlib_dst, conv_target_ptr,
                 conv->columns, conv->rows, conv->scale);
         }
         else
         {
             status = VXLIB_convolve_i8u_c16s_o16s(src_addr, &vxlib_src,
-                (int16_t*)dst_addr, &vxlib_dst, conv->mem_ptr.target_ptr,
+                (int16_t*)dst_addr, &vxlib_dst, conv_target_ptr,
                 conv->columns, conv->rows, conv->scale);
         }
         if (VXLIB_SUCCESS != status)
@@ -144,12 +148,12 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(conv->mem_ptr.target_ptr, conv->mem_size,
-            conv->mem_ptr.mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

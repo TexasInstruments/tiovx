@@ -152,15 +152,19 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
 
     if (VX_SUCCESS == status)
     {
-        low_img->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            low_img->mem_ptr[0].shared_ptr, low_img->mem_ptr[0].mem_type);
-        out_img->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            out_img->mem_ptr[0].shared_ptr, out_img->mem_ptr[0].mem_type);
+        void *low_img_target_ptr;
+        void *out_img_target_ptr;
+        void *pyd_level_target_ptr;
 
-        tivxMemBufferMap(low_img->mem_ptr[0].target_ptr, low_img->mem_size[0],
-            low_img->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(out_img->mem_ptr[0].target_ptr, out_img->mem_size[0],
-            out_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        low_img_target_ptr = tivxMemShared2TargetPtr(
+            low_img->mem_ptr[0].shared_ptr, low_img->mem_ptr[0].mem_heap_region);
+        out_img_target_ptr = tivxMemShared2TargetPtr(
+            out_img->mem_ptr[0].shared_ptr, out_img->mem_ptr[0].mem_heap_region);
+
+        tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(out_img_target_ptr, out_img->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         /* Input is 8-bit image ... need to convert to 16 */
         tivxInitBufParams(low_img, &prms->vxlib_scratch);
@@ -171,10 +175,10 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         prms->vxlib_src.data_type = VXLIB_INT16;
 
         src_addr = (uint8_t *)prms->add_output;
-        tivxSetPointerLocation(out_img, &dst_addr);
+        tivxSetPointerLocation(out_img, &out_img_target_ptr, &dst_addr);
 
         status = VXLIB_convertDepth_i8u_o16s(
-            (uint8_t *)low_img->mem_ptr[0U].target_ptr, &prms->vxlib_scratch,
+            (uint8_t *)low_img_target_ptr, &prms->vxlib_scratch,
             (int16_t *)src_addr, &prms->vxlib_src, 0);
 
         /* Reinterpret 16-bit version of low_img as an 8 bit image, where every other byte is 0 */
@@ -186,14 +190,14 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
         {
             pyd_level = prms->img_obj_desc[level];
 
-            pyd_level->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
+            pyd_level_target_ptr = tivxMemShared2TargetPtr(
                 pyd_level->mem_ptr[0].shared_ptr,
-                pyd_level->mem_ptr[0].mem_type);
-            tivxMemBufferMap(pyd_level->mem_ptr[0].target_ptr,
-                pyd_level->mem_size[0], pyd_level->mem_ptr[0].mem_type,
+                pyd_level->mem_ptr[0].mem_heap_region);
+            tivxMemBufferMap(pyd_level_target_ptr,
+                pyd_level->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
 
-            tivxSetPointerLocation(pyd_level, (uint8_t**)&laplac_addr);
+            tivxSetPointerLocation(pyd_level, &pyd_level_target_ptr, (uint8_t**)&laplac_addr);
 
             rect = pyd_level->valid_roi;
 
@@ -257,8 +261,8 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
                 }
             }
 
-            tivxMemBufferUnmap(pyd_level->mem_ptr[0].target_ptr,
-                pyd_level->mem_size[0], pyd_level->mem_ptr[0].mem_type,
+            tivxMemBufferUnmap(pyd_level_target_ptr,
+                pyd_level->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
 
             if (status != VXLIB_SUCCESS)
@@ -268,10 +272,10 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
             }
         }
 
-        tivxMemBufferUnmap(low_img->mem_ptr[0].target_ptr, low_img->mem_size[0],
-            low_img->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(out_img->mem_ptr[0].target_ptr, out_img->mem_size[0],
-            out_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(out_img_target_ptr, out_img->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

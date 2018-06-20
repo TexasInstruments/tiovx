@@ -107,17 +107,19 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX];
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX];
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &vxlib_src);
 
         status = VXLIB_meanStdDev_i8u_o32f(src_addr, &vxlib_src,
@@ -129,8 +131,8 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
     return (status);

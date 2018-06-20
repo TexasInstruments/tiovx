@@ -102,6 +102,10 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *arr0_target_ptr;
+        void *arr1_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MML_IN_IMG_IDX];
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MIN_SC_IDX];
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MAX_SC_IDX];
@@ -110,34 +114,34 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
         arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MML_OUT_MIN_ARR_IDX];
         arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MML_OUT_MAX_ARR_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         if (NULL != arr[0u])
         {
-            arr[0U]->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                arr[0U]->mem_ptr.shared_ptr, arr[0U]->mem_ptr.mem_type);
-            tivxMemBufferMap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,
-                arr[0U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            arr0_target_ptr = tivxMemShared2TargetPtr(
+                arr[0U]->mem_ptr.shared_ptr, arr[0U]->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(arr0_target_ptr, arr[0U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-            min_loc = arr[0U]->mem_ptr.target_ptr;
+            min_loc = arr0_target_ptr;
             min_cap = arr[0U]->mem_size / arr[0u]->item_size;
         }
 
         if (NULL != arr[1u])
         {
-            arr[1U]->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                arr[1U]->mem_ptr.shared_ptr, arr[1U]->mem_ptr.mem_type);
-            tivxMemBufferMap(arr[1U]->mem_ptr.target_ptr, arr[1U]->mem_size,
-                arr[1U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            arr1_target_ptr = tivxMemShared2TargetPtr(
+                arr[1U]->mem_ptr.shared_ptr, arr[1U]->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(arr1_target_ptr, arr[1U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-            max_loc = arr[1U]->mem_ptr.target_ptr;
+            max_loc = arr1_target_ptr;
             max_cap = arr[1U]->mem_size / arr[1u]->item_size;
         }
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &vxlib_src);
 
         if (VX_DF_IMAGE_U8 == src->format)
@@ -196,17 +200,17 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
             }
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         if (NULL != arr[0u])
         {
-            tivxMemBufferUnmap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,
-                arr[0U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(arr0_target_ptr, arr[0U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
         if (NULL != arr[1u])
         {
-            tivxMemBufferUnmap(arr[1U]->mem_ptr.target_ptr, arr[1U]->mem_size,
-                arr[1U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(arr1_target_ptr, arr[1U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
     }
 

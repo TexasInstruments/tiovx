@@ -150,24 +150,28 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
     if (VX_SUCCESS == status)
     {
-        low_img->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            low_img->mem_ptr[0].shared_ptr, low_img->mem_ptr[0].mem_type);
-        tivxMemBufferMap(low_img->mem_ptr[0].target_ptr, low_img->mem_size[0],
-            low_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        void *src_target_ptr;
+        void *low_img_target_ptr;
+        void *dst_target_ptr;
+
+        low_img_target_ptr = tivxMemShared2TargetPtr(
+            low_img->mem_ptr[0].shared_ptr, low_img->mem_ptr[0].mem_heap_region);
+        tivxMemBufferMap(low_img_target_ptr, low_img->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_LPL_PMD_IN_IMG_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &prms->vxlib_src);
 
         prms->vxlib_gauss0.data_type = VXLIB_UINT8;
@@ -181,13 +185,13 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
 
             dst = prms->img_obj_desc[levels];
 
-            dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
+            dst_target_ptr = tivxMemShared2TargetPtr(
+                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
 
-            tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-            tivxSetPointerLocation(dst, (uint8_t**)&dst_addr);
+            tivxSetPointerLocation(dst, &dst_target_ptr, (uint8_t**)&dst_addr);
 
             /* Half scaled intermediate result */
             if(levels == (pmd->num_levels - 1u))
@@ -195,7 +199,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 tivxInitBufParams(low_img, &prms->vxlib_gauss0);
                 prms->vxlib_gauss0.data_type = VXLIB_UINT8;
 
-                tivxSetPointerLocation(low_img, &out_addr);
+                tivxSetPointerLocation(low_img, &low_img_target_ptr, &out_addr);
             }
             else
             {
@@ -255,8 +259,8 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
                 }
             }
 
-            tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             if (status != VXLIB_SUCCESS)
             {
@@ -265,11 +269,11 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             }
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        tivxMemBufferUnmap(low_img->mem_ptr[0].target_ptr, low_img->mem_size[0],
-            low_img->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(low_img_target_ptr, low_img->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

@@ -104,25 +104,29 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *dst_target_ptr;
+        void *remap_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_REMAP_IN_IMG_IDX];
         sc = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_REMAP_IN_POLICY_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_REMAP_OUT_IMG_IDX];
         remap = (tivx_obj_desc_remap_t *)obj_desc[TIVX_KERNEL_REMAP_IN_TBL_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        remap->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            remap->mem_ptr.shared_ptr, remap->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        remap_target_ptr = tivxMemShared2TargetPtr(
+            remap->mem_ptr.shared_ptr, remap->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        tivxMemBufferMap(remap->mem_ptr.target_ptr, remap->mem_size,
-            remap->mem_ptr.mem_type, VX_READ_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        tivxMemBufferMap(remap_target_ptr, remap->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -132,8 +136,8 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         vxlib_remap.stride_y = dst->imagepatch_addr[0].dim_x * 8U;
         vxlib_remap.data_type = VXLIB_FLOAT32;
 
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         tivxGetTargetKernelInstanceBorderMode(kernel, &border);
 
@@ -141,14 +145,14 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         {
             status = VXLIB_remapBilinear_bc_i8u_i32f_o8u(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst,
-                remap->mem_ptr.target_ptr, &vxlib_remap,
+                remap_target_ptr, &vxlib_remap,
                 border.constant_value.U8);
         }
         else if (VX_INTERPOLATION_NEAREST_NEIGHBOR == sc->data.enm)
         {
             status = VXLIB_remapNearest_bc_i8u_i32f_o8u(
                 src_addr, &vxlib_src, dst_addr, &vxlib_dst,
-                remap->mem_ptr.target_ptr, &vxlib_remap,
+                remap_target_ptr, &vxlib_remap,
                 border.constant_value.U8);
         }
         else
@@ -161,12 +165,12 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
-        tivxMemBufferUnmap(remap->mem_ptr.target_ptr, remap->mem_size,
-            remap->mem_ptr.mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(remap_target_ptr, remap->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
     return (status);

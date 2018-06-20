@@ -142,26 +142,29 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[3];
+        void *src_target_ptr;
+        void *dstx_target_ptr = NULL;
+        void *dsty_target_ptr = NULL;
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         if(dstx != NULL)
         {
-            dstx->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dstx->mem_ptr[0].shared_ptr, dstx->mem_ptr[0].mem_type);
+            dstx_target_ptr = tivxMemShared2TargetPtr(
+                dstx->mem_ptr[0].shared_ptr, dstx->mem_ptr[0].mem_heap_region);
 
-            tivxSetPointerLocation(dstx, (uint8_t **)&dstx_addr);
+            tivxSetPointerLocation(dstx, &dstx_target_ptr, (uint8_t **)&dstx_addr);
         }
 
         if(dsty != NULL)
         {
-            dsty->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dsty->mem_ptr[0].shared_ptr, dsty->mem_ptr[0].mem_type);
+            dsty_target_ptr = tivxMemShared2TargetPtr(
+                dsty->mem_ptr[0].shared_ptr, dsty->mem_ptr[0].mem_heap_region);
 
-            tivxSetPointerLocation(dsty, (uint8_t **)&dsty_addr);
+            tivxSetPointerLocation(dsty, &dsty_target_ptr, (uint8_t **)&dsty_addr);
         }
 
         if ((dstx != NULL) && (dsty != NULL))

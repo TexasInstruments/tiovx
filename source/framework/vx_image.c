@@ -363,7 +363,7 @@ static void ownInitPlane(vx_image image,
 
         obj_desc->mem_size[index] = mem_size;
 
-        obj_desc->mem_ptr[index].mem_type = TIVX_MEM_EXTERNAL;
+        obj_desc->mem_ptr[index].mem_heap_region = TIVX_MEM_EXTERNAL;
         obj_desc->mem_ptr[index].host_ptr = NULL;
         obj_desc->mem_ptr[index].shared_ptr = NULL;
 
@@ -764,7 +764,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
 
                 obj_desc->mem_size[plane_idx] = (imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
 
-                mem_ptr->mem_type =  TIVX_MEM_EXTERNAL;
+                mem_ptr->mem_heap_region =  TIVX_MEM_EXTERNAL;
                 mem_ptr->host_ptr = ptrs[plane_idx];
                 if(mem_ptr->host_ptr)
                 {
@@ -1692,7 +1692,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
 
         if(status == VX_SUCCESS)
         {
-            tivxMemBufferMap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
+            tivxMemBufferMap(map_addr, map_size, VX_MEMORY_TYPE_HOST, usage);
 
             /* copy the patch from the image */
             if (user_addr->stride_x == image_addr->stride_x)
@@ -1843,7 +1843,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                 }
             }
 
-            tivxMemBufferUnmap(map_addr, map_size, obj_desc->mem_ptr[plane_index].mem_type, usage);
+            tivxMemBufferUnmap(map_addr, map_size, VX_MEMORY_TYPE_HOST, usage);
         }
     }
 
@@ -1915,6 +1915,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 {
                     image->maps[map_idx].map_addr = host_addr;
                     image->maps[map_idx].map_size = map_size;
+                    image->maps[map_idx].mem_type = mem_type;
                     image->maps[map_idx].usage = usage;
                     break;
                 }
@@ -1932,8 +1933,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
                 map_addr = (vx_uint8*)TIVX_FLOOR((uintptr_t)host_addr, 128U);
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 map_size = end_addr - host_addr;
-                tivxMemBufferMap(map_addr, map_size,
-                    obj_desc->mem_ptr[plane_index].mem_type, usage);
+                tivxMemBufferMap(map_addr, map_size, mem_type, usage);
 
                 tivxLogSetResourceUsedValue("TIVX_IMAGE_MAX_MAPS", map_idx+1);
             }
@@ -1956,7 +1956,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
 VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id map_id)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_image_t *obj_desc = NULL;
 
     /* bad references */
     if (ownIsValidImage(image) == vx_false_e)
@@ -1997,8 +1996,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
             vx_uint8* map_addr = NULL, *end_addr = NULL;
             uint32_t map_size = 0;
 
-            obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
-
             map_addr = image->maps[map_id].map_addr;
             map_size = image->maps[map_id].map_size;
 
@@ -2009,7 +2006,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxUnmapImagePatch(vx_image image, vx_map_id m
 
             tivxMemBufferUnmap(
                 map_addr, map_size,
-                obj_desc->mem_ptr[0].mem_type,
+                image->maps[map_id].mem_type,
                 image->maps[map_id].usage);
 
             image->maps[map_id].map_addr = NULL;
@@ -2090,7 +2087,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                     if (NULL != prev_ptrs[p])
                     {
                         tivxMemBufferMap(prev_ptrs[p], obj_desc->mem_size[p],
-                            obj_desc->mem_ptr[p].mem_type, VX_WRITE_ONLY);
+                            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
                     }
                 }
             }
@@ -2151,12 +2148,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                 {
                     /* set new pointers for subimage */
                     obj_desc->mem_ptr[p].host_ptr = new_ptrs[p];
-                    obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr(new_ptrs[p], obj_desc->mem_ptr[p].mem_type);
+                    obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr(new_ptrs[p], obj_desc->mem_ptr[p].mem_heap_region);
 
                     if (NULL != new_ptrs[p])
                     {
                         tivxMemBufferUnmap(new_ptrs[p], obj_desc->mem_size[p],
-                            obj_desc->mem_ptr[p].mem_type, VX_WRITE_ONLY);
+                            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
                     }
                 }
             }

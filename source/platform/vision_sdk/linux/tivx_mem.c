@@ -14,7 +14,7 @@
 #include <src/hlos/system/system_priv_openvx.h>
 
 vx_status tivxMemBufferAlloc(
-    tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_type)
+    tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
 
@@ -35,8 +35,8 @@ vx_status tivxMemBufferAlloc(
         mem_ptr->host_ptr = tivxMemAlloc(size, mem_type);
         if (NULL != mem_ptr->host_ptr)
         {
-            mem_ptr->mem_type = mem_type;
-            mem_ptr->shared_ptr = (void *)tivxMemHost2SharedPtr(mem_ptr->host_ptr, mem_type);
+            mem_ptr->mem_heap_region = mem_heap_region;
+            mem_ptr->shared_ptr = (void *)tivxMemHost2SharedPtr(mem_ptr->host_ptr, mem_heap_region);
 
             memset(mem_ptr->host_ptr, 0, size);
             System_ovxCacheWb((unsigned int)mem_ptr->host_ptr, size);
@@ -51,7 +51,7 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
-void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     void *ptr = NULL;
 
@@ -60,7 +60,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
     if ((NULL != ptr) && (0 != size))
     {
@@ -90,7 +90,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     }
     else
     {
-        tivxMemFree(mem_ptr->host_ptr, size, mem_ptr->mem_type);
+        tivxMemFree(mem_ptr->host_ptr, size, mem_ptr->mem_heap_region);
 
         mem_ptr->host_ptr = NULL;
         mem_ptr->shared_ptr = NULL;
@@ -102,13 +102,18 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 void tivxMemBufferMap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0 != size))
+    /* Note: Technically, we might be able to avoid a cache invalidate
+     * if the maptype == VX_WRITE_ONLY, however if the mapping boundary splits
+     * a cache line, then stale data outside the mapping, but on a cache
+     * line that was mapped, could inadvertently be written back.  Therefore,
+     * to be safe, we still perform invalidate even in WRITE only mode. */
+    if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type))
     {
         System_ovxCacheInv((unsigned int)host_ptr, size);
     }
 }
 
-void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 {
     if (NULL == stats)
     {
@@ -127,14 +132,14 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0 != size) &&
+    if ((NULL != host_ptr) && (0 != size) && (TIVX_MEMORY_TYPE_DMA != mem_type) &&
         ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
         System_ovxCacheWb((unsigned int)host_ptr, size);
     }
 }
 
-void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type)
+void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region)
 {
     void *addr = NULL;
 
@@ -146,7 +151,7 @@ void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type)
     return (addr);
 }
 
-void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type)
+void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region)
 {
     void *addr = NULL;
 
@@ -158,12 +163,12 @@ void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type)
     return (addr);
 }
 
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type)
+void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region)
 {
     return (shared_ptr);
 }
 
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type)
+void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
 {
     return (target_ptr);
 }

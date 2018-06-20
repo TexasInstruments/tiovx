@@ -146,34 +146,36 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
         rect = dst->valid_roi;
 
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        dst_addr = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        border_addr_tl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        border_addr_tl = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2),
             &dst->imagepatch_addr[0U]));
-        border_addr_tr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        border_addr_tr = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_x, rect.start_y + (prms->gs / 2),
             &dst->imagepatch_addr[0U]));
-        border_addr_bl = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        border_addr_bl = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x + (prms->gs / 2), rect.start_y + (prms->gs / 2) + 1 + prms->vxlib_dst.dim_y,
             &dst->imagepatch_addr[0U]));
 

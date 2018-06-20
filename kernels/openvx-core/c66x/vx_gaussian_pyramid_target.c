@@ -154,6 +154,9 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         for (levels = 0; (levels < pmd->num_levels) && (VX_SUCCESS == status);
                 levels ++)
         {
+            void *src_target_ptr;
+            void *dst_target_ptr;
+
             if (0 == levels)
             {
                 src = (tivx_obj_desc_image_t *)obj_desc[
@@ -165,20 +168,20 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             }
             dst = prms->img_obj_desc[levels];
 
-            src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-            dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
+            src_target_ptr = tivxMemShared2TargetPtr(
+                src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+            dst_target_ptr = tivxMemShared2TargetPtr(
+                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
 
-            tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-                src->mem_ptr[0].mem_type, VX_READ_ONLY);
-            tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             /* Valid rectangle is ignore here */
-            src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+            src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
                 tivxComputePatchOffset(0, 0, &src->imagepatch_addr[0U]));
-            dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+            dst_addr = (uint8_t *)((uintptr_t)dst_target_ptr +
                 tivxComputePatchOffset(0, 0, &dst->imagepatch_addr[0]));
 
             vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
@@ -208,8 +211,8 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                 }
                 tivxInitBufParams(dst, &vxlib_dst);
 
-                tivxSetPointerLocation(src, &src_addr);
-                tivxSetPointerLocation(dst, &dst_addr);
+                tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+                tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
                 status = VXLIB_channelCopy_1to1_i8u_o8u(
                     src_addr, &vxlib_src, dst_addr, &vxlib_dst);
             }
@@ -221,8 +224,8 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                     tivxInitBufParams(src, &vxlib_gauss);
                     tivxInitBufParams(dst, &vxlib_dst);
 
-                    tivxSetPointerLocation(src, &src_addr);
-                    tivxSetPointerLocation(dst, &dst_addr);
+                    tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+                    tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
                     status = VXLIB_halfScaleGaussian_5x5_i8u_o8u(
                         (uint8_t*)src_addr, &vxlib_src, dst_addr, &vxlib_dst);
@@ -249,10 +252,10 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
                 }
             }
 
-            tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-                src->mem_ptr[0].mem_type, VX_READ_ONLY);
-            tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             if (status != VXLIB_SUCCESS)
             {

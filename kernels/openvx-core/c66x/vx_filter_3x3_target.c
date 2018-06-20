@@ -124,6 +124,8 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
     uint8_t *src_addr, *dst_addr;
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     tivxFilter3x3KernelInfo *kern_info;
+    void *src_desc_target_ptr;
+    void *dst_desc_target_ptr;
 
     if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
         (NULL == obj_desc[1U]) || (NULL == kernel) ||
@@ -151,13 +153,13 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
 
         /* Get the target pointer from the shared pointer for all
            three buffers */
-        src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
-        dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(
+            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(
+            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
 
-        if ((NULL == src_desc->mem_ptr[0].target_ptr) ||
-            (NULL == dst_desc->mem_ptr[0].target_ptr))
+        if ((NULL == src_desc_target_ptr) ||
+            (NULL == dst_desc_target_ptr))
         {
             status = VX_ERROR_INVALID_REFERENCE;
         }
@@ -174,18 +176,18 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
     if (VX_SUCCESS == status)
     {
         /* Map all buffers, which invalidates the cache */
-        tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
-            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(src_desc_target_ptr,
+            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
-            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(dst_desc_target_ptr,
+            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        tivxSetPointerLocation(src_desc, &src_addr);
-        tivxSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_desc_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
 
         /* All 3x3 filter reduces the output size, therefore reduce output
          * height, but leave output width the same (DSP optimization) */
@@ -201,11 +203,11 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,
-            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(src_desc_target_ptr,
+            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(dst_desc_target_ptr,
+            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
     }
 

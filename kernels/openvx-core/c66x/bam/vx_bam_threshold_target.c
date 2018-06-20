@@ -102,7 +102,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     tivxThresholdParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     vx_uint8 *src_addr, *dst_addr;
-    vx_size size;
+    uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_THRLD_MAX_PARAMS);
@@ -125,14 +125,16 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_type);
-        dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
 
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;

@@ -136,15 +136,16 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
         tivx_obj_desc_scalar_t *sc[2U];
         VXLIB_F32 mean_val, stddev_val;
         void *img_ptrs[1];
+        void *src_target_ptr;
 
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX];
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX];
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);

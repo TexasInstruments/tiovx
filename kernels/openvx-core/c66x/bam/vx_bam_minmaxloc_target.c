@@ -144,6 +144,9 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         tivx_obj_desc_array_t *arr[2U];
         uint32_t min_val, max_val;
         void *img_ptrs[1];
+        void *src_target_ptr;
+        void *arr0_target_ptr = NULL;
+        void *arr1_target_ptr = NULL;
 
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MML_IN_IMG_IDX];
         sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MIN_SC_IDX];
@@ -153,36 +156,36 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
         arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MML_OUT_MIN_ARR_IDX];
         arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MML_OUT_MAX_ARR_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         img_ptrs[0] = src_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 0U, img_ptrs);
 
         if (NULL != arr[0u])
         {
-            arr[0U]->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                arr[0U]->mem_ptr.shared_ptr, arr[0U]->mem_ptr.mem_type);
-            tivxMemBufferMap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,
-                arr[0U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            arr0_target_ptr = tivxMemShared2TargetPtr(
+                arr[0U]->mem_ptr.shared_ptr, arr[0U]->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(arr0_target_ptr, arr[0U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             tivxBamControlNode(prms->graph_handle, 0,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_LOC_PTR,
-                               arr[0U]->mem_ptr.target_ptr);
+                               arr0_target_ptr);
         }
 
         if (NULL != arr[1u])
         {
-            arr[1U]->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                arr[1U]->mem_ptr.shared_ptr, arr[1U]->mem_ptr.mem_type);
-            tivxMemBufferMap(arr[1U]->mem_ptr.target_ptr, arr[1U]->mem_size,
-                arr[1U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            arr1_target_ptr = tivxMemShared2TargetPtr(
+                arr[1U]->mem_ptr.shared_ptr, arr[1U]->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(arr1_target_ptr, arr[1U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             tivxBamControlNode(prms->graph_handle, 0,
                                VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_LOC_PTR,
-                               arr[1U]->mem_ptr.target_ptr);
+                               arr1_target_ptr);
         }
 
         status  = tivxBamProcessGraph(prms->graph_handle);
@@ -239,13 +242,13 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
 
         if (NULL != arr[0u])
         {
-            tivxMemBufferUnmap(arr[0U]->mem_ptr.target_ptr, arr[0U]->mem_size,
-                arr[0U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(arr0_target_ptr, arr[0U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
         if (NULL != arr[1u])
         {
-            tivxMemBufferUnmap(arr[1U]->mem_ptr.target_ptr, arr[1U]->mem_size,
-                arr[1U]->mem_ptr.mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(arr1_target_ptr, arr[1U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
     }
 

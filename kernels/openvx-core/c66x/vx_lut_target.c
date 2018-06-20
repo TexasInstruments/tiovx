@@ -87,26 +87,30 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *dst_target_ptr;
+        void *lut_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_IN_IMG_IDX];
         lut = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_LUT_IN_LUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_OUT_IMG_IDX];
 
-        src->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_type);
-        dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
-        lut->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
+        lut_target_ptr = tivxMemShared2TargetPtr(
+            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(lut->mem_ptr.target_ptr, lut->mem_size,
-            lut->mem_ptr.mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(lut_target_ptr, lut->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr,  &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         tivxInitBufParams(src, &vxlib_src);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -114,25 +118,25 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         if (src->format == VX_DF_IMAGE_U8)
         {
             status = VXLIB_tableLookup_i8u_o8u(src_addr, &vxlib_src,
-                dst_addr, &vxlib_dst, lut->mem_ptr.target_ptr, lut->num_items);
+                dst_addr, &vxlib_dst, lut_target_ptr, lut->num_items);
         }
         else
         {
             status = VXLIB_tableLookup_i16s_o16s((int16_t *)src_addr,
                 &vxlib_src, (int16_t *)dst_addr, &vxlib_dst,
-                lut->mem_ptr.target_ptr, lut->num_items, 32768U);
+                lut_target_ptr, lut->num_items, 32768U);
         }
         if (VXLIB_SUCCESS != status)
         {
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0U].target_ptr, src->mem_size[0],
-            src->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(lut->mem_ptr.target_ptr, lut->mem_size,
-            lut->mem_ptr.mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0U].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0U].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(lut_target_ptr, lut->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (VX_SUCCESS);

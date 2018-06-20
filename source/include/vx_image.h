@@ -52,6 +52,8 @@ typedef struct _tivx_image_map_info_t
     uint8_t *map_addr;
     /*! \brief Size of memory region mapped via vxMapImagePatch() */
     vx_size  map_size;
+    /*! \brief Type of memory mapped via vxMapImagePatch(), see \ref vx_memory_type_e and \ref tivx_memory_type_e */
+    vx_enum  mem_type;
     /*! \brief Type of access being done by user, see \ref vx_accessor_e */
     vx_enum usage;
 } tivx_image_map_info_t;

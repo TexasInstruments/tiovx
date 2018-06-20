@@ -98,32 +98,36 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
     }
     else
     {
+        void *src_desc_target_ptr;
+        void *mask_desc_target_ptr;
+        void *dst_desc_target_ptr;
+
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
         src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
         mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX];
 
-        src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
-        mask_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-          mask_desc->mem_ptr.shared_ptr, mask_desc->mem_ptr.mem_type);
-        dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(
+          src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
+        mask_desc_target_ptr = tivxMemShared2TargetPtr(
+          mask_desc->mem_ptr.shared_ptr, mask_desc->mem_ptr.mem_heap_region);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(
+          dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
-           src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(src_desc_target_ptr,
+           src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(mask_desc->mem_ptr.target_ptr,
-           mask_desc->mem_size, mask_desc->mem_ptr.mem_type,
+        tivxMemBufferMap(mask_desc_target_ptr,
+           mask_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
-           dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(dst_desc_target_ptr,
+           dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
-        mask_addr = (uint8_t *)((uintptr_t)mask_desc->mem_ptr.target_ptr);
+        mask_addr = (uint8_t *)((uintptr_t)mask_desc_target_ptr);
 
-        tivxSetPointerLocation(src_desc, &src_addr);
-        tivxSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_desc_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
 
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
@@ -162,14 +166,14 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
             }
         }
 
-        tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,
-           src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(src_desc_target_ptr,
+           src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(mask_desc->mem_ptr.target_ptr,
-           mask_desc->mem_size, mask_desc->mem_ptr.mem_type,
+        tivxMemBufferUnmap(mask_desc_target_ptr,
+           mask_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-           dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(dst_desc_target_ptr,
+           dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
 

@@ -92,30 +92,33 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *dst_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_IN_IMG_IDX];
         dst = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_OUT_IMG_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        dst->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr.shared_ptr, dst->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr.target_ptr, dst->mem_size,
-            dst->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
         tivxInitBufParams(src, &vxlib_src);
 
         status = tivxGetTargetKernelInstanceContext(kernel, &scratch, &scratch_size);
 
         if (VXLIB_SUCCESS == status)
         {
-            memset(dst->mem_ptr.target_ptr, 0, dst->mem_size);
+            memset(dst_target_ptr, 0, dst->mem_size);
 
             status = VXLIB_histogram_i8u_o32u(src_addr, &vxlib_src,
-                    dst->mem_ptr.target_ptr, (uint32_t*)scratch, dst->offset, dst->range, dst->num_bins, 1);
+                    dst_target_ptr, (uint32_t*)scratch, dst->offset, dst->range, dst->num_bins, 1);
         }
         else
         {
@@ -127,10 +130,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr.target_ptr, dst->mem_size,
-            dst->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

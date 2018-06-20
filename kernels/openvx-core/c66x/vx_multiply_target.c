@@ -89,6 +89,10 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
             TIVX_KERNEL_MULT_MAX_PARAMS);
     if (VX_SUCCESS == status)
     {
+        void *src0_target_ptr;
+        void *src1_target_ptr;
+        void *dst_target_ptr;
+
         src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN0_IMG_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN1_IMG_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_OUT_IMG_IDX];
@@ -97,22 +101,22 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
         sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN1_SC_IDX];
         sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN2_SC_IDX];
 
-        src0->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_type);
-        src1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_type);
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
+        src0_target_ptr = tivxMemShared2TargetPtr(
+            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);
+        src1_target_ptr = tivxMemShared2TargetPtr(
+            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
-            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
-            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(src0_target_ptr, src0->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(src1_target_ptr, src1->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        tivxSetTwoPointerLocation(src0, src1, &src0_addr, &src1_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetTwoPointerLocation(src0, src1, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         tivxInitTwoBufParams(src0, src1, &vxlib_src0, &vxlib_src1);
         tivxInitBufParams(dst, &vxlib_dst);
@@ -174,12 +178,12 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src0->mem_ptr[0].target_ptr, src0->mem_size[0],
-            src0->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(src1->mem_ptr[0].target_ptr, src1->mem_size[0],
-            src1->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(src0_target_ptr, src0->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(src1_target_ptr, src1->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

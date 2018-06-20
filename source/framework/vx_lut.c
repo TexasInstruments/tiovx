@@ -109,7 +109,7 @@ vx_lut VX_API_CALL vxCreateLUT(
                     obj_desc->mem_size = dim * count;
                     obj_desc->mem_ptr.host_ptr = NULL;
                     obj_desc->mem_ptr.shared_ptr = NULL;
-                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     lut->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -260,12 +260,12 @@ vx_status VX_API_CALL vxCopyLUT(
         if (VX_READ_ONLY == usage)
         {
             tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
-                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
             memcpy(user_ptr, obj_desc->mem_ptr.host_ptr, size);
 
             tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
-                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
         else /* Copy from user memory to lut object */
         {
@@ -274,12 +274,12 @@ vx_status VX_API_CALL vxCopyLUT(
             if (VX_SUCCESS == status)
             {
                 tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
                 memcpy(obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
             }
         }
     }
@@ -309,7 +309,7 @@ vx_status VX_API_CALL vxMapLUT(
         {
             obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
             tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
-                obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
+                obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_READ_AND_WRITE);
 
             *ptr = obj_desc->mem_ptr.host_ptr;
@@ -336,7 +336,7 @@ vx_status VX_API_CALL vxUnmapLUT(vx_lut lut, vx_map_id map_id)
     {
         obj_desc = (tivx_obj_desc_lut_t *)lut->base.obj_desc;
         tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
+            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_AND_WRITE);
     }
 

@@ -104,7 +104,7 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     obj_desc->mem_size = columns*rows*dim;
                     obj_desc->mem_ptr.host_ptr = NULL;
                     obj_desc->mem_ptr.shared_ptr = NULL;
-                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -202,7 +202,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 obj_desc->origin_y = rows/2;
                 obj_desc->pattern = pattern;
                 obj_desc->mem_size = columns*rows*dim;
-                obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                 matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
                 obj_desc->mem_ptr.host_ptr = NULL;
@@ -245,7 +245,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
     if ((VX_SUCCESS == status) && (NULL != obj_desc->mem_ptr.host_ptr))
     {
         tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
+            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
         pTempDataPtr = (vx_uint8 *)obj_desc->mem_ptr.host_ptr;
@@ -316,7 +316,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         }
 
         tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr,
-            obj_desc->mem_size, obj_desc->mem_ptr.mem_type,
+            obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
     }
 
@@ -475,12 +475,12 @@ vx_status VX_API_CALL vxCopyMatrix(
         if (VX_READ_ONLY == usage)
         {
             tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
-                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
             memcpy(user_ptr, obj_desc->mem_ptr.host_ptr, size);
 
             tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
-                obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
         else /* Copy from user memory to matrix object */
         {
@@ -489,12 +489,12 @@ vx_status VX_API_CALL vxCopyMatrix(
             if (VX_SUCCESS == status)
             {
                 tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
                 memcpy(obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
                 tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
             }
         }
     }

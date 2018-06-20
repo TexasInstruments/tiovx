@@ -86,15 +86,16 @@ vx_status tivxChannelExtractRgbRgbxInput(
     uint8_t channel_offset;
     vx_rectangle_t rect;
     vx_status status = VX_SUCCESS;
+    void *in_desc_target_ptr;
 
-    in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-      in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_type);
+    in_desc_target_ptr = tivxMemShared2TargetPtr(
+      in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_heap_region);
 
     /* Get the correct offset of the images from the valid roi parameter,
      */
     rect = in_desc->valid_roi;
 
-    src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[0U].target_ptr +
+    src_addr = (uint8_t *)((uintptr_t)in_desc_target_ptr +
         tivxComputePatchOffset(rect.start_x, rect.start_y,
         &in_desc->imagepatch_addr[0U]));
 
@@ -132,8 +133,8 @@ vx_status tivxChannelExtractRgbRgbxInput(
 
     if(status == VX_SUCCESS)
     {
-        tivxMemBufferMap(in_desc->mem_ptr[0].target_ptr,
-           in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(in_desc_target_ptr,
+           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
         if(in_desc->format == VX_DF_IMAGE_RGB)
@@ -150,8 +151,8 @@ vx_status tivxChannelExtractRgbRgbxInput(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(in_desc->mem_ptr[0].target_ptr,
-           in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(in_desc_target_ptr,
+           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
     }
 
@@ -170,11 +171,12 @@ vx_status tivxChannelExtractYuyvUyvyInput(
     uint8_t *src_addr;
     uint8_t channel_offset;
     vx_status status = VX_SUCCESS;
+    void *in_desc_target_ptr;
 
-    in_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-      in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_type);
+    in_desc_target_ptr = tivxMemShared2TargetPtr(
+      in_desc->mem_ptr[0].shared_ptr, in_desc->mem_ptr[0].mem_heap_region);
 
-    tivxSetPointerLocation(in_desc, &src_addr);
+    tivxSetPointerLocation(in_desc, &in_desc_target_ptr, &src_addr);
 
     tivxInitBufParams(in_desc, &vxlib_src);
 
@@ -217,8 +219,8 @@ vx_status tivxChannelExtractYuyvUyvyInput(
 
     if(status == VX_SUCCESS)
     {
-        tivxMemBufferMap(in_desc->mem_ptr[0].target_ptr,
-           in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(in_desc_target_ptr,
+           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
         if(channel_value == VX_CHANNEL_Y)
@@ -234,8 +236,8 @@ vx_status tivxChannelExtractYuyvUyvyInput(
             status = VXLIB_channelExtract_1of4_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
 
-        tivxMemBufferUnmap(in_desc->mem_ptr[0].target_ptr,
-           in_desc->mem_size[0], in_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(in_desc_target_ptr,
+           in_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
     }
 
@@ -255,6 +257,7 @@ vx_status tivxChannelExtractNv12Nv21Input(
     uint8_t channel_offset, plane_idx;
     vx_rectangle_t rect;
     vx_status status = VX_SUCCESS;
+    void *in_desc_target_ptr;
 
     if( channel_value == VX_CHANNEL_Y)
     {
@@ -277,14 +280,14 @@ vx_status tivxChannelExtractNv12Nv21Input(
 
     if(status == VX_SUCCESS)
     {
-        in_desc->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(
-          in_desc->mem_ptr[plane_idx].shared_ptr, in_desc->mem_ptr[plane_idx].mem_type);
+        in_desc_target_ptr = tivxMemShared2TargetPtr(
+          in_desc->mem_ptr[plane_idx].shared_ptr, in_desc->mem_ptr[plane_idx].mem_heap_region);
 
         /* Get the correct offset of the images from the valid roi parameter,
          */
         rect = in_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[plane_idx].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)in_desc_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &in_desc->imagepatch_addr[plane_idx]));
 
@@ -327,8 +330,8 @@ vx_status tivxChannelExtractNv12Nv21Input(
 
     if(status == VX_SUCCESS)
     {
-        tivxMemBufferMap(in_desc->mem_ptr[plane_idx].target_ptr,
-           in_desc->mem_size[plane_idx], in_desc->mem_ptr[plane_idx].mem_type,
+        tivxMemBufferMap(in_desc_target_ptr,
+           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
         if(channel_value == VX_CHANNEL_Y)
@@ -340,8 +343,8 @@ vx_status tivxChannelExtractNv12Nv21Input(
             status = VXLIB_channelExtract_1of2_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst, channel_offset);
         }
 
-        tivxMemBufferUnmap(in_desc->mem_ptr[plane_idx].target_ptr,
-           in_desc->mem_size[plane_idx], in_desc->mem_ptr[plane_idx].mem_type,
+        tivxMemBufferUnmap(in_desc_target_ptr,
+           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
     }
 
@@ -361,6 +364,7 @@ vx_status tivxChannelExtractIyuvYuv4Input(
     uint8_t plane_idx;
     vx_rectangle_t rect;
     vx_status status = VX_SUCCESS;
+    void *in_desc_target_ptr;
 
     if( channel_value == VX_CHANNEL_Y)
     {
@@ -383,14 +387,14 @@ vx_status tivxChannelExtractIyuvYuv4Input(
 
     if(status == VX_SUCCESS)
     {
-        in_desc->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(
-          in_desc->mem_ptr[plane_idx].shared_ptr, in_desc->mem_ptr[plane_idx].mem_type);
+        in_desc_target_ptr = tivxMemShared2TargetPtr(
+          in_desc->mem_ptr[plane_idx].shared_ptr, in_desc->mem_ptr[plane_idx].mem_heap_region);
 
         /* Get the correct offset of the images from the valid roi parameter,
          */
         rect = in_desc->valid_roi;
 
-        src_addr = (uint8_t *)((uintptr_t)in_desc->mem_ptr[plane_idx].target_ptr +
+        src_addr = (uint8_t *)((uintptr_t)in_desc_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &in_desc->imagepatch_addr[plane_idx]));
 
@@ -403,14 +407,14 @@ vx_status tivxChannelExtractIyuvYuv4Input(
 
     if(status == VX_SUCCESS)
     {
-        tivxMemBufferMap(in_desc->mem_ptr[plane_idx].target_ptr,
-           in_desc->mem_size[plane_idx], in_desc->mem_ptr[plane_idx].mem_type,
+        tivxMemBufferMap(in_desc_target_ptr,
+           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
         status = VXLIB_channelCopy_1to1_i8u_o8u(src_addr, &vxlib_src, dst_addr, vxlib_dst);
 
-        tivxMemBufferUnmap(in_desc->mem_ptr[plane_idx].target_ptr,
-           in_desc->mem_size[plane_idx], in_desc->mem_ptr[plane_idx].mem_type,
+        tivxMemBufferUnmap(in_desc_target_ptr,
+           in_desc->mem_size[plane_idx], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
     }
 
@@ -434,16 +438,17 @@ vx_status VX_CALLBACK tivxChannelExtract(
     if (VX_SUCCESS == status)
     {
         vx_enum channel_value;
+        void *out_desc_target_ptr;
 
         in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_IN_IDX];
         channel_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
         out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX];
 
-        out_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_type);
+        out_desc_target_ptr = tivxMemShared2TargetPtr(
+          out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(out_desc->mem_ptr[0].target_ptr,
-           out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(out_desc_target_ptr,
+           out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
         channel_value = channel_desc->data.enm;
@@ -458,7 +463,7 @@ vx_status VX_CALLBACK tivxChannelExtract(
              */
             rect = out_desc->valid_roi;
 
-            dst_addr = (uint8_t *)((uintptr_t)out_desc->mem_ptr[0U].target_ptr +
+            dst_addr = (uint8_t *)((uintptr_t)out_desc_target_ptr +
                 tivxComputePatchOffset(rect.start_x, rect.start_y,
                 &out_desc->imagepatch_addr[0]));
 
@@ -515,8 +520,8 @@ vx_status VX_CALLBACK tivxChannelExtract(
         }
         /* kernel processing function complete */
 
-        tivxMemBufferUnmap(out_desc->mem_ptr[0].target_ptr,
-           out_desc->mem_size[0], out_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(out_desc_target_ptr,
+           out_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
 

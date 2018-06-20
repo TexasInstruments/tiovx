@@ -136,18 +136,21 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
 
     if (VX_SUCCESS == status)
     {
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        arr->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_type);
+        void *src_target_ptr;
+        void *arr_target_ptr;
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(arr->mem_ptr.target_ptr, arr->mem_size,
-            arr->mem_ptr.mem_type, VX_WRITE_ONLY);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        arr_target_ptr = tivxMemShared2TargetPtr(
+            arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);
+
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(arr_target_ptr, arr->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         tivxInitBufParams(src, &vxlib_src);
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         status = VXLIB_fastCorners_i8u(
             src_addr, &vxlib_src, prms->corners, prms->strength,
@@ -172,7 +175,7 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             }
             arr->num_items = num_corners;
 
-            kp = (vx_keypoint_t *)arr->mem_ptr.target_ptr;
+            kp = (vx_keypoint_t *)arr_target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
                 kp->x = prms->corners[i] & 0xFFFFu;
@@ -187,10 +190,10 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
             }
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
-        tivxMemBufferUnmap(arr->mem_ptr.target_ptr, arr->mem_size,
-            arr->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferUnmap(arr_target_ptr, arr->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

@@ -188,20 +188,22 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *arr_target_ptr;
         VXLIB_STATUS status_vxlib = VXLIB_SUCCESS;
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        arr->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        arr_target_ptr = tivxMemShared2TargetPtr(
+            arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(arr->mem_ptr.target_ptr, arr->mem_size,
-            arr->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(arr_target_ptr, arr->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = prms->hcs_score;
@@ -257,7 +259,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
             }
             arr->num_items = num_corners;
 
-            kp = (vx_keypoint_t *)arr->mem_ptr.target_ptr;
+            kp = (vx_keypoint_t *)arr_target_ptr;
             for (i = 0; i < num_corners; i ++)
             {
                 kp->x = rect.start_x + (prms->nms_corners[i] & 0xFFFFu);
@@ -272,8 +274,8 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
                 kp ++;
             }
         }
-        tivxMemBufferUnmap(arr->mem_ptr.target_ptr, arr->mem_size,
-            arr->mem_ptr.mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(arr_target_ptr, arr->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);

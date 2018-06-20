@@ -136,14 +136,16 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_type);
-        dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
 
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;

@@ -23,7 +23,7 @@
 
 
 vx_status tivxMemBufferAlloc(
-    tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_type)
+    tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
@@ -42,7 +42,7 @@ vx_status tivxMemBufferAlloc(
     }
     else
     {
-        switch (mem_type)
+        switch (mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
@@ -69,7 +69,7 @@ vx_status tivxMemBufferAlloc(
             {
                 mem_ptr->mem_type = mem_type;
                 mem_ptr->host_ptr = tivxMemShared2HostPtr(
-                    mem_ptr->shared_ptr, mem_type);
+                    mem_ptr->shared_ptr, mem_heap_region);
             }
             else
             {
@@ -82,13 +82,13 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
-void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
     void *ptr = NULL;
 
-    switch (mem_type)
+    switch (mem_heap_region)
     {
         case TIVX_MEM_EXTERNAL:
             heap_id = UTILS_HEAPID_DDR_CACHED_SR;
@@ -114,14 +114,14 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
 
     if ((NULL != ptr) && (0U != size))
     {
-        switch (mem_type)
+        switch (mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
@@ -204,7 +204,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     return (status);
 }
 
-void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 {
     int32_t ret_val;
     vx_status status = VX_SUCCESS;
@@ -220,7 +220,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        switch (mem_type)
+        switch (mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
@@ -253,7 +253,12 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
 void tivxMemBufferMap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0U != size))
+    /* Note: Technically, we might be able to avoid a cache invalidate
+     * if the maptype == VX_WRITE_ONLY, however if the mapping boundary splits
+     * a cache line, then stale data outside the mapping, but on a cache
+     * line that was mapped, could inadvertently be written back.  Therefore,
+     * to be safe, we still perform invalidate even in WRITE only mode. */
+    if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type))
     {
         BspOsal_cacheInv(
             host_ptr,
@@ -266,7 +271,7 @@ void tivxMemBufferMap(
 void tivxMemBufferUnmap(
     void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum maptype)
 {
-    if ((NULL != host_ptr) && (0U != size) &&
+    if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type) &&
         ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
         BspOsal_cacheWb(
@@ -277,19 +282,19 @@ void tivxMemBufferUnmap(
     }
 }
 
-void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type)
+void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same */
     return (host_ptr);
 }
 
-void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type)
+void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same */
     return (shared_ptr);
 }
 
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type)
+void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same
      * However when used in Linux+BIOS mode, a translation maybe required
@@ -298,7 +303,7 @@ void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type)
     return Utils_memPhysToVirt(shared_ptr);
 }
 
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type)
+void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
 {
     return (target_ptr);
 }

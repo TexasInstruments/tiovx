@@ -478,23 +478,25 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *dst_target_ptr;
         plane_idx = prms->plane_idx;
 
         /* Get the correct offset of the images from the valid roi parameter */
         rect = src->valid_roi;
 
-        src->mem_ptr[plane_idx].target_ptr = tivxMemShared2TargetPtr(
+        src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[plane_idx].shared_ptr,
-            src->mem_ptr[plane_idx].mem_type);
-        src_addr = (uint8_t *)((uintptr_t)src->mem_ptr[plane_idx].target_ptr +
+            src->mem_ptr[plane_idx].mem_heap_region);
+        src_addr = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[plane_idx]));
 
         rect = dst->valid_roi;
 
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        dst_addr = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        dst_addr = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 

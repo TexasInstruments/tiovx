@@ -148,7 +148,7 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                     obj_desc->mem_size = dst_width*dst_height*sizeof(tivx_remap_point_t);
                     obj_desc->mem_ptr.host_ptr = NULL;
                     obj_desc->mem_ptr.shared_ptr = NULL;
-                    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+                    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     remap->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
             }
@@ -264,13 +264,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
                 remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
                 tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
                 remap_point->src_x = src_x;
                 remap_point->src_y = src_y;
 
                 tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
                 status = VX_SUCCESS;
             }
@@ -324,13 +324,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
                 remap_point = ownGetRemapPoint(obj_desc, dst_x, dst_y);
 
                 tivxMemBufferMap(remap_point, sizeof(tivx_remap_point_t),
-                    obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                 *src_x = remap_point->src_x;
                 *src_y = remap_point->src_y;
 
                 tivxMemBufferUnmap(remap_point, sizeof(tivx_remap_point_t),
-                    obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                 status = VX_SUCCESS;
             }

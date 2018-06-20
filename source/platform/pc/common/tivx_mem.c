@@ -86,16 +86,15 @@ static vx_uint8 gL2RAM_mem[TIVX_MEM_L2RAM_SIZE];
 static vx_uint32 gL2RAM_mem_offset = 0;
 
 vx_status tivxMemBufferAlloc(
-    tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_type)
+    tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
 
-    mem_ptr->mem_type = mem_type;
+    mem_ptr->mem_heap_region = mem_heap_region;
 
     mem_ptr->host_ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
 
     mem_ptr->shared_ptr = mem_ptr->host_ptr;
-    mem_ptr->target_ptr = mem_ptr->host_ptr;
 
     if(mem_ptr->host_ptr==NULL)
     {
@@ -106,11 +105,11 @@ vx_status tivxMemBufferAlloc(
     return (status);
 }
 
-void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
+void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     void *ptr = NULL;
 
-    if(mem_type==TIVX_MEM_INTERNAL_L2)
+    if(mem_heap_region==TIVX_MEM_INTERNAL_L2)
     {
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation */
         if(size+gL2RAM_mem_offset <= TIVX_MEM_L2RAM_SIZE)
@@ -128,11 +127,11 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_type)
     return (ptr);
 }
 
-void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_type)
+void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
     if(ptr)
     {
-        if(mem_type==TIVX_MEM_INTERNAL_L2)
+        if(mem_heap_region==TIVX_MEM_INTERNAL_L2)
         {
             /* L2RAM is used as scratch memory and allocation is linear offset based allocation
              * Free in this case resets the offset to 0
@@ -158,7 +157,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     return (status);
 }
 
-void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
+void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
 {
     if (NULL == stats)
     {
@@ -172,7 +171,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        if(mem_type==TIVX_MEM_INTERNAL_L2)
+        if(mem_heap_region==TIVX_MEM_INTERNAL_L2)
         {
             stats->mem_size = TIVX_MEM_L2RAM_SIZE;
             stats->free_size = TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;
@@ -190,22 +189,22 @@ void tivxMemBufferUnmap(
 {
 }
 
-void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_type)
+void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region)
 {
     return (host_ptr);
 }
 
-void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_type)
+void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region)
 {
     return (shared_ptr);
 }
 
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_type)
+void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region)
 {
     return (shared_ptr);
 }
 
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_type)
+void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
 {
     return (target_ptr);
 }

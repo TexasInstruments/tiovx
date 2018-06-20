@@ -163,6 +163,7 @@ void tivxInitTwoBufParams(
  */
 void tivxSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,
+    void *target_ptr[],
     uint8_t *addr[]);
 
 /*!
@@ -174,6 +175,8 @@ void tivxSetPointerLocation(
 void tivxSetTwoPointerLocation(
     tivx_obj_desc_image_t *obj_desc0,
     tivx_obj_desc_image_t *obj_desc1,
+    void *target_ptr0[],
+    void *target_ptr1[],
     uint8_t *addr0[],
     uint8_t *addr1[]);
 

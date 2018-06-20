@@ -104,6 +104,9 @@ static vx_status tivxKernelConvertDepth(
     }
     if (VX_SUCCESS == status)
     {
+        void *src_desc_target_ptr;
+        void *dst_desc_target_ptr;
+
         src_desc = (tivx_obj_desc_image_t *)
             obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN_IMG_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
@@ -113,19 +116,19 @@ static vx_status tivxKernelConvertDepth(
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
             obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN1_SCALAR_IDX];
 
-        src_desc->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0U].shared_ptr, src_desc->mem_ptr[0U].mem_type);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(
+            src_desc->mem_ptr[0U].shared_ptr, src_desc->mem_ptr[0U].mem_heap_region);
 
-        dst_desc->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_type);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(
+            dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_heap_region);
 
-        tivxMemBufferMap(src_desc->mem_ptr[0U].target_ptr, src_desc->mem_size[0],
-            src_desc->mem_ptr[0U].mem_type, VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr, dst_desc->mem_size[0],
-            dst_desc->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferMap(src_desc_target_ptr, src_desc->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        tivxMemBufferMap(dst_desc_target_ptr, dst_desc->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        tivxSetPointerLocation(src_desc, &src_addr);
-        tivxSetPointerLocation(dst_desc, &dst_addr);
+        tivxSetPointerLocation(src_desc, &src_desc_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
 
         tivxInitBufParams(src_desc, &vxlib_src);
         tivxInitBufParams(dst_desc, &vxlib_dst);
@@ -157,11 +160,11 @@ static vx_status tivxKernelConvertDepth(
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src_desc->mem_ptr[0U].target_ptr,
-            src_desc->mem_size[0], src_desc->mem_ptr[0U].mem_type,
+        tivxMemBufferUnmap(src_desc_target_ptr,
+            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc->mem_ptr[0U].target_ptr,
-            dst_desc->mem_size[0], dst_desc->mem_ptr[0U].mem_type,
+        tivxMemBufferUnmap(dst_desc_target_ptr,
+            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
     }
 

@@ -162,7 +162,7 @@ static void ownInitTensorObject(
 
     obj_desc->mem_ptr.host_ptr = NULL;
     obj_desc->mem_ptr.shared_ptr = NULL;
-    obj_desc->mem_ptr.mem_type = TIVX_MEM_EXTERNAL;
+    obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
 }
 
 static vx_status ownTensorCheckSizes(uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions)
@@ -468,22 +468,22 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             if (VX_READ_ONLY == usage)
             {
                 tivxMemBufferMap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                 memcpy (user_curr_ptr + patch_pos, tensor_ptr + tensor_pos, bytes_per_line);
 
                 tivxMemBufferUnmap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    obj_desc->mem_ptr.mem_type, VX_READ_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
             }
             else /* Copy from user memory to tensor object */
             {
                 tivxMemBufferMap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
                 memcpy (tensor_ptr + tensor_pos, user_curr_ptr + patch_pos, bytes_per_line);
 
                 tivxMemBufferUnmap(tensor_ptr + tensor_pos, (uint32_t)bytes_per_line,
-                    obj_desc->mem_ptr.mem_type, VX_WRITE_ONLY);
+                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
             }
         }
     }
@@ -571,6 +571,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 {
                     tensor->maps[map_idx].map_addr = host_addr;
                     tensor->maps[map_idx].map_size = map_size;
+                    tensor->maps[map_idx].mem_type = user_memory_type;
                     tensor->maps[map_idx].usage = usage;
                     break;
                 }
@@ -592,7 +593,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 map_size = end_addr - host_addr;
                 tivxMemBufferMap(map_addr, map_size,
-                    obj_desc->mem_ptr.mem_type, usage);
+                    user_memory_type, usage);
 
                 tivxLogSetResourceUsedValue("TIVX_TENSOR_MAX_MAPS", map_idx+1);
             }
@@ -615,7 +616,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map_id map_id)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_tensor_t *obj_desc = NULL;
 
     if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == vx_false_e) ||
         (tensor->base.obj_desc == NULL)
@@ -644,8 +644,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
             vx_uint8* map_addr = NULL, *end_addr = NULL;
             uint32_t map_size = 0;
 
-            obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
-
             map_addr = tensor->maps[map_id].map_addr;
             map_size = tensor->maps[map_id].map_size;
 
@@ -656,7 +654,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxUnmapTensorPatch(vx_tensor tensor, vx_map
 
             tivxMemBufferUnmap(
                 map_addr, map_size,
-                obj_desc->mem_ptr.mem_type,
+                tensor->maps[map_id].mem_type,
                 tensor->maps[map_id].usage);
 
             tensor->maps[map_id].map_addr = NULL;

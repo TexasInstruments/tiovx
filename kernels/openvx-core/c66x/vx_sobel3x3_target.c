@@ -100,19 +100,23 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr;
+        void *dst0_target_ptr;
+        void *dst1_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SOBEL_IN_IMG_IDX];
         dst0 = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
         dst1 = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
 
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        tivxSetPointerLocation(src, &src_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
 
         vxlib_src.dim_x = src->imagepatch_addr[0].dim_x;
         vxlib_src.dim_y = src->imagepatch_addr[0].dim_y;
@@ -121,13 +125,13 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
         if (NULL != dst0)
         {
-            dst0->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dst0->mem_ptr[0].shared_ptr, dst0->mem_ptr[0].mem_type);
+            dst0_target_ptr = tivxMemShared2TargetPtr(
+                dst0->mem_ptr[0].shared_ptr, dst0->mem_ptr[0].mem_heap_region);
 
-            tivxMemBufferMap(dst0->mem_ptr[0].target_ptr, dst0->mem_size[0],
-                dst0->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferMap(dst0_target_ptr, dst0->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-            tivxSetPointerLocation(dst0, (uint8_t **)&dst_addr);
+            tivxSetPointerLocation(dst0, &dst0_target_ptr, (uint8_t **)&dst_addr);
 
             tivxInitBufParams(dst0, &vxlib_dst);
 
@@ -139,19 +143,19 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
                 status = VX_FAILURE;
             }
 
-            tivxMemBufferUnmap(dst0->mem_ptr[0].target_ptr, dst0->mem_size[0],
-                dst0->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(dst0_target_ptr, dst0->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
 
         if ((VX_SUCCESS == status) && (NULL != dst1))
         {
-            dst1->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dst1->mem_ptr[0].shared_ptr, dst1->mem_ptr[0].mem_type);
+            dst1_target_ptr = tivxMemShared2TargetPtr(
+                dst1->mem_ptr[0].shared_ptr, dst1->mem_ptr[0].mem_heap_region);
 
-            tivxMemBufferMap(dst1->mem_ptr[0].target_ptr, dst1->mem_size[0],
-                dst1->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferMap(dst1_target_ptr, dst1->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-            tivxSetPointerLocation(dst1, (uint8_t **)&dst_addr);
+            tivxSetPointerLocation(dst1, &dst1_target_ptr, (uint8_t **)&dst_addr);
 
             tivxInitBufParams(dst1, &vxlib_dst);
 
@@ -163,12 +167,12 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
                 status = VX_FAILURE;
             }
 
-            tivxMemBufferUnmap(dst1->mem_ptr[0].target_ptr, dst1->mem_size[0],
-                dst1->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(dst1_target_ptr, dst1->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
     return (status);

@@ -101,7 +101,6 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     vx_status status = VX_SUCCESS;
     tivxLutParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
-    tivx_obj_desc_lut_t *lut;
     vx_uint8 *src_addr, *dst_addr;
     uint32_t size;
 
@@ -111,7 +110,6 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_IN_IMG_IDX];
-        lut = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_LUT_IN_LUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_OUT_IMG_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
@@ -127,28 +125,22 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
     if (VX_SUCCESS == status)
     {
         void *img_ptrs[2];
+        void *src_target_ptr;
+        void *dst_target_ptr;
 
-        src->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_type);
-        dst->mem_ptr[0U].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_type);
-        lut->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_type);
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0U].shared_ptr, dst->mem_ptr[0U].mem_heap_region);
 
-        tivxMemBufferMap(lut->mem_ptr.target_ptr, lut->mem_size,
-            lut->mem_ptr.mem_type, VX_READ_ONLY);
-
-        tivxSetPointerLocation(src, &src_addr);
-        tivxSetPointerLocation(dst, &dst_addr);
+        tivxSetPointerLocation(src, &src_target_ptr, &src_addr);
+        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
 
         img_ptrs[0] = src_addr;
         img_ptrs[1] = dst_addr;
         tivxBamUpdatePointers(prms->graph_handle, 1U, 1U, img_ptrs);
 
         status  = tivxBamProcessGraph(prms->graph_handle);
-
-        tivxMemBufferUnmap(lut->mem_ptr.target_ptr, lut->mem_size,
-            lut->mem_ptr.mem_type, VX_READ_ONLY);
     }
 
     return (status);
@@ -168,6 +160,8 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
 
     if (VX_SUCCESS == status)
     {
+        void *lut_target_ptr;
+
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_LUT_IN_IMG_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
@@ -175,11 +169,11 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
         lut = (tivx_obj_desc_lut_t *)obj_desc[
             TIVX_KERNEL_LUT_IN_LUT_IDX];
 
-        lut->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_type);
+        lut_target_ptr = tivxMemShared2TargetPtr(
+            lut->mem_ptr.shared_ptr, lut->mem_ptr.mem_heap_region);
 
-        tivxMemBufferMap(lut->mem_ptr.target_ptr, lut->mem_size,
-            lut->mem_ptr.mem_type, VX_READ_ONLY);
+        tivxMemBufferMap(lut_target_ptr, lut->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         prms = tivxMemAlloc(sizeof(tivxLutParams), TIVX_MEM_EXTERNAL);
 
@@ -202,7 +196,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
             if (src->format == VX_DF_IMAGE_U8)
             {
                 BAM_VXLIB_tableLookup_i8u_o8u_params kernel_params;
-                kernel_params.lut    = lut->mem_ptr.target_ptr;
+                kernel_params.lut    = lut_target_ptr;
                 kernel_params.count  = lut->num_items;
 
                 kernel_details.compute_kernel_params = (void*)&kernel_params;
@@ -217,7 +211,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreate(
             else
             {
                 BAM_VXLIB_tableLookup_i16s_o16s_params kernel_params;
-                kernel_params.lut    = lut->mem_ptr.target_ptr;
+                kernel_params.lut    = lut_target_ptr;
                 kernel_params.count  = lut->num_items;
                 kernel_params.offset = 32768U;
 

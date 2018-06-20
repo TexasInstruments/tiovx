@@ -127,19 +127,22 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
 
     if (VX_SUCCESS == status)
     {
+        void *src_target_ptr[TIVX_IMAGE_MAX_PLANES];
+        void *dst_target_ptr[TIVX_IMAGE_MAX_PLANES];
+
         for (i = 0; i < src->planes; i++)
         {
-            src->mem_ptr[i].target_ptr = tivxMemShared2TargetPtr(
-                src->mem_ptr[i].shared_ptr, src->mem_ptr[i].mem_type);
+            src_target_ptr[i] = tivxMemShared2TargetPtr(
+                src->mem_ptr[i].shared_ptr, src->mem_ptr[i].mem_heap_region);
         }
-        tivxSetPointerLocation(src, (uint8_t**)&src_addr);
+        tivxSetPointerLocation(src, src_target_ptr, (uint8_t**)&src_addr);
 
         for (i = 0; i < dst->planes; i++)
         {
-            dst->mem_ptr[i].target_ptr = tivxMemShared2TargetPtr(
-                dst->mem_ptr[i].shared_ptr, dst->mem_ptr[i].mem_type);
+            dst_target_ptr[i] = tivxMemShared2TargetPtr(
+                dst->mem_ptr[i].shared_ptr, dst->mem_ptr[i].mem_heap_region);
         }
-        tivxSetPointerLocation(dst, (uint8_t**)&dst_addr);
+        tivxSetPointerLocation(dst, dst_target_ptr, (uint8_t**)&dst_addr);
 
         if (((VX_DF_IMAGE_RGB == src->format) &&
              (VX_DF_IMAGE_YUV4 == dst->format)) ||

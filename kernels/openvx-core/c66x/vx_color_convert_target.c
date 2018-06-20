@@ -103,6 +103,9 @@ static vx_status tivxKernelColorConvert(
     }
     if (VX_SUCCESS == status)
     {
+        void *src_desc_target_ptr[TIVX_IMAGE_MAX_PLANES];
+        void *dst_desc_target_ptr[TIVX_IMAGE_MAX_PLANES];
+
         src_desc = (tivx_obj_desc_image_t *)
             obj_desc[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
@@ -110,21 +113,21 @@ static vx_status tivxKernelColorConvert(
 
         for (i = 0; i < src_desc->planes; i++)
         {
-            src_desc->mem_ptr[i].target_ptr = tivxMemShared2TargetPtr(
-                src_desc->mem_ptr[i].shared_ptr, src_desc->mem_ptr[i].mem_type);
-            tivxMemBufferMap(src_desc->mem_ptr[i].target_ptr, src_desc->mem_size[i],
-                src_desc->mem_ptr[i].mem_type, VX_READ_ONLY);
+            src_desc_target_ptr[i] = tivxMemShared2TargetPtr(
+                src_desc->mem_ptr[i].shared_ptr, src_desc->mem_ptr[i].mem_heap_region);
+            tivxMemBufferMap(src_desc_target_ptr[i], src_desc->mem_size[i],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
-        tivxSetPointerLocation(src_desc, (uint8_t**)&src_addr);
+        tivxSetPointerLocation(src_desc, src_desc_target_ptr, (uint8_t**)&src_addr);
 
         for (i = 0; i < dst_desc->planes; i++)
         {
-            dst_desc->mem_ptr[i].target_ptr = tivxMemShared2TargetPtr(
-                dst_desc->mem_ptr[i].shared_ptr, dst_desc->mem_ptr[i].mem_type);
-            tivxMemBufferMap(dst_desc->mem_ptr[i].target_ptr, dst_desc->mem_size[i],
-                dst_desc->mem_ptr[i].mem_type, VX_WRITE_ONLY);
+            dst_desc_target_ptr[i] = tivxMemShared2TargetPtr(
+                dst_desc->mem_ptr[i].shared_ptr, dst_desc->mem_ptr[i].mem_heap_region);
+            tivxMemBufferMap(dst_desc_target_ptr[i], dst_desc->mem_size[i],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
-        tivxSetPointerLocation(dst_desc, (uint8_t**)&dst_addr);
+        tivxSetPointerLocation(dst_desc, dst_desc_target_ptr, (uint8_t**)&dst_addr);
 
         tivxInitBufParams(src_desc, (VXLIB_bufParams2D_t*)&vxlib_src);
 
@@ -319,15 +322,15 @@ static vx_status tivxKernelColorConvert(
 
         for (i = 0; i < src_desc->planes; i++)
         {
-            tivxMemBufferUnmap(src_desc->mem_ptr[i].target_ptr,
-                src_desc->mem_size[i], src_desc->mem_ptr[i].mem_type,
+            tivxMemBufferUnmap(src_desc_target_ptr[i],
+                src_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
         }
 
         for (i = 0; i < dst_desc->planes; i++)
         {
-            tivxMemBufferUnmap(dst_desc->mem_ptr[i].target_ptr,
-                dst_desc->mem_size[i], dst_desc->mem_ptr[i].mem_type,
+            tivxMemBufferUnmap(dst_desc_target_ptr[i],
+                dst_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
         }
     }
