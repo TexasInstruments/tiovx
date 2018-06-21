@@ -143,18 +143,8 @@ static void ownInitTensorObject(
     obj_desc->dimensions[0] = dimensions[0];
     obj_desc->stride[0] = ownSizeOfEnumType(obj_desc->data_type);
 
-    /* Stride 1 is padded to a default alignment */
-    if (number_of_dimensions > 1)
-    {
-        obj_desc->dimensions[1] = dimensions[1];
-        obj_desc->stride[1] = TIVX_ALIGN(
-            (obj_desc->stride[0] * obj_desc->dimensions[0]),
-            TIVX_DEFAULT_STRIDE_Y_ALIGN
-            );
-    }
-
     /* Remaining strides are simple equation */
-    for (i = 2; i < number_of_dimensions; i++)
+    for (i = 1; i < number_of_dimensions; i++)
     {
         obj_desc->dimensions[i] = dimensions[i];
         obj_desc->stride[i] = obj_desc->stride[i - 1] * obj_desc->dimensions[i - 1];
