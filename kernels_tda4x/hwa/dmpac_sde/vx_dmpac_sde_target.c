@@ -130,6 +130,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     {
         uint32_t size;
         tivxDmpacSdeParams *prms = NULL;
+        void *left_target_ptr;
+        void *right_target_ptr;
+        void *configuration_target_ptr;
+        void *confidence_histogram_target_ptr = NULL;
+        void *output_target_ptr;
 
         configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         left_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
@@ -148,44 +153,44 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
 
         if (VX_SUCCESS == status)
         {
-            left_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-              left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_type);
-            right_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-              right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_type);
-            configuration_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-              configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_type);
-            output_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-              output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_type);
+            left_target_ptr = tivxMemShared2TargetPtr(
+              left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
+            right_target_ptr = tivxMemShared2TargetPtr(
+              right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
+            configuration_target_ptr = tivxMemShared2TargetPtr(
+              configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
+            output_target_ptr = tivxMemShared2TargetPtr(
+              output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
             if( confidence_histogram_desc != NULL)
             {
-                confidence_histogram_desc->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                  confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_type);
+                confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
+                  confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
             }
             
-            tivxMemBufferMap(left_desc->mem_ptr[0].target_ptr,
-               left_desc->mem_size[0], left_desc->mem_ptr[0].mem_type,
+            tivxMemBufferMap(left_target_ptr,
+               left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
-            tivxMemBufferMap(right_desc->mem_ptr[0].target_ptr,
-               right_desc->mem_size[0], right_desc->mem_ptr[0].mem_type,
+            tivxMemBufferMap(right_target_ptr,
+               right_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
-            tivxMemBufferMap(configuration_desc->mem_ptr.target_ptr,
-               configuration_desc->mem_size, configuration_desc->mem_ptr.mem_type,
+            tivxMemBufferMap(configuration_target_ptr,
+               configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
-            tivxMemBufferMap(output_desc->mem_ptr[0].target_ptr,
-               output_desc->mem_size[0], output_desc->mem_ptr[0].mem_type,
+            tivxMemBufferMap(output_target_ptr,
+               output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
             if( confidence_histogram_desc != NULL)
             {
-                tivxMemBufferMap(confidence_histogram_desc->mem_ptr.target_ptr,
-                   confidence_histogram_desc->mem_size, confidence_histogram_desc->mem_ptr.mem_type,
+                tivxMemBufferMap(confidence_histogram_target_ptr,
+                   confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
             }
 
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
              */
-            lse_reformat_in(left_desc, prms->left16);
-            lse_reformat_in(right_desc, prms->right16);
+            lse_reformat_in(left_desc, left_target_ptr, prms->left16);
+            lse_reformat_in(right_desc, right_target_ptr, prms->right16);
 
             status = sde_hw(&prms->mmr);
 
@@ -196,30 +201,29 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         }
         if (VX_SUCCESS == status)
         {
-
-            lse_reformat_out(left_desc, output_desc, prms->dst16, 12);
+            lse_reformat_out(left_desc, output_desc, output_target_ptr, prms->dst16, 12);
 
             if( confidence_histogram_desc != NULL)
             {
-                memcpy(confidence_histogram_desc->mem_ptr.target_ptr, prms->mmr.hist_bin, 128*sizeof(int32_t));
+                memcpy(confidence_histogram_target_ptr, prms->mmr.hist_bin, 128*sizeof(int32_t));
             }
 
-            tivxMemBufferUnmap(left_desc->mem_ptr[0].target_ptr,
-               left_desc->mem_size[0], left_desc->mem_ptr[0].mem_type,
+            tivxMemBufferUnmap(left_target_ptr,
+               left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
-            tivxMemBufferUnmap(right_desc->mem_ptr[0].target_ptr,
-               right_desc->mem_size[0], right_desc->mem_ptr[0].mem_type,
+            tivxMemBufferUnmap(right_target_ptr,
+               right_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
-            tivxMemBufferUnmap(configuration_desc->mem_ptr.target_ptr,
-               configuration_desc->mem_size, configuration_desc->mem_ptr.mem_type,
+            tivxMemBufferUnmap(configuration_target_ptr,
+               configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
-            tivxMemBufferUnmap(output_desc->mem_ptr[0].target_ptr,
-               output_desc->mem_size[0], output_desc->mem_ptr[0].mem_type,
+            tivxMemBufferUnmap(output_target_ptr,
+               output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
             if( confidence_histogram_desc != NULL)
             {
-                tivxMemBufferUnmap(confidence_histogram_desc->mem_ptr.target_ptr,
-                   confidence_histogram_desc->mem_size, confidence_histogram_desc->mem_ptr.mem_type,
+                tivxMemBufferUnmap(confidence_histogram_target_ptr,
+                   confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
             }
         }
@@ -309,18 +313,19 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             {
                 tivx_dmpac_sde_params_t *params;
                 uint32_t disp_max;
+                void *params_array_target_ptr;
    
                 tivx_obj_desc_array_t *params_array;
 
                 params_array = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
 
-                params_array->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                    params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_type);
+                params_array_target_ptr = tivxMemShared2TargetPtr(
+                    params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
 
-                tivxMemBufferMap(params_array->mem_ptr.target_ptr, params_array->mem_size,
-                    params_array->mem_ptr.mem_type, VX_READ_ONLY);
+                tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-                params = (tivx_dmpac_sde_params_t *)params_array->mem_ptr.target_ptr;
+                params = (tivx_dmpac_sde_params_t *)params_array_target_ptr;
 
                 /* When migrating to silicon, the hardware takes different values from what the
                  * CModel took for the following registers:
@@ -359,8 +364,8 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
                 prms->mmr.rightImg = prms->right16;
                 prms->mmr.outImg = prms->dst16;
 
-                tivxMemBufferUnmap(params_array->mem_ptr.target_ptr, params_array->mem_size,
-                    params_array->mem_ptr.mem_type, VX_READ_ONLY);
+                tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
             }
         }
         else

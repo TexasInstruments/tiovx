@@ -149,18 +149,20 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
     if (VX_SUCCESS == status)
     {
-        src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-        tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        void *src_target_ptr;
+
+        src_target_ptr = tivxMemShared2TargetPtr(
+            src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+        tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         /* C-model supports only 12-bit in uint16_t container
          * So we may need to translate.  In HW, VPAC_LSE does this
          */
-        lse_reformat_in(src, prms->src16);
+        lse_reformat_in(src, src_target_ptr, prms->src16);
 
-        tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-            src->mem_ptr[0].mem_type, VX_READ_ONLY);
+        tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
     if (VX_SUCCESS == status)
@@ -253,32 +255,33 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     {
         uint32_t bufCnt = 1;
         tivx_obj_desc_image_t stub;
+        void *dst_target_ptr;
 
         stub.valid_roi.start_x = 0;
         stub.valid_roi.start_y = 0;
 
         /* Reformat levels 0 and 1 */
         dst = prms->img_obj_desc[0];
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        lse_reformat_out(&stub, dst, prms->dst16[0], 12);
+        lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[0], 12);
 
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         dst = prms->img_obj_desc[1];
-        dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-        tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        dst_target_ptr = tivxMemShared2TargetPtr(
+            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+        tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        lse_reformat_out(&stub, dst, prms->dst16[1], 12);
+        lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[1], 12);
 
-        tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-            dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+        tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+            VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         imgOutput[0] = NULL;
 
@@ -299,15 +302,15 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
 
             scaler_top_processing(imgInput, imgOutput, &prms->mmr);
 
-            dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-            tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            dst_target_ptr = tivxMemShared2TargetPtr(
+                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-            lse_reformat_out(&stub, dst, prms->dst16[bufCnt^1], 12);
+            lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16[bufCnt^1], 12);
 
-            tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             bufCnt ^= 1;
         }

@@ -135,6 +135,9 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         int16_t temp_lut[25];
         int16_t i_lut[24];
         int16_t *pConv;
+        void *src_target_ptr;
+        void *dst_target_ptr;
+        void *conv_target_ptr;
 
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
         conv = (tivx_obj_desc_convolution_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
@@ -152,27 +155,26 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
 
         if (VX_SUCCESS == status)
         {
+            src_target_ptr = tivxMemShared2TargetPtr(
+                src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
+            dst_target_ptr = tivxMemShared2TargetPtr(
+                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
+            conv_target_ptr = tivxMemShared2TargetPtr(
+                conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_heap_region);
 
-            src->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_type);
-            dst->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-                dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_type);
-            conv->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                conv->mem_ptr.shared_ptr, conv->mem_ptr.mem_type);
-
-            tivxMemBufferMap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-                src->mem_ptr[0].mem_type, VX_READ_ONLY);
-            tivxMemBufferMap(conv->mem_ptr.target_ptr, conv->mem_size,
-                conv->mem_ptr.mem_type, VX_READ_ONLY);
-            tivxMemBufferMap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferMap(src_target_ptr, src->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferMap(conv_target_ptr, conv->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
              */
-            lse_reformat_in(src, prms->src16);
+            lse_reformat_in(src, src_target_ptr, prms->src16);
 
-            pConv = conv->mem_ptr.target_ptr;
+            pConv = conv_target_ptr;
 
             /* Centers the given matrix in the 5x5 for the c-model */
             {
@@ -220,14 +222,14 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         if (VX_SUCCESS == status)
         {
 
-            lse_reformat_out(src, dst, prms->dst16, 12);
+            lse_reformat_out(src, dst, dst_target_ptr, prms->dst16, 12);
 
-            tivxMemBufferUnmap(src->mem_ptr[0].target_ptr, src->mem_size[0],
-                src->mem_ptr[0].mem_type, VX_READ_ONLY);
-            tivxMemBufferUnmap(conv->mem_ptr.target_ptr, conv->mem_size,
-                conv->mem_ptr.mem_type, VX_READ_ONLY);
-            tivxMemBufferUnmap(dst->mem_ptr[0].target_ptr, dst->mem_size[0],
-                dst->mem_ptr[0].mem_type, VX_WRITE_ONLY);
+            tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferUnmap(conv_target_ptr, conv->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
     }
     
@@ -279,15 +281,17 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
             {
                 tivx_vpac_nf_common_params_t *params;
                 tivx_obj_desc_array_t *params_array;
+                void *params_array_target_ptr;
+
                 params_array = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
 
-                params_array->mem_ptr.target_ptr = tivxMemShared2TargetPtr(
-                    params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_type);
+                params_array_target_ptr = tivxMemShared2TargetPtr(
+                    params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
 
-                tivxMemBufferMap(params_array->mem_ptr.target_ptr, params_array->mem_size,
-                    params_array->mem_ptr.mem_type, VX_READ_ONLY);
+                tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-                params = (tivx_vpac_nf_common_params_t *)params_array->mem_ptr.target_ptr;
+                params = (tivx_vpac_nf_common_params_t *)params_array_target_ptr;
 
                 prms->mmr.filterMode = FILTERMODE_GENERIC;
                 prms->mmr.width = src->imagepatch_addr[0].dim_x;
@@ -313,8 +317,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                 prms->debug.replicateH_off = 0;
                 prms->debug.replicateV_off = 0;
 
-                tivxMemBufferUnmap(params_array->mem_ptr.target_ptr, params_array->mem_size,
-                    params_array->mem_ptr.mem_type, VX_READ_ONLY);
+                tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
             }
         }
         else

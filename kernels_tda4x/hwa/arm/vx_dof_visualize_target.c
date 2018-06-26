@@ -112,27 +112,30 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
     }
     else
     {
+        void *flow_vector_target_ptr;
+        void *flow_vector_rgb_target_ptr;
+        void *confidence_image_target_ptr;
 
         flow_vector_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
         flow_vector_rgb_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX];
         confidence_image_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
         confidence_threshold_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
 
-        flow_vector_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          flow_vector_desc->mem_ptr[0].shared_ptr, flow_vector_desc->mem_ptr[0].mem_type);
-        flow_vector_rgb_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          flow_vector_rgb_desc->mem_ptr[0].shared_ptr, flow_vector_rgb_desc->mem_ptr[0].mem_type);
-        confidence_image_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-          confidence_image_desc->mem_ptr[0].shared_ptr, confidence_image_desc->mem_ptr[0].mem_type);
+        flow_vector_target_ptr = tivxMemShared2TargetPtr(
+          flow_vector_desc->mem_ptr[0].shared_ptr, flow_vector_desc->mem_ptr[0].mem_heap_region);
+        flow_vector_rgb_target_ptr = tivxMemShared2TargetPtr(
+          flow_vector_rgb_desc->mem_ptr[0].shared_ptr, flow_vector_rgb_desc->mem_ptr[0].mem_heap_region);
+        confidence_image_target_ptr = tivxMemShared2TargetPtr(
+          confidence_image_desc->mem_ptr[0].shared_ptr, confidence_image_desc->mem_ptr[0].mem_heap_region);
 
-        tivxMemBufferMap(flow_vector_desc->mem_ptr[0].target_ptr,
-           flow_vector_desc->mem_size[0], flow_vector_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(flow_vector_target_ptr,
+           flow_vector_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(flow_vector_rgb_desc->mem_ptr[0].target_ptr,
-           flow_vector_rgb_desc->mem_size[0], flow_vector_rgb_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(flow_vector_rgb_target_ptr,
+           flow_vector_rgb_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
-        tivxMemBufferMap(confidence_image_desc->mem_ptr[0].target_ptr,
-           confidence_image_desc->mem_size[0], confidence_image_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(confidence_image_target_ptr,
+           confidence_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
         /* if not specified by user or value out of valid range use default value */
@@ -154,10 +157,10 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
             flow_vector_size[1] = flow_vector_desc->imagepatch_addr[0].stride_y/sizeof(uint32_t);
 
             visualizeFlowAndConfidance(
-                flow_vector_desc->mem_ptr[0].target_ptr,
+                flow_vector_target_ptr,
                 flow_vector_size,
-                flow_vector_rgb_desc->mem_ptr[0].target_ptr,
-                confidence_image_desc->mem_ptr[0].target_ptr,
+                flow_vector_rgb_target_ptr,
+                confidence_image_target_ptr,
                 flow_vector_desc->width,
                 flow_vector_rgb_desc->imagepatch_addr[0].stride_y,
                 confidence_image_desc->imagepatch_addr[0].stride_y,
@@ -167,14 +170,14 @@ static vx_status VX_CALLBACK tivxDofVisualizeProcess(
 
         /* kernel processing function complete */
 
-        tivxMemBufferUnmap(flow_vector_desc->mem_ptr[0].target_ptr,
-           flow_vector_desc->mem_size[0], flow_vector_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(flow_vector_target_ptr,
+           flow_vector_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(flow_vector_rgb_desc->mem_ptr[0].target_ptr,
-           flow_vector_rgb_desc->mem_size[0], flow_vector_rgb_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(flow_vector_rgb_target_ptr,
+           flow_vector_rgb_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
-        tivxMemBufferUnmap(confidence_image_desc->mem_ptr[0].target_ptr,
-           confidence_image_desc->mem_size[0], confidence_image_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(confidence_image_target_ptr,
+           confidence_image_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
 

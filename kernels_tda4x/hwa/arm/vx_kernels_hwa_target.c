@@ -85,7 +85,7 @@ void tivxUnRegisterHwaTargetArmKernels(void)
     tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[])
+void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[])
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -97,7 +97,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[])
 
     if (VX_DF_IMAGE_U8 == src->format)
     {
-        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
@@ -112,7 +112,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[])
     }
     else if((VX_DF_IMAGE_U16 == src->format) || (VX_DF_IMAGE_S16 == src->format))
     {
-        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
         stride /= 2;
@@ -128,7 +128,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[])
     }
     else /* TIVX_DF_IMAGE_P12*/
     {
-        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
         stride /= 4;
@@ -154,7 +154,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, uint16_t src16[])
     }
 }
 
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, uint16_t dst16[], uint16_t input_bits)
+void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -169,7 +169,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
 
     if (VX_DF_IMAGE_U8 == dst->format)
     {
-        uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
 
@@ -184,7 +184,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
     }
     else if((VX_DF_IMAGE_U16 == dst->format) || (VX_DF_IMAGE_S16 == dst->format))
     {
-        uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
         stride /= 2;
@@ -200,7 +200,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
     }
     else /* TIVX_DF_IMAGE_P12*/
     {
-        uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
         stride /= 4;
@@ -228,7 +228,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, ui
     }
 }
 
-void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
+void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -240,7 +240,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
 
     if (VX_DF_IMAGE_U8 == src->format)
     {
-        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
 
@@ -255,7 +255,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
     }
     else if((VX_DF_IMAGE_U16 == src->format) || (VX_DF_IMAGE_S16 == src->format))
     {
-        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
         stride /= 2;
@@ -271,7 +271,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
     }
     else if((VX_DF_IMAGE_U32 == src->format) || (VX_DF_IMAGE_S32 == src->format))
     {
-        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
         stride /= 4;
@@ -287,7 +287,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
     }
     else /* TIVX_DF_IMAGE_P12*/
     {
-        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src->mem_ptr[0U].target_ptr +
+        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &src->imagepatch_addr[0U]));
         stride /= 4;
@@ -313,7 +313,7 @@ void lse_reformat_in_dof(tivx_obj_desc_image_t *src, int *src32)
     }
 }
 
-void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, int32_t *dst32)
+void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, int32_t *dst32)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
@@ -325,7 +325,7 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
 
     if((VX_DF_IMAGE_U32 == dst->format) || (VX_DF_IMAGE_S32 == dst->format))
     {
-        uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst->mem_ptr[0U].target_ptr +
+        uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
             &dst->imagepatch_addr[0U]));
         stride /= 4;
