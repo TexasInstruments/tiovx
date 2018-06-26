@@ -130,23 +130,26 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
     }
     else
     {
+        void *src_desc_target_ptr;
+        void *dst_desc_target_ptr;
+
         /* Get the Src and Dst descriptors */
         src_desc = (tivx_obj_desc_image_t *)obj_desc[PHASE_RGB_IN0_IMG_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[PHASE_RGB_OUT0_IMG_IDX];
 
         /* Get the target pointer from the shared pointer for all
            buffers */
-        src_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_type);
-        dst_desc->mem_ptr[0].target_ptr = tivxMemShared2TargetPtr(
-            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_type);
+        src_desc_target_ptr = tivxMemShared2TargetPtr(
+            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
+        dst_desc_target_ptr = tivxMemShared2TargetPtr(
+            dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
 
         /* Map all buffers, which invalidates the cache */
-        tivxMemBufferMap(src_desc->mem_ptr[0].target_ptr,
-            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(src_desc_target_ptr,
+            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(dst_desc->mem_ptr[0].target_ptr,
-            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferMap(dst_desc_target_ptr,
+            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
         /* Run function for complete image, ROI is ignored in this example */
@@ -155,8 +158,8 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
             vx_uint8 *in_data_ptr, *out_data_ptr;
             vx_uint8 *in_pixel, *out_pixel;
 
-            in_data_ptr = src_desc->mem_ptr[0].target_ptr;
-            out_data_ptr = dst_desc->mem_ptr[0].target_ptr;
+            in_data_ptr = src_desc_target_ptr;
+            out_data_ptr = dst_desc_target_ptr;
 
             width = dst_desc->imagepatch_addr[0U].dim_x;
             height = dst_desc->imagepatch_addr[0U].dim_y;
@@ -202,11 +205,11 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgb(
             }
         }
 
-        tivxMemBufferUnmap(src_desc->mem_ptr[0].target_ptr,
-            src_desc->mem_size[0], src_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(src_desc_target_ptr,
+            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferUnmap(dst_desc->mem_ptr[0].target_ptr,
-            dst_desc->mem_size[0], dst_desc->mem_ptr[0].mem_type,
+        tivxMemBufferUnmap(dst_desc_target_ptr,
+            dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
     }

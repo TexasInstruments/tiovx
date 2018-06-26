@@ -67,7 +67,7 @@ vx_status tivxMemBufferAlloc(
 
             if (NULL != mem_ptr->shared_ptr)
             {
-                mem_ptr->mem_type = mem_type;
+                mem_ptr->mem_heap_region = mem_heap_region;
                 mem_ptr->host_ptr = tivxMemShared2HostPtr(
                     mem_ptr->shared_ptr, mem_heap_region);
             }
@@ -166,7 +166,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     }
     else
     {
-        switch (mem_ptr->mem_type)
+        switch (mem_ptr->mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;

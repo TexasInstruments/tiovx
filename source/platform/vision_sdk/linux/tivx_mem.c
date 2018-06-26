@@ -32,7 +32,7 @@ vx_status tivxMemBufferAlloc(
     }
     else
     {
-        mem_ptr->host_ptr = tivxMemAlloc(size, mem_type);
+        mem_ptr->host_ptr = tivxMemAlloc(size, mem_heap_region);
         if (NULL != mem_ptr->host_ptr)
         {
             mem_ptr->mem_heap_region = mem_heap_region;
