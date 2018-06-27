@@ -70,77 +70,113 @@ $(document).ready(function(){initNavTree('vx__tensor_8h_source.html','');});
 </div><!--header-->
 <div class="contents">
 <a href="vx__tensor_8h.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">/*</span></div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment"> * Copyright (c) 2012-2016 The Khronos Group Inc.</span></div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment"> * Permission is hereby granted, free of charge, to any person obtaining a</span></div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment"> * copy of this software and/or associated documentation files (the</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment"> * &quot;Materials&quot;), to deal in the Materials without restriction, including</span></div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment"> * without limitation the rights to use, copy, modify, merge, publish,</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment"> * distribute, sublicense, and/or sell copies of the Materials, and to</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment"> * permit persons to whom the Materials are furnished to do so, subject to</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment"> * the following conditions:</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment"> * The above copyright notice and this permission notice shall be included</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment"> * in all copies or substantial portions of the Materials.</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment"> * MODIFICATIONS TO THIS FILE MAY MEAN IT NO LONGER ACCURATELY REFLECTS</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment"> * KHRONOS STANDARDS. THE UNMODIFIED, NORMATIVE VERSIONS OF KHRONOS</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment"> * SPECIFICATIONS AND HEADER INFORMATION ARE LOCATED AT</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment"> *    https://www.khronos.org/registry/</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment"> *</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment"> * THE MATERIALS ARE PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND,</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment"> * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment"> * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment"> * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment"> * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment"> * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment"> * MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment"> */</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#ifndef VX_TENSOR_H_</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define VX_TENSOR_H_</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html">   49</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_tensor_map_info_t</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;{</div>
-<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c">   52</a></span>&#160;    uint8_t *<a class="code" href="structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c">map_addr</a>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b">   54</a></span>&#160;    <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324">vx_size</a>  <a class="code" href="structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b">map_size</a>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a">   56</a></span>&#160;    <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> <a class="code" href="structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a">usage</a>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;} <a class="code" href="structtivx__tensor__map__info__t.html">tivx_tensor_map_info_t</a>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="structtivx__tensor__t.html">   65</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_tensor</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;{</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="structtivx__tensor__t.html#a4616b13f4effe1aa6c839c43779072e3">   68</a></span>&#160;    <a class="code" href="structtivx__reference__t.html">tivx_reference_t</a> <a class="code" href="structtivx__tensor__t.html#a4616b13f4effe1aa6c839c43779072e3">base</a>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="structtivx__tensor__t.html#a41320e8b5ed5ea3426da1f6e96b8c9ed">   70</a></span>&#160;    <a class="code" href="structtivx__image__map__info__t.html">tivx_image_map_info_t</a> maps[<a class="code" href="tivx__config_8h.html#afe9e94a8988c60e1dc743e985fcf7beb">TIVX_TENSOR_MAX_MAPS</a>];</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;} <a class="code" href="structtivx__tensor__t.html">tivx_tensor_t</a>;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="preprocessor"></span>}</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="structtivx__tensor__map__info__t_html_ab7d9203ed1c57a423ef568fa8128a28a"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a">tivx_tensor_map_info_t::usage</a></div><div class="ttdeci">vx_enum usage</div><div class="ttdoc">Type of access being done by user, see vx_accessor_e. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:56</div></div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">* Copyright (c) 2018 Texas Instruments Incorporated</span></div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">* All rights reserved not granted herein.</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="comment">* Limited License.</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="comment">* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="comment">* license under copyrights and patents it now or hereafter owns or controls to make,</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">* have made, use, import, offer to sell and sell (&quot;Utilize&quot;) this software subject to the</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">* terms herein.  With respect to the foregoing patent license, such license is granted</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="comment">* solely to the extent that any such patent is necessary to Utilize the software alone.</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">* The patent license shall not apply to any combinations which include this software,</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="comment">* other than combinations with devices manufactured by or for TI (&quot;TI Devices&quot;).</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="comment">* No hardware patent is licensed hereunder.</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">* Redistributions must preserve existing copyright notices and reproduce this license</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">* (including the above copyright notice and the disclaimer and (if applicable) source</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">* code license limitations below) in the documentation and/or other materials provided</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">* with the distribution</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">* Redistribution and use in binary form, without modification, are permitted provided</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">* that the following conditions are met:</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="comment">* *       No reverse engineering, decompilation, or disassembly of this software is</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">* permitted with respect to any software provided in binary form.</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="comment">* *       any redistribution and use are licensed by TI for use only with TI Devices.</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="comment">* *       Nothing shall obligate TI to provide you with source code for the software</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">* licensed and provided to you in object code.</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="comment">* If software source code is provided to you, modification and redistribution of the</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">* source code are permitted provided that the following conditions are met:</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">* *       any redistribution and use of the source code, including any resulting derivative</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">* works, are licensed by TI for use only with TI Devices.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment">* *       any redistribution and use of any object code compiled from the source code</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">* and any resulting derivative works, are licensed by TI for use only with TI Devices.</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">* Neither the name of Texas Instruments Incorporated nor the names of its suppliers</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">* may be used to endorse or promote products derived from this software without</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">* specific prior written permission.</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">* DISCLAIMER.</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">* THIS SOFTWARE IS PROVIDED BY TI AND TI&#39;S LICENSORS &quot;AS IS&quot; AND ANY EXPRESS</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="comment">* IN NO EVENT SHALL TI AND TI&#39;S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="comment">* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;<span class="comment">* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">* OF THE POSSIBILITY OF SUCH DAMAGE.</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="comment">*</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">*/</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#ifndef VX_TENSOR_H_</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define VX_TENSOR_H_</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="preprocessor"></span><span class="keyword">extern</span> <span class="stringliteral">&quot;C&quot;</span> {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00083"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html">   83</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_tivx_tensor_map_info_t</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;{</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c">   86</a></span>&#160;    uint8_t *<a class="code" href="structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c">map_addr</a>;</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b">   88</a></span>&#160;    <a class="code" href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324">vx_size</a>  <a class="code" href="structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b">map_size</a>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#a88623ad7f5fa17431ba5c0ae0f7e0def">   90</a></span>&#160;    <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>  <a class="code" href="structtivx__tensor__map__info__t.html#a88623ad7f5fa17431ba5c0ae0f7e0def">mem_type</a>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a">   92</a></span>&#160;    <a class="code" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> <a class="code" href="structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a">usage</a>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;} <a class="code" href="structtivx__tensor__map__info__t.html">tivx_tensor_map_info_t</a>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="structtivx__tensor__t.html">  101</a></span>&#160;<span class="keyword">typedef</span> <span class="keyword">struct </span>_vx_tensor</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;{</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="structtivx__tensor__t.html#a4616b13f4effe1aa6c839c43779072e3">  104</a></span>&#160;    <a class="code" href="structtivx__reference__t.html">tivx_reference_t</a> <a class="code" href="structtivx__tensor__t.html#a4616b13f4effe1aa6c839c43779072e3">base</a>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno"><a class="line" href="structtivx__tensor__t.html#a41320e8b5ed5ea3426da1f6e96b8c9ed">  106</a></span>&#160;    <a class="code" href="structtivx__image__map__info__t.html">tivx_image_map_info_t</a> maps[<a class="code" href="tivx__config_8h.html#afe9e94a8988c60e1dc743e985fcf7beb">TIVX_TENSOR_MAX_MAPS</a>];</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;} <a class="code" href="structtivx__tensor__t.html">tivx_tensor_t</a>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#ifdef __cplusplus</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;<span class="preprocessor"></span>}</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="structtivx__tensor__map__info__t_html_ab7d9203ed1c57a423ef568fa8128a28a"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a">tivx_tensor_map_info_t::usage</a></div><div class="ttdeci">vx_enum usage</div><div class="ttdoc">Type of access being done by user, see vx_accessor_e. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:92</div></div>
 <div class="ttc" id="structtivx__reference__t_html"><div class="ttname"><a href="structtivx__reference__t.html">tivx_reference_t</a></div><div class="ttdoc">The most basic type in the OpenVX system. Any type that inherits from tivx_reference_t must have a vx...</div><div class="ttdef"><b>Definition:</b> vx_reference.h:75</div></div>
 <div class="ttc" id="vx__types_8h_html_a73d23cb932d31a69f44182054a987c85"><div class="ttname"><a href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a></div><div class="ttdeci">int32_t vx_enum</div><div class="ttdoc">Sets the standard enumeration type size to be a fixed quantity. </div><div class="ttdef"><b>Definition:</b> vx_types.h:148</div></div>
-<div class="ttc" id="structtivx__tensor__map__info__t_html_a66ac3e2581e015dcddaed364c8e5353c"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c">tivx_tensor_map_info_t::map_addr</a></div><div class="ttdeci">uint8_t * map_addr</div><div class="ttdoc">Address mapped via vxMapTensorPatch() </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:52</div></div>
+<div class="ttc" id="structtivx__tensor__map__info__t_html_a66ac3e2581e015dcddaed364c8e5353c"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c">tivx_tensor_map_info_t::map_addr</a></div><div class="ttdeci">uint8_t * map_addr</div><div class="ttdoc">Address mapped via vxMapTensorPatch() </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:86</div></div>
 <div class="ttc" id="vx__types_8h_html_a46d89d47ad9a2de1de723d0db861d324"><div class="ttname"><a href="vx__types_8h.html#a46d89d47ad9a2de1de723d0db861d324">vx_size</a></div><div class="ttdeci">size_t vx_size</div><div class="ttdoc">A wrapper of size_t to keep the naming convention uniform. </div><div class="ttdef"><b>Definition:</b> vx_types.h:153</div></div>
-<div class="ttc" id="structtivx__tensor__t_html_a4616b13f4effe1aa6c839c43779072e3"><div class="ttname"><a href="structtivx__tensor__t.html#a4616b13f4effe1aa6c839c43779072e3">tivx_tensor_t::base</a></div><div class="ttdeci">tivx_reference_t base</div><div class="ttdoc">reference object </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:68</div></div>
+<div class="ttc" id="structtivx__tensor__t_html_a4616b13f4effe1aa6c839c43779072e3"><div class="ttname"><a href="structtivx__tensor__t.html#a4616b13f4effe1aa6c839c43779072e3">tivx_tensor_t::base</a></div><div class="ttdeci">tivx_reference_t base</div><div class="ttdoc">reference object </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:104</div></div>
 <div class="ttc" id="tivx__config_8h_html_afe9e94a8988c60e1dc743e985fcf7beb"><div class="ttname"><a href="tivx__config_8h.html#afe9e94a8988c60e1dc743e985fcf7beb">TIVX_TENSOR_MAX_MAPS</a></div><div class="ttdeci">#define TIVX_TENSOR_MAX_MAPS</div><div class="ttdoc">Max possible mapping via vxMapTensorPatch supported. </div><div class="ttdef"><b>Definition:</b> tivx_config.h:378</div></div>
-<div class="ttc" id="structtivx__tensor__map__info__t_html_ac488d22d3231ad1a6e2486051359884b"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b">tivx_tensor_map_info_t::map_size</a></div><div class="ttdeci">vx_size map_size</div><div class="ttdoc">Size of memory region mapped via vxMapTensorPatch() </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:54</div></div>
-<div class="ttc" id="structtivx__tensor__map__info__t_html"><div class="ttname"><a href="structtivx__tensor__map__info__t.html">tivx_tensor_map_info_t</a></div><div class="ttdoc">Information about a image mapping. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:49</div></div>
+<div class="ttc" id="structtivx__tensor__map__info__t_html_a88623ad7f5fa17431ba5c0ae0f7e0def"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#a88623ad7f5fa17431ba5c0ae0f7e0def">tivx_tensor_map_info_t::mem_type</a></div><div class="ttdeci">vx_enum mem_type</div><div class="ttdoc">Type of memory mapped via vxMapTensorPatch(), see vx_memory_type_e and tivx_memory_type_e. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:90</div></div>
+<div class="ttc" id="structtivx__tensor__map__info__t_html_ac488d22d3231ad1a6e2486051359884b"><div class="ttname"><a href="structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b">tivx_tensor_map_info_t::map_size</a></div><div class="ttdeci">vx_size map_size</div><div class="ttdoc">Size of memory region mapped via vxMapTensorPatch() </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:88</div></div>
+<div class="ttc" id="structtivx__tensor__map__info__t_html"><div class="ttname"><a href="structtivx__tensor__map__info__t.html">tivx_tensor_map_info_t</a></div><div class="ttdoc">Information about a image mapping. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:83</div></div>
 <div class="ttc" id="structtivx__image__map__info__t_html"><div class="ttname"><a href="structtivx__image__map__info__t.html">tivx_image_map_info_t</a></div><div class="ttdoc">Information about a image mapping. </div><div class="ttdef"><b>Definition:</b> vx_image.h:49</div></div>
-<div class="ttc" id="structtivx__tensor__t_html"><div class="ttname"><a href="structtivx__tensor__t.html">tivx_tensor_t</a></div><div class="ttdoc">Tensor object internal state. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:65</div></div>
+<div class="ttc" id="structtivx__tensor__t_html"><div class="ttname"><a href="structtivx__tensor__t.html">tivx_tensor_t</a></div><div class="ttdoc">Tensor object internal state. </div><div class="ttdef"><b>Definition:</b> vx_tensor.h:101</div></div>
 </div><!-- fragment --></div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.11-->
@@ -148,7 +184,7 @@ $(document).ready(function(){initNavTree('vx__tensor_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_b2f33c71d4aa5e7af42a1ca61ff5af1b.html">source</a></li><li class="navelem"><a class="el" href="dir_8ee1a5e78eaec319fe5d64075812fc61.html">include</a></li><li class="navelem"><a class="el" href="vx__tensor_8h.html">vx_tensor.h</a></li>
-    <li class="footer">Generated on Mon Jun 25 2018 09:08:21 for TIOVX User Guide by
+    <li class="footer">Generated on Wed Jun 27 2018 18:15:24 for TIOVX User Guide by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.6 </li>
   </ul>

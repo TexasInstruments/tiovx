@@ -3,6 +3,7 @@ var group__group__vx__image =
     [ "tivx_image_map_info_t", "structtivx__image__map__info__t.html", [
       [ "map_addr", "structtivx__image__map__info__t.html#aa08494ec477c5acef58f7c99c5c404f0", null ],
       [ "map_size", "structtivx__image__map__info__t.html#a1d5a67c881bd1291b58fadc3d4c19808", null ],
+      [ "mem_type", "structtivx__image__map__info__t.html#a1155110956ea3f8dd08a9fc9292ba97d", null ],
       [ "usage", "structtivx__image__map__info__t.html#a586ccbafe62d20aaa442f0242e8a4cd8", null ]
     ] ],
     [ "tivx_image_t", "structtivx__image__t.html", [
@@ -16,6 +17,7 @@ var group__group__vx__image =
     [ "tivx_tensor_map_info_t", "structtivx__tensor__map__info__t.html", [
       [ "map_addr", "structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c", null ],
       [ "map_size", "structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b", null ],
+      [ "mem_type", "structtivx__tensor__map__info__t.html#a88623ad7f5fa17431ba5c0ae0f7e0def", null ],
       [ "usage", "structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a", null ]
     ] ],
     [ "ownPrintImageAddressing", "group__group__vx__image.html#gab68727411ea99e2640bc5d9d25f7cc56", null ],

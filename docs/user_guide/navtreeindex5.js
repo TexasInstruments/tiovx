@@ -1,5 +1,9 @@
 var NAVTREEINDEX5 =
 {
+"structtivx__object__t.html#ae66bb0af9daedd1ccd541bdef33a7da8":[16,1,0,1,5,0,16],
+"structtivx__object__t.html#aeaffeb7a1eed56dcbd85215b4a3d1b62":[16,1,0,1,5,0,22],
+"structtivx__object__t.html#af94fa6b9d2023d6861e4e3c5c90656a2":[16,1,0,1,5,0,24],
+"structtivx__parameter__t.html":[16,1,0,1,6,0],
 "structtivx__parameter__t.html#a352a2b9989e9d4bdec5e415012bc14a7":[16,1,0,1,6,0,1],
 "structtivx__parameter__t.html#a511b01ecc2907f14e97067220bf9216a":[16,1,0,1,6,0,3],
 "structtivx__parameter__t.html#aa03727814d9b11212c4715ec03cb4df3":[16,1,0,1,6,0,2],
@@ -51,8 +55,7 @@ var NAVTREEINDEX5 =
 "structtivx__scalar__t.html#a68cebc55d84b1e0c481d64118956a5e8":[16,1,0,0,10,0,0],
 "structtivx__shared__mem__ptr__t.html":[16,0,0,0,0],
 "structtivx__shared__mem__ptr__t.html#a08ec9977d4f04424859d6ceea157bf2c":[16,0,0,0,0,2],
-"structtivx__shared__mem__ptr__t.html#aa11f6d52bfa3911e16d82f7b76306a2f":[16,0,0,0,0,0],
-"structtivx__shared__mem__ptr__t.html#ac7cd343fc463946dfb84251ddf9225de":[16,0,0,0,0,3],
+"structtivx__shared__mem__ptr__t.html#a8bc9d61ab3d1497321e331c0057608d1":[16,0,0,0,0,0],
 "structtivx__shared__mem__ptr__t.html#acd358584426137febe5a29ba465987e1":[16,0,0,0,0,1],
 "structtivx__signature__t.html":[16,1,0,1,2,0],
 "structtivx__signature__t.html#a33289a39c86d7e237820c2fd50f6b140":[16,1,0,1,2,0,3],
@@ -107,7 +110,8 @@ var NAVTREEINDEX5 =
 "structtivx__task__create__params__t.html#afabb86fedec11ed49eab78c70fec1692":[16,0,1,5,1,4],
 "structtivx__tensor__map__info__t.html":[16,1,0,0,4,2],
 "structtivx__tensor__map__info__t.html#a66ac3e2581e015dcddaed364c8e5353c":[16,1,0,0,4,2,0],
-"structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a":[16,1,0,0,4,2,2],
+"structtivx__tensor__map__info__t.html#a88623ad7f5fa17431ba5c0ae0f7e0def":[16,1,0,0,4,2,2],
+"structtivx__tensor__map__info__t.html#ab7d9203ed1c57a423ef568fa8128a28a":[16,1,0,0,4,2,3],
 "structtivx__tensor__map__info__t.html#ac488d22d3231ad1a6e2486051359884b":[16,1,0,0,4,2,1],
 "structtivx__tensor__t.html":[17,0,67],
 "structtivx__tensor__t.html#a41320e8b5ed5ea3426da1f6e96b8c9ed":[17,0,67,1],
@@ -245,9 +249,5 @@ var NAVTREEINDEX5 =
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa4e23aec1caf5cfa2e3ca2f9feede9b48":[18,0,13,25,12],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa51856910203e6babff84d35dcc536309":[18,0,13,25,4],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa5318ebc57b8179bb55e48ce9cdd4ba21":[18,0,13,25,1],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa63ca2783561208dc6e076224f9b74001":[18,0,13,25,8],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa6748e946383394fbf5f4960b14448275":[18,0,13,25,6],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa8cbaa812acb08885cd58173a8c72e989":[18,0,13,25,5],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6faad7dc7685f5bc5fb4ea9bf8e9fcced1c":[18,0,13,25,2],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fab1c2b27895776b0444c32cd74272e359":[18,0,13,25,3]
+"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa63ca2783561208dc6e076224f9b74001":[18,0,13,25,8]
 };
