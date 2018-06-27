@@ -80,6 +80,11 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME_HWA    "hwa"
 
+/*! \brief Name for OpenVX Extension kernel module: tidl
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_MODULE_NAME_TIDL    "tidl"
+
 /*! \brief The list of kernels supported in hwa module
  *
  * Each kernel listed here can be used with the <tt>\ref vxGetKernelByName</tt> call.
@@ -134,6 +139,12 @@ extern "C" {
  *  \ingroup group_vision_function_vpac_viss
  */
 #define TIVX_KERNEL_VPAC_VISS_NAME     "com.ti.hwa.vpac_viss"
+
+
+/*! \brief tidl kernel name
+ *  \ingroup group_vision_function_tidl
+ */
+#define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
 
 /*! End of group_vision_function_hwa */
 
@@ -478,13 +489,13 @@ typedef struct {
  */
 typedef struct {
     /* not needed from algo */
-    char      sensor_name[256];    /*!< Path to the root folder where the configuration files are located on the file system. 
+    char      sensor_name[256];    /*!< Path to the root folder where the configuration files are located on the file system.
                                     *   TAn example set of configuration files is located in the path tiovx\conformance_tests\test_data\viss_config\example_sensor\0\0\.
                                     *   New sensor configs can be provided using the same format. If any of the optional parameters are disabled,
                                     *   the corresponding configuration files are not needed. The provided configuration files are examples; however,
                                     *   they can be modified as needed. A GUI tuning tool is in development which allows these configuration files to
-                                    *   be generated.  The configuration files are used for the edge enhancer, the FlexCC (color conversion), FlexCFA, 
-                                    *   H3A (Auto-Exposure, Auto-white balance, Auto-focus), Nsf4 (noise filter), and Rawfe. Please contact your local 
+                                    *   be generated.  The configuration files are used for the edge enhancer, the FlexCC (color conversion), FlexCFA,
+                                    *   H3A (Auto-Exposure, Auto-white balance, Auto-focus), Nsf4 (noise filter), and Rawfe. Please contact your local
                                     *   TI representative for more information. */
     uint16_t  use_case;            /*!< Identifier corresponding to the sub-setting within the sensor configuration of the DCC file (not yet supported) */
 
@@ -548,10 +559,16 @@ void tivxHwaLoadKernels(vx_context context);
 void tivxHwaUnLoadKernels(vx_context context);
 
 /*!
- * \brief Used to print the performance of the kernels.
- * \ingroup group_vision_function_hwa
+ * \brief Used for the Application to load the TIDL kernels into the context.
+ * \ingroup group_vision_function_tidl
  */
-void tivxHwaPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
+void tivxTIDLLoadKernels(vx_context context);
+
+/*!
+ * \brief Used for the Application to unload the tidl kernels from the context.
+ * \ingroup group_vision_function_tidl
+ */
+void tivxTIDLUnLoadKernels(vx_context context);
 
 #ifdef __cplusplus
 }

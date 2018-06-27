@@ -60,6 +60,49 @@
  *
  */
 
-#include "hwa/test/test_main.h"
-#include "tidl/test/test_main.h"
+#ifndef VX_TIDL_KERNELS_H_
+#define VX_TIDL_KERNELS_H_
+
+#include "tivx_kernels_host_utils.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*!
+ * \file
+ * \brief Interface file for the TIDL kernels
+ */
+
+
+/*!
+ * \brief Function to register TIDL Kernels on the Host
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterTIDLKernels(void);
+
+/*!
+ * \brief Function to un-register TIDL Kernels on the Host
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterKernels(void);
+
+/*!
+ * \brief Function to register TIDL Kernels on the TIDL Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterTIDLTargetKernels(void);
+
+/*!
+ * \brief Function to un-register TIDL Kernels on the TIDL Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterTIDLTargetKernels(void);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* VX_HWA_KERNELS_H_ */
+
 

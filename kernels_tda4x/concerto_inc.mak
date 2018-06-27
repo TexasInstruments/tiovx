@@ -32,9 +32,12 @@ STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils
 STATIC_LIBS += vx_target_kernels_tda4x_arm
 STATIC_LIBS += vx_utils
 
+STATIC_LIBS += vx_tiovx_tidl_tests vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo
+
 SYS_SHARED_LIBS += rt dl png
 
 LDIRS+=$(TDA4X_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(OPENCV_LIB_PATH)
+LDIRS+=$(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)
 
 endif
