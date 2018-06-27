@@ -383,11 +383,14 @@ typedef struct {
 } Arg;
 
 #define PARAMETERS \
+    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2"), \
+
+#if 0
     CT_GENERATE_PARAMETERS("inception_v1", ARG, "inception_v1"), \
     CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1"), \
-    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2"), \
     CT_GENERATE_PARAMETERS("resnet10", ARG, "resnet10"), \
     CT_GENERATE_PARAMETERS("squeez1", ARG, "squeez1")
+#endif
 
 TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 {
