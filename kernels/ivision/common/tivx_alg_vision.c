@@ -71,7 +71,7 @@ typedef struct IM_Fxns
 }IM_Fxns;
 
 /* Local Functions */
-vx_int32 tivxAlgiVisionDeleteAlg(Void *algHandle);
+vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle);
 vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec);
 vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 
@@ -192,7 +192,7 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
     return status;
 }
 
-vx_int32 tivxAlgiVisionDeleteAlg(Void *algHandle)
+vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle)
 {
     vx_uint32 numMemRec;
     IALG_MemRec   *memRec;
@@ -222,7 +222,7 @@ vx_int32 tivxAlgiVisionDeleteAlg(Void *algHandle)
     return status;
 }
 
-Void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
+void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
 {
     vx_uint32 numMemRec;
     IALG_MemRec *memRec;
@@ -267,12 +267,12 @@ Void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
     return algHandle;
 }
 
-vx_int32 tivxAlgiVisionDelete(Void *algHandle)
+vx_int32 tivxAlgiVisionDelete(void *algHandle)
 {
     return tivxAlgiVisionDeleteAlg(algHandle);
 }
 
-vx_int32 tivxAlgiVisionProcess(Void *algHandle,
+vx_int32 tivxAlgiVisionProcess(void *algHandle,
         IVISION_InBufs *inBufs,
         IVISION_OutBufs *outBufs,
         IVISION_InArgs *inArgs,
@@ -296,7 +296,7 @@ vx_int32 tivxAlgiVisionProcess(Void *algHandle,
     return status;
 }
 
-vx_int32 tivxAlgiVisionControl(Void *algHandle,
+vx_int32 tivxAlgiVisionControl(void *algHandle,
                     IALG_Cmd cmd,
                     const IALG_Params *inParams,
                     IALG_Params *outParams)
@@ -313,14 +313,14 @@ vx_int32 tivxAlgiVisionControl(Void *algHandle,
     return status;
 }
 
-Void tivxAlgiVisionActivate(Void *algHandle)
+void tivxAlgiVisionActivate(void *algHandle)
 {
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
 
     ivision->fxns->ialg.algActivate((IALG_Handle)ivision);
 }
 
-Void tivxAlgiVisionDeActivate(Void *algHandle)
+void tivxAlgiVisionDeActivate(void *algHandle)
 {
     IM_Fxns *ivision = (IM_Fxns *)algHandle;
 

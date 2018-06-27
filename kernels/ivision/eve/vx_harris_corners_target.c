@@ -66,6 +66,8 @@
 #include <VX/vx.h>
 #include <tivx_kernel_harris_corners.h>
 #include <TI/tivx_target_kernel.h>
+#include <common/xdais_types.h> /* Adding to support vx_uint32/vx_int32 data types */
+#include <ti/xdais/ires.h>
 #include <tivx_alg_ivision_if.h>
 #include <apps/harrisCornerDetection32/algo/inc/iHarrisCornerDetection32_ti.h>
 #include <tivx_kernels_target_utils.h>
