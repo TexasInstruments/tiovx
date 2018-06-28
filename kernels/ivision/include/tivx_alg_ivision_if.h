@@ -67,6 +67,7 @@
 #define TIVX_ALG_IVISION_IF_H_
 
 #include <VX/vx.h>
+#include <xdais_types.h>
 #include <ivision.h>
 
 #ifdef __cplusplus
