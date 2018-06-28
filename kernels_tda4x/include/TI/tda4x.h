@@ -158,3 +158,8 @@ extern "C" {
  * \defgroup group_vision_function_dmpac_sde TI DMPAC SDE (Stereo Disparity Engine) Kernel APIs
  * \ingroup group_vision_function_hwa
  */
+
+/*!
+ * \defgroup group_vision_function_tidl TIDL Kernel APIs
+ * \ingroup group_tivx_api
+ */
