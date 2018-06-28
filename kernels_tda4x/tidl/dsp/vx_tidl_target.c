@@ -290,7 +290,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         prms->createParams.visionParams.algParams.size   = sizeof(TIDL_CreateParams);
         prms->createParams.visionParams.cacheWriteBack   = NULL;
         prms->createParams.currLayersGroupId             = TIDL_TB_CURR_LAYERS_GROUP_ID;
-        prms->createParams.isInbufsPaded                       = 1;
+        prms->createParams.isInbufsPaded                 = 1;
+        prms->createParams.TIDLGetPhysicalAddress        = NULL;
         prms->createParams.optimiseExtMem                = TIDL_optimiseExtMemL1;
 
         network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);

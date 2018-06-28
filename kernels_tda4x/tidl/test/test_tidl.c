@@ -408,7 +408,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
   vx_int32    network_id = 0;
   vx_int32    refid[] = {896, 895, 895, 895, 895};
-  vx_float32  refscore[] = {1173.131958f, 650.004700f, 824.762573f, 542.191040f, 4.546313};
+  vx_float32  refscore[] = {1672.485962f, 650.004700f, 824.762573f, 542.191040f, 4.546313};
 
   if(strcmp(arg_->network, "inception_v1") == 0)
     network_id = 0;
