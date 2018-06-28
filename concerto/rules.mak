@@ -230,9 +230,9 @@ doxy_docs:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
 
 doxy_docs_j7:
-	-$(Q)$(MKDIR) docs/user_guide_j7_presi/ $(QUIET) || true
-	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/*.gif docs/user_guide_j7_presi $(QUIET) || true
-	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/*.png docs/user_guide_j7_presi $(QUIET) || true
+	-$(Q)$(MKDIR) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7_presi/ $(QUIET) || true
+	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/*.gif tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7_presi $(QUIET) || true
+	-$(Q)$(COPY) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/*.png tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7_presi $(QUIET) || true
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7presi_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/doxy_warnings.txt
 
 doxy_docs_pytiovx:
