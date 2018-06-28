@@ -145,7 +145,6 @@ vx_status uc_sample_05_data_create(uc_sample_05 usecase)
     vx_status status = VX_SUCCESS;
 
     vx_context context = usecase->context;
-    vx_graph graph = usecase->graph_0;
 
     if (status == VX_SUCCESS)
     {
@@ -805,7 +804,6 @@ vx_status uc_sample_05_graph_0_create(uc_sample_05 usecase)
 {
     vx_status status = VX_SUCCESS;
 
-    vx_context context = usecase->context;
     vx_graph graph = usecase->graph_0;
 
     if (status == VX_SUCCESS)
