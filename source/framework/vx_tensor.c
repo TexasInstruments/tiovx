@@ -163,6 +163,12 @@ static void ownInitTensorObject(
     obj_desc->mem_ptr.host_ptr = NULL;
     obj_desc->mem_ptr.shared_ptr = NULL;
     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
+
+    for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i ++)
+    {
+        tensor->maps[i].map_addr = NULL;
+        tensor->maps[i].map_size = 0;
+    }
 }
 
 static vx_status ownTensorCheckSizes(uint32_t *dimensions, const vx_size * view_start, const vx_size * view_end, vx_size number_of_dimensions)
