@@ -231,7 +231,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     const vx_size * view_end,
     vx_map_id* map_id,
     vx_size * dims,
-    vx_size * stride,
+    vx_size * strides,
     void** user_ptr,
     vx_enum usage,
     vx_enum user_memory_type,

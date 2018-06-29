@@ -63,7 +63,7 @@
 
 
 /**
- *  @file       bam_kernel_database.c
+ *  @file       tivx_bam_kernel_database.c
  *
  *  @brief      This file defines the table of interface of all kernels supported in BAM
  */

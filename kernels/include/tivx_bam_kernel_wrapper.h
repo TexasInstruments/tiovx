@@ -62,7 +62,7 @@
 
 
 /**
- *  @file       bam_kernel_wrapper.h
+ *  @file       tivx_bam_kernel_wrapper.h
  *
  *  @brief      This file provides a BAM wrapper interface around each VXLIB kernel
  *               to be included in TIOVX. Using this BAM wrapper will accelerate

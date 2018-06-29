@@ -768,8 +768,7 @@ typedef struct _tivx_obj_desc_tensor
      * How to calculate:
      * 
      * stride[0] = sizeof(data_type)
-     * stride[1] = stride[0] * dimensions[0], rounded up to nearest multiple of 16
-     * for (i > 1)
+     * for (i > 0)
      *    stride[i] = stride[i-1] * dimensions[i-1]
      */
     uint32_t stride[TIVX_CONTEXT_MAX_TENSOR_DIMS];

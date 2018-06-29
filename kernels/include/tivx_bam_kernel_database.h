@@ -62,7 +62,7 @@
 
 
 /**
- *  @file       bam_kernel_database.h
+ *  @file       tivx_bam_kernel_database.h
  *
  *  @brief      This file includes the relevant header files for all the kernels and acts as a common
  *  unified interface for all the kernels.
