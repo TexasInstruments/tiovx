@@ -988,7 +988,7 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
                 context->user_structs[i].type = VX_TYPE_USER_STRUCT_START + i;
                 context->user_structs[i].size = size;
                 type = context->user_structs[i].type;
-                tivxLogResourceAlloc("TIVX_CONTEXT_MAX_USER_STRUCTS", 1);
+                tivxLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (i+1));
                 break;
             }
         }
