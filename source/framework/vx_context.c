@@ -319,6 +319,7 @@ vx_status ownAddKernelToContext(vx_context context, vx_kernel kernel)
         {
             /* free entry not found */
             VX_PRINT(VX_ZONE_ERROR,"free entry not found\n");
+            VX_PRINT(VX_ZONE_ERROR, "ownAddKernelToContext: May need to increase the value of TIVX_CONTEXT_MAX_KERNELS in tiovx/include/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
 
@@ -991,6 +992,11 @@ VX_API_ENTRY vx_enum VX_API_CALL vxRegisterUserStruct(vx_context context, vx_siz
                 tivxLogSetResourceUsedValue("TIVX_CONTEXT_MAX_USER_STRUCTS", (i+1));
                 break;
             }
+        }
+
+        if (type == VX_TYPE_INVALID)
+        {
+            VX_PRINT(VX_ZONE_WARNING, "vxRegisterUserStruct: May need to increase the value of TIVX_CONTEXT_MAX_USER_STRUCTS in tiovx/include/tivx_config.h\n");
         }
 
         ownContextUnlock(context);

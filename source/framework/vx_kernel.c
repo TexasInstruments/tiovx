@@ -227,6 +227,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToKernel(vx_kernel kernel,
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: Index value is greater than the number of parameters\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToKernel: May need to increase the value of TIVX_KERNEL_MAX_PARAMS in tiovx/include/tivx_config.h\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -377,6 +378,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
         {
             status = VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Number of targets greater than maximum allowable\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: May need to increase the value of TIVX_MAX_TARGETS_PER_KERNEL in tiovx/include/tivx_config.h\n");
         }
     }
     else

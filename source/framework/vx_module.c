@@ -133,6 +133,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterModule(const char *name, vx_publi
         if(idx>=dimof(g_module_table))
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: Module table is full\n");
+            VX_PRINT(VX_ZONE_ERROR, "tivxRegisterModule: May need to increase the value of TIVX_MODULE_MAX in tiovx/include/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }

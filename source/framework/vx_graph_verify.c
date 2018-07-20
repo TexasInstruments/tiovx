@@ -120,6 +120,10 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", graph->num_data_ref);
         status = VX_SUCCESS;
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_WARNING, "ownGraphAddDataReference: May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/tivx_config.h\n");
+    }
     return status;
 }
 
@@ -643,6 +647,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 graph->num_head_nodes = TIVX_GRAPH_MAX_HEAD_NODES;
                 status = VX_ERROR_NO_RESOURCES;
                 VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
+                VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_HEAD_NODES in tiovx/include/tivx_config.h\n");
                 break;
             }
             graph->head_nodes[graph->num_head_nodes] = node;
@@ -656,6 +661,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
                 graph->num_leaf_nodes = TIVX_GRAPH_MAX_LEAF_NODES;
                 status = VX_ERROR_NO_RESOURCES;
                 VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
+                VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_LEAF_NODES in tiovx/include/tivx_config.h\n");
                 break;
             }
             graph->leaf_nodes[graph->num_leaf_nodes] = node;
@@ -1290,6 +1296,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
         {
             status = VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR, "Unable to add data ref q to graph since list is full \n");
+            VX_PRINT(VX_ZONE_ERROR, "ownGraphAddDataRefQ: May need to increase the value of TIVX_GRAPH_MAX_DATA_REF_QUEUE in tiovx/include/tivx_config.h\n");
         }
     }
     return status;

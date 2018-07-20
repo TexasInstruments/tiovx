@@ -139,6 +139,12 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                 }
             }
 
+            if (TIVX_TARGET_KERNEL_ID_INVALID ==
+                g_target_kernel_table[i].kernel_id)
+            {
+                VX_PRINT(VX_ZONE_WARNING, "tivxAddTargetKernelInternal: May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/tivx_config.h\n");
+            }
+
             tivxMutexUnlock(g_target_kernel_lock);
         }
     }

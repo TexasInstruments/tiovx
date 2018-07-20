@@ -686,6 +686,11 @@ static uint8_t *ownAllocObject(
         obj_start_ptr += size;
     }
 
+    if (obj_ptr == NULL)
+    {
+        VX_PRINT(VX_ZONE_WARNING, "ownAllocObject: May need to increase the value of %s in tiovx/include/tivx_config.h\n", resource_name);
+    }
+
     return (obj_ptr);
 }
 

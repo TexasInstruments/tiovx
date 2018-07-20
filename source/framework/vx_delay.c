@@ -93,6 +93,12 @@ static tivx_delay_param_t *ownAllocDelayPrm(vx_delay delay)
             break;
         }
     }
+
+    if (prm == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownAllocDelayPrm: May need to increase the value of TIVX_DELAY_MAX_PRM_OBJECT in tiovx/include/tivx_config.h\n");
+    }
+
     return prm;
 }
 
@@ -410,6 +416,7 @@ VX_API_ENTRY vx_delay VX_API_CALL vxCreateDelay(vx_context context,
                     vxReleaseDelay(&delay);
 
                     VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: Could not allocate delay object descriptor\n");
+                    VX_PRINT(VX_ZONE_ERROR, "vxCreateDelay: May need to increase the value of TIVX_DELAY_MAX_OBJECT in tiovx/include/tivx_config.h\n");
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate delay object descriptor\n");
                     delay = (vx_delay)ownGetErrorObject(

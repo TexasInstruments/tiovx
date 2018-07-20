@@ -117,6 +117,7 @@ static tivx_target tivxTargetAllocHandle(vx_enum target_id)
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxTargetAllocHandle: Exceeded max targets in CPU. Modify TIVX_TARGET_MAX_TARGETS_IN_CPU value in tivx_config.h\n");
+        VX_PRINT(VX_ZONE_ERROR, "tivxTargetAllocHandle: May need to increase the value of TIVX_TARGET_MAX_TARGETS_IN_CPU in tiovx/include/tivx_config.h\n");
     }
 
     return target;

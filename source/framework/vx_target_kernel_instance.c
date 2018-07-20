@@ -128,6 +128,12 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, cha
                     break;
                 }
             }
+
+            if(tmp_kernel_instance->kernel_id == TIVX_TARGET_KERNEL_ID_INVALID)
+            {
+                VX_PRINT(VX_ZONE_WARNING, "tivxTargetKernelInstanceAlloc: May need to increase the value of TIVX_TARGET_KERNEL_INSTANCE_MAX in tiovx/include/tivx_config.h\n");
+            }
+
             tivxMutexUnlock(g_target_kernel_instance_lock);
         }
     }
