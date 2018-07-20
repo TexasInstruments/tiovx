@@ -1240,7 +1240,14 @@ static vx_node usecase_node_create_node_58 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ABSDIFF, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.absdiff");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1261,7 +1268,14 @@ static vx_node usecase_node_create_node_60 (
           (vx_reference)scalar_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ADD, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.add");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1282,7 +1296,14 @@ static vx_node usecase_node_create_node_62 (
           (vx_reference)scalar_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_SUBTRACT, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.subtract");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1301,7 +1322,14 @@ static vx_node usecase_node_create_node_63 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_AND, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.and");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1320,7 +1348,14 @@ static vx_node usecase_node_create_node_64 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_OR, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.or");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1339,7 +1374,14 @@ static vx_node usecase_node_create_node_65 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_XOR, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.xor");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1356,7 +1398,14 @@ static vx_node usecase_node_create_node_66 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_NOT, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.not");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1373,7 +1422,14 @@ static vx_node usecase_node_create_node_67 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_BOX_3x3, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.box_3x3");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1392,7 +1448,14 @@ static vx_node usecase_node_create_node_68 (
           (vx_reference)convolution_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CUSTOM_CONVOLUTION, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.custom_convolution");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1409,7 +1472,14 @@ static vx_node usecase_node_create_node_69 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_DILATE_3x3, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.dilate_3x3");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1426,7 +1496,14 @@ static vx_node usecase_node_create_node_70 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_GAUSSIAN_3x3, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.gaussian_3x3");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1447,7 +1524,14 @@ static vx_node usecase_node_create_node_72 (
           (vx_reference)matrix_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_NON_LINEAR_FILTER, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.non_linear_filter");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1472,7 +1556,14 @@ static vx_node usecase_node_create_node_75 (
           (vx_reference)scalar_4 ,
           (vx_reference)image_5 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_MULTIPLY, params, 6);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.multiply");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 6);
+        }
+    }
 
     return node;
 }
@@ -1493,7 +1584,14 @@ static vx_node usecase_node_create_node_77 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.convertdepth");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1512,7 +1610,14 @@ static vx_node usecase_node_create_node_78 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_MAGNITUDE, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.magnitude");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1531,7 +1636,14 @@ static vx_node usecase_node_create_node_79 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_PHASE, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.phase");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1554,7 +1666,14 @@ static vx_node usecase_node_create_node_80 (
           (vx_reference)image_3 ,
           (vx_reference)image_4 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CHANNEL_COMBINE, params, 5);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.channel_combine");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 5);
+        }
+    }
 
     return node;
 }
@@ -1573,7 +1692,14 @@ static vx_node usecase_node_create_node_82 (
           (vx_reference)scalar_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CHANNEL_EXTRACT, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.channel_extract");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1590,7 +1716,14 @@ static vx_node usecase_node_create_node_83 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_EQUALIZE_HISTOGRAM, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.equalize_histogram");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1609,7 +1742,14 @@ static vx_node usecase_node_create_node_84 (
           (vx_reference)lut_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_TABLE_LOOKUP, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.table_lookup");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1626,7 +1766,14 @@ static vx_node usecase_node_create_node_85 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_MEDIAN_3x3, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.median_3x3");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1645,7 +1792,14 @@ static vx_node usecase_node_create_node_86 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_SOBEL_3x3, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.sobel_3x3");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1666,7 +1820,14 @@ static vx_node usecase_node_create_node_88 (
           (vx_reference)scalar_2 ,
           (vx_reference)scalar_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CONVERTDEPTH, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.convertdepth");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1687,7 +1848,14 @@ static vx_node usecase_node_create_node_90 (
           (vx_reference)scalar_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_WARP_AFFINE, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.warp_affine");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1708,7 +1876,14 @@ static vx_node usecase_node_create_node_92 (
           (vx_reference)scalar_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_WARP_PERSPECTIVE, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.warp_perspective");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1727,7 +1902,14 @@ static vx_node usecase_node_create_node_93 (
           (vx_reference)threshold_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_THRESHOLD, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.threshold");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1748,7 +1930,14 @@ static vx_node usecase_node_create_node_95 (
           (vx_reference)scalar_2 ,
           (vx_reference)image_3 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_REMAP, params, 4);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.remap");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
+        }
+    }
 
     return node;
 }
@@ -1767,7 +1956,14 @@ static vx_node usecase_node_create_node_97 (
           (vx_reference)image_1 ,
           (vx_reference)scalar_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_SCALE_IMAGE, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.scale_image");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }
@@ -1790,7 +1986,14 @@ static vx_node usecase_node_create_node_100 (
           (vx_reference)scalar_3 ,
           (vx_reference)image_4 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_CANNY_EDGE_DETECTOR, params, 5);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.canny_edge_detector");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 5);
+        }
+    }
 
     return node;
 }
@@ -1807,7 +2010,14 @@ static vx_node usecase_node_create_node_101 (
           (vx_reference)image_0 ,
           (vx_reference)image_1 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_INTEGRAL_IMAGE, params, 2);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.integral_image");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
+        }
+    }
 
     return node;
 }
@@ -1826,7 +2036,14 @@ static vx_node usecase_node_create_node_102 (
           (vx_reference)image_1 ,
           (vx_reference)image_2 
     };
-    node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_LAPLACIAN_RECONSTRUCT, params, 3);
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.laplacian_reconstruct");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
+        }
+    }
 
     return node;
 }

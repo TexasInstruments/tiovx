@@ -60,6 +60,7 @@
 #
 
 from . import *
+import os, sys, re
 
 ## Export objects from context to C source code
 #
@@ -82,9 +83,14 @@ class ExportCode (Export) :
     ## Constructor used to create this object
     #
     # \param context [in] Context object. tiovx::context::Context
-    def __init__(self, context) :
+    # \param env_var [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH"
+    def __init__(self, context, env_var='CUSTOM_APPLICATON_PATH') :
+        self.env_var = env_var
+        self.workarea = os.environ.get(self.env_var)
+        if self.workarea == None :
+            sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
         Export.__init__(self, context)
-        self.usecase_code = UsecaseCode(context)
+        self.usecase_code = UsecaseCode(context, self.workarea)
 
     ## Export object as C source code
     def export(self) :

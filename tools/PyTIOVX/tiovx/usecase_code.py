@@ -62,11 +62,55 @@
 from . import *
 
 class UsecaseCode :
-    def __init__(self, context) :
-        self.h_file = CodeGenerate(context.name + '.h')
-        self.c_file = CodeGenerate(context.name + '.c')
+    def __init__(self, context, workarea) :
+        self.workarea = workarea
+        self.workarea_app = self.workarea + "/" + "app_" + context.name
+        self.create_directory(self.workarea_app)
+        self.h_file = CodeGenerate(self.workarea_app + "/" + context.name + '.h')
+        self.c_file = CodeGenerate(self.workarea_app + "/" + context.name + '.c')
+        self.concerto_file = CodeGenerate(self.workarea_app + "/" + 'concerto.mak', header=False)
+        self.workarea_kernel = self.workarea + "/kernels"
+        # Generating necessary files if they don't exist
+        self.include_custom_kernel_library_tests_filename = self.workarea_kernel + "/custom_app_kernel_library_tests.h"
+        self.create_directory(self.workarea_kernel)
+        if not os.path.exists(self.include_custom_kernel_library_tests_filename):
+            print("Creating " + self.include_custom_kernel_library_tests_filename)
+            self.include_custom_kernel_library_tests_code = CodeGenerate(self.include_custom_kernel_library_tests_filename)
+            self.include_custom_kernel_library_tests_code.close()
+
+        self.tools_path_filename = self.workarea + "/custom_tools_path.mak"
+        if not os.path.exists(self.tools_path_filename):
+            print("Creating " + self.tools_path_filename)
+            self.tools_path_code = CodeGenerate(self.tools_path_filename, header=False)
+            self.tools_path_code.write_line("# This file can optionally be used to define environment variables which")
+            self.tools_path_code.write_line("# are needed by the kernel libraries defined in this folder, or can be")
+            self.tools_path_code.write_line("# used to overwrite environment variables from the psdk_tools_path.mak")
+            self.tools_path_code.write_line("# and vsdk_tools_path.mak files from the tiovx directory.")
+            self.tools_path_code.write_newline()
+            self.tools_path_code.write_line("# < DEVELOPER_TODO: Add any custom PATH environment variables >")
+            self.tools_path_code.close()
+
+        self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
+        if not os.path.exists(self.concerto_inc_filename):
+            print("Creating " + self.concerto_inc_filename)
+            self.concerto_inc_code = CodeGenerate(self.concerto_inc_filename, header=False)
+            self.concerto_inc_code.write_line("# This file contains a list of extension kernel specific static libraries")
+            self.concerto_inc_code.write_line("# to be included in the PC executables.  It is put in this separate file")
+            self.concerto_inc_code.write_line("# to make it easier to add/extend kernels without needing to modify")
+            self.concerto_inc_code.write_line("# several concerto.mak files which depend on kernel libraries.")
+            self.concerto_inc_code.write_newline()
+            self.concerto_inc_code.write_line("STATIC_LIBS += vx_conformance_engine")
+            self.concerto_inc_code.write_line("# < DEVELOPER_TODO: Add any additional dependent libraries >")
+            self.concerto_inc_code.close()
+
         self.context = context
         self.context_code = ContextCode(context)
+
+    def create_directory(self, directory):
+        self.directory = directory
+        if not os.path.exists(self.directory):
+            print("Creating " + self.directory)
+            os.makedirs(self.directory)
 
     def generate_h_code(self) :
         self.h_file.write_ifndef_define(self.context.name.upper())
@@ -109,6 +153,42 @@ class UsecaseCode :
     def generate_define_node_code(self) :
         for node in self.context.node_list :
             NodeCode(node).define_create(self.c_file)
+
+    def generate_main_code(self) :
+        self.c_file.write_line("/**")
+        self.c_file.write_line(" * Main function")
+        self.c_file.write_line(" *")
+        self.c_file.write_line(" */")
+        self.c_file.write_line("int main(int argc, char* argv[])")
+        self.c_file.write_open_brace()
+        self.c_file.write_define_status()
+        self.c_file.write_newline()
+        self.c_file.write_line("%s_t uc;" % self.context.name)
+        self.c_file.write_newline()
+        self.c_file.write_line("tivxInit();")
+        self.c_file.write_newline()
+        self.c_file.write_line("status = %s_create(&uc);" % self.context.name)
+        self.c_file.write_newline()
+        self.c_file.write_if_status()
+        self.c_file.write_open_brace()
+        self.c_file.write_line("status = %s_verify(&uc);" % self.context.name)
+        self.c_file.write_close_brace()
+        self.c_file.write_newline()
+        self.c_file.write_if_status()
+        self.c_file.write_open_brace()
+        self.c_file.write_line("status = %s_run(&uc);" % self.context.name)
+        self.c_file.write_close_brace()
+        self.c_file.write_newline()
+        self.c_file.write_if_status()
+        self.c_file.write_open_brace()
+        self.c_file.write_line("status = %s_delete(&uc);" % self.context.name)
+        self.c_file.write_close_brace()
+        self.c_file.write_newline()
+        self.c_file.write_line("tivxDeInit();")
+        self.c_file.write_newline()
+        self.c_file.write_line("return 0;")
+        self.c_file.write_close_brace()
+        self.c_file.write_newline()
 
     def generate_create_graph_code(self, graph):
         self.c_file.write_line("vx_status %s_%s_create(%s usecase)" % (self.context.name, graph.name, self.context.name) )
@@ -300,10 +380,39 @@ class UsecaseCode :
             self.generate_delete_graph_code(graph)
             self.generate_verify_graph_code(graph)
             self.generate_run_graph_code(graph)
+        self.generate_main_code()
         self.c_file.close()
+
+    def generate_concerto(self) :
+        self.concerto_file.write_line("include $(PRELUDE)")
+        self.concerto_file.write_line("TARGET      := vx_app_%s" % self.context.name)
+        self.concerto_file.write_line("TARGETTYPE  := exe")
+        self.concerto_file.write_line("CSOURCES    := $(call all-c-files)")
+        self.concerto_file.write_newline()
+        self.concerto_file.write_line("IDIRS       += $(TIOVX_PATH)/utils/include")
+        self.concerto_file.write_newline()
+        self.concerto_file.write_line("STATIC_LIBS += vx_vxu vx_framework")
+        self.concerto_file.write_line("STATIC_LIBS += vx_platform_pc vx_framework")
+        self.concerto_file.write_line("STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core")
+        self.concerto_file.write_newline()
+        self.concerto_file.write_line("include $(HOST_ROOT)/kernels/concerto_inc.mak")
+        self.concerto_file.write_newline()
+        self.concerto_file.write_line("ifeq ($(BUILD_TUTORIAL),yes)")
+        self.concerto_file.write_line("STATIC_LIBS += vx_target_kernels_tutorial")
+        self.concerto_file.write_line("endif")
+        self.concerto_file.write_newline()
+        self.concerto_file.write_line("STATIC_LIBS += vx_kernels_host_utils")
+        self.concerto_file.write_line("STATIC_LIBS += vx_kernels_target_utils")
+        self.concerto_file.write_line("STATIC_LIBS += vx_framework")
+        self.concerto_file.write_line("STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66")
+        self.concerto_file.write_line("SYS_SHARED_LIBS += rt")
+        self.concerto_file.write_newline()
+        self.concerto_file.write_line("include $(FINALE)")
+        self.concerto_file.close()
 
     def generate_code(self) :
         self.generate_h_code()
         self.generate_c_code()
+        self.generate_concerto()
 
 
