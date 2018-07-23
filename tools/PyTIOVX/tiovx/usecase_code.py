@@ -60,10 +60,14 @@
 #
 
 from . import *
+from glob import glob
 
 class UsecaseCode :
-    def __init__(self, context, workarea) :
-        self.workarea = workarea
+    def __init__(self, context, env_var) :
+        self.env_var = env_var
+        self.workarea = os.environ.get(self.env_var)
+        if self.workarea == None :
+            sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
         self.workarea_app = self.workarea + "/" + "app_" + context.name
         self.create_directory(self.workarea_app)
         self.h_file = CodeGenerate(self.workarea_app + "/" + context.name + '.h')
@@ -260,6 +264,9 @@ class UsecaseCode :
         self.c_file.write_line("status = VX_ERROR_NO_RESOURCES;");
         self.c_file.write_close_brace()
         self.c_file.write_close_brace()
+        self.c_file.write_newline();
+        self.c_file.write_line("/* < DEVELOPER_TODO: (Optional) Load any custom kernel modules needed for this use case > */")
+        self.c_file.write_newline();
         for graph in self.context.graph_list:
             # Create graph
             self.c_file.write_if_status();
@@ -302,6 +309,10 @@ class UsecaseCode :
         self.c_file.write_open_brace()
         self.c_file.write_line("status = %s_data_delete(usecase);" % (self.context.name) )
         self.c_file.write_close_brace()
+
+        self.c_file.write_newline();
+        self.c_file.write_line("/* < DEVELOPER_TODO: (Optional) Unload any custom kernel modules needed for this use case >*/")
+        self.c_file.write_newline();
 
         self.c_file.write_if_status();
         self.c_file.write_open_brace()
@@ -367,6 +378,8 @@ class UsecaseCode :
 
     def generate_c_code(self) :
         self.c_file.write_include(self.context.name + '.h')
+        self.c_file.write_line("/* < DEVELOPER_TODO: (Optional) Include any custom kernel module header files needed for this use case >*/")
+        self.c_file.write_newline();
         self.c_file.write_newline()
         self.generate_create_usecase_code()
         self.generate_usecase_function_code("verify")
@@ -410,9 +423,59 @@ class UsecaseCode :
         self.concerto_file.write_line("include $(FINALE)")
         self.concerto_file.close()
 
+    def todo(self) :
+        self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
+        print("Creating " + self.todo_filename)
+        self.todo_code = CodeGenerate(self.todo_filename, header=False)
+
+        self.lineNum = -1
+        self.fileName = None
+        self.state = False
+
+        self.todo_code.write_line("# This file lists the places in the generated code where the developer is expected")
+        self.todo_code.write_line("# to add custom code beyond what the script can generate.  This is generated as ")
+        self.todo_code.write_line("# part of the KernelExportCode.export() function, but may also be called independently ")
+        self.todo_code.write_line("# by calling the KernelExportCode.todo() function with the requirement that the ")
+        self.todo_code.write_line("# "+self.env_var+" environment variable is defined. This function simply searches")
+        self.todo_code.write_line("# for the \"< DEVELOPER_TODO ...>\" string in all the files from this path, and lists them.")
+        self.todo_code.write_line("# Removing the \"< DEVELOPER_TODO ...>\" comment block from the files will effectively remove those")
+        self.todo_code.write_line("# lines from showing up in this file the next time KernelExportCode.todo() is run.")
+        self.all_files = [y for x in os.walk(self.workarea) for y in glob(os.path.join(x[0], '*.*'))]
+        for file in self.all_files :
+            with open(file, 'rb') as f:
+                for num, line in enumerate(f, 1):
+                    if 'DEVELOPER_TODO'.encode() in line:
+                        if '>'.encode() in line:
+                            self.state = False
+                        else:
+                            self.state = True
+                        self.modLine = re.sub("^.*?DEVELOPER_TODO:".encode(),"".encode(), line)
+                        self.modLine = re.sub("^\s+".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\*\/".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\>".encode(),"".encode(), self.modLine)
+                        if self.fileName != file :
+                            self.todo_code.write_line("\n" + file, new_line=False)
+                        self.todo_code.write_line("\n    " + str(num) + ": " + self.modLine.decode('utf-8'), new_line=False)
+                        self.lineNum = num
+                        self.fileName = file
+                    elif self.state :
+                        if '>'.encode() in line :
+                            self.state = False
+                        self.modLine = re.sub("^.*?DEVELOPER_TODO:".encode(),"".encode(), line)
+                        self.modLine = re.sub("#".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\/\/".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\/\*".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\*\/".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("^\s+".encode(),"".encode(), self.modLine)
+                        self.modLine = re.sub("\>".encode(),"".encode(), self.modLine)
+                        self.todo_code.write_line("    " + str(num) + ": " + self.modLine.decode('utf-8'), new_line=False)
+                        self.lineNum = num
+        self.todo_code.close()
+
     def generate_code(self) :
         self.generate_h_code()
         self.generate_c_code()
         self.generate_concerto()
+        self.todo()
 
 
