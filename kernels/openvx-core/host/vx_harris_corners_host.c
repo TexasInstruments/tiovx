@@ -285,14 +285,13 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
             }
         }
     }
-
     if (VX_SUCCESS == status)
     {
         arr_type = VX_TYPE_KEYPOINT;
 
         for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
         {
-            if (NULL != metas[i])
+            if ( (NULL != metas[i]) && (NULL != parameters[i]) )
             {
                 vx_enum type = 0;
                 vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
@@ -302,6 +301,12 @@ static vx_status VX_CALLBACK tivxAddKernelHarrisCValidate(vx_node node,
                         sizeof(arr_type));
                     vxSetMetaFormatAttribute(metas[i], VX_ARRAY_CAPACITY,
                         &arr_capacity, sizeof(arr_capacity));
+                }
+
+                if (VX_TYPE_SIZE == type)
+                {
+                    vxSetMetaFormatAttribute(metas[i], VX_SCALAR_TYPE, &type,
+                        sizeof(type));
                 }
             }
         }

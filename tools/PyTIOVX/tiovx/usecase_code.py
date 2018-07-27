@@ -369,7 +369,8 @@ class UsecaseCode :
         for data in self.context.data_list :
             self.c_file.write_if_status();
             self.c_file.write_open_brace()
-            self.c_file.write_line("status = vxReleaseReference((vx_reference*)&usecase->%s);" % (data.name) )
+            if data.type != Type.NULL :
+                self.c_file.write_line("status = vxReleaseReference((vx_reference*)&usecase->%s);" % (data.name) )
             self.c_file.write_close_brace()
         self.c_file.write_newline()
         self.c_file.write_line("return status;")

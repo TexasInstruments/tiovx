@@ -149,6 +149,8 @@ class Type(Enum):
     KEYPOINT     = 37
     ## OpenVX equivalent = VX_TYPE_COORDINATES2D
     COORDINATES2D = 38
+    ## Used when optional parameters
+    NULL = 39
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:
@@ -166,7 +168,10 @@ class Type(Enum):
         return NotImplemented
 
     def get_vx_enum_name(type) :
-        return "VX_TYPE_" + type.name
+        if type == Type.NULL :
+            return NULL
+        else :
+            return "VX_TYPE_" + type.name
 
     def get_vx_name(type) :
         return "vx_" + type.name.lower()

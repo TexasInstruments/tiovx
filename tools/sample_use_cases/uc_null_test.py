@@ -59,61 +59,61 @@
 #
 #
 
-from . import *
+from tiovx import *
 
-class ContextCode (ReferenceCode) :
-    def __init__(self, ref) :
-        ReferenceCode.__init__(self, ref)
-        self.data_code_list = []
-        self.graph_code_list = []
-        self.node_code_list = []
-        for data in self.ref.data_list :
-            self.data_code_list.append( ContextCode.get_data_code_obj(data) )
-        for graph in self.ref.graph_list :
-            self.graph_code_list.append( GraphCode(graph) )
-        for node in self.ref.node_list :
-            self.node_code_list.append( NodeCode(node) )
+context = Context("uc_superset1")
+graph = Graph()
 
-    def get_data_code_obj(ref) :
-        if ref.type == Type.IMAGE :
-            return ImageCode(ref)
-        if ref.type == Type.LUT :
-            return LutCode(ref)
-        if ref.type == Type.CONVOLUTION :
-            return ConvolutionCode(ref)
-        if ref.type == Type.DISTRIBUTION :
-            return DistributionCode(ref)
-        if ref.type == Type.MATRIX :
-            return MatrixCode(ref)
-        if ref.type == Type.REMAP :
-            return RemapCode(ref)
-        if ref.type == Type.THRESHOLD :
-            return ThresholdCode(ref)
-        if ref.type == Type.PYRAMID :
-            return PyramidCode(ref)
-        if ref.type == Type.OBJECT_ARRAY :
-            return ObjectArrayCode(ref)
-        if ref.type == Type.SCALAR :
-            return ScalarCode(ref)
-        if ref.type == Type.GRAPH :
-            return GraphCode(ref)
-        if ref.type == Type.NODE :
-            return NodeCode(ref)
-        if ref.type == Type.ARRAY :
-            return ArrayCode(ref)
-        if ref.type == Type.NULL :
-            return NullCode(ref)
-        return None
+#creating references
+#First Branch
+out_phase    = Image(640, 480, DfImage.U8)
+in1_ch_comb  = Image(640, 480, DfImage.U8)
+in2_ch_comb  = Image(640, 480, DfImage.U8)
+in3_ch_comb  = Image(640, 480, DfImage.U8)
+out_ch_comb  = Image(640, 480, DfImage.RGB)
 
-    def declare_var(self, code_gen) :
-        code_gen.write_line('vx_context context;')
-        code_gen.write_newline()
-        for graph_code in self.graph_code_list :
-             graph_code.declare_var(code_gen)
-        code_gen.write_newline()
-        for data_code in self.data_code_list :
-             data_code.declare_var(code_gen)
-        code_gen.write_newline()
-        for node_code in self.node_code_list :
-             node_code.declare_var(code_gen)
-        code_gen.write_newline()
+fast_strength_thr   = Scalar(Type.FLOAT32, 0) # issue in c code w/ this param
+in_fast             = Image(640, 480, DfImage.U8)
+fast_corners        = Array(Type.KEYPOINT, 100)
+fast_num_corners    = Scalar(Type.SIZE, 0)
+nonmax              = Scalar(Type.BOOL, True)
+
+in_harris           = Image(640, 480, DfImage.U8)
+harris_strength_thr = Scalar(Type.FLOAT32, 0) # issue in c code w/ this param
+fast_strength_thr   = Scalar(Type.FLOAT32, 0) # issue in c code w/ this param
+harris_min_dist     = Scalar(Type.FLOAT32, 0)
+harris_sensitivity  = Scalar(Type.FLOAT32, 0)
+harris_corners      = Array(Type.KEYPOINT, 100)
+harris_num_corners  = Scalar(Type.SIZE, 0)
+
+in_minmax    = Image(640, 480, DfImage.U8)
+sc_min1      = Scalar(Type.UINT8, 0)
+sc_max1      = Scalar(Type.UINT8, 255)
+arr1_minmax  = Array(Type.COORDINATES2D, 100)
+arr2_minmax  = Array(Type.COORDINATES2D, 100)
+sc_min_cnt   = Scalar(Type.UINT32, 10)
+sc_max_cnt   = Scalar(Type.UINT32, 100)
+
+out_median   = Image(640, 480, DfImage.U8)
+out_sobel1   = Image(640, 480, DfImage.S16)
+out_sobel2   = Image(640, 480, DfImage.S16)
+
+#creating nodes
+node_ch_comb  = NodeChannelCombine(out_phase, in1_ch_comb, in2_ch_comb, Null(), out_ch_comb )
+node_fast     = NodeFastCorners(in_fast, fast_strength_thr, nonmax, fast_corners, Null())
+node_harris   = NodeHarrisCorners(in_harris, harris_strength_thr, harris_min_dist, harris_sensitivity, 3, 5, harris_corners, Null())
+node_minmax   = NodeMinMaxLoc(in_minmax, sc_min1, sc_max1, arr1_minmax, arr2_minmax, Null(), Null())
+node_sobel    = NodeSobel3x3(out_median, out_sobel1, out_sobel2)
+
+
+#adding nodes to graph
+graph.add ( node_ch_comb )
+graph.add ( node_fast )
+graph.add ( node_harris )
+graph.add ( node_minmax )
+graph.add ( node_sobel )
+
+context.add ( graph )
+
+ExportImage(context).export()
+ExportCode(context, "CUSTOM_APPLICATION_PATH").export()

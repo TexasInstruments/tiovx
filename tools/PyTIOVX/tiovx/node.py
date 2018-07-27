@@ -685,7 +685,6 @@ class NodeCannyEdgeDetector (Node) :
         assert ( self.ref[0].df_image == self.ref[4].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
-#TODO how to handle optional parameters?
 ## Node object used to generate a Channel Combine node
 #
 # \par Example Usage: Creating Channel Combine node
@@ -696,15 +695,22 @@ class NodeChannelCombine (Node) :
     ## Constructor used to create this object
     #
     # \param image_in1      [in] First input image
-    # \param image_in2      [in] [optional] Second input image
-    # \param image_in3      [in] [optional] Third input image
-    # \param image_in4      [in] [optional] Fourth input image
+    # \param image_in2      [in] Second input image
+    # \param image_in3      [in] Third input image; optional from a node point of view
+    # \param image_in4      [in] Fourth input image; optional from a node point of view
     # \param image_out5     [in] Output image
     # \param name           [in] [optional] Name of the node; Default="default"
     # \param target         [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, image_in2, image_in3, image_in4, image_out5, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.channel_combine", image_in1, image_in2, image_in3, image_in4, image_out5)
-        self.setParams(4, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE)
+        # modify based on null type?
+        if image_in4.type == Type.NULL :
+            if image_in3.type == Type.NULL :
+                self.setParams(4, 1, Type.IMAGE, Type.IMAGE, Type.NULL, Type.NULL, Type.IMAGE)
+            else :
+                self.setParams(4, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.NULL, Type.IMAGE)
+        else :
+            self.setParams(4, 1, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE, Type.IMAGE)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_CHANNEL_COMBINE");
 
@@ -713,8 +719,10 @@ class NodeChannelCombine (Node) :
         # additional error conditions over the basic ones
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[1].df_image == DfImage.U8 ), "Image data format must be U8"
-        assert ( self.ref[2].df_image == DfImage.U8 ), "Image data format must be U8"
-        assert ( self.ref[3].df_image == DfImage.U8 ), "Image data format must be U8"
+        if param_type_args[2] == Type.IMAGE :
+            assert ( self.ref[2].df_image == DfImage.U8 ), "Image data format must be U8"
+        if param_type_args[3] == Type.IMAGE :
+            assert ( self.ref[3].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[4].df_image != DfImage.U8 ), "Image data format must not be U8"
 
 ## Node object used to generate a Channel Extract node
@@ -898,7 +906,6 @@ class NodeErode3x3 (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
-#TODO, this one also has an optional parameter (corners5)
 ## Node object used to generate a Fast Corners node
 #
 # \par Example Usage: Creating Fast Corners node
@@ -909,15 +916,18 @@ class NodeFastCorners (Node) :
     ## Constructor used to create this object
     #
     # \param image_in1        [in] Input image
-    # \param strength_thresh2  [in] Strength threshold scalar input
+    # \param strength_thresh2 [in] Strength threshold scalar input
     # \param nonmax3          [in] Nonmax suppression boolean input
     # \param arr_out4         [in] Output array
-    # \param corners5         [in] Number of corners scalar output
+    # \param corners5         [in] Number of corners scalar output; optional from a node point of view
     # \param name             [in] [optional] Name of the node; Default="default"
     # \param target           [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, strength_thresh2, nonmax3, arr_out4, corners5, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.fast_corners", image_in1, strength_thresh2, nonmax3, arr_out4, corners5)
-        self.setParams(3, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR)
+        if corners5.type == Type.NULL :
+            self.setParams(3, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.NULL)
+        else :
+            self.setParams(3, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_FAST_CORNERS");
 
@@ -980,7 +990,6 @@ class NodeNonLinearFilter (Node) :
         assert ( self.ref[1].df_image == DfImage.U8 ), "Image data format must be U8"
         assert ( self.ref[3].df_image == DfImage.U8 ), "Image data format must be U8"
 
-#TODO, this one also has an optional parameter (num_corners8)
 ## Node object used to generate a Harris Corners node
 #
 # \par Example Usage: Creating Harris Corners node
@@ -997,14 +1006,17 @@ class NodeHarrisCorners (Node) :
     # \param gradient_size5   [in] Gradient size scalar input
     # \param block_size6      [in] Block window size scalar input
     # \param arr_out7         [in] Output corners array
-    # \param num_corners8     [in] Output number of corners scalar
+    # \param num_corners8     [in] Output number of corners scalar; optional from a node point of view
     # \param name             [in] [optional] Name of the node; Default="default"
     # \param target           [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, strength_thresh2, dist3, sensitivity4, gradient_size5, block_size6, arr_out7, num_corners8, name="default", target=Target.DEFAULT) :
         scalar5 = Scalar(Type.INT32, gradient_size5)
         scalar6 = Scalar(Type.INT32, block_size6)
         Node.__init__(self, "org.khronos.openvx.harris_corners", image_in1, strength_thresh2, dist3, sensitivity4, scalar5, scalar6, arr_out7, num_corners8)
-        self.setParams(6, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR, )
+        if num_corners8.type == Type.NULL :
+            self.setParams(6, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.NULL)
+        else :
+            self.setParams(6, 2, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_HARRIS_CORNERS");
 
@@ -1223,7 +1235,6 @@ class NodeMedian3x3 (Node) :
         assert ( self.ref[0].df_image == self.ref[1].df_image ), "Input and Output MUST have same image data format"
         assert ( self.ref[0].df_image == DfImage.U8 ), "Image data format must be U8"
 
-#TODO Optional Parameters
 ## Node object used to generate a Min Max Location node
 #
 # \par Example Usage: Creating Min Max Location node
@@ -1238,13 +1249,76 @@ class NodeMinMaxLoc (Node) :
     # \param max3         [in] Max output scalar
     # \param array_out4   [in] Min loc output array
     # \param array_out5   [in] Max loc output array
-    # \param minCnt6      [in] Min count output scalar
-    # \param maxCnt7      [in] Max count output scalar
+    # \param minCnt6      [in] Min count output scalar; optional from a node point of view
+    # \param maxCnt7      [in] Max count output scalar; optional from a node point of view
     # \param name         [in] [optional] Name of the node; Default="default"
     # \param target       [in] [optional] Default core to run on; Default="Target.DEFAULT"
     def __init__(self, image_in1, min2, max3, array_out4, array_out5, minCnt6, maxCnt7, name="default", target=Target.DEFAULT) :
         Node.__init__(self, "org.khronos.openvx.minmaxloc", image_in1, min2, max3, array_out4, array_out5, minCnt6, maxCnt7)
-        self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR)
+
+        # 0000
+        if array_out4.type == Type.NULL and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.NULL, Type.NULL, Type.NULL)
+        #0001
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.NULL, Type.NULL, Type.NULL)
+        #0010
+        elif array_out4.type == Type.NULL and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.ARRAY, Type.NULL, Type.NULL)
+        #0011
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.NULL, Type.NULL)
+        #0100
+        elif array_out4.type == Type.NULL and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.NULL, Type.SCALAR, Type.NULL)
+        #0101
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.ARRAY, Type.NULL, Type.NULL, Type.SCALAR, Type.NULL)
+        #0110
+        elif array_out4.type == Type.NULL and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.NULL, Type.ARRAY, Type.NULL, Type.SCALAR, Type.NULL)
+        #0111
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.NULL :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.NULL, Type.SCALAR, Type.NULL)
+        #1000
+        elif array_out4.type == Type.NULL and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.NULL, Type.NULL, Type.SCALAR)
+        #1001
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.NULL, Type.NULL, Type.SCALAR)
+        #1010
+        elif array_out4.type == Type.NULL and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.ARRAY, Type.NULL, Type.SCALAR)
+        #1011
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.NULL and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.NULL, Type.SCALAR)
+        #1100
+        elif array_out4.type == Type.NULL and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.NULL, Type.SCALAR, Type.SCALAR)
+        #1101
+        elif array_out4.type == Type.ARRAY and array_out5.type == Type.NULL and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.NULL, Type.SCALAR, Type.SCALAR)
+        #1110
+        elif array_out4.type == Type.NULL and array_out5.type == Type.ARRAY and \
+           minCnt6.type == Type.SCALAR and maxCnt7.type == Type.SCALAR :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.NULL, Type.ARRAY, Type.SCALAR, Type.SCALAR)
+        #1111
+        else :
+            self.setParams(1, 6, Type.IMAGE, Type.SCALAR, Type.SCALAR, Type.ARRAY, Type.ARRAY, Type.SCALAR, Type.SCALAR)
         self.setTarget(target)
         self.setKernelEnumName("VX_KERNEL_MINMAXLOC");
 

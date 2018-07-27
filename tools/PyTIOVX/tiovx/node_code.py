@@ -82,7 +82,13 @@ class NodeCode (ReferenceCode) :
             end_char = ","
             if i == (num_params-1) :
                 end_char = ""
-            code_gen.write_line("  %s %s_%d %s" % (Type.get_vx_name(ref.type), ref.type.name.lower(), i, end_char))
+            if ref.type != Type.NULL :
+                if ((i == (num_params-2)) and (self.ref.ref[num_params-1].type == Type.NULL)) or \
+                   ((i == (num_params-3)) and (self.ref.ref[num_params-2].type == Type.NULL) and \
+                    (self.ref.ref[num_params-1].type == Type.NULL)):
+                    end_char = ""
+
+                code_gen.write_line("  %s %s_%d %s" % (Type.get_vx_name(ref.type), ref.type.name.lower(), i, end_char))
             i = i+1
         code_gen.write_line("  )")
 
@@ -95,7 +101,10 @@ class NodeCode (ReferenceCode) :
             end_char = ","
             if i == (num_params-1) :
                 end_char = ""
-            code_gen.write_line("  (vx_reference)%s_%d %s" % (ref.type.name.lower(), i, end_char))
+            if ref.type != Type.NULL :
+                code_gen.write_line("  (vx_reference)%s_%d %s" % (ref.type.name.lower(), i, end_char))
+            else :
+                code_gen.write_line("  NULL %s" % (end_char))
             i = i+1
         code_gen.write_close_brace(";")
 
@@ -127,7 +136,12 @@ class NodeCode (ReferenceCode) :
             end_char = ","
             if i == (num_params-1) :
                 end_char = ""
-            code_gen.write_line("    usecase->%s %s" % (ref.name, end_char))
+            if ((i == (num_params-2)) and (self.ref.ref[num_params-1].type == Type.NULL)) or \
+               ((i == (num_params-3)) and (self.ref.ref[num_params-2].type == Type.NULL) and \
+                (self.ref.ref[num_params-1].type == Type.NULL)):
+                end_char = ""
+            if ref.type != Type.NULL :
+                code_gen.write_line("    usecase->%s %s" % (ref.name, end_char))
             i = i+1
         code_gen.write_line("  );")
         self.set_ref_name(code_gen)
