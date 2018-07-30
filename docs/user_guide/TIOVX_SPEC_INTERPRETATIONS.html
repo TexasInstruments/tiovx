@@ -64,7 +64,44 @@ $(document).ready(function(){initNavTree('TIOVX_SPEC_INTERPRETATIONS.html','');}
 <div class="title">OpenVX Standard Specification Interpretations </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><dl class="section user"><dt>Context Creation</dt><dd><ul>
+<div class="textblock"><dl class="section user"><dt>OpenVX 1.1 Specification: Vendor-specific implementation details broken down by section</dt><dd><ul>
+<li>Section 2.10.2: User Kernels Naming Conventions<ul>
+<li>TI's vendor ID is VX_ID_TI</li>
+<li>TI user kernel strings begin with "com.ti"</li>
+<li>TI user kernel enums begin with TIVX_KERNEL_</li>
+</ul>
+</li>
+<li>Section 2.12: Targets<ul>
+<li>TI's targets can be found at &lt;TIOVX_PATH&gt;/include/TI/tivx.h</li>
+</ul>
+</li>
+<li>Section 2.18.1: Extending Attributes<ul>
+<li>TI's vendor extension ID is VX_ID_TI</li>
+</ul>
+</li>
+<li>Section 2.18.2: Vendor Custom Kernels<ul>
+<li>Further documentation is provided for any custom kernel extension</li>
+</ul>
+</li>
+<li>Section 2.18.3: Vendor Custom extensions<ul>
+<li>TI does not currently support any custom extensions</li>
+</ul>
+</li>
+<li>Section 2.18.4: Hinting<ul>
+<li>TI does not currently support any custom hints </li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Additional specification interpretation beyond the scope of OpenVX 1.1 Specification:</dt><dd><ul>
+<li>Vendor Naming Conventions<ul>
+<li>TI's naming convention append "tivx" to the front of a given object. For example, a TI extension of the df_image_e is called "tivx_df_image_e".</li>
+<li>TI's enumeration values append "TIVX" to the front of an enum. For example, a TI-specific target host is called TIVX_TARGET_HOST. </li>
+</ul>
+</li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Context Creation</dt><dd><ul>
 <li>The TI Implementation of OpenVX supports the creation of a single context. Additional calls to vxCreateContext beyond the initial call simply return a reference to the initially created context.</li>
 <li>Furthermore, the TIVX_CONTEXT_MAX_OBJECTS does not take effect. It merely provides the value of the amount of contexts that are allowed, namely 1. </li>
 </ul>
