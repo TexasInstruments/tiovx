@@ -786,6 +786,439 @@ class KernelExportCode :
         self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
+    # performs error checking on string keywords within the attribute string
+    def extract_local_mem_string_error_check(self, new_str, type, name):
+        found = False
+        invalid_str = ""
+        if type != Type.ARRAY :
+            if "capacity" in new_str :
+                found = True
+                invalid_str = "capacity"
+            elif "itemsize" in new_str :
+                found = True
+                invalid_str = "itemsize"
+            elif "itemtype" in new_str :
+                found = True
+                invalid_str = "itemtype"
+        if type != Type.ARRAY and type != Type.OBJECT_ARRAY:
+            if "numitems" in new_str :
+                found = True
+                invalid_str = "numitems"
+        if type != Type.IMAGE and type != Type.REMAP:
+            if "width" in new_str :
+                found = True
+                invalid_str = "width"
+            elif "height" in new_str :
+                found = True
+                invalid_str = "height"
+        if type != Type.IMAGE :
+            if "stride_x" in new_str :
+                found = True
+                invalid_str = "stride_x"
+            elif "stride_y" in new_str :
+                found = True
+                invalid_str = "stride_y"
+        if type != Type.PYRAMID :
+            if "levels" in new_str :
+                found = True
+                invalid_str = "levels"
+        if type != Type.MATRIX and type != Type.CONVOLUTION:
+            if "rows" in new_str :
+                found = True
+                invalid_str = "rows"
+            elif "columns" in new_str :
+                found = True
+                invalid_str = "columns"
+        if type != Type.DISTRIBUTION :
+            if "dimensions" in new_str :
+                found = True
+                invalid_str = "dimensions"
+            elif "range" in new_str :
+                found = True
+                invalid_str = "range"
+            elif "bins" in new_str :
+                found = True
+                invalid_str = "bins"
+            elif "win" in new_str :
+                found = True
+                invalid_str = "win"
+        if type != Type.DISTRIBUTION and type != Type.LUT:
+            if "offset" in new_str :
+                found = True
+                invalid_str = "offset"
+        if type != Type.LUT:
+            if "count" in new_str :
+                found = True
+                invalid_str = "count"
+        assert found == False, "'%s' is in invalid string for parameter %s" % (invalid_str, name)
+
+    # extracts from string written by user for local mem allocation
+    def extract_local_mem_string(self, type, attribute, local):
+        self.extract_local_mem_string_error_check(attribute, type, local.name)
+        if type == Type.IMAGE :
+            new_str = attribute
+            new_str = new_str.replace("width", "%s_desc->imagepatch_addr[0].dim_x" % local.prm.name_lower)
+            new_str = new_str.replace("height", "%s_desc->imagepatch_addr[0].dim_y" % local.prm.name_lower)
+            new_str = new_str.replace("stride_x", "%s_desc->imagepatch_addr[0].stride_x" % local.prm.name_lower)
+            new_str = new_str.replace("stride_y", "%s_desc->imagepatch_addr[0].stride_y" % local.prm.name_lower)
+            return new_str
+        elif type == Type.ARRAY :
+            new_str = attribute
+            new_str = new_str.replace("capacity", "%s_desc->capacity" % local.prm.name_lower)
+            new_str = new_str.replace("itemsize", "%s_desc->item_size" % local.prm.name_lower)
+            new_str = new_str.replace("itemtype", "%s_desc->item_type" % local.prm.name_lower)
+            new_str = new_str.replace("numitems", "%s_desc->num_items" % local.prm.name_lower)
+            return new_str
+        elif type == Type.PYRAMID :
+            new_str = attribute
+            # should this support width/height?
+            new_str = new_str.replace("levels", "%s_desc->num_levels" % local.prm.name_lower)
+            return new_str
+        elif type == Type.MATRIX :
+            new_str = attribute
+            new_str = new_str.replace("rows", "%s_desc->rows" % local.prm.name_lower)
+            new_str = new_str.replace("columns", "%s_desc->columns" % local.prm.name_lower)
+            new_str = new_str.replace("size", "%s_desc->mem_size" % local.prm.name_lower)
+            return new_str
+        elif type == Type.DISTRIBUTION :
+            new_str = attribute
+            new_str = new_str.replace("dimensions", "1")
+            new_str = new_str.replace("offset", "%s_desc->offset" % local.prm.name_lower)
+            new_str = new_str.replace("range", "%s_desc->range" % local.prm.name_lower)
+            new_str = new_str.replace("bins", "%s_desc->num_bins" % local.prm.name_lower)
+            new_str = new_str.replace("window", "%s_desc->num_win" % local.prm.name_lower)
+            new_str = new_str.replace("size", "%s_desc->mem_size" % local.prm.name_lower)
+            return new_str
+        elif type == Type.LUT :
+            new_str = attribute
+            new_str = new_str.replace("count", "%s_desc->num_items" % local.prm.name_lower)
+            new_str = new_str.replace("size", "%s_desc->mem_size" % local.prm.name_lower)
+            return new_str
+        elif type == Type.REMAP :
+            new_str = attribute
+            new_str = new_str.replace("source_width", "%s_desc->src_width" % local.prm.name_lower)
+            new_str = new_str.replace("source_height", "%s_desc->src_height" % local.prm.name_lower)
+            new_str = new_str.replace("destination_width", "%s_desc->dst_width" % local.prm.name_lower)
+            new_str = new_str.replace("destination_height", "%s_desc->dst_height" % local.prm.name_lower)
+            return new_str
+        elif type == Type.CONVOLUTION :
+            new_str = attribute
+            new_str = new_str.replace("rows", "%s_desc->rows" % local.prm.name_lower)
+            new_str = new_str.replace("columns", "%s_desc->columns" % local.prm.name_lower)
+            new_str = new_str.replace("size", "%s_desc->mem_size" % local.prm.name_lower)
+            new_str = new_str.replace("scale", "%s_desc->scale" % local.prm.name_lower)
+            return new_str
+        elif type == Type.OBJECT_ARRAY :
+            new_str = attribute
+            new_str = new_str.replace("numitems", "%s_desc->num_items" % local.prm.name_lower)
+            return new_str
+
+    # extracts from string written by user for local mem allocation
+    def is_supported_type(self, type):
+        if type == Type.IMAGE :
+            return True
+        elif type == Type.ARRAY :
+            return True
+        elif type == Type.PYRAMID :
+            return True
+        elif type == Type.MATRIX :
+            return True
+        elif type == Type.DISTRIBUTION :
+            return True
+        elif type == Type.REMAP :
+            return True
+        elif type == Type.CONVOLUTION :
+            return True
+        elif type == Type.LUT :
+            return True
+        elif type == Type.OBJECT_ARRAY :
+            return True
+        elif type == Type.NULL :
+            return True
+        else :
+            return False
+
+    # extracts from string written by user for local mem allocation
+    def extract_attribute(self, local, setting, is_first_prm):
+        invalid_type = False
+        if not is_first_prm :
+            self.target_c_code.write_line("if (VX_SUCCESS == status)")
+            self.target_c_code.write_open_brace()
+        if local.prm.type != Type.NULL :
+            # verifying that the optional parameter is being used
+            if ParamState.OPTIONAL == local.state :
+                self.target_c_code.write_line("if( %s_desc != NULL)" % local.prm.name_lower)
+                self.target_c_code.write_open_brace()
+        if local.prm.type == Type.IMAGE :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is ImageAttribute :
+                     if Attribute.Image.WIDTH == attr :
+                         append_str = ("%s_desc->imagepatch_addr[0].dim_x" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Image.HEIGHT == attr :
+                         append_str = ("%s_desc->imagepatch_addr[0].dim_y" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.ARRAY :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is ArrayAttribute :
+                     if Attribute.Array.CAPACITY == attr :
+                         append_str = ("%s_desc->capacity" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Array.ITEMTYPE == attr :
+                         append_str = ("%s_desc->item_type" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Array.NUMITEMS == attr :
+                         append_str = ("%s_desc->num_items" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Array.ITEMSIZE == attr :
+                         append_str = ("%s_desc->item_size" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.PYRAMID :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is PyramidAttribute :
+                     if Attribute.Pyramid.LEVELS == attr :
+                         append_str = ("%s_desc->num_levels" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.MATRIX :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is MatrixAttribute :
+                     if Attribute.Matrix.ROWS == attr :
+                         append_str = ("%s_desc->rows" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Matrix.COLUMNS == attr :
+                         append_str = ("%s_desc->columns" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Matrix.SIZE == attr :
+                         append_str = ("%s_desc->mem_size" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.DISTRIBUTION :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is DistributionAttribute :
+                     if Attribute.Distribution.DIMENSIONS == attr :
+                         append_str = ("1")
+                         size_str+=append_str
+                     elif Attribute.Distribution.OFFSET == attr :
+                         append_str = ("%s_desc->offset" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Distribution.RANGE == attr :
+                         append_str = ("%s_desc->range" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Distribution.BINS == attr :
+                         append_str = ("%s_desc->num_bins" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Distribution.WINDOW == attr :
+                         append_str = ("%s_desc->num_win" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Distribution.SIZE == attr :
+                         append_str = ("%s_desc->mem_size" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.LUT :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is LutAttribute :
+                     if Attribute.Lut.COUNT == attr :
+                         append_str = ("%s_desc->num_items" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Lut.SIZE == attr :
+                         append_str = ("%s_desc->mem_size" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.REMAP :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is RemapAttribute :
+                     if Attribute.Remap.SOURCE_WIDTH == attr :
+                         append_str = ("%s_desc->src_width" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Remap.SOURCE_HEIGHT == attr :
+                         append_str = ("%s_desc->src_height" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Remap.DESTINATION_WIDTH == attr :
+                         append_str = ("%s_desc->dst_width" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Remap.DESTINATION_HEIGHT == attr :
+                         append_str = ("%s_desc->dst_height" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.OBJECT_ARRAY :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is ObjectArrayAttribute :
+                     if Attribute.ObjectArray.NUMITEMS == attr :
+                         append_str = ("%s_desc->num_items" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.CONVOLUTION :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is ConvolutionAttribute :
+                     if Attribute.Convolution.ROWS == attr :
+                         append_str = ("%s_desc->rows" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Convolution.COLUMNS == attr :
+                         append_str = ("%s_desc->columns" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Convolution.SCALE == attr :
+                         append_str = ("%s_desc->scale" % local.prm.name_lower)
+                         size_str+=append_str
+                     elif Attribute.Convolution.SIZE == attr :
+                         append_str = ("%s_desc->mem_size" % local.prm.name_lower)
+                         size_str+=append_str
+                 elif type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = self.extract_local_mem_string(local.prm.type, attr, local)
+                     size_str+=append_str
+                 else :
+                    invalid_type = True
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+                 assert invalid_type == False, "'%s' contains an invalid attribute" % (local.prm.name_lower)
+        elif local.prm.type == Type.NULL :
+             size_str = ""
+             append_str = ""
+             for num, attr in enumerate(local.attribute_list, start=1):
+                 if type(attr) is int :
+                     append_str = ("%s" % attr)
+                     size_str+=append_str
+                 elif type(attr) is str :
+                     append_str = attr
+                     size_str+=append_str
+                 if num < len(local.attribute_list) :
+                     append_str = " * "
+                     size_str+=append_str
+        # setting 0 is for allocating mem; setting 1 is for setting mem to 0
+        if setting == 0 :
+            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify correct amount of memory is allocated >")
+            self.target_c_code.write_line("prms->%s_size = %s;" % (local.name, size_str) )
+            self.target_c_code.write_line("prms->%s_ptr = tivxMemAlloc(prms->%s_size, TIVX_MEM_EXTERNAL);" % (local.name, local.name) )
+            self.target_c_code.write_newline()
+            self.target_c_code.write_line("if (NULL == prms->%s_ptr)" % (local.name) )
+            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
+            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
+            self.target_c_code.write_close_brace()
+            if not is_first_prm :
+                self.target_c_code.write_close_brace()
+        elif setting == 1 :
+            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify memory setting to clear the correct amount of memory >")
+            self.target_c_code.write_line("memset(prms->%s_ptr, 0, %s);" % (local.name, size_str) )
+            if not is_first_prm :
+                self.target_c_code.write_close_brace()
+        if local.prm.type != Type.NULL :
+             # verifying that the optional parameter is being used
+             if ParamState.OPTIONAL == local.state :
+                 self.target_c_code.write_close_brace()
+
     def generate_target_c_create_func_code(self):
         self.target_c_code.write_line("static vx_status VX_CALLBACK tivx%sCreate(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
@@ -793,9 +1226,78 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        if self.kernel.localMem == True :
+            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating")
         self.target_c_code.write_comment_line("                  local memory buffers, one time initialization, etc) >")
+        if self.kernel.localMem == True :
+            # checks function parameters
+            self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+            for prm in self.kernel.params :
+                if prm.state is ParamState.REQUIRED :
+                    self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+            self.target_c_code.write_line(")")
+            self.target_c_code.write_open_brace()
+            # function parameters status check failure case
+            self.target_c_code.write_line("status = VX_FAILURE;")
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_line("else")
+            self.target_c_code.write_open_brace()
+
+            # declaring variables
+            duplicates = []
+            for local in self.kernel.local_mem_list :
+                 if local.prm.type != Type.NULL :
+                     if not (local.prm.name_lower in duplicates) :
+                         self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(local.prm.type), local.prm.name_lower) )
+                         duplicates.append(local.prm.name_lower)
+            self.target_c_code.write_newline()
+
+            # populating object descriptors
+            duplicates = []
+            for local in self.kernel.local_mem_list :
+                 if local.prm.type != Type.NULL :
+                     if not (local.prm.name_lower in duplicates) :
+                         self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
+                            (local.prm.name_lower, Type.get_obj_desc_name(local.prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, local.prm.name_upper) )
+                         duplicates.append(local.prm.name_lower)
+            self.target_c_code.write_newline()
+
+            # Allocating memory for local structure
+            self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel)
+            self.target_c_code.write_line("if (NULL != prms)")
+            self.target_c_code.write_open_brace()
+            # Allocating local memory data
+            is_first_prm = True
+            for local in self.kernel.local_mem_list :
+                 if self.is_supported_type(local.prm.type) :
+                     self.extract_attribute(local, 0, is_first_prm)
+                     is_first_prm = False
+            self.target_c_code.write_newline()
+            # verifying that the optional parameter is being used
+            for local in self.kernel.local_mem_list :
+                 if self.is_supported_type(local.prm.type) :
+                     self.extract_attribute(local, 1, is_first_prm)
+
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_line("else")
+            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
+            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_newline()
+            self.target_c_code.write_line("if (VX_SUCCESS == status)")
+            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,")
+            self.target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel)
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_line("else")
+            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
+            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
         self.target_c_code.write_line("return status;")
         self.target_c_code.write_close_brace()
@@ -808,9 +1310,39 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        if self.kernel.localMem == True :
+            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
+            self.target_c_code.write_line("uint32_t size;")
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel delete code here (e.g. freeing")
         self.target_c_code.write_comment_line("                  local memory buffers, etc) >")
+        if self.kernel.localMem == True :
+            # checks function parameters
+            self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+            for prm in self.kernel.params :
+                if prm.state is ParamState.REQUIRED :
+                    self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
+            self.target_c_code.write_line(")")
+            self.target_c_code.write_open_brace()
+            # function parameters status check failure case
+            self.target_c_code.write_line("status = VX_FAILURE;")
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_line("else")
+            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);")
+            self.target_c_code.write_newline()
+            self.target_c_code.write_line("if ((NULL != prms) &&")
+            self.target_c_code.write_line("    (sizeof(tivx%sParams) == size))" % self.kernel.name_camel)
+            self.target_c_code.write_open_brace()
+            for local in self.kernel.local_mem_list :
+                 if prm.type == Type.IMAGE :
+                     self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, TIVX_MEM_EXTERNAL);" %
+                         (local.name, local.name) )
+
+            self.target_c_code.write_line("tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);")
+            self.target_c_code.write_close_brace()
+            self.target_c_code.write_close_brace()
+
         self.target_c_code.write_newline()
         self.target_c_code.write_line("return status;")
         self.target_c_code.write_close_brace()
@@ -831,6 +1363,15 @@ class KernelExportCode :
         self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
+    def generate_target_c_struct(self):
+        self.target_c_code.write_line("typedef struct")
+        self.target_c_code.write_line("{")
+        for local in self.kernel.local_mem_list :
+             self.target_c_code.write_line("    void     *%s_ptr;" % local.name )
+             self.target_c_code.write_line("    uint32_t %s_size;" % local.name )
+        self.target_c_code.write_line("} tivx%sParams;" % self.kernel.name_camel)
+        self.target_c_code.write_newline()
+
     def generate_target_c_process_func_code(self):
         # define function name, and parameters
         self.target_c_code.write_line("static vx_status VX_CALLBACK tivx%sProcess(" % self.kernel.name_camel)
@@ -841,6 +1382,8 @@ class KernelExportCode :
 
         # define status variables and obj descriptor variable
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        if self.kernel.localMem == True :
+            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
         need_plane_idx_var = False
         need_pyramid_idx_var = False
         for prm in self.kernel.params :
@@ -867,7 +1410,7 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
         # checks function parameters
-        self.target_c_code.write_line("if ( num_params != %s%s_MAX_PARAMS" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+        self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
         for prm in self.kernel.params :
             if prm.state is ParamState.REQUIRED :
                 self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
@@ -878,12 +1421,36 @@ class KernelExportCode :
         # function parameters status check failure case
         self.target_c_code.write_line("status = VX_FAILURE;")
         self.target_c_code.write_close_brace()
+        self.target_c_code.write_newline()
 
-        self.target_c_code.write_line("else")
-
+        self.target_c_code.write_line("if(VX_SUCCESS == status)")
         self.target_c_code.write_open_brace()
 
+        if self.kernel.localMem == True :
+            self.target_c_code.write_line("uint32_t size;")
+
+        # assigned descriptors to local variables
+        for prm in self.kernel.params :
+            self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
+                (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
+        self.target_c_code.write_newline()
+
+        # retrieving prms struct for use
+        if self.kernel.localMem == True :
+            self.target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,")
+            self.target_c_code.write_line("    (void **)&prms, &size);")
+            self.target_c_code.write_line("if ((VX_SUCCESS != status) || (NULL == prms) ||")
+            self.target_c_code.write_line("    (sizeof(tivx%sParams) != size))" % self.kernel.name_camel)
+            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("status = VX_FAILURE;")
+            self.target_c_code.write_close_brace()
+
+        self.target_c_code.write_close_brace()
+        self.target_c_code.write_newline()
         # function parameters status check success case
+
+        self.target_c_code.write_line("if(VX_SUCCESS == status)")
+        self.target_c_code.write_open_brace()
 
         # define variables to hold scalar values
         for prm in self.kernel.params :
@@ -894,12 +1461,6 @@ class KernelExportCode :
         # assigned descriptors to local variables
         for prm in self.kernel.params :
             self.target_c_code.write_line("void *%s_target_ptr;" % prm.name_lower )
-        self.target_c_code.write_newline()
-
-        # assigned descriptors to local variables
-        for prm in self.kernel.params :
-            self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
-                (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
         self.target_c_code.write_newline()
 
         # convert descriptors pointer to target pointers
@@ -927,7 +1488,7 @@ class KernelExportCode :
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   %s->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                             else :
                                 self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
@@ -935,7 +1496,7 @@ class KernelExportCode :
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   %s->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                         elif prm.type == Type.PYRAMID or prm.type == Type.OBJECT_ARRAY:
                             if prm.type == Type.PYRAMID :
                                 self.target_c_code.write_line("tivxGetObjDescList(%s->obj_desc_id, (tivx_obj_desc_t**)img_%s, %s->num_levels);" % (desc, desc, desc) )
@@ -954,7 +1515,7 @@ class KernelExportCode :
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   img_%s[i]->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                                 self.target_c_code.write_close_brace()
                             else :
@@ -968,7 +1529,7 @@ class KernelExportCode :
                                 if prm.do_map :
                                     self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                                     self.target_c_code.write_line("   img_%s[i]->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                                    self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                                    self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                                 self.target_c_code.write_close_brace()
                     elif prm.type != Type.THRESHOLD:
                         self.target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
@@ -976,7 +1537,7 @@ class KernelExportCode :
                         if prm.do_map :
                             self.target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
                             self.target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)
-                            self.target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
+                            self.target_c_code.write_line("   %s);" % Direction.get_access_type(prm.direction))
                     if prm.state is ParamState.OPTIONAL:
                         self.target_c_code.write_close_brace()
                     self.target_c_code.write_newline()
@@ -1094,6 +1655,9 @@ class KernelExportCode :
         self.target_c_code.write_include("TI/tivx_target_kernel.h")
         self.target_c_code.write_include("tivx_kernels_target_utils.h")
         self.target_c_code.write_newline()
+        # Calling method for creating struct based on if localMem is needing to be allocated
+        if self.kernel.localMem == True :
+            self.generate_target_c_struct()
         self.target_c_code.write_line("static tivx_target_kernel vx_%s_target_kernel = NULL;" % (self.kernel.name_lower))
         self.target_c_code.write_newline()
 

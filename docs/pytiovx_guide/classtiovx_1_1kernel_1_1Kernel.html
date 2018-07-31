@@ -88,6 +88,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a32a4913e87c6c29fad0421dcb89995cf"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#a32a4913e87c6c29fad0421dcb89995cf">setParameter</a></td></tr>
 <tr class="memdesc:a32a4913e87c6c29fad0421dcb89995cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method used to set a parameter of the kernel; called for as many parameters as necessary.  <a href="#a32a4913e87c6c29fad0421dcb89995cf">More...</a><br/></td></tr>
 <tr class="separator:a32a4913e87c6c29fad0421dcb89995cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc6285e73826495d44e4bc6d8534a3b9"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#afc6285e73826495d44e4bc6d8534a3b9">allocateLocalMemory</a></td></tr>
+<tr class="memdesc:afc6285e73826495d44e4bc6d8534a3b9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method used to allocated local memory; called per instance of memory allocation.  <a href="#afc6285e73826495d44e4bc6d8534a3b9">More...</a><br/></td></tr>
+<tr class="separator:afc6285e73826495d44e4bc6d8534a3b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a318b5feffc879b8f8166c76308a6b996"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1kernel_1_1Kernel.html#a318b5feffc879b8f8166c76308a6b996">setParameterRelationship</a></td></tr>
 <tr class="memdesc:a318b5feffc879b8f8166c76308a6b996"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method used to set the relationship between two parameters of a kernels Information from this method used in validate stage Note: these parameters must have already been set prior to the invocation of this method.  <a href="#a318b5feffc879b8f8166c76308a6b996">More...</a><br/></td></tr>
 <tr class="separator:a318b5feffc879b8f8166c76308a6b996"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -249,6 +252,121 @@ Public Member Functions</h2></td></tr>
     <tr><td class="paramname">do_map</td><td>[in] [optional] Flag to indicate whether or not to do buffer mapping in target kernel; Default=True </td></tr>
     <tr><td class="paramname">do_unmap</td><td>[in] [optional] Flag to indicate whether or not to do buffer unmapping in target kernel; Default=True </td></tr>
     <tr><td class="paramname">do_map_unmap_all_planes</td><td>[in] [optional] Flag to indicate whether or not to do buffer unmapping for all planes in target kernel; Default=False </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="afc6285e73826495d44e4bc6d8534a3b9"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">def tiovx.kernel.Kernel.allocateLocalMemory </td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>self</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>local_mem_name</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>attribute_list</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname"><em>parameter_name</em> = <code>&quot;&quot;</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Method used to allocated local memory; called per instance of memory allocation. </p>
+<p>The allocateLocalMemory method generates OpenVX code for allocating and free-ing local memory based on characteristics of existing data objects or on constant values. The method works by specifying the name of the memory to be allocated, the attributes or constant values to use for determining the amount of memory allocation and optionally specifying the existing parameter in the case of using attributes for memory allocation. The attribute list can consist of a) a comma-separated list of Attributes of the respective data type as defined in enums.py b) a comma-separated list of integers or c) a string containing a mixture of keywords per data type and string literals to be passed to the memory allocation. Each element of this list is multiplied together to The list of keywords per data type can be found below. (Note: in the case of images, the respective attributes are taken from plane 0.)</p>
+<dl class="section user"><dt>Image:</dt><dd><ul>
+<li>width</li>
+<li>height</li>
+<li>stride_x</li>
+<li>stride_y </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Array:</dt><dd><ul>
+<li>capacity</li>
+<li>itemsize</li>
+<li>itemtype</li>
+<li>numitems </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Pyramid:</dt><dd><ul>
+<li>levels </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Matrix:</dt><dd><ul>
+<li>rows</li>
+<li>columns</li>
+<li>size </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Distribution:</dt><dd><ul>
+<li>dimensions</li>
+<li>offset</li>
+<li>range</li>
+<li>bins</li>
+<li>window</li>
+<li>size </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>LUT:</dt><dd><ul>
+<li>count</li>
+<li>size </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Remap:</dt><dd><ul>
+<li>source_width</li>
+<li>source_height</li>
+<li>destination_width</li>
+<li>destination_height </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Convolution:</dt><dd><ul>
+<li>rows</li>
+<li>columns</li>
+<li>size</li>
+<li>scale </li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Object Array:</dt><dd><ul>
+<li>numitems</li>
+</ul>
+</dd></dl>
+<dl class="section user"><dt>Example Usage #1:</dt><dd>Allocating memory based on attributes of existing image "IN_IMAGE"</dd></dl>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [Attribute.Image.WIDTH, Attribute.Image.HEIGHT], <span class="stringliteral">&quot;IN_IMAGE&quot;</span>)</div>
+</div><!-- fragment --><dl class="section user"><dt>Example Usage #2:</dt><dd>Alternative method of allocating memory from Example #1 based on string keywords.</dd></dl>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [<span class="stringliteral">&quot;width*height&quot;</span>], <span class="stringliteral">&quot;IN_IMAGE&quot;</span>)</div>
+</div><!-- fragment --><dl class="section user"><dt>Example Usage #3:</dt><dd>Combining attribute method of allocation with an integer. The example below allocates 2 * width * height.</dd></dl>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [2, Attribute.Image.WIDTH, Attribute.Image.HEIGHT], <span class="stringliteral">&quot;IN_IMAGE&quot;</span>)</div>
+</div><!-- fragment --><dl class="section user"><dt>Example Usage #4:</dt><dd>Combining all methods for allocating memory. The output from this example will allocate width * height * 2 * width * height.</dd></dl>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [<span class="stringliteral">&quot;width*height&quot;</span>, 2, Attribute.Image.WIDTH, Attribute.Image.HEIGHT], <span class="stringliteral">&quot;IN_IMAGE&quot;</span>)</div>
+</div><!-- fragment --><dl class="section user"><dt>Example Usage #5:</dt><dd>Using non-keywords for string allocation method. The string method of allocation can also take other arguments such as "sizeof" and copies the string directly. Therefore, if there are errors in the string literal then there will be errors in the output result.</dd></dl>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [<span class="stringliteral">&quot;width*height*sizeof(uint32_t)&quot;</span>], <span class="stringliteral">&quot;IN_IMAGE&quot;</span>)</div>
+</div><!-- fragment --><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">local_mem_name</td><td>[in] Name of scratch memory pointer to be allocated </td></tr>
+    <tr><td class="paramname">attribute_list</td><td>[in] Attribute list to determine amount of memory to be allocated </td></tr>
+    <tr><td class="paramname">parameter_name</td><td>[in] [optional] Existing parameter of which previous list of attributes is based </td></tr>
   </table>
   </dd>
 </dl>

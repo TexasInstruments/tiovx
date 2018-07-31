@@ -91,6 +91,16 @@ class KernelParamRelationship :
     def __str__(self):
         return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + type + " " + state
 
+class KernelLocalMem :
+    def __init__(self, prm, attribute_list, name, state):
+        self.attribute_list = attribute_list
+        self.prm = prm
+        self.state = state
+        self.name = name
+
+    def __str__(self):
+        return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + " " + state
+
 ## Kernel class containing parameter information
 #
 # \par Example Usage: Initializing kernel object with specified kernel name
@@ -118,6 +128,10 @@ class Kernel  :
         self.targets = []
         self.relationship_list = []
         self.relationship_list_index = 0
+        self.local_mem_list = []
+        self.local_mem_list_index = 0
+        self.localMem = False
+        self.local_mem_name_list = []
 
     def setKernelPrefix(self, name_str_prefix, enum_str_prefix) :
         self.name_str_prefix = name_str_prefix
@@ -165,6 +179,131 @@ class Kernel  :
         params = KernelParams(self.index, type, direction, state, name, data_types, do_map, do_unmap, do_map_unmap_all_planes);
         self.params.append(params)
         self.index = self.index + 1
+
+    ## Method used to allocated local memory; called per instance of memory allocation
+    #
+    #  The allocateLocalMemory method generates OpenVX code for allocating and free-ing local memory based
+    #  on characteristics of existing data objects or on constant values. The method works by specifying
+    #  the name of the memory to be allocated, the attributes or constant values to use for determining
+    #  the amount of memory allocation and optionally specifying the existing parameter in the case of
+    #  using attributes for memory allocation. The attribute list can consist of a) a comma-separated list
+    #  of Attributes of the respective data type as defined in enums.py b) a comma-separated list of
+    #  integers or c) a string containing a mixture of keywords per data type and string literals to be
+    #  passed to the memory allocation. Each element of this list is multiplied together to The list of 
+    #  keywords per data type can be found below. (Note: in the case of images, the respective attributes
+    #  are taken from plane 0.)
+    #
+    #  \par Image:
+    #      - width
+    #      - height
+    #      - stride_x
+    #      - stride_y
+    #  \par Array:
+    #      - capacity
+    #      - itemsize
+    #      - itemtype
+    #      - numitems
+    #  \par Pyramid:
+    #      - levels
+    #  \par Matrix:
+    #      - rows
+    #      - columns
+    #      - size
+    #  \par Distribution:
+    #      - dimensions
+    #      - offset
+    #      - range
+    #      - bins
+    #      - window
+    #      - size
+    #  \par LUT:
+    #      - count
+    #      - size
+    #  \par Remap:
+    #      - source_width
+    #      - source_height
+    #      - destination_width
+    #      - destination_height
+    #  \par Convolution:
+    #      - rows
+    #      - columns
+    #      - size
+    #      - scale
+    #  \par Object Array:
+    #      - numitems
+    #
+    # \par Example Usage #1:
+    #  Allocating memory based on attributes of existing image "IN_IMAGE"
+    #
+    # \code
+    # kernel.allocateLocalMemory("img_scratch_mem", [Attribute.Image.WIDTH, Attribute.Image.HEIGHT], "IN_IMAGE")
+    # \endcode
+    #
+    # \par Example Usage #2:
+    # Alternative method of allocating memory from Example #1 based on string keywords.
+    #
+    # \code
+    # kernel.allocateLocalMemory("img_scratch_mem", ["width*height"], "IN_IMAGE")
+    # \endcode
+    #
+    # \par Example Usage #3:
+    # Combining attribute method of allocation with an integer. The example below allocates 2 * width * height.
+    #
+    # \code
+    # kernel.allocateLocalMemory("img_scratch_mem", [2, Attribute.Image.WIDTH, Attribute.Image.HEIGHT], "IN_IMAGE")
+    # \endcode
+    #
+    # \par Example Usage #4:
+    # Combining all methods for allocating memory. The output from this example will allocate width * height * 2 * width * height.
+    #
+    # \code
+    # kernel.allocateLocalMemory("img_scratch_mem", ["width*height", 2, Attribute.Image.WIDTH, Attribute.Image.HEIGHT], "IN_IMAGE")
+    # \endcode
+    #
+    # \par Example Usage #5:
+    # Using non-keywords for string allocation method. The string method of allocation can also take other arguments such as "sizeof"
+    # and copies the string directly. Therefore, if there are errors in the string literal then there will be errors in the output result.
+    #
+    # \code
+    # kernel.allocateLocalMemory("img_scratch_mem", ["width*height*sizeof(uint32_t)"], "IN_IMAGE")
+    # \endcode
+    #
+    # \param local_mem_name          [in] Name of scratch memory pointer to be allocated
+    # \param attribute_list          [in] Attribute list to determine amount of memory to be allocated
+    # \param parameter_name          [in] [optional] Existing parameter of which previous list of attributes is based
+    def allocateLocalMemory(self, local_mem_name, attribute_list, parameter_name=""):
+        self.localMem = True
+
+        local_prm = Null()
+        required = 0
+        optional = 0
+        first_required = 0
+        in_list = False
+
+        if local_mem_name in self.local_mem_name_list :
+            in_list = True
+        else :
+            self.local_mem_name_list.append(local_mem_name)
+
+        assert in_list == False, "'%s' was already used as local memory name" % local_mem_name
+
+        # Get params from names
+        if parameter_name :
+            found = False
+            for prm in self.params :
+                if parameter_name.lower() == prm.name_lower :
+                    if KernelExportCode.is_supported_type(self, prm.type):
+                        local_prm = prm
+                        found = True
+                        break
+            assert found == True, "'%s' was not found in image parameter list" % parameter_name
+
+        if parameter_name :
+            localmem = KernelLocalMem(local_prm, attribute_list, local_mem_name, local_prm.state)
+        else :
+            localmem = KernelLocalMem(local_prm, attribute_list, local_mem_name, ParamState.REQUIRED)
+        self.local_mem_list.append(localmem)
+        self.local_mem_list_index = self.local_mem_list_index + 1
 
     def getNumImages(self) :
         num_images = 0

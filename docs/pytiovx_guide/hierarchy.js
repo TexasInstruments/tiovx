@@ -76,6 +76,7 @@ var hierarchy =
     ] ],
     [ "tiovx.enums.NonLinearFilter", "classtiovx_1_1enums_1_1NonLinearFilter.html", null ],
     [ "tiovx.enums.Norm", "classtiovx_1_1enums_1_1Norm.html", null ],
+    [ "tiovx.null.Null", "classtiovx_1_1null_1_1Null.html", null ],
     [ "tiovx.objectarray.ObjectArray", "classtiovx_1_1objectarray_1_1ObjectArray.html", null ],
     [ "tiovx.attribute.ObjectArrayAttribute", "classtiovx_1_1attribute_1_1ObjectArrayAttribute.html", null ],
     [ "tiovx.enums.ParamState", "classtiovx_1_1enums_1_1ParamState.html", null ],

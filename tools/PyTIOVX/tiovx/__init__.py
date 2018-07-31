@@ -99,12 +99,13 @@ from .objectarray import *
 from .export import *
 from .export_image import *
 from .export_code import *
-from .kernel import *
+from .null import *
 from .attribute import *
 from .kernel_code import *
+from .kernel import *
 
 from .array import *
-from .null import *
+
 
 
 
