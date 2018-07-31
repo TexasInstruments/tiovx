@@ -428,6 +428,30 @@ class Target(Enum) :
 
         return None
 
+    def is_j6_target(target) :
+        if target == Target.DSP1 :
+            return True
+        if target == Target.DSP2 :
+            return True
+        if target == Target.EVE1 :
+            return True
+        if target == Target.EVE2 :
+            return True
+        if target == Target.EVE3 :
+            return True
+        if target == Target.EVE4 :
+            return True
+        if target == Target.A15_0 :
+            return True
+        if target == Target.IPU1_0 :
+            return True
+        if target == Target.IPU1_1 :
+            return True
+        if target == Target.IPU2 :
+            return True
+
+        return False
+
     def get_cpu(target) :
         if target == Target.DSP1 :
             return Cpu.DSP1
