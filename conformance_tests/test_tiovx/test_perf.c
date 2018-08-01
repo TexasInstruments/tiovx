@@ -123,8 +123,8 @@ void PrintPerf(vx_perf_t graph, vx_perf_t node, uint32_t width,  uint32_t height
         fprintf(perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
     else
         fprintf(perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
-    fprintf(perf_file, "%s%4d.%-6d%s\n", "<td>", (uint32_t)(graph.max/1000000), (uint32_t)(graph.max%1000000), "</td>");
-    fprintf(perf_file, "%s%4d.%-6d%s\n", "<td>", (uint32_t)(node.max/1000000), (uint32_t)(node.max%1000000), "</td>");
+    fprintf(perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
+    fprintf(perf_file, "%s%4.6f%s\n", "<td>", node.max/1000000.0, "</td>");
     fprintf(perf_file, "%s\n", " </tr>");
 }
 

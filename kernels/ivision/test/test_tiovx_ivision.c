@@ -72,15 +72,12 @@ static uint32_t gIsIVisionKernelsLoad = 0u;
 
 void IVisionPrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName)
 {
-    printf("[ %c%c ] Execution time for %9d pixels (avg = %4d.%-6d ms, min = %4d.%-6d ms, max = %4d.%-6d ms)\n",
+    printf("[ %c%c ] Execution time for %9d pixels (avg = %4.6f ms, min = %4.6f ms, max = %4.6f ms)\n",
         testName[0], testName[1],
         (int)numPixels,
-        (int)(performance.avg/1000000),
-        (int)(performance.avg%1000000),
-        (int)(performance.min/1000000),
-        (int)(performance.min%1000000),
-        (int)(performance.max/1000000),
-        (int)(performance.max%1000000)
+        performance.avg/1000000.0,
+        performance.min/1000000.0,
+        performance.max/1000000.0
         );
 }
 
