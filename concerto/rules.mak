@@ -24,7 +24,7 @@ rwildcard = $(foreach d,$(wildcard $1*),$(call rwildcard,$d/,$2) $(filter $(subs
 
 # Define all but don't do anything with it yet.
 .PHONY: all
-all::
+all:
 
 # Remove the implicit rules for compiling.
 .SUFFIXES:
@@ -112,7 +112,10 @@ ifndef NO_TARGETS
 
 depend::
 
-all:: build
+all: release
+
+release: build
+	$(foreach joined,$(JOINED_OUTS),$(call RELEASE_OUT,$(call LOCAL_TARGET_OUT, $(joined)), $(call LOCAL_TARGET_LIB_OUT, $(joined)) ))
 
 build:: dir depend
 
@@ -219,9 +222,6 @@ define RELEASE_OUT
 	-$(Q)$(COPY) $(1)/*.lib $(2) $(QUIET) || true
 
 endef
-
-release:
-	$(foreach joined,$(JOINED_OUTS),$(call RELEASE_OUT,$(call LOCAL_TARGET_OUT, $(joined)), $(call LOCAL_TARGET_LIB_OUT, $(joined)) ))
 
 doxy_docs:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
