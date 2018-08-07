@@ -132,6 +132,7 @@ class Kernel  :
         self.local_mem_list_index = 0
         self.localMem = False
         self.local_mem_name_list = []
+        self.parameter_name_list = []
 
     def setKernelPrefix(self, name_str_prefix, enum_str_prefix) :
         self.name_str_prefix = name_str_prefix
@@ -176,6 +177,15 @@ class Kernel  :
     # \param do_unmap                [in] [optional] Flag to indicate whether or not to do buffer unmapping in target kernel; Default=True
     # \param do_map_unmap_all_planes [in] [optional] Flag to indicate whether or not to do buffer unmapping for all planes in target kernel; Default=False
     def setParameter(self, type, direction, state, name, data_types=[], do_map=True, do_unmap=True, do_map_unmap_all_planes=False):
+        in_list = False
+
+        if name in self.parameter_name_list :
+            in_list = True
+        else :
+            self.parameter_name_list.append(name)
+
+        assert in_list == False, "'%s' was already used as local memory name" % name
+
         params = KernelParams(self.index, type, direction, state, name, data_types, do_map, do_unmap, do_map_unmap_all_planes);
         self.params.append(params)
         self.index = self.index + 1
