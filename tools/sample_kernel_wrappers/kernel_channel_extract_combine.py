@@ -17,7 +17,7 @@ kernel.setTarget(Target.DSP1)
 kernel.setTarget(Target.DSP2)
 
 code.export(kernel)
-
+code.exportDiagram(kernel)
 
 
 
@@ -33,3 +33,4 @@ kernel.setTarget(Target.DSP1)
 kernel.setTarget(Target.DSP2)
 
 code.export(kernel)
+code.exportDiagram(kernel)

@@ -172,6 +172,96 @@ class KernelExportCode :
         else:
             self.kernels_header_extension = "_priv";
 
+    def getDataColor(self, ref) :
+        return "GhostWhite"
+
+    def outputData(self, data) :
+        self.file.write('  %s [color=%s, style=filled]\n' % (data.name_lower, self.getDataColor(data)))
+
+    def outputDataList(self, kernel) :
+        self.file.write('\n')
+        self.file.write('  /* DATA OBJECTS */\n')
+        for ref in kernel.params :
+            self.outputData(ref)
+        self.file.write('\n')
+
+    def getTargetColor(self, target) :
+        if target == Target.DSP1 :
+            return "palegreen"
+        if target == Target.DSP2 :
+            return "darkturquoise"
+        if target == Target.EVE1 :
+            return "yellow"
+        if target == Target.EVE2 :
+            return "gold"
+        if target == Target.EVE3 :
+            return "orange"
+        if target == Target.EVE4 :
+            return "goldenrod4"
+        if target == Target.A15_0 :
+            return "lightblue"
+        if target == Target.IPU1_0 :
+            return "grey"
+        if target == Target.IPU1_1 :
+            return "LightSalmon"
+        if target == Target.IPU2 :
+            return "MediumOrchid"
+        return "white"
+
+    def outputNode(self, kernel) :
+        self.file.write('  %s [label=\"%s\", color=%s, style=filled]\n' % (kernel.name_lower, kernel.name_lower, self.getTargetColor(kernel.targets[0])) )
+
+    def outputNodeList(self, kernel) :
+        self.file.write('\n')
+        self.file.write('  /* NODE OBJECTS */\n')
+        self.outputNode(kernel)
+        self.file.write('\n')
+
+    def outputNodeConnection(self, kernel) :
+        idx = 0
+        for prm in kernel.params :
+            if prm.direction == Direction.INPUT :
+                self.file.write('  %s -> %s [taillabel=%d, labeldistance=3]\n' % (prm.name_lower, kernel.name_lower, idx))
+            else :
+                self.file.write('  %s -> %s [headlabel=%d, labeldistance=3]\n' % (kernel.name_lower, prm.name_lower, idx))
+            idx = idx + 1
+
+    def outputNodeConnectionList(self, kernel) :
+        self.file.write('\n')
+        self.file.write('  /* NODE CONNECTIONS */\n')
+        self.outputNodeConnection(kernel)
+        self.file.write('\n')
+
+    ## Export object as C source code
+    #
+    def exportDiagram(self, kernel) :
+        print ('Generating image from OpenVX kernel ...')
+        self.filename_prefix = kernel.name_lower
+        self.filename = kernel.name_lower + "_img.txt"
+        self.filenameJpg = kernel.name_lower + ".jpg"
+        self.file = None
+
+        self.file = open(self.filename, 'w')
+        self.file.write('digraph %s {\n' % kernel.name_lower)
+        self.file.write('\n')
+        self.file.write('  label = \"%s\"\n' % kernel.name_lower)
+        self.outputDataList(kernel)
+        self.outputNodeList(kernel)
+        self.outputNodeConnectionList(kernel)
+        self.file.write('\n')
+        self.file.write('}\n')
+        self.file.close()
+
+        try :
+            command_str = 'dot %s -Tjpg -o%s' % (self.filename, self.filenameJpg)
+            command_args = ['dot', self.filename, '-Tjpg','-o%s' % self.filenameJpg]
+            print('Executing dot tool command ... [' + command_str + ']')
+            subprocess.call(command_args)
+            print ('Generating image from OpenVX context ... DONE !!!')
+        except FileNotFoundError:
+            print('ERROR: \'dot\' tool not found. Make sure \'graphviz\' is installed and \'dot\' command is added to system PATH !!!')
+            print('ERROR: Cannot generate .jpg file !!!')
+
 
     def setCompanyDirectory(self, company) :
         self.company = company

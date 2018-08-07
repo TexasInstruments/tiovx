@@ -106,3 +106,4 @@ kernel.setTarget(Target.EVE3)
 kernel.setTarget(Target.EVE4)
 
 code.export(kernel)
+code.exportDiagram(kernel)
