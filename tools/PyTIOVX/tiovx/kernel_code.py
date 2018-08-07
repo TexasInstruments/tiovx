@@ -2179,7 +2179,7 @@ class KernelExportCode :
         self.generate_bam_target_c_remove_func_code()
         self.bam_target_c_code.close()
 
-    def generate_make_files(self) :
+    def generate_make_files(self, kernel) :
         self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
         if not os.path.exists(self.concerto_inc_filename):
             print("Creating " + self.concerto_inc_filename)
@@ -2232,11 +2232,11 @@ class KernelExportCode :
             self.module_host_concerto_code.write_line("endif")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-            self.module_host_concerto_code.write_line("SKIPBUILD=1")
+            self.module_host_concerto_code.write_line("SKIPBUILD=0")
             self.module_host_concerto_code.write_line("endif")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-            self.module_host_concerto_code.write_line("SKIPBUILD=1")
+            self.module_host_concerto_code.write_line("SKIPBUILD=0")
             self.module_host_concerto_code.write_line("endif")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("include $(FINALE)")
@@ -2275,20 +2275,45 @@ class KernelExportCode :
             self.module_target_concerto_code.write_line("DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
+            targetListContainsC66 = False
+            targetListContainsEVE = False
+            targetListContainsA15 = False
+            targetListContainsM4  = False
+            for tar in kernel.targets :
+                if tar == Target.DSP1 or tar == Target.DSP2 :
+                    targetListContainsC66 = True
+                if tar == Target.EVE1 or tar == Target.EVE2 or tar == Target.EVE3 or tar == Target.EVE4 :
+                    targetListContainsEVE = True
+                if tar == Target.A15_0 :
+                    targetListContainsA15 = True
+                if tar == Target.IPU1_0 or tar == Target.IPU1_1 or tar == Target.IPU2 :
+                    targetListContainsM4  = True
             self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
-            self.module_target_concerto_code.write_line("SKIPBUILD=1")
+            if targetListContainsC66 :
+                self.module_target_concerto_code.write_line("SKIPBUILD=0")
+            else :
+                self.module_target_concerto_code.write_line("SKIPBUILD=1")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
             self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),EVE)")
-            self.module_target_concerto_code.write_line("SKIPBUILD=1")
+            if targetListContainsEVE :
+                self.module_target_concerto_code.write_line("SKIPBUILD=0")
+            else :
+                self.module_target_concerto_code.write_line("SKIPBUILD=1")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
             self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-            self.module_target_concerto_code.write_line("SKIPBUILD=1")
+            if targetListContainsA15 :
+                self.module_target_concerto_code.write_line("SKIPBUILD=0")
+            else :
+                self.module_target_concerto_code.write_line("SKIPBUILD=1")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
             self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-            self.module_target_concerto_code.write_line("SKIPBUILD=1")
+            if targetListContainsM4 :
+                self.module_target_concerto_code.write_line("SKIPBUILD=0")
+            else :
+                self.module_target_concerto_code.write_line("SKIPBUILD=1")
             self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
             self.module_target_concerto_code.write_line("include $(FINALE)")
@@ -2314,11 +2339,11 @@ class KernelExportCode :
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-            self.module_test_concerto_code.write_line("SKIPBUILD=1")
+            self.module_test_concerto_code.write_line("SKIPBUILD=0")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-            self.module_test_concerto_code.write_line("SKIPBUILD=1")
+            self.module_test_concerto_code.write_line("SKIPBUILD=0")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("include $(FINALE)")
@@ -2977,7 +3002,7 @@ class KernelExportCode :
         print ('Creating new directories ...')
         self.create_all_directories()
         print ('Creating new makefiles ...')
-        self.generate_make_files()
+        self.generate_make_files(kernel)
         print ('Creating new headers ...')
         self.generate_headers()
         print ('Creating new module-level sources ...')
