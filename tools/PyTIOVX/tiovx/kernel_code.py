@@ -2605,7 +2605,7 @@ class KernelExportCode :
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
             for target in self.kernel.targets :
                 if Target.is_j6_target(target) :
-                    self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_%s);" % target.name)
+                    self.host_kernels_code.write_line("tivxSetSelfCpuId(%s);" % Cpu.get_vx_enum_name(Target.get_cpu(target)))
                     self.host_kernels_code.write_line("tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels();")
                 else :
                     self.host_kernels_code.write_line("tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);")
