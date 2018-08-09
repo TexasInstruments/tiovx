@@ -1639,8 +1639,9 @@ class KernelExportCode :
 
         # assigned descriptors to local variables
         for prm in self.kernel.params :
-            self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
-                (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
+            if prm.do_map or prm.do_unmap :
+                self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
+                    (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
         self.target_c_code.write_newline()
 
         # retrieving prms struct for use
@@ -1767,12 +1768,32 @@ class KernelExportCode :
                     self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
+        # Setting up bufparams and pointer location in case of image
+        self.target_c_code.write_open_brace()
+        for prm in self.kernel.params :
+            if prm.type == Type.IMAGE and (prm.do_map or prm.do_unmap):
+                self.target_c_code.write_line("VXLIB_bufParams2D_t vxlib_%s;" % prm.name_lower)
+                self.target_c_code.write_line("uint8_t *%s_addr = NULL;" % prm.name_lower)
+        self.target_c_code.write_newline()
+        for prm in self.kernel.params :
+            desc = prm.name_lower + "_desc"
+            if prm.type == Type.IMAGE and (prm.do_map or prm.do_unmap):
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_line("if( %s != NULL)" % desc)
+                    self.target_c_code.write_open_brace()
+                self.target_c_code.write_line("tivxInitBufParams(%s, &vxlib_%s);" % (desc, prm.name_lower) )
+                self.target_c_code.write_line("tivxSetPointerLocation(%s, &%s_target_ptr, &%s_addr);" % (desc, prm.name_lower, prm.name_lower) )
+                if prm.state is ParamState.OPTIONAL:
+                    self.target_c_code.write_close_brace()
+                self.target_c_code.write_newline()
+
         self.target_c_code.write_comment_line("call kernel processing function")
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: Add target kernel processing code here >")
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("kernel processing function complete")
         self.target_c_code.write_newline()
+        self.target_c_code.write_close_brace()
 
         # unmap descriptors pointer
         for prm in self.kernel.params :
