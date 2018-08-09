@@ -64,46 +64,13 @@
 #include <TI/tda4x.h>
 #include "tivx_tidl_kernels.h"
 
-static vx_status VX_CALLBACK publishKernels(vx_context context);
-static vx_status VX_CALLBACK unPublishKernels(vx_context context);
-
 static uint32_t gIsTIDLKernelsLoad = 0u;
-
-vx_status tivxAddKernelTIDL(vx_context context);
-vx_status tivxRemoveKernelTIDL(vx_context context);
-
-static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
-    {tivxAddKernelTIDL, tivxRemoveKernelTIDL}
-};
-
-static vx_status VX_CALLBACK publishKernels(vx_context context)
-{
-    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
-}
-
-static vx_status VX_CALLBACK unPublishKernels(vx_context context)
-{
-    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
-}
-
-void tivxRegisterTIDLKernels(void)
-{
-    tivxRegisterModule(TIVX_MODULE_NAME_TIDL, publishKernels, unPublishKernels);
-}
-
-void tivxUnRegisterTIDLKernels(void)
-{
-    tivxUnRegisterModule(TIVX_MODULE_NAME_TIDL);
-}
 
 void tivxTIDLLoadKernels(vx_context context)
 {
     if ((0 == gIsTIDLKernelsLoad) && (NULL != context))
     {
         void tivxSetSelfCpuId(vx_enum cpu_id);
-
-        tivxRegisterTIDLKernels();
-        vxLoadKernels(context, TIVX_MODULE_NAME_TIDL);
 
         /* These three lines only work on PC emulation mode ...
          * this will need to be updated when moving to target */
@@ -119,9 +86,6 @@ void tivxTIDLUnLoadKernels(vx_context context)
 {
     if ((1u == gIsTIDLKernelsLoad) && (NULL != context))
     {
-        vxUnloadKernels(context, TIVX_MODULE_NAME_TIDL);
-        tivxUnRegisterTIDLKernels();
-
         /* This line only work on PC emulation mode ...
          * this will need to be updated when moving to target */
 

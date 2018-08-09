@@ -278,25 +278,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
 
 /*! \brief [Graph] Creates a TIDL Node.
  * \param [in] graph The reference to the graph.
- * \param [in] config The configuration.
- * \param [in] network The network.
- * \param [in] input The input tensor.
- * \param [out] output The output tensor.
+ * \param [in] Array of vx_reference params.
  * \see <tt>TIVX_KERNEL_TIDL_NAME</tt>
  * \ingroup group_vision_function_tidl
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
-                                              vx_array  config,
-                                              vx_tensor network,
-                                              vx_tensor input,
-                                              vx_tensor output);
+                                              vx_kernel kernel,
+                                              vx_reference params[],
+                                              vx_uint32 num_params);
 
 #ifdef __cplusplus
 }
 #endif
 
 #endif /* TDA4X_NODES_H_ */
-
-

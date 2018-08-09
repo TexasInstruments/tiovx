@@ -66,7 +66,6 @@
 #include <TI/tda4x.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_alg_ivision_if.h>
-#include <tivx_kernel_tidl.h>
 #include "itidl_ti.h"
 
 /* This is to be removed in future TIDL algo releases. */
@@ -110,7 +109,7 @@ static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDe
   uint16_t numBuffs = 0;
 
   //Currently only one input buffer supported
-  for(numBuffs = 0; numBuffs < 1; numBuffs++)
+  for(numBuffs = 0; numBuffs < pConfig->numInputBuf; numBuffs++)
   {
     BufDescList[numBuffs].numPlanes                          = 1;
     BufDescList[numBuffs].bufPlanes[0].frameROI.topLeft.x    = 0;
@@ -139,7 +138,7 @@ static int32_t tidl_AllocNetOutputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufD
   uint16_t numBuffs = 0;
 
   //Currently only one output buffer supported
-  for(numBuffs = 0; numBuffs < 1; numBuffs++)
+  for(numBuffs = 0; numBuffs < pConfig->numOutputBuf; numBuffs++)
   {
       BufDescList[numBuffs].numPlanes                          = 1;
       BufDescList[numBuffs].bufPlanes[0].frameROI.topLeft.x    = 0;
@@ -173,33 +172,20 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 {
     vx_status status = VX_SUCCESS;
 
-    tivx_obj_desc_tensor_t *inTensor;
-    tivx_obj_desc_tensor_t *outTensor;
-
     tivxTIDLParams *prms;
     uint32_t i, size;
 
-    if (num_params != TIVX_KERNEL_TIDL_MAX_PARAMS)
+    for (i = 0U; i < num_params; i ++)
     {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_TIDL_MAX_PARAMS; i ++)
+        if (NULL == obj_desc[i])
         {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
+            status = VX_FAILURE;
+            break;
         }
     }
 
     if (VX_SUCCESS == status)
     {
-        inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[TIVX_KERNEL_TIDL_IN_TENSOR_IDX];
-        outTensor = (tivx_obj_desc_tensor_t *)obj_desc[TIVX_KERNEL_TIDL_OUT_TENSOR_IDX];
-
         status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
 
         if ((VX_SUCCESS != status) || (NULL == prms) ||  (sizeof(tivxTIDLParams) != size))
@@ -210,15 +196,33 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     if (VX_SUCCESS == status)
     {
-        void *in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
-        void *out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
+        tivx_obj_desc_tensor_t *inTensor;
+        tivx_obj_desc_tensor_t *outTensor;
 
-        tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-        tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-
-        prms->inBufDesc[0].bufPlanes[0].buf = in_tensor_target_ptr;
-        prms->outBufDesc[0].bufPlanes[0].buf = out_tensor_target_ptr;
-
+        void *in_tensor_target_ptr;
+        void *out_tensor_target_ptr;
+        
+        /* Idx 0 - config data, Idx 1 - network data, Idx 2 - input tensor */
+        uint32_t in_tensor_idx = 2;
+        
+        /* Idx N - output tensors, where N = Idx 2 + number of input tensors */
+        uint32_t out_tensor_idx = in_tensor_idx + prms->inBufs.numBufs;
+        uint32_t id;
+        
+        for(id = 0; id < prms->inBufs.numBufs; id++) {
+            inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
+            in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+            prms->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
+        }
+        
+        for(id = 0; id < prms->outBufs.numBufs; id++) {
+            outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
+            out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+            prms->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
+        }
+        
         status = tivxAlgiVisionProcess
                  (
                     prms->algHandle,
@@ -228,9 +232,17 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
                     (IVISION_OutArgs *)&prms->outArgs
                  );
 
-        tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-        tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        for(id = 0; id < prms->inBufs.numBufs; id++) {
+            inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
+            in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
+            tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        }
 
+        for(id = 0; id < prms->outBufs.numBufs; id++) {
+            outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
+            out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
+            tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        }
     }
 
     return (status);
@@ -255,26 +267,22 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     uint32_t i;
 
-    if (num_params != TIVX_KERNEL_TIDL_MAX_PARAMS)
+    for (i = 0U; i < num_params; i ++)
     {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_TIDL_MAX_PARAMS; i ++)
+        if (NULL == obj_desc[i])
         {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
+            status = VX_FAILURE;
+            break;
         }
     }
 
     if (VX_SUCCESS == status)
     {
-        config    = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_TIDL_CONFIG_IDX];
-        network   = (tivx_obj_desc_tensor_t *)obj_desc[TIVX_KERNEL_TIDL_NETWORK_IDX];
+        /* IMPORTANT! Config data is assumed to be available at index 0 */
+        config    = (tivx_obj_desc_array_t *)obj_desc[0];
+
+        /* IMPORTANT! Network data is assumed to be available at index 1 */
+        network   = (tivx_obj_desc_tensor_t *)obj_desc[1];
 
         prms = tivxMemAlloc(sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
 
@@ -367,19 +375,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
     uint32_t size;
     tivxTIDLParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_TIDL_MAX_PARAMS)
+    for (i = 0U; i < num_params; i ++)
     {
-        status = VX_FAILURE;
-    }
-    else
-    {
-        for (i = 0U; i < TIVX_KERNEL_TIDL_MAX_PARAMS; i ++)
+        if (NULL == obj_desc[i])
         {
-            if (NULL == obj_desc[i])
-            {
-                status = VX_FAILURE;
-                break;
-            }
+            status = VX_FAILURE;
+            break;
         }
     }
 

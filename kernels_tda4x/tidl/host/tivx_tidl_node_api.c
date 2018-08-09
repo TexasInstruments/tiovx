@@ -66,22 +66,14 @@
 #include <TI/tda4x.h>
 
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
-                                              vx_array  config,
-                                              vx_tensor network,
-                                              vx_tensor input,
-                                              vx_tensor output)
+                                              vx_kernel kernel,
+                                              vx_reference params[],
+                                              vx_uint32 num_params)
 {
-    vx_reference params[] = {
-            (vx_reference)config,
-            (vx_reference)network,
-            (vx_reference)input,
-            (vx_reference)output,
-    };
 
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                              TIVX_KERNEL_TIDL_NAME,
-                                              params,
-                                              dimof(params));
+    vx_node node = tivxCreateNodeByKernelRef(graph,
+                                             kernel,
+                                             params,
+                                             num_params);
     return node;
 }
-

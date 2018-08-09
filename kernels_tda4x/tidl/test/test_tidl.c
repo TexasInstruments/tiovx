@@ -73,7 +73,10 @@ TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
 
-static vx_array readConfig(vx_context context, char *config_file)
+vx_status tivxAddKernelTIDL(vx_context context, uint32_t num_input_tensors, uint32_t num_output_tensors);
+vx_status tivxRemoveKernelTIDL(vx_context context);
+
+static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
 {
   vx_status status = VX_SUCCESS;
 
@@ -115,6 +118,9 @@ static vx_array readConfig(vx_context context, char *config_file)
   {
     vxAddArrayItems(config_array, sizeof(sTIDL_IOBufDesc_t), (void *)ioBufDesc, stride);
   }
+
+  *num_input_tensors  = ioBufDesc->numInputBuf;
+  *num_output_tensors = ioBufDesc->numOutputBuf;
 
   tivxMemFree(ioBufDesc, capacity, TIVX_MEM_EXTERNAL);
 
@@ -397,6 +403,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   vx_context context = context_->vx_context_;
   vx_graph graph = 0;
   vx_node node = 0;
+  vx_kernel kernel = 0;
 
   vx_perf_t perf_node;
   vx_perf_t perf_graph;
@@ -427,14 +434,19 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
   if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP1))
   {
-    tivxTIDLLoadKernels(context);
+    uint32_t num_input_tensors  = 0;
+    uint32_t num_output_tensors = 0;
 
-    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    tivxTIDLLoadKernels(context);
 
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
-    ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0]), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), VX_TYPE_ARRAY);
+
+    kernel = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/network.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
@@ -445,7 +457,14 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(output_tensor = createOutputTensor(context, config), VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, config, network, input_tensor, output_tensor), VX_TYPE_NODE);
+    vx_reference params[] = {
+            (vx_reference)config,
+            (vx_reference)network,
+            (vx_reference)input_tensor,
+            (vx_reference)output_tensor,
+    };
+
+    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, dimof(params)), VX_TYPE_NODE);
 
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
@@ -460,9 +479,11 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     checkOutput(config, output_tensor, refid[network_id], refscore[network_id]);
 
     VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT(node == 0);
+    ASSERT(kernel == 0);
     ASSERT(graph == 0);
 
     VX_CALL(vxReleaseArray(&config));
@@ -476,8 +497,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT(output_tensor == 0);
 
     tivxTIDLUnLoadKernels(context);
+
   }
 }
 
 TESTCASE_TESTS(tivxTIDL, testTIDL)
-

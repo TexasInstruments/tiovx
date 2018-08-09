@@ -64,20 +64,17 @@
 
 #include <TI/tivx.h>
 #include <TI/tda4x.h>
-#include <tivx_kernel_tidl.h>
-
-static vx_kernel vx_tidl_kernel = NULL;
 
 static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
-            vx_uint32 num,
+            vx_uint32 num_params,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
 
     vx_uint32 i;
 
-    for (i = 0U; i < TIVX_KERNEL_TIDL_MAX_PARAMS; i ++)
+    for (i = 0U; i < num_params; i ++)
     {
         /* Check for NULL */
         if (NULL == parameters[i])
@@ -90,12 +87,13 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
     return status;
 }
 
-vx_status tivxAddKernelTIDL(vx_context context)
+vx_kernel tivxAddKernelTIDL(vx_context context, uint32_t num_input_tensors, uint32_t num_output_tensors)
 {
     vx_kernel kernel;
     vx_status status;
-    uint32_t index;
     vx_enum kernel_id;
+    uint32_t index;
+    uint32_t i;
 
     status = vxAllocateUserKernelId(context, &kernel_id);
     if(status != VX_SUCCESS)
@@ -105,12 +103,15 @@ vx_status tivxAddKernelTIDL(vx_context context)
 
     if (status == VX_SUCCESS)
     {
+        /* Number of parameters are config + network + input tensors + output tensors */
+        uint32_t num_params = 2 + num_input_tensors + num_output_tensors;
+
         kernel = vxAddUserKernel(
                                 context,
                                 TIVX_KERNEL_TIDL_NAME,
                                 kernel_id,
                                 NULL,
-                                TIVX_KERNEL_TIDL_MAX_PARAMS,
+                                num_params,
                                 tivxAddKernelTIDLValidate,
                                 NULL,
                                 NULL);
@@ -141,26 +142,35 @@ vx_status tivxAddKernelTIDL(vx_context context)
                 );
             index++;
         }
-        if ( status == VX_SUCCESS)
+
+        for(i = 0; i < num_input_tensors; i++)
         {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                VX_INPUT,
-                VX_TYPE_TENSOR,
-                VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
+            if ( status == VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    VX_INPUT,
+                    VX_TYPE_TENSOR,
+                    VX_PARAMETER_STATE_REQUIRED
+                    );
+                index++;
+            }
         }
-        if ( status == VX_SUCCESS)
+
+        for(i = 0; i < num_output_tensors; i++)
         {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                VX_OUTPUT,
-                VX_TYPE_TENSOR,
-                VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
+            if ( status == VX_SUCCESS)
+            {
+                status = vxAddParameterToKernel(kernel,
+                    index,
+                    VX_OUTPUT,
+                    VX_TYPE_TENSOR,
+                    VX_PARAMETER_STATE_REQUIRED
+                    );
+                index++;
+            }
         }
+
         if ( status == VX_SUCCESS)
         {
             /* add supported target's */
@@ -183,25 +193,5 @@ vx_status tivxAddKernelTIDL(vx_context context)
         kernel = NULL;
     }
 
-    vx_tidl_kernel = kernel;
-
-    return status;
+    return kernel;
 }
-
-vx_status tivxRemoveKernelTIDL(vx_context context)
-{
-    vx_status status;
-    vx_kernel kernel = vx_tidl_kernel;
-
-    /* Kernel is released as part of Remove Kernel */
-    status = vxRemoveKernel(kernel);
-
-    vx_tidl_kernel = NULL;
-
-    return status;
-}
-
-
-
-
-
