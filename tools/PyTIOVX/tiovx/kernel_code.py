@@ -424,7 +424,16 @@ class KernelExportCode :
         for rel in relationship_list :
             if prm in rel.prm_list and attribute in rel.attribute_list :
                 return True
-
+        if attribute == ImageAttribute.FORMAT :
+            return True
+        elif attribute == ArrayAttribute.ITEMSIZE :
+            return True
+        elif attribute == PyramidAttribute.FORMAT :
+            return True
+        elif attribute == MatrixAttribute.TYPE :
+            return True
+        elif attribute == LutAttribute.TYPE :
+            return True
         return False
 
     def generate_host_c_validate_func_code(self):
@@ -439,116 +448,16 @@ class KernelExportCode :
         self.num_params = 0
         for prm in self.kernel.params :
             self.host_c_code.write_newline()
-            if not Type.is_scalar_type(prm.type) :
-                self.host_c_code.write_line("%s %s = NULL;" % (Type.get_vx_name(prm.type), prm.name_lower))
-            if prm.type == Type.IMAGE :
-                self.host_c_code.write_line("vx_df_image %s_fmt;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.WIDTH) :
-                    self.host_c_code.write_line("vx_uint32 %s_w;" % (prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.HEIGHT) :
-                    self.host_c_code.write_line("vx_uint32 %s_h;" % (prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.PLANES) :
-                    self.host_c_code.write_line("vx_size %s_planes;" % (prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.SIZE) :
-                    self.host_c_code.write_line("vx_size %s_size;" % (prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.SPACE) :
-                    self.host_c_code.write_line("vx_enum  %s_space;" % (prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.RANGE) :
-                    self.host_c_code.write_line("vx_enum  %s_range;" % (prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.MEMORY_TYPE) :
-                    self.host_c_code.write_line("vx_enum  %s_memory_type;" % (prm.name_lower))
-            elif prm.type == Type.ARRAY :
-                self.host_c_code.write_line("vx_size %s_item_size;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Array.CAPACITY) :
-                    self.host_c_code.write_line("vx_size %s_capacity;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Array.ITEMTYPE) :
-                    self.host_c_code.write_line("vx_size %s_item_type;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Array.NUMITEMS) :
-                    self.host_c_code.write_line("vx_size %s_num_items;" % prm.name_lower)
-            elif prm.type == Type.PYRAMID :
-                self.host_c_code.write_line("vx_df_image %s_fmt;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.LEVELS) :
-                    self.host_c_code.write_line("vx_size %s_levels;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.SCALE) :
-                    self.host_c_code.write_line("vx_float32 %s_scale;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.WIDTH) :
-                    self.host_c_code.write_line("vx_uint32 %s_w;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.HEIGHT) :
-                    self.host_c_code.write_line("vx_uint32 %s_h;" % prm.name_lower)
-            elif prm.type == Type.MATRIX :
-                self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.COLUMNS) :
-                    self.host_c_code.write_line("vx_size %s_w;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.ROWS) :
-                    self.host_c_code.write_line("vx_size %s_h;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.SIZE) :
-                    self.host_c_code.write_line("vx_size %s_size;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.ORIGIN) :
-                    self.host_c_code.write_line("vx_coordinates2d_t %s_origin;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.PATTERN) :
-                    self.host_c_code.write_line("vx_enum %s_pattern;" % prm.name_lower)
-            elif prm.type == Type.CONVOLUTION :
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.COLUMNS) :
-                    self.host_c_code.write_line("vx_size %s_col;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.ROWS) :
-                    self.host_c_code.write_line("vx_size %s_row;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.SIZE) :
-                    self.host_c_code.write_line("vx_size %s_size;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.SCALE) :
-                    self.host_c_code.write_line("vx_uint32 %s_scale;" % prm.name_lower)
-            elif prm.type == Type.DISTRIBUTION :
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.OFFSET) :
-                    self.host_c_code.write_line("vx_int32 %s_offset = 0;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.RANGE) :
-                    self.host_c_code.write_line("vx_uint32 %s_range = 0;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.WINDOW) :
-                    self.host_c_code.write_line("vx_uint32 %s_win;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.BINS) :
-                    self.host_c_code.write_line("vx_size %s_bins = 0;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.DIMENSIONS) :
-                    self.host_c_code.write_line("vx_size %s_dims;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.SIZE) :
-                    self.host_c_code.write_line("vx_size %s_size;" % prm.name_lower)
-            elif prm.type == Type.LUT :
-                self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Lut.OFFSET) :
-                    self.host_c_code.write_line("vx_uint32 %s_offset;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Lut.COUNT) :
-                    self.host_c_code.write_line("vx_size %s_count;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Lut.SIZE) :
-                    self.host_c_code.write_line("vx_size %s_size;" % prm.name_lower)
-            elif prm.type == Type.THRESHOLD:
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.TYPE) :
-                    self.host_c_code.write_line("vx_enum %s_threshold_type;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.DATA_TYPE) :
-                    self.host_c_code.write_line("vx_enum %s_threshold_data_type;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.THRESHOLD_VALUE) :
-                    self.host_c_code.write_line("vx_int32 %s_value;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.THRESHOLD_UPPER) :
-                    self.host_c_code.write_line("vx_int32 %s_upper;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.THRESHOLD_LOWER) :
-                    self.host_c_code.write_line("vx_int32 %s_lower;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.TRUE_VALUE) :
-                    self.host_c_code.write_line("vx_int32 %s_true_value;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.FALSE_VALUE) :
-                    self.host_c_code.write_line("vx_int32 %s_false_value;" % prm.name_lower)
-            elif prm.type == Type.OBJECT_ARRAY:
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.ObjectArray.ITEMTYPE) :
-                    self.host_c_code.write_line("vx_enum %s_type;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.ObjectArray.NUMITEMS) :
-                    self.host_c_code.write_line("vx_size %s_num_items;" % prm.name_lower)
-            elif prm.type == Type.REMAP :
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.SOURCE_WIDTH) :
-                    self.host_c_code.write_line("vx_uint32 %s_src_w;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.SOURCE_HEIGHT) :
-                    self.host_c_code.write_line("vx_uint32 %s_src_h;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.DESTINATION_WIDTH) :
-                    self.host_c_code.write_line("vx_uint32 %s_dst_w;" % prm.name_lower)
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.DESTINATION_HEIGHT) :
-                    self.host_c_code.write_line("vx_uint32 %s_dst_h;" % prm.name_lower)
-            elif Type.is_scalar_type(prm.type) :
+
+            attr = Attribute.from_type(prm.type)
+            if Type.is_scalar_type(prm.type) :
                 self.host_c_code.write_line("vx_scalar %s = NULL;" % prm.name_lower)
-                self.host_c_code.write_line("vx_enum %s_scalar_type;" % prm.name_lower)
+                self.host_c_code.write_line("vx_enum %s_scalar_type;" % (prm.name_lower))
+            else :
+                self.host_c_code.write_line("%s %s = NULL;" % (Type.get_vx_name(prm.type), prm.name_lower))
+                for name, member in attr.__members__.items() :
+                    if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member) :
+                        self.host_c_code.write_line("%s %s_%s;" % (member.value[1], prm.name_lower, member.value[0]))
             self.num_params += 1
 
         self.host_c_code.write_newline()
@@ -593,124 +502,14 @@ class KernelExportCode :
                 self.host_c_code.write_line("if (NULL != %s)" % prm.name_lower)
                 self.host_c_code.write_open_brace()
 
-            # TODO:
-            # Now that we have attributes defined, these commented out lines *could* replace the if..else list below, however this would fetch ALL of the attributes, which we don't yet do.
-            #    also, we would need to do something similar for the variable declaration section above, and the parameter checking section below.
-            #
-            #attr = Attribute.from_type(prm.type)
-            #if Type.is_scalar_type(prm.type) :
-            #    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            #else :
-            #    for name, member in attr.__members__.items() :
-            #        self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value, prm.name_lower, member.value))
-
+            attr = Attribute.from_type(prm.type)
             if Type.is_scalar_type(prm.type) :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.IMAGE == prm.type :
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_FORMAT, &%s_fmt, sizeof(%s_fmt)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.WIDTH) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_WIDTH, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.HEIGHT) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_HEIGHT, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.PLANES) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_PLANES, &%s_planes, sizeof(%s_planes)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.SPACE) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_SPACE, &%s_space, sizeof(%s_space)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.RANGE) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_RANGE, &%s_range, sizeof(%s_range)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.SIZE) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Image.MEMORY_TYPE) :
-                    self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryImage(%s, VX_IMAGE_MEMORY_TYPE, &%s_memory_type, sizeof(%s_memory_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.ARRAY == prm.type :
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Array.ITEMTYPE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_ITEMTYPE, &%s_item_type, sizeof(%s_item_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Array.CAPACITY) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_CAPACITY, &%s_capacity, sizeof(%s_capacity)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_ITEMSIZE, &%s_item_size, sizeof(%s_item_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Array.NUMITEMS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryArray(%s, VX_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.MATRIX == prm.type :
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_TYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.COLUMNS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_COLUMNS, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.ROWS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_ROWS, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.SIZE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.ORIGIN) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_ORIGIN, &%s_origin, sizeof(%s_origin)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Matrix.PATTERN) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryMatrix(%s, VX_MATRIX_PATTERN, &%s_pattern, sizeof(%s_pattern)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.PYRAMID == prm.type :
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_FORMAT, &%s_fmt, sizeof(%s_fmt)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.LEVELS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_LEVELS, &%s_levels, sizeof(%s_levels)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.SCALE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_SCALE, &%s_scale, sizeof(%s_scale)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.WIDTH) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_WIDTH, &%s_w, sizeof(%s_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Pyramid.HEIGHT) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryPyramid(%s, VX_PYRAMID_HEIGHT, &%s_h, sizeof(%s_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.CONVOLUTION == prm.type :
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.COLUMNS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_COLUMNS, &%s_col, sizeof(%s_col)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.ROWS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_ROWS, &%s_row, sizeof(%s_row)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.SCALE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_SCALE, &%s_scale, sizeof(%s_scale)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Convolution.SIZE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryConvolution(%s, VX_CONVOLUTION_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.DISTRIBUTION == prm.type :
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.BINS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_BINS, &%s_bins, sizeof(%s_bins)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.RANGE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_RANGE, &%s_range, sizeof(%s_range)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.OFFSET) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_OFFSET, &%s_offset, sizeof(%s_offset)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.DIMENSIONS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_DIMENSIONS, &%s_dims, sizeof(%s_dims)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.WINDOW) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_WINDOW, &%s_win, sizeof(%s_win)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Distribution.SIZE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryDistribution(%s, VX_DISTRIBUTION_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.LUT == prm.type:
-                self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_TYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Lut.COUNT) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_COUNT, &%s_count, sizeof(%s_count)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Lut.SIZE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_SIZE, &%s_size, sizeof(%s_size)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Lut.OFFSET) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_LUT_OFFSET, &%s_offset, sizeof(%s_offset)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.THRESHOLD == prm.type:
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.TYPE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_TYPE, &%s_threshold_type, sizeof(%s_threshold_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.DATA_TYPE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_DATA_TYPE, &%s_threshold_data_type, sizeof(%s_threshold_data_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.THRESHOLD_VALUE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_THRESHOLD_VALUE, &%s_value, sizeof(%s_value)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.THRESHOLD_LOWER) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_THRESHOLD_LOWER, &%s_lower, sizeof(%s_lower)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.THRESHOLD_UPPER) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_THRESHOLD_UPPER, &%s_upper, sizeof(%s_upper)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.TRUE_VALUE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_TRUE_VALUE, &%s_true_value, sizeof(%s_true_value)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Threshold.FALSE_VALUE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryThreshold(%s, VX_THRESHOLD_FALSE_VALUE, &%s_false_value, sizeof(%s_false_value)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.OBJECT_ARRAY == prm.type:
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.ObjectArray.ITEMTYPE) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryObjectArray(%s, VX_OBJECT_ARRAY_ITEMTYPE, &%s_type, sizeof(%s_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.ObjectArray.NUMITEMS) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryObjectArray(%s, VX_OBJECT_ARRAY_NUMITEMS, &%s_num_items, sizeof(%s_num_items)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-            elif Type.REMAP == prm.type:
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.SOURCE_WIDTH) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_SOURCE_WIDTH, &%s_src_w, sizeof(%s_src_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.SOURCE_HEIGHT) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_SOURCE_HEIGHT, &%s_src_h, sizeof(%s_src_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.DESTINATION_WIDTH) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_DESTINATION_WIDTH, &%s_dst_w, sizeof(%s_dst_w)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
-                if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, Attribute.Remap.DESTINATION_HEIGHT) :
-                   self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryRemap(%s, VX_REMAP_DESTINATION_HEIGHT, &%s_dst_h, sizeof(%s_dst_h)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
+            else :
+                for name, member in attr.__members__.items() :
+                    if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member) :
+                        self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+
             if prm.state is ParamState.OPTIONAL :
                 self.host_c_code.write_close_brace()
             if prm is not self.kernel.params[-1] :
@@ -809,16 +608,16 @@ class KernelExportCode :
                     self.host_c_code.write_open_brace()
                 for attr in rel.attribute_list :
                     if attr.vx_enum_name() == "VX_MATRIX_ORIGIN":
-                        self.host_c_code.write_line("if( (%s_%s.x != %s_%s.x) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
-                        self.host_c_code.write_line("    (%s_%s.y != %s_%s.y) )" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                        self.host_c_code.write_line("if( (%s_%s.x != %s_%s.x) ||" % (rel.prm_list[0].name_lower, attr.value[0], rel.prm_list[1].name_lower, attr.value[0]))
+                        self.host_c_code.write_line("    (%s_%s.y != %s_%s.y) )" % (rel.prm_list[0].name_lower, attr.value[0], rel.prm_list[1].name_lower, attr.value[0]))
                     else :
                         if len(rel.prm_list) > 2 :
-                            self.host_c_code.write_line("if( (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                            self.host_c_code.write_line("if( (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value[0], rel.prm_list[1].name_lower, attr.value[0]))
                             for prm in rel.prm_list[2:-1] :
-                                self.host_c_code.write_line("    (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value, prm.name_lower, attr.value))
-                            self.host_c_code.write_line("    (%s_%s != %s_%s))" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[-1].name_lower, attr.value))
+                                self.host_c_code.write_line("    (%s_%s != %s_%s) ||" % (rel.prm_list[0].name_lower, attr.value[0], prm.name_lower, attr.value[0]))
+                            self.host_c_code.write_line("    (%s_%s != %s_%s))" % (rel.prm_list[0].name_lower, attr.value[0], rel.prm_list[-1].name_lower, attr.value[0]))
                         elif len(rel.prm_list) == 2 :
-                            self.host_c_code.write_line("if (%s_%s != %s_%s)" % (rel.prm_list[0].name_lower, attr.value, rel.prm_list[1].name_lower, attr.value))
+                            self.host_c_code.write_line("if (%s_%s != %s_%s)" % (rel.prm_list[0].name_lower, attr.value[0], rel.prm_list[1].name_lower, attr.value[0]))
 
                     self.host_c_code.write_open_brace()
                     self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")

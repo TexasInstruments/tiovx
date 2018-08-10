@@ -73,21 +73,21 @@ from . import *
 #
 class ImageAttribute(Enum) :
     ## OpenVX equivalent = VX_IMAGE_WIDTH
-    WIDTH       = 'w'
+    WIDTH       = ('w', 'vx_uint32')
     ## OpenVX equivalent = VX_IMAGE_HEIGHT
-    HEIGHT      = 'h'
+    HEIGHT      = ('h', 'vx_uint32')
     ## OpenVX equivalent = VX_IMAGE_FORMAT
-    FORMAT      = 'fmt'
+    FORMAT      = ('fmt', 'vx_df_image')
     ## OpenVX equivalent = VX_IMAGE_PLANES
-    PLANES      = 'planes'
+    PLANES      = ('planes', 'vx_size')
     ## OpenVX equivalent = VX_IMAGE_SPACE
-    SPACE       = 'space'
+    SPACE       = ('space', 'vx_enum')
     ## OpenVX equivalent = VX_IMAGE_RANGE
-    RANGE       = 'range'
+    RANGE       = ('range', 'vx_enum')
     ## OpenVX equivalent = VX_IMAGE_SIZE
-    SIZE        = 'size'
+    SIZE        = ('size', 'vx_size')
     ## OpenVX equivalent = VX_IMAGE_MEMORY_TYPE
-    MEMORY_TYPE = 'memory_type'
+    MEMORY_TYPE = ('memory_type', 'vx_enum')
 
     def vx_enum_name(attr) :
         return "VX_IMAGE_" + attr.name
@@ -106,15 +106,15 @@ class ImageAttribute(Enum) :
 #
 class PyramidAttribute(Enum) :
     ## OpenVX equivalent = VX_PYRAMID_LEVELS
-    LEVELS      = 'levels'
+    LEVELS      = ('levels', 'vx_size')
     ## OpenVX equivalent = VX_PYRAMID_SCALE
-    SCALE       = 'scale'
+    SCALE       = ('scale', 'vx_float32')
     ## OpenVX equivalent = VX_PYRAMID_WIDTH
-    WIDTH       = 'w'
+    WIDTH       = ('w', 'vx_uint32')
     ## OpenVX equivalent = VX_PYRAMID_HEIGHT
-    HEIGHT      = 'h'
+    HEIGHT      = ('h', 'vx_uint32')
     ## OpenVX equivalent = VX_PYRAMID_FORMAT
-    FORMAT      = 'fmt'
+    FORMAT      = ('fmt', 'vx_df_image')
 
     def vx_enum_name(attr) :
         return "VX_PYRAMID_" + attr.name
@@ -133,13 +133,13 @@ class PyramidAttribute(Enum) :
 #
 class ArrayAttribute(Enum) :
     ## OpenVX equivalent = VX_ARRAY_ITEMTYPE
-    ITEMTYPE      = 'item_type'
+    ITEMTYPE      = ('item_type', 'vx_enum')
     ## OpenVX equivalent = VX_ARRAY_NUMITEMS
-    NUMITEMS      = 'num_items'
+    NUMITEMS      = ('num_items', 'vx_size')
     ## OpenVX equivalent = VX_ARRAY_CAPACITY
-    CAPACITY      = 'capacity'
+    CAPACITY      = ('capacity', 'vx_size')
     ## OpenVX equivalent = VX_ARRAY_ITEMSIZE
-    ITEMSIZE      = 'item_size'
+    ITEMSIZE      = ('item_size', 'vx_size')
 
     def vx_enum_name(attr) :
         return "VX_ARRAY_" + attr.name
@@ -157,7 +157,7 @@ class ArrayAttribute(Enum) :
 #
 class ScalarAttribute(Enum) :
     ## OpenVX equivalent = VX_SCALAR_TYPE
-    TYPE      = 'scalar_type'
+    TYPE      = ('scalar_type', 'vx_enum')
 
     def vx_enum_name(attr) :
         return "VX_SCALAR_" + attr.name
@@ -176,13 +176,13 @@ class ScalarAttribute(Enum) :
 #
 class ConvolutionAttribute(Enum) :
     ## OpenVX equivalent = VX_CONVOLUTION_ROWS
-    ROWS      = 'row'
+    ROWS      = ('row', 'vx_size')
     ## OpenVX equivalent = VX_CONVOLUTION_COLUMNS
-    COLUMNS   = 'col'
+    COLUMNS   = ('col', 'vx_size')
     ## OpenVX equivalent = VX_CONVOLUTION_SCALE
-    SCALE     = 'scale'
+    SCALE     = ('scale', 'vx_uint32')
     ## OpenVX equivalent = VX_CONVOLUTION_SIZE
-    SIZE      = 'size'
+    SIZE      = ('size', 'vx_size')
 
     def vx_enum_name(attr) :
         return "VX_CONVOLUTION_" + attr.name
@@ -201,17 +201,17 @@ class ConvolutionAttribute(Enum) :
 #
 class MatrixAttribute(Enum) :
     ## OpenVX equivalent = VX_MATRIX_TYPE
-    TYPE      = 'type'
+    TYPE      = ('type', 'vx_enum')
     ## OpenVX equivalent = VX_MATRIX_ROWS
-    ROWS      = 'h'
+    ROWS      = ('h', 'vx_size')
     ## OpenVX equivalent = VX_MATRIX_COLUMNS
-    COLUMNS   = 'w'
+    COLUMNS   = ('w', 'vx_size')
     ## OpenVX equivalent = VX_MATRIX_SIZE
-    SIZE      = 'size'
+    SIZE      = ('size', 'vx_size')
     ## OpenVX equivalent = VX_MATRIX_ORIGIN
-    ORIGIN    = 'origin'
+    ORIGIN    = ('origin', 'vx_coordinates2d_t')
     ## OpenVX equivalent = VX_MATRIX_PATTERN
-    PATTERN   = 'pattern'
+    PATTERN   = ('pattern', 'vx_enum')
 
     def vx_enum_name(attr) :
         return "VX_MATRIX_" + attr.name
@@ -230,13 +230,13 @@ class MatrixAttribute(Enum) :
 #
 class LutAttribute(Enum) :
     ## OpenVX equivalent = VX_LUT_TYPE
-    TYPE      = 'type'
+    TYPE      = ('type', 'vx_enum')
     ## OpenVX equivalent = VX_LUT_COUNT
-    COUNT     = 'count'
+    COUNT     = ('count', 'vx_size')
     ## OpenVX equivalent = VX_LUT_SIZE
-    SIZE      = 'size'
+    SIZE      = ('size', 'vx_size')
     ## OpenVX equivalent = VX_LUT_OFFSET
-    OFFSET    = 'offset'
+    OFFSET    = ('offset', 'vx_uint32')
 
     def vx_enum_name(attr) :
         return "VX_LUT_" + attr.name
@@ -255,17 +255,17 @@ class LutAttribute(Enum) :
 #
 class DistributionAttribute(Enum) :
     ## OpenVX equivalent = VX_DISTRIBUTION_DIMENSIONS
-    DIMENSIONS  = 'dims'
+    DIMENSIONS  = ('dims', 'vx_size')
     ## OpenVX equivalent = VX_DISTRIBUTION_OFFSET
-    OFFSET      = 'offset'
+    OFFSET      = ('offset', 'vx_int32')
     ## OpenVX equivalent = VX_DISTRIBUTION_RANGE
-    RANGE       = 'range'
+    RANGE       = ('range', 'vx_uint32')
     ## OpenVX equivalent = VX_DISTRIBUTION_BINS
-    BINS        = 'bins'
+    BINS        = ('bins', 'vx_size')
     ## OpenVX equivalent = VX_DISTRIBUTION_WINDOW
-    WINDOW      = 'win'
+    WINDOW      = ('win', 'vx_uint32')
     ## OpenVX equivalent = VX_DISTRIBUTION_SIZE
-    SIZE        = 'size'
+    SIZE        = ('size', 'vx_size')
 
     def vx_enum_name(attr) :
         return "VX_DISTRIBUTION_" + attr.name
@@ -284,19 +284,19 @@ class DistributionAttribute(Enum) :
 #
 class ThresholdAttribute(Enum) :
     ## OpenVX equivalent = VX_THRESHOLD_TYPE
-    TYPE             = 'threshold_type'
+    TYPE             = ('threshold_type', 'vx_enum')
     ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_VALUE
-    THRESHOLD_VALUE  = 'value'
+    THRESHOLD_VALUE  = ('value', 'vx_int32')
     ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_LOWER
-    THRESHOLD_LOWER  = 'lower'
+    THRESHOLD_LOWER  = ('lower', 'vx_int32')
     ## OpenVX equivalent = VX_THRESHOLD_THRESHOLD_UPPER
-    THRESHOLD_UPPER  = 'upper'
+    THRESHOLD_UPPER  = ('upper', 'vx_int32')
     ## OpenVX equivalent = VX_THRESHOLD_TRUE_VALUE
-    TRUE_VALUE       = 'true_value'
+    TRUE_VALUE       = ('true_value', 'vx_int32')
     ## OpenVX equivalent = VX_THRESHOLD_FALSE_VALUE
-    FALSE_VALUE      = 'false_value'
+    FALSE_VALUE      = ('false_value', 'vx_int32')
     ## OpenVX equivalent = VX_THRESHOLD_FALSE_VALUE
-    DATA_TYPE        = 'threshold_data_type'
+    DATA_TYPE        = ('threshold_data_type', 'vx_enum')
 
     def vx_enum_name(attr) :
         return "VX_THRESHOLD_" + attr.name
@@ -315,13 +315,13 @@ class ThresholdAttribute(Enum) :
 #
 class RemapAttribute(Enum) :
     ## OpenVX equivalent = VX_REMAP_SOURCE_WIDTH
-    SOURCE_WIDTH         = 'src_w'
+    SOURCE_WIDTH         = ('src_w', 'vx_uint32')
     ## OpenVX equivalent = VX_REMAP_SOURCE_HEIGHT
-    SOURCE_HEIGHT        = 'src_h'
+    SOURCE_HEIGHT        = ('src_h', 'vx_uint32')
     ## OpenVX equivalent = VX_REMAP_DESTINATION_WIDTH
-    DESTINATION_WIDTH    = 'dst_w'
+    DESTINATION_WIDTH    = ('dst_w', 'vx_uint32')
     ## OpenVX equivalent = VX_REMAP_DESTINATION_HEIGHT
-    DESTINATION_HEIGHT   = 'dst_h'
+    DESTINATION_HEIGHT   = ('dst_h', 'vx_uint32')
 
     def vx_enum_name(attr) :
         return "VX_REMAP_" + attr.name
@@ -340,9 +340,9 @@ class RemapAttribute(Enum) :
 #
 class ObjectArrayAttribute(Enum) :
     ## OpenVX equivalent = VX_OBJECT_ARRAY_ITEMTYPE
-    ITEMTYPE      = 'type'
+    ITEMTYPE      = ('type', 'vx_enum')
     ## OpenVX equivalent = VX_OBJECT_ARRAY_NUMITEMS
-    NUMITEMS      = 'num_items'
+    NUMITEMS      = ('num_items', 'vx_size')
 
     def vx_enum_name(attr) :
         return "VX_OBJECT_ARRAY_" + attr.name
