@@ -129,6 +129,7 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
     {
         /* kernel is released inside vxCreateNodeByStructure */
         node =  vxCreateNodeByStructure(graph, kernel, 0, params, num);
+        vxReleaseKernel(&kernel);
     }
     else
     {
