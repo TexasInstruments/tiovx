@@ -53,11 +53,13 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
 {
     vx_status status = VX_SUCCESS;
     vx_node node = 0;
+    vx_uint32 release_kernel = 0;
     vx_context context = vxGetContext((vx_reference)graph);
 
     if(kernel==NULL)
     {
         kernel = vxGetKernelByEnum(context, kernelenum);
+        release_kernel = 1;
     }
     if (kernel)
     {
@@ -83,7 +85,10 @@ static vx_node vxCreateNodeByStructure(vx_graph graph,
             VX_PRINT(VX_ZONE_ERROR,"vxCreateNodeByStructure: Failed to create node with kernel enum %d\n", kernelenum);
             status = VX_ERROR_NO_MEMORY;
         }
-        vxReleaseKernel(&kernel);
+        if (release_kernel)
+        {
+            vxReleaseKernel(&kernel);
+        }
     }
     else
     {
@@ -847,4 +852,3 @@ VX_API_ENTRY vx_node VX_API_CALL vxHalfScaleGaussianNode(vx_graph graph, vx_imag
     vxReleaseScalar(&ksize);
     return node;
 }
-
