@@ -1247,6 +1247,7 @@ static vx_node usecase_node_create_node_58 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1275,6 +1276,7 @@ static vx_node usecase_node_create_node_60 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1303,6 +1305,7 @@ static vx_node usecase_node_create_node_62 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1329,6 +1332,7 @@ static vx_node usecase_node_create_node_63 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1355,6 +1359,7 @@ static vx_node usecase_node_create_node_64 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1381,6 +1386,7 @@ static vx_node usecase_node_create_node_65 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1405,6 +1411,7 @@ static vx_node usecase_node_create_node_66 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1429,6 +1436,7 @@ static vx_node usecase_node_create_node_67 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1455,6 +1463,7 @@ static vx_node usecase_node_create_node_68 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1479,6 +1488,7 @@ static vx_node usecase_node_create_node_69 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1503,6 +1513,7 @@ static vx_node usecase_node_create_node_70 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1531,6 +1542,7 @@ static vx_node usecase_node_create_node_72 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1563,6 +1575,7 @@ static vx_node usecase_node_create_node_75 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 6);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1591,6 +1604,7 @@ static vx_node usecase_node_create_node_77 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1617,6 +1631,7 @@ static vx_node usecase_node_create_node_78 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1643,6 +1658,7 @@ static vx_node usecase_node_create_node_79 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1673,6 +1689,7 @@ static vx_node usecase_node_create_node_80 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 5);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1699,6 +1716,7 @@ static vx_node usecase_node_create_node_82 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1723,6 +1741,7 @@ static vx_node usecase_node_create_node_83 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1749,6 +1768,7 @@ static vx_node usecase_node_create_node_84 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1773,6 +1793,7 @@ static vx_node usecase_node_create_node_85 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1799,6 +1820,7 @@ static vx_node usecase_node_create_node_86 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1827,6 +1849,7 @@ static vx_node usecase_node_create_node_88 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1855,6 +1878,7 @@ static vx_node usecase_node_create_node_90 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1883,6 +1907,7 @@ static vx_node usecase_node_create_node_92 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1909,6 +1934,7 @@ static vx_node usecase_node_create_node_93 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1937,6 +1963,7 @@ static vx_node usecase_node_create_node_95 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 4);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1963,6 +1990,7 @@ static vx_node usecase_node_create_node_97 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -1993,6 +2021,7 @@ static vx_node usecase_node_create_node_100 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 5);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -2017,6 +2046,7 @@ static vx_node usecase_node_create_node_101 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;
@@ -2043,6 +2073,7 @@ static vx_node usecase_node_create_node_102 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 3);
         }
+        vxReleaseKernel(&kernel);
     }
 
     return node;

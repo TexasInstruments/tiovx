@@ -115,6 +115,7 @@ class NodeCode (ReferenceCode) :
         code_gen.write_open_brace();
         code_gen.write_line("node = tivxCreateNodeByKernelRef(graph, kernel, params, %d);" % (num_params))
         code_gen.write_close_brace()
+        code_gen.write_line("vxReleaseKernel(&kernel);")
         code_gen.write_close_brace()
         code_gen.write_newline()
         code_gen.write_line("return node;")

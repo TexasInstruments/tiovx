@@ -272,6 +272,7 @@ static vx_node usecase_node_create_node_3 (
         {
             node = tivxCreateNodeByKernelRef(graph, kernel, params, 2);
         }
+        vxReleaseKernel(&kernel);
     }
     
     return node;
