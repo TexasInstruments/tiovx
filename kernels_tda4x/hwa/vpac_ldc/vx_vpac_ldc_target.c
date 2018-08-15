@@ -87,8 +87,8 @@ typedef struct
     uint32_t outY2_buffer_size;
     uint32_t outC3_buffer_size;
     uint32_t mesh_buffer_size;
-
-    ldc_settings mmr;
+    
+    ldc_config config;
 
 } tivxVpacLdcParams;
 
@@ -207,8 +207,23 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     VX_READ_ONLY);
             }
 
-            ldc(&prms->mmr, prms->inY_16, prms->inC_16,
+#ifdef VLAB_HWA
+
+            prms->config.magic = 0xC0DEFACE;
+            prms->config.buffer[0]  = prms->inY_16;
+            prms->config.buffer[2]  = prms->inC_16;
+            prms->config.buffer[4]  = prms->outY0_16;
+            prms->config.buffer[6]  = prms->outC1_16;
+            prms->config.buffer[8]  = prms->outY2_16;
+            prms->config.buffer[10] = prms->outC3_16;
+
+            status = vlab_hwa_process(VPAC_LDC_BASE_ADDRESS, "VPAC_LDC", sizeof(ldc_config), &prms->config);
+
+#else
+
+            ldc(&prms->config.settings, prms->inY_16, prms->inC_16,
                          prms->outY0_16, prms->outC1_16, prms->outY2_16, prms->outC3_16);
+#endif
         }
 
         if (VX_SUCCESS == status)
@@ -273,12 +288,12 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         if(NULL != error_status_desc)
         {
             error_status_value = 0;
-            error_status_value |= prms->mmr.flag_pix_buf_overflow;
-            error_status_value |= (prms->mmr.flag_mesh_buf_overflow << 1);
-            error_status_value |= (prms->mmr.flag_out_of_frame_bound << 2);
-            error_status_value |= (prms->mmr.flag_out_of_block_bound << 3);
-            error_status_value |= (prms->mmr.flag_affine_pwarp_overflow << 4);
-            error_status_value |= (prms->mmr.flag_out_of_mesh_block_bound << 5);
+            error_status_value |= prms->config.settings.flag_pix_buf_overflow;
+            error_status_value |= (prms->config.settings.flag_mesh_buf_overflow << 1);
+            error_status_value |= (prms->config.settings.flag_out_of_frame_bound << 2);
+            error_status_value |= (prms->config.settings.flag_out_of_block_bound << 3);
+            error_status_value |= (prms->config.settings.flag_affine_pwarp_overflow << 4);
+            error_status_value |= (prms->config.settings.flag_out_of_mesh_block_bound << 5);
             error_status_desc->data.u32 = error_status_value;
         }
     }
@@ -429,15 +444,15 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                 params = (tivx_vpac_ldc_params_t *)configuration_target_ptr;
 
-                prms->mmr.pixmem_size  = 42;    // must be 42 before running LDC
-                prms->mmr.pixmem_sizeC = 30;    // must be 30 before running LDC
-                prms->mmr.meshmem_size = 10;    // must be 10 before running LDC
+                prms->config.settings.pixmem_size  = 42;    // must be 42 before running LDC
+                prms->config.settings.pixmem_sizeC = 30;    // must be 30 before running LDC
+                prms->config.settings.meshmem_size = 10;    // must be 10 before running LDC
 
-                prms->mmr.en = 1;                                        // LD enable
-                prms->mmr.ip_dfmt = IP_DFMT_12b_UNPACK;                  // LD input pixel format
-                prms->mmr.ld_yint_typ = params->luma_interpolation_type; // Interpolation method for Y data.  0: Bicubic, 1: Bilinear
-                prms->mmr.ld_initx =  params->init_x;                    // compute window starting y, in pixels
-                prms->mmr.ld_inity =  params->init_y;                    // compute window starting x, in pixels
+                prms->config.settings.en = 1;                                        // LD enable
+                prms->config.settings.ip_dfmt = IP_DFMT_12b_UNPACK;                  // LD input pixel format
+                prms->config.settings.ld_yint_typ = params->luma_interpolation_type; // Interpolation method for Y data.  0: Bicubic, 1: Bilinear
+                prms->config.settings.ld_initx =  params->init_x;                    // compute window starting y, in pixels
+                prms->config.settings.ld_inity =  params->init_y;                    // compute window starting x, in pixels
 
                 /* Configure data mode and input resolution */
 
@@ -456,46 +471,46 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                         data_mode = DATA_MODE_Y;
                     }
         
-                    prms->mmr.iw = in_luma_or_422_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
-                    prms->mmr.ih = in_luma_or_422_desc->imagepatch_addr[0].dim_y; // source (distorted) image height, in pixels
+                    prms->config.settings.iw = in_luma_or_422_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
+                    prms->config.settings.ih = in_luma_or_422_desc->imagepatch_addr[0].dim_y; // source (distorted) image height, in pixels
                 }
                 else
                 {
                     data_mode = DATA_MODE_UV;
 
-                    prms->mmr.iw = in_chroma_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
-                    prms->mmr.ih = in_chroma_desc->imagepatch_addr[0].dim_y; // source (distorted) image height, in pixels
+                    prms->config.settings.iw = in_chroma_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
+                    prms->config.settings.ih = in_chroma_desc->imagepatch_addr[0].dim_y; // source (distorted) image height, in pixels
                 }
-                prms->mmr.data_mode = data_mode;      // LD input data mode
+                prms->config.settings.data_mode = data_mode;      // LD input data mode
 
                 if (NULL != out_0_luma_or_422_desc)
                 {
-                    prms->mmr.compute_sizew = out_0_luma_or_422_desc->imagepatch_addr[0].dim_x; // compute window width, in pixels
-                    prms->mmr.compute_sizeh = out_0_luma_or_422_desc->imagepatch_addr[0].dim_y; // compute window height, in pixels
+                    prms->config.settings.compute_sizew = out_0_luma_or_422_desc->imagepatch_addr[0].dim_x; // compute window width, in pixels
+                    prms->config.settings.compute_sizeh = out_0_luma_or_422_desc->imagepatch_addr[0].dim_y; // compute window height, in pixels
 
                     if((VX_DF_IMAGE_UYVY == out_0_luma_or_422_desc->format) ||
                         (VX_DF_IMAGE_YUYV == out_0_luma_or_422_desc->format))
                     {
-                        prms->mmr.out_in_420 = 0;      // LD 422 to 420 conversion
+                        prms->config.settings.out_in_420 = 0;      // LD 422 to 420 conversion
                     }
                     else
                     {
-                        prms->mmr.out_in_420 = 1;      // LD 422 to 420 conversion
+                        prms->config.settings.out_in_420 = 1;      // LD 422 to 420 conversion
                     }
                 }
                 else if(NULL != out_1_chroma_desc)
                 {
-                    prms->mmr.compute_sizew = out_1_chroma_desc->imagepatch_addr[0].dim_x; // compute window width, in pixels
-                    prms->mmr.compute_sizeh = out_1_chroma_desc->imagepatch_addr[0].dim_y; // compute window height, in pixels
+                    prms->config.settings.compute_sizew = out_1_chroma_desc->imagepatch_addr[0].dim_x; // compute window width, in pixels
+                    prms->config.settings.compute_sizeh = out_1_chroma_desc->imagepatch_addr[0].dim_y; // compute window height, in pixels
 
                     if((VX_DF_IMAGE_UYVY == out_1_chroma_desc->format) ||
                         (VX_DF_IMAGE_YUYV == out_1_chroma_desc->format))
                     {
-                        prms->mmr.out_in_420 = 0;      // LD 422 to 420 conversion
+                        prms->config.settings.out_in_420 = 0;      // LD 422 to 420 conversion
                     }
                     else
                     {
-                        prms->mmr.out_in_420 = 1;      // LD 422 to 420 conversion
+                        prms->config.settings.out_in_420 = 1;      // LD 422 to 420 conversion
                     }
                 }
                 else
@@ -511,7 +526,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     int32_t *meshPtr;
                     void *mesh_table_target_ptr;
 
-                    prms->mmr.ldmapen = 1;     // LD back mapping enable
+                    prms->config.settings.ldmapen = 1;     // LD back mapping enable
 
                     mesh_table_target_ptr = tivxMemShared2TargetPtr(
                         mesh_table_desc->mem_ptr[0].shared_ptr, mesh_table_desc->mem_ptr[0].mem_heap_region);
@@ -528,13 +543,13 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     }
 
                     // derived (not in cfg file directly)
-                    prms->mmr.mesh_table = (int32_t*)prms->mesh;                       // must fill in correctly before running LDC
-                    prms->mmr.table_width = mesh_table_desc->imagepatch_addr[0].dim_x;  // must fill in correctly before running LDC
-                    prms->mmr.table_height = mesh_table_desc->imagepatch_addr[0].dim_y; // must fill in correctly before running LDC
+                    prms->config.settings.mesh_table = (int32_t*)prms->mesh;                       // must fill in correctly before running LDC
+                    prms->config.settings.table_width = mesh_table_desc->imagepatch_addr[0].dim_x;  // must fill in correctly before running LDC
+                    prms->config.settings.table_height = mesh_table_desc->imagepatch_addr[0].dim_y; // must fill in correctly before running LDC
 
-                    prms->mmr.table_m = params->mesh.subsample_factor;    // Table horizontal subsampling factor, 2^m
-                    prms->mmr.mesh_frame_w = params->mesh.frame_width;    // mesh frame window height
-                    prms->mmr.mesh_frame_h = params->mesh.frame_height;   // mesh frame window width
+                    prms->config.settings.table_m = params->mesh.subsample_factor;    // Table horizontal subsampling factor, 2^m
+                    prms->config.settings.mesh_frame_w = params->mesh.frame_width;    // mesh frame window height
+                    prms->config.settings.mesh_frame_h = params->mesh.frame_height;   // mesh frame window width
 
                     tivxMemBufferUnmap(mesh_table_target_ptr,
                         mesh_table_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -561,27 +576,27 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                         if(3 == warp_matrix_desc->columns)
                         {
-                            prms->mmr.affine_a = mat_addr[0];
-                            prms->mmr.affine_b = mat_addr[3];
-                            prms->mmr.affine_c = mat_addr[6];
-                            prms->mmr.affine_d = mat_addr[1];
-                            prms->mmr.affine_e = mat_addr[4];
-                            prms->mmr.affine_f = mat_addr[7];
-                            prms->mmr.affine_g = mat_addr[2];
-                            prms->mmr.affine_h = mat_addr[5];
-                            prms->mmr.pwarpen = 1;         // PWARP enable
+                            prms->config.settings.affine_a = mat_addr[0];
+                            prms->config.settings.affine_b = mat_addr[3];
+                            prms->config.settings.affine_c = mat_addr[6];
+                            prms->config.settings.affine_d = mat_addr[1];
+                            prms->config.settings.affine_e = mat_addr[4];
+                            prms->config.settings.affine_f = mat_addr[7];
+                            prms->config.settings.affine_g = mat_addr[2];
+                            prms->config.settings.affine_h = mat_addr[5];
+                            prms->config.settings.pwarpen = 1;         // PWARP enable
                         }
                         else
                         {
-                            prms->mmr.affine_a = mat_addr[0];
-                            prms->mmr.affine_b = mat_addr[2];
-                            prms->mmr.affine_c = mat_addr[4];
-                            prms->mmr.affine_d = mat_addr[1];
-                            prms->mmr.affine_e = mat_addr[3];
-                            prms->mmr.affine_f = mat_addr[5];
-                            prms->mmr.affine_g = 0;
-                            prms->mmr.affine_h = 0;
-                            prms->mmr.pwarpen = 0;         // PWARP enable
+                            prms->config.settings.affine_a = mat_addr[0];
+                            prms->config.settings.affine_b = mat_addr[2];
+                            prms->config.settings.affine_c = mat_addr[4];
+                            prms->config.settings.affine_d = mat_addr[1];
+                            prms->config.settings.affine_e = mat_addr[3];
+                            prms->config.settings.affine_f = mat_addr[5];
+                            prms->config.settings.affine_g = 0;
+                            prms->config.settings.affine_h = 0;
+                            prms->config.settings.pwarpen = 0;         // PWARP enable
                         }
                     }
                     else /* Compute HW registers from floating point warp matrix */
@@ -592,27 +607,27 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                         if(3 == warp_matrix_desc->columns)
                         {
-                            prms->mmr.affine_a = (int16_t)((mat_addr[0] / mat_addr[9]) * 4096.0f);
-                            prms->mmr.affine_b = (int16_t)((mat_addr[3] / mat_addr[9]) * 4096.0f);
-                            prms->mmr.affine_c = (int16_t)((mat_addr[6] / mat_addr[9]) * 8.0f);
-                            prms->mmr.affine_d = (int16_t)((mat_addr[1] / mat_addr[9]) * 4096.0f);
-                            prms->mmr.affine_e = (int16_t)((mat_addr[4] / mat_addr[9]) * 4096.0f);
-                            prms->mmr.affine_f = (int16_t)((mat_addr[7] / mat_addr[9]) * 8.0f);
-                            prms->mmr.affine_g = (int16_t)((mat_addr[2] / mat_addr[9]) * 8388608.0f);
-                            prms->mmr.affine_h = (int16_t)((mat_addr[5] / mat_addr[9]) * 8388608.0f);
-                            prms->mmr.pwarpen = 1;         // PWARP enable
+                            prms->config.settings.affine_a = (int16_t)((mat_addr[0] / mat_addr[9]) * 4096.0f);
+                            prms->config.settings.affine_b = (int16_t)((mat_addr[3] / mat_addr[9]) * 4096.0f);
+                            prms->config.settings.affine_c = (int16_t)((mat_addr[6] / mat_addr[9]) * 8.0f);
+                            prms->config.settings.affine_d = (int16_t)((mat_addr[1] / mat_addr[9]) * 4096.0f);
+                            prms->config.settings.affine_e = (int16_t)((mat_addr[4] / mat_addr[9]) * 4096.0f);
+                            prms->config.settings.affine_f = (int16_t)((mat_addr[7] / mat_addr[9]) * 8.0f);
+                            prms->config.settings.affine_g = (int16_t)((mat_addr[2] / mat_addr[9]) * 8388608.0f);
+                            prms->config.settings.affine_h = (int16_t)((mat_addr[5] / mat_addr[9]) * 8388608.0f);
+                            prms->config.settings.pwarpen = 1;         // PWARP enable
                         }
                         else
                         {
-                            prms->mmr.affine_a = (int16_t)(mat_addr[0] * 4096.0f);
-                            prms->mmr.affine_b = (int16_t)(mat_addr[2] * 4096.0f);
-                            prms->mmr.affine_c = (int16_t)(mat_addr[4] * 8.0f);
-                            prms->mmr.affine_d = (int16_t)(mat_addr[1] * 4096.0f);
-                            prms->mmr.affine_e = (int16_t)(mat_addr[3] * 4096.0f);
-                            prms->mmr.affine_f = (int16_t)(mat_addr[5] * 8.0f);
-                            prms->mmr.affine_g = 0;
-                            prms->mmr.affine_h = 0;
-                            prms->mmr.pwarpen = 0;         // PWARP enable
+                            prms->config.settings.affine_a = (int16_t)(mat_addr[0] * 4096.0f);
+                            prms->config.settings.affine_b = (int16_t)(mat_addr[2] * 4096.0f);
+                            prms->config.settings.affine_c = (int16_t)(mat_addr[4] * 8.0f);
+                            prms->config.settings.affine_d = (int16_t)(mat_addr[1] * 4096.0f);
+                            prms->config.settings.affine_e = (int16_t)(mat_addr[3] * 4096.0f);
+                            prms->config.settings.affine_f = (int16_t)(mat_addr[5] * 8.0f);
+                            prms->config.settings.affine_g = 0;
+                            prms->config.settings.affine_h = 0;
+                            prms->config.settings.pwarpen = 0;         // PWARP enable
                         }
                     }
 
@@ -621,15 +636,15 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 }
                 else
                 {
-                    prms->mmr.affine_a = 4096;
-                    prms->mmr.affine_b = 0;
-                    prms->mmr.affine_c = 0;
-                    prms->mmr.affine_d = 0;
-                    prms->mmr.affine_e = 4096;
-                    prms->mmr.affine_f = 0;
-                    prms->mmr.affine_g = 0;
-                    prms->mmr.affine_h = 0;
-                    prms->mmr.pwarpen  = 0;         // PWARP enable
+                    prms->config.settings.affine_a = 4096;
+                    prms->config.settings.affine_b = 0;
+                    prms->config.settings.affine_c = 0;
+                    prms->config.settings.affine_d = 0;
+                    prms->config.settings.affine_e = 4096;
+                    prms->config.settings.affine_f = 0;
+                    prms->config.settings.affine_g = 0;
+                    prms->config.settings.affine_h = 0;
+                    prms->config.settings.pwarpen  = 0;         // PWARP enable
                 }
 
                 /* Configure region params */
@@ -646,11 +661,11 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     tivx_vpac_ldc_region_params_t *region_params =
                         (tivx_vpac_ldc_region_params_t*)region_params_target_ptr;
 
-                    prms->mmr.regmode_en = 0;      // Region mode enable.  0: off, 1: on
+                    prms->config.settings.regmode_en = 0;      // Region mode enable.  0: off, 1: on
 
-                    prms->mmr.ld_obw = region_params->out_block_width;  // output block height, in pixels, for block processing
-                    prms->mmr.ld_obh = region_params->out_block_height; // output block height, in pixels, for block processing
-                    prms->mmr.ld_pad = region_params->pixel_pad;        // pixel padding to determine input block for block processing
+                    prms->config.settings.ld_obw = region_params->out_block_width;  // output block height, in pixels, for block processing
+                    prms->config.settings.ld_obh = region_params->out_block_height; // output block height, in pixels, for block processing
+                    prms->config.settings.ld_pad = region_params->pixel_pad;        // pixel padding to determine input block for block processing
                 }
                 else
                 {
@@ -659,20 +674,20 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     tivx_vpac_ldc_subregion_params_t *region_params =
                         (tivx_vpac_ldc_subregion_params_t*)region_params_target_ptr;
 
-                    prms->mmr.regmode_en = 1;      // Region mode enable.  0: off, 1: on
+                    prms->config.settings.regmode_en = 1;      // Region mode enable.  0: off, 1: on
 
-                    prms->mmr.ld_sf_width[0]  = region_params->column_width[0]; // subframe width
-                    prms->mmr.ld_sf_width[1]  = region_params->column_width[1];
-                    prms->mmr.ld_sf_width[2]  = region_params->column_width[2];
-                    prms->mmr.ld_sf_height[0] = region_params->row_height[0];   // subframe height
-                    prms->mmr.ld_sf_height[1] = region_params->row_height[1];
-                    prms->mmr.ld_sf_height[2] = region_params->row_height[2];
+                    prms->config.settings.ld_sf_width[0]  = region_params->column_width[0]; // subframe width
+                    prms->config.settings.ld_sf_width[1]  = region_params->column_width[1];
+                    prms->config.settings.ld_sf_width[2]  = region_params->column_width[2];
+                    prms->config.settings.ld_sf_height[0] = region_params->row_height[0];   // subframe height
+                    prms->config.settings.ld_sf_height[1] = region_params->row_height[1];
+                    prms->config.settings.ld_sf_height[2] = region_params->row_height[2];
 
                     for(i = 0; i < 9; i++) {
-                        prms->mmr.ld_sf_en[i]  = region_params->enable[i];           // subframe enable
-                        prms->mmr.ld_sf_obw[i] = region_params->out_block_width[i];  // output block width, in pixels, for block processing
-                        prms->mmr.ld_sf_obh[i] = region_params->out_block_height[i]; // output block height, in pixels, for block processing
-                        prms->mmr.ld_sf_pad[i] = region_params->pixel_pad[i];        // pixel padding to determine input block for block processing
+                        prms->config.settings.ld_sf_en[i]  = region_params->enable[i];           // subframe enable
+                        prms->config.settings.ld_sf_obw[i] = region_params->out_block_width[i];  // output block width, in pixels, for block processing
+                        prms->config.settings.ld_sf_obh[i] = region_params->out_block_height[i]; // output block height, in pixels, for block processing
+                        prms->config.settings.ld_sf_pad[i] = region_params->pixel_pad[i];        // pixel padding to determine input block for block processing
                     }
                 }
 
@@ -696,12 +711,12 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                     lut_addr = out_2_luma_lut_target_ptr;
 
-                    prms->mmr.ylut_en = 1;
-                    prms->mmr.yin_bits = params->out_2_luma.in_bits;
-                    prms->mmr.yout_bits = params->out_2_luma.out_bits;
+                    prms->config.settings.ylut_en = 1;
+                    prms->config.settings.yin_bits = params->out_2_luma.in_bits;
+                    prms->config.settings.yout_bits = params->out_2_luma.out_bits;
 
                     for(i = 0; i < 513; i++) {
-                        prms->mmr.ylut[i]  = lut_addr[i];           // subframe enable
+                        prms->config.settings.ylut[i]  = lut_addr[i];           // subframe enable
                     }
                     tivxMemBufferUnmap(out_2_luma_lut_target_ptr, out_2_luma_lut_desc->mem_size,
                         VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -722,17 +737,17 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
                     lut_addr = out_3_chroma_lut_target_ptr;
 
-                    prms->mmr.clut_en = 1;
-                    prms->mmr.cin_bits = params->out_3_chroma.in_bits;
-                    prms->mmr.cout_bits = params->out_3_chroma.out_bits;
+                    prms->config.settings.clut_en = 1;
+                    prms->config.settings.cin_bits = params->out_3_chroma.in_bits;
+                    prms->config.settings.cout_bits = params->out_3_chroma.out_bits;
 
                     for(i = 0; i < 513; i++) {
-                        prms->mmr.clut[i]  = lut_addr[i];           // subframe enable
+                        prms->config.settings.clut[i]  = lut_addr[i];           // subframe enable
                     }
                 }
 
                 // additional (not in cfg file)
-                prms->mmr.DDR_S = 6;                        // must be 6 before running LDC
+                prms->config.settings.DDR_S = 6;                        // must be 6 before running LDC
 
                 tivxMemBufferUnmap(configuration_target_ptr, configuration_desc->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

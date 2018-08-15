@@ -126,6 +126,8 @@ static uint32_t bilateral_coefsLUTGen(
 static void interleaveTables(uint16_t **i_lut, uint8_t numTables, uint32_t rangeLutEntries);
 static int getSubRangeBits(int i);
 
+#ifndef VLAB_HWA
+
 /* Static hardware configuration from J7 */
 static bilateralFilter_algParams_t    algParams[] =
 {
@@ -138,6 +140,8 @@ static bilateralFilter_algParams_t    algParams[] =
         512         /* recipLutQuantCutoff */
     }
 };
+
+#endif
 
 static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
        tivx_target_kernel_instance kernel,
@@ -205,12 +209,18 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
              */
             lse_reformat_in(input_desc, input_target_ptr, prms->src16);
 
-            status = bilateral_hw(&algParams[0], &prms->mmr, &prms->debug);
+#ifdef VLAB_HWA
 
+            status = vlab_hwa_process(VPAC_NF_BASE_ADDRESS, "VPAC_NF_BILATERAL", sizeof(bilateralFilter_mmr_t), &prms->mmr);
+
+#else
+            status = bilateral_hw(&algParams[0], &prms->mmr, &prms->debug);
             if (0 != status)
             {
                 status = VX_FAILURE;
             }
+#endif
+
         }
         if (VX_SUCCESS == status)
         {

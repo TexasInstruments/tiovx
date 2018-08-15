@@ -11,6 +11,9 @@ BUILD_CONFORMANCE_TEST?=yes
 BUILD_TUTORIAL?=yes
 BUILD_BAM?=no
 
+# Applied to target mode only
+BUILD_VLAB?=yes
+
 PROFILE?=all
 
 DIRECTORIES :=

@@ -14,6 +14,10 @@ ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 DEFS += BUILD_HWA_DMPAC_DOF
 endif
 
+ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
+DEFS += VLAB_HWA
+endif
+
 include $(FINALE)
 
 endif

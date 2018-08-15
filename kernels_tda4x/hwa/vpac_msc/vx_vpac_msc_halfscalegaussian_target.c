@@ -79,7 +79,7 @@ typedef struct
     uint32_t buffer_size_in;
     uint32_t buffer_size_out;
 
-    Scaler_Config mmr;
+    msc_config config;
 } tivxHalfScaleGaussianParams;
 
 static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
@@ -159,51 +159,63 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
         imgInput[0] = prms->src16;
         imgOutput[0] = prms->dst16;
 
-        prms->mmr.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
-        prms->mmr.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
+        prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
+        prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
 
-        prms->mmr.unitParams[0].filter_mode = 0;
+        prms->config.settings.unitParams[0].filter_mode = 0;
 
-        prms->mmr.unitParams[0].sp_hs_coef_sel = 0;
-        prms->mmr.unitParams[0].sp_vs_coef_sel = 0;
+        prms->config.settings.unitParams[0].sp_hs_coef_sel = 0;
+        prms->config.settings.unitParams[0].sp_vs_coef_sel = 0;
 
-        prms->mmr.unitParams[0].threadMap = 0;
-        prms->mmr.unitParams[0].coefShift = 8;
-        prms->mmr.unitParams[0].outWidth = dst->imagepatch_addr[0].dim_x;
-        prms->mmr.unitParams[0].outHeight = dst->imagepatch_addr[0].dim_y;
-        prms->mmr.unitParams[0].hzScale = 4096*2;
-        prms->mmr.unitParams[0].vtScale = 4096*2;//.f/pmd->scale;
+        prms->config.settings.unitParams[0].threadMap = 0;
+        prms->config.settings.unitParams[0].coefShift = 8;
+        prms->config.settings.unitParams[0].outWidth = dst->imagepatch_addr[0].dim_x;
+        prms->config.settings.unitParams[0].outHeight = dst->imagepatch_addr[0].dim_y;
+        prms->config.settings.unitParams[0].hzScale = 4096*2;
+        prms->config.settings.unitParams[0].vtScale = 4096*2;//.f/pmd->scale;
 
-        prms->mmr.cfg_Kernel[0].Sz_height = 5;
-        prms->mmr.cfg_Kernel[0].Tpad_sz = 2;
-        prms->mmr.cfg_Kernel[0].Bpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Sz_height = 5;
+        prms->config.settings.cfg_Kernel[0].Tpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
 
         if (1 == gsize_value)
         {
-            prms->mmr.coef_sp[0][0] = 0;
-            prms->mmr.coef_sp[0][1] = 0;
-            prms->mmr.coef_sp[0][2] = 256;
-            prms->mmr.coef_sp[0][3] = 0;
-            prms->mmr.coef_sp[0][4] = 0;
+            prms->config.settings.coef_sp[0][0] = 0;
+            prms->config.settings.coef_sp[0][1] = 0;
+            prms->config.settings.coef_sp[0][2] = 256;
+            prms->config.settings.coef_sp[0][3] = 0;
+            prms->config.settings.coef_sp[0][4] = 0;
         }
         else if (3 == gsize_value)
         {
-            prms->mmr.coef_sp[0][0] = 0;
-            prms->mmr.coef_sp[0][1] = 64;
-            prms->mmr.coef_sp[0][2] = 128;
-            prms->mmr.coef_sp[0][3] = 64;
-            prms->mmr.coef_sp[0][4] = 0;
+            prms->config.settings.coef_sp[0][0] = 0;
+            prms->config.settings.coef_sp[0][1] = 64;
+            prms->config.settings.coef_sp[0][2] = 128;
+            prms->config.settings.coef_sp[0][3] = 64;
+            prms->config.settings.coef_sp[0][4] = 0;
         }
         else /* 5 == gsize_value */
         {
-            prms->mmr.coef_sp[0][0] = 16;
-            prms->mmr.coef_sp[0][1] = 64;
-            prms->mmr.coef_sp[0][2] = 96;
-            prms->mmr.coef_sp[0][3] = 64;
-            prms->mmr.coef_sp[0][4] = 16;
+            prms->config.settings.coef_sp[0][0] = 16;
+            prms->config.settings.coef_sp[0][1] = 64;
+            prms->config.settings.coef_sp[0][2] = 96;
+            prms->config.settings.coef_sp[0][3] = 64;
+            prms->config.settings.coef_sp[0][4] = 16;
         }
 
-        scaler_top_processing(imgInput, imgOutput, &prms->mmr);
+#ifdef VLAB_HWA
+
+        prms->config.magic = 0xC0DEFACE;
+        prms->config.buffer[0]  = prms->src16;
+        prms->config.buffer[4]  = prms->dst16;
+
+        status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_HALFSCALE_GAUSSIAN", sizeof(msc_config), &prms->config);
+
+#else
+
+        scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+
+#endif
     }
 
     if (VX_SUCCESS == status)

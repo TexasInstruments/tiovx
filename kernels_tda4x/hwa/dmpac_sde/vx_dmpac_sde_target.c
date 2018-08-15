@@ -192,12 +192,18 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             lse_reformat_in(left_desc, left_target_ptr, prms->left16);
             lse_reformat_in(right_desc, right_target_ptr, prms->right16);
 
+#ifdef VLAB_HWA
+
+            status = vlab_hwa_process(DMPAC_SDE_BASE_ADDRESS, "DMPAC_SDE", sizeof(SDE_HW_MMR), &prms->mmr);
+
+#else
             status = sde_hw(&prms->mmr);
 
             if (0 != status)
             {
                 status = VX_FAILURE;
             }
+#endif
         }
         if (VX_SUCCESS == status)
         {

@@ -70,8 +70,28 @@
 #include "vx_kernels_hwa_target.h"
 #include "LibDenseOpticalFlow.h"
 
+#ifdef VLAB_HWA
+
 typedef struct {
 
+    int magic;
+    int resv1;
+    int *input_current[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS*2];
+    int *input_reference[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS*2];
+    int *current_prediction;
+    int resv2;
+    int *past_prediction;
+    int resv3;
+    int pyramid_size[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS][2];
+    int confidence_histogram[TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS];
+    DOFParams dofParams;
+} tivxDmpacDofParams;
+
+#else
+
+typedef struct {
+
+    int magic;
     int *input_current[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
     int *input_reference[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
     int *current_prediction;
@@ -80,6 +100,8 @@ typedef struct {
     int confidence_histogram[TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS];
     DOFParams dofParams;
 } tivxDmpacDofParams;
+
+#endif
 
 static tivx_target_kernel vx_dmpac_dof_target_kernel = NULL;
 
@@ -347,6 +369,12 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
 
         /* call kernel processing function */
+#ifdef VLAB_HWA
+
+        status = vlab_hwa_process(DMPAC_DOF_BASE_ADDRESS, "DMPAC_DOF", sizeof(tivxDmpacDofParams), &prms);
+        prms->past_prediction = past_prediction;
+
+#else
 
         dofProcess(
            &prms->dofParams,
@@ -356,6 +384,8 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
            prms->pyramid_size,
            prms->current_prediction,
            prms->confidence_histogram);
+
+#endif
 
         /* kernel processing function complete */
 
@@ -461,6 +491,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
 
             params = (tivx_dmpac_dof_params_t *)params_array_target_ptr;
 
+            prms->magic = 0xC0DEFACE;
             prms->dofParams.direction = params->motion_direction ;
             prms->dofParams.flowPostFiltering = params->median_filter_enable ;
             prms->dofParams.msf = params->motion_smoothness_factor ;

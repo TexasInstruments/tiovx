@@ -79,7 +79,7 @@ typedef struct
     uint16_t *dst16[2];
     uint32_t buffer_size;
 
-    Scaler_Config mmr;
+    msc_config config;
 } tivxGassPyrmdParams;
 
 static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
@@ -172,39 +172,39 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         imgOutput[1] = prms->dst16[1];
 
         /* Process levels 0 and 1 */
-        prms->mmr.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
-        prms->mmr.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
+        prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
+        prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
 
         /* 1x output for level 0 of pyramid */
-        prms->mmr.coef_sp[0][0] = 0;
-        prms->mmr.coef_sp[0][1] = 0;
-        prms->mmr.coef_sp[0][2] = 256;
-        prms->mmr.coef_sp[0][3] = 0;
-        prms->mmr.coef_sp[0][4] = 0;
+        prms->config.settings.coef_sp[0][0] = 0;
+        prms->config.settings.coef_sp[0][1] = 0;
+        prms->config.settings.coef_sp[0][2] = 256;
+        prms->config.settings.coef_sp[0][3] = 0;
+        prms->config.settings.coef_sp[0][4] = 0;
 
-        prms->mmr.unitParams[0].threadMap = 0;
-        prms->mmr.unitParams[0].coefShift = 8;
-        prms->mmr.unitParams[0].outWidth = prms->img_obj_desc[0]->imagepatch_addr[0].dim_x;
-        prms->mmr.unitParams[0].outHeight = prms->img_obj_desc[0]->imagepatch_addr[0].dim_y;
-        prms->mmr.unitParams[0].hzScale = 4096;
-        prms->mmr.unitParams[0].vtScale = 4096;
+        prms->config.settings.unitParams[0].threadMap = 0;
+        prms->config.settings.unitParams[0].coefShift = 8;
+        prms->config.settings.unitParams[0].outWidth = prms->img_obj_desc[0]->imagepatch_addr[0].dim_x;
+        prms->config.settings.unitParams[0].outHeight = prms->img_obj_desc[0]->imagepatch_addr[0].dim_y;
+        prms->config.settings.unitParams[0].hzScale = 4096;
+        prms->config.settings.unitParams[0].vtScale = 4096;
 
-        prms->mmr.cfg_Kernel[0].Sz_height = 5;
-        prms->mmr.cfg_Kernel[0].Tpad_sz = 2;
-        prms->mmr.cfg_Kernel[0].Bpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Sz_height = 5;
+        prms->config.settings.cfg_Kernel[0].Tpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
 
         if(pmd->scale == 0.5f)
         {
-            prms->mmr.unitParams[1].filter_mode = 0;
+            prms->config.settings.unitParams[1].filter_mode = 0;
 
-            prms->mmr.coef_sp[1][0] = 16;
-            prms->mmr.coef_sp[1][1] = 64;
-            prms->mmr.coef_sp[1][2] = 96;
-            prms->mmr.coef_sp[1][3] = 64;
-            prms->mmr.coef_sp[1][4] = 16;
+            prms->config.settings.coef_sp[1][0] = 16;
+            prms->config.settings.coef_sp[1][1] = 64;
+            prms->config.settings.coef_sp[1][2] = 96;
+            prms->config.settings.coef_sp[1][3] = 64;
+            prms->config.settings.coef_sp[1][4] = 16;
 
-            prms->mmr.unitParams[1].sp_hs_coef_sel = 1;
-            prms->mmr.unitParams[1].sp_vs_coef_sel = 1;
+            prms->config.settings.unitParams[1].sp_hs_coef_sel = 1;
+            prms->config.settings.unitParams[1].sp_vs_coef_sel = 1;
         }
         else
         /* This does not pass the OpenVX conformance test for ORB scale */
@@ -214,41 +214,54 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
         {
             int32_t i;
 
-            prms->mmr.unitParams[1].filter_mode = 1;
-            prms->mmr.unitParams[1].initPhaseX = 4096.f*(1.f-pmd->scale);
-            prms->mmr.unitParams[1].initPhaseY = 4096.f*(1.f-pmd->scale);
+            prms->config.settings.unitParams[1].filter_mode = 1;
+            prms->config.settings.unitParams[1].initPhaseX = 4096.f*(1.f-pmd->scale);
+            prms->config.settings.unitParams[1].initPhaseY = 4096.f*(1.f-pmd->scale);
 
             for(i=0; i<32; i++)
             {
-                prms->mmr.coef_mp[0].matrix[i][0] = 16;
-                prms->mmr.coef_mp[0].matrix[i][1] = 64;
-                prms->mmr.coef_mp[0].matrix[i][2] = 96;
-                prms->mmr.coef_mp[0].matrix[i][3] = 64;
-                prms->mmr.coef_mp[0].matrix[i][4] = 16;
+                prms->config.settings.coef_mp[0].matrix[i][0] = 16;
+                prms->config.settings.coef_mp[0].matrix[i][1] = 64;
+                prms->config.settings.coef_mp[0].matrix[i][2] = 96;
+                prms->config.settings.coef_mp[0].matrix[i][3] = 64;
+                prms->config.settings.coef_mp[0].matrix[i][4] = 16;
             }
 
             for(i=0; i<32; i++)
             {
-                prms->mmr.coef_mp[1].matrix[i][0] = 16;
-                prms->mmr.coef_mp[1].matrix[i][1] = 64;
-                prms->mmr.coef_mp[1].matrix[i][2] = 96;
-                prms->mmr.coef_mp[1].matrix[i][3] = 64;
-                prms->mmr.coef_mp[1].matrix[i][4] = 16;
+                prms->config.settings.coef_mp[1].matrix[i][0] = 16;
+                prms->config.settings.coef_mp[1].matrix[i][1] = 64;
+                prms->config.settings.coef_mp[1].matrix[i][2] = 96;
+                prms->config.settings.coef_mp[1].matrix[i][3] = 64;
+                prms->config.settings.coef_mp[1].matrix[i][4] = 16;
             }
         }
 
-        prms->mmr.unitParams[1].threadMap = 0;
-        prms->mmr.unitParams[1].coefShift = 8;
-        prms->mmr.unitParams[1].outWidth = prms->img_obj_desc[1]->imagepatch_addr[0].dim_x;
-        prms->mmr.unitParams[1].outHeight = prms->img_obj_desc[1]->imagepatch_addr[0].dim_y;
-        prms->mmr.unitParams[1].hzScale = 4096.f/pmd->scale;
-        prms->mmr.unitParams[1].vtScale = 4096.f/pmd->scale;
+        prms->config.settings.unitParams[1].threadMap = 0;
+        prms->config.settings.unitParams[1].coefShift = 8;
+        prms->config.settings.unitParams[1].outWidth = prms->img_obj_desc[1]->imagepatch_addr[0].dim_x;
+        prms->config.settings.unitParams[1].outHeight = prms->img_obj_desc[1]->imagepatch_addr[0].dim_y;
+        prms->config.settings.unitParams[1].hzScale = 4096.f/pmd->scale;
+        prms->config.settings.unitParams[1].vtScale = 4096.f/pmd->scale;
 
-        prms->mmr.cfg_Kernel[0].Sz_height = 5;
-        prms->mmr.cfg_Kernel[0].Tpad_sz = 2;
-        prms->mmr.cfg_Kernel[0].Bpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Sz_height = 5;
+        prms->config.settings.cfg_Kernel[0].Tpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
 
-        scaler_top_processing(imgInput, imgOutput, &prms->mmr);
+#ifdef VLAB_HWA
+
+        prms->config.magic = 0xC0DEFACE;
+        prms->config.buffer[0]  = imgInput[0];
+        prms->config.buffer[4]  = imgOutput[0];
+        prms->config.buffer[6]  = imgOutput[1];
+
+        status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_GAUSSIAN_PYRAMID", sizeof(msc_config), &prms->config);
+
+#else
+
+        scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+
+#endif
     }
 
     if (VX_SUCCESS == status)
@@ -295,13 +308,25 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             imgInput[0] = prms->dst16[bufCnt];
             imgOutput[1] = prms->dst16[bufCnt^1];
 
-            prms->mmr.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
-            prms->mmr.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
-            prms->mmr.unitParams[1].outWidth = dst->imagepatch_addr[0].dim_x;
-            prms->mmr.unitParams[1].outHeight = dst->imagepatch_addr[0].dim_y;
+            prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
+            prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
+            prms->config.settings.unitParams[1].outWidth = dst->imagepatch_addr[0].dim_x;
+            prms->config.settings.unitParams[1].outHeight = dst->imagepatch_addr[0].dim_y;
 
-            scaler_top_processing(imgInput, imgOutput, &prms->mmr);
+#ifdef VLAB_HWA
 
+            prms->config.magic = 0xC0DEFACE;
+            prms->config.buffer[0]  = imgInput[0];
+            prms->config.buffer[4]  = imgOutput[0];
+            prms->config.buffer[6]  = imgOutput[1];
+
+            status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_GAUSSIAN_PYRAMID", sizeof(msc_config), &prms->config);
+
+#else
+
+            scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+
+#endif
             dst_target_ptr = tivxMemShared2TargetPtr(
                 dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
             tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],

@@ -65,6 +65,10 @@
 
 #include "TI/tivx.h"
 
+#ifdef VLAB_HWA
+#include "vlab_hwa.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -78,6 +82,10 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t 
 void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits);
 void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32);
 void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, int32_t *dst32);
+
+#ifdef VLAB_HWA
+vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t config_size, void *pConfig);
+#endif
 
 #ifdef __cplusplus
 }

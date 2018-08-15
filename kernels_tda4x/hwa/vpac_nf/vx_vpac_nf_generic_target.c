@@ -102,6 +102,8 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
        uint16_t num_params, void *priv_arg);
 static void tivxVpacNfGenericFreeMem(tivxVpacNfGenericParams *prms);
 
+#ifndef VLAB_HWA
+
 /* Static hardware configuration from J7 */
 static bilateralFilter_algParams_t    algParams[] =
 {
@@ -114,6 +116,8 @@ static bilateralFilter_algParams_t    algParams[] =
         512         /* recipLutQuantCutoff */
     }
 };
+
+#endif
 
 static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
        tivx_target_kernel_instance kernel,
@@ -212,12 +216,17 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             prms->mmr.centerPixelWeight = temp_lut[12];
             prms->mmr.lut = (uint16_t*)&i_lut;
 
-            status = bilateral_hw(&algParams[0], &prms->mmr, &prms->debug);
+#ifdef VLAB_HWA
 
+            status = vlab_hwa_process(VPAC_NF_BASE_ADDRESS, "VPAC_NF_GENERIC", sizeof(bilateralFilter_mmr_t), &prms->mmr);
+
+#else
+            status = bilateral_hw(&algParams[0], &prms->mmr, &prms->debug);
             if (0 != status)
             {
                 status = VX_FAILURE;
             }
+#endif
         }
         if (VX_SUCCESS == status)
         {

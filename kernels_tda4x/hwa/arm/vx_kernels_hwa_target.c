@@ -64,6 +64,7 @@
 #include <TI/tivx_target_kernel.h>
 #include "tivx_hwa_kernels.h"
 #include "tivx_kernels_target_utils.h"
+#include "vx_kernels_hwa_target.h"
 
 void tivxAddTargetKernelDofVisualize(void);
 
@@ -340,3 +341,42 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
         }
     }
 }
+
+#ifdef VLAB_HWA
+vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t config_size, void *pConfig)
+{
+    uint32_t data;
+    uint32_t *base_addr = (uint32_t*)base_address;
+    volatile uint32_t* const regs = base_addr;
+    vx_status status = VX_SUCCESS;
+
+    /* Check if config size is as expected */
+    data = GET_REG(REG_STATUS);
+    if(( data >> 16 )  != config_size)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "%s: vlab model expecting different config size: model=%d, local=%d\n", kernel_prefix, data >> 16, config_size);
+        status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        /* Set config address, and start processing */
+        SET_REG(REG_ADDR_LO, &pConfig);
+        SET_REG(REG_STATUS, 1);
+
+        /* Read STATUS register; DONE bit should be cleared before checking output */
+        do {
+            data = GET_REG(REG_STATUS);
+        } while(data & 1);
+
+        data = GET_REG(REG_ERROR);
+
+        if( data )
+        {
+            VX_PRINT(VX_ZONE_ERROR, "%s: vlab model returned error %d\n", kernel_prefix, data);
+            status = VX_FAILURE;
+        }
+    }
+    return status;
+}
+#endif

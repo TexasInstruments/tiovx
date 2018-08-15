@@ -79,7 +79,8 @@ typedef struct
     uint32_t buffer_size_in;
     uint32_t buffer_size_out;
 
-    Scaler_Config mmr;
+    msc_config config;
+
 } tivxScaleParams;
 
 static vx_status VX_CALLBACK tivxKernelScaleProcess(
@@ -165,29 +166,29 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         imgInput[0] = prms->src16;
         imgOutput[0] = prms->dst16;
 
-        prms->mmr.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
-        prms->mmr.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
+        prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
+        prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
 
-        prms->mmr.unitParams[0].threadMap = 0;
-        prms->mmr.unitParams[0].coefShift = 8;
-        prms->mmr.unitParams[0].outWidth = dst->imagepatch_addr[0].dim_x;
-        prms->mmr.unitParams[0].outHeight = dst->imagepatch_addr[0].dim_y;
-        prms->mmr.unitParams[0].hzScale = hzScale;
-        prms->mmr.unitParams[0].vtScale = vtScale;
+        prms->config.settings.unitParams[0].threadMap = 0;
+        prms->config.settings.unitParams[0].coefShift = 8;
+        prms->config.settings.unitParams[0].outWidth = dst->imagepatch_addr[0].dim_x;
+        prms->config.settings.unitParams[0].outHeight = dst->imagepatch_addr[0].dim_y;
+        prms->config.settings.unitParams[0].hzScale = hzScale;
+        prms->config.settings.unitParams[0].vtScale = vtScale;
 
-        prms->mmr.unitParams[0].filter_mode = 1;    /* multi phase */
-        prms->mmr.unitParams[0].phase_mode = 0;     /* 64 phases */
-        prms->mmr.unitParams[0].hs_coef_sel = 0;
-        prms->mmr.unitParams[0].vs_coef_sel = 0;
-        prms->mmr.unitParams[0].initPhaseX = (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
-        prms->mmr.unitParams[0].initPhaseY = (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        prms->config.settings.unitParams[0].filter_mode = 1;    /* multi phase */
+        prms->config.settings.unitParams[0].phase_mode = 0;     /* 64 phases */
+        prms->config.settings.unitParams[0].hs_coef_sel = 0;
+        prms->config.settings.unitParams[0].vs_coef_sel = 0;
+        prms->config.settings.unitParams[0].initPhaseX = (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        prms->config.settings.unitParams[0].initPhaseY = (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
 
-        prms->mmr.unitParams[0].x_offset = 0;
-        prms->mmr.unitParams[0].y_offset = 0;
+        prms->config.settings.unitParams[0].x_offset = 0;
+        prms->config.settings.unitParams[0].y_offset = 0;
 
-        prms->mmr.cfg_Kernel[0].Sz_height = 5;
-        prms->mmr.cfg_Kernel[0].Tpad_sz = 2;
-        prms->mmr.cfg_Kernel[0].Bpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Sz_height = 5;
+        prms->config.settings.cfg_Kernel[0].Tpad_sz = 2;
+        prms->config.settings.cfg_Kernel[0].Bpad_sz = 2;
 
         /* The precision (64 phases) of the bilinear interpolation on the random
          * conformance tests for ORB, 3_1, and DOWN_NEAR is not enough
@@ -200,43 +201,54 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
             for(i=0; i<32; i++)
             {
                 weight = i<<2;
-                prms->mmr.coef_mp[0].matrix[i][0] = 0;
-                prms->mmr.coef_mp[0].matrix[i][1] = 0;
-                prms->mmr.coef_mp[0].matrix[i][2] = 256-weight;
-                prms->mmr.coef_mp[0].matrix[i][3] = weight;
-                prms->mmr.coef_mp[0].matrix[i][4] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][0] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][1] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][2] = 256-weight;
+                prms->config.settings.coef_mp[0].matrix[i][3] = weight;
+                prms->config.settings.coef_mp[0].matrix[i][4] = 0;
             }
             for(i=0; i<32; i++)
             {
                 weight = (i+32)<<2;
-                prms->mmr.coef_mp[1].matrix[i][0] = 0;
-                prms->mmr.coef_mp[1].matrix[i][1] = 0;
-                prms->mmr.coef_mp[1].matrix[i][2] = 256-weight;
-                prms->mmr.coef_mp[1].matrix[i][3] = weight;
-                prms->mmr.coef_mp[1].matrix[i][4] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][0] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][1] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][2] = 256-weight;
+                prms->config.settings.coef_mp[1].matrix[i][3] = weight;
+                prms->config.settings.coef_mp[1].matrix[i][4] = 0;
             }
         }
         else    /* Nearest Neighbor coefficients */
         {
             for(i=0; i<32; i++)
             {
-                prms->mmr.coef_mp[0].matrix[i][0] = 0;
-                prms->mmr.coef_mp[0].matrix[i][1] = 0;
-                prms->mmr.coef_mp[0].matrix[i][2] = 256;
-                prms->mmr.coef_mp[0].matrix[i][3] = 0;
-                prms->mmr.coef_mp[0].matrix[i][4] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][0] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][1] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][2] = 256;
+                prms->config.settings.coef_mp[0].matrix[i][3] = 0;
+                prms->config.settings.coef_mp[0].matrix[i][4] = 0;
             }
             for(i=0; i<32; i++)
             {
-                prms->mmr.coef_mp[1].matrix[i][0] = 0;
-                prms->mmr.coef_mp[1].matrix[i][1] = 0;
-                prms->mmr.coef_mp[1].matrix[i][2] = 0;
-                prms->mmr.coef_mp[1].matrix[i][3] = 256;
-                prms->mmr.coef_mp[1].matrix[i][4] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][0] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][1] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][2] = 0;
+                prms->config.settings.coef_mp[1].matrix[i][3] = 256;
+                prms->config.settings.coef_mp[1].matrix[i][4] = 0;
             }
         }
+#ifdef VLAB_HWA
 
-        scaler_top_processing(imgInput, imgOutput, &prms->mmr);
+        prms->config.magic = 0xC0DEFACE;
+        prms->config.buffer[0]  = prms->src16;
+        prms->config.buffer[4]  = prms->dst16;
+
+        status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_SCALE", sizeof(msc_config), &prms->config);
+
+#else
+
+        scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+
+#endif
     }
 
     if (VX_SUCCESS == status)
