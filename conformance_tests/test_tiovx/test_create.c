@@ -124,8 +124,115 @@ TEST_WITH_ARG(tivxCreate, testCreateLUT, Arg,
     VX_CALL(vxReleaseLUT(&lut_char));
 }
 
+TEST_WITH_ARG(tivxCreate, testCreateNodeByEnum, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_node node = NULL;
+    vx_graph graph;
+    vx_image image_0, image_1, image_2;
+
+    ASSERT_VX_OBJECT(image_0   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_1   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_2   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    vx_reference params[] =
+    {
+          (vx_reference)image_0 ,
+          (vx_reference)image_1 ,
+          (vx_reference)image_2
+    };
+    {
+        ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelEnum(graph, VX_KERNEL_ABSDIFF, params, 3), VX_TYPE_NODE);
+    }
+
+    VX_CALL(vxReleaseImage(&image_2));
+    VX_CALL(vxReleaseImage(&image_1));
+    VX_CALL(vxReleaseImage(&image_0));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST_WITH_ARG(tivxCreate, testCreateNodeByRef, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_node node = NULL;
+    vx_graph graph;
+    vx_image image_0, image_1, image_2;
+
+    ASSERT_VX_OBJECT(image_0   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_1   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_2   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    vx_reference params[] =
+    {
+          (vx_reference)image_0 ,
+          (vx_reference)image_1 ,
+          (vx_reference)image_2
+    };
+    {
+        vx_kernel kernel = vxGetKernelByName(vxGetContext((vx_reference)graph), "org.khronos.openvx.absdiff");
+
+        if (vxGetStatus((vx_reference)kernel)==VX_SUCCESS)
+        {
+            ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelRef(graph, kernel, params, 3), VX_TYPE_NODE);
+        }
+
+        VX_CALL(vxReleaseKernel(&kernel));
+    }
+
+    VX_CALL(vxReleaseImage(&image_2));
+    VX_CALL(vxReleaseImage(&image_1));
+    VX_CALL(vxReleaseImage(&image_0));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+TEST_WITH_ARG(tivxCreate, testCreateNodeByName, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_node node = NULL;
+    vx_graph graph;
+    vx_image image_0, image_1, image_2;
+
+    ASSERT_VX_OBJECT(image_0   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_1   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image_2   = vxCreateImage(context, 640, 480, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    vx_reference params[] =
+    {
+          (vx_reference)image_0 ,
+          (vx_reference)image_1 ,
+          (vx_reference)image_2
+    };
+    {
+        ASSERT_VX_OBJECT(node = tivxCreateNodeByKernelName(graph, "org.khronos.openvx.absdiff", params, 3), VX_TYPE_NODE);
+    }
+
+    VX_CALL(vxReleaseImage(&image_2));
+    VX_CALL(vxReleaseImage(&image_1));
+    VX_CALL(vxReleaseImage(&image_0));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+
 TESTCASE_TESTS(tivxCreate,
         testCreateMatrix,
-        testCreateLUT
+        testCreateLUT,
+        testCreateNodeByEnum,
+        testCreateNodeByRef,
+        testCreateNodeByName
         )
 

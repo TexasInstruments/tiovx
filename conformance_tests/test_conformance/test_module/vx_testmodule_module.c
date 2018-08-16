@@ -286,3 +286,8 @@ void TestModuleRegister()
 {
     tivxRegisterModule("test-testmodule", vxPublishKernels, vxUnpublishKernels);
 }
+
+void TestModuleUnRegister()
+{
+    tivxUnRegisterModule("test-testmodule");
+}

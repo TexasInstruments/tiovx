@@ -18,11 +18,13 @@
 
 int vx_conformance_test_main(int argc, char* argv[]);
 void TestModuleRegister();
+void TestModuleUnRegister();
 
 int main(int argc, char* argv[])
 {
     tivxInit();
     TestModuleRegister();
     vx_conformance_test_main(argc, argv);
+    TestModuleUnRegister();
     tivxDeInit();
 }

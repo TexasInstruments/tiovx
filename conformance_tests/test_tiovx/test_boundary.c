@@ -43,6 +43,7 @@ TEST(tivxBoundary, testImageBoundary)
     for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
     {
         ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT(vx_false_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
     }
 
     for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
@@ -197,6 +198,7 @@ TEST(tivxBoundary, testVirtualImageBoundary)
     for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
     {
         ASSERT_VX_OBJECT(src_image[i] = vxCreateVirtualImage(graph, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT(vx_true_e == tivxIsReferenceVirtual((vx_reference)src_image[i]) );
     }
 
     for (i = 0; i < TIVX_IMAGE_MAX_OBJECTS; i++)
