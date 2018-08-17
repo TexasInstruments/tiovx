@@ -95,6 +95,8 @@ from glob import glob
 # c66/concerto.mak (generated first time only for given parameters)
 # c66/vx_<kernel_name>_target.c
 # c66/vx_kernels_ext1_target.c (generated first time only for given parameters)
+# c66/bam/vx_bam_<kernel_name>_target.c (if using the C66 DSP)
+# c66/bam/concerto.mak (generated first time only for given parameters, if using the C66 DSP)
 # host/concerto.mak (generated first time only for given parameters)
 # tivx_ext1_node_api.c (generated first time only for given parameters)
 # host/vx_<kernel_name>_host.c
@@ -135,6 +137,8 @@ from glob import glob
 # c66/concerto.mak (generated first time only for given parameters)
 # c66/vx_<kernel_name>_target.c
 # c66/vx_kernels_ext1_target.c (generated first time only for given parameters)
+# c66/bam/vx_bam_<kernel_name>_target.c (if using the C66 DSP)
+# c66/bam/concerto.mak (generated first time only for given parameters, if using the C66 DSP)
 # host/concerto.mak (generated first time only for given parameters)
 # tivx_ext1_node_api.c (generated first time only for given parameters)
 # host/vx_<kernel_name>_host.c
@@ -209,7 +213,10 @@ class KernelExportCode :
         return "white"
 
     def outputNode(self, kernel) :
-        self.file.write('  %s [label=\"%s\", color=%s, style=filled]\n' % (kernel.name_lower, kernel.name_lower, self.getTargetColor(kernel.targets[0])) )
+        if kernel.targets :
+            self.file.write('  %s [label=\"%s\", color=%s, style=filled]\n' % (kernel.name_lower, kernel.name_lower, self.getTargetColor(kernel.targets[0])) )
+        else :
+            self.file.write('  %s [label=\"%s\", color=%s, style=filled]\n' % (kernel.name_lower, kernel.name_lower, self.getTargetColor("white")) )
 
     def outputNodeList(self, kernel) :
         self.file.write('\n')
@@ -307,6 +314,10 @@ class KernelExportCode :
 
         self.workarea_module_core = self.workarea_module + "/" + self.core
         self.create_directory(self.workarea_module_core)
+
+        if self.target_uses_dsp :
+            self.workarea_module_core_bam = self.workarea_module + "/" + self.core + "/bam"
+            self.create_directory(self.workarea_module_core_bam)
 
         self.workarea_module_test = self.workarea_module + "/test"
         self.create_directory(self.workarea_module_test)
@@ -744,7 +755,8 @@ class KernelExportCode :
         self.host_c_code.close()
 
     def generate_target_c_add_func_code(self):
-        self.target_c_code.write_line("void tivxAddTargetKernel%s(void)" % self.kernel.name_camel)
+        self.target_c_code.write_line("void tivxAddTargetKernel%s(void)" % self.kernel.name_camel, files=0)
+        self.target_c_code.write_line("void tivxAddTargetKernelBam%s(void)" % self.kernel.name_camel, files=1)
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_FAILURE;")
         self.target_c_code.write_line("char target_name[TIVX_TARGET_MAX_NAME];")
@@ -781,7 +793,8 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
     def generate_target_c_remove_func_code(self):
-        self.target_c_code.write_line("void tivxRemoveTargetKernel%s(void)" % self.kernel.name_camel)
+        self.target_c_code.write_line("void tivxRemoveTargetKernel%s(void)" % self.kernel.name_camel, files=0)
+        self.target_c_code.write_line("void tivxRemoveTargetKernelBam%s(void)" % self.kernel.name_camel, files=1)
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
         self.target_c_code.write_newline()
@@ -1233,33 +1246,33 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        if self.kernel.localMem == True :
-            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
+        if self.prms_needed:
+            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating")
         self.target_c_code.write_comment_line("                  local memory buffers, one time initialization, etc) >")
-        if self.kernel.localMem == True :
+        if self.prms_needed :
             # checks function parameters
-            self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+            self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) , files=self.prms_write)
             for prm in self.kernel.params :
                 if prm.state is ParamState.REQUIRED :
-                    self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
-            self.target_c_code.write_line(")")
-            self.target_c_code.write_open_brace()
+                    self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper), files=self.prms_write)
+            self.target_c_code.write_line(")", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
             # function parameters status check failure case
-            self.target_c_code.write_line("status = VX_FAILURE;")
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_line("else")
-            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_line("else", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
 
             # declaring variables
             duplicates = []
             for local in self.kernel.local_mem_list :
                  if local.prm.type != Type.NULL :
                      if not (local.prm.name_lower in duplicates) :
-                         self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(local.prm.type), local.prm.name_lower) )
+                         self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(local.prm.type), local.prm.name_lower) , files=self.prms_write)
                          duplicates.append(local.prm.name_lower)
-            self.target_c_code.write_newline()
+            self.target_c_code.write_newline(files=self.prms_write)
 
             # populating object descriptors
             duplicates = []
@@ -1267,44 +1280,44 @@ class KernelExportCode :
                  if local.prm.type != Type.NULL :
                      if not (local.prm.name_lower in duplicates) :
                          self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
-                            (local.prm.name_lower, Type.get_obj_desc_name(local.prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, local.prm.name_upper) )
+                            (local.prm.name_lower, Type.get_obj_desc_name(local.prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, local.prm.name_upper) , files=self.prms_write)
                          duplicates.append(local.prm.name_lower)
-            self.target_c_code.write_newline()
+            self.target_c_code.write_newline(files=self.prms_write)
 
             # Allocating memory for local structure
-            self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel)
-            self.target_c_code.write_line("if (NULL != prms)")
-            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel, files=self.prms_write)
+            self.target_c_code.write_line("if (NULL != prms)", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
             # Allocating local memory data
             is_first_prm = True
             for local in self.kernel.local_mem_list :
                  if self.is_supported_type(local.prm.type) :
                      self.extract_attribute(local, 0, is_first_prm)
                      is_first_prm = False
-            self.target_c_code.write_newline()
+            self.target_c_code.write_newline(files=self.prms_write)
             # verifying that the optional parameter is being used
             for local in self.kernel.local_mem_list :
                  if self.is_supported_type(local.prm.type) :
                      self.extract_attribute(local, 1, is_first_prm)
 
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_line("else")
-            self.target_c_code.write_open_brace()
-            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
-            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_newline()
-            self.target_c_code.write_line("if (VX_SUCCESS == status)")
-            self.target_c_code.write_open_brace()
-            self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,")
-            self.target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel)
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_line("else")
-            self.target_c_code.write_open_brace()
-            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
-            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_close_brace()
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_line("else", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
+            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
+            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_newline(files=self.prms_write)
+            self.target_c_code.write_line("if (VX_SUCCESS == status)", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
+            self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,", files=self.prms_write)
+            self.target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel, files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_line("else", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
+            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
+            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
         self.target_c_code.write_newline()
         self.target_c_code.write_line("return status;")
         self.target_c_code.write_close_brace()
@@ -1317,38 +1330,39 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        if self.kernel.localMem == True :
-            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
-            self.target_c_code.write_line("uint32_t size;")
-        self.target_c_code.write_newline()
+        if self.prms_needed :
+            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
+            self.target_c_code.write_line("uint32_t size;", files=self.prms_write)
+        self.target_c_code.write_newline(files=self.prms_write)
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel delete code here (e.g. freeing")
         self.target_c_code.write_comment_line("                  local memory buffers, etc) >")
-        if self.kernel.localMem == True :
+        if self.prms_needed :
             # checks function parameters
-            self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) )
+            self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) , files=self.prms_write)
             for prm in self.kernel.params :
                 if prm.state is ParamState.REQUIRED :
-                    self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper))
-            self.target_c_code.write_line(")")
-            self.target_c_code.write_open_brace()
+                    self.target_c_code.write_line("    || (NULL == obj_desc[%s%s_%s_IDX])" % (self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper), files=self.prms_write)
+            self.target_c_code.write_line(")", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
             # function parameters status check failure case
-            self.target_c_code.write_line("status = VX_FAILURE;")
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_line("else")
-            self.target_c_code.write_open_brace()
-            self.target_c_code.write_line("tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);")
-            self.target_c_code.write_newline()
-            self.target_c_code.write_line("if ((NULL != prms) &&")
-            self.target_c_code.write_line("    (sizeof(tivx%sParams) == size))" % self.kernel.name_camel)
-            self.target_c_code.write_open_brace()
+            self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_line("else", files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
+            self.target_c_code.write_line("tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);", files=self.prms_write)
+            self.target_c_code.write_newline(files=self.prms_write)
+            self.target_c_code.write_line("if ((NULL != prms) &&", files=self.prms_write)
+            self.target_c_code.write_line("    (sizeof(tivx%sParams) == size))" % self.kernel.name_camel, files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
             for local in self.kernel.local_mem_list :
                  if prm.type == Type.IMAGE :
                      self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, TIVX_MEM_EXTERNAL);" %
-                         (local.name, local.name) )
+                         (local.name, local.name) , files=self.prms_write)
 
-            self.target_c_code.write_line("tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);")
-            self.target_c_code.write_close_brace()
-            self.target_c_code.write_close_brace()
+            self.target_c_code.write_line("tivxBamDestroyHandle(prms->graph_handle);", files=1)
+            self.target_c_code.write_line("tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);", files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
 
         self.target_c_code.write_newline()
         self.target_c_code.write_line("return status;")
@@ -1371,13 +1385,81 @@ class KernelExportCode :
         self.target_c_code.write_newline()
 
     def generate_target_c_struct(self):
-        self.target_c_code.write_line("typedef struct")
-        self.target_c_code.write_line("{")
+        self.target_c_code.write_line("typedef struct", files=self.prms_write)
+        self.target_c_code.write_line("{", files=self.prms_write)
         for local in self.kernel.local_mem_list :
-             self.target_c_code.write_line("    void     *%s_ptr;" % local.name )
-             self.target_c_code.write_line("    uint32_t %s_size;" % local.name )
-        self.target_c_code.write_line("} tivx%sParams;" % self.kernel.name_camel)
-        self.target_c_code.write_newline()
+            self.target_c_code.write_line("    void     *%s_ptr;" % local.name , files=self.prms_write)
+            self.target_c_code.write_line("    uint32_t %s_size;" % local.name , files=self.prms_write)
+        if self.target_uses_dsp :
+            self.target_c_code.write_line("    tivx_bam_graph_handle graph_handle;" , files=1)
+        self.target_c_code.write_line("} tivx%sParams;" % self.kernel.name_camel, files=self.prms_write)
+        self.target_c_code.write_newline(files=self.prms_write)
+
+    def generate_bam_pointers(self, kernel_params):
+        idx = 0
+        for prm in kernel_params :
+            if prm.type == Type.IMAGE :
+                self.target_c_code.write_line("img_ptrs[%s] = %s_addr;" % (idx, prm.name_lower), files=1)
+                idx += 1
+        self.target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumInputImages(), self.kernel.getNumOutputImages()), files=1)
+        self.target_c_code.write_newline(files=1)
+
+    def generate_optional_bam_pointers(self, num_scenarios) :
+        first_scenario = True
+        first_param = True
+        binary_mask = num_scenarios
+        for scenario in range(num_scenarios) :
+            first_param = True
+            included_str = []
+            num_included_optional_input = 0
+            num_included_optional_output = 0
+            for idx, prm in enumerate(self.optional_img_params) :
+                if binary_mask & (2**idx) :
+                    included_str.append(prm.name_lower)
+                    if first_scenario == True and first_param == True:
+                        self.target_c_code.write_line ("if ( (%s_desc != NULL)" % prm.name_lower, files=1)
+                        first_scenario = False
+                        first_param = False
+                    elif first_param == True :
+                        self.target_c_code.write_line ("else if ( (%s_desc != NULL)" % prm.name_lower, files=1)
+                        first_scenario = False
+                        first_param = False
+                    else :
+                        self.target_c_code.write_line ("    && (%s_desc != NULL)" % prm.name_lower, files=1)
+                    if prm.direction == Direction.INPUT :
+                        num_included_optional_input += 1
+                    elif prm.direction == Direction.OUTPUT :
+                        num_included_optional_output += 1
+            self.target_c_code.write_line (")", files=1)
+            self.target_c_code.write_open_brace(files=1)
+            idx = 0
+            for prm in self.kernel.params :
+                if (prm.type == Type.IMAGE and prm.state == ParamState.REQUIRED) or \
+                   (prm.name_lower in included_str):
+                    self.target_c_code.write_line("img_ptrs[%s] = %s_addr;" % (idx, prm.name_lower), files=1)
+                    idx += 1
+            self.target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumRequiredInputImages()+num_included_optional_input, \
+                self.kernel.getNumRequiredOutputImages()+num_included_optional_output), files=1)
+            self.target_c_code.write_close_brace(files=1)
+            binary_mask -= 1
+
+        self.target_c_code.write_line ("else", files=1)
+        self.target_c_code.write_open_brace(files=1)
+        idx = 0
+        for prm in self.kernel.params :
+            if (prm.type == Type.IMAGE and prm.state == ParamState.REQUIRED) :
+                self.target_c_code.write_line("img_ptrs[%s] = %s_addr;" % (idx, prm.name_lower), files=1)
+                idx += 1
+        self.target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumRequiredInputImages(), \
+            self.kernel.getNumRequiredOutputImages()), files=1)
+        self.target_c_code.write_close_brace(files=1)
+
+
+    def generate_optional_list(self, kernel_params) :
+        self.optional_img_params = []
+        for prm in kernel_params :
+            if prm.type == Type.IMAGE and prm.state == ParamState.OPTIONAL :
+                self.optional_img_params.append(prm)
 
     def generate_target_c_process_func_code(self):
         # define function name, and parameters
@@ -1389,8 +1471,8 @@ class KernelExportCode :
 
         # define status variables and obj descriptor variable
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        if self.kernel.localMem == True :
-            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
+        if self.prms_needed :
+            self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
         need_plane_idx_var = False
         need_pyramid_idx_var = False
         for prm in self.kernel.params :
@@ -1433,25 +1515,25 @@ class KernelExportCode :
         self.target_c_code.write_line("if(VX_SUCCESS == status)")
         self.target_c_code.write_open_brace()
 
-        if self.kernel.localMem == True :
-            self.target_c_code.write_line("uint32_t size;")
+        if self.prms_needed :
+            self.target_c_code.write_line("uint32_t size;", files=self.prms_write)
 
         # assigned descriptors to local variables
         for prm in self.kernel.params :
-            if prm.do_map or prm.do_unmap :
+            if prm.do_map or prm.do_unmap  or (Type.is_scalar_type(prm.type) is True):
                 self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
                     (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
         self.target_c_code.write_newline()
 
         # retrieving prms struct for use
-        if self.kernel.localMem == True :
-            self.target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,")
-            self.target_c_code.write_line("    (void **)&prms, &size);")
-            self.target_c_code.write_line("if ((VX_SUCCESS != status) || (NULL == prms) ||")
-            self.target_c_code.write_line("    (sizeof(tivx%sParams) != size))" % self.kernel.name_camel)
-            self.target_c_code.write_open_brace()
-            self.target_c_code.write_line("status = VX_FAILURE;")
-            self.target_c_code.write_close_brace()
+        if self.prms_needed :
+            self.target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,", files=self.prms_write)
+            self.target_c_code.write_line("    (void **)&prms, &size);", files=self.prms_write)
+            self.target_c_code.write_line("if ((VX_SUCCESS != status) || (NULL == prms) ||", files=self.prms_write)
+            self.target_c_code.write_line("    (sizeof(tivx%sParams) != size))" % self.kernel.name_camel, files=self.prms_write)
+            self.target_c_code.write_open_brace(files=self.prms_write)
+            self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+            self.target_c_code.write_close_brace(files=self.prms_write)
 
         self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
@@ -1567,8 +1649,12 @@ class KernelExportCode :
                     self.target_c_code.write_close_brace()
         self.target_c_code.write_newline()
 
-        # Setting up bufparams and pointer location in case of image
         self.target_c_code.write_open_brace()
+        if self.target_uses_dsp :
+            if self.kernel.getNumImages() > 0:
+                self.target_c_code.write_line("void *img_ptrs[%s];" % self.kernel.getNumImages(), files=1)
+
+        # Setting up bufparams and pointer location in case of image
         for prm in self.kernel.params :
             if prm.type == Type.IMAGE and (prm.do_map or prm.do_unmap):
                 self.target_c_code.write_line("VXLIB_bufParams2D_t vxlib_%s;" % prm.name_lower)
@@ -1585,6 +1671,22 @@ class KernelExportCode :
                 if prm.state is ParamState.OPTIONAL:
                     self.target_c_code.write_close_brace()
                 self.target_c_code.write_newline()
+
+        if self.target_uses_dsp :
+            if self.kernel.getNumImages() > 0:
+                self.generate_optional_list(self.kernel.params)
+                if self.kernel.getNumOptionalImages() > 0 :
+                    num_scenarios = (2 ** self.kernel.getNumOptionalImages()) - 1
+                else :
+                    num_scenarios = 1
+                if num_scenarios == 1 and self.kernel.getNumOptionalImages() == 0 :
+                    self.generate_bam_pointers(self.kernel.params)
+                elif num_scenarios == 1 and self.kernel.getNumOptionalImages() > 0 :
+                    self.generate_optional_bam_pointers(num_scenarios)
+                else :
+                    self.generate_optional_bam_pointers(num_scenarios)
+                self.target_c_code.write_line("status  = tivxBamProcessGraph(prms->graph_handle);", files=1)
+                self.target_c_code.write_newline(files=1)
 
         self.target_c_code.write_comment_line("call kernel processing function")
         self.target_c_code.write_newline()
@@ -1674,7 +1776,11 @@ class KernelExportCode :
 
     def generate_target_c_file_code(self):
         print("Creating " + self.workarea_module_core + "/" + self.target_c_filename)
-        self.target_c_code = CodeGenerate(self.workarea_module_core + "/" + self.target_c_filename)
+        if self.target_uses_dsp :
+            self.target_c_code = CodeGenerate(self.workarea_module_core + "/" + self.target_c_filename, True, self.workarea_module_core_bam + "/" + self.bam_target_c_filename)
+            print("Creating " + self.workarea_module_core_bam + "/" + self.bam_target_c_filename)
+        else :
+            self.target_c_code = CodeGenerate(self.workarea_module_core + "/" + self.target_c_filename)
         self.target_c_code.write_include("TI/tivx.h")
         self.target_c_code.write_include(self.company + "/" + self.top_header_name + ".h")
         self.target_c_code.write_include("VX/vx.h")
@@ -1682,9 +1788,12 @@ class KernelExportCode :
         self.target_c_code.write_include(self.h_filename)
         self.target_c_code.write_include("TI/tivx_target_kernel.h")
         self.target_c_code.write_include("tivx_kernels_target_utils.h")
+        self.target_c_code.write_include("ti/vxlib/vxlib.h")
+        if self.target_uses_dsp :
+            self.target_c_code.write_include("tivx_bam_kernel_wrapper.h", files=1)
         self.target_c_code.write_newline()
         # Calling method for creating struct based on if localMem is needing to be allocated
-        if self.kernel.localMem == True :
+        if self.prms_needed == True :
             self.generate_target_c_struct()
         self.target_c_code.write_line("static tivx_target_kernel vx_%s_target_kernel = NULL;" % (self.kernel.name_lower))
         self.target_c_code.write_newline()
@@ -1715,408 +1824,6 @@ class KernelExportCode :
         self.generate_target_c_remove_func_code()
         self.target_c_code.close()
 
-    def generate_bam_target_c_add_func_code(self):
-        self.bam_target_c_code.write_line("void tivxAddTargetKernelBam%s(void)" % self.kernel.name_camel)
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_status status = VX_FAILURE;")
-        self.bam_target_c_code.write_line("char target_name[TIVX_TARGET_MAX_NAME];")
-        self.bam_target_c_code.write_line("vx_enum self_cpu;")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("self_cpu = tivxGetSelfCpuId();")
-        self.bam_target_c_code.write_newline()
-        for target in self.kernel.targets :
-            cpu = Target.get_cpu(target)
-            self.bam_target_c_code.write_line("if ( self_cpu == %s )" % Cpu.get_vx_enum_name(cpu) )
-            self.bam_target_c_code.write_open_brace()
-            self.bam_target_c_code.write_line("strncpy(target_name, %s, TIVX_TARGET_MAX_NAME);" % Target.get_vx_enum_name(target))
-            self.bam_target_c_code.write_line("status = VX_SUCCESS;")
-            self.bam_target_c_code.write_close_brace()
-            self.bam_target_c_code.write_line("else")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("status = VX_FAILURE;")
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-        self.bam_target_c_code.write_if_status()
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_%s_target_kernel = tivxAddTargetKernelByName(" % self.kernel.name_lower)
-        self.bam_target_c_code.write_line("                    %s%s_NAME," % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        self.bam_target_c_code.write_line("                    target_name,")
-        self.bam_target_c_code.write_line("                    tivx%sProcess," % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("                    tivx%sCreate," % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("                    tivx%sDelete," % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("                    tivx%sControl," % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("                    NULL);")
-        self.bam_target_c_code.write_close_brace()
-
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-    def generate_bam_target_c_remove_func_code(self):
-        self.bam_target_c_code.write_line("void tivxRemoveTargetKernelBam%s(void)" % self.kernel.name_camel)
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("status = tivxRemoveTargetKernel(vx_%s_target_kernel);" % self.kernel.name_lower)
-        self.bam_target_c_code.write_if_status()
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_%s_target_kernel = NULL;" % self.kernel.name_lower)
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-    def generate_bam_target_c_process_func_code(self):
-        # define function name, and parameters
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sProcess(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
-        self.bam_target_c_code.write_open_brace()
-
-        # define status variables and obj descriptor variable
-        self.bam_target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        need_plane_idx_var = False
-        for prm in self.kernel.params :
-            if prm.do_map or prm.do_unmap :
-                if prm.do_map_unmap_all_planes :
-                    need_plane_idx_var = True
-            self.bam_target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
-        if need_plane_idx_var is True :
-            self.bam_target_c_code.write_line("uint16_t plane_idx;")
-        # TODO figure out a way to get image format and create addr pointers here
-        self.bam_target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("uint32_t size;")
-        self.bam_target_c_code.write_newline()
-
-        # checks function parameters
-        self.bam_target_c_code.write_line("status = tivxCheckNullParams(obj_desc, num_params,")
-        self.bam_target_c_code.write_line("        %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        self.bam_target_c_code.write_newline()
-
-        # get target kernel instance context
-        self.bam_target_c_code.write_line("if (VX_SUCCESS == status)")
-        self.bam_target_c_code.write_open_brace()
-
-        # define variables to hold scalar values
-        for prm in self.kernel.params :
-            if Type.is_scalar_type(prm.type) is True :
-                self.bam_target_c_code.write_line("%s %s_value;" % (Type.get_vx_name(prm.type), prm.name_lower ))
-        self.bam_target_c_code.write_newline()
-
-        # assigned descriptors to local variables
-        for prm in self.kernel.params :
-            self.bam_target_c_code.write_line("void *%s_target_ptr;" % prm.name_lower )
-        self.bam_target_c_code.write_newline()
-
-        # assigned descriptors to local variables
-        for prm in self.kernel.params :
-            self.bam_target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
-                (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
-        self.bam_target_c_code.write_newline()
-
-        self.bam_target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,")
-        self.bam_target_c_code.write_line("    (void **)&prms, &size);")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("if ((VX_SUCCESS != status) || (NULL == prms) ||")
-        self.bam_target_c_code.write_line("    (sizeof(tivx%sParams) != size))" % self.kernel.name_camel)
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("status = VX_FAILURE;")
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_close_brace()
-
-        self.bam_target_c_code.write_line("if (VX_SUCCESS == status)")
-        self.bam_target_c_code.write_open_brace()
-
-        self.bam_target_c_code.write_line("void *img_ptrs[%s];" % self.kernel.getNumImages())
-        self.bam_target_c_code.write_newline()
-
-        # convert descriptors pointer to target pointers
-        for prm in self.kernel.params :
-            desc = prm.name_lower + "_desc"
-            if Type.is_scalar_type(prm.type) is False :
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_line("if( %s != NULL)" % desc)
-                    self.bam_target_c_code.write_open_brace()
-                if prm.do_map or prm.do_unmap :
-                    if prm.do_map_unmap_all_planes :
-                        self.bam_target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
-                        self.bam_target_c_code.write_open_brace()
-                        self.bam_target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                        self.bam_target_c_code.write_line("  %s->mem_ptr[plane_idx].shared_ptr, %s->mem_ptr[plane_idx].mem_heap_region);" % (desc, desc))
-                        self.bam_target_c_code.write_close_brace()
-                    else:
-                        if prm.type == Type.IMAGE : #TODO: test with other types
-                            self.bam_target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                            self.bam_target_c_code.write_line("  %s->mem_ptr[0].shared_ptr, %s->mem_ptr[0].mem_heap_region);" % (desc, desc))
-                        elif prm.type != Type.THRESHOLD :
-                            self.bam_target_c_code.write_line("%s_target_ptr = tivxMemShared2TargetPtr(" % prm.name_lower )
-                            self.bam_target_c_code.write_line("  %s->mem_ptr.shared_ptr, %s->mem_ptr.mem_heap_region);" % (desc, desc))
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-        # map descriptors pointer
-        for prm in self.kernel.params :
-            desc = prm.name_lower + "_desc"
-            if prm.do_map :
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_line("if( %s != NULL)" % desc)
-                    self.bam_target_c_code.write_open_brace()
-                if prm.do_map_unmap_all_planes :
-                    self.bam_target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
-                    self.bam_target_c_code.write_open_brace()
-                    self.bam_target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
-                    self.bam_target_c_code.write_line("   %s->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                    self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    self.bam_target_c_code.write_close_brace()
-                else:
-                    if prm.type == Type.IMAGE : #TODO: test with other types
-                        self.bam_target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
-                        self.bam_target_c_code.write_line("   %s->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                        self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    elif prm.type != Type.THRESHOLD :
-                        self.bam_target_c_code.write_line("tivxMemBufferMap(%s_target_ptr," % prm.name_lower )
-                        self.bam_target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)
-                        self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-        # set scalar values to local variables for input type scalars
-        for prm in self.kernel.params :
-            desc = prm.name_lower + "_desc"
-            if (Type.is_scalar_type(prm.type) is True) and prm.direction != Direction.OUTPUT :
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_line("if( %s != NULL)" % desc)
-                    self.bam_target_c_code.write_open_brace()
-                if "invalid" != Type.get_scalar_obj_desc_data_name(prm.type):
-                    self.bam_target_c_code.write_line("%s_value = %s->data.%s;" % (prm.name_lower, desc, Type.get_scalar_obj_desc_data_name(prm.type)))
-                else :
-                    self.bam_target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Modify 'scalar data type' below to be correct type >")
-                    self.bam_target_c_code.write_line("/*%s_value = %s->data.<scalar data type>;*/" % (prm.name_lower, desc))
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-        #TODO Set pointer location
-        #TODO Set img_ptrs
-        self.bam_target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumInputImages(), self.kernel.getNumOutputImages()))
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("status  = tivxBamProcessGraph(prms->graph_handle);")
-        self.bam_target_c_code.write_newline()
-
-        # unmap descriptors pointer
-        for prm in self.kernel.params :
-            desc = prm.name_lower + "_desc"
-            if prm.do_unmap :
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_line("if( %s != NULL)" % desc)
-                    self.bam_target_c_code.write_open_brace()
-                if prm.do_map_unmap_all_planes :
-                    self.bam_target_c_code.write_line("for(plane_idx=0; plane_idx<%s->planes; plane_idx++)" % desc )
-                    self.bam_target_c_code.write_open_brace()
-                    self.bam_target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
-                    self.bam_target_c_code.write_line("   %s->mem_size[plane_idx], VX_MEMORY_TYPE_HOST," % desc)
-                    self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    self.bam_target_c_code.write_close_brace()
-                else:
-                    if prm.type == Type.IMAGE : #TODO: test with other types
-                        self.bam_target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
-                        self.bam_target_c_code.write_line("   %s->mem_size[0], VX_MEMORY_TYPE_HOST," % desc)
-                        self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                    elif prm.type != Type.THRESHOLD :
-                        self.bam_target_c_code.write_line("tivxMemBufferUnmap(%s_target_ptr," % prm.name_lower )
-                        self.bam_target_c_code.write_line("   %s->mem_size, VX_MEMORY_TYPE_HOST," % desc)
-                        self.bam_target_c_code.write_line("    %s);" % Direction.get_access_type(prm.direction))
-                if prm.state is ParamState.OPTIONAL:
-                    self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-        self.bam_target_c_code.write_close_brace()
-
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("return status;")
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-    def generate_bam_target_c_create_func_code(self):
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sCreate(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
-        self.bam_target_c_code.write_open_brace()
-
-        # define status variables and obj descriptor variable
-        self.bam_target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        need_plane_idx_var = False
-        for prm in self.kernel.params :
-            if prm.do_map or prm.do_unmap :
-                if prm.do_map_unmap_all_planes :
-                    need_plane_idx_var = True
-            self.bam_target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
-        if need_plane_idx_var is True :
-            self.bam_target_c_code.write_line("uint16_t plane_idx;")
-        self.bam_target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
-        self.bam_target_c_code.write_newline()
-
-        # checks function parameters
-        self.bam_target_c_code.write_line("status = tivxCheckNullParams(obj_desc, num_params,")
-        self.bam_target_c_code.write_line("        %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        self.bam_target_c_code.write_newline()
-
-        self.bam_target_c_code.write_line("if (VX_SUCCESS == status)")
-        self.bam_target_c_code.write_open_brace()
-
-        # define variables to hold scalar values
-        for prm in self.kernel.params :
-            if Type.is_scalar_type(prm.type) is True :
-                self.bam_target_c_code.write_line("%s %s_value;" % (Type.get_vx_name(prm.type), prm.name_lower ))
-        self.bam_target_c_code.write_newline()
-
-        # declare target pointer variables
-        for prm in self.kernel.params :
-            self.bam_target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
-                (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
-        self.bam_target_c_code.write_newline()
-
-        # assigned descriptors to local variables
-        for prm in self.kernel.params :
-            self.bam_target_c_code.write_line("void *%s_target_ptr;" % prm.name_lower )
-        self.bam_target_c_code.write_newline()
-
-        # allocate memory for tivxParams
-        self.bam_target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams)," % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("    TIVX_MEM_EXTERNAL);")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("if (NULL != prms)")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("tivx_bam_kernel_details_t kernel_details;")
-        # TODO: Probably could use some kind of logic here to write bufparams
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("memset(prms, 0, sizeof(tivxAddParams));")
-        # TODO: Use same logic from buf params to write owninitbufparams and fill in frame level sizes
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("/* Fill in the frame level sizes of buffers here. If the port")
-        self.bam_target_c_code.write_line(" * is optionally disabled, put NULL */")
-
-        self.bam_target_c_code.write_close_brace()
-
-        # if function parameter check fails
-        self.bam_target_c_code.write_line("else")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
-        self.bam_target_c_code.write_close_brace()
-
-        self.bam_target_c_code.write_line("if (VX_SUCCESS == status)")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,")
-        self.bam_target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel)
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_line("else")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("if (NULL != prms)")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("tivxMemFree(prms, sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel)
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_line("return status;")
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-    def generate_bam_target_c_delete_func_code(self):
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sDelete(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        self.bam_target_c_code.write_line("uint32_t size;")
-        self.bam_target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel)
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("/* Check number of buffers and NULL pointers */")
-        self.bam_target_c_code.write_line("status = tivxCheckNullParams(obj_desc, num_params,")
-        self.bam_target_c_code.write_line("        %s%s_MAX_PARAMS);" % (self.kernel.enum_str_prefix, self.kernel.name_upper))
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("if (VX_SUCCESS == status)")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("status = tivxGetTargetKernelInstanceContext(kernel,")
-        self.bam_target_c_code.write_line("    (void **)&prms, &size);")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("if ((VX_SUCCESS == status) && (NULL != prms) &&")
-        self.bam_target_c_code.write_line("    (sizeof(tivx%sParams) == size))" % self.kernel.name_camel)
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("tivxBamDestroyHandle(prms->graph_handle);")
-        self.bam_target_c_code.write_line("tivxMemFree(prms, sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel)
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("return status;")
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-    def generate_bam_target_c_control_func_code(self):
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sControl(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
-        self.bam_target_c_code.write_open_brace()
-        self.bam_target_c_code.write_line("vx_status status = VX_SUCCESS;")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands")
-        self.bam_target_c_code.write_comment_line("                  the user can call to modify the processing of the kernel at run-time) >")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("return status;")
-        self.bam_target_c_code.write_close_brace()
-        self.bam_target_c_code.write_newline()
-
-    def generate_bam_target_c_file_code(self):
-        self.bam_target_c_code = CodeGenerate(self.bam_target_c_filename)
-        self.bam_target_c_code.write_include("TI/tivx.h")
-        self.bam_target_c_code.write_include("VX/vx.h")
-        self.bam_target_c_code.write_include("tivx_openvx_core_kernels.h")
-        self.bam_target_c_code.write_include(self.h_filename)
-        self.bam_target_c_code.write_include("TI/tivx_target_kernel.h")
-        self.bam_target_c_code.write_include("ti/vxlib/vxlib.h")
-        self.bam_target_c_code.write_include("tivx_kernels_target_utils.h")
-        self.bam_target_c_code.write_include("<tivx_bam_kernel_wrapper.h")
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("typedef struct")
-        self.bam_target_c_code.write_line("{")
-        self.bam_target_c_code.write_line("    tivx_bam_graph_handle graph_handle;")
-        self.bam_target_c_code.write_line("} tivx%sParams;" % (self.kernel.name_camel))
-        self.bam_target_c_code.write_newline()
-        self.bam_target_c_code.write_line("static tivx_target_kernel vx_%s_target_kernel = NULL;" % (self.kernel.name_lower))
-        self.bam_target_c_code.write_newline()
-
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sProcess(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sCreate(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sDelete(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
-        self.bam_target_c_code.write_line("static vx_status VX_CALLBACK tivx%sControl(" % self.kernel.name_camel)
-        self.bam_target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.bam_target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
-        self.bam_target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
-
-        self.bam_target_c_code.write_newline()
-        self.generate_bam_target_c_process_func_code()
-        self.generate_bam_target_c_create_func_code()
-        self.generate_bam_target_c_delete_func_code()
-        self.generate_bam_target_c_control_func_code()
-        self.generate_bam_target_c_add_func_code()
-        self.generate_bam_target_c_remove_func_code()
-        self.bam_target_c_code.close()
-
     def generate_make_files(self, kernel) :
         self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
         if not os.path.exists(self.concerto_inc_filename):
@@ -2130,8 +1837,12 @@ class KernelExportCode :
             self.concerto_inc_code.write_line("STATIC_LIBS += vx_kernels_" + self.module + "_tests " + "vx_kernels_" + self.module)
             if self.env_var == 'CUSTOM_KERNEL_PATH' :
                 self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core)
+                if self.target_uses_dsp :
+                    self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core + "_bam")
             else:
                 self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core)
+                if self.target_uses_dsp :
+                    self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "_bam")
             self.concerto_inc_code.write_line("STATIC_LIBS += vx_conformance_engine")
             self.concerto_inc_code.write_line("# < DEVELOPER_TODO: Add any additional dependent libraries >")
             self.concerto_inc_code.close()
@@ -2256,6 +1967,71 @@ class KernelExportCode :
             self.module_target_concerto_code.write_newline();
             self.module_target_concerto_code.write_line("include $(FINALE)")
             self.module_target_concerto_code.close()
+
+        if self.target_uses_dsp :
+            self.module_target_bam_concerto_filename = self.workarea_module_core_bam + "/concerto.mak"
+            if not os.path.exists(self.module_target_bam_concerto_filename):
+                print("Creating " + self.module_target_bam_concerto_filename)
+                self.module_target_bam_concerto_code = CodeGenerate(self.module_target_bam_concerto_filename, header=False)
+                self.module_target_bam_concerto_code.write_line("include $(PRELUDE)")
+                if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                    self.module_target_bam_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.core + "_bam")
+                else:
+                    self.module_target_bam_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.module + "_" + self.core + "_bam");
+                self.module_target_bam_concerto_code.write_line("TARGETTYPE  := library")
+                self.module_target_bam_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
+                if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += $("+self.env_var+")/" + self.module + "/include")
+                else:
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/include")
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/host")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/inc")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc/edma_utils")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc/edma_csl")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc/baseaddress/vayu/dsp")
+                self.module_target_bam_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom include paths using 'IDIRS' >")
+                self.module_target_bam_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom preprocessor defines or build options needed using")
+                self.module_target_bam_concerto_code.write_line("#                   'CFLAGS'. >")
+                self.module_target_bam_concerto_code.write_line("# < DEVELOPER_TODO: Adjust which cores this library gets built on using 'SKIPBUILD'. >")
+                self.module_target_bam_concerto_code.write_newline();
+                self.module_target_bam_concerto_code.write_line("DEFS += CORE_DSP")
+                self.module_target_bam_concerto_code.write_newline();
+                self.module_target_bam_concerto_code.write_line("ifeq ($(BUILD_BAM),yes)")
+                self.module_target_bam_concerto_code.write_line("DEFS += BUILD_BAM")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline();
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))")
+                self.module_target_bam_concerto_code.write_line("DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline();
+                self.module_target_bam_concerto_code.write_line("ifeq ($(BUILD_BAM),yes)")
+                self.module_target_bam_concerto_code.write_line("SKIPBUILD=0")
+                self.module_target_bam_concerto_code.write_line("else")
+                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline()
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline()
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),EVE)")
+                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline()
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
+                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline()
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
+                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
+                self.module_target_bam_concerto_code.write_line("endif")
+                self.module_target_bam_concerto_code.write_newline()
+                self.module_target_bam_concerto_code.write_line("include $(FINALE)")
+                self.module_target_bam_concerto_code.close()
 
         self.module_test_concerto_filename = self.workarea_module_test + "/concerto.mak"
         if not os.path.exists(self.module_test_concerto_filename):
@@ -2571,6 +2347,7 @@ class KernelExportCode :
 
         self.target_kernels_filename = self.workarea_module_core + "/vx_kernels_" + self.module.lower() + "_target.c"
         if not os.path.exists(self.target_kernels_filename):
+            self.target_kernels_created = True
             print("Creating " + self.target_kernels_filename)
             self.target_kernels_code = CodeGenerate(self.target_kernels_filename)
             self.target_kernels_code.write_line("#include <TI/tivx.h>")
@@ -2578,12 +2355,45 @@ class KernelExportCode :
             self.target_kernels_code.write_line("#include \"tivx_" + self.module.lower() + "_kernels" + self.kernels_header_extension + ".h\"")
             self.target_kernels_code.write_line("#include \"tivx_kernels_target_utils.h\"")
             self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#ifdef BUILD_BAM")
+            self.target_kernels_code.write_newline()
+            if self.target_uses_dsp :
+                self.target_kernels_code.write_line("void tivxAddTargetKernelBam" + self.kernel.name_camel + "(void);")
+            else :
+                self.target_kernels_code.write_line("void tivxAddTargetKernel" + self.kernel.name_camel + "(void);")
+            self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#else")
+            self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("void tivxAddTargetKernel" + self.kernel.name_camel + "(void);")
+            self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#endif")
+            self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#ifdef BUILD_BAM")
+            self.target_kernels_code.write_newline()
+            if self.target_uses_dsp :
+                self.target_kernels_code.write_line("void tivxRemoveTargetKernelBam" + self.kernel.name_camel + "(void);")
+            else :
+                self.target_kernels_code.write_line("void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);")
+            self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#else")
             self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);")
             self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#endif")
+            self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {")
+            self.target_kernels_code.write_line("#ifdef BUILD_BAM")
+            self.target_kernels_code.write_newline()
+            if self.target_uses_dsp :
+                self.target_kernels_code.write_line("    {&tivxAddTargetKernelBam" + self.kernel.name_camel + ", &tivxRemoveTargetKernelBam" + self.kernel.name_camel + "},")
+            else :
+                self.target_kernels_code.write_line("    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},")
+            self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#else")
+            self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},")
+            self.target_kernels_code.write_newline()
+            self.target_kernels_code.write_line("#endif")
             self.target_kernels_code.write_line("};")
             self.target_kernels_code.write_newline()
             self.target_kernels_code.write_line("void tivxRegister" + toCamelCase(self.module) + "Target" + toCamelCase(self.core) + "Kernels(void)")
@@ -2596,6 +2406,8 @@ class KernelExportCode :
             self.target_kernels_code.write_line("tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));")
             self.target_kernels_code.write_close_brace()
             self.target_kernels_code.close()
+        else :
+            self.target_kernels_created = False
 
     def modify_files(self) :
         self.modify_make_file()
@@ -2622,19 +2434,35 @@ class KernelExportCode :
         if self.env_var == 'CUSTOM_KERNEL_PATH' :
             CodeModify().block_insert(self.concerto_inc_filename,
                           "vx_kernels_" + self.module,
-                          "DEVELOPER_TODO",
-                          "vx_target_kernels_" + self.core,
-                          "STATIC_LIBS \+= vx_conformance_engine",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.core + "\n",
+                          "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_target_kernels_" + self.core + "\n")
+            if self.target_uses_dsp :
+                CodeModify().block_insert(self.concerto_inc_filename,
+                          "vx_kernels_" + self.module,
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.core + "_bam\n",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.core + "_bam\n")
         else:
             CodeModify().block_insert(self.concerto_inc_filename,
                           "vx_kernels_" + self.module,
-                          "DEVELOPER_TODO",
-                          "vx_target_kernels_" + self.core,
-                          "STATIC_LIBS \+= vx_conformance_engine",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "\n",
+                          "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "\n")
+            if self.target_uses_dsp :
+                CodeModify().block_insert(self.concerto_inc_filename,
+                          "vx_kernels_" + self.module,
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "_bam\n",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_conformance_engine",
+                          "STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "_bam\n")
 
 
     def modify_kernel_header_file(self) :
@@ -2846,29 +2674,81 @@ class KernelExportCode :
 
     def modify_module_target_source_file(self) :
         print("Modifying " + self.target_kernels_filename)
-        CodeModify().block_insert(self.target_kernels_filename,
+
+        if self.target_uses_dsp :
+            CodeModify().block_insert(self.target_kernels_filename,
                           "void tivxAddTargetKernel",
-                          "void tivxRemoveTargetKernel",
+                          "#ifdef BUILD_BAM",
+                          "void tivxAddTargetKernelBam" + self.kernel.name_camel + "(void);",
+                          "\n#else\n\n",
+                          "\n#else\n\n",
+                          "void tivxAddTargetKernelBam" + self.kernel.name_camel + "(void);\n")
+        else :
+            CodeModify().block_insert(self.target_kernels_filename,
+                          "void tivxAddTargetKernel",
+                          "#ifdef BUILD_BAM",
                           "void tivxAddTargetKernel" + self.kernel.name_camel + "(void);",
-                          "\nvoid tivxRemoveTargetKernel",
-                          "\nvoid tivxRemoveTargetKernel",
+                          "\n#else\n\n",
+                          "\n#else\n\n",
                           "void tivxAddTargetKernel" + self.kernel.name_camel + "(void);\n")
 
         CodeModify().block_insert(self.target_kernels_filename,
+                          "void tivxAddTargetKernel",
+                          "#ifdef BUILD_BAM",
+                          "void tivxAddTargetKernel" + self.kernel.name_camel + "(void);",
+                          "\n#endif",
+                          "\n#endif",
+                          "void tivxAddTargetKernel" + self.kernel.name_camel + "(void);\n", overrideFind=(not self.target_kernels_created))
+
+        if self.target_uses_dsp :
+            CodeModify().block_insert(self.target_kernels_filename,
                           "void tivxRemoveTargetKernel",
-                          "Tivx_Target_Kernel_List",
+                          "static Tivx_Target_Kernel_List",
+                          "void tivxRemoveTargetKernelBam" + self.kernel.name_camel + "(void);",
+                          "\n#else\n\n",
+                          "\n#else\n\n",
+                          "void tivxRemoveTargetKernelBam" + self.kernel.name_camel + "(void);\n")
+        else :
+            CodeModify().block_insert(self.target_kernels_filename,
+                          "void tivxRemoveTargetKernel",
+                          "static Tivx_Target_Kernel_List",
                           "void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);",
-                          "\nstatic Tivx_Target_Kernel_List",
-                          "\nstatic Tivx_Target_Kernel_List",
+                          "\n#else\n\n",
+                          "\n#else\n\n",
                           "void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);\n")
 
         CodeModify().block_insert(self.target_kernels_filename,
+                          "void tivxRemoveTargetKernel",
+                          "#endif",
+                          "void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);",
+                          "\n#endif",
+                          "\n#endif",
+                          "void tivxRemoveTargetKernel" + self.kernel.name_camel + "(void);\n", overrideFind=(not self.target_kernels_created))
+
+        if self.target_uses_dsp :
+            CodeModify().block_insert(self.target_kernels_filename,
+                              "Tivx_Target_Kernel_List",
+                              "#else",
+                              "    {&tivxAddTargetKernelBam" + self.kernel.name_camel + ", &tivxRemoveTargetKernelBam" + self.kernel.name_camel + "},",
+                              "\n#else",
+                              "\n#else",
+                              "    {&tivxAddTargetKernelBam" + self.kernel.name_camel + ", &tivxRemoveTargetKernelBam" + self.kernel.name_camel + "},\n")
+        else :
+            CodeModify().block_insert(self.target_kernels_filename,
+                              "Tivx_Target_Kernel_List",
+                              "#else",
+                              "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},",
+                              "\n#else",
+                              "\n#else",
+                              "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},\n")
+
+        CodeModify().block_insert(self.target_kernels_filename,
                           "Tivx_Target_Kernel_List",
-                          "};",
-                          "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "}",
-                          "};",
-                          "};",
-                          "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},\n")
+                          "#endif",
+                          "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},",
+                          "\n#endif",
+                          "\n#endif",
+                          "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},\n", overrideFind=(not self.target_kernels_created))
 
     def todo(self) :
         self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
@@ -2935,6 +2815,16 @@ class KernelExportCode :
             if target == Target.DSP1 or target == Target.DSP2 :
                 self.target_uses_dsp = True
 
+        self.prms_write = 2
+        if self.kernel.localMem == True :
+            self.prms_write = 2
+        elif self.target_uses_dsp and self.kernel.localMem == False :
+            self.prms_write = 1
+
+        self.prms_needed = False
+        if self.target_uses_dsp or self.kernel.localMem == True :
+            self.prms_needed = True
+
         print ('Generating C code for OpenVX kernel ...')
         print ()
         print ('Creating new directories ...')
@@ -2952,8 +2842,6 @@ class KernelExportCode :
         self.generate_h_file_code()
         self.generate_host_c_file_code()
         self.generate_target_c_file_code()
-        if self.target_uses_dsp :
-            self.generate_bam_target_c_file_code()
 
         print ()
         print (self.kernel)

@@ -322,6 +322,20 @@ class Kernel  :
                 num_images += 1
         return num_images
 
+    def getNumRequiredImages(self) :
+        num_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE and prm.state == ParamState.REQUIRED :
+                num_images += 1
+        return num_images
+
+    def getNumOptionalImages(self) :
+        num_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE and prm.state == ParamState.OPTIONAL :
+                num_images += 1
+        return num_images
+
     def getNumScalars(self) :
         num_scalars = 0
         for prm in self.params :
@@ -336,10 +350,24 @@ class Kernel  :
                 num_input_images += 1
         return num_input_images
 
+    def getNumRequiredInputImages(self) :
+        num_input_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE and prm.direction == Direction.INPUT and prm.state == ParamState.REQUIRED :
+                num_input_images += 1
+        return num_input_images
+
     def getNumOutputImages(self) :
         num_output_images = 0
         for prm in self.params :
             if prm.type == Type.IMAGE and prm.direction == Direction.OUTPUT:
+                num_output_images += 1
+        return num_output_images
+
+    def getNumRequiredOutputImages(self) :
+        num_output_images = 0
+        for prm in self.params :
+            if prm.type == Type.IMAGE and prm.direction == Direction.OUTPUT and prm.state == ParamState.REQUIRED :
                 num_output_images += 1
         return num_output_images
 

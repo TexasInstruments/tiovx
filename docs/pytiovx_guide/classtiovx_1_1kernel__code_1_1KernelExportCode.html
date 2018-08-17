@@ -82,6 +82,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a0089634556f1ba30c4a7375e86b8a440"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1kernel__code_1_1KernelExportCode.html#a0089634556f1ba30c4a7375e86b8a440">__init__</a></td></tr>
 <tr class="memdesc:a0089634556f1ba30c4a7375e86b8a440"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor used to create this object.  <a href="#a0089634556f1ba30c4a7375e86b8a440">More...</a><br/></td></tr>
 <tr class="separator:a0089634556f1ba30c4a7375e86b8a440"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5ed186a943628d251e11f93b6f442be3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ed186a943628d251e11f93b6f442be3"></a>
+def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1kernel__code_1_1KernelExportCode.html#a5ed186a943628d251e11f93b6f442be3">exportDiagram</a></td></tr>
+<tr class="memdesc:a5ed186a943628d251e11f93b6f442be3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Export object as C source code. <br/></td></tr>
+<tr class="separator:a5ed186a943628d251e11f93b6f442be3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a24fd84d1259761bf084c3d019291b69d"><td class="memItemLeft" align="right" valign="top">def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classtiovx_1_1kernel__code_1_1KernelExportCode.html#a24fd84d1259761bf084c3d019291b69d">export</a></td></tr>
 <tr class="memdesc:a24fd84d1259761bf084c3d019291b69d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Method for generating files from kernel.  <a href="#a24fd84d1259761bf084c3d019291b69d">More...</a><br/></td></tr>
 <tr class="separator:a24fd84d1259761bf084c3d019291b69d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -105,14 +109,16 @@ Public Member Functions</h2></td></tr>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;c66/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;c66/vx_&lt;kernel_name&gt;_target.c</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;c66/vx_kernels_ext1_target.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;host/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;tivx_ext1_node_api.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;host/vx_&lt;kernel_name&gt;_host.c</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;host/vx_kernels_ext1_host.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;include/tivx_ext1_kernels.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;include/tivx_kernel_&lt;kernel_name&gt;.h</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;test/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;test/test_main.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;c66/bam/vx_bam_&lt;kernel_name&gt;_target.c (<span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;c66/bam/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters, <span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;host/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;tivx_ext1_node_api.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;host/vx_&lt;kernel_name&gt;_host.c</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;host/vx_kernels_ext1_host.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;include/tivx_ext1_kernels.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;include/tivx_kernel_&lt;kernel_name&gt;.h</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;test/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;test/test_main.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
 </div><!-- fragment --><dl class="section user"><dt>Below is an example using the CUSTOM_APPLICATION_PATH</dt><dd></dd></dl>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
@@ -132,14 +138,16 @@ Public Member Functions</h2></td></tr>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;c66/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;c66/vx_&lt;kernel_name&gt;_target.c</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;c66/vx_kernels_ext1_target.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;host/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;tivx_ext1_node_api.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;host/vx_&lt;kernel_name&gt;_host.c</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;host/vx_kernels_ext1_host.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;include/tivx_ext1_kernels.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;include/tivx_kernel_&lt;kernel_name&gt;.h</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;test/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;test/test_main.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;c66/bam/vx_bam_&lt;kernel_name&gt;_target.c (<span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;c66/bam/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters, <span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;host/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;tivx_ext1_node_api.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;host/vx_&lt;kernel_name&gt;_host.c</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;host/vx_kernels_ext1_host.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;include/tivx_ext1_kernels.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;include/tivx_kernel_&lt;kernel_name&gt;.h</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;test/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;test/test_main.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
 </div><!-- fragment --> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0089634556f1ba30c4a7375e86b8a440"></a>
 <div class="memitem">

@@ -93,7 +93,7 @@ class CodeModify :
                             searchObj = re.findall(search, self.multiline)
                             return (searchObj[-1])
 
-    def block_insert(self, in_filename, start, end, find, search, searchNoEsc, insert) :
+    def block_insert(self, in_filename, start, end, find, search, searchNoEsc, insert, overrideFind=False) :
         if os.path.exists(in_filename):
             self.status = False
             self.found = False
@@ -110,7 +110,7 @@ class CodeModify :
                         self.multiline = self.multiline + line
                         if end in line:
                             self.status = False
-                            if not find in self.multiline :
+                            if not find in self.multiline or overrideFind:
                                 self.multiline = re.sub(search,insert + searchNoEsc, self.multiline)
                             self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
                     else :

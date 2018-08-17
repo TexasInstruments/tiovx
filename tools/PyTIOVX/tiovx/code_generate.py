@@ -62,15 +62,22 @@
 from . import *
 
 class CodeGenerate :
-    def __init__(self, filename, header=True) :
+    def __init__(self, filename, header=True, additional_filename="") :
         self.indent_level = 0
+        self.indent_level_additional = 0
         self.indent = "    "
         self.filename = filename
+        self.additional_filename_exists = False
+        if additional_filename :
+            self.additional_filename_exists = True
+            self.additional_filename = additional_filename
         self.header = header
         self.open()
 
     def open(self) :
         self.file = open(self.filename,'w')
+        if self.additional_filename_exists :
+            self.additional_file = open(self.additional_filename,'w')
         if self.header :
             self.write_header()
 
@@ -78,6 +85,8 @@ class CodeGenerate :
         if new_line :
             self.write_newline()
         self.file.close()
+        if self.additional_filename_exists :
+            self.additional_file.close()
 
     def write_header(self) :
         self.write_line('/*')
@@ -143,61 +152,91 @@ class CodeGenerate :
         self.write_line(' */')
         self.write_newline()
 
-    def write_comment_line(self, text_line) :
-        self.write_line('/* %s */' % text_line)
+    def write_comment_line(self, text_line, files=2) :
+        self.write_line('/* %s */' % text_line, True, True, files)
 
-    def write_line(self, text_line, new_line=True, indent=True) :
+    # Note: files variable defines whether or not to output to additional files or not
+    # If files = 2, both files get written to; if files = 0, only the original file gets written to
+    # If files = 1, only the additional file gets written to
+    def write_line(self, text_line, new_line=True, indent=True, files=2) :
         if indent :
             for i in range(0, self.indent_level) :
-                self.file.write(self.indent)
-        self.file.write(text_line)
+                if files == 2 or files == 0 :
+                    self.file.write(self.indent)
+            if self.additional_filename_exists :
+                for i in range(0, self.indent_level_additional) :
+                    if files == 2 or files == 1 :
+                        self.additional_file.write(self.indent)
+        if files == 2 or files == 0 :
+            self.file.write(text_line)
+        if files == 2 or files == 1 :
+            if self.additional_filename_exists :
+                self.additional_file.write(text_line)
         if new_line:
-            self.file.write('\n')
+            if files == 2 or files == 0 :
+                self.file.write('\n')
+            if files == 2 or files == 1 :
+                if self.additional_filename_exists :
+                    self.additional_file.write('\n')
 
-    def write_block(self, text_block, new_line=True) :
+    def write_block(self, text_block, new_line=True, files=2) :
         self.file.write(text_block)
+        if self.additional_filename_exists :
+            self.additional_file.write(text_block)
         if new_line:
             self.file.write('\n')
+            if self.additional_filename_exists :
+                self.additional_file.write('\n')
 
-    def write_open_brace(self) :
-        self.write_line('{')
-        self.indent_level = self.indent_level+1
+    def write_open_brace(self, files=2) :
+        self.write_line('{', True, True, files)
+        if files == 2 or files == 0 :
+            self.indent_level = self.indent_level+1
+        if files == 2 or files == 1 :
+            self.indent_level_additional = self.indent_level_additional+1
 
-    def write_close_brace(self, text="") :
-        self.indent_level = self.indent_level-1
-        self.write_line('}%s' % text)
+    def write_close_brace(self, text="", files=2) :
+        if files == 2 or files == 0 :
+            self.indent_level = self.indent_level-1
+        if files == 2 or files == 1 :
+            self.indent_level_additional = self.indent_level_additional-1
+        self.write_line('}%s' % text, True, True, files)
 
-    def write_include(self, include_file_name) :
-        self.write_line('#include "%s"' % include_file_name)
+    def write_include(self, include_file_name, files=2) :
+        self.write_line('#include "%s"' % include_file_name, True, True, files)
 
-    def write_ifndef_define(self, text) :
-        self.write_line('#ifndef %s' % text)
-        self.write_line('#define %s' % text)
-        self.write_newline()
+    def write_ifndef_define(self, text, files=2) :
+        self.write_line('#ifndef %s' % text, True, True, files)
+        self.write_line('#define %s' % text, True, True, files)
+        self.write_newline(files)
 
-    def write_endif(self, text) :
-        self.write_line('#endif /* %s */' % text)
-        self.write_newline()
+    def write_endif(self, text, files=2) :
+        self.write_line('#endif /* %s */' % text, True, True, files)
+        self.write_newline(files)
 
-    def write_extern_c_top(self) :
-        self.write_line("#ifdef __cplusplus")
-        self.write_line("extern \"C\" {")
-        self.write_line("#endif")
-        self.write_newline()
+    def write_extern_c_top(self, files=2) :
+        self.write_line("#ifdef __cplusplus", True, True, files)
+        self.write_line("extern \"C\" {", True, True, files)
+        self.write_line("#endif", True, True, files)
+        self.write_newline(files)
 
-    def write_extern_c_bottom(self) :
-        self.write_line("#ifdef __cplusplus")
-        self.write_line("}")
-        self.write_line("#endif")
-        self.write_newline()
+    def write_extern_c_bottom(self, files=2) :
+        self.write_line("#ifdef __cplusplus", True, True, files)
+        self.write_line("}", True, True, files)
+        self.write_line("#endif", True, True, files)
+        self.write_newline(files)
 
-    def write_newline(self) :
-        self.file.write('\n')
+    def write_newline(self, files=2) :
+        if files == 2 or files == 0 :
+            self.file.write('\n')
+        if files == 2 or files == 1 :
+            if self.additional_filename_exists :
+                self.additional_file.write('\n')
 
-    def write_define_status(self) :
-        self.write_line("vx_status status = VX_SUCCESS;")
+    def write_define_status(self, files=2) :
+        self.write_line("vx_status status = VX_SUCCESS;", True, True, files)
 
-    def write_if_status(self) :
-        self.write_line("if (status == VX_SUCCESS)");
+    def write_if_status(self, files=2) :
+        self.write_line("if (status == VX_SUCCESS)", True, True, files)
 
 
