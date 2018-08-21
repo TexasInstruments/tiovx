@@ -63,6 +63,7 @@
 
 #include <TI/tivx.h>
 #include <TI/tda4x.h>
+#include <TI/tda4x_kernels.h>
 #include <TI/tivx_mem.h>
 #include "test_engine/test.h"
 #include <float.h>
@@ -72,9 +73,6 @@
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
-
-vx_status tivxAddKernelTIDL(vx_context context, uint32_t num_input_tensors, uint32_t num_output_tensors);
-vx_status tivxRemoveKernelTIDL(vx_context context);
 
 static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
 {
@@ -285,10 +283,10 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
       if(input_buffer) {
     	vx_int32 i, j;
 
-    	//Reset the input buffer, this will take care of padding requirement for TIDL
+    	/* Reset the input buffer, this will take care of padding requirement for TIDL */
     	memset(input_buffer, 0, capacity);
 
-    	//Copy the input data at a location of (padH * stride) + padW for each channel
+    	/* Copy the input data at a location of (padH * stride) + padW for each channel */
     	for(j = 0; j < ioBufDesc->inNumChannels[0]; j++){
 
     	  vx_int32 start_offset = (j * input_strides[2]) + (ioBufDesc->inPadT[0] * input_strides[1]) + ioBufDesc->inPadL[0];

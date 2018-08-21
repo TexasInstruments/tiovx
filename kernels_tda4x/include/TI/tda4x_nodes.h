@@ -277,8 +277,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
                                       vx_array             h3a_aew_af);
 
 /*! \brief [Graph] Creates a TIDL Node.
- * \param [in] graph The reference to the graph.
+ * \param [in] Reference to vx_graph.
+ * \param [in] Reference to vx_kernel.
  * \param [in] Array of vx_reference params.
+ * \param [in] Lengh of params[] array.
  * \see <tt>TIVX_KERNEL_TIDL_NAME</tt>
  * \ingroup group_vision_function_tidl
  * \return <tt>\ref vx_node</tt>.

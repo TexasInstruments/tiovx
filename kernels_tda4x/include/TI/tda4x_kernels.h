@@ -556,6 +556,14 @@ void tivxTIDLLoadKernels(vx_context context);
  */
 void tivxTIDLUnLoadKernels(vx_context context);
 
+/*!
+ * \brief Used for the Application to create the tidl kernel from the context.
+ * \ingroup group_vision_function_tidl
+ */
+vx_kernel tivxAddKernelTIDL(vx_context context,
+                            uint32_t num_input_tensors,
+                            uint32_t num_output_tensors);
+
 #ifdef __cplusplus
 }
 #endif

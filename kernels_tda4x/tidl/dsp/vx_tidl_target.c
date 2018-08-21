@@ -108,26 +108,26 @@ static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDe
 {
   uint16_t numBuffs = 0;
 
-  //Currently only one input buffer supported
+  /* Currently only one input buffer supported */
   for(numBuffs = 0; numBuffs < pConfig->numInputBuf; numBuffs++)
   {
     BufDescList[numBuffs].numPlanes                          = 1;
     BufDescList[numBuffs].bufPlanes[0].frameROI.topLeft.x    = 0;
     BufDescList[numBuffs].bufPlanes[0].frameROI.topLeft.y    = 0;
 
-    //This has to be width + horizontal padding
+    /* This has to be width + horizontal padding */
     BufDescList[numBuffs].bufPlanes[0].width                 = pConfig->inWidth[numBuffs] + pConfig->inPadL[numBuffs] + pConfig->inPadR[numBuffs];
-    //This has to be numCh * (height + vertical padding)
+    /* This has to be numCh * (height + vertical padding) */
     BufDescList[numBuffs].bufPlanes[0].height                = pConfig->inNumChannels[numBuffs] * (pConfig->inHeight[numBuffs]  + pConfig->inPadT[numBuffs] + pConfig->inPadB[numBuffs]);
-    //This has to be just width
+    /* This has to be just width */
     BufDescList[numBuffs].bufPlanes[0].frameROI.width        = pConfig->inWidth[numBuffs];
-    //This has to be just height
+    /* This has to be just height */
     BufDescList[numBuffs].bufPlanes[0].frameROI.height       = pConfig->inHeight[numBuffs];
 
-    //This comes from tidl_io_xxx.txt file (inDataId), not sure how to pass it. Currently hardcoding for Jacinto Net
+    /* This comes from tidl_io_xxx.txt file (inDataId), not sure how to pass it. Currently hardcoding for Jacinto Net */
     BufDescList[numBuffs].reserved[0]     = pConfig->inDataId[numBuffs];
 
-    //This comes from tidl_io_xxx.txt file (inDataId), not sure how to pass it. Currently hardcoding for Jacinto Net
+    /* This comes from tidl_io_xxx.txt file (inDataId), not sure how to pass it. Currently hardcoding for Jacinto Net */
     BufDescList[numBuffs].bufferId = pConfig->inDataId[numBuffs];
   }
   return numBuffs;
@@ -137,26 +137,26 @@ static int32_t tidl_AllocNetOutputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufD
 {
   uint16_t numBuffs = 0;
 
-  //Currently only one output buffer supported
+  /* Currently only one output buffer supported */
   for(numBuffs = 0; numBuffs < pConfig->numOutputBuf; numBuffs++)
   {
       BufDescList[numBuffs].numPlanes                          = 1;
       BufDescList[numBuffs].bufPlanes[0].frameROI.topLeft.x    = 0;
       BufDescList[numBuffs].bufPlanes[0].frameROI.topLeft.y    = 0;
 
-      //This requires output width + horizontal padding
+      /* This requires output width + horizontal padding */
       BufDescList[numBuffs].bufPlanes[0].width                 = pConfig->outWidth[numBuffs] + pConfig->outPadL[numBuffs] + pConfig->outPadR[numBuffs];
-      //This requires numOutCh * (output height + vertial padding)
+      /* This requires numOutCh * (output height + vertial padding) */
       BufDescList[numBuffs].bufPlanes[0].height                = pConfig->outNumChannels[numBuffs] * (pConfig->outHeight[numBuffs] + pConfig->outPadT[numBuffs] + pConfig->outPadB[numBuffs]);
-      //This requires just output width
+      /* This requires just output width */
       BufDescList[numBuffs].bufPlanes[0].frameROI.width        = pConfig->outWidth[numBuffs];
-      //This requires just output height
+      /* This requires just output height */
       BufDescList[numBuffs].bufPlanes[0].frameROI.height       = pConfig->outHeight[numBuffs];
 
-      //This comes from tidl_io_xxx.txt file (outDataId), not sure how to pass it. Currently hardcoding for Jacinto Net
+      /* This comes from tidl_io_xxx.txt file (outDataId), not sure how to pass it. Currently hardcoding for Jacinto Net */
       BufDescList[numBuffs].reserved[0]      = pConfig->outDataId[numBuffs];
 
-      //This comes from tidl_io_xxx.txt file (outDataId), not sure how to pass it. Currently hardcoding for Jacinto Net
+      /* This comes from tidl_io_xxx.txt file (outDataId), not sure how to pass it. Currently hardcoding for Jacinto Net */
       BufDescList[numBuffs].bufferId         = pConfig->outDataId[numBuffs];
   }
   return numBuffs;
