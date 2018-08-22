@@ -5,7 +5,7 @@
 
 from tiovx import *
 
-code = KernelExportCode("TI", "extvx", "ext1", "c66", "CUSTOM_APPLICATION_PATH")
+code = KernelExportCode(Module.IMAGING, Core.C66, "CUSTOM_APPLICATION_PATH")
 
 kernel = Kernel("channel_extract")
 

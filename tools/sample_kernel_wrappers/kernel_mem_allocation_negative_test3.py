@@ -5,7 +5,7 @@
 
 from tiovx import *
 
-code = KernelExportCode("TI", "superset", "superset_module", "c66", "CUSTOM_APPLICATION_PATH")
+code = KernelExportCode("superset_module", Core.C66, "CUSTOM_APPLICATION_PATH")
 
 kernel = Kernel("kernel_mem_allocation")
 

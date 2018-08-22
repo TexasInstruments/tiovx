@@ -8,6 +8,7 @@ var hierarchy =
     [ "tiovx.context.Context", "classtiovx_1_1context_1_1Context.html", null ],
     [ "tiovx.convolution.Convolution", "classtiovx_1_1convolution_1_1Convolution.html", null ],
     [ "tiovx.attribute.ConvolutionAttribute", "classtiovx_1_1attribute_1_1ConvolutionAttribute.html", null ],
+    [ "tiovx.core.Core", "classtiovx_1_1core_1_1Core.html", null ],
     [ "tiovx.enums.DfImage", "classtiovx_1_1enums_1_1DfImage.html", null ],
     [ "tiovx.enums.Direction", "classtiovx_1_1enums_1_1Direction.html", null ],
     [ "tiovx.distribution.Distribution", "classtiovx_1_1distribution_1_1Distribution.html", null ],
@@ -28,6 +29,7 @@ var hierarchy =
     [ "tiovx.attribute.LutAttribute", "classtiovx_1_1attribute_1_1LutAttribute.html", null ],
     [ "tiovx.matrix.Matrix", "classtiovx_1_1matrix_1_1Matrix.html", null ],
     [ "tiovx.attribute.MatrixAttribute", "classtiovx_1_1attribute_1_1MatrixAttribute.html", null ],
+    [ "tiovx.module.Module", "classtiovx_1_1module_1_1Module.html", null ],
     [ "tiovx.node.Node", "classtiovx_1_1node_1_1Node.html", [
       [ "tiovx.node.NodeAbsDiff", "classtiovx_1_1node_1_1NodeAbsDiff.html", null ],
       [ "tiovx.node.NodeAccumulateImage", "classtiovx_1_1node_1_1NodeAccumulateImage.html", null ],

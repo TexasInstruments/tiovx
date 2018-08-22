@@ -72,7 +72,7 @@ from glob import glob
 # \code
 # from tiovx import *
 #
-# code = KernelExportCode("TI", "extv", "ext1", "c66", "CUSTOM_KERNEL_PATH")
+# code = KernelExportCode(Module.IMAGING, Core.C66, "CUSTOM_KERNEL_PATH")
 # <set up kernel parameters>
 # code.export(kernel)
 # \endcode
@@ -80,28 +80,28 @@ from glob import glob
 # Output files from the above parameters:
 # \code
 # <CUSTOM_KERNEL_PATH>/DEVELOPER_TODO.txt (generated first time only for given parameters)
-# <CUSTOM_KERNEL_PATH>/include/TI/extvx.h (generated first time only for given parameters)
-# <CUSTOM_KERNEL_PATH>/include/TI/extvx_kernels.h (generated first time only for given parameters)
-# <CUSTOM_KERNEL_PATH>/include/TI/extvx_nodes.h (generated first time only for given parameters)
+# <CUSTOM_KERNEL_PATH>/include/TI/tivx_imaging.h (generated first time only for given parameters)
+# <CUSTOM_KERNEL_PATH>/include/TI/tivx_imaging_kernels.h (generated first time only for given parameters)
+# <CUSTOM_KERNEL_PATH>/include/TI/tivx_imaging_nodes.h (generated first time only for given parameters)
 # \endcode
 #
 # Output folder from the above parameters:
 # \code
-# <CUSTOM_KERNEL_PATH>/ext1/
+# <CUSTOM_KERNEL_PATH>/imaging/
 # \endcode
 #
 # This folder contains the following:
 # \code
 # c66/concerto.mak (generated first time only for given parameters)
 # c66/vx_<kernel_name>_target.c
-# c66/vx_kernels_ext1_target.c (generated first time only for given parameters)
+# c66/vx_kernels_imaging_target.c (generated first time only for given parameters)
 # c66/bam/vx_bam_<kernel_name>_target.c (if using the C66 DSP)
 # c66/bam/concerto.mak (generated first time only for given parameters, if using the C66 DSP)
 # host/concerto.mak (generated first time only for given parameters)
-# tivx_ext1_node_api.c (generated first time only for given parameters)
+# tivx_imaging_node_api.c (generated first time only for given parameters)
 # host/vx_<kernel_name>_host.c
-# host/vx_kernels_ext1_host.c (generated first time only for given parameters)
-# include/tivx_ext1_kernels.h (generated first time only for given parameters)
+# host/vx_kernels_imaging_host.c (generated first time only for given parameters)
+# include/tivx_imaging_kernels.h (generated first time only for given parameters)
 # include/tivx_kernel_<kernel_name>.h
 # test/concerto.mak (generated first time only for given parameters)
 # test/test_main.h (generated first time only for given parameters)
@@ -112,7 +112,7 @@ from glob import glob
 # \code
 # from tiovx import *
 #
-# code = KernelExportCode("TI", "extvx", "ext1", "c66", "CUSTOM_APPLICATION_PATH")
+# code = KernelExportCode(Module.IMAGING, Core.C66, "CUSTOM_APPLICATION_PATH")
 # <set up kernel parameters>
 # code.export(kernel)
 # \endcode
@@ -122,28 +122,28 @@ from glob import glob
 # <CUSTOM_APPLICATION_PATH>/DEVELOPER_TODO.txt
 # <CUSTOM_APPLICATION_PATH>/concerto_inc.mak
 # <CUSTOM_APPLICATION_PATH>/custom_tools_path.mak
-# <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx.h
-# <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx_kernels.h
-# <CUSTOM_APPLICATION_PATH>/kernels/ext1/include/TI/extvx_nodes.h
+# <CUSTOM_APPLICATION_PATH>/kernels/imaging/include/TI/tivx_imaging.h
+# <CUSTOM_APPLICATION_PATH>/kernels/imaging/include/TI/tivx_imaging_kernels.h
+# <CUSTOM_APPLICATION_PATH>/kernels/imaging/include/TI/tivx_imaging_nodes.h
 # \endcode
 #
 # Output folder from the above parameters:
 # \code
-# <CUSTOM_APPLICATION_PATH>/kernels/ext1/
+# <CUSTOM_APPLICATION_PATH>/kernels/imaging/
 # \endcode
 #
 # This folder contains the following:
 # \code
 # c66/concerto.mak (generated first time only for given parameters)
 # c66/vx_<kernel_name>_target.c
-# c66/vx_kernels_ext1_target.c (generated first time only for given parameters)
+# c66/vx_kernels_imaging_target.c (generated first time only for given parameters)
 # c66/bam/vx_bam_<kernel_name>_target.c (if using the C66 DSP)
 # c66/bam/concerto.mak (generated first time only for given parameters, if using the C66 DSP)
 # host/concerto.mak (generated first time only for given parameters)
-# tivx_ext1_node_api.c (generated first time only for given parameters)
+# tivx_imaging_node_api.c (generated first time only for given parameters)
 # host/vx_<kernel_name>_host.c
-# host/vx_kernels_ext1_host.c (generated first time only for given parameters)
-# include/tivx_ext1_kernels.h (generated first time only for given parameters)
+# host/vx_kernels_imaging_host.c (generated first time only for given parameters)
+# include/tivx_imaging_kernels.h (generated first time only for given parameters)
 # include/tivx_kernel_<kernel_name>.h
 # test/concerto.mak (generated first time only for given parameters)
 # test/test_main.h (generated first time only for given parameters)
@@ -154,16 +154,30 @@ from glob import glob
 class KernelExportCode :
     ## Constructor used to create this object
     #
-    # \param include_subpath  [in] [optional] Company name which serves as a subpath for an include directory; Default="TI"
-    # \param include_filename [in] [optional] Name used for kernel include path; Default="extvx"
     # \param module           [in] [optional] Module name for the kernel; Default="ext1"
     # \param core             [in] [optional] Name of the core for the kernel to run on; Default="c66"
     # \param env_var          [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH"
-    def __init__(self, include_subpath="TI", include_filename="extvx", module="ext1", core="c66", env_var='CUSTOM_APPLICATON_PATH') :
+    # \param include_subpath  [in] [optional] Company name which serves as a subpath for an include directory; Default="TI"
+    # \param include_filename [in] [optional] Variable to overwrite the include filename, otherwise include filename set to <lowercase(include_subpath)>vx_<module>; Default=""
+    def __init__(self, module="ext1", core="c66", env_var='CUSTOM_APPLICATON_PATH', include_subpath="TI", include_filename="") :
         self.company = include_subpath
-        self.top_header_name = include_filename
-        self.module = module
-        self.core = core
+        self.module = ""
+        if type(module) is Module :
+            self.module = module.value
+        else :
+            print("WARNING: module argument should use the Module class to avoid potential name clashes")
+            self.module = module
+        if include_filename :
+            self.top_header_name = include_filename
+        else :
+            self.top_header_name = include_subpath.lower()+"vx_"+self.module.lower()
+        if type(core) is Core :
+            self.core = core.value
+        elif type(core) is str :
+            print("WARNING: core argument should use the Core class to avoid potential name clashes")
+            self.core = core
+        else :
+            sys.exit("core argument has invalid type.")
         self.env_var = env_var
 
         self.workarea = os.environ.get(self.env_var)
@@ -277,10 +291,19 @@ class KernelExportCode :
         self.top_header_name = header
 
     def setModuleDirectory(self, module) :
-        self.module = module
+        if type(module) is Module :
+            self.module = module.value
+        elif type(core) is str :
+            self.module is module
+        self.top_header_name = include_subpath.lower()+"vx_"+self.module.lower()
 
     def setCoreDirectory(self, core) :
-        self.core = core
+        if type(core) is Core :
+            self.core = core.value
+        elif type(core) is str :
+            self.core = core
+        else :
+            sys.exit("core argument has invalid type.")
 
     def create_all_directories(self):
         self.create_directory(self.workarea)

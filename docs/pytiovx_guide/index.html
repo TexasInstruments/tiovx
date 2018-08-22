@@ -110,68 +110,93 @@ and use the PyTIOVX tool to generate C code with OpenVX APIs.</pre><p> Additiona
 <ul>
 <li>Below is an example of a Python script used for generating a custom Channel Extract kernel: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;code = KernelExportCode(<span class="stringliteral">&quot;TI&quot;</span>, <span class="stringliteral">&quot;extvx&quot;</span>, <span class="stringliteral">&quot;ext1&quot;</span>, <span class="stringliteral">&quot;c66&quot;</span>, <span class="stringliteral">&quot;CUSTOM_KERNEL_PATH&quot;</span>)</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;code = KernelExportCode(Module.IMAGING, Core.C66, <span class="stringliteral">&quot;CUSTOM_APPLICATION_PATH&quot;</span>)</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;code.setCoreDirectory(<span class="stringliteral">&quot;c66&quot;</span>)</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;kernel = Kernel(<span class="stringliteral">&quot;channel_extract&quot;</span>)</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;kernel.setParameter(Type.IMAGE, Direction.INPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;IN&quot;</span>, [<span class="stringliteral">&#39;VX_DF_IMAGE_U8&#39;</span>], do_map=<span class="keyword">False</span>, do_unmap=<span class="keyword">False</span>)</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;kernel.setParameter(Type.IMAGE, Direction.INPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;IN&quot;</span>, [<span class="stringliteral">&#39;VX_DF_IMAGE_U8&#39;</span>])</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;kernel.setParameter(Type.ENUM, Direction.INPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;CHANNEL&quot;</span>)</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;kernel.setParameter(Type.IMAGE, Direction.OUTPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;OUT&quot;</span>, [<span class="stringliteral">&#39;VX_DF_IMAGE_U8&#39;</span>])</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;kernel.setParameterRelationship([<span class="stringliteral">&quot;INPUT&quot;</span>, <span class="stringliteral">&quot;OUTPUT&quot;</span>], [Attribute.Image.WIDTH, Attribute.Image.HEIGHT])</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;kernel.setTarget(Target.DSP1)</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;kernel.setTarget(Target.DSP2)</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;code.export(kernel)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [<span class="stringliteral">&quot;width*height&quot;</span>], <span class="stringliteral">&quot;IN&quot;</span>)</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;kernel.setTarget(Target.DSP1)</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;kernel.setTarget(Target.DSP2)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;code.export(kernel)</div>
 </div><!-- fragment --></li>
-<li>The constructor for the KernelExportCode API contains arguments that serve as the directory paths of the generated code. The first argument, "TI", is the company name and serves as the include subpath. The second argument, "extvx",serves as the include filename. The third argument, "ext1", is the intended module of the kernel. The fourth argument, "channel_extract" is the specific core that this kernel will run on. Finally, the fifth argument "CUSTOM_KERNEL_PATH" is the path where the output files will be exported to. (Note: this path must be set as an environment variable.)</li>
+<li>The constructor for the KernelExportCode API contains arguments that serve as the directory paths of the generated code. The first argument, Module.IMAGING, is the intended module of the kernel. A full list of modules are contained with the module.py file of PyTIOVX. If the name of the module needed is not listed, either the module can be added to the module.py file or the module name can be passed as a string to the constructor. The fourth argument, Core.C66 is the specific core that this kernel will run on. Similar to the module name, a list of core values are listed in core.py. If the name of the core needed is not listed, either the core can be added to the core.py file or the core name can be passed as a string to the constructor. Finally, the third # argument "CUSTOM_KERNEL_PATH" is the path where the output files will be exported to. (Note: this path must be set as an environment variable.) The constructor has two optional arguments, include_subpath and include_filename. The include_subpath should be set to the string value of the company name of the developer and defaults to "TI". The include_filename contains the path name to the include file. By default, this value is set an empty string which results in the filepath being set to "&lt;lowercase(include_subpath)&gt;vx_&lt;module&gt;". However, the filepath can be overwritten by filling in this optional parameter.</li>
 <li>Several dedicated API's are provided in the case that certain parameters of KernelExportCode must be changed during execution of the script. This examples shows one example, setCoreDirectory. This method can change the intended core by passing in a particular core as its only argument.</li>
 <li>The constructor for the Kernel class contains as its only argument the name of the kernel to be created.</li>
 <li>The above example shows a simple case of setting up parameters for a Channel Extract kernel. By using the setParameter method of the kernel class, the scripts creates a number of OpenVX data types as input and output parameters of the kernel. These parameters can be either required parameters of the kernel or optional parameters; in this case, all parameters are set to required. Additionally, the names and allowed data types of these parameters can be set as an argument to the setParameter method.</li>
 <li>After setting all parameters via the setParameter method, relationships among these parameters can be set via the setParameterRelationship method. This method is designed to ouput code in the validation callback to verify equality between certain attributes of parameters of the kernel. This validation of parameters is important in order no run-time errors of the kernel. In this case, a relationship is set between the width and height of the "INPUT" and "OUTPUT" parameters. This will produce code in the kernel validate callback that queries these attributes and checks for equality between them.</li>
+<li>The allocateLocalMemory method is used to generate OpenVX code for allocating and free-ing local memory based on characteristics of existing data objects or on constant values. In this example, the allocateLocalMemory method is used to create a buffer with the name "img_scratch_mem" and is equal to the size of the width * height of the image, "IN".</li>
 <li>The list of targets for the kernel to run on can be set via the setTarget API. This is designed to set all possible targets for the kernel. In this example, the target kernel is set to run on both DSP1 and DSP2.</li>
+<li>Note: in the case that one of the DSP's is chosen as a potential target for the kernel to run on, a BAM version of the target kernel file is additionally outputted, along with a flag (BUILD_BAM) in the kernel registration file to build the BAM version in the case that this flag is enabled in the Makefile.</li>
 <li>After setting up all parameters and targets of the kernel, the kernel wrappers can be generated by running the export method.</li>
 <li>Further documentation of the API's used for kernel code generation can be found <a href="modules.html" target="_blank">here</a></li>
 </ul>
 <dl class="section user"><dt>Generated Kernel Code Overview</dt><dd></dd></dl>
 <ul>
 <li>This section describes the generated files based on the example given above.</li>
-<li>Based on whether the code generation path is set to CUSTOM_KERNEL_PATH or CUSTOM_APPLICATION_PATH, the kernel files are generated in different locations.</li>
+<li>Based on whether the code generation path is set to CUSTOM_KERNEL_PATH, CUSTOM_APPLICATION_PATH or VISION_APPS_PATH, the kernel files are generated in different locations.</li>
 <li>The files that are generated the first time only are noted. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/DEVELOPER_TODO.txt (generated first time only)</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx.h (generated first time only)</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx_kernels.h (generated first time only)</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/extvx_nodes.h (generated first time only)</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/c66/concerto.mak (generated first time only)</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/c66/vx_channel_extract_target.c</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/c66/vx_kernels_ext1_target.c (generated first time only)</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/host/concerto.mak (generated first time only)</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/tivx_ext1_node_api.c (generated first time only)</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/host/vx_channel_extract_host.c</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/host/vx_kernels_ext1_host.c (generated first time only)</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/include/tivx_ext1_kernels.h (generated first time only)</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/include/tivx_kernel_channel_extract.h</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/test/concerto.mak (generated first time only)</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/ext1/test/test_main.h (generated first time only)</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/tivx_imaging.h (generated first time only)</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/tivx_imaging_kernels.h (generated first time only)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/tivx_imaging_nodes.h (generated first time only)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/c66/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/c66/vx_channel_extract_target.c</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/c66/vx_kernels_imaging_target.c (generated first time only)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/c66/bam/vx_bam_channel_extract_target.c (<span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/c66/bam/concerto.mak (generated first time only, <span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/host/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/tivx_imaging_node_api.c (generated first time only)</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/host/vx_channel_extract_host.c</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/host/vx_kernels_imaging_host.c (generated first time only)</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/include/tivx_imaging_kernels.h (generated first time only)</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/include/tivx_kernel_channel_extract.h</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/test/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/test/test_main.h (generated first time only)</div>
 </div><!-- fragment --></li>
 <li>If the final argument was changed to CUSTOM_APPLICATION_PATH, the following files are produced: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt (generated first time only)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/concerto_inc.mak</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/custom_tools_path.mak</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/TI/extvx.h (generated first time only)</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/TI/extvx_kernels.h (generated first time only)</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/TI/extvx_nodes.h (generated first time only)</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/c66/concerto.mak (generated first time only)</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/c66/vx_channel_extract_target.c</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/c66/vx_kernels_ext1_target.c (generated first time only)</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/host/concerto.mak (generated first time only)</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/tivx_ext1_node_api.c (generated first time only)</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/host/vx_channel_extract_host.c</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/host/vx_kernels_ext1_host.c (generated first time only)</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/tivx_ext1_kernels.h (generated first time only)</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/include/tivx_kernel_channel_extract.h</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/test/concerto.mak (generated first time only)</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/test/test_main.h (generated first time only)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/include/TI/tivx_imaging.h (generated first time only)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_kernels.h (generated first time only)</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_nodes.h (generated first time only)</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/c66/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/c66/vx_channel_extract_target.c</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/c66/vx_kernels_imaging_target.c (generated first time only)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/c66/bam/vx_bam_channel_extract_target.c (<span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/c66/bam/concerto.mak (generated first time only, <span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/host/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/tivx_imaging_node_api.c (generated first time only)</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/host/vx_channel_extract_host.c</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/host/vx_kernels_imaging_host.c (generated first time only)</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/include/tivx_imaging_kernels.h (generated first time only)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/include/tivx_kernel_channel_extract.h</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/test/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/test/test_main.h (generated first time only)</div>
+</div><!-- fragment --></li>
+<li>If the final argument was changed to VISION_APPS_PATH, the following files are produced: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/DEVELOPER_TODO.txt (generated first time only)</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging.h (generated first time only)</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_kernels.h (generated first time only)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_nodes.h (generated first time only)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/c66/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/c66/vx_channel_extract_target.c</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/c66/vx_kernels_imaging_target.c (generated first time only)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/c66/bam/vx_bam_channel_extract_target.c (<span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/c66/bam/concerto.mak (generated first time only, <span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/host/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/tivx_imaging_node_api.c (generated first time only)</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/host/vx_channel_extract_host.c</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/host/vx_kernels_imaging_host.c (generated first time only)</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/tivx_imaging_kernels.h (generated first time only)</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/tivx_kernel_channel_extract.h</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/test/concerto.mak (generated first time only)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/test/test_main.h (generated first time only)</div>
 </div><!-- fragment --></li>
 <li>As noted, the majority of the generated files are only generated once per kernel module. These files contain boilerplate code needed for registering/unregistering the new kernels and node creation.</li>
 <li>In the case that the module already exists, code will simply be appended to the existing files rather than duplicating any previously generated files.</li>
@@ -179,8 +204,8 @@ and use the PyTIOVX tool to generate C code with OpenVX APIs.</pre><p> Additiona
 <dl class="section user"><dt>Overview of Necessary Kernel Code Modifications</dt><dd></dd></dl>
 <ul>
 <li>In addition to the code generated by the python script, a text file called "DEVELOPER_TODO.txt" is generated that provides information regarding the changes to be made to the generated files.</li>
-<li>The two files wherein most modifications will occur are the host and target kernel files. The files for the given example are listed below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/c66/vx_channel_extract_target.c</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/ext1/host/vx_channel_extract_host.c</div>
+<li>The two files wherein most modifications will occur are the host and target kernel files. The files for the given example are listed below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/c66/vx_channel_extract_target.c</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/host/vx_channel_extract_host.c</div>
 </div><!-- fragment --></li>
 <li>The host kernel file must be modified in the following ways:<ul>
 <li>Validate callback: Additional custom parameter checking may need to be added to the validate callback. The script will generate parameter checking for attributes of parameters that are equal. Additional checking beyond the scope of the script must be entered in manually by the user. For example, in the case of a kernel with a scaled output, the validate callback should verify that the output is dimensions are scaled properly from the input. This type of check will most likely first require querying a given kernel parameter as specified by the OpenVX API designated for querying the given parameter. At this point the value can be verified against a known quantity. This step of proper validation catches errors during the verification stage and is important within the context of OpenVX to ensure no errors during execution of the graph.</li>

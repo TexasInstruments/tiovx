@@ -101,6 +101,8 @@ from .export_image import *
 from .export_code import *
 from .null import *
 from .attribute import *
+from .core import *
+from .module import *
 from .kernel_code import *
 from .kernel import *
 

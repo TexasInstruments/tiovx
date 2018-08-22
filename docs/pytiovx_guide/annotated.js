@@ -24,6 +24,9 @@ var annotated =
       [ "convolution", null, [
         [ "Convolution", "classtiovx_1_1convolution_1_1Convolution.html", "classtiovx_1_1convolution_1_1Convolution" ]
       ] ],
+      [ "core", null, [
+        [ "Core", "classtiovx_1_1core_1_1Core.html", null ]
+      ] ],
       [ "distribution", null, [
         [ "Distribution", "classtiovx_1_1distribution_1_1Distribution.html", "classtiovx_1_1distribution_1_1Distribution" ]
       ] ],
@@ -71,6 +74,9 @@ var annotated =
       ] ],
       [ "matrix", null, [
         [ "Matrix", "classtiovx_1_1matrix_1_1Matrix.html", "classtiovx_1_1matrix_1_1Matrix" ]
+      ] ],
+      [ "module", null, [
+        [ "Module", "classtiovx_1_1module_1_1Module.html", null ]
       ] ],
       [ "node", null, [
         [ "Node", "classtiovx_1_1node_1_1Node.html", "classtiovx_1_1node_1_1Node" ],
