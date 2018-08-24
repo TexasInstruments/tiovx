@@ -92,11 +92,25 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <dl class="section user"><dt>Example Usage: Export objects from context to C source code</dt><dd></dd></dl>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;my_context = Context(<span class="stringliteral">&quot;my_context&quot;</span>)</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;my_context = Context(<span class="stringliteral">&quot;my_usecase&quot;</span>)</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;...</div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;ExportCode(my_context).export()</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;ExportCode(my_context, VISION_APPS_PATH).export()</div>
+</div><!-- fragment --><p>Output files from the above parameters: </p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/DEVELOPER_TODO.txt</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/concerto_inc.mak</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/concerto.mak</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/my_usecase.c</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/my_usecase.h</div>
+</div><!-- fragment --><p>Output files from the above parameters in the case that the environment variable CUSTOM_APPLICATION_PATH was given: </p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/concerto_inc.mak</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/custom_tools_path.mak</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/custom_app_kernel_library_tests.h</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/concerto.mak</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/my_usecase.c</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/my_usecase.h</div>
 </div><!-- fragment --> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a3dc836a99f8d0ff8c4f5c297464947d4"></a>
 <div class="memitem">
@@ -118,7 +132,7 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>env_var</em> = <code>'CUSTOM_APPLICATON_PATH'</code>&#160;</td>
+          <td class="paramname"><em>env_var</em> = <code>'VISION_APPS_PATH'</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -132,7 +146,7 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">context</td><td>[in] Context object. <a class="el" href="classtiovx_1_1context_1_1Context.html" title="Context object (OpenVX equivalent = vx_context) ">tiovx::context::Context</a> </td></tr>
-    <tr><td class="paramname">env_var</td><td>[in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH" </td></tr>
+    <tr><td class="paramname">env_var</td><td>[in] [optional] Path to the directory where these should be outputted; Default="VISION_APPS_PATH" </td></tr>
   </table>
   </dd>
 </dl>

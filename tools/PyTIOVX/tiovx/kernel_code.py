@@ -149,6 +149,46 @@ from glob import glob
 # test/test_main.h (generated first time only for given parameters)
 # \endcode
 #
+# \par Below is an example using the VISION_APPS_PATH
+#
+# \code
+# from tiovx import *
+#
+# code = KernelExportCode(Module.IMAGING, Core.C66, "VISION_APPS_PATH")
+# <set up kernel parameters>
+# code.export(kernel)
+# \endcode
+#
+# Output files from the above parameters:
+# \code
+# <VISION_APPS_PATH>/kernels/DEVELOPER_TODO.txt
+# <VISION_APPS_PATH>/kernels/imaging/include/TI/tivx_imaging.h
+# <VISION_APPS_PATH>/kernels/imaging/include/TI/tivx_imaging_kernels.h
+# <VISION_APPS_PATH>/kernels/imaging/include/TI/tivx_imaging_nodes.h
+# \endcode
+#
+# Output folder from the above parameters:
+# \code
+# <VISION_APPS_PATH>/kernels/imaging/
+# \endcode
+#
+# This folder contains the following:
+# \code
+# c66/concerto.mak (generated first time only for given parameters)
+# c66/vx_<kernel_name>_target.c
+# c66/vx_kernels_imaging_target.c (generated first time only for given parameters)
+# c66/bam/vx_bam_<kernel_name>_target.c (if using the C66 DSP)
+# c66/bam/concerto.mak (generated first time only for given parameters, if using the C66 DSP)
+# host/concerto.mak (generated first time only for given parameters)
+# tivx_imaging_node_api.c (generated first time only for given parameters)
+# host/vx_<kernel_name>_host.c
+# host/vx_kernels_imaging_host.c (generated first time only for given parameters)
+# include/tivx_imaging_kernels.h (generated first time only for given parameters)
+# include/tivx_kernel_<kernel_name>.h
+# test/concerto.mak (generated first time only for given parameters)
+# test/test_main.h (generated first time only for given parameters)
+# \endcode
+#
 # \ingroup KERNEL_CODE
 #
 class KernelExportCode :
@@ -156,10 +196,10 @@ class KernelExportCode :
     #
     # \param module           [in] [optional] Module name for the kernel; Default="ext1"
     # \param core             [in] [optional] Name of the core for the kernel to run on; Default="c66"
-    # \param env_var          [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH"
+    # \param env_var          [in] [optional] Path to the directory where these should be outputted; Default="VISION_APPS_PATH"
     # \param include_subpath  [in] [optional] Company name which serves as a subpath for an include directory; Default="TI"
     # \param include_filename [in] [optional] Variable to overwrite the include filename, otherwise include filename set to <lowercase(include_subpath)>vx_<module>; Default=""
-    def __init__(self, module="ext1", core="c66", env_var='CUSTOM_APPLICATON_PATH', include_subpath="TI", include_filename="") :
+    def __init__(self, module="ext1", core="c66", env_var='VISION_APPS_PATH', include_subpath="TI", include_filename="") :
         self.company = include_subpath
         self.module = ""
         if type(module) is Module :
@@ -182,7 +222,7 @@ class KernelExportCode :
 
         self.workarea = os.environ.get(self.env_var)
 
-        if self.workarea == None :
+        if self.workarea == None or self.workarea == "":
             sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
 
         if self.env_var == 'CUSTOM_KERNEL_PATH':
@@ -1848,39 +1888,41 @@ class KernelExportCode :
         self.target_c_code.close()
 
     def generate_make_files(self, kernel) :
-        self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
-        if not os.path.exists(self.concerto_inc_filename):
-            print("Creating " + self.concerto_inc_filename)
-            self.concerto_inc_code = CodeGenerate(self.concerto_inc_filename, header=False)
-            self.concerto_inc_code.write_line("# This file contains a list of extension kernel specific static libraries")
-            self.concerto_inc_code.write_line("# to be included in the PC executables.  It is put in this separate file")
-            self.concerto_inc_code.write_line("# to make it easier to add/extend kernels without needing to modify")
-            self.concerto_inc_code.write_line("# several concerto.mak files which depend on kernel libraries.")
-            self.concerto_inc_code.write_newline()
-            self.concerto_inc_code.write_line("STATIC_LIBS += vx_kernels_" + self.module + "_tests " + "vx_kernels_" + self.module)
-            if self.env_var == 'CUSTOM_KERNEL_PATH' :
-                self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core)
-                if self.target_uses_dsp :
-                    self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core + "_bam")
-            else:
-                self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core)
-                if self.target_uses_dsp :
-                    self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "_bam")
-            self.concerto_inc_code.write_line("STATIC_LIBS += vx_conformance_engine")
-            self.concerto_inc_code.write_line("# < DEVELOPER_TODO: Add any additional dependent libraries >")
-            self.concerto_inc_code.close()
+        if self.env_var == 'CUSTOM_KERNEL_PATH' or self.env_var == 'CUSTOM_APPLICATION_PATH':
+            self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
+            if not os.path.exists(self.concerto_inc_filename):
+                print("Creating " + self.concerto_inc_filename)
+                self.concerto_inc_code = CodeGenerate(self.concerto_inc_filename, header=False)
+                self.concerto_inc_code.write_line("# This file contains a list of extension kernel specific static libraries")
+                self.concerto_inc_code.write_line("# to be included in the PC executables.  It is put in this separate file")
+                self.concerto_inc_code.write_line("# to make it easier to add/extend kernels without needing to modify")
+                self.concerto_inc_code.write_line("# several concerto.mak files which depend on kernel libraries.")
+                self.concerto_inc_code.write_newline()
+                self.concerto_inc_code.write_line("STATIC_LIBS += vx_kernels_" + self.module + "_tests " + "vx_kernels_" + self.module)
+                if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                    self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core)
+                    if self.target_uses_dsp :
+                        self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core + "_bam")
+                else:
+                    self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core)
+                    if self.target_uses_dsp :
+                        self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "_bam")
+                self.concerto_inc_code.write_line("STATIC_LIBS += vx_conformance_engine")
+                self.concerto_inc_code.write_line("# < DEVELOPER_TODO: Add any additional dependent libraries >")
+                self.concerto_inc_code.close()
 
-        self.tools_path_filename = self.workarea + "/custom_tools_path.mak"
-        if not os.path.exists(self.tools_path_filename):
-            print("Creating " + self.tools_path_filename)
-            self.tools_path_code = CodeGenerate(self.tools_path_filename, header=False)
-            self.tools_path_code.write_line("# This file can optionally be used to define environment variables which")
-            self.tools_path_code.write_line("# are needed by the kernel libraries defined in this folder, or can be")
-            self.tools_path_code.write_line("# used to overwrite environment variables from the psdk_tools_path.mak")
-            self.tools_path_code.write_line("# and vsdk_tools_path.mak files from the tiovx directory.")
-            self.tools_path_code.write_newline()
-            self.tools_path_code.write_line("# < DEVELOPER_TODO: Add any custom PATH environment variables >")
-            self.tools_path_code.close()
+        if self.env_var == 'CUSTOM_KERNEL_PATH' or self.env_var == 'CUSTOM_APPLICATION_PATH':
+            self.tools_path_filename = self.workarea + "/custom_tools_path.mak"
+            if not os.path.exists(self.tools_path_filename):
+                print("Creating " + self.tools_path_filename)
+                self.tools_path_code = CodeGenerate(self.tools_path_filename, header=False)
+                self.tools_path_code.write_line("# This file can optionally be used to define environment variables which")
+                self.tools_path_code.write_line("# are needed by the kernel libraries defined in this folder, or can be")
+                self.tools_path_code.write_line("# used to overwrite environment variables from the psdk_tools_path.mak")
+                self.tools_path_code.write_line("# and vsdk_tools_path.mak files from the tiovx directory.")
+                self.tools_path_code.write_newline()
+                self.tools_path_code.write_line("# < DEVELOPER_TODO: Add any custom PATH environment variables >")
+                self.tools_path_code.close()
 
         self.module_host_concerto_filename = self.workarea_module_host + "/concerto.mak"
         if not os.path.exists(self.module_host_concerto_filename):
@@ -2453,8 +2495,8 @@ class KernelExportCode :
                       "TESTCASE(tivx" + toCamelCase(self.module) + self.kernel.name_camel + ")\n")
 
     def modify_make_file(self) :
-        print("Modifying " + self.concerto_inc_filename)
         if self.env_var == 'CUSTOM_KERNEL_PATH' :
+            print("Modifying " + self.concerto_inc_filename)
             CodeModify().block_insert(self.concerto_inc_filename,
                           "vx_kernels_" + self.module,
                           "STATIC_LIBS += vx_conformance_engine",
@@ -2470,7 +2512,8 @@ class KernelExportCode :
                           "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_conformance_engine",
                           "STATIC_LIBS += vx_target_kernels_" + self.core + "_bam\n")
-        else:
+        elif self.env_var == 'CUSTOM_APPLICATION_PATH' :
+            print("Modifying " + self.concerto_inc_filename)
             CodeModify().block_insert(self.concerto_inc_filename,
                           "vx_kernels_" + self.module,
                           "STATIC_LIBS += vx_conformance_engine",
@@ -2774,7 +2817,10 @@ class KernelExportCode :
                           "    {&tivxAddTargetKernel" + self.kernel.name_camel + ", &tivxRemoveTargetKernel" + self.kernel.name_camel + "},\n", overrideFind=(not self.target_kernels_created))
 
     def todo(self) :
-        self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
+        if self.env_var == 'CUSTOM_KERNEL_PATH' or self.env_var == 'CUSTOM_APPLICATION_PATH':
+            self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
+        else :
+            self.todo_filename = self.workarea_module + "/DEVELOPER_TODO.txt"
         print("Creating " + self.todo_filename)
         self.todo_code = CodeGenerate(self.todo_filename, header=False)
 
@@ -2790,7 +2836,10 @@ class KernelExportCode :
         self.todo_code.write_line("# for the \"< DEVELOPER_TODO ...>\" string in all the files from this path, and lists them.")
         self.todo_code.write_line("# Removing the \"< DEVELOPER_TODO ...>\" comment block from the files will effectively remove those")
         self.todo_code.write_line("# lines from showing up in this file the next time KernelExportCode.todo() is run.")
-        self.all_files = [y for x in os.walk(self.workarea) for y in glob(os.path.join(x[0], '*.*'))]
+        if self.env_var == 'CUSTOM_KERNEL_PATH' or self.env_var == 'CUSTOM_APPLICATION_PATH':
+            self.all_files = [y for x in os.walk(self.workarea) for y in glob(os.path.join(x[0], '*.*'))]
+        else :
+            self.all_files = [y for x in os.walk(self.workarea_module) for y in glob(os.path.join(x[0], '*.*'))]
         for file in self.all_files :
             with open(file, 'rb') as f:
                 for num, line in enumerate(f, 1):

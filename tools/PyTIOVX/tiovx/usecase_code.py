@@ -61,40 +61,51 @@
 
 from . import *
 from glob import glob
+import os, sys, re
 
 class UsecaseCode :
     def __init__(self, context, env_var) :
         self.env_var = env_var
         self.workarea = os.environ.get(self.env_var)
-        if self.workarea == None :
+        if self.workarea == None or self.workarea == "":
             sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
-        self.workarea_app = self.workarea + "/" + "app_" + context.name
+        if self.env_var == "CUSTOM_APPLICATION_PATH" :
+            self.workarea_app = self.workarea + "/" + "app_" + context.name
+        else :
+            self.workarea_app = self.workarea + "/apps/" + context.name + "/app_" + context.name
         self.create_directory(self.workarea_app)
         self.h_file = CodeGenerate(self.workarea_app + "/" + context.name + '.h')
         self.c_file = CodeGenerate(self.workarea_app + "/" + context.name + '.c')
         self.concerto_file = CodeGenerate(self.workarea_app + "/" + 'concerto.mak', header=False)
         self.workarea_kernel = self.workarea + "/kernels"
+
         # Generating necessary files if they don't exist
-        self.include_custom_kernel_library_tests_filename = self.workarea_kernel + "/custom_app_kernel_library_tests.h"
-        self.create_directory(self.workarea_kernel)
-        if not os.path.exists(self.include_custom_kernel_library_tests_filename):
-            print("Creating " + self.include_custom_kernel_library_tests_filename)
-            self.include_custom_kernel_library_tests_code = CodeGenerate(self.include_custom_kernel_library_tests_filename)
-            self.include_custom_kernel_library_tests_code.close()
+        if self.env_var == "CUSTOM_APPLICATION_PATH" :
+            self.include_custom_kernel_library_tests_filename = self.workarea_kernel + "/custom_app_kernel_library_tests.h"
+            self.create_directory(self.workarea_kernel)
+            if not os.path.exists(self.include_custom_kernel_library_tests_filename):
+                print("Creating " + self.include_custom_kernel_library_tests_filename)
+                self.include_custom_kernel_library_tests_code = CodeGenerate(self.include_custom_kernel_library_tests_filename)
+                self.include_custom_kernel_library_tests_code.close()
 
-        self.tools_path_filename = self.workarea + "/custom_tools_path.mak"
-        if not os.path.exists(self.tools_path_filename):
-            print("Creating " + self.tools_path_filename)
-            self.tools_path_code = CodeGenerate(self.tools_path_filename, header=False)
-            self.tools_path_code.write_line("# This file can optionally be used to define environment variables which")
-            self.tools_path_code.write_line("# are needed by the kernel libraries defined in this folder, or can be")
-            self.tools_path_code.write_line("# used to overwrite environment variables from the psdk_tools_path.mak")
-            self.tools_path_code.write_line("# and vsdk_tools_path.mak files from the tiovx directory.")
-            self.tools_path_code.write_newline()
-            self.tools_path_code.write_line("# < DEVELOPER_TODO: Add any custom PATH environment variables >")
-            self.tools_path_code.close()
+        if self.env_var == "CUSTOM_APPLICATION_PATH" :
+            self.tools_path_filename = self.workarea + "/custom_tools_path.mak"
+            if not os.path.exists(self.tools_path_filename):
+                print("Creating " + self.tools_path_filename)
+                self.tools_path_code = CodeGenerate(self.tools_path_filename, header=False)
+                self.tools_path_code.write_line("# This file can optionally be used to define environment variables which")
+                self.tools_path_code.write_line("# are needed by the kernel libraries defined in this folder, or can be")
+                self.tools_path_code.write_line("# used to overwrite environment variables from the psdk_tools_path.mak")
+                self.tools_path_code.write_line("# and vsdk_tools_path.mak files from the tiovx directory.")
+                self.tools_path_code.write_newline()
+                self.tools_path_code.write_line("# < DEVELOPER_TODO: Add any custom PATH environment variables >")
+                self.tools_path_code.close()
 
-        self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
+        if self.env_var == "CUSTOM_APPLICATION_PATH" :
+            self.concerto_inc_filename = self.workarea + "/concerto_inc.mak"
+        else :
+            self.concerto_inc_filename_folder = self.workarea + "/apps/" + context.name
+            self.concerto_inc_filename = self.concerto_inc_filename_folder + "/concerto_inc.mak"
         if not os.path.exists(self.concerto_inc_filename):
             print("Creating " + self.concerto_inc_filename)
             self.concerto_inc_code = CodeGenerate(self.concerto_inc_filename, header=False)
@@ -398,34 +409,53 @@ class UsecaseCode :
         self.c_file.close()
 
     def generate_concerto(self) :
-        self.concerto_file.write_line("include $(PRELUDE)")
-        self.concerto_file.write_line("TARGET      := vx_app_%s" % self.context.name)
-        self.concerto_file.write_line("TARGETTYPE  := exe")
-        self.concerto_file.write_line("CSOURCES    := $(call all-c-files)")
-        self.concerto_file.write_newline()
-        self.concerto_file.write_line("IDIRS       += $(TIOVX_PATH)/utils/include")
-        self.concerto_file.write_newline()
-        self.concerto_file.write_line("STATIC_LIBS += vx_vxu vx_framework")
-        self.concerto_file.write_line("STATIC_LIBS += vx_platform_pc vx_framework")
-        self.concerto_file.write_line("STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core")
-        self.concerto_file.write_newline()
-        self.concerto_file.write_line("include $(HOST_ROOT)/kernels/concerto_inc.mak")
-        self.concerto_file.write_newline()
-        self.concerto_file.write_line("ifeq ($(BUILD_TUTORIAL),yes)")
-        self.concerto_file.write_line("STATIC_LIBS += vx_target_kernels_tutorial")
-        self.concerto_file.write_line("endif")
-        self.concerto_file.write_newline()
-        self.concerto_file.write_line("STATIC_LIBS += vx_kernels_host_utils")
-        self.concerto_file.write_line("STATIC_LIBS += vx_kernels_target_utils")
-        self.concerto_file.write_line("STATIC_LIBS += vx_framework")
-        self.concerto_file.write_line("STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66")
-        self.concerto_file.write_line("SYS_SHARED_LIBS += rt")
-        self.concerto_file.write_newline()
-        self.concerto_file.write_line("include $(FINALE)")
-        self.concerto_file.close()
+        if self.env_var == "VISION_APPS_PATH" :
+            self.concerto_file.write_line("ifeq ($(TARGET_PLATFORM),PC)")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("include $(PRELUDE)")
+            self.concerto_file.write_line("TARGET      := vx_app_%s" % self.context.name)
+            self.concerto_file.write_line("TARGETTYPE  := exe")
+            self.concerto_file.write_line("CSOURCES    := $(call all-c-files)")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("include $(VISION_APPS_PATH)/apps/concerto_inc.mak")
+            self.concerto_file.write_line("include $(VISION_APPS_PATH)/apps/%s/concerto_inc.mak" % self.context.name)
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("include $(FINALE)")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("endif")
+            self.concerto_file.close()
+        else :
+            self.concerto_file.write_line("include $(PRELUDE)")
+            self.concerto_file.write_line("TARGET      := vx_app_%s" % self.context.name)
+            self.concerto_file.write_line("TARGETTYPE  := exe")
+            self.concerto_file.write_line("CSOURCES    := $(call all-c-files)")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("IDIRS       += $(TIOVX_PATH)/utils/include")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("STATIC_LIBS += vx_vxu vx_framework")
+            self.concerto_file.write_line("STATIC_LIBS += vx_platform_pc vx_framework")
+            self.concerto_file.write_line("STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("include $(HOST_ROOT)/kernels/concerto_inc.mak")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("ifeq ($(BUILD_TUTORIAL),yes)")
+            self.concerto_file.write_line("STATIC_LIBS += vx_target_kernels_tutorial")
+            self.concerto_file.write_line("endif")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("STATIC_LIBS += vx_kernels_host_utils")
+            self.concerto_file.write_line("STATIC_LIBS += vx_kernels_target_utils")
+            self.concerto_file.write_line("STATIC_LIBS += vx_framework")
+            self.concerto_file.write_line("STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66")
+            self.concerto_file.write_line("SYS_SHARED_LIBS += rt")
+            self.concerto_file.write_newline()
+            self.concerto_file.write_line("include $(FINALE)")
+            self.concerto_file.close()
 
     def todo(self) :
-        self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
+        if self.env_var == "CUSTOM_APPLICATION_PATH" :
+            self.todo_filename = self.workarea + "/DEVELOPER_TODO.txt"
+        else :
+            self.todo_filename = self.concerto_inc_filename_folder + "/DEVELOPER_TODO.txt"
         print("Creating " + self.todo_filename)
         self.todo_code = CodeGenerate(self.todo_filename, header=False)
 
@@ -441,7 +471,10 @@ class UsecaseCode :
         self.todo_code.write_line("# for the \"< DEVELOPER_TODO ...>\" string in all the files from this path, and lists them.")
         self.todo_code.write_line("# Removing the \"< DEVELOPER_TODO ...>\" comment block from the files will effectively remove those")
         self.todo_code.write_line("# lines from showing up in this file the next time KernelExportCode.todo() is run.")
-        self.all_files = [y for x in os.walk(self.workarea) for y in glob(os.path.join(x[0], '*.*'))]
+        if self.env_var == "CUSTOM_APPLICATION_PATH" :
+            self.all_files = [y for x in os.walk(self.workarea) for y in glob(os.path.join(x[0], '*.*'))]
+        else :
+            self.all_files = [y for x in os.walk(self.concerto_inc_filename_folder) for y in glob(os.path.join(x[0], '*.*'))]
         for file in self.all_files :
             with open(file, 'rb') as f:
                 for num, line in enumerate(f, 1):

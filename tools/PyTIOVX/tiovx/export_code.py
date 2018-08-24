@@ -71,11 +71,31 @@ import os, sys, re
 #
 # from tiovx import *
 #
-# my_context = Context("my_context")
+# my_context = Context("my_usecase")
 #
 # ...
 #
-# ExportCode(my_context).export()
+# ExportCode(my_context, VISION_APPS_PATH).export()
+# \endcode
+#
+# Output files from the above parameters:
+# \code
+# <VISION_APPS_PATH>/apps/my_usecase/DEVELOPER_TODO.txt
+# <VISION_APPS_PATH>/apps/my_usecase/concerto_inc.mak
+# <VISION_APPS_PATH>/apps/my_usecase/app_my_usecase/concerto.mak
+# <VISION_APPS_PATH>/apps/my_usecase/app_my_usecase/my_usecase.c
+# <VISION_APPS_PATH>/apps/my_usecase/app_my_usecase/my_usecase.h
+# \endcode
+#
+# Output files from the above parameters in the case that the environment variable CUSTOM_APPLICATION_PATH was given:
+# \code
+# <CUSTOM_APPLICATION_PATH>/DEVELOPER_TODO.txt
+# <CUSTOM_APPLICATION_PATH>/concerto_inc.mak
+# <CUSTOM_APPLICATION_PATH>/custom_tools_path.mak
+# <CUSTOM_APPLICATION_PATH>/kernels/custom_app_kernel_library_tests.h
+# <CUSTOM_APPLICATION_PATH>/app_my_usecase/concerto.mak
+# <CUSTOM_APPLICATION_PATH>/app_my_usecase/my_usecase.c
+# <CUSTOM_APPLICATION_PATH>/app_my_usecase/my_usecase.h
 # \endcode
 #
 # \ingroup FRAMEWORK
@@ -83,8 +103,8 @@ class ExportCode (Export) :
     ## Constructor used to create this object
     #
     # \param context [in] Context object. tiovx::context::Context
-    # \param env_var [in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH"
-    def __init__(self, context, env_var='CUSTOM_APPLICATON_PATH') :
+    # \param env_var [in] [optional] Path to the directory where these should be outputted; Default="VISION_APPS_PATH"
+    def __init__(self, context, env_var='VISION_APPS_PATH') :
         self.env_var = env_var
         Export.__init__(self, context)
         self.usecase_code = UsecaseCode(context, self.env_var)

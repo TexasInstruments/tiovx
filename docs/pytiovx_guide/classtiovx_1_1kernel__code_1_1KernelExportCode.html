@@ -148,6 +148,33 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;include/tivx_kernel_&lt;kernel_name&gt;.h</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;test/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;test/test_main.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+</div><!-- fragment --><dl class="section user"><dt>Below is an example using the VISION_APPS_PATH</dt><dd></dd></dl>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;code = KernelExportCode(Module.IMAGING, Core.C66, <span class="stringliteral">&quot;VISION_APPS_PATH&quot;</span>)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;set up kernel parameters&gt;</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;code.export(kernel)</div>
+</div><!-- fragment --><p>Output files from the above parameters: </p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/DEVELOPER_TODO.txt</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging.h</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_kernels.h</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_nodes.h</div>
+</div><!-- fragment --><p>Output folder from the above parameters: </p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/</div>
+</div><!-- fragment --><p>This folder contains the following: </p>
+<div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;c66/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;c66/vx_&lt;kernel_name&gt;_target.c</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;c66/vx_kernels_imaging_target.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;c66/bam/vx_bam_&lt;kernel_name&gt;_target.c (<span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;c66/bam/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters, <span class="keywordflow">if</span> using the C66 DSP)</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;host/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;tivx_imaging_node_api.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;host/vx_&lt;kernel_name&gt;_host.c</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;host/vx_kernels_imaging_host.c (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;include/tivx_imaging_kernels.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;include/tivx_kernel_&lt;kernel_name&gt;.h</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;test/concerto.mak (generated first time only <span class="keywordflow">for</span> given parameters)</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;test/test_main.h (generated first time only <span class="keywordflow">for</span> given parameters)</div>
 </div><!-- fragment --> </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a0089634556f1ba30c4a7375e86b8a440"></a>
 <div class="memitem">
@@ -175,7 +202,7 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">&#160;</td>
-          <td class="paramname"><em>env_var</em> = <code>'CUSTOM_APPLICATON_PATH'</code>, </td>
+          <td class="paramname"><em>env_var</em> = <code>'VISION_APPS_PATH'</code>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -202,7 +229,7 @@ def&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class
   <table class="params">
     <tr><td class="paramname">module</td><td>[in] [optional] Module name for the kernel; Default="ext1" </td></tr>
     <tr><td class="paramname">core</td><td>[in] [optional] Name of the core for the kernel to run on; Default="c66" </td></tr>
-    <tr><td class="paramname">env_var</td><td>[in] [optional] Path to the directory where these should be outputted; Default="CUSTOM_APPLICATON_PATH" </td></tr>
+    <tr><td class="paramname">env_var</td><td>[in] [optional] Path to the directory where these should be outputted; Default="VISION_APPS_PATH" </td></tr>
     <tr><td class="paramname">include_subpath</td><td>[in] [optional] Company name which serves as a subpath for an include directory; Default="TI" </td></tr>
     <tr><td class="paramname">include_filename</td><td>[in] [optional] Variable to overwrite the include filename, otherwise include filename set to &lt;lowercase(include_subpath)&gt;vx_&lt;module&gt;; Default="" </td></tr>
   </table>

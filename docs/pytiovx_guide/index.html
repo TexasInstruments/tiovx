@@ -224,7 +224,7 @@ and use the PyTIOVX tool to generate C code with OpenVX APIs.</pre><p> Additiona
 <ul>
 <li>In addition to generating kernel wrappers, the Python script also provides the ability to generate full use cases consisting of existing nodes. The Python script will generate all of the necessary OpenVX-related function calls at a fraction of the amount of code.</li>
 <li>In addition to generating OpenVX code, the Python tool also has the ability to generate an image capturing the nodes and connections within the OpenVX graph. This allows the developer to better visualize the functionality of the graph.</li>
-<li>Several examples are given as a part of the TIOVX release at the location tiovx/tools/sample_use_cases. Particularly, the file "uc_sample_05.py" gives an in-depth look at the extent of the tool by providing a superset of the data types as well as showing how a good portion of the nodes are called.</li>
+<li>Several examples are given as a part of the TIOVX release at the location tiovx/tools/sample_use_cases. Particularly, the file "uc_sample_07.py" gives an in-depth look at the extent of the tool by providing a superset of the data types as well as showing how a good portion of the nodes are called.</li>
 <li>An example is given below of how to generate OpenVX code using the Python tool. This example consists of two nodes, a table lookup node and a convolution node. The next section will describe the generated OpenVX code from this example. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;context = Context(<span class="stringliteral">&quot;uc_sample_07&quot;</span>)</div>
@@ -246,12 +246,26 @@ and use the PyTIOVX tool to generate C code with OpenVX APIs.</pre><p> Additiona
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;context.add ( graph )</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;ExportImage(context).export()</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;ExportCode(context).export()</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;ExportCode(context, <span class="stringliteral">&quot;VISION_APPS_PATH&quot;</span>).export()</div>
 </div><!-- fragment --></li>
 <li>Further documentation of the API's used for use case generation can be found <a href="modules.html" target="_blank">here</a></li>
 </ul>
 <dl class="section user"><dt>Generated Use Case Code Overview</dt><dd></dd></dl>
 <ul>
+<li>For the above Python script, a set of use case-specific files get generated. In the default case, the exported code gets generated at the "VISION_APPS_PATH". The intent of generating use cases along this path is to build the use case as a part of the vision_apps project. A list of the generated files can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/DEVELOPER_TODO.txt</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/concerto_inc.mak</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/concerto.mak</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/my_usecase.c</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/my_usecase.h</div>
+</div><!-- fragment --></li>
+<li>The other supported export path is the CUSTOM_APPLICATION_PATH. The intent of generating use cases along this path is to build the use case as a part of the tiovx project. A list of generated files using this path with the above script can be seen below. Note: a few additional files are generated in this case in order for it to be included in the tiovx build. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/concerto_inc.mak</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/custom_tools_path.mak</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/custom_app_kernel_library_tests.h</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/concerto.mak</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/my_usecase.c</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/my_usecase.h</div>
+</div><!-- fragment --></li>
 <li>The top-level function prototypes generated by the use case generation script can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;vx_status uc_sample_07_create(uc_sample_07 usecase);</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;vx_status uc_sample_07_delete(uc_sample_07 usecase);</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;vx_status uc_sample_07_verify(uc_sample_07 usecase);</div>
