@@ -1,6 +1,6 @@
 
 # Valid values are: vsdk psdk
-BUILD_SDK=vsdk
+BUILD_SDK?=vsdk
 
 include $(BUILD_SDK)_tools_path.mak
 
