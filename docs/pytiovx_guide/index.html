@@ -63,10 +63,11 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="title">PyTIOVX User Guide </div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><pre class="fragment">PyTIOVX Tool allows users to specify an OpenVX graph as Python code
-and use the PyTIOVX tool to generate C code with OpenVX APIs.</pre><p> Additionally, the PyTIOVX Tool allows users to generate an OpenVX extension kernel wrapper by specifying parameters of the kernel and setting relationships between these parameters. <br/>
+<div class="textblock"><dl class="section user"><dt>Overview</dt><dd>PyTIOVX Tool allows users to specify an OpenVX graph as Python code and use the PyTIOVX tool to generate C code with OpenVX APIs. Additionally, the PyTIOVX Tool allows users to generate an OpenVX extension kernel wrapper by specifying parameters of the kernel and setting relationships between these parameters. <br/>
 <br/>
- 'tiovx' is the python module that is used to specify OpenVX graph in a compact manner using predefined classes and objects. After specification of OpenVX graph using PyTIOVX APIs, it can be exported in various formats including C code, JPG image</p>
+ 'tiovx' is the python module that is used to specify OpenVX graph in a compact manner using predefined classes and objects. After specification of OpenVX graph using PyTIOVX APIs, it can be exported in various formats including C code, JPG image <br/>
+<br/>
+ Note: If running off repository, overwrite the PyTIOVX files tools/PyTIOVX/tiovx/core_extended.py and tools/PyTIOVX/tiovx/target_extended.py from tiovx_dev/internal_docs/PyTIOVX_Extended.</dd></dl>
 <dl class="section user"><dt>Installation</dt><dd><ul>
 <li>Install Python 3.5.2 or later (<a href="https://www.python.org/">https://www.python.org/</a>)<ul>
 <li>To confirm "python" and "pip" are in your install path, type below <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;python3 --version</div>

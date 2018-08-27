@@ -154,7 +154,10 @@ class Kernel  :
         kernel_str = "Kernel: " + self.name_lower + " "+ self.name_upper + " "+ self.name_camel + "\n"
         kernel_str += "Targets: "
         for target in self.targets :
-            kernel_str += Target.get_vx_enum_name(target) + "(CPU: " + Cpu.get_vx_enum_name(Target.get_cpu(target)) + ") "
+            if type(target) is Target :
+                kernel_str += Target.get_vx_enum_name(target) + "(CPU: " + Cpu.get_vx_enum_name(Target.get_cpu(target)) + ") "
+            else :
+                kernel_str += TargetExtended.get_vx_enum_name(target) + "(CPU: " + CpuExtended.get_vx_enum_name(TargetExtended.get_cpu(target)) + ") "
         kernel_str += "\n"
         for prm in self.params :
             kernel_str += str(prm) + "\n"

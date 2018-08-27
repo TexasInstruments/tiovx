@@ -15,5 +15,6 @@ var group__ENUMS =
     [ "ParamState", "classtiovx_1_1enums_1_1ParamState.html", null ],
     [ "PyramidScale", "classtiovx_1_1enums_1_1PyramidScale.html", null ],
     [ "ThresholdType", "classtiovx_1_1enums_1_1ThresholdType.html", null ],
-    [ "TermCriteria", "classtiovx_1_1enums_1_1TermCriteria.html", null ]
+    [ "TermCriteria", "classtiovx_1_1enums_1_1TermCriteria.html", null ],
+    [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", null ]
 ];

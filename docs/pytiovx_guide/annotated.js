@@ -27,6 +27,9 @@ var annotated =
       [ "core", null, [
         [ "Core", "classtiovx_1_1core_1_1Core.html", null ]
       ] ],
+      [ "core_extended", null, [
+        [ "CoreExtended", "classtiovx_1_1core__extended_1_1CoreExtended.html", null ]
+      ] ],
       [ "distribution", null, [
         [ "Distribution", "classtiovx_1_1distribution_1_1Distribution.html", "classtiovx_1_1distribution_1_1Distribution" ]
       ] ],
@@ -139,6 +142,9 @@ var annotated =
       ] ],
       [ "scalar", null, [
         [ "Scalar", "classtiovx_1_1scalar_1_1Scalar.html", "classtiovx_1_1scalar_1_1Scalar" ]
+      ] ],
+      [ "target_extended", null, [
+        [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", null ]
       ] ],
       [ "threshold", null, [
         [ "Threshold", "classtiovx_1_1threshold_1_1Threshold.html", "classtiovx_1_1threshold_1_1Threshold" ]
