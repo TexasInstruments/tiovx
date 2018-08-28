@@ -1,3 +1,6 @@
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F))
+
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 
 include $(PRELUDE)
@@ -9,26 +12,8 @@ IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
 IDIRS       += $(TDA4X_C_MODELS_PATH)/include
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
-endif
-
-ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),A15)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),M4)
-SKIPBUILD=1
-endif
-
 include $(FINALE)
 
 endif
 # ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
+endif

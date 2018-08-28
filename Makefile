@@ -1,6 +1,9 @@
+# Valid values are: j7presi
+BUILD_SDK?=j7presi
 
-include j7presi_tools_path.mak
+include $(BUILD_SDK)_tools_path.mak
 
+BUILD_TARGET_MODE?=yes
 BUILD_EMULATION_MODE?=yes
 BUILD_EMULATION_ARCH?=x86_64
 
@@ -39,6 +42,22 @@ ifeq ($(BUILD_EMULATION_MODE),yes)
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
         TARGET_COMBOS += PC:LINUX:x86_64:1:release:GCC_LINUX
+    endif
+endif
+
+ifeq ($(BUILD_TARGET_MODE),yes)
+    ifeq ($(PROFILE), $(filter $(PROFILE), debug all))
+        TARGET_COMBOS += TDA4X:SYSBIOS:R5F:1:debug:TIARMCGT
+        TARGET_COMBOS += TDA4X:SYSBIOS:A72:1:debug:GCC_SYSBIOS_ARM
+        TARGET_COMBOS += TDA4X:SYSBIOS:C66:1:debug:CGT6X
+        TARGET_COMBOS += TDA4X:SYSBIOS:C71:1:debug:CGT7X
+    endif
+
+    ifeq ($(PROFILE), $(filter $(PROFILE), release all))
+        TARGET_COMBOS += TDA4X:SYSBIOS:R5F:1:release:TIARMCGT
+        TARGET_COMBOS += TDA4X:SYSBIOS:A72:1:release:GCC_SYSBIOS_ARM
+        TARGET_COMBOS += TDA4X:SYSBIOS:C66:1:release:CGT6X
+        TARGET_COMBOS += TDA4X:SYSBIOS:C71:1:release:CGT7X
     endif
 endif
 

@@ -1,3 +1,5 @@
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72))
+
 ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 include $(PRELUDE)
@@ -39,22 +41,8 @@ CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 endif
 
-ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),A15)
-SKIPBUILD=0
-endif
-
-ifeq ($(TARGET_CPU),M4)
-SKIPBUILD=0
-endif
-
 include $(FINALE)
+
+endif
 
 endif

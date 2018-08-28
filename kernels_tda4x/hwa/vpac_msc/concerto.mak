@@ -1,4 +1,6 @@
 
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 R5F))
+
 include $(PRELUDE)
 TARGET      := vx_target_kernels_vpac_msc
 TARGETTYPE  := library
@@ -9,23 +11,6 @@ IDIRS       += $(HOST_ROOT)/kernels/openvx-core/include
 IDIRS       += $(TDA4X_C_MODELS_PATH)/include
 IDIRS       += $(VXLIB_PATH)/packages
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
-endif
-
-ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),A15)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),M4)
-SKIPBUILD=1
-endif
-
 include $(FINALE)
+
+endif
