@@ -29,28 +29,33 @@ SYSLDIRS :=
 
 SYSDEFS  :=
 
-ifeq ($(TARGET_PLATFORM),TDAX)
+ifeq ($(TARGET_PLATFORM),PC)
+    SYSDEFS +=
+    SYSIDIRS += $(GCC_WINDOWS_ROOT)/include
+    SYSLDIRS += $(GCC_WINDOWS_ROOT)/lib
+else
     SYSDEFS +=
     ifeq ($(TARGET_FAMILY),ARM)
         ifeq ($(TARGET_CPU),A15)
-        SYSIDIRS += $(GCC_ROOT)/include
-        SYSLDIRS += $(GCC_ROOT)/lib
+            SYSIDIRS += $(GCC_ROOT)/include
+            SYSLDIRS += $(GCC_ROOT)/lib
+        else ifeq ($(TARGET_CPU),A72)
+            SYSIDIRS += $(GCC_SYSBIOS_ARM_ROOT)/include
+            SYSLDIRS += $(GCC_SYSBIOS_ARM_ROOT)/lib
         else
-        SYSIDIRS += $(TIARMCGT_ROOT)/include
-        SYSLDIRS += $(TIARMCGT_ROOT)/lib
+            SYSIDIRS += $(TIARMCGT_ROOT)/include
+            SYSLDIRS += $(TIARMCGT_ROOT)/lib
         endif
     else ifeq ($(TARGET_FAMILY),DSP)
-        SYSIDIRS += $(CGT6X_ROOT)/include
-        SYSLDIRS += $(CGT6X_ROOT)/lib
+        ifeq ($(TARGET_CPU),C71)
+            SYSIDIRS += $(CGT7X_ROOT)/include
+            SYSLDIRS += $(CGT7X_ROOT)/lib
+        else
+            SYSIDIRS += $(CGT6X_ROOT)/include
+            SYSLDIRS += $(CGT6X_ROOT)/lib
+        endif
     else ifeq ($(TARGET_FAMILY),EVE)
         SYSIDIRS += $(ARP32CGT_ROOT)/include
         SYSLDIRS += $(ARP32CGT_ROOT)/lib
     endif
 endif
-
-ifeq ($(TARGET_PLATFORM),PC)
-    SYSDEFS +=
-    SYSIDIRS += $(GCC_WINDOWS_ROOT)/include
-    SYSLDIRS += $(GCC_WINDOWS_ROOT)/lib
-endif
-

@@ -33,7 +33,7 @@ else ifeq ($($(1)_CPU),x86_64)
     $(1)_FAMILY=x86_64
     $(1)_ARCH=64
     $(1)_ENDIAN=LITTLE
-else ifneq ($(filter $($(1)_CPU),ARM M3 M4 A8 A8F A9 A9F A15 A15F armv7l),)
+else ifneq ($(filter $($(1)_CPU),ARM M3 M4 A8 A8F A9 A9F A15 A15F armv7l R5F),)
     ifeq ($(HOST_CPU),$($(1)_CPU))
         HOST_PLATFORM=PANDA
     else
@@ -42,15 +42,20 @@ else ifneq ($(filter $($(1)_CPU),ARM M3 M4 A8 A8F A9 A9F A15 A15F armv7l),)
     $(1)_FAMILY=ARM
     $(1)_ARCH=32
     $(1)_ENDIAN=LITTLE
-else ifneq ($(filter $($(1)_CPU),ARM64 aarch64 A53 A54 A57),)
-    HOST_PLATFORM=KEYSTONE
+else ifneq ($(filter $($(1)_CPU),ARM64 aarch64 A53 A54 A57 A72),)
+    HOST_PLATFORM=PC
     $(1)_FAMILY=ARM
     $(1)_ARCH=64
     $(1)_ENDIAN=LITTLE
-else ifneq ($(filter $($(1)_CPU),C6XSIM C64T C64P C64 C66 C674 C67 C67P),)
+else ifneq ($(filter $($(1)_CPU),C6XSIM C64T C64P C64 C66 C674 C67 C67P C71),)
     HOST_PLATFORM=PC
     $(1)_FAMILY=DSP
     $(1)_ARCH=32
+    ifeq ($(TARGET_CPU),C71)
+        TARGET_ARCH=64
+    else
+        TARGET_ARCH=32
+    endif
     $(1)_ENDIAN=LITTLE
 else ifeq ($($(1)_CPU),EVE)
     HOST_PLATFORM=PC

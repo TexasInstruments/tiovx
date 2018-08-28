@@ -96,7 +96,9 @@ endif
 
 ifeq ($(NEEDS_COMPILER),1)
 # which compiler does this need?
-ifeq ($(HOST_COMPILER),GCC)
+ifeq ($(HOST_COMPILER),GCC_SYSBIOS_ARM)
+	include $(CONCERTO_ROOT)/compilers/gcc_sysbios_arm.mak
+else ifeq ($(HOST_COMPILER),GCC)
 	include $(CONCERTO_ROOT)/compilers/gcc.mak
 else ifeq ($(HOST_COMPILER),GCC_LINARO)
 	include $(CONCERTO_ROOT)/compilers/gcc_linaro.mak
@@ -121,7 +123,7 @@ else ifeq ($(HOST_COMPILER),TIARMCGT)
 else ifeq ($(HOST_COMPILER),ARP32CGT)
 	include $(CONCERTO_ROOT)/compilers/arp32.mak
 else
-$(error Undefined compiler $(HOST_COMPILER))	
+$(error Undefined compiler $(HOST_COMPILER))
 endif
 endif
 
@@ -140,7 +142,7 @@ SKIPBUILD:=
 
 .PHONY: $(_MODULE)_output
 define $(_MODULE)_output_list
-$(_MODULE)_output:: 
+$(_MODULE)_output::
 	@echo $(1)
 endef
 

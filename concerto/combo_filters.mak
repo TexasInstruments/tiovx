@@ -51,8 +51,8 @@ $(info Keep only $(TARGET_BUILD) BUILDS in TARGET_COMBOS)
 TARGET_COMBOS := $(call FILTER_COMBO,$(TARGET_BUILD))
 endif
 
-# The compilers which must have roots set. 
-COMPILER_ROOTS := TIARMCGT_ROOT GCC_ROOT GCC_WINDOWS_ROOT GCC_LINUX_ROOT 
+# The compilers which must have roots set.
+COMPILER_ROOTS := TIARMCGT_ROOT GCC_SYSBIOS_ARM_ROOT CGT6X_ROOT GCC_WINDOWS_ROOT GCC_LINUX_ROOT
 
 $(foreach root,$(COMPILER_ROOTS),$(info $(origin $(root)) $(root)=$(value $(root))))
 

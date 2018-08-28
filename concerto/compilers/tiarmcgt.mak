@@ -16,7 +16,7 @@ ifndef TIARMCGT_ROOT
 $(error You must define TIARMCGT_ROOT!)
 endif
 
-# check for the supported CPU types for this compiler 
+# check for the supported CPU types for this compiler
 ifeq ($(filter $(TARGET_FAMILY),ARM),)
 $(error TARGET_FAMILY $(TARGET_FAMILY) is not supported by this compiler)
 endif
@@ -85,7 +85,9 @@ $(_MODULE)_COPT +=-mv=7A8 --float_support=vfpv3
 else ifeq ($(TARGET_CPU),M3)
 $(_MODULE)_COPT +=-mv=7M3
 else ifeq ($(TARGET_CPU),M4)
-$(_MODULE)_COPT +=-mv=7M4 --float_support=vfplib 
+$(_MODULE)_COPT +=-mv=7M4 --float_support=vfplib
+else ifeq ($(TARGET_CPU),R5F)
+$(_MODULE)_COPT +=-mv=7R5
 endif
 
 ifneq ($(MISRA_RULES),) # If module specifies rules,
