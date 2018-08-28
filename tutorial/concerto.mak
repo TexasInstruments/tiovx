@@ -1,5 +1,5 @@
 
-
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72))
 
 include $(PRELUDE)
 TARGET      := vx_tutorial
@@ -37,20 +37,6 @@ CSOURCES    := \
 	$(CH02_SOURCES) \
 	$(CH03_SOURCES) \
 
-ifeq ($(TARGET_CPU),C66)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),EVE)
-SKIPBUILD=1
-endif
-
-ifeq ($(TARGET_CPU),A15)
-SKIPBUILD=0
-endif
-
-ifeq ($(TARGET_CPU),M4)
-SKIPBUILD=0
-endif
-
 include $(FINALE)
+
+endif
