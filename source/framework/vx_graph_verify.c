@@ -120,7 +120,7 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_DATA_REF", graph->num_data_ref);
         status = VX_SUCCESS;
     }
-    else
+    else if (graph->num_data_ref >= TIVX_GRAPH_MAX_DATA_REF)
     {
         VX_PRINT(VX_ZONE_WARNING, "ownGraphAddDataReference: May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/tivx_config.h\n");
     }
