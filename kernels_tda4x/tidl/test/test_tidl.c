@@ -63,7 +63,6 @@
 
 #include <TI/tivx.h>
 #include <TI/tda4x.h>
-#include <TI/tda4x_kernels.h>
 #include <TI/tivx_mem.h>
 #include "test_engine/test.h"
 #include <float.h>
@@ -83,6 +82,7 @@ static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_
   vx_array   config_array;
   vx_size    stride = sizeof(vx_uint8);
   vx_uint32  capacity;
+  vx_enum config_type = VX_TYPE_INVALID;
 
   FILE *fp_config;
 
@@ -108,13 +108,16 @@ static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_
     return NULL;
   }
 
-  config_array = vxCreateArray(context, VX_TYPE_UINT8, sizeof(sTIDL_IOBufDesc_t));
+  /* Create a user struct type for handling config data*/
+  config_type = vxRegisterUserStruct(context, sizeof(sTIDL_IOBufDesc_t));
+  ASSERT(config_type >= VX_TYPE_USER_STRUCT_START && config_type <= VX_TYPE_USER_STRUCT_END);
+  config_array = vxCreateArray(context, config_type, 1);
 
   status = vxGetStatus((vx_reference)config_array);
 
   if (VX_SUCCESS == status)
   {
-    vxAddArrayItems(config_array, sizeof(sTIDL_IOBufDesc_t), (void *)ioBufDesc, stride);
+    vxAddArrayItems(config_array, 1, (void *)ioBufDesc, sizeof(sTIDL_IOBufDesc_t));
   }
 
   *num_input_tensors  = ioBufDesc->numInputBuf;
@@ -191,9 +194,9 @@ static vx_tensor createInputTensor(vx_context context, vx_array config)
   vx_map_id map_id_config;
 
   sTIDL_IOBufDesc_t *ioBufDesc;
-  vx_size stride = sizeof(vx_uint8);
+  vx_size stride = sizeof(sTIDL_IOBufDesc_t);
 
-  vxMapArrayRange(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+  vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
   ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
 
@@ -212,11 +215,11 @@ static vx_tensor createOutputTensor(vx_context context, vx_array config)
 
   void     *config_buffer = NULL;
   vx_map_id map_id_config;
-  vx_size stride = sizeof(vx_uint8);
+  vx_size stride = sizeof(sTIDL_IOBufDesc_t);
 
   sTIDL_IOBufDesc_t *ioBufDesc;
 
-  vxMapArrayRange(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+  vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
   ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
 
@@ -237,7 +240,7 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
 
   if (VX_SUCCESS == status)
   {
-    vx_size    stride = sizeof(vx_uint8);
+    vx_size    stride = sizeof(sTIDL_IOBufDesc_t);
     int32_t    capacity;
     void      *input_buffer = NULL;
     void      *config_buffer = NULL;
@@ -251,7 +254,7 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
 
     sTIDL_IOBufDesc_t *ioBufDesc;
 
-    vxMapArrayRange(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
 
@@ -322,9 +325,9 @@ static void checkOutput(vx_array config, vx_tensor output_tensor, vx_int32 refid
     vx_map_id map_id_config;
 
     sTIDL_IOBufDesc_t *ioBufDesc;
-    vx_size stride = sizeof(vx_uint8);
+    vx_size stride = sizeof(sTIDL_IOBufDesc_t);
 
-    vxMapArrayRange(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
 

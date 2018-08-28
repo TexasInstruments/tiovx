@@ -81,7 +81,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         /* config, network, mininum 1-input, minimum 1-output */
         status = VX_FAILURE;
     }
-    
+
     for (i = 0U; i < num_params; i ++)
     {
         /* Check for NULL */
@@ -97,17 +97,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_array config = NULL;
         vx_enum config_item_type;
         vx_size config_capacity, config_item_size;
-    
+
         config = (const vx_array)parameters[0];
 
         tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_ITEMTYPE, &config_item_type, sizeof(config_item_type)));
         tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_CAPACITY, &config_capacity, sizeof(config_capacity)));
         tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_ITEMSIZE, &config_item_size, sizeof(config_item_size)));
-        
-        if (config_item_type != VX_TYPE_UINT8)
-        {
-            status = VX_FAILURE;
-        }
     }
 
     if (VX_SUCCESS == status)
@@ -115,12 +110,12 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_tensor network = NULL;
         vx_enum network_data_type;
         vx_size network_dims;
-    
+
         network = (const vx_tensor)parameters[1];
 
         tivxCheckStatus(&status, vxQueryTensor(network, VX_TENSOR_DATA_TYPE, &network_data_type, sizeof(network_data_type)));
         tivxCheckStatus(&status, vxQueryTensor(network, VX_TENSOR_NUMBER_OF_DIMS, &network_dims, sizeof(network_dims)));
-        
+
         if (network_data_type != VX_TYPE_UINT8)
         {
             status = VX_FAILURE;
@@ -132,7 +127,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         }
 
     }
-    
+
     return status;
 }
 
