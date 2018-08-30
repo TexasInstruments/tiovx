@@ -134,7 +134,7 @@ Kernel Generation</h1>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;kernel.setParameter(Type.IMAGE, Direction.INPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;IN&quot;</span>, [<span class="stringliteral">&#39;VX_DF_IMAGE_U8&#39;</span>])</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;kernel.setParameter(Type.ENUM, Direction.INPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;CHANNEL&quot;</span>)</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;kernel.setParameter(Type.IMAGE, Direction.OUTPUT, ParamState.REQUIRED, <span class="stringliteral">&quot;OUT&quot;</span>, [<span class="stringliteral">&#39;VX_DF_IMAGE_U8&#39;</span>])</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;kernel.setParameterRelationship([<span class="stringliteral">&quot;INPUT&quot;</span>, <span class="stringliteral">&quot;OUTPUT&quot;</span>], [Attribute.Image.WIDTH, Attribute.Image.HEIGHT])</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;kernel.setParameterRelationship([<span class="stringliteral">&quot;IN&quot;</span>, <span class="stringliteral">&quot;OUT&quot;</span>], [Attribute.Image.WIDTH, Attribute.Image.HEIGHT])</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;kernel.allocateLocalMemory(<span class="stringliteral">&quot;img_scratch_mem&quot;</span>, [<span class="stringliteral">&quot;width*height&quot;</span>], <span class="stringliteral">&quot;IN&quot;</span>)</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;kernel.setTarget(Target.DSP1)</div>
@@ -180,7 +180,10 @@ Kernel Generation</h1>
 <ul>
 <li>This section describes the generated files based on the example given above.</li>
 <li>Based on whether the code generation path is set to CUSTOM_KERNEL_PATH, CUSTOM_APPLICATION_PATH or VISION_APPS_PATH, the kernel files are generated in different locations.</li>
-<li>The files that are generated the first time only are noted. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/DEVELOPER_TODO.txt (generated first time only)</div>
+<li>The files that are generated the first time only are noted. <div class="image">
+<img src="custom_kernel_path.png" alt="custom_kernel_path.png"/>
+</div>
+ <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/DEVELOPER_TODO.txt (generated first time only)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/tivx_imaging.h (generated first time only)</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/tivx_imaging_kernels.h (generated first time only)</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/include/TI/tivx_imaging_nodes.h (generated first time only)</div>
@@ -198,7 +201,10 @@ Kernel Generation</h1>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/test/concerto.mak (generated first time only)</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;&lt;CUSTOM_KERNEL_PATH&gt;/imaging/test/test_main.h (generated first time only)</div>
 </div><!-- fragment --></li>
-<li>If the final argument was changed to CUSTOM_APPLICATION_PATH, the following files are produced: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt (generated first time only)</div>
+<li>If the final argument was changed to CUSTOM_APPLICATION_PATH, the following files are produced: <div class="image">
+<img src="custom_application_path.png" alt="custom_application_path.png"/>
+</div>
+ <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt (generated first time only)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/concerto_inc.mak</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/custom_tools_path.mak</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/include/TI/tivx_imaging.h (generated first time only)</div>
@@ -218,7 +224,10 @@ Kernel Generation</h1>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/test/concerto.mak (generated first time only)</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/imaging/test/test_main.h (generated first time only)</div>
 </div><!-- fragment --></li>
-<li>If the final argument was changed to VISION_APPS_PATH, the following files are produced: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/DEVELOPER_TODO.txt (generated first time only)</div>
+<li>If the final argument was changed to VISION_APPS_PATH, the following files are produced: <div class="image">
+<img src="vision_apps_path.png" alt="vision_apps_path.png"/>
+</div>
+ <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/DEVELOPER_TODO.txt (generated first time only)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging.h (generated first time only)</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_kernels.h (generated first time only)</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/kernels/imaging/include/TI/tivx_imaging_nodes.h (generated first time only)</div>
@@ -292,19 +301,25 @@ Use Case Generation</h1>
 </ul>
 <dl class="section user"><dt>Generated Use Case Code Overview</dt><dd></dd></dl>
 <ul>
-<li>For the above Python script, a set of use case-specific files get generated. In the default case, the exported code gets generated at the "VISION_APPS_PATH". The intent of generating use cases along this path is to build the use case as a part of the vision_apps project. A list of the generated files can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/DEVELOPER_TODO.txt</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/concerto_inc.mak</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/concerto.mak</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/my_usecase.c</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/my_usecase/app_my_usecase/my_usecase.h</div>
+<li>For the above Python script, a set of use case-specific files get generated. In the default case, the exported code gets generated at the "VISION_APPS_PATH". The intent of generating use cases along this path is to build the use case as a part of the vision_apps project. A list of the generated files can be seen below: <div class="image">
+<img src="vapps_path2.png" alt="vapps_path2.png"/>
+</div>
+ <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/uc_sample_07/DEVELOPER_TODO.txt</div>
+<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/uc_sample_07/concerto_inc.mak</div>
+<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/uc_sample_07/app_uc_sample_07/concerto.mak</div>
+<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/uc_sample_07/app_uc_sample_07/uc_sample_07.c</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;VISION_APPS_PATH&gt;/apps/uc_sample_07/app_uc_sample_07/uc_sample_07.h</div>
 </div><!-- fragment --></li>
-<li>The other supported export path is the CUSTOM_APPLICATION_PATH. The intent of generating use cases along this path is to build the use case as a part of the tiovx project. A list of generated files using this path with the above script can be seen below. Note: a few additional files are generated in this case in order for it to be included in the tiovx build. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt</div>
+<li>The other supported export path is the CUSTOM_APPLICATION_PATH. The intent of generating use cases along this path is to build the use case as a part of the tiovx project. A list of generated files using this path with the above script can be seen below. Note: a few additional files are generated in this case in order for it to be included in the tiovx build. <div class="image">
+<img src="custom_application_path_use_case.png" alt="custom_application_path_use_case.png"/>
+</div>
+ <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/DEVELOPER_TODO.txt</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/concerto_inc.mak</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/custom_tools_path.mak</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/kernels/custom_app_kernel_library_tests.h</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/concerto.mak</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/my_usecase.c</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_my_usecase/my_usecase.h</div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_uc_sample_07/concerto.mak</div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_uc_sample_07/uc_sample_07.c</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;&lt;CUSTOM_APPLICATION_PATH&gt;/app_uc_sample_07/uc_sample_07.h</div>
 </div><!-- fragment --></li>
 <li>The top-level function prototypes generated by the use case generation script can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;vx_status uc_sample_07_create(uc_sample_07 usecase);</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;vx_status uc_sample_07_delete(uc_sample_07 usecase);</div>
