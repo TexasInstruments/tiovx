@@ -68,7 +68,19 @@ $(document).ready(function(){initNavTree('index.html','');});
  'tiovx' is the python module that is used to specify OpenVX graph in a compact manner using predefined classes and objects. After specification of OpenVX graph using PyTIOVX APIs, it can be exported in various formats including C code, JPG image <br/>
 <br/>
  Note: If running off repository, overwrite the PyTIOVX files tools/PyTIOVX/tiovx/core_extended.py and tools/PyTIOVX/tiovx/target_extended.py from tiovx_dev/internal_docs/PyTIOVX_Extended.</dd></dl>
-<dl class="section user"><dt>Installation</dt><dd><ul>
+<dl class="section user"><dt>Contents</dt><dd><ul>
+<li><a class="el" href="index.html#INSTALLATION">Installation</a></li>
+<li><a class="el" href="index.html#USAGE">Usage</a></li>
+<li><a class="el" href="index.html#KERNEL_SCRIPT">Kernel Generation</a></li>
+<li><a class="el" href="index.html#USE_CASE_SCRIPT">Use Case Generation</a></li>
+</ul>
+</dd></dl>
+<p><br/>
+</p>
+<hr/>
+<h1><a class="anchor" id="INSTALLATION"></a>
+Installation</h1>
+<ul>
 <li>Install Python 3.5.2 or later (<a href="https://www.python.org/">https://www.python.org/</a>)<ul>
 <li>To confirm "python" and "pip" are in your install path, type below <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;python3 --version</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;pip3 --version</div>
@@ -90,8 +102,8 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>Now tiovx python module can be imported and used in your python script by doing below, <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
 </div><!-- fragment --></li>
 </ul>
-</dd></dl>
-<dl class="section user"><dt>Usage</dt><dd></dd></dl>
+<h1><a class="anchor" id="USAGE"></a>
+Usage</h1>
 <ul>
 <li>Both modes of the PyTIOVX Tool usage (use case and kernel generation) are run in identical fashion as described below</li>
 <li>Describe your application graph or kernel wrapper using PyTIOVX APIs in a .py file. Execute the .py file by invoking python <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;python my_use_case.py</div>
@@ -107,6 +119,8 @@ $(document).ready(function(){initNavTree('index.html','');});
 <li>See also examples in TIOVX tutorial <a href="../tutorial_guide/index.html" target="_blank">[HTML]</a> for making OpenVX usecases using PyTIOVX tool</li>
 <li>See also sample python scripts (*.py) @ "&lt;tiovx install path&gt;/tools/sample_use_cases" for additional examples</li>
 </ul>
+<h1><a class="anchor" id="KERNEL_SCRIPT"></a>
+Kernel Generation</h1>
 <dl class="section user"><dt>Example Kernel Generation Python Script</dt><dd></dd></dl>
 <ul>
 <li>Below is an example of a Python script used for generating a custom Channel Extract kernel: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
@@ -128,13 +142,36 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;code.export(kernel)</div>
 </div><!-- fragment --></li>
-<li>The constructor for the KernelExportCode API contains arguments that serve as the directory paths of the generated code. The first argument, Module.IMAGING, is the intended module of the kernel. A full list of modules are contained with the module.py file of PyTIOVX. If the name of the module needed is not listed, either the module can be added to the module.py file or the module name can be passed as a string to the constructor. The fourth argument, Core.C66 is the specific core that this kernel will run on. Similar to the module name, a list of core values are listed in core.py. If the name of the core needed is not listed, either the core can be added to the core.py file or the core name can be passed as a string to the constructor. Finally, the third # argument "CUSTOM_KERNEL_PATH" is the path where the output files will be exported to. (Note: this path must be set as an environment variable.) The constructor has two optional arguments, include_subpath and include_filename. The include_subpath should be set to the string value of the company name of the developer and defaults to "TI". The include_filename contains the path name to the include file. By default, this value is set an empty string which results in the filepath being set to "&lt;lowercase(include_subpath)&gt;vx_&lt;module&gt;". However, the filepath can be overwritten by filling in this optional parameter.</li>
-<li>Several dedicated API's are provided in the case that certain parameters of KernelExportCode must be changed during execution of the script. This examples shows one example, setCoreDirectory. This method can change the intended core by passing in a particular core as its only argument.</li>
+<li>The constructor for the KernelExportCode API contains arguments that serve as the directory paths of the generated code.<ul>
+<li>The first argument, Module.IMAGING, is the intended module of the kernel. A full list of modules are contained with the module.py file of PyTIOVX. If the name of the module needed is not listed, either the module can be added to the module.py file or the module name can be passed as a string to the constructor.</li>
+<li>The second argument, Core.C66 is the specific core that this kernel will run on. Similar to the module name, a list of core values are listed in core.py. If the name of the core needed is not listed, either the core can be added to the core.py file or the core name can be passed as a string to the constructor.</li>
+<li>The third argument "CUSTOM_KERNEL_PATH" is the path where the output files will be exported to.<ul>
+<li>Note: this path must be set as an environment variable or else an error will be thrown.</li>
+</ul>
+</li>
+<li>The constructor has two optional arguments, include_subpath and include_filename.<ul>
+<li>The include_subpath should be set to the string value of the company name of the developer and defaults to "TI".</li>
+<li>The include_filename contains the path name to the include file. By default, this value is set an empty string which results in the filepath being set to "&lt;lowercase(include_subpath)&gt;vx_&lt;module&gt;". However, the filepath can be overwritten by filling in this optional parameter.</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Several dedicated API's are provided in the case that certain parameters of KernelExportCode must be changed during execution of the script. This example shows one such API, setCoreDirectory. This method can change the intended core by passing in a particular core as its only argument.</li>
 <li>The constructor for the Kernel class contains as its only argument the name of the kernel to be created.</li>
-<li>The above example shows a simple case of setting up parameters for a Channel Extract kernel. By using the setParameter method of the kernel class, the scripts creates a number of OpenVX data types as input and output parameters of the kernel. These parameters can be either required parameters of the kernel or optional parameters; in this case, all parameters are set to required. Additionally, the names and allowed data types of these parameters can be set as an argument to the setParameter method.</li>
-<li>After setting all parameters via the setParameter method, relationships among these parameters can be set via the setParameterRelationship method. This method is designed to ouput code in the validation callback to verify equality between certain attributes of parameters of the kernel. This validation of parameters is important in order no run-time errors of the kernel. In this case, a relationship is set between the width and height of the "INPUT" and "OUTPUT" parameters. This will produce code in the kernel validate callback that queries these attributes and checks for equality between them.</li>
-<li>The allocateLocalMemory method is used to generate OpenVX code for allocating and free-ing local memory based on characteristics of existing data objects or on constant values. In this example, the allocateLocalMemory method is used to create a buffer with the name "img_scratch_mem" and is equal to the size of the width * height of the image, "IN".</li>
-<li>The list of targets for the kernel to run on can be set via the setTarget API. This is designed to set all possible targets for the kernel. In this example, the target kernel is set to run on both DSP1 and DSP2.</li>
+<li>Parameters of a kernel are set via the setParameter API as in the example above. In this example, 3 parameters are set, an input image, an input scalar enum and an output image.</li>
+<li>The following are arguments of the setParameter method:<ul>
+<li>The first argument is the OpenVX data type of the parameter. Allowed values can be found in enums.py.</li>
+<li>The second argument is the direction of the parameter. Allowed values are Direction.INPUT or Direction.OUTPUT.</li>
+<li>The third argument determines whether the parameter is required or optional. Allowed values are ParamState.REQUIRED or ParamState.OPTIONAL.</li>
+<li>The fourth argument is the name of the parameter in string format.</li>
+<li>The fifth argument is optional and defines a set of allowed data types of the parameter. These are given as OpenVX data types as defined in the OpenVX 1.1 specification and are given as a comma separated list.</li>
+<li>For further information, please refer to the API guide.</li>
+</ul>
+</li>
+<li>After setting all parameters via the setParameter method, relationships among these parameters can be set via the setParameterRelationship method. This method is designed to ouput code in the validation callback to verify equality between certain attributes of parameters of the kernel. This validation of parameters is important in order no run-time errors of the kernel.</li>
+<li>In this case, a relationship is set between the width and height of the "IN" and "OUT" parameters. This will produce code in the kernel validate callback that first queries the "IN" and "OUT" parameters for the width and height then checks for equality between the width of the "IN" parameter against the width of the "OUT" parameter in addition to checking for the equality between the height of the "IN" parameter against the height of the "OUT" parameter.</li>
+<li>The allocateLocalMemory method is used to generate OpenVX code for allocating and free-ing local memory based on characteristics of existing data objects or on constant values. In this example, the allocateLocalMemory method is used to create a buffer with the name "img_scratch_mem" and is equal to the size of the width * height of the image, "IN". For further information, please refer to the API guide.</li>
+<li>The list of targets for the kernel to run on can be set via the setTarget API. All possible targets that the kernel could run on should be given as arguments to this API. In this example, the target kernel is can be run on either DSP1 or DSP2 and therefore the setTarget API is called twice with each argument given. Allowed target values are given in enums.py.</li>
 <li>Note: in the case that one of the DSP's is chosen as a potential target for the kernel to run on, a BAM version of the target kernel file is additionally outputted, along with a flag (BUILD_BAM) in the kernel registration file to build the BAM version in the case that this flag is enabled in the Makefile.</li>
 <li>After setting up all parameters and targets of the kernel, the kernel wrappers can be generated by running the export method.</li>
 <li>Further documentation of the API's used for kernel code generation can be found <a href="modules.html" target="_blank">here</a></li>
@@ -221,6 +258,8 @@ $(document).ready(function(){initNavTree('index.html','');});
 </ul>
 </li>
 </ul>
+<h1><a class="anchor" id="USE_CASE_SCRIPT"></a>
+Use Case Generation</h1>
 <dl class="section user"><dt>Example Use Case Generation Python Script</dt><dd></dd></dl>
 <ul>
 <li>In addition to generating kernel wrappers, the Python script also provides the ability to generate full use cases consisting of existing nodes. The Python script will generate all of the necessary OpenVX-related function calls at a fraction of the amount of code.</li>
@@ -272,7 +311,14 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;vx_status uc_sample_07_verify(uc_sample_07 usecase);</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;vx_status uc_sample_07_run(uc_sample_07 usecase);</div>
 </div><!-- fragment --></li>
-<li>The functions listed above can be called from a main function in sequential order upon successful return in order to run the OpenVX graph. The create function simply allocates all memory and data objects for the graph and performs any necessary initialization. The verify function calls the vxVerifyGraph API to ensure that all parameters of the graph are correct. The run function simply executes the graph once upon each run. Finally, the delete function frees all memory and performs deinitialization. The tutorial provided at tiovx/tutorial provides sample code of how to link these functions to a main function.</li>
+<li>The functions listed above can be called from a main function in sequential order upon successful return in order to run the OpenVX graph.<ul>
+<li>The create function simply allocates all memory and data objects for the graph and performs any necessary initialization.</li>
+<li>The verify function calls the vxVerifyGraph API to ensure that all parameters of the graph are correct.</li>
+<li>The run function simply executes the graph once upon each call.</li>
+<li>The delete function frees all memory and performs deinitialization.</li>
+</ul>
+</li>
+<li>The tutorial provided at tiovx/tutorial provides sample code of how to link these functions to a main function.</li>
 <li>The following code snippet shows the creation of the data used in the use case generation script. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;vx_status uc_sample_07_data_create(uc_sample_07 usecase)</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;{</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    vx_status status = VX_SUCCESS;</div>
@@ -326,7 +372,7 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}</div>
 </div><!-- fragment --></li>
-<li>As the above code snippet indicates, the PyTIOVX use case generation tool encapsulates a large amount of OpenVX code in very few lines of Python code The OpenVX generated code also provides error checking in the event that the data objects were unable to be created. A corresponding delete function will release the data objects created during the create phase.</li>
+<li>As the above code snippet indicates, the PyTIOVX use case generation tool encapsulates a large amount of OpenVX code in very few lines of Python code. The OpenVX generated code also provides error checking in the event that the data objects were unable to be created.</li>
 <li>The following code snippet shows the functions used for creating the nodes corresponding to the use case generation script. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;static vx_node usecase_node_create_node_4 (</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;  vx_graph graph ,</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;  vx_image image_0 ,</div>
@@ -394,7 +440,11 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
 </div><!-- fragment --></li>
-<li>The code snippet above is generated for every use case. The first function simply performs verification on the graph and returns the status of verification. The second function runs the graph by executing vxProcessGraph. In the case that the use case requires streaming, this function can be executed in a loop run continuously.</li>
+<li>The code snippet above is generated for every use case.<ul>
+<li>The first function simply performs verification on the graph and returns the status of verification.</li>
+<li>The second function runs the graph by executing vxProcessGraph. In the case that the use case requires streaming, this function can be executed in an infinite loop.</li>
+</ul>
+</li>
 <li>For further information on this use case, the entire file can be found at tiovx/tools/sample_use_cases/uc_sample_07.c.</li>
 </ul>
 <dl class="section user"><dt>Using PyTIOVX to create a use case with a user kernel</dt><dd></dd></dl>
@@ -415,7 +465,14 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;code.export(kernel)</div>
 </div><!-- fragment --></li>
-<li>After running the previous script, the next step is to create a use case generation PyTIOVX script that includes the newly created user kernel. An example of this can be found at tiovx/tutorial/ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.py. Minimal modifications to this script are needed to incorporate the previously discussed user kernel. The first modification to be made is to change the name of the node to match the name given to the user kernel. In this case, the node name is NodePresentationExample. The next simple modification to be made is to replace the existing kernel string with the kernel string produced by the kernel generation script. In this case, the kernel string is "com.ti.presentation_module.presentation_example". Finally, slight modifications must be made to the checkParams method of the Node class based on the kernel parameters' relationships. The resulting PyTIOVX script can be seen below. <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
+<li>After running the previous script, the next step is to create a use case generation PyTIOVX script that includes the newly created user kernel. An example of this can be found at tiovx/tutorial/ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.py.</li>
+<li>Minimal modifications to this script are needed to incorporate the previously discussed user kernel.<ul>
+<li>The first modification to be made is to change the name of the node to match the name given to the user kernel. In this case, the node name is NodePresentationExample.</li>
+<li>The next simple modification to be made is to replace the existing kernel string with the kernel string produced by the kernel generation script. In this case, the kernel string is "com.ti.presentation_module.presentation_example".</li>
+<li>Finally, slight modifications must be made to the checkParams method of the Node class based on the kernel parameters' relationships.</li>
+</ul>
+</li>
+<li>The resulting PyTIOVX script can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="keyword">from</span> tiovx <span class="keyword">import</span> *</div>
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;</div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="keyword">class </span>NodePresentationExample (Node) :</div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    <span class="keyword">def </span>__init__(self, image_in, image_out, name=&quot;default&quot;, target=Target.DEFAULT) :</div>
@@ -452,103 +509,6 @@ $(document).ready(function(){initNavTree('index.html','');});
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;make_my_graph()</div>
 </div><!-- fragment --></li>
-<li>Now that the use case code has been generated, the next step in the process of running the code is writing a wrapper for the create, verify, run and delete functions. This can be done in multiple ways; however, a simple way to begin incorporates the existing tutorial. The tutorial consists of several examples that are run out of a menu. The generated use case can be implemented as an additional example from the tutorial menu. This method is described below.</li>
-<li>The first step in the process of integrating the example into the tutorial is to first write a simple wrapper for the top-level functions generated by PyTIOVX. The following code shows a sample wrapper for the example given above as well as a few print statements to show the status of each step. (Note: the function prototype for the below function was added to the generated header file.) <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;void vx_tutorial_graph_uc_sample_08()</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;{</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    vx_status status;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;    /**</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;     * - Define the data structure representing the generated OpenVX use-case code.</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;     *</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;     * This structure includes the context, data object, node, graph handles</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;     * <span class="keywordflow">for</span> the generated code.</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;     * \code</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;     */</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;    uc_sample_08_t uc;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    printf(<span class="stringliteral">&quot; uc_sample_08: Tutorial Started !!! \n&quot;</span>);</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    status = uc_sample_08_create(&amp;uc);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    printf(<span class="stringliteral">&quot;create status = %d\n&quot;</span>, status);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    if(status==VX_SUCCESS)</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;        status = uc_sample_08_verify(&amp;uc);</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    }</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    printf(<span class="stringliteral">&quot;verify status = %d\n&quot;</span>, status);</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    if(status==VX_SUCCESS)</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;        status = uc_sample_08_run(&amp;uc);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    }</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    printf(<span class="stringliteral">&quot;run status = %d\n&quot;</span>, status);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    if(status==VX_SUCCESS)</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;        status = uc_sample_08_delete(&amp;uc);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    }</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    printf(<span class="stringliteral">&quot;delete status = %d\n&quot;</span>, status);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    printf(<span class="stringliteral">&quot; uc_sample_08: Tutorial Done !!! \n&quot;</span>);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    printf(<span class="stringliteral">&quot; \n&quot;</span>);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
-</div><!-- fragment --></li>
-<li>The next step to add the use case to the tutorial menu is to make modifications to the tutorial file itself in order to call the wrapper shown above. This file can be found at tiovx/tutorial/ch03_graph/vx_tutorial_graph.c. The first modification involves simply calling the kernel wrapper by adding an additional case to the case statement for calling examples. The code for this step can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;case <span class="stringliteral">&#39;8&#39;</span>:</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;    vx_tutorial_graph_uc_sample_08();</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    <span class="keywordflow">break</span>;</div>
-</div><!-- fragment --></li>
-<li>The only additional change that must be added to this file is to add the include path to the use case header file. The necessary include path can be found below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">#include &lt;ch03_graph/uc_sample_08.h&gt;</span></div>
-</div><!-- fragment --></li>
-<li>In order for the use case file to be built, this file must be added to the sources found in the file tiovx/tutorial/concerto.mak. This can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;CH03_SOURCES := \</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;  ch03_graph/vx_tutorial_graph.c \</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;  ch03_graph/vx_tutorial_graph_image_gradients.c \</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;  ch03_graph/vx_tutorial_graph_image_gradients_pytiovx.c \</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;  ch03_graph/vx_tutorial_graph_image_gradients_pytiovx_uc.c \</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;  ch03_graph/vx_tutorial_graph_user_kernel.c \</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;  ch03_graph/phase_rgb_user_kernel.c \</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;  ch03_graph/vx_tutorial_graph_user_kernel_pytiovx.c \</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;  ch03_graph/vx_tutorial_graph_user_kernel_pytiovx_uc.c \</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;  ch03_graph/uc_sample_08.c \</div>
-</div><!-- fragment --></li>
-<li>Now that the use case has been added to the tutorial menu, there are only a few additional modifications to be made to get the use case running. The first is a modification to the concerto_inc.mak file in order to add the appropriate STATIC_LIBS. In this example, the CUSTOM_KERNEL_PATH was set to be the tiovx/kernels path. Therefore, in this case, the concerto_inc.mak file was located at tiovx/kernels/concerto_inc.mak. The additions to this file can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;STATIC_LIBS += vx_kernels_presentation_module</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;STATIC_LIBS += vx_target_kernels_c66x</div>
-</div><!-- fragment --></li>
-<li>The next modification to be made is to load kernel module that was created. This must be done after the context has been created. In this example, the kernel module can be loaded within the generated use case file "uc_sample_08.c", specifically in the uc_sample_08_create function. This full function can be seen below. The only line that was added to the generated code is the line calling the function "tivxPresentationModuleLoadKernels". <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;vx_status uc_sample_08_create(uc_sample_08 usecase)</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;{</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;    vx_status status = VX_SUCCESS;</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;    memset(usecase, 0, sizeof(uc_sample_08_t));</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;    <span class="keywordflow">if</span> (status == VX_SUCCESS)</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;    {</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;        usecase-&gt;context = vxCreateContext();</div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;        <span class="keywordflow">if</span> (usecase-&gt;context == NULL)</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;        {</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;            status = VX_ERROR_NO_RESOURCES;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;        }</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;    }</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    tivxPresentationModuleLoadKernels(usecase-&gt;context);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    <span class="keywordflow">if</span> (status == VX_SUCCESS)</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;        status = uc_sample_08_data_create(usecase);</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;    }</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keywordflow">if</span> (status == VX_SUCCESS)</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;        status = uc_sample_08_graph_0_create(usecase);</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    }</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
-</div><!-- fragment --></li>
-<li>Additionally, within the use case file, the header file to the new kernel module must be included. The include file needed in this example can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;<span class="comment">#include &lt;TI/presentation.h&gt;</span></div>
-</div><!-- fragment --></li>
-<li>The next modification needed to be made is to add the functionality to the kernel by adding to the kernel process function. In this instance, a simple copy is needed in the kernel processing function. The code being used to perform the copy can be seen below: <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;uint8_t *src_addr, *dst_addr;</div>
-<div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;VXLIB_bufParams2D_t vxlib_src, vxlib_dst;</div>
-<div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;tivxSetPointerLocation(in_desc, &amp;src_addr);</div>
-<div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;tivxSetPointerLocation(out_desc, &amp;dst_addr);</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;</div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;tivxInitBufParams(in_desc, &amp;vxlib_src);</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;tivxInitBufParams(out_desc, &amp;vxlib_dst);</div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;memcpy(dst_addr, src_addr, vxlib_src.stride_y*vxlib_src.dim_y);</div>
-</div><!-- fragment --></li>
-<li>As the code above shows, a simple memcpy function is being used to copy the source image to the destination image. Additionally, a few helper functions are being used to extract information from the object descriptor data structures. First, the tivxSetPointerLocation helper function takes as an input an image object descriptor as well as a uint8_t pointer. This function will set the pointer to the beginning address of the image with the valid region taken into account. Additionally, the tivxInitBufParams is used to extract the image dimensions from the image object descriptor. This function populates the VXLIB_bufParams2D_t data structure which contains the X and Y dimensions, the Y stride and the data type of the image.</li>
-<li>Note: will calling the register presentation module with the correct core be needed or will this be fixed?</li>
 </ul>
 <p><br/>
  </p>
