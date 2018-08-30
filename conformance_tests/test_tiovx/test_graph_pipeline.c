@@ -302,6 +302,8 @@ static vx_status test_user_kernel_validate(vx_node node,
                     printf(" ERROR: Test user kernel: Scalar type MUST be VX_TYPE_UINT32 !!!\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
+                vxSetMetaFormatAttribute(metas[i], VX_SCALAR_TYPE, &scalar_type[i],
+                    sizeof(scalar_type[i]));
             }
             if(status!=VX_SUCCESS)
             {
@@ -578,7 +580,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
 
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(d1, &rect, 0, &map_id, &addr, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
 
-        memset(ptr, 0x0, addr.stride_y*addr.dim_y);
+        ct_memset(ptr, 0x0, addr.stride_y*addr.dim_y);
 
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(d1, map_id));
     }
@@ -1326,8 +1328,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
     vx_node  n[TIVX_GRAPH_MAX_DATA_REF_QUEUE+1];
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
 
-    CT_Image ref_src[MAX_NUM_BUF], vxdst;
-    uint32_t width, height, seq_init, pipeline_depth, num_buf, tmp_num_buf;
+    CT_Image ref_src[MAX_NUM_BUF];
+    uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt, i;
     uint64_t exe_time;
 
@@ -3505,7 +3507,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
     vx_uint32 tmp_value = 0;
 
     uint32_t pipeline_depth, num_buf;
-    uint32_t buf_id, loop_id, loop_cnt, k;
+    uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -3764,7 +3766,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
     vx_uint32 tmp_value = 0;
 
     uint32_t pipeline_depth, num_buf;
-    uint32_t buf_id, loop_id, loop_cnt, k;
+    uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
@@ -4020,25 +4022,20 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
 
     int i;
-    vx_df_image f = VX_DF_IMAGE_U8;
     vx_graph graph_1 = 0;
     vx_image images[4];
     vx_node nodes[3];
     vx_delay delay_1 = 0;
     vx_image delay_image_0 = 0;
     vx_image delay_image_1 = 0;
-    vx_image delay_image_2 = 0;
     vx_image delay_image_0_nopipeline = 0;
     vx_image delay_image_1_nopipeline = 0;
-    vx_image delay_image_2_nopipeline = 0;
-    vx_image node_image = 0;
-    vx_parameter param = 0;
     vx_imagepatch_addressing_t addr;
     vx_uint8 *pdata = 0;
     vx_rectangle_t rect = {0, 0, arg_->width, arg_->height};
     vx_map_id map_id;
 
-    CT_Image ref_src[MAX_NUM_BUF], ref_src1[MAX_NUM_BUF], vxdst0, vxdst1, vxsrc0, vxsrc1;
+    CT_Image ref_src[MAX_NUM_BUF], ref_src1[MAX_NUM_BUF], vxdst0, vxdst1;
     uint32_t width, height, seq_init, pipeline_depth, num_buf;
     uint32_t buf_id, loop_id, loop_cnt;
     uint64_t exe_time;
@@ -4220,9 +4217,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
     {
-        vx_image add_in0_img, add_in1_img, add_out_img, not_out0_img, not_out1_img;
+        vx_image add_in0_img, add_out_img, not_out1_img;
         uint32_t num_refs;
-        CT_Image add_out_ctimg, add_out_ctimg_nopipeline;
 
         VX_CALL(vxProcessGraph(graph_1));
 
