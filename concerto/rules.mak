@@ -235,6 +235,9 @@ doxy_docs_pytiovx:
 doxy_docs_tutorial:
 	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/tutorial_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/doxy_warnings.txt
 
+doxy_docs_design:
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_design/design_guide.cfg 2> tiovx_dev/internal_docs/doxy_cfg_design/doxy_warnings.txt
+
 -include $(CONCERTO_ROOT)/project.mak
 
 endif
