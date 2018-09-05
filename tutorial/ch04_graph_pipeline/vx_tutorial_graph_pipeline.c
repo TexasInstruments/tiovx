@@ -60,20 +60,57 @@
 *
 */
 
-#ifndef VX_TUTORIAL_H
-#define VX_TUTORIAL_H
 
-#include <stdio.h>
-#include <VX/vx.h>
+#include <vx_tutorial.h>
 
+static char menu[] = {
+    "\n"
+    "\n ========================="
+    "\n Tutorial : Graph Pipeline"
+    "\n ========================="
+    "\n"
+    "\n 1: Graph pipeline with two nodes"
+    "\n"
+    "\n a: Run All"
+    "\n"
+    "\n x: Exit Menu"
+    "\n"
+    "\n Enter Choice: "
+};
 
-#include <ch02_image/vx_tutorial_image.h>
-#include <ch03_graph/vx_tutorial_graph.h>
-#include <ch04_graph_pipeline/vx_tutorial_graph_pipeline.h>
+void vx_tutorial_graph_pipeline_run_all()
+{
+    vx_tutorial_graph_pipeline_two_nodes();
+}
 
-char vx_tutorial_get_char();
+void vx_tutorial_graph_pipeline_run_interactive()
+{
+    char ch;
+    vx_bool done = vx_false_e;
 
-void vx_tutorial_run_interactive();
-void vx_tutorial_run_all();
+    while(!done)
+    {
+        printf(menu);
+        ch = vx_tutorial_get_char();
+        printf("\n");
 
-#endif
+        switch(ch)
+        {
+            case '1':
+                vx_tutorial_graph_pipeline_two_nodes();
+                break;
+            case 'a':
+                vx_tutorial_graph_pipeline_run_all();
+                break;
+            case 'x':
+                done = vx_true_e;
+                break;
+            case '\n':
+                break;
+            default:
+                printf("\n Invalid option !!!");
+                break;
+        }
+    }
+}
+

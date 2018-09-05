@@ -60,20 +60,38 @@
 *
 */
 
-#ifndef VX_TUTORIAL_H
-#define VX_TUTORIAL_H
 
-#include <stdio.h>
+
+#ifndef VX_TUTORIAL_GRAPH_PIPELINE_H
+#define VX_TUTORIAL_GRAPH_PIPELINE_H
+
 #include <VX/vx.h>
 
+/*
+ * \brief Tutorials showing more graph pipelining API usage
+ *
+ *        Aim of these tutorials is to show
+ *        - How to use graph pipelining API to run two or more nodes on different
+ *          CPU targets and pipelining them at a "frame" boundary
+ */
 
-#include <ch02_image/vx_tutorial_image.h>
-#include <ch03_graph/vx_tutorial_graph.h>
-#include <ch04_graph_pipeline/vx_tutorial_graph_pipeline.h>
+/*
+ * \brief Pipelines a graph of two nodes across DSP1 and DSP2
+ *
+ *        - Do a NOT operation on DSP1 and then another NOT operation on DSP2
+ *        - Feed random input data to the graph
+ *        - Output should match input
+ */
+void vx_tutorial_graph_pipeline_two_nodes();
 
-char vx_tutorial_get_char();
+/*
+ * \brief Run all tutorials in this module
+ */
+void vx_tutorial_graph_pipeline_run_all();
 
-void vx_tutorial_run_interactive();
-void vx_tutorial_run_all();
+/*
+ * \brief Interactive execution of tutorials using console IO
+ */
+void vx_tutorial_graph_pipeline_run_interactive();
 
 #endif
