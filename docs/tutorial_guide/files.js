@@ -10,6 +10,7 @@ var files =
     [ "vx_tutorial_graph_image_gradients.c", "vx__tutorial__graph__image__gradients_8c.html", "vx__tutorial__graph__image__gradients_8c" ],
     [ "vx_tutorial_graph_image_gradients_pytiovx.c", "vx__tutorial__graph__image__gradients__pytiovx_8c.html", "vx__tutorial__graph__image__gradients__pytiovx_8c" ],
     [ "vx_tutorial_graph_image_gradients_pytiovx_uc.py", "vx__tutorial__graph__image__gradients__pytiovx__uc_8py.html", "vx__tutorial__graph__image__gradients__pytiovx__uc_8py" ],
+    [ "vx_tutorial_graph_pipeline_two_nodes.c", "vx__tutorial__graph__pipeline__two__nodes_8c.html", "vx__tutorial__graph__pipeline__two__nodes_8c" ],
     [ "vx_tutorial_graph_user_kernel.c", "vx__tutorial__graph__user__kernel_8c.html", "vx__tutorial__graph__user__kernel_8c" ],
     [ "vx_tutorial_graph_user_kernel_pytiovx.c", "vx__tutorial__graph__user__kernel__pytiovx_8c.html", "vx__tutorial__graph__user__kernel__pytiovx_8c" ],
     [ "vx_tutorial_graph_user_kernel_pytiovx_uc.py", "vx__tutorial__graph__user__kernel__pytiovx__uc_8py.html", "vx__tutorial__graph__user__kernel__pytiovx__uc_8py" ],
