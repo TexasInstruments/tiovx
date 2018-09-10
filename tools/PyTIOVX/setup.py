@@ -1,5 +1,3 @@
-# pip install -e .
-
 #
 # Copyright (c) 2017 Texas Instruments Incorporated
 #

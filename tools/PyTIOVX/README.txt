@@ -20,7 +20,7 @@ Installation
 3. Install 'tiovx' module by executing below command at folder specified
    Folder: <tiovx install path>/tiovx/tools/PyTIOVX
    Type Command:
-   # pip install -e .
+   # sudo pip3 install -e .
 
    Expected output,
      Obtaining file:///<tiovx install path>/tiovx/tools/PyTIOVX
