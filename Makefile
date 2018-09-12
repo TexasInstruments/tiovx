@@ -1,5 +1,5 @@
 # Valid values are: j7presi
-BUILD_SDK?=j7presi
+BUILD_SDK?=tiovx_dev/j7presi
 
 include $(BUILD_SDK)_tools_path.mak
 
@@ -16,6 +16,7 @@ PROFILE?=all
 DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
+DIRECTORIES += $(CUSTOM_PLATFORM_PATH)
 DIRECTORIES += source/vxu
 DIRECTORIES += kernels
 DIRECTORIES += utils
