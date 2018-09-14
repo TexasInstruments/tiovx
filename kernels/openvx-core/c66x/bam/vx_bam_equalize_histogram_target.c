@@ -115,9 +115,9 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_EQUALIZE_HISTOGRAM_IN_IMG_IDX];
+            TIVX_KERNEL_EQUALIZE_HISTOGRAM_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUT_IMG_IDX];
+            TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -190,9 +190,9 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_EQUALIZE_HISTOGRAM_IN_IMG_IDX];
+            TIVX_KERNEL_EQUALIZE_HISTOGRAM_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUT_IMG_IDX];
+            TIVX_KERNEL_EQUALIZE_HISTOGRAM_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxEqHistParams), TIVX_MEM_EXTERNAL);
 

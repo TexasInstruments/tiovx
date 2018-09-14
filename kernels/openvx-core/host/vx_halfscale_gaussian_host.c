@@ -1,66 +1,64 @@
 /*
-*
-* Copyright (c) 2017 Texas Instruments Incorporated
-*
-* All rights reserved not granted herein.
-*
-* Limited License.
-*
-* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
-* license under copyrights and patents it now or hereafter owns or controls to make,
-* have made, use, import, offer to sell and sell ("Utilize") this software subject to the
-* terms herein.  With respect to the foregoing patent license, such license is granted
-* solely to the extent that any such patent is necessary to Utilize the software alone.
-* The patent license shall not apply to any combinations which include this software,
-* other than combinations with devices manufactured by or for TI ("TI Devices").
-* No hardware patent is licensed hereunder.
-*
-* Redistributions must preserve existing copyright notices and reproduce this license
-* (including the above copyright notice and the disclaimer and (if applicable) source
-* code license limitations below) in the documentation and/or other materials provided
-* with the distribution
-*
-* Redistribution and use in binary form, without modification, are permitted provided
-* that the following conditions are met:
-*
-* *       No reverse engineering, decompilation, or disassembly of this software is
-* permitted with respect to any software provided in binary form.
-*
-* *       any redistribution and use are licensed by TI for use only with TI Devices.
-*
-* *       Nothing shall obligate TI to provide you with source code for the software
-* licensed and provided to you in object code.
-*
-* If software source code is provided to you, modification and redistribution of the
-* source code are permitted provided that the following conditions are met:
-*
-* *       any redistribution and use of the source code, including any resulting derivative
-* works, are licensed by TI for use only with TI Devices.
-*
-* *       any redistribution and use of any object code compiled from the source code
-* and any resulting derivative works, are licensed by TI for use only with TI Devices.
-*
-* Neither the name of Texas Instruments Incorporated nor the names of its suppliers
-*
-* may be used to endorse or promote products derived from this software without
-* specific prior written permission.
-*
-* DISCLAIMER.
-*
-* THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
-* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-* OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
-
-
+ *
+ * Copyright (c) 2019 Texas Instruments Incorporated
+ *
+ * All rights reserved not granted herein.
+ *
+ * Limited License.
+ *
+ * Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
+ * license under copyrights and patents it now or hereafter owns or controls to make,
+ * have made, use, import, offer to sell and sell ("Utilize") this software subject to the
+ * terms herein.  With respect to the foregoing patent license, such license is granted
+ * solely to the extent that any such patent is necessary to Utilize the software alone.
+ * The patent license shall not apply to any combinations which include this software,
+ * other than combinations with devices manufactured by or for TI ("TI Devices").
+ * No hardware patent is licensed hereunder.
+ *
+ * Redistributions must preserve existing copyright notices and reproduce this license
+ * (including the above copyright notice and the disclaimer and (if applicable) source
+ * code license limitations below) in the documentation and/or other materials provided
+ * with the distribution
+ *
+ * Redistribution and use in binary form, without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ * *       No reverse engineering, decompilation, or disassembly of this software is
+ * permitted with respect to any software provided in binary form.
+ *
+ * *       any redistribution and use are licensed by TI for use only with TI Devices.
+ *
+ * *       Nothing shall obligate TI to provide you with source code for the software
+ * licensed and provided to you in object code.
+ *
+ * If software source code is provided to you, modification and redistribution of the
+ * source code are permitted provided that the following conditions are met:
+ *
+ * *       any redistribution and use of the source code, including any resulting derivative
+ * works, are licensed by TI for use only with TI Devices.
+ *
+ * *       any redistribution and use of any object code compiled from the source code
+ * and any resulting derivative works, are licensed by TI for use only with TI Devices.
+ *
+ * Neither the name of Texas Instruments Incorporated nor the names of its suppliers
+ *
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * DISCLAIMER.
+ *
+ * THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
@@ -73,10 +71,11 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[]);
-
 static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+vx_status tivxAddKernelHalfscaleGaussian(vx_context context);
+vx_status tivxRemoveKernelHalfscaleGaussian(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -84,138 +83,137 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_image img[2U];
-    vx_uint32 w[2U], h[2U], i;
-    vx_df_image fmt[2U];
-    vx_scalar scalar;
-    vx_int32 gsize;
-    vx_enum stype;
+
+    vx_image input = NULL;
+    vx_uint32 input_w;
+    vx_uint32 input_h;
+    vx_df_image input_fmt;
+
+    vx_image output = NULL;
+    vx_uint32 output_w;
+    vx_uint32 output_h;
+    vx_df_image output_fmt;
+
+    vx_scalar kernel_size = NULL;
+    vx_enum kernel_size_scalar_type;
+    vx_int32 kernel_size_val;
+
     vx_border_t border;
 
-    for (i = 0U; i < TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS; i ++)
+    if ( (num != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX])
+    )
     {
-        /* Check for NULL */
-        if (NULL == parameters[i])
-        {
-            status = VX_ERROR_NO_MEMORY;
-            break;
-        }
-    }
-    if (VX_SUCCESS == status)
-    {
-        img[0U] = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
-        img[1U] = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
-        scalar  = (vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
-
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
-            sizeof(fmt[0U]));
-
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
     if (VX_SUCCESS == status)
     {
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype, sizeof(stype));
-        if ((VX_SUCCESS == status) && (stype == VX_TYPE_INT32))
-        {
-            status = vxCopyScalar(scalar, &gsize, VX_READ_ONLY,
-                VX_MEMORY_TYPE_HOST);
-
-            if (VX_SUCCESS == status)
-            {
-                if ((gsize == 1) ||
-                    (gsize == 3) ||
-                    (gsize == 5))
-                {
-                    status = VX_SUCCESS;
-                }
-                else
-                {
-                    status = VX_ERROR_INVALID_VALUE;
-                }
-            }
-        }
-        else
-        {
-            status = VX_ERROR_INVALID_TYPE;
-        }
+        input = (const vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
+        output = (const vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
+        kernel_size = (const vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
     }
+
+
+    /* PARAMETER ATTRIBUTE FETCH */
 
     if (VX_SUCCESS == status)
     {
-        /* Check for validity of data format */
-        if (VX_DF_IMAGE_U8 != fmt[0U])
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+
+        tivxCheckStatus(&status, vxQueryScalar(kernel_size, VX_SCALAR_TYPE, &kernel_size_scalar_type, sizeof(kernel_size_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(kernel_size, &kernel_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+    }
+
+
+    /* PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_DF_IMAGE_U8 != input_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
-    }
 
-    if (VX_SUCCESS == status)
-    {
-        /* Get the image width/height and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
-            sizeof(fmt[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
-
-        /* Check for format */
-        if (fmt[0U] != fmt[1U])
+        if (VX_DF_IMAGE_U8 != output_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_U8 \n");
         }
-    }
 
-    if (VX_SUCCESS == status)
-    {
-        if (w[1U] != ((w[0U]+1)/2))
+        if (VX_TYPE_INT32 != kernel_size_scalar_type)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'kernel_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
         }
     }
 
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
     if (VX_SUCCESS == status)
     {
-        if (h[1U] != ((h[0U]+1)/2))
+        if (((input_w + 1U) / 2U) != output_w)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' width should be equal to ('input' width + 1) / 2 \n");
+        }
+
+        if (((input_h + 1U) / 2U) != output_h)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' height should be equal to ('input' height + 1) / 2 \n");
+        }
+    }
+
+
+    /* CUSTOM PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if ((1 != kernel_size_val) &&
+            (3 != kernel_size_val) &&
+            (5 != kernel_size_val))
+        {
+            status = VX_ERROR_INVALID_VALUE;
+            VX_PRINT(VX_ZONE_ERROR, "'kernel_size' should be a scalar with value:\n 1, 3, or 5 \n");
         }
     }
 
     if (VX_SUCCESS == status)
     {
-        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
-        if (VX_SUCCESS == status)
+        if (VX_BORDER_UNDEFINED != border.mode)
         {
-            if (border.mode != VX_BORDER_UNDEFINED)
-            {
-                status = VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for halfscale gaussian\n");
-            }
-        }
+            status = VX_ERROR_NOT_SUPPORTED;
+            VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for halfscale gaussian \n");
+         }
     }
+
+#if 1
 
     if (VX_SUCCESS == status)
     {
-        for (i = 0U; i < 2U; i ++)
-        {
-            if (NULL != metas[i])
-            {
-                vx_enum type = 0;
-                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
-                if (VX_TYPE_IMAGE == type)
-                {
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &fmt[i],
-                        sizeof(fmt[i]));
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[i],
-                        sizeof(w[i]));
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[i],
-                        sizeof(h[i]));
-                }
-            }
-        }
+        output_w = ((input_w + 1U) / 2U);
+        output_h = ((input_h + 1U) / 2U);
+
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX], VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX], VX_IMAGE_WIDTH, &output_w, sizeof(output_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX], VX_IMAGE_HEIGHT, &output_h, sizeof(output_h));
     }
+
+#endif
 
     return status;
 }
@@ -225,55 +223,50 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianInitialize(vx_node no
             vx_uint32 num_params)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint32 i;
     tivxKernelValidRectParams prms;
-    vx_scalar scalar;
-    vx_int32 gsize;
-    vx_enum stype;
 
-    if (num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
+    vx_scalar kernel_size = NULL;
+    vx_enum kernel_size_scalar_type;
+    vx_int32 kernel_size_val;
+
+    if ( (num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-
-    for (i = 0U; (i < TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS) &&
-            (VX_SUCCESS == status); i ++)
-    {
-        /* Check for NULL */
-        if (NULL == parameters[i])
-        {
-            status = VX_ERROR_NO_MEMORY;
-            break;
-        }
-    }
-
-    scalar  = (vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
 
     if (VX_SUCCESS == status)
     {
-        status = vxQueryScalar(scalar, VX_SCALAR_TYPE, &stype, sizeof(stype));
-        if ((VX_SUCCESS == status) && (stype == VX_TYPE_INT32))
-        {
-            status = vxCopyScalar(scalar, &gsize, VX_READ_ONLY,
-                VX_MEMORY_TYPE_HOST);
+        kernel_size = (const vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
+    }
 
-            if (VX_SUCCESS == status)
-            {
-                if ((gsize == 1) ||
-                    (gsize == 3) ||
-                    (gsize == 5))
-                {
-                    status = VX_SUCCESS;
-                }
-                else
-                {
-                    status = VX_ERROR_INVALID_VALUE;
-                }
-            }
-        }
-        else
+    if (VX_SUCCESS == status)
+    {
+        tivxCheckStatus(&status, vxQueryScalar(kernel_size, VX_SCALAR_TYPE, &kernel_size_scalar_type, sizeof(kernel_size_scalar_type)));
+        tivxCheckStatus(&status, vxCopyScalar(kernel_size, &kernel_size_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_TYPE_INT32 != kernel_size_scalar_type)
         {
-            status = VX_ERROR_INVALID_TYPE;
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'kernel_size' should be a scalar of type:\n VX_TYPE_INT32 \n");
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if ((1 != kernel_size_val) &&
+            (3 != kernel_size_val) &&
+            (5 != kernel_size_val))
+        {
+            status = VX_ERROR_INVALID_VALUE;
+            VX_PRINT(VX_ZONE_ERROR, "'kernel_size' should be a scalar with value:\n 1, 3, or 5 \n");
         }
     }
 
@@ -281,30 +274,30 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianInitialize(vx_node no
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
-        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
 
-        prms.num_input_images = 1;
-        prms.num_output_images = 1;
+        prms.num_input_images = 1U;
+        prms.num_output_images = 1U;
 
-        if (gsize == 1)
+        if (1 == kernel_size_val)
         {
-            prms.top_pad = 0;
-            prms.bot_pad = 0;
-            prms.left_pad = 0;
-            prms.right_pad = 0;
+            prms.top_pad = 0U;
+            prms.bot_pad = 0U;
+            prms.left_pad = 0U;
+            prms.right_pad = 0U;
         }
         else
         {
-            prms.top_pad = 1;
-            prms.bot_pad = 1;
-            prms.left_pad = 1;
-            prms.right_pad = 1;
+            prms.top_pad = 1U;
+            prms.bot_pad = 1U;
+            prms.left_pad = 1U;
+            prms.right_pad = 1U;
         }
 
         prms.border_mode = VX_BORDER_UNDEFINED;
 
-        status = tivxKernelConfigValidRect(&prms);
+        tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
 
     return status;
@@ -315,23 +308,32 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
-                context,
-                "org.khronos.openvx.halfscale_gaussian",
-                VX_KERNEL_HALFSCALE_GAUSSIAN,
-                NULL,
-                TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS,
-                tivxAddKernelHalfscaleGaussianValidate,
-                tivxAddKernelHalfscaleGaussianInitialize,
-                NULL);
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
 
-    status = vxGetStatus((vx_reference)kernel);
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    "org.khronos.openvx.halfscale_gaussian",
+                    VX_KERNEL_HALFSCALE_GAUSSIAN,
+                    NULL,
+                    TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS,
+                    tivxAddKernelHalfscaleGaussianValidate,
+                    tivxAddKernelHalfscaleGaussianInitialize,
+                    NULL);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
     if (status == VX_SUCCESS)
     {
         index = 0;
 
-        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -359,7 +361,6 @@ vx_status tivxAddKernelHalfscaleGaussian(vx_context context)
                         VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
-            index++;
         }
         if (status == VX_SUCCESS)
         {

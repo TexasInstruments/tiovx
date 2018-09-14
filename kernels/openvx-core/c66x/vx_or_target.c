@@ -66,13 +66,15 @@
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_target_kernels_priv.h>
-#include <tivx_kernel_filter_3x3.h>
+#include <tivx_kernel_or.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
 
-typedef VXLIB_STATUS (*VxLib_Filt3x3_Fxn)(const uint8_t *,
-    const VXLIB_bufParams2D_t *, uint8_t *, const VXLIB_bufParams2D_t *);
+typedef VXLIB_STATUS (*VxLib_Bitwise_Fxn)(
+    const uint8_t *src0, const VXLIB_bufParams2D_t *src0_prms,
+    const uint8_t *src1, const VXLIB_bufParams2D_t *src1_prms,
+    uint8_t *dst, const VXLIB_bufParams2D_t *dst_prms);
 
 typedef struct
 {
@@ -83,128 +85,97 @@ typedef struct
     tivx_target_kernel      target_kernel;
 
     /*! \brief Pointer to filter function */
-    VxLib_Filt3x3_Fxn       filter_func;
-} tivxFilter3x3KernelInfo;
+    VxLib_Bitwise_Fxn       vxlib_process;
+} tivxOrKernelInfo;
 
-static tivxFilter3x3KernelInfo gTivxFilt3x3KernelInfo[] =
+tivxOrKernelInfo gTivxOrKernelInfo =
 {
-    {
-        VX_KERNEL_ERODE_3x3,
-        NULL,
-        VXLIB_erode_3x3_i8u_o8u
-    },
-    {
-        VX_KERNEL_BOX_3x3,
-        NULL,
-        VXLIB_box_3x3_i8u_o8u
-    },
-    {
-        VX_KERNEL_DILATE_3x3,
-        NULL,
-        VXLIB_dilate_3x3_i8u_o8u
-    },
-    {
-        VX_KERNEL_GAUSSIAN_3x3,
-        NULL,
-        VXLIB_gaussian_3x3_i8u_o8u
-    },
-    {
-        VX_KERNEL_MEDIAN_3x3,
-        NULL,
-        VXLIB_median_3x3_i8u_o8u
-    },
+    VX_KERNEL_OR,
+    NULL,
+    VXLIB_or_i8u_i8u_o8u
 };
 
-vx_status VX_CALLBACK tivxProcess3x3Filter(
+vx_status VX_CALLBACK tivxKernelOrProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
+    uint16_t num_params,
+    void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_image_t *src_desc, *dst_desc;
-    uint8_t *src_addr, *dst_addr;
-    VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
-    tivxFilter3x3KernelInfo *kern_info;
-    void *src_desc_target_ptr;
-    void *dst_desc_target_ptr;
+    tivx_obj_desc_image_t *src0_desc, *src1_desc, *dst_desc;
+    uint8_t *src0_addr, *src1_addr, *dst_addr;
+    VXLIB_bufParams2D_t vxlib_src0, vxlib_src1, vxlib_dst;
+    tivxOrKernelInfo *kern_info;
 
-    if ((num_params != 2U) || (NULL == obj_desc[0U]) ||
-        (NULL == obj_desc[1U]) || (NULL == kernel) ||
-        (NULL == priv_arg))
+    status = tivxCheckNullParams(obj_desc, num_params,
+            TIVX_KERNEL_OR_MAX_PARAMS);
+
+    if ((VX_FAILURE == status) || (NULL == priv_arg))
     {
         status = VX_FAILURE;
     }
     else
     {
+        void *src0_desc_target_ptr;
+        void *src1_desc_target_ptr;
+        void *dst_desc_target_ptr;
+
+        kern_info = (tivxOrKernelInfo *)priv_arg;
+
         /* Get the Src and Dst descriptors */
-        src_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+        src0_desc = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_OR_IN1_IDX];
+        src1_desc = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_OR_IN2_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
-
-        if ((NULL == src_desc) || (NULL == dst_desc))
-        {
-            status = VX_FAILURE;
-        }
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        kern_info = (tivxFilter3x3KernelInfo *)priv_arg;
+            TIVX_KERNEL_OR_OUT_IDX];
 
         /* Get the target pointer from the shared pointer for all
-           three buffers */
-        src_desc_target_ptr = tivxMemShared2TargetPtr(
-            src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
+           buffers */
+        src0_desc_target_ptr = tivxMemShared2TargetPtr(
+            src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_heap_region);
+        src1_desc_target_ptr = tivxMemShared2TargetPtr(
+            src1_desc->mem_ptr[0].shared_ptr, src1_desc->mem_ptr[0].mem_heap_region);
         dst_desc_target_ptr = tivxMemShared2TargetPtr(
             dst_desc->mem_ptr[0].shared_ptr, dst_desc->mem_ptr[0].mem_heap_region);
 
-        if ((NULL == src_desc_target_ptr) ||
-            (NULL == dst_desc_target_ptr))
-        {
-            status = VX_ERROR_INVALID_REFERENCE;
-        }
-
-        if ((src_desc->imagepatch_addr[0U].stride_y <
-                src_desc->imagepatch_addr[0U].dim_x) ||
-            (dst_desc->imagepatch_addr[0U].stride_y <
-                dst_desc->imagepatch_addr[0U].dim_x))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        /* Map all buffers, which invalidates the cache */
-        tivxMemBufferMap(src_desc_target_ptr,
-            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+        /* Map all three buffers, which invalidates the cache */
+        tivxMemBufferMap(src0_desc_target_ptr,
+            src0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferMap(src1_desc_target_ptr,
+            src1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
         tivxMemBufferMap(dst_desc_target_ptr,
             dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
 
-        tivxInitBufParams(src_desc, &vxlib_src);
-        tivxInitBufParams(dst_desc, &vxlib_dst);
-
-        tivxSetPointerLocation(src_desc, &src_desc_target_ptr, &src_addr);
+        tivxSetTwoPointerLocation(src0_desc, src1_desc, &src0_desc_target_ptr, &src1_desc_target_ptr, &src0_addr, &src1_addr);
         tivxSetPointerLocation(dst_desc, &dst_desc_target_ptr, &dst_addr);
 
-        /* All 3x3 filter reduces the output size, therefore reduce output
-         * height, but leave output width the same (DSP optimization) */
-        vxlib_dst.dim_x = vxlib_src.dim_x;
+        tivxInitTwoBufParams(src0_desc, src1_desc, &vxlib_src0, &vxlib_src1);
+        tivxInitBufParams(dst_desc, &vxlib_dst);
 
-        if (kern_info->filter_func)
+        if (NULL != kern_info->vxlib_process)
         {
-            status = kern_info->filter_func(src_addr, &vxlib_src, dst_addr,
-                &vxlib_dst);
+            status = kern_info->vxlib_process(
+                src0_addr, &vxlib_src0, src1_addr, &vxlib_src1,
+                dst_addr, &vxlib_dst);
+
+            if (VXLIB_SUCCESS != status)
+            {
+                status = VX_FAILURE;
+            }
         }
-        if (VXLIB_SUCCESS != status)
+        else
         {
             status = VX_FAILURE;
         }
 
-        tivxMemBufferUnmap(src_desc_target_ptr,
-            src_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+        tivxMemBufferUnmap(src0_desc_target_ptr,
+            src0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(src1_desc_target_ptr,
+            src1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
         tivxMemBufferUnmap(dst_desc_target_ptr,
             dst_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -214,29 +185,24 @@ vx_status VX_CALLBACK tivxProcess3x3Filter(
     return (status);
 }
 
-vx_status VX_CALLBACK tivxFilter3x3Create(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
+static vx_status VX_CALLBACK tivxKernelOrCreate(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-
-    return status;
+    return (VX_SUCCESS);
 }
 
-vx_status VX_CALLBACK tivxFilter3x3Delete(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
+static vx_status VX_CALLBACK tivxKernelOrDelete(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
-
-    return status;
+    return (VX_SUCCESS);
 }
 
-void tivxAddTargetKernelErode3x3(void)
+void tivxAddTargetKernelOr(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    vx_uint32 i;
 
     self_cpu = tivxGetSelfCpuId();
 
@@ -252,40 +218,29 @@ void tivxAddTargetKernelErode3x3(void)
             strncpy(target_name, TIVX_TARGET_DSP2,
                 TIVX_TARGET_MAX_NAME);
         }
-
-        for (i = 0; i < (sizeof(gTivxFilt3x3KernelInfo)/
-                sizeof(tivxFilter3x3KernelInfo)); i ++)
-        {
-            gTivxFilt3x3KernelInfo[i].target_kernel = tivxAddTargetKernel(
-                        gTivxFilt3x3KernelInfo[i].kernel_id,
-                        target_name,
-                        tivxProcess3x3Filter,
-                        tivxFilter3x3Create,
-                        tivxFilter3x3Delete,
-                        NULL,
-                        (void *)&gTivxFilt3x3KernelInfo[i]);
-            if (NULL == gTivxFilt3x3KernelInfo[i].target_kernel)
-            {
-                break;
-            }
-        }
+        gTivxOrKernelInfo.target_kernel = tivxAddTargetKernel(
+            gTivxOrKernelInfo.kernel_id,
+            target_name,
+            tivxKernelOrProcess,
+            tivxKernelOrCreate,
+            tivxKernelOrDelete,
+            NULL,
+            &gTivxOrKernelInfo);
     }
 }
 
-void tivxRemoveTargetKernelErode3x3(void)
-{
-    vx_status status = VX_SUCCESS;
-    vx_uint32 i;
 
-    for (i = 0; i < (sizeof(gTivxFilt3x3KernelInfo)/
-            sizeof(tivxFilter3x3KernelInfo)); i ++)
+void tivxRemoveTargetKernelOr(void)
+{
+    vx_status status;
+
+    if (gTivxOrKernelInfo.target_kernel)
     {
-        status = tivxRemoveTargetKernel(gTivxFilt3x3KernelInfo[i].target_kernel);
+        status = tivxRemoveTargetKernel(gTivxOrKernelInfo.target_kernel);
 
         if (VX_SUCCESS == status)
         {
-            gTivxFilt3x3KernelInfo[i].target_kernel = NULL;
+            gTivxOrKernelInfo.target_kernel = NULL;
         }
     }
 }
-

@@ -105,9 +105,9 @@ static vx_status VX_CALLBACK tivxKernelSubtractProcess(
 
     if (VX_SUCCESS == status)
     {
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN0_IMG_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN1_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_OUT_IMG_IDX];
+        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN1_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN2_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_OUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -180,13 +180,13 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
     if (VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ADDSUB_IN0_IMG_IDX];
+            TIVX_KERNEL_ADDSUB_IN1_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ADDSUB_IN1_IMG_IDX];
+            TIVX_KERNEL_ADDSUB_IN2_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ADDSUB_OUT_IMG_IDX];
+            TIVX_KERNEL_ADDSUB_OUT_IDX];
         sc_desc = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_ADDSUB_IN_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
 

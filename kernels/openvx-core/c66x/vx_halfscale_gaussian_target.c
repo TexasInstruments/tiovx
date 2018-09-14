@@ -86,8 +86,8 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
     uint8_t *src_addr, *dst_addr;
 
     if ((num_params != TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS)
-        || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX]))
+        || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX]))
     {
         status = VX_FAILURE;
     }
@@ -97,9 +97,9 @@ vx_status VX_CALLBACK tivxHalfscaleGaussian(
         void *src_desc_target_ptr;
         void *dst_desc_target_ptr;
 
-        src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
-        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
-        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
+        src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
+        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
+        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
 
         src_desc_target_ptr = tivxMemShared2TargetPtr(
           src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);
@@ -206,7 +206,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
     if (VX_SUCCESS == status)
     {
 
-        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
+        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
 
         if( gsize_desc != NULL)
         {
@@ -216,7 +216,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianCreate(
         if (gsize_value == 3)
         {
 
-            src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
+            src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
 
             temp_ptr = tivxMemAlloc(src_desc->imagepatch_addr[0].stride_y *
                 src_desc->imagepatch_addr[0].dim_y, TIVX_MEM_EXTERNAL);
@@ -270,7 +270,7 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
     if (VX_SUCCESS == status)
     {
 
-        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
+        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
 
         if( gsize_desc != NULL)
         {

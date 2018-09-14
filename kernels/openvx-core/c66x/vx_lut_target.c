@@ -91,9 +91,9 @@ static vx_status VX_CALLBACK tivxKernelLutProcess(
         void *dst_target_ptr;
         void *lut_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_IN_IMG_IDX];
-        lut = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_LUT_IN_LUT_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_INPUT_IDX];
+        lut = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_LUT_LUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LUT_OUTPUT_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0U].shared_ptr, src->mem_ptr[0U].mem_heap_region);

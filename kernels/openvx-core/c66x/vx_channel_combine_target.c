@@ -88,9 +88,9 @@ vx_status VX_CALLBACK tivxChannelCombine(
     uint16_t plane_idx;
 
     if ((num_params != TIVX_KERNEL_CHANNEL_COMBINE_MAX_PARAMS)
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX]))
+        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX]))
     {
         status = VX_FAILURE;
     }
@@ -102,11 +102,11 @@ vx_status VX_CALLBACK tivxChannelCombine(
         void *src3_desc_target_ptr = NULL;
         void *dst_desc_target_ptr[4U];
 
-        src0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC0_IDX];
-        src1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC1_IDX];
-        src2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC2_IDX];
-        src3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_SRC3_IDX];
-        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_DST_IDX];
+        src0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
+        src1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
+        src2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
+        src3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_PLANE3_IDX];
+        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
 
         src0_desc_target_ptr = tivxMemShared2TargetPtr(
           src0_desc->mem_ptr[0].shared_ptr, src0_desc->mem_ptr[0].mem_heap_region);

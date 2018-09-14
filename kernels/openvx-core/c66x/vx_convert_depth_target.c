@@ -108,13 +108,13 @@ static vx_status tivxKernelConvertDepth(
         void *dst_desc_target_ptr;
 
         src_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN_IMG_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
         sc_desc[0] = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN0_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_POLICY_IDX];
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN1_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
 
         src_desc_target_ptr = tivxMemShared2TargetPtr(
             src_desc->mem_ptr[0U].shared_ptr, src_desc->mem_ptr[0U].mem_heap_region);

@@ -102,16 +102,16 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
     int16_t *dstx_addr, *dsty_addr;
     uint32_t size;
 
-    if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
         /* Check for NULL */
-        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL_IN_IMG_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-             (NULL == obj_desc[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX])))
+        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_INPUT_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -119,11 +119,11 @@ static vx_status VX_CALLBACK tivxKernelSobelProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SOBEL_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
         dstx = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
+            TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
         dsty = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
+            TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -213,15 +213,15 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
     tivxSobelParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL_IN_IMG_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-             (NULL == obj_desc[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX])))
+        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_INPUT_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -230,11 +230,11 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_SOBEL_IN_IMG_IDX];
+            TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
         dstx = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
+            TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
         dsty = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
+            TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
 
@@ -331,15 +331,15 @@ static vx_status VX_CALLBACK tivxKernelSobelDelete(
     tivxSobelParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
-    if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL_IN_IMG_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-             (NULL == obj_desc[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX])))
+        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_INPUT_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
         }

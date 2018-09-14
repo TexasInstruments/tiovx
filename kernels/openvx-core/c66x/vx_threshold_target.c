@@ -84,17 +84,17 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_THRLD_MAX_PARAMS);
+                TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRLD_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
         thr = (tivx_obj_desc_threshold_t *)obj_desc[
-            TIVX_KERNEL_THRLD_IN_THR_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRLD_OUT_IMG_IDX];
+            TIVX_KERNEL_THRESHOLD_THRESH_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

@@ -108,13 +108,13 @@ static vx_status tivxKernelAddSub(
         void *dst_target_ptr;
 
         src0_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ADDSUB_IN0_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ADDSUB_IN1_IDX];
         src1_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ADDSUB_IN1_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ADDSUB_IN2_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ADDSUB_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ADDSUB_OUT_IDX];
         sc_desc = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_ADDSUB_IN_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
 
         src0_target_ptr = tivxMemShared2TargetPtr(
             src0_desc->mem_ptr[0U].shared_ptr, src0_desc->mem_ptr[0U].mem_heap_region);

@@ -127,11 +127,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
     vx_size list_indx;
 
     if ((num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
-        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_PREVPTS_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_ESTIMATEDPTS_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEXTPTS_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX])
@@ -143,11 +143,11 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLk(
     }
     else
     {
-        old_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX];
-        new_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX];
-        prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_PREVPTS_IDX];
-        estimatedpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_ESTIMATEDPTS_IDX];
-        nextpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEXTPTS_IDX];
+        old_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
+        new_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
+        prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
+        estimatedpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX];
+        nextpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX];
         termination_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX];
         epsilon_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX];
         num_iterations_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX];
@@ -400,9 +400,9 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkCreate(
 
     if (VX_SUCCESS == status)
     {
-        prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_PREVPTS_IDX];
+        prevpts_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
         window_dimension_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX];
-        old_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX];
+        old_pyramid_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
         window_dimension_value = window_dimension_desc->data.size;
 
         list_length = prevpts_desc->capacity;

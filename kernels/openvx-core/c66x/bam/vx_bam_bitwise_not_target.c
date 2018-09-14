@@ -65,7 +65,7 @@
 #include <TI/tivx.h>
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
-#include <tivx_kernel_bitwise.h>
+#include <tivx_kernel_not.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
@@ -74,45 +74,45 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
-} tivxBitwiseNotParams;
+} tivxNotParams;
 
-static tivx_target_kernel vx_bitwise_not_target_kernel = NULL;
+static tivx_target_kernel vx_not_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
+static vx_status VX_CALLBACK tivxKernelNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBitwiseNotCreate(
+static vx_status VX_CALLBACK tivxKernelNotCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBitwiseNotDelete(
+static vx_status VX_CALLBACK tivxKernelNotDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
+static vx_status VX_CALLBACK tivxKernelNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivxBitwiseNotParams *prms = NULL;
+    tivxNotParams *prms = NULL;
     tivx_obj_desc_image_t *src, *dst;
     uint8_t *src_addr, *dst_addr;
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
+                TIVX_KERNEL_NOT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
         if ((VX_SUCCESS != status) || (NULL == prms) ||
-            (sizeof(tivxBitwiseNotParams) != size))
+            (sizeof(tivxNotParams) != size))
         {
             status = VX_FAILURE;
         }
@@ -147,27 +147,27 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotProcess(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelBitwiseNotCreate(
+static vx_status VX_CALLBACK tivxKernelNotCreate(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
 
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_image_t *src, *dst;
-    tivxBitwiseNotParams *prms = NULL;
+    tivxNotParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
+                TIVX_KERNEL_NOT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX];
+            TIVX_KERNEL_NOT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX];
+            TIVX_KERNEL_NOT_OUTPUT_IDX];
 
-        prms = tivxMemAlloc(sizeof(tivxBitwiseNotParams), TIVX_MEM_EXTERNAL);
+        prms = tivxMemAlloc(sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
 
         if (NULL != prms)
         {
@@ -175,7 +175,7 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotCreate(
             VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
             VXLIB_bufParams2D_t *buf_params[2];
 
-            memset(prms, 0, sizeof(tivxBitwiseNotParams));
+            memset(prms, 0, sizeof(tivxNotParams));
 
             tivxInitBufParams(src, &vxlib_src);
             tivxInitBufParams(dst, &vxlib_dst);
@@ -202,13 +202,13 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotCreate(
         if (VX_SUCCESS == status)
         {
             tivxSetTargetKernelInstanceContext(kernel, prms,
-                sizeof(tivxBitwiseNotParams));
+                sizeof(tivxNotParams));
         }
         else
         {
             if (NULL != prms)
             {
-                tivxMemFree(prms, sizeof(tivxBitwiseNotParams), TIVX_MEM_EXTERNAL);
+                tivxMemFree(prms, sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
             }
         }
     }
@@ -216,17 +216,17 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotCreate(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelBitwiseNotDelete(
+static vx_status VX_CALLBACK tivxKernelNotDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
     uint32_t size;
-    tivxBitwiseNotParams *prms = NULL;
+    tivxNotParams *prms = NULL;
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS);
+                TIVX_KERNEL_NOT_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -234,17 +234,17 @@ static vx_status VX_CALLBACK tivxKernelBitwiseNotDelete(
             (void **)&prms, &size);
 
         if ((VX_SUCCESS == status) && (NULL != prms) &&
-            (sizeof(tivxBitwiseNotParams) == size))
+            (sizeof(tivxNotParams) == size))
         {
             tivxBamDestroyHandle(prms->graph_handle);
-            tivxMemFree(prms, sizeof(tivxBitwiseNotParams), TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms, sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
         }
     }
 
     return (status);
 }
 
-void tivxAddTargetKernelBamBitwiseNot(void)
+void tivxAddTargetKernelBamNot(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -264,19 +264,19 @@ void tivxAddTargetKernelBamBitwiseNot(void)
                 TIVX_TARGET_MAX_NAME);
         }
 
-        vx_bitwise_not_target_kernel = tivxAddTargetKernel(
+        vx_not_target_kernel = tivxAddTargetKernel(
             VX_KERNEL_NOT,
             target_name,
-            tivxKernelBitwiseNotProcess,
-            tivxKernelBitwiseNotCreate,
-            tivxKernelBitwiseNotDelete,
+            tivxKernelNotProcess,
+            tivxKernelNotCreate,
+            tivxKernelNotDelete,
             NULL,
             NULL);
     }
 }
 
 
-void tivxRemoveTargetKernelBamBitwiseNot(void)
+void tivxRemoveTargetKernelBamNot(void)
 {
-    tivxRemoveTargetKernel(vx_bitwise_not_target_kernel);
+    tivxRemoveTargetKernel(vx_not_target_kernel);
 }

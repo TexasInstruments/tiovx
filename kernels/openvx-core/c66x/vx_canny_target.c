@@ -126,18 +126,18 @@ static vx_status VX_CALLBACK tivxKernelCannyProcess(
     uint32_t size, num_dbl_thr_items = 0, num_edge_trace_out = 0;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_CNED_MAX_PARAMS);
+                TIVX_KERNEL_CANNY_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CNED_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CNED_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CANNY_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CANNY_OUTPUT_IDX];
         thr = (tivx_obj_desc_threshold_t *)obj_desc[
-            TIVX_KERNEL_CNED_IN_THR_IDX];
+            TIVX_KERNEL_CANNY_HYST_IDX];
         sc_gs = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_CNED_IN_SC_GS_IDX];
+            TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
         sc_norm = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_CNED_IN_SC_NORM_IDX];
+            TIVX_KERNEL_CANNY_NORM_TYPE_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -255,16 +255,16 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
     tivx_obj_desc_scalar_t *sc_gs;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_CNED_MAX_PARAMS);
+                TIVX_KERNEL_CANNY_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CNED_IN_IMG_IDX];
+            TIVX_KERNEL_CANNY_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CNED_OUT_IMG_IDX];
+            TIVX_KERNEL_CANNY_OUTPUT_IDX];
         sc_gs = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_CNED_IN_SC_GS_IDX];
+            TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxCannyParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
@@ -387,7 +387,7 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     tivxCannyParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_CNED_MAX_PARAMS);
+                TIVX_KERNEL_CANNY_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

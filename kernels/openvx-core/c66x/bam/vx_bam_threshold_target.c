@@ -101,12 +101,12 @@ static vx_status VX_CALLBACK tivxKernelThresholdProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_THRLD_MAX_PARAMS);
+                TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRLD_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRLD_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -152,14 +152,14 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreate(
     tivxThresholdParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_THRLD_MAX_PARAMS);
+                TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRLD_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
         thr = (tivx_obj_desc_threshold_t *)obj_desc[
-            TIVX_KERNEL_THRLD_IN_THR_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRLD_OUT_IMG_IDX];
+            TIVX_KERNEL_THRESHOLD_THRESH_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxThresholdParams), TIVX_MEM_EXTERNAL);
 
@@ -244,7 +244,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdDelete(
     tivxThresholdParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_THRLD_MAX_PARAMS);
+                TIVX_KERNEL_THRESHOLD_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

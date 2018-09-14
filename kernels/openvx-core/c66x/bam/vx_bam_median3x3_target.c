@@ -66,7 +66,7 @@
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_target_kernels_priv.h>
-#include <tivx_kernel_filter_3x3.h>
+#include <tivx_kernel_median3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
@@ -79,19 +79,19 @@ typedef struct
 
 static tivx_target_kernel vx_median_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxKernelMedianProcess(
+static vx_status VX_CALLBACK tivxKernelMedian3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelMedianCreate(
+static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelMedianDelete(
+static vx_status VX_CALLBACK tivxKernelMedian3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelMedianProcess(
+static vx_status VX_CALLBACK tivxKernelMedian3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -102,13 +102,13 @@ static vx_status VX_CALLBACK tivxKernelMedianProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MEDIAN3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_MEDIAN3X3_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelMedianProcess(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelMedianCreate(
+static vx_status VX_CALLBACK tivxKernelMedian3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -160,14 +160,14 @@ static vx_status VX_CALLBACK tivxKernelMedianCreate(
     tivxMedianParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+            TIVX_KERNEL_MEDIAN3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_MEDIAN3X3_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxMedianParams), TIVX_MEM_EXTERNAL);
 
@@ -222,7 +222,7 @@ static vx_status VX_CALLBACK tivxKernelMedianCreate(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelMedianDelete(
+static vx_status VX_CALLBACK tivxKernelMedian3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -231,7 +231,7 @@ static vx_status VX_CALLBACK tivxKernelMedianDelete(
     tivxMedianParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_MEDIAN3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -249,7 +249,7 @@ static vx_status VX_CALLBACK tivxKernelMedianDelete(
     return (status);
 }
 
-void tivxAddTargetKernelBamMedian3x3(void)
+void tivxAddTargetKernelBamMedian3X3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -272,16 +272,16 @@ void tivxAddTargetKernelBamMedian3x3(void)
         vx_median_target_kernel = tivxAddTargetKernel(
             VX_KERNEL_MEDIAN_3x3,
             target_name,
-            tivxKernelMedianProcess,
-            tivxKernelMedianCreate,
-            tivxKernelMedianDelete,
+            tivxKernelMedian3X3Process,
+            tivxKernelMedian3X3Create,
+            tivxKernelMedian3X3Delete,
             NULL,
             NULL);
     }
 }
 
 
-void tivxRemoveTargetKernelBamMedian3x3(void)
+void tivxRemoveTargetKernelBamMedian3X3(void)
 {
     tivxRemoveTargetKernel(vx_median_target_kernel);
 }

@@ -458,9 +458,9 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractProcess(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CHANNEL_EXTRACT_IN_IDX];
+            TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX];
+            TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -527,9 +527,9 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CHANNEL_EXTRACT_IN_IDX];
+            TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX];
+            TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
         ch = (tivx_obj_desc_scalar_t *)obj_desc[
             TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
 

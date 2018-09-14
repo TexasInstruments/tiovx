@@ -99,13 +99,13 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
     uint32_t size, levels;
     vx_rectangle_t rect;
 
-    if (num_params != TIVX_KERNEL_LPL_PMD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_LPL_PMD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -116,10 +116,10 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
     }
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LPL_PMD_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
-            TIVX_KERNEL_LPL_PMD_OUT_PMD_IDX];
-        low_img = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LPL_PMD_OUT_IMG_IDX];
+            TIVX_KERNEL_LAPLACIAN_PYRAMID_LAPLACIAN_IDX];
+        low_img = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LAPLACIAN_PYRAMID_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdProcess(
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_LPL_PMD_IN_IMG_IDX];
+            TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
@@ -288,13 +288,13 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
     tivx_obj_desc_image_t *img;
     tivxLaplacianPyramidParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_LPL_PMD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_LPL_PMD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -307,7 +307,7 @@ static vx_status VX_CALLBACK tivxKernelLplPmdCreate(
     if (VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_LPL_PMD_IN_IMG_IDX];
+            TIVX_KERNEL_LAPLACIAN_PYRAMID_INPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxLaplacianPyramidParams),
             TIVX_MEM_EXTERNAL);
@@ -400,13 +400,13 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
     uint32_t size;
     tivxLaplacianPyramidParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_LPL_PMD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_LPL_PMD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_LAPLACIAN_PYRAMID_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {

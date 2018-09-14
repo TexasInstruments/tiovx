@@ -105,8 +105,8 @@ static vx_status VX_CALLBACK tivxKernelAccumulateProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -163,9 +163,9 @@ static vx_status VX_CALLBACK tivxKernelAccumulateCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ACCUMULATE_IN_IMG_IDX];
+            TIVX_KERNEL_ACCUMULATE_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ACCUMULATE_OUT_IMG_IDX];
+            TIVX_KERNEL_ACCUMULATE_ACCUM_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxAccumulateParams), TIVX_MEM_EXTERNAL);
 

@@ -104,8 +104,8 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -159,9 +159,9 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
         void *mask_target_ptr;
 
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
+            TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX];
+            TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
         mask = (tivx_obj_desc_matrix_t *)obj_desc[
             TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[

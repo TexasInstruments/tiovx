@@ -106,10 +106,10 @@ static vx_status VX_CALLBACK tivxKernelConvolveProcess(
         void *dst_target_ptr;
         void *conv_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_INPUT_IDX];
         conv = (tivx_obj_desc_convolution_t *)obj_desc[
-            TIVX_KERNEL_CONVOLVE_IN_CONVOLVE_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_OUT_IMG_IDX];
+            TIVX_KERNEL_CONVOLVE_CONV_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVOLVE_OUTPUT_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

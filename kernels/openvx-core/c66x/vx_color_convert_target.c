@@ -107,9 +107,9 @@ static vx_status tivxKernelColorConvert(
         void *dst_desc_target_ptr[TIVX_IMAGE_MAX_PLANES];
 
         src_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
+            obj_desc[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         for (i = 0; i < src_desc->planes; i++)
         {
@@ -366,9 +366,9 @@ static vx_status VX_CALLBACK tivxKernelColorConvertCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
+            obj_desc[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         /* scenarios where scratch memory is needed */
         if ( ((VX_DF_IMAGE_RGB == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||
@@ -426,9 +426,9 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
+            obj_desc[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         /* scenarios where scratch memory is needed */
         if ( ((VX_DF_IMAGE_RGB == src->format) && (VX_DF_IMAGE_NV12 == dst->format)) ||

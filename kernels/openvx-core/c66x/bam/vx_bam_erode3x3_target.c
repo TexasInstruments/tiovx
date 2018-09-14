@@ -66,7 +66,7 @@
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_target_kernels_priv.h>
-#include <tivx_kernel_filter_3x3.h>
+#include <tivx_kernel_erode3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
@@ -79,19 +79,19 @@ typedef struct
 
 static tivx_target_kernel vx_erode_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxKernelErodeProcess(
+static vx_status VX_CALLBACK tivxKernelErode3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelErodeCreate(
+static vx_status VX_CALLBACK tivxKernelErode3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelErodeDelete(
+static vx_status VX_CALLBACK tivxKernelErode3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelErodeProcess(
+static vx_status VX_CALLBACK tivxKernelErode3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -102,13 +102,13 @@ static vx_status VX_CALLBACK tivxKernelErodeProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_ERODE3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ERODE3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_ERODE3X3_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelErodeProcess(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelErodeCreate(
+static vx_status VX_CALLBACK tivxKernelErode3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -160,14 +160,14 @@ static vx_status VX_CALLBACK tivxKernelErodeCreate(
     tivxErodeParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_ERODE3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+            TIVX_KERNEL_ERODE3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_ERODE3X3_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxErodeParams), TIVX_MEM_EXTERNAL);
 
@@ -223,7 +223,7 @@ static vx_status VX_CALLBACK tivxKernelErodeCreate(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelErodeDelete(
+static vx_status VX_CALLBACK tivxKernelErode3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -232,7 +232,7 @@ static vx_status VX_CALLBACK tivxKernelErodeDelete(
     tivxErodeParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_ERODE3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -250,7 +250,7 @@ static vx_status VX_CALLBACK tivxKernelErodeDelete(
     return (status);
 }
 
-void tivxAddTargetKernelBamErode3x3(void)
+void tivxAddTargetKernelBamErode3X3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -273,16 +273,16 @@ void tivxAddTargetKernelBamErode3x3(void)
         vx_erode_target_kernel = tivxAddTargetKernel(
             VX_KERNEL_ERODE_3x3,
             target_name,
-            tivxKernelErodeProcess,
-            tivxKernelErodeCreate,
-            tivxKernelErodeDelete,
+            tivxKernelErode3X3Process,
+            tivxKernelErode3X3Create,
+            tivxKernelErode3X3Delete,
             NULL,
             NULL);
     }
 }
 
 
-void tivxRemoveTargetKernelBamErode3x3(void)
+void tivxRemoveTargetKernelBamErode3X3(void)
 {
     tivxRemoveTargetKernel(vx_erode_target_kernel);
 }

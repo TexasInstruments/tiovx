@@ -107,9 +107,9 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
+            TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+            TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -320,9 +320,9 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
+            TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+            TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
 

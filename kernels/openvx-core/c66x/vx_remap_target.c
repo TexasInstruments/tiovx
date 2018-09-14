@@ -108,11 +108,11 @@ static vx_status VX_CALLBACK tivxKernelRemapProcess(
         void *dst_target_ptr;
         void *remap_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_REMAP_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_REMAP_INPUT_IDX];
         sc = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_REMAP_IN_POLICY_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_REMAP_OUT_IMG_IDX];
-        remap = (tivx_obj_desc_remap_t *)obj_desc[TIVX_KERNEL_REMAP_IN_TBL_IDX];
+            TIVX_KERNEL_REMAP_POLICY_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_REMAP_OUTPUT_IDX];
+        remap = (tivx_obj_desc_remap_t *)obj_desc[TIVX_KERNEL_REMAP_TABLE_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

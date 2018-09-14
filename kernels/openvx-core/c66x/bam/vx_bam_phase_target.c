@@ -105,9 +105,9 @@ static vx_status VX_CALLBACK tivxBamKernelPhaseProcess(
 
     if (VX_SUCCESS == status)
     {
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_IN0_IMG_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_IN1_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_OUT_IMG_IDX];
+        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_GRAD_X_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_GRAD_Y_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_PHASE_ORIENTATION_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -170,11 +170,11 @@ static vx_status VX_CALLBACK tivxBamKernelPhaseCreate(
     if (VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_PHASE_IN0_IMG_IDX];
+            TIVX_KERNEL_PHASE_GRAD_X_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_PHASE_IN1_IMG_IDX];
+            TIVX_KERNEL_PHASE_GRAD_Y_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_PHASE_OUT_IMG_IDX];
+            TIVX_KERNEL_PHASE_ORIENTATION_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxPhaseParams), TIVX_MEM_EXTERNAL);
 

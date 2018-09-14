@@ -1,321 +1,398 @@
 /*
-*
-* Copyright (c) 2017 Texas Instruments Incorporated
-*
-* All rights reserved not granted herein.
-*
-* Limited License.
-*
-* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
-* license under copyrights and patents it now or hereafter owns or controls to make,
-* have made, use, import, offer to sell and sell ("Utilize") this software subject to the
-* terms herein.  With respect to the foregoing patent license, such license is granted
-* solely to the extent that any such patent is necessary to Utilize the software alone.
-* The patent license shall not apply to any combinations which include this software,
-* other than combinations with devices manufactured by or for TI ("TI Devices").
-* No hardware patent is licensed hereunder.
-*
-* Redistributions must preserve existing copyright notices and reproduce this license
-* (including the above copyright notice and the disclaimer and (if applicable) source
-* code license limitations below) in the documentation and/or other materials provided
-* with the distribution
-*
-* Redistribution and use in binary form, without modification, are permitted provided
-* that the following conditions are met:
-*
-* *       No reverse engineering, decompilation, or disassembly of this software is
-* permitted with respect to any software provided in binary form.
-*
-* *       any redistribution and use are licensed by TI for use only with TI Devices.
-*
-* *       Nothing shall obligate TI to provide you with source code for the software
-* licensed and provided to you in object code.
-*
-* If software source code is provided to you, modification and redistribution of the
-* source code are permitted provided that the following conditions are met:
-*
-* *       any redistribution and use of the source code, including any resulting derivative
-* works, are licensed by TI for use only with TI Devices.
-*
-* *       any redistribution and use of any object code compiled from the source code
-* and any resulting derivative works, are licensed by TI for use only with TI Devices.
-*
-* Neither the name of Texas Instruments Incorporated nor the names of its suppliers
-*
-* may be used to endorse or promote products derived from this software without
-* specific prior written permission.
-*
-* DISCLAIMER.
-*
-* THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
-* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-* OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
-
+ *
+ * Copyright (c) 2019 Texas Instruments Incorporated
+ *
+ * All rights reserved not granted herein.
+ *
+ * Limited License.
+ *
+ * Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
+ * license under copyrights and patents it now or hereafter owns or controls to make,
+ * have made, use, import, offer to sell and sell ("Utilize") this software subject to the
+ * terms herein.  With respect to the foregoing patent license, such license is granted
+ * solely to the extent that any such patent is necessary to Utilize the software alone.
+ * The patent license shall not apply to any combinations which include this software,
+ * other than combinations with devices manufactured by or for TI ("TI Devices").
+ * No hardware patent is licensed hereunder.
+ *
+ * Redistributions must preserve existing copyright notices and reproduce this license
+ * (including the above copyright notice and the disclaimer and (if applicable) source
+ * code license limitations below) in the documentation and/or other materials provided
+ * with the distribution
+ *
+ * Redistribution and use in binary form, without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ * *       No reverse engineering, decompilation, or disassembly of this software is
+ * permitted with respect to any software provided in binary form.
+ *
+ * *       any redistribution and use are licensed by TI for use only with TI Devices.
+ *
+ * *       Nothing shall obligate TI to provide you with source code for the software
+ * licensed and provided to you in object code.
+ *
+ * If software source code is provided to you, modification and redistribution of the
+ * source code are permitted provided that the following conditions are met:
+ *
+ * *       any redistribution and use of the source code, including any resulting derivative
+ * works, are licensed by TI for use only with TI Devices.
+ *
+ * *       any redistribution and use of any object code compiled from the source code
+ * and any resulting derivative works, are licensed by TI for use only with TI Devices.
+ *
+ * Neither the name of Texas Instruments Incorporated nor the names of its suppliers
+ *
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * DISCLAIMER.
+ *
+ * THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_sobel3x3.h>
 #include <TI/tivx_target_kernel.h>
 
-static vx_kernel vx_sobel_kernel = NULL;
+static vx_kernel vx_sobel3x3_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[]);
-
-static vx_status VX_CALLBACK tivxAddKernelSobelInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelSobel3X3Initialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+vx_status tivxAddKernelSobel3X3(vx_context context);
+vx_status tivxRemoveKernelSobel3X3(vx_context context);
 
-static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_image img[3U];
-    vx_uint32 w[3U], h[3U], i;
-    vx_df_image fmt[3U], out_fmt;
+
+    vx_image input = NULL;
+    vx_uint32 input_w;
+    vx_uint32 input_h;
+    vx_df_image input_fmt;
+
+    vx_image output_x = NULL;
+    vx_uint32 output_x_w;
+    vx_uint32 output_x_h;
+    vx_df_image output_x_fmt;
+
+    vx_image output_y = NULL;
+    vx_uint32 output_y_w;
+    vx_uint32 output_y_h;
+    vx_df_image output_y_fmt;
+
     vx_border_t border;
 
-    /* Check for NULL */
-    if ((NULL == parameters[TIVX_KERNEL_SOBEL_IN_IMG_IDX]) ||
-        ((NULL == parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-         (NULL == parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX])))
+    vx_bool is_output_x_virtual = vx_false_e;
+    vx_bool is_output_y_virtual = vx_false_e;
+
+    if ( (num != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX])
+    )
     {
-        status = VX_ERROR_NOT_SUFFICIENT;
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
     if (VX_SUCCESS == status)
     {
-        img[0U] = (vx_image)parameters[TIVX_KERNEL_SOBEL_IN_IMG_IDX];
-        img[1U] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
-        img[2U] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
-
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[0U], VX_IMAGE_FORMAT, &fmt[0U],
-            sizeof(fmt[0U]));
-
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
+        input = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
+        output_x = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
+        output_y = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
     }
+
+
+    /* PARAMETER ATTRIBUTE FETCH */
 
     if (VX_SUCCESS == status)
     {
-        /* Check for validity of data format */
-        if (VX_DF_IMAGE_U8 != fmt[0U])
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+
+        if (NULL != output_x)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
+            tivxCheckStatus(&status, vxQueryImage(output_x, VX_IMAGE_WIDTH, &output_x_w, sizeof(output_x_w)));
+            tivxCheckStatus(&status, vxQueryImage(output_x, VX_IMAGE_HEIGHT, &output_x_h, sizeof(output_x_h)));
+            tivxCheckStatus(&status, vxQueryImage(output_x, VX_IMAGE_FORMAT, &output_x_fmt, sizeof(output_x_fmt)));
         }
+
+        if (NULL != output_y)
+        {
+            tivxCheckStatus(&status, vxQueryImage(output_y, VX_IMAGE_WIDTH, &output_y_w, sizeof(output_y_w)));
+            tivxCheckStatus(&status, vxQueryImage(output_y, VX_IMAGE_HEIGHT, &output_y_h, sizeof(output_y_h)));
+            tivxCheckStatus(&status, vxQueryImage(output_y, VX_IMAGE_FORMAT, &output_y_fmt, sizeof(output_y_fmt)));
+        }
+
+        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+#if 1
+
+        is_output_x_virtual = tivxIsReferenceVirtual((vx_reference)output_x);
+        is_output_y_virtual = tivxIsReferenceVirtual((vx_reference)output_y);
+
+#endif
+
     }
 
-    if ((VX_SUCCESS == status) && (NULL != img[1U]) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
-    {
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[1U], VX_IMAGE_FORMAT, &fmt[1U],
-            sizeof(fmt[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
 
-        /* Check for frame sizes */
-        if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-
-        /* Check for format */
-        if (VX_DF_IMAGE_S16 != fmt[1U])
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
-
-    if ((VX_SUCCESS == status) && (NULL != img[2U]) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[2U])))
-    {
-        /* Get the image width/heigh and format */
-        status = vxQueryImage(img[2U], VX_IMAGE_FORMAT, &fmt[2U],
-            sizeof(fmt[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_WIDTH, &w[2U], sizeof(w[2U]));
-        status |= vxQueryImage(img[2U], VX_IMAGE_HEIGHT, &h[2U], sizeof(h[2U]));
-
-        /* Check for frame sizes */
-        if ((w[0U] != w[2U]) || (h[0U] != h[2U]))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-
-        /* Check for format */
-        if (VX_DF_IMAGE_S16 != fmt[2U])
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
+    /* PARAMETER CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
-        if (VX_SUCCESS == status)
+        if (VX_DF_IMAGE_U8 != input_fmt)
         {
-            if (border.mode != VX_BORDER_UNDEFINED)
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_U8 \n");
+        }
+
+        if (NULL != output_x)
+        {
+            if (vx_false_e == is_output_x_virtual)
             {
-                status = VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for sobel\n");
+                if (VX_DF_IMAGE_S16 != output_x_fmt)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "'output_x' should be an image of type:\n VX_DF_IMAGE_S16 \n");
+                }
             }
         }
-    }
 
-    out_fmt = VX_DF_IMAGE_S16;
-    if (VX_SUCCESS == status)
-    {
-        for (i = 0U; i < TIVX_KERNEL_SOBEL_MAX_PARAMS; i ++)
+        if (NULL != output_y)
         {
-            if (NULL != parameters[i])
+            if (vx_false_e == is_output_y_virtual)
             {
-                vx_enum type = 0;
-                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
-                if (VX_TYPE_IMAGE == type)
+                if (VX_DF_IMAGE_S16 != output_y_fmt)
                 {
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                        sizeof(out_fmt));
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                        sizeof(w[0U]));
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                        sizeof(h[0U]));
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "'output_y' should be an image of type:\n VX_DF_IMAGE_S16 \n");
                 }
             }
         }
     }
+
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (NULL != output_x)
+        {
+            if (vx_false_e == is_output_x_virtual)
+            {
+                if (output_x_w != input_w)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output_x' and 'input' should have the same value for VX_IMAGE_WIDTH \n");
+                }
+
+                if (output_x_h != input_h)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output_x' and 'input' should have the same value for VX_IMAGE_HEIGHT \n");
+                }
+            }
+        }
+
+        if (NULL != output_y)
+        {
+            if (vx_false_e == is_output_y_virtual)
+            {
+                if (output_y_w != input_w)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output_y' and 'input' should have the same value for VX_IMAGE_WIDTH \n");
+                }
+
+                if (output_y_h != input_h)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output_y' and 'input' should have the same value for VX_IMAGE_HEIGHT \n");
+                }
+            }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_BORDER_UNDEFINED != border.mode)
+        {
+            status = VX_ERROR_NOT_SUPPORTED;
+            VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for sobel \n");
+        }
+    }
+
+#if 1
+
+    if (VX_SUCCESS == status)
+    {
+        output_x_fmt = VX_DF_IMAGE_S16;
+
+        if (NULL != output_x)
+        {
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX], VX_IMAGE_FORMAT, &output_x_fmt, sizeof(output_x_fmt));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        }
+
+        if (NULL != output_y)
+        {
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX], VX_IMAGE_FORMAT, &output_y_fmt, sizeof(output_y_fmt));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+            vxSetMetaFormatAttribute(metas[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+        }
+    }
+
+#endif
+
     return status;
 }
 
-static vx_status VX_CALLBACK tivxAddKernelSobelInitialize(vx_node node,
+static vx_status VX_CALLBACK tivxAddKernelSobel3X3Initialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint8 num_output_images = 0;
     tivxKernelValidRectParams prms;
 
-    if (num_params != TIVX_KERNEL_SOBEL_MAX_PARAMS)
+    vx_image output_x = NULL;
+    vx_image output_y = NULL;
+
+    if ( (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        output_x = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
+        output_y = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
     }
 
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_IN_IMG_IDX];
-        if ( (NULL == (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-             (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX]) )
+
+        prms.num_input_images = 1U;
+        prms.num_output_images = 0U;
+
+        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
+
+        if (NULL != output_x)
         {
-            num_output_images = 1;
-            prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
-        }
-        else if ( (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-                  (NULL == (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX]) )
-        {
-            num_output_images = 1;
-            prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
-        }
-        else if ( (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX]) &&
-                  (NULL != (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX]) )
-        {
-            num_output_images = 2;
-            prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT0_IMG_IDX];
-            prms.out_img[1] = (vx_image)parameters[TIVX_KERNEL_SOBEL_OUT1_IMG_IDX];
+            prms.out_img[prms.num_output_images] = output_x;
+            prms.num_output_images++;
         }
 
-        prms.num_input_images = 1;
-        prms.num_output_images = num_output_images;
+        if (NULL != output_y)
+        {
+            prms.out_img[prms.num_output_images] = output_y;
+            prms.num_output_images++;
+        }
 
-        prms.top_pad = 1;
-        prms.bot_pad = 1;
-        prms.left_pad = 1;
-        prms.right_pad = 1;
+        prms.top_pad = 1U;
+        prms.bot_pad = 1U;
+        prms.left_pad = 1U;
+        prms.right_pad = 1U;
         prms.border_mode = VX_BORDER_UNDEFINED;
-        status = tivxKernelConfigValidRect(&prms);
+        tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
 
     return status;
 }
 
-vx_status tivxAddKernelSobel3x3(vx_context context)
+vx_status tivxAddKernelSobel3X3(vx_context context)
 {
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
-                            context,
-                            "org.khronos.openvx.sobel_3x3",
-                            VX_KERNEL_SOBEL_3x3,
-                            NULL,
-                            3,
-                            tivxAddKernelSobelValidate,
-                            tivxAddKernelSobelInitialize,
-                            NULL);
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
 
-    status = vxGetStatus((vx_reference)kernel);
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    "org.khronos.openvx.sobel_3x3",
+                    VX_KERNEL_SOBEL_3x3,
+                    NULL,
+                    TIVX_KERNEL_SOBEL3X3_MAX_PARAMS,
+                    tivxAddKernelSobel3X3Validate,
+                    tivxAddKernelSobel3X3Initialize,
+                    NULL);
 
-    if ( status == VX_SUCCESS)
+        status = vxGetStatus((vx_reference)kernel);
+    }
+    if (status == VX_SUCCESS)
     {
         index = 0;
 
-        if ( status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
-                index,
-                VX_INPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
-                );
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_REQUIRED
+            );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
-                index,
-                VX_OUTPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_OPTIONAL
-                );
+                        index,
+                        VX_OUTPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
-                index,
-                VX_OUTPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_OPTIONAL
-                );
-            index++;
+                        index,
+                        VX_OUTPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
         }
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if( status != VX_SUCCESS)
+        if (status != VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;
@@ -325,26 +402,20 @@ vx_status tivxAddKernelSobel3x3(vx_context context)
     {
         kernel = NULL;
     }
-
-    vx_sobel_kernel = kernel;
+    vx_sobel3x3_kernel = kernel;
 
     return status;
 }
 
-vx_status tivxRemoveKernelSobel3x3(vx_context context)
+vx_status tivxRemoveKernelSobel3X3(vx_context context)
 {
     vx_status status;
-    vx_kernel kernel = vx_sobel_kernel;
+    vx_kernel kernel = vx_sobel3x3_kernel;
 
-    /* Kernel is released as part of Remove Kernel */
     status = vxRemoveKernel(kernel);
-
-    vx_sobel_kernel = NULL;
+    vx_sobel3x3_kernel = NULL;
 
     return status;
 }
-
-
-
 
 

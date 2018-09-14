@@ -1,65 +1,64 @@
 /*
-*
-* Copyright (c) 2017 Texas Instruments Incorporated
-*
-* All rights reserved not granted herein.
-*
-* Limited License.
-*
-* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
-* license under copyrights and patents it now or hereafter owns or controls to make,
-* have made, use, import, offer to sell and sell ("Utilize") this software subject to the
-* terms herein.  With respect to the foregoing patent license, such license is granted
-* solely to the extent that any such patent is necessary to Utilize the software alone.
-* The patent license shall not apply to any combinations which include this software,
-* other than combinations with devices manufactured by or for TI ("TI Devices").
-* No hardware patent is licensed hereunder.
-*
-* Redistributions must preserve existing copyright notices and reproduce this license
-* (including the above copyright notice and the disclaimer and (if applicable) source
-* code license limitations below) in the documentation and/or other materials provided
-* with the distribution
-*
-* Redistribution and use in binary form, without modification, are permitted provided
-* that the following conditions are met:
-*
-* *       No reverse engineering, decompilation, or disassembly of this software is
-* permitted with respect to any software provided in binary form.
-*
-* *       any redistribution and use are licensed by TI for use only with TI Devices.
-*
-* *       Nothing shall obligate TI to provide you with source code for the software
-* licensed and provided to you in object code.
-*
-* If software source code is provided to you, modification and redistribution of the
-* source code are permitted provided that the following conditions are met:
-*
-* *       any redistribution and use of the source code, including any resulting derivative
-* works, are licensed by TI for use only with TI Devices.
-*
-* *       any redistribution and use of any object code compiled from the source code
-* and any resulting derivative works, are licensed by TI for use only with TI Devices.
-*
-* Neither the name of Texas Instruments Incorporated nor the names of its suppliers
-*
-* may be used to endorse or promote products derived from this software without
-* specific prior written permission.
-*
-* DISCLAIMER.
-*
-* THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
-* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-* OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
-
+ *
+ * Copyright (c) 2019 Texas Instruments Incorporated
+ *
+ * All rights reserved not granted herein.
+ *
+ * Limited License.
+ *
+ * Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
+ * license under copyrights and patents it now or hereafter owns or controls to make,
+ * have made, use, import, offer to sell and sell ("Utilize") this software subject to the
+ * terms herein.  With respect to the foregoing patent license, such license is granted
+ * solely to the extent that any such patent is necessary to Utilize the software alone.
+ * The patent license shall not apply to any combinations which include this software,
+ * other than combinations with devices manufactured by or for TI ("TI Devices").
+ * No hardware patent is licensed hereunder.
+ *
+ * Redistributions must preserve existing copyright notices and reproduce this license
+ * (including the above copyright notice and the disclaimer and (if applicable) source
+ * code license limitations below) in the documentation and/or other materials provided
+ * with the distribution
+ *
+ * Redistribution and use in binary form, without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ * *       No reverse engineering, decompilation, or disassembly of this software is
+ * permitted with respect to any software provided in binary form.
+ *
+ * *       any redistribution and use are licensed by TI for use only with TI Devices.
+ *
+ * *       Nothing shall obligate TI to provide you with source code for the software
+ * licensed and provided to you in object code.
+ *
+ * If software source code is provided to you, modification and redistribution of the
+ * source code are permitted provided that the following conditions are met:
+ *
+ * *       any redistribution and use of the source code, including any resulting derivative
+ * works, are licensed by TI for use only with TI Devices.
+ *
+ * *       any redistribution and use of any object code compiled from the source code
+ * and any resulting derivative works, are licensed by TI for use only with TI Devices.
+ *
+ * Neither the name of Texas Instruments Incorporated nor the names of its suppliers
+ *
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * DISCLAIMER.
+ *
+ * THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
@@ -72,10 +71,11 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[]);
-
 static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
+vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context);
+vx_status tivxRemoveKernelOpticalFlowPyrLk(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -83,107 +83,271 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_pyramid pyr[2U];
-    vx_array arr[3U];
-    vx_size i;
-    vx_enum item_type[3U];
-    vx_size capacity[3U];
-    vx_size levels[2U];
-    vx_uint32 w[2U], h[2U];
-    vx_float32 scale[2U];
-    vx_df_image df_image[2U];
+
+    vx_pyramid old_images = NULL;
+    vx_uint32 old_images_w;
+    vx_uint32 old_images_h;
+    vx_size old_images_levels;
+    vx_float32 old_images_scale;
+    vx_df_image old_images_fmt;
+
+    vx_pyramid new_images = NULL;
+    vx_uint32 new_images_w;
+    vx_uint32 new_images_h;
+    vx_size new_images_levels;
+    vx_float32 new_images_scale;
+    vx_df_image new_images_fmt;
+
+    vx_array old_points = NULL;
+    vx_enum old_points_item_type;
+    vx_size old_points_capacity;
+
+    vx_array new_points_estimates = NULL;
+    vx_enum new_points_estimates_item_type;
+    vx_size new_points_estimates_capacity;
+
+    vx_array new_points = NULL;
+    vx_enum new_points_item_type;
+    vx_size new_points_capacity;
+
+    vx_scalar termination = NULL;
+    vx_enum termination_scalar_type;
+
+    vx_scalar epsilon = NULL;
+    vx_enum epsilon_scalar_type;
+
+    vx_scalar num_iterations = NULL;
+    vx_enum num_iterations_scalar_type;
+
+    vx_scalar use_initial_estimate = NULL;
+    vx_enum use_initial_estimate_scalar_type;
+
+    vx_scalar window_dimension = NULL;
+    vx_size window_dimension_val;
+
     vx_border_t border;
 
-    for (i = 0U; i < TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS; i ++)
+    vx_bool is_virtual = vx_false_e;
+
+    if ( (num != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_USE_INITIAL_ESTIMATE_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX])
+    )
     {
-        /* Check for NULL */
-        if (NULL == parameters[i])
-        {
-            status = VX_ERROR_NO_MEMORY;
-            break;
-        }
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-
-    pyr[0U] = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX];
-    pyr[1U] = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX];
-
-    arr[0U] = (vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_PREVPTS_IDX];
-    arr[1U] = (vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_ESTIMATEDPTS_IDX];
-    arr[2U] = (vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEXTPTS_IDX];
 
     if (VX_SUCCESS == status)
     {
-        for(i=0; i<2; i++)
-        {
-            status |= vxQueryPyramid(pyr[i], VX_PYRAMID_LEVELS, &levels[i], sizeof(levels[i]));
-            status |= vxQueryPyramid(pyr[i], VX_PYRAMID_SCALE, &scale[i], sizeof(scale[i]));
-            status |= vxQueryPyramid(pyr[i], VX_PYRAMID_WIDTH, &w[i], sizeof(w[i]));
-            status |= vxQueryPyramid(pyr[i], VX_PYRAMID_HEIGHT, &h[i], sizeof(h[i]));
-            status |= vxQueryPyramid(pyr[i], VX_PYRAMID_FORMAT, &df_image[i], sizeof(df_image[i]));
-        }
+        old_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
+        new_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
+        old_points = (const vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
+        new_points_estimates = (const vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX];
+        new_points = (const vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX];
+        termination = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX];
+        epsilon = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX];
+        num_iterations = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX];
+        use_initial_estimate = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_USE_INITIAL_ESTIMATE_IDX];
+        window_dimension = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX];
+    }
 
-        if((levels[0U] != levels[1U])
-            || (scale[0U] != scale[1U])
-            || (w[0U] != w[1U])
-            || (h[0U] != h[1U])
-            || (df_image[0U] != df_image[1U])
-            || (df_image[0U] != VX_DF_IMAGE_U8))
+
+    /* PARAMETER ATTRIBUTE FETCH */
+
+    if (VX_SUCCESS == status)
+    {
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_WIDTH, &old_images_w, sizeof(old_images_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_HEIGHT, &old_images_h, sizeof(old_images_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_FORMAT, &old_images_fmt, sizeof(old_images_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_SCALE, &old_images_scale, sizeof(old_images_scale)));
+
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_WIDTH, &new_images_w, sizeof(new_images_w)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_HEIGHT, &new_images_h, sizeof(new_images_h)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_FORMAT, &new_images_fmt, sizeof(new_images_fmt)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_LEVELS, &new_images_levels, sizeof(new_images_levels)));
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_SCALE, &new_images_scale, sizeof(new_images_scale)));
+
+        tivxCheckStatus(&status, vxQueryArray(old_points, VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(old_points, VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity)));
+
+        tivxCheckStatus(&status, vxQueryArray(new_points_estimates, VX_ARRAY_ITEMTYPE, &new_points_estimates_item_type, sizeof(new_points_estimates_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(new_points_estimates, VX_ARRAY_CAPACITY, &new_points_estimates_capacity, sizeof(new_points_estimates_capacity)));
+
+        tivxCheckStatus(&status, vxQueryArray(new_points, VX_ARRAY_ITEMTYPE, &new_points_item_type, sizeof(new_points_item_type)));
+        tivxCheckStatus(&status, vxQueryArray(new_points, VX_ARRAY_CAPACITY, &new_points_capacity, sizeof(new_points_capacity)));
+
+        tivxCheckStatus(&status, vxCopyScalar(termination, &termination_scalar_type, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+        tivxCheckStatus(&status, vxQueryScalar(epsilon, VX_SCALAR_TYPE, &epsilon_scalar_type, sizeof(epsilon_scalar_type)));
+
+        tivxCheckStatus(&status, vxQueryScalar(num_iterations, VX_SCALAR_TYPE, &num_iterations_scalar_type, sizeof(num_iterations_scalar_type)));
+
+        tivxCheckStatus(&status, vxQueryScalar(use_initial_estimate, VX_SCALAR_TYPE, &use_initial_estimate_scalar_type, sizeof(use_initial_estimate_scalar_type)));
+
+        tivxCheckStatus(&status, vxCopyScalar(window_dimension, &window_dimension_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+        tivxCheckStatus(&status, vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+#if 1
+
+        is_virtual = tivxIsReferenceVirtual((vx_reference)new_points);
+
+#endif
+
+    }
+
+
+    /* PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_DF_IMAGE_U8 != old_images_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        for(i=0; i<3U; i++)
-        {
-            status |= vxQueryArray(arr[i], VX_ARRAY_ITEMTYPE, &item_type[i], sizeof(item_type[i]));
-            status |= vxQueryArray(arr[i], VX_ARRAY_CAPACITY, &capacity[i], sizeof(capacity[i]));
+            VX_PRINT(VX_ZONE_ERROR, "'old_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
         }
 
-        if(    item_type[0U] != item_type[1U]
-            || capacity[0U] != capacity[1U]
-            || item_type[0U] != VX_TYPE_KEYPOINT
-            )
+        if (VX_DF_IMAGE_U8 != new_images_fmt)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'new_images' should be a pyramid of type:\n VX_DF_IMAGE_U8 \n");
         }
-    }
-    if (VX_SUCCESS == status)
-    {
-        if(vx_false_e == tivxIsReferenceVirtual((vx_reference)arr[2U]))
+
+        if (VX_TYPE_KEYPOINT != old_points_item_type)
         {
-            if(    item_type[0U] != item_type[2U]
-                || capacity[0U] != capacity[2U]
-                )
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_points' should be an array of type:\n VX_TYPE_KEYPOINT \n");
+        }
+
+        if (VX_TYPE_KEYPOINT != new_points_estimates_item_type)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'new_points_estimates' should be an array of type:\n VX_TYPE_KEYPOINT \n");
+        }
+
+        if (vx_false_e == is_virtual)
+        {
+            if (VX_TYPE_KEYPOINT != new_points_item_type)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'new_points' should be an array of type:\n VX_TYPE_KEYPOINT \n");
             }
         }
-    }
 
-    if (VX_SUCCESS == status)
-    {
-        status = vxQueryNode(node, VX_NODE_BORDER, &border, sizeof(border));
-        if (VX_SUCCESS == status)
+        if ((VX_TERM_CRITERIA_ITERATIONS != termination_scalar_type) &&
+            (VX_TERM_CRITERIA_EPSILON != termination_scalar_type) &&
+            (VX_TERM_CRITERIA_BOTH != termination_scalar_type))
         {
-            if (border.mode != VX_BORDER_UNDEFINED)
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'termination' should be a scalar of type:\n VX_TERM_CRITERIA_ITERATIONS or VX_TERM_CRITERIA_EPSILON or VX_TERM_CRITERIA_BOTH \n");
+        }
+
+        if (VX_TYPE_FLOAT32 != epsilon_scalar_type)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'epsilon' should be a scalar of type:\n VX_TYPE_FLOAT32 \n");
+        }
+
+        if (VX_TYPE_UINT32 != num_iterations_scalar_type)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'num_iterations' should be a scalar of type:\n VX_TYPE_UINT32 \n");
+        }
+
+        if (VX_TYPE_BOOL != use_initial_estimate_scalar_type)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'use_initial_estimate' should be a scalar of type:\n VX_TYPE_BOOL \n");
+        }
+    }
+
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (old_images_levels != new_images_levels)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_LEVELS\n");
+        }
+
+        if (old_images_scale != new_images_scale)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_SCALE \n");
+        }
+
+        if (old_images_w != new_images_w)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_WIDTH \n");
+        }
+
+        if (old_images_h != new_images_h)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_HEIGHT \n");
+        }
+
+        if (old_points_capacity != new_points_estimates_capacity)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_points' and 'new_points_estimates' should have the same value for VX_ARRAY_CAPACITY \n");
+        }
+
+        if (vx_false_e == is_virtual)
+        {
+            if (old_points_capacity != new_points_capacity)
             {
-                status = VX_ERROR_NOT_SUPPORTED;
-                VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for optical flow\n");
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'old_points' and 'new_points' should have the same value for VX_ARRAY_CAPACITY \n");
             }
         }
     }
 
+
+    /* CUSTOM PARAMETER CHECKING */
+
     if (VX_SUCCESS == status)
     {
-        i = TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEXTPTS_IDX;
-
-        vxSetMetaFormatAttribute(metas[i], VX_ARRAY_ITEMTYPE, &item_type[0U],
-            sizeof(item_type[0U]));
-        vxSetMetaFormatAttribute(metas[i], VX_ARRAY_CAPACITY, &capacity[0U],
-            sizeof(capacity[0U]));
+#if 0
+        if (TIVX_CONTEXT_MAX_OPTICALFLOWPYRLK_DIM < window_dimension_val)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'window_dimension' must not be greater than VX_CONTEXT_OPTICAL_FLOW_MAX_WINDOW_DIMENSION \n");
+        }
+#endif
     }
+
+    if (VX_SUCCESS == status)
+    {
+        if (VX_BORDER_UNDEFINED != border.mode)
+        {
+            status = VX_ERROR_NOT_SUPPORTED;
+            VX_PRINT(VX_ZONE_ERROR, "Only undefined border mode is supported for optical flow \n");
+        }
+    }
+
+#if 1
+
+    if (VX_SUCCESS == status)
+    {
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], VX_ARRAY_ITEMTYPE, &old_points_item_type, sizeof(old_points_item_type));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX], VX_ARRAY_CAPACITY, &old_points_capacity, sizeof(old_points_capacity));
+    }
+
+#endif
 
     return status;
 }
@@ -193,59 +357,93 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
             vx_uint32 num_params)
 {
     vx_status status = VX_SUCCESS;
-    vx_uint32 i;
     tivxKernelValidRectParams prms;
-    vx_pyramid pyr[2U];
-    vx_size levels[2U];
-    vx_image img[2U];
+    vx_pyramid old_images = NULL;
+    vx_size old_images_levels;
+    vx_pyramid new_images = NULL;
+    vx_size new_images_levels;
 
-    if (num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
+    vx_image old_image;
+    vx_image new_image;
+
+    vx_bool is_virtual = vx_false_e;
+
+    vx_uint32 i;
+
+    if ( (num_params != TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_USE_INITIAL_ESTIMATE_IDX])
+        || (NULL == parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        old_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
+        new_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxCheckStatus(&status, vxQueryPyramid(old_images, VX_PYRAMID_LEVELS, &old_images_levels, sizeof(old_images_levels)));
+
+        tivxCheckStatus(&status, vxQueryPyramid(new_images, VX_PYRAMID_LEVELS, &new_images_levels, sizeof(new_images_levels)));
+
+#if 1
+
+        is_virtual = tivxIsReferenceVirtual((vx_reference)new_images);
+
+#endif
+
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if (old_images_levels != new_images_levels)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'old_images' and 'new_images' should have the same value for VX_PYRAMID_LEVELS\n");
+        }
     }
 
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
-        pyr[0U] = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX];
-        pyr[1U] = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX];
-
-        for(i=0; i<2; i++)
+        if(vx_false_e == is_virtual)
         {
-            status |= vxQueryPyramid(pyr[i], VX_PYRAMID_LEVELS, &levels[i], sizeof(levels[i]));
-        }
+            for (i = 0U; i < old_images_levels; i++)
+            {
+                old_image = vxGetPyramidLevel(old_images, i);
+                new_image = vxGetPyramidLevel(new_images, i);
 
-        if(levels[0U] != levels[1U])
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
-    }
+                prms.in_img[0U] = old_image;
+                prms.in_img[1U] = new_image;
 
-    if ((VX_SUCCESS == status) && (vx_false_e == tivxIsReferenceVirtual((vx_reference)pyr[0U])) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)pyr[1U])) )
-    {
-        for (i = 0; i < levels[0U]; i++)
-        {
-            img[0] = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_PYRAMID_IDX], i);
-            img[1] = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_PYRAMID_IDX], i);
+                prms.num_input_images = 2U;
+                prms.num_output_images = 0U;
 
-            prms.in_img[0] = img[0];
-            prms.in_img[1] = img[1];
+                prms.top_pad = 0U;
+                prms.bot_pad = 0U;
+                prms.left_pad = 0U;
+                prms.right_pad = 0U;
+                prms.border_mode = VX_BORDER_UNDEFINED;
 
-            prms.num_input_images = 2;
-            prms.num_output_images = 0;
+                tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
 
-            prms.top_pad = 0;
-            prms.bot_pad = 0;
-            prms.left_pad = 0;
-            prms.right_pad = 0;
-            prms.border_mode = VX_BORDER_UNDEFINED;
-
-            status |= tivxKernelConfigValidRect(&prms);
-
-            status |= vxReleaseImage(&img[0]);
-            status |= vxReleaseImage(&img[1]);
+                tivxCheckStatus(&status, vxReleaseImage(&old_image));
+                tivxCheckStatus(&status, vxReleaseImage(&new_image));
+            }
         }
     }
 
@@ -257,23 +455,32 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
-                context,
-                "org.khronos.openvx.optical_flow_pyr_lk",
-                VX_KERNEL_OPTICAL_FLOW_PYR_LK,
-                NULL,
-                TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS,
-                tivxAddKernelOpticalFlowPyrLkValidate,
-                tivxAddKernelOpticalFlowPyrLkInitialize,
-                NULL);
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
 
-    status = vxGetStatus((vx_reference)kernel);
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    "org.khronos.openvx.optical_flow_pyr_lk",
+                    VX_KERNEL_OPTICAL_FLOW_PYR_LK,
+                    NULL,
+                    TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_MAX_PARAMS,
+                    tivxAddKernelOpticalFlowPyrLkValidate,
+                    tivxAddKernelOpticalFlowPyrLkInitialize,
+                    NULL);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
     if (status == VX_SUCCESS)
     {
         index = 0;
 
-        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
                         index,
@@ -328,7 +535,7 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_SCALAR,
+                        VX_TYPE_ENUM,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -368,10 +575,9 @@ vx_status tivxAddKernelOpticalFlowPyrLk(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_SCALAR,
+                        VX_TYPE_SIZE,
                         VX_PARAMETER_STATE_REQUIRED
             );
-            index++;
         }
         if (status == VX_SUCCESS)
         {

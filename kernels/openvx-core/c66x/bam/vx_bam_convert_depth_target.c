@@ -108,12 +108,12 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVERT_DEPTH_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
         sc_desc[0] = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN0_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_POLICY_IDX];
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN1_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -196,13 +196,13 @@ static vx_status VX_CALLBACK tivxKernelBamConvertDepthCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CONVERT_DEPTH_IN_IMG_IDX];
+            TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_CONVERT_DEPTH_OUT_IMG_IDX];
+            TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
         sc_desc[0] = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN0_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_POLICY_IDX];
         sc_desc[1] = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_IN1_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxConvertDepthParams), TIVX_MEM_EXTERNAL);
 

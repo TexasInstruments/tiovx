@@ -66,7 +66,7 @@
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_target_kernels_priv.h>
-#include <tivx_kernel_filter_3x3.h>
+#include <tivx_kernel_gaussian3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
@@ -79,19 +79,19 @@ typedef struct
 
 static tivx_target_kernel vx_gaussian_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxKernelGaussianProcess(
+static vx_status VX_CALLBACK tivxKernelGaussian3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelGaussianCreate(
+static vx_status VX_CALLBACK tivxKernelGaussian3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelGaussianDelete(
+static vx_status VX_CALLBACK tivxKernelGaussian3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelGaussianProcess(
+static vx_status VX_CALLBACK tivxKernelGaussian3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -102,14 +102,14 @@ static vx_status VX_CALLBACK tivxKernelGaussianProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_GAUSSIAN3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+            TIVX_KERNEL_GAUSSIAN3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_GAUSSIAN3X3_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -151,7 +151,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianProcess(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelGaussianCreate(
+static vx_status VX_CALLBACK tivxKernelGaussian3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -161,14 +161,14 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreate(
     tivxGaussianParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_GAUSSIAN3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+            TIVX_KERNEL_GAUSSIAN3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_GAUSSIAN3X3_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxGaussianParams), TIVX_MEM_EXTERNAL);
 
@@ -225,7 +225,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreate(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelGaussianDelete(
+static vx_status VX_CALLBACK tivxKernelGaussian3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -234,7 +234,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianDelete(
     tivxGaussianParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_GAUSSIAN3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -252,7 +252,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianDelete(
     return (status);
 }
 
-void tivxAddTargetKernelBamGaussian3x3(void)
+void tivxAddTargetKernelBamGaussian3X3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -275,16 +275,16 @@ void tivxAddTargetKernelBamGaussian3x3(void)
         vx_gaussian_target_kernel = tivxAddTargetKernel(
             VX_KERNEL_GAUSSIAN_3x3,
             target_name,
-            tivxKernelGaussianProcess,
-            tivxKernelGaussianCreate,
-            tivxKernelGaussianDelete,
+            tivxKernelGaussian3X3Process,
+            tivxKernelGaussian3X3Create,
+            tivxKernelGaussian3X3Delete,
             NULL,
             NULL);
     }
 }
 
 
-void tivxRemoveTargetKernelBamGaussian3x3(void)
+void tivxRemoveTargetKernelBamGaussian3X3(void)
 {
     tivxRemoveTargetKernel(vx_gaussian_target_kernel);
 }

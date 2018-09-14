@@ -85,13 +85,13 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
     VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
     vx_border_t border;
 
-    if (num_params != TIVX_KERNEL_SCALE_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_SCALE_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -106,10 +106,10 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
         sc = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_SCALE_IN_TYPE_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_OUT_IMG_IDX];
+            TIVX_KERNEL_SCALE_IMAGE_TYPE_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

@@ -107,11 +107,11 @@ static vx_status tivxKernelAccumulateWeighted(
         void *dst_desc_target_ptr;
 
         src_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_IN_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX];
         sc_desc = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_IN_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ALPHA_IDX];
 
         src_desc_target_ptr = tivxMemShared2TargetPtr(
             src_desc->mem_ptr[0U].shared_ptr, src_desc->mem_ptr[0U].mem_heap_region);

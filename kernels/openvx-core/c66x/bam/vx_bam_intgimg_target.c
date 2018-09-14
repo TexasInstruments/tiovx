@@ -102,12 +102,12 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_INTGIMG_MAX_PARAMS);
+                TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTGIMG_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTG_IMG_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -153,14 +153,14 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
     tivxIntgImgParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_INTGIMG_MAX_PARAMS);
+                TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_INTGIMG_IN_IMG_IDX];
+            TIVX_KERNEL_INTG_IMG_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
+            TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
 
@@ -224,7 +224,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     tivxIntgImgParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_INTGIMG_MAX_PARAMS);
+                TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

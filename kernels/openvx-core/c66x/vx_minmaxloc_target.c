@@ -86,15 +86,15 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
     uint32_t min_cnt = 0, max_cnt = 0, min_cap = 0, max_cap = 0;
     uint32_t *min_loc = NULL, *max_loc = NULL;
 
-    if (num_params != TIVX_KERNEL_MML_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_MML_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MML_OUT_MIN_SC_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MML_OUT_MAX_SC_IDX]))
+        if ((NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -106,13 +106,13 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
         void *arr0_target_ptr;
         void *arr1_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MML_IN_IMG_IDX];
-        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MIN_SC_IDX];
-        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MAX_SC_IDX];
-        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MIN_SC_C_IDX];
-        sc[3U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MML_OUT_MAX_SC_C_IDX];
-        arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MML_OUT_MIN_ARR_IDX];
-        arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MML_OUT_MAX_ARR_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX];
+        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX];
+        sc[3U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX];
+        arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
+        arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

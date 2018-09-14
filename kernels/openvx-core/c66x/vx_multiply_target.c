@@ -86,20 +86,20 @@ static vx_status VX_CALLBACK tivxKernelMultiplyProcess(
     uint16_t overflow_policy;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MULT_MAX_PARAMS);
+            TIVX_KERNEL_MULTIPLY_MAX_PARAMS);
     if (VX_SUCCESS == status)
     {
         void *src0_target_ptr;
         void *src1_target_ptr;
         void *dst_target_ptr;
 
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN0_IMG_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN1_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_OUT_IMG_IDX];
+        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULTIPLY_IN1_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULTIPLY_IN2_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULTIPLY_OUT_IDX];
 
-        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN0_SC_IDX];
-        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN1_SC_IDX];
-        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN2_SC_IDX];
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_SCALE_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_OVERFLOW_POLICY_IDX];
+        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_ROUNDING_POLICY_IDX];
 
         src0_target_ptr = tivxMemShared2TargetPtr(
             src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);

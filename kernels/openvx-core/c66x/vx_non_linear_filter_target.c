@@ -90,9 +90,9 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
 
     if ((num_params != TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX]))
+        || (NULL == obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX]))
     {
         status = VX_FAILURE;
     }
@@ -103,9 +103,9 @@ vx_status VX_CALLBACK tivxNonLinearFilter(
         void *dst_desc_target_ptr;
 
         function_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
-        src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_SRC_IDX];
+        src_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
         mask_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
-        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_DST_IDX];
+        dst_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
 
         src_desc_target_ptr = tivxMemShared2TargetPtr(
           src_desc->mem_ptr[0].shared_ptr, src_desc->mem_ptr[0].mem_heap_region);

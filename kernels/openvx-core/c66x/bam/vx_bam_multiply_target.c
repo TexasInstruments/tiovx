@@ -101,13 +101,13 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MULT_MAX_PARAMS);
+            TIVX_KERNEL_MULTIPLY_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN0_IMG_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_IN1_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULT_OUT_IMG_IDX];
+        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULTIPLY_IN1_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULTIPLY_IN2_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MULTIPLY_OUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -174,19 +174,19 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyCreate(
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MULT_MAX_PARAMS);
+            TIVX_KERNEL_MULTIPLY_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MULT_IN0_IMG_IDX];
+            TIVX_KERNEL_MULTIPLY_IN1_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MULT_IN1_IMG_IDX];
+            TIVX_KERNEL_MULTIPLY_IN2_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MULT_OUT_IMG_IDX];
-        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN0_SC_IDX];
-        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN1_SC_IDX];
-        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULT_IN2_SC_IDX];
+            TIVX_KERNEL_MULTIPLY_OUT_IDX];
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_SCALE_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_OVERFLOW_POLICY_IDX];
+        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MULTIPLY_ROUNDING_POLICY_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
 
@@ -351,7 +351,7 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyDelete(
 
     /* Check number of buffers and NULL pointers */
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_MULT_MAX_PARAMS);
+            TIVX_KERNEL_MULTIPLY_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {

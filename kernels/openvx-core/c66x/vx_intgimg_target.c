@@ -85,15 +85,15 @@ static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     uint32_t *prev_row, size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_INTGIMG_MAX_PARAMS);
+                TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         void *src_target_ptr;
         void *dst_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTGIMG_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTG_IMG_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
@@ -146,12 +146,12 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreate(
     void *temp_ptr;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_INTGIMG_MAX_PARAMS);
+                TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
+            TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
         temp_ptr = tivxMemAlloc(dst->imagepatch_addr[0].dim_x *
             sizeof(uint32_t), TIVX_MEM_EXTERNAL);
@@ -182,12 +182,12 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     void *temp_ptr;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_INTGIMG_MAX_PARAMS);
+                TIVX_KERNEL_INTG_IMG_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_INTGIMG_OUT_IMG_IDX];
+            TIVX_KERNEL_INTG_IMG_OUTPUT_IDX];
 
         tivxGetTargetKernelInstanceContext(kernel, &temp_ptr, &size);
 

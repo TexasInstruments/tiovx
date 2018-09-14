@@ -111,11 +111,11 @@ static vx_status VX_CALLBACK tivxKernelWarpAffineProcess(
         void *mat_target_ptr;
         void *dst_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_WARP_AFFINE_IN0_IMG_IDX];
-        mat = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_WARP_AFFINE_IN0_MAT_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_WARP_AFFINE_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_WARP_AFFINE_INPUT_IDX];
+        mat = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_WARP_AFFINE_MATRIX_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_WARP_AFFINE_OUTPUT_IDX];
 
-        sc = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_WARP_AFFINE_IN0_SC_IDX];
+        sc = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_WARP_AFFINE_TYPE_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

@@ -89,13 +89,13 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
     pixelsProcessed = 0U;
     currentSum = currentSqSum = 0.0f;
 
-    if (num_params != TIVX_KERNEL_MSD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_MSD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -109,9 +109,9 @@ static vx_status VX_CALLBACK tivxKernelMsdProcess(
     {
         void *src_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX];
-        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX];
-        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX];
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);

@@ -105,8 +105,8 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_ACCUM_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -163,11 +163,11 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ACCUMULATE_SQUARE_IN_IMG_IDX];
+            TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ACCUMULATE_SQUARE_OUT_IMG_IDX];
+            TIVX_KERNEL_ACCUMULATE_SQUARE_ACCUM_IDX];
         sc_desc = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_IN_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_SQUARE_SHIFT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxAccumulateSquareParams), TIVX_MEM_EXTERNAL);
 

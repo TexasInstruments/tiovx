@@ -105,8 +105,8 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -164,11 +164,11 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ACCUMULATE_WEIGHTED_IN_IMG_IDX];
+            TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ACCUMULATE_WEIGHTED_OUT_IMG_IDX];
+            TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX];
         sc_desc = (tivx_obj_desc_scalar_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_IN_SCALAR_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ALPHA_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxAccumulateParams), TIVX_MEM_EXTERNAL);
 

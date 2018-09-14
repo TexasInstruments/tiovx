@@ -107,9 +107,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffProcess(
     else
     {
         /* Check for NULL */
-        if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX]) &&
-             (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX])))
+        if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN2_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -117,9 +117,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffProcess(
 
     if (VX_SUCCESS == status)
     {
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX];
+        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ABSDIFF_IN2_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -182,9 +182,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX]) &&
-             (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX])))
+        if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN2_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -193,11 +193,11 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
     if (VX_SUCCESS == status)
     {
         src0 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX];
+            TIVX_KERNEL_ABSDIFF_IN1_IDX];
         src1 = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX];
+            TIVX_KERNEL_ABSDIFF_IN2_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX];
+            TIVX_KERNEL_ABSDIFF_OUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxAbsDiffParams), TIVX_MEM_EXTERNAL);
 
@@ -276,9 +276,9 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffDelete(
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX]) &&
-             (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX])))
+        if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN2_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
         }

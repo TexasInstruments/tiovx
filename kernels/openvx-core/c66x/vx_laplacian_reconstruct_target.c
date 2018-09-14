@@ -101,13 +101,13 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
     uint32_t size;
     vx_rectangle_t rect;
 
-    if (num_params != TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -118,10 +118,10 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctProcess(
     }
     if (VX_SUCCESS == status)
     {
-        low_img = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LPL_RCNSTR_IN_IMG_IDX];
+        low_img = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_INPUT_IDX];
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
-            TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX];
-        out_img = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LPL_RCNSTR_OUT_IMG_IDX];
+            TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_LAPLACIAN_IDX];
+        out_img = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -290,13 +290,13 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctCreate(
     tivx_obj_desc_pyramid_t *pmd;
     tivxLaplacianReconstructParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -309,7 +309,7 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctCreate(
     if (VX_SUCCESS == status)
     {
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
-            TIVX_KERNEL_LPL_RCNSTR_IN_PMD_IDX];
+            TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_LAPLACIAN_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxLaplacianReconstructParams),
             TIVX_MEM_EXTERNAL);
@@ -384,13 +384,13 @@ static vx_status VX_CALLBACK tivxKernelLplRcstrctDelete(
     uint32_t size;
     tivxLaplacianReconstructParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_LPL_RCNSTR_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {

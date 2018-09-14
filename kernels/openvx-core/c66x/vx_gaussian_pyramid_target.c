@@ -94,13 +94,13 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     uint8_t *temp_buf = NULL;
     uint32_t size, levels;
 
-    if (num_params != TIVX_KERNEL_G_PYD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_G_PYD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -111,9 +111,9 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
     }
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_G_PYD_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
-            TIVX_KERNEL_G_PYD_OUT_PYT_IDX];
+            TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -160,7 +160,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdProcess(
             if (0 == levels)
             {
                 src = (tivx_obj_desc_image_t *)obj_desc[
-                    TIVX_KERNEL_G_PYD_IN_IMG_IDX];
+                    TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
             }
             else
             {
@@ -280,13 +280,13 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
     void *temp_ptr;
     tivxGassPyrmdParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_G_PYD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_G_PYD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -299,9 +299,9 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdCreate(
     if (VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_G_PYD_IN_IMG_IDX];
+            TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
-            TIVX_KERNEL_G_PYD_OUT_PYT_IDX];
+            TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxGassPyrmdParams), TIVX_MEM_EXTERNAL);
 
@@ -350,13 +350,13 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
     tivx_obj_desc_pyramid_t *pmd;
     tivxGassPyrmdParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_G_PYD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_G_PYD_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_GAUSSIAN_PYRAMID_MAX_PARAMS; i ++)
         {
             if (NULL == obj_desc[i])
             {
@@ -369,7 +369,7 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
     if (VX_SUCCESS == status)
     {
         pmd = (tivx_obj_desc_pyramid_t *)obj_desc[
-            TIVX_KERNEL_G_PYD_OUT_PYT_IDX];
+            TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);

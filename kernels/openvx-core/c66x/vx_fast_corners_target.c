@@ -96,16 +96,16 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
     tivx_obj_desc_scalar_t *sc_thr, *sc_nms, *sc_cnt;
     vx_keypoint_t *kp;
 
-    if (num_params != TIVX_KERNEL_FASTC_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_FASTC_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS; i ++)
         {
             if ((NULL == obj_desc[i]) &&
-                (i != TIVX_KERNEL_FASTC_OUT_SC_CNT_IDX))
+                (i != TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -115,14 +115,14 @@ static vx_status VX_CALLBACK tivxKernelFastCProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_FASTC_IN_IMG_IDX];
-        arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_FASTC_OUT_ARR_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_FAST_CORNERS_INPUT_IDX];
+        arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX];
         sc_thr = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_FASTC_IN_SC_THR_IDX];
+            TIVX_KERNEL_FAST_CORNERS_STRENGTH_THRESH_IDX];
         sc_nms = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_FASTC_IN_NMS_IDX];
+            TIVX_KERNEL_FAST_CORNERS_NONMAX_SUPPRESSION_IDX];
         sc_cnt = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_FASTC_OUT_SC_CNT_IDX];
+            TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -210,16 +210,16 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
     tivx_obj_desc_array_t *arr;
     tivxFastCornersParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_FASTC_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_FASTC_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS; i ++)
         {
             if ((NULL == obj_desc[i]) &&
-                (i != TIVX_KERNEL_FASTC_OUT_SC_CNT_IDX))
+                (i != TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -230,9 +230,9 @@ static vx_status VX_CALLBACK tivxKernelFastCCreate(
     if (VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FASTC_IN_IMG_IDX];
+            TIVX_KERNEL_FAST_CORNERS_INPUT_IDX];
         arr = (tivx_obj_desc_array_t *)obj_desc[
-            TIVX_KERNEL_FASTC_OUT_ARR_IDX];
+            TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxFastCornersParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
@@ -328,16 +328,16 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
     tivx_obj_desc_array_t *arr;
     tivxFastCornersParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_FASTC_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_FASTC_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_FAST_CORNERS_MAX_PARAMS; i ++)
         {
             if ((NULL == obj_desc[i]) &&
-                (i != TIVX_KERNEL_FASTC_OUT_SC_CNT_IDX))
+                (i != TIVX_KERNEL_FAST_CORNERS_NUM_CORNERS_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -348,7 +348,7 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
     if (VX_SUCCESS == status)
     {
         arr = (tivx_obj_desc_array_t *)obj_desc[
-            TIVX_KERNEL_FASTC_OUT_ARR_IDX];
+            TIVX_KERNEL_FAST_CORNERS_CORNERS_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);

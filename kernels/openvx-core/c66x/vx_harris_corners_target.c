@@ -137,16 +137,16 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
     vx_keypoint_t *kp;
     vx_rectangle_t rect;
 
-    if (num_params != TIVX_KERNEL_HARRISC_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS; i ++)
         {
             if ((NULL == obj_desc[i]) &&
-                (i != TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX))
+                (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -156,18 +156,18 @@ static vx_status VX_CALLBACK tivxKernelHarrisCProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HARRISC_IN_IMG_IDX];
-        arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_HARRISC_OUT_ARR_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
+        arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_HARRIS_CORNERS_CORNERS_IDX];
         sc_thr = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_THR_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_STRENGTH_THRESH_IDX];
         sc_bs = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_BS_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_BLOCK_SIZE_IDX];
         sc_gs = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_GS_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_GRADIENT_SIZE_IDX];
         sc_sens = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_SENS_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_SENSITIVITY_IDX];
         sc_cnt = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -282,16 +282,16 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
     tivxHarrisCornersParams *prms = NULL;
     tivx_obj_desc_scalar_t *sc_dist, *sc_gs, *sc_bs;
 
-    if (num_params != TIVX_KERNEL_HARRISC_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS; i ++)
         {
             if ((NULL == obj_desc[i]) &&
-                (i != TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX))
+                (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
                 status = VX_FAILURE;
                 break;
@@ -302,13 +302,13 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
     if (VX_SUCCESS == status)
     {
         img = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_IMG_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_INPUT_IDX];
         sc_bs = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_BS_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_BLOCK_SIZE_IDX];
         sc_gs = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_GS_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_GRADIENT_SIZE_IDX];
         sc_dist = (tivx_obj_desc_scalar_t *)obj_desc[
-            TIVX_KERNEL_HARRISC_IN_SC_DIST_IDX];
+            TIVX_KERNEL_HARRIS_CORNERS_MIN_DISTANCE_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxHarrisCornersParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
@@ -521,16 +521,16 @@ static vx_status VX_CALLBACK tivxKernelHarrisCDelete(
     uint32_t size;
     tivxHarrisCornersParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_HARRISC_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        for (i = 0U; i < TIVX_KERNEL_HARRISC_MAX_PARAMS; i ++)
+        for (i = 0U; i < TIVX_KERNEL_HARRIS_CORNERS_MAX_PARAMS; i ++)
         {
             if ((NULL == obj_desc[i]) &&
-                (i != TIVX_KERNEL_HARRISC_OUT_SC_CNT_IDX))
+                (i != TIVX_KERNEL_HARRIS_CORNERS_NUM_CORNERS_IDX))
             {
                 status = VX_FAILURE;
                 break;

@@ -62,9 +62,8 @@
 
 
 
-
-#ifndef TIVX_KENREL_LUT_
-#define TIVX_KENREL_LUT_
+#ifndef TIVX_KERNEL_BOX3X3_
+#define TIVX_KERNEL_BOX3X3_
 
 
 #ifdef __cplusplus
@@ -73,7 +72,7 @@ extern "C" {
 
 /*!
  * \file
- * \brief Interface file for bitwise kernel
+ * \brief Interface file for box3x3 kernel
  */
 
 
@@ -82,49 +81,21 @@ extern "C" {
  *
  * \ingroup group_tivx_int_common_kernel
  */
-#define TIVX_KERNEL_BITWISE_IN0_IMG_IDX          (0U)
-
-/*!
- * \brief Index of the input image
- *
- * \ingroup group_tivx_int_common_kernel
- */
-#define TIVX_KERNEL_BITWISE_IN1_IMG_IDX          (1U)
+#define TIVX_KERNEL_BOX3X3_INPUT_IDX        (0U)
 
 /*!
  * \brief Index of the output image
  *
  * \ingroup group_tivx_int_common_kernel
  */
-#define TIVX_KERNEL_BITWISE_OUT_IMG_IDX          (2U)
+#define TIVX_KERNEL_BOX3X3_OUTPUT_IDX       (1U)
 
 /*!
- * \brief Max Parameter for bitwise operation
+ * \brief Max number of params
  *
  * \ingroup group_tivx_int_common_kernel
  */
-#define TIVX_KERNEL_BITWISE_MAX_PARAMS           (3U)
-
-/*!
- * \brief Index of the input image for Not operation
- *
- * \ingroup group_tivx_int_common_kernel
- */
-#define TIVX_KERNEL_BITWISE_NOT_IN_IMG_IDX          (0U)
-
-/*!
- * \brief Index of the output image for Not operation
- *
- * \ingroup group_tivx_int_common_kernel
- */
-#define TIVX_KERNEL_BITWISE_NOT_OUT_IMG_IDX         (1U)
-
-/*!
- * \brief Max Parameter for bitwise Not operation
- *
- * \ingroup group_tivx_int_common_kernel
- */
-#define TIVX_KERNEL_BITWISE_NOT_MAX_PARAMS           (2U)
+#define TIVX_KERNEL_BOX3X3_MAX_PARAMS       (2U)
 
 #ifdef __cplusplus
 }

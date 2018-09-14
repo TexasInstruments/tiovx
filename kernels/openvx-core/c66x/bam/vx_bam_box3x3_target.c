@@ -66,7 +66,7 @@
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_target_kernels_priv.h>
-#include <tivx_kernel_filter_3x3.h>
+#include <tivx_kernel_box3x3.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
@@ -79,19 +79,19 @@ typedef struct
 
 static tivx_target_kernel vx_box_target_kernel = NULL;
 
-static vx_status VX_CALLBACK tivxKernelBoxProcess(
+static vx_status VX_CALLBACK tivxKernelBox3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBoxCreate(
+static vx_status VX_CALLBACK tivxKernelBox3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBoxDelete(
+static vx_status VX_CALLBACK tivxKernelBox3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBoxProcess(
+static vx_status VX_CALLBACK tivxKernelBox3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -102,13 +102,13 @@ static vx_status VX_CALLBACK tivxKernelBoxProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_BOX3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_BOX3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_BOX3X3_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -150,7 +150,7 @@ static vx_status VX_CALLBACK tivxKernelBoxProcess(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelBoxCreate(
+static vx_status VX_CALLBACK tivxKernelBox3X3Create(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -160,14 +160,14 @@ static vx_status VX_CALLBACK tivxKernelBoxCreate(
     tivxBoxParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_BOX3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_IN_IMG_IDX];
+            TIVX_KERNEL_BOX3X3_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_FILT3x3_OUT_IMG_IDX];
+            TIVX_KERNEL_BOX3X3_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxBoxParams), TIVX_MEM_EXTERNAL);
 
@@ -222,7 +222,7 @@ static vx_status VX_CALLBACK tivxKernelBoxCreate(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelBoxDelete(
+static vx_status VX_CALLBACK tivxKernelBox3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -231,7 +231,7 @@ static vx_status VX_CALLBACK tivxKernelBoxDelete(
     tivxBoxParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_FILT3x3_MAX_PARAMS);
+            TIVX_KERNEL_BOX3X3_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
@@ -249,7 +249,7 @@ static vx_status VX_CALLBACK tivxKernelBoxDelete(
     return (status);
 }
 
-void tivxAddTargetKernelBamBox3x3(void)
+void tivxAddTargetKernelBamBox3X3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
@@ -272,16 +272,16 @@ void tivxAddTargetKernelBamBox3x3(void)
         vx_box_target_kernel = tivxAddTargetKernel(
             VX_KERNEL_BOX_3x3,
             target_name,
-            tivxKernelBoxProcess,
-            tivxKernelBoxCreate,
-            tivxKernelBoxDelete,
+            tivxKernelBox3X3Process,
+            tivxKernelBox3X3Create,
+            tivxKernelBox3X3Delete,
             NULL,
             NULL);
     }
 }
 
 
-void tivxRemoveTargetKernelBamBox3x3(void)
+void tivxRemoveTargetKernelBamBox3X3(void)
 {
     tivxRemoveTargetKernel(vx_box_target_kernel);
 }

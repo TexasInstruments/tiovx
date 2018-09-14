@@ -94,11 +94,11 @@ vx_status VX_CALLBACK tivxAbsDiff(
 
         /* Get the Src and Dst descriptors */
         src0_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ABSDIFF_IN0_IMG_IDX];
+            TIVX_KERNEL_ABSDIFF_IN1_IDX];
         src1_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ABSDIFF_IN1_IMG_IDX];
+            TIVX_KERNEL_ABSDIFF_IN2_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_ABSDIFF_OUT_IMG_IDX];
+            TIVX_KERNEL_ABSDIFF_OUT_IDX];
 
         /* Get the target pointer from the shared pointer for all
            buffers */

@@ -95,11 +95,11 @@ vx_status VX_CALLBACK tivxMagnitude(
 
         /* Get the Src and Dst descriptors */
         src0_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MAGNITUDE_IN0_IMG_IDX];
+            TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX];
         src1_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MAGNITUDE_IN1_IMG_IDX];
+            TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX];
         dst_desc = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_MAGNITUDE_OUT_IMG_IDX];
+            TIVX_KERNEL_MAGNITUDE_MAG_IDX];
 
         /* Get the target pointer from the shared pointer for all
            buffers */

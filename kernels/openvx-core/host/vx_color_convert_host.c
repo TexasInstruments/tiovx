@@ -1,139 +1,81 @@
 /*
-*
-* Copyright (c) 2017 Texas Instruments Incorporated
-*
-* All rights reserved not granted herein.
-*
-* Limited License.
-*
-* Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
-* license under copyrights and patents it now or hereafter owns or controls to make,
-* have made, use, import, offer to sell and sell ("Utilize") this software subject to the
-* terms herein.  With respect to the foregoing patent license, such license is granted
-* solely to the extent that any such patent is necessary to Utilize the software alone.
-* The patent license shall not apply to any combinations which include this software,
-* other than combinations with devices manufactured by or for TI ("TI Devices").
-* No hardware patent is licensed hereunder.
-*
-* Redistributions must preserve existing copyright notices and reproduce this license
-* (including the above copyright notice and the disclaimer and (if applicable) source
-* code license limitations below) in the documentation and/or other materials provided
-* with the distribution
-*
-* Redistribution and use in binary form, without modification, are permitted provided
-* that the following conditions are met:
-*
-* *       No reverse engineering, decompilation, or disassembly of this software is
-* permitted with respect to any software provided in binary form.
-*
-* *       any redistribution and use are licensed by TI for use only with TI Devices.
-*
-* *       Nothing shall obligate TI to provide you with source code for the software
-* licensed and provided to you in object code.
-*
-* If software source code is provided to you, modification and redistribution of the
-* source code are permitted provided that the following conditions are met:
-*
-* *       any redistribution and use of the source code, including any resulting derivative
-* works, are licensed by TI for use only with TI Devices.
-*
-* *       any redistribution and use of any object code compiled from the source code
-* and any resulting derivative works, are licensed by TI for use only with TI Devices.
-*
-* Neither the name of Texas Instruments Incorporated nor the names of its suppliers
-*
-* may be used to endorse or promote products derived from this software without
-* specific prior written permission.
-*
-* DISCLAIMER.
-*
-* THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
-* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
-* OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-* IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-* INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-* BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
-* OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
-* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
-* OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
-
-
+ *
+ * Copyright (c) 2017 Texas Instruments Incorporated
+ *
+ * All rights reserved not granted herein.
+ *
+ * Limited License.
+ *
+ * Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
+ * license under copyrights and patents it now or hereafter owns or controls to make,
+ * have made, use, import, offer to sell and sell ("Utilize") this software subject to the
+ * terms herein.  With respect to the foregoing patent license, such license is granted
+ * solely to the extent that any such patent is necessary to Utilize the software alone.
+ * The patent license shall not apply to any combinations which include this software,
+ * other than combinations with devices manufactured by or for TI ("TI Devices").
+ * No hardware patent is licensed hereunder.
+ *
+ * Redistributions must preserve existing copyright notices and reproduce this license
+ * (including the above copyright notice and the disclaimer and (if applicable) source
+ * code license limitations below) in the documentation and/or other materials provided
+ * with the distribution
+ *
+ * Redistribution and use in binary form, without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ * *       No reverse engineering, decompilation, or disassembly of this software is
+ * permitted with respect to any software provided in binary form.
+ *
+ * *       any redistribution and use are licensed by TI for use only with TI Devices.
+ *
+ * *       Nothing shall obligate TI to provide you with source code for the software
+ * licensed and provided to you in object code.
+ *
+ * If software source code is provided to you, modification and redistribution of the
+ * source code are permitted provided that the following conditions are met:
+ *
+ * *       any redistribution and use of the source code, including any resulting derivative
+ * works, are licensed by TI for use only with TI Devices.
+ *
+ * *       any redistribution and use of any object code compiled from the source code
+ * and any resulting derivative works, are licensed by TI for use only with TI Devices.
+ *
+ * Neither the name of Texas Instruments Incorporated nor the names of its suppliers
+ *
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * DISCLAIMER.
+ *
+ * THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 
 #include <TI/tivx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_kernel_color_convert.h>
 #include <TI/tivx_target_kernel.h>
 
-
 static vx_kernel vx_color_convert_kernel = NULL;
-
-static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format);
 
 static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num,
             vx_meta_format metas[]);
-
 static vx_status VX_CALLBACK tivxAddKernelColorConvertInitialize(vx_node node,
             const vx_reference parameters[ ],
             vx_uint32 num_params);
-
-static vx_status tivxCheckFormatAndPlanes(vx_size plane, vx_df_image format)
-{
-    vx_status status = VX_ERROR_INVALID_PARAMETERS;
-
-    switch(plane)
-    {
-        case 1:
-        {
-            switch (format)
-            {
-                case VX_DF_IMAGE_RGB:
-                case VX_DF_IMAGE_RGBX:
-                case VX_DF_IMAGE_UYVY:
-                case VX_DF_IMAGE_YUYV:
-                    status = VX_SUCCESS;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-        case 2:
-        {
-            switch (format)
-            {
-                case VX_DF_IMAGE_NV12:
-                case VX_DF_IMAGE_NV21:
-                    status = VX_SUCCESS;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-        case 3:
-        {
-            switch (format)
-            {
-                case VX_DF_IMAGE_IYUV:
-                case VX_DF_IMAGE_YUV4:
-                    status = VX_SUCCESS;
-                    break;
-                default:
-                    break;
-            }
-            break;
-        }
-        default:
-            break;
-    }
-
-    return status;
-}
+vx_status tivxAddKernelColorConvert(vx_context context);
+vx_status tivxRemoveKernelColorConvert(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -141,106 +83,205 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertValidate(vx_node node,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
-    vx_image img[2U];
-    vx_df_image out_fmt;
-    vx_uint32 i, w[2U], h[2U];
-    vx_df_image src_format, dst_format;
-    vx_size src_planes, dst_planes;
-    vx_enum src_space;
-    vx_rectangle_t rect;
 
-    for (i = 0U; i < TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS; i++)
+    vx_image input = NULL;
+    vx_uint32 input_w;
+    vx_uint32 input_h;
+    vx_df_image input_fmt;
+    vx_size input_planes;
+
+    vx_image output = NULL;
+    vx_uint32 output_w;
+    vx_uint32 output_h;
+    vx_df_image output_fmt;
+    vx_size output_planes;
+
+    vx_bool is_virtual = vx_false_e;
+
+    if ( (num != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX])
+    )
     {
-        /* Check for NULL */
-        if (NULL == parameters[i])
-        {
-            status = VX_ERROR_NO_MEMORY;
-            break;
-        }
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
 
     if (VX_SUCCESS == status)
     {
-        img[0U] = (vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
-        img[1U] = (vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
-
-        status |= vxQueryImage(img[0U], VX_IMAGE_FORMAT, &src_format, sizeof(src_format));
-        status |= vxQueryImage(img[0U], VX_IMAGE_SPACE, &src_space, sizeof(src_space));
-        status |= vxQueryImage(img[0U], VX_IMAGE_PLANES, &src_planes, sizeof(src_planes));
-
-        status |= vxQueryImage(img[0U], VX_IMAGE_WIDTH, &w[0U], sizeof(w[0U]));
-        status |= vxQueryImage(img[0U], VX_IMAGE_HEIGHT, &h[0U], sizeof(h[0U]));
-
-        status |= vxGetValidRegionImage(img[0U], &rect);
-
-        if (VX_SUCCESS == status)
-        {
-            status = tivxCheckFormatAndPlanes(src_planes, src_format);
-        }
-        dst_format = src_format;
+        input = (const vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
+        output = (const vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
     }
+
+
+    /* PARAMETER ATTRIBUTE FETCH */
 
     if (VX_SUCCESS == status)
     {
-        status |= vxQueryImage(img[1U], VX_IMAGE_FORMAT, &dst_format, sizeof(dst_format));
-        status |= vxQueryImage(img[1U], VX_IMAGE_PLANES, &dst_planes, sizeof(dst_planes));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_HEIGHT, &input_h, sizeof(input_h)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_PLANES, &input_planes, sizeof(input_planes)));
 
-        status |= vxQueryImage(img[1U], VX_IMAGE_WIDTH, &w[1U], sizeof(w[1U]));
-        status |= vxQueryImage(img[1U], VX_IMAGE_HEIGHT, &h[1U], sizeof(h[1U]));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_WIDTH, &output_w, sizeof(output_w)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_HEIGHT, &output_h, sizeof(output_h)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt)));
+        tivxCheckStatus(&status, vxQueryImage(output, VX_IMAGE_PLANES, &output_planes, sizeof(output_planes)));
 
-        if (VX_SUCCESS == status)
-        {
-            if(src_format == dst_format)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
-        }
+#if 1
+
+        is_virtual = tivxIsReferenceVirtual((vx_reference)output);
+
+#endif
+
     }
 
-    if ((VX_SUCCESS == status) &&
-        (vx_false_e == tivxIsReferenceVirtual((vx_reference)img[1U])))
-    {
-        if (VX_SUCCESS == status)
-        {
-            /* Verifies luma channel size */
-            if ((w[0U] != w[1U]) || (h[0U] != h[1U]))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
 
-            if(src_format == dst_format)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-            }
-        }
-
-        if (VX_SUCCESS == status)
-        {
-            status = tivxCheckFormatAndPlanes(dst_planes, dst_format);
-        }
-    }
+    /* PARAMETER CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        out_fmt = dst_format;
-        for (i = 0U; i < TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS; i ++)
+        if( (VX_DF_IMAGE_RGB != input_fmt) &&
+            (VX_DF_IMAGE_RGBX != input_fmt) &&
+            (VX_DF_IMAGE_NV12 != input_fmt) &&
+            (VX_DF_IMAGE_NV21 != input_fmt) &&
+            (VX_DF_IMAGE_UYVY != input_fmt) &&
+            (VX_DF_IMAGE_YUYV != input_fmt) &&
+            (VX_DF_IMAGE_IYUV != input_fmt) &&
+            (VX_DF_IMAGE_YUV4 != input_fmt))
         {
-            if (NULL != metas[i])
-            {
-                vx_enum type = 0;
-                vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
-                if (VX_TYPE_IMAGE == type)
-                {
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_FORMAT, &out_fmt,
-                        sizeof(out_fmt));
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_WIDTH, &w[0U],
-                        sizeof(w[0U]));
-                    vxSetMetaFormatAttribute(metas[i], VX_IMAGE_HEIGHT, &h[0U],
-                        sizeof(h[0U]));
-                }
-            }
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'input' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
+        }
+
+        if( (VX_DF_IMAGE_RGB != output_fmt) &&
+            (VX_DF_IMAGE_RGBX != output_fmt) &&
+            (VX_DF_IMAGE_NV12 != output_fmt) &&
+            (VX_DF_IMAGE_NV21 != output_fmt) &&
+            (VX_DF_IMAGE_UYVY != output_fmt) &&
+            (VX_DF_IMAGE_YUYV != output_fmt) &&
+            (VX_DF_IMAGE_IYUV != output_fmt) &&
+            (VX_DF_IMAGE_YUV4 != output_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' should be an image of type:\n VX_DF_IMAGE_RGB or VX_DF_IMAGE_RGBX or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_NV21 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_IYUV or VX_DF_IMAGE_YUV4 \n");
         }
     }
+
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (vx_false_e == is_virtual)
+        {
+            if (input_w != output_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_WIDTH \n");
+            }
+
+            if (input_h != output_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' should have the same value for VX_IMAGE_HEIGHT \n");
+            }
+        }
+
+        if (input_fmt == output_fmt)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input' and 'output' must not be the same format \n");
+        }
+    }
+
+
+    /* CUSTOM PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (1U == input_planes)
+        {
+            if ((VX_DF_IMAGE_RGB != input_fmt) &&
+                (VX_DF_IMAGE_RGBX != input_fmt) &&
+                (VX_DF_IMAGE_UYVY != input_fmt) &&
+                (VX_DF_IMAGE_YUYV != input_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid input format for 1 plane \n");
+            }
+        }
+        else if (2U == input_planes)
+        {
+            if ((VX_DF_IMAGE_NV12 != input_fmt) &&
+                (VX_DF_IMAGE_NV21 != input_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid input format for 2 planes \n");
+            }
+        }
+        else if (3U == input_planes)
+        {
+            if ((VX_DF_IMAGE_IYUV != input_fmt) &&
+                (VX_DF_IMAGE_YUV4 != input_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid input format for 3 planes \n");
+            }
+        }
+        else
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Invalid number of input planes \n");
+        }
+
+        if (1U == output_planes)
+        {
+            if ((VX_DF_IMAGE_RGB != output_fmt) &&
+                (VX_DF_IMAGE_RGBX != output_fmt) &&
+                (VX_DF_IMAGE_UYVY != output_fmt) &&
+                (VX_DF_IMAGE_YUYV != output_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid output format for 1 plane \n");
+            }
+        }
+        else if (2U == output_planes)
+        {
+            if ((VX_DF_IMAGE_NV12 != output_fmt) &&
+                (VX_DF_IMAGE_NV21 != output_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid output format for 2 planes \n");
+            }
+        }
+        else if (3U == output_planes)
+        {
+            if ((VX_DF_IMAGE_IYUV != output_fmt) &&
+                (VX_DF_IMAGE_YUV4 != output_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid output format for 3 planes \n");
+            }
+        }
+        else
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Invalid number of output planes \n");
+        }
+    }
+
+#if 1
+
+    if (VX_SUCCESS == status)
+    {
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX], VX_IMAGE_FORMAT, &output_fmt, sizeof(output_fmt));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX], VX_IMAGE_WIDTH, &input_w, sizeof(input_w));
+        vxSetMetaFormatAttribute(metas[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX], VX_IMAGE_HEIGHT, &input_h, sizeof(input_h));
+    }
+
+#endif
+
     return status;
 }
 
@@ -251,90 +292,96 @@ static vx_status VX_CALLBACK tivxAddKernelColorConvertInitialize(vx_node node,
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
-    if ((num_params != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
-        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX])
-        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX]))
+    if ( (num_params != TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX])
+        || (NULL == parameters[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-
     if (VX_SUCCESS == status)
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0] = (vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_IN_IMG_IDX];
-        prms.out_img[0] = (vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_OUT_IMG_IDX];
+        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
+        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
 
-        prms.num_input_images = 1;
-        prms.num_output_images = 1;
+        prms.num_input_images = 1U;
+        prms.num_output_images = 1U;
 
-        prms.top_pad = 0;
-        prms.bot_pad = 0;
-        prms.left_pad = 0;
-        prms.right_pad = 0;
+        prms.top_pad = 0U;
+        prms.bot_pad = 0U;
+        prms.left_pad = 0U;
+        prms.right_pad = 0U;
         prms.border_mode = VX_BORDER_UNDEFINED;
 
-        status = tivxKernelConfigValidRect(&prms);
+        tivxCheckStatus(&status, tivxKernelConfigValidRect(&prms));
     }
 
     return status;
 }
-
 
 vx_status tivxAddKernelColorConvert(vx_context context)
 {
     vx_kernel kernel;
     vx_status status;
     uint32_t index;
+    vx_enum kernel_id;
 
-    kernel = vxAddUserKernel(
-                            context,
-                            "org.khronos.openvx.color_convert",
-                            VX_KERNEL_COLOR_CONVERT,
-                            NULL,
-                            2,
-                            tivxAddKernelColorConvertValidate,
-                            tivxAddKernelColorConvertInitialize,
-                            NULL);
+    status = vxAllocateUserKernelId(context, &kernel_id);
+    if(status != VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate user kernel ID\n");
+    }
 
-    status = vxGetStatus((vx_reference)kernel);
+    if (status == VX_SUCCESS)
+    {
+        kernel = vxAddUserKernel(
+                    context,
+                    "org.khronos.openvx.color_convert",
+                    VX_KERNEL_COLOR_CONVERT,
+                    NULL,
+                    TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS,
+                    tivxAddKernelColorConvertValidate,
+                    tivxAddKernelColorConvertInitialize,
+                    NULL);
 
-    if ( status == VX_SUCCESS)
+        status = vxGetStatus((vx_reference)kernel);
+    }
+    if (status == VX_SUCCESS)
     {
         index = 0;
 
-        if ( status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
-                index,
-                VX_INPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
-                );
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_REQUIRED
+            );
             index++;
         }
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
-                index,
-                VX_OUTPUT,
-                VX_TYPE_IMAGE,
-                VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
+                        index,
+                        VX_OUTPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_REQUIRED
+            );
         }
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP1);
             tivxAddKernelTarget(kernel, TIVX_TARGET_DSP2);
         }
-
-        if ( status == VX_SUCCESS)
+        if (status == VX_SUCCESS)
         {
             status = vxFinalizeKernel(kernel);
         }
-        if( status != VX_SUCCESS)
+        if (status != VX_SUCCESS)
         {
             vxReleaseKernel(&kernel);
             kernel = NULL;
@@ -344,7 +391,6 @@ vx_status tivxAddKernelColorConvert(vx_context context)
     {
         kernel = NULL;
     }
-
     vx_color_convert_kernel = kernel;
 
     return status;
@@ -355,9 +401,7 @@ vx_status tivxRemoveKernelColorConvert(vx_context context)
     vx_status status;
     vx_kernel kernel = vx_color_convert_kernel;
 
-    /* Kernel is released as part of Remove Kernel */
     status = vxRemoveKernel(kernel);
-
     vx_color_convert_kernel = NULL;
 
     return status;

@@ -99,15 +99,15 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
     tivxMeanStdDevParams *prms = NULL;
     uint32_t size;
 
-    if (num_params != TIVX_KERNEL_MSD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX]))
+        if ((NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX]))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -134,9 +134,9 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
         void *img_ptrs[1];
         void *src_target_ptr;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX];
-        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX];
-        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX];
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX];
 
         src_target_ptr = tivxMemShared2TargetPtr(
             src->mem_ptr[0].shared_ptr, src->mem_ptr[0].mem_heap_region);
@@ -170,15 +170,15 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
     vx_status status = VX_SUCCESS;
     tivxMeanStdDevParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_MSD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX]))
+        if ((NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX]))
         {
             status = VX_ERROR_NO_MEMORY;
         }
@@ -188,7 +188,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
     {
         tivx_obj_desc_image_t *src;
 
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxMeanStdDevParams), TIVX_MEM_EXTERNAL);
 
@@ -246,15 +246,15 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
     uint32_t size;
     tivxMeanStdDevParams *prms = NULL;
 
-    if (num_params != TIVX_KERNEL_MSD_MAX_PARAMS)
+    if (num_params != TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS)
     {
         status = VX_FAILURE;
     }
     else
     {
-        if ((NULL == obj_desc[TIVX_KERNEL_MSD_IN_IMG_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MSD_OUT_MEAN_IDX]) ||
-            (NULL == obj_desc[TIVX_KERNEL_MSD_OUT_STDDEV_IDX]))
+        if ((NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX]))
         {
             status = VX_ERROR_NO_MEMORY;
         }

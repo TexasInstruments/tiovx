@@ -440,9 +440,9 @@ vx_status VX_CALLBACK tivxChannelExtract(
         vx_enum channel_value;
         void *out_desc_target_ptr;
 
-        in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_IN_IDX];
+        in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
         channel_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
-        out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_OUT_IDX];
+        out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
 
         out_desc_target_ptr = tivxMemShared2TargetPtr(
           out_desc->mem_ptr[0].shared_ptr, out_desc->mem_ptr[0].mem_heap_region);

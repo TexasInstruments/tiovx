@@ -107,8 +107,8 @@ static vx_status VX_CALLBACK tivxKernelHistogramProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_IN_IMG_IDX];
-        dst = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_OUT_IMG_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_INPUT_IDX];
+        dst = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -167,9 +167,9 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_HISTOGRAM_IN_IMG_IDX];
+            TIVX_KERNEL_HISTOGRAM_INPUT_IDX];
         dst = (tivx_obj_desc_distribution_t *)obj_desc[
-            TIVX_KERNEL_HISTOGRAM_OUT_IMG_IDX];
+            TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
 

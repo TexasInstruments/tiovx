@@ -106,9 +106,9 @@ static vx_status tivxKernelAccumulate(
         void *dst_desc_target_ptr;
 
         src_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_IN_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_INPUT_IDX];
         dst_desc = (tivx_obj_desc_image_t *)
-            obj_desc[TIVX_KERNEL_ACCUMULATE_OUT_IMG_IDX];
+            obj_desc[TIVX_KERNEL_ACCUMULATE_ACCUM_IDX];
 
         src_desc_target_ptr = tivxMemShared2TargetPtr(
             src_desc->mem_ptr[0U].shared_ptr, src_desc->mem_ptr[0U].mem_heap_region);
