@@ -14,6 +14,12 @@ CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security
 endif
 
+ifeq ($(HOST_COMPILER),GCC_SYSBIOS_ARM)
+CFLAGS += -Wno-unused-function
+CFLAGS += -Wno-unused-variable
+CFLAGS += -Wno-format-security
+endif
+
 include $(FINALE)
 
 endif

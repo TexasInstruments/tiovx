@@ -57,7 +57,7 @@ vx_status tivxPlatformInit(void)
     BUILD_ASSERT(
     (sizeof(tivx_obj_desc_shm_entry_t)) <= TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE);
 
-    retVal = appIpcGetTiovxObjDescSharedMemInfo((void**)gTivxObjDescShmEntry, &shmSize);
+    retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
     if( (0U != retVal) || (gTivxObjDescShmEntry == NULL)
         || shmSize < (TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST*sizeof(tivx_obj_desc_shm_entry_t)))
@@ -194,7 +194,7 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
         table_info->last_alloc_index = 0U;
     }
 
-#if defined (R5F)
+#if defined (A72)
     {
         tivx_obj_desc_t *tmp_obj_desc = NULL;
         uint32_t i;

@@ -79,7 +79,7 @@ static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_
 
   sTIDL_IOBufDesc_t *ioBufDesc;
 
-  vx_array   config_array;
+  vx_array   config_array = NULL;
   vx_size    stride = sizeof(vx_uint8);
   vx_uint32  capacity;
   vx_enum config_type = VX_TYPE_INVALID;
@@ -103,6 +103,7 @@ static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_
 
   if(ioBufDesc) {
     fread(ioBufDesc, capacity, stride, fp_config);
+    fclose(fp_config);
   } else {
     printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
     return NULL;
@@ -110,7 +111,10 @@ static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_
 
   /* Create a user struct type for handling config data*/
   config_type = vxRegisterUserStruct(context, sizeof(sTIDL_IOBufDesc_t));
-  ASSERT(config_type >= VX_TYPE_USER_STRUCT_START && config_type <= VX_TYPE_USER_STRUCT_END);
+  if(config_type < VX_TYPE_USER_STRUCT_START || config_type > VX_TYPE_USER_STRUCT_END)
+  {
+    return NULL;
+  }
   config_array = vxCreateArray(context, config_type, 1);
 
   status = vxGetStatus((vx_reference)config_array);

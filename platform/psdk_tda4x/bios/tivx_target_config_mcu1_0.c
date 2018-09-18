@@ -17,9 +17,9 @@
  * \brief Target Stack
  *******************************************************************************
  */
-#pragma DATA_ALIGN(gHost_tskStack, 32)
-#pragma DATA_SECTION(gHost_tskStack, ".bss:taskStackSection")
-uint8_t gHost_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE];
+static uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE]
+    __attribute__ ((aligned(4096)))
+    ;
 
 
 void tivxPlatformCreateTargets(void)
@@ -27,7 +27,7 @@ void tivxPlatformCreateTargets(void)
     vx_status status;
     tivx_target_create_params_t target_create_prms;
 
-    target_create_prms.task_stack_ptr = gHost_tskStack;
+    target_create_prms.task_stack_ptr = gTarget_tskStack;
     target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
     target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
     target_create_prms.task_priority = 8U;

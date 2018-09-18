@@ -75,23 +75,8 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for EVE1 */
     TIVX_TARGET_ID_EVE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_EVE1, 0u),
 
-    /*! \brief target ID for EVE2 */
-    TIVX_TARGET_ID_EVE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_EVE2, 0u),
-
-    /*! \brief target ID for EVE3 */
-    TIVX_TARGET_ID_EVE3 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_EVE3, 0u),
-
-    /*! \brief target ID for EVE4 */
-    TIVX_TARGET_ID_EVE4 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_EVE4, 0u),
-
     /*! \brief target ID for IPU1-0 */
     TIVX_TARGET_ID_IPU1_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 0u),
-
-    /*! \brief target ID for IPU1-1 */
-    TIVX_TARGET_ID_IPU1_1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_1, 0u),
-
-    /*! \brief target ID for IPU2 */
-    TIVX_TARGET_ID_IPU2_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU2_0, 0u),
 
     /*! \brief target ID for A15-0 */
     TIVX_TARGET_ID_A15_0 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_A15_0, 0u),
@@ -109,12 +94,7 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_DSP1, TIVX_TARGET_ID_DSP1},                                   \
     {TIVX_TARGET_DSP2, TIVX_TARGET_ID_DSP2},                                   \
     {TIVX_TARGET_EVE1, TIVX_TARGET_ID_EVE1},                                   \
-    {TIVX_TARGET_EVE2, TIVX_TARGET_ID_EVE2},                                   \
-    {TIVX_TARGET_EVE3, TIVX_TARGET_ID_EVE3},                                   \
-    {TIVX_TARGET_EVE4, TIVX_TARGET_ID_EVE4},                                   \
     {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_IPU1_0},                               \
-    {TIVX_TARGET_IPU1_1, TIVX_TARGET_ID_IPU1_1},                               \
-    {TIVX_TARGET_IPU2, TIVX_TARGET_ID_IPU2_0},                                 \
     {TIVX_TARGET_A15_0, TIVX_TARGET_ID_A15_0},                                 \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \

@@ -19,9 +19,9 @@
  * \brief Target Stack
  *******************************************************************************
  */
-#pragma DATA_ALIGN(gTarget_tskStack, 32)
-#pragma DATA_SECTION(gTarget_tskStack, ".bss:taskStackSection")
-uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE];
+static uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE]
+    __attribute__ ((aligned(4096)))
+    ;
 
 
 void tivxPlatformCreateTargets(void)

@@ -19,7 +19,7 @@ void tivxHostInit(void)
     tivxObjectInit();
     tivxRegisterOpenVXCoreKernels();
     /* Note: eventually register HWA kernels here (deferring for now) */
-    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
+    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A15_0);
     VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
 }
 
