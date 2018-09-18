@@ -186,6 +186,9 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
                     }
                 }
                 break;
+            default:
+                status = VX_FAILURE;
+                break;
         }
     }
 

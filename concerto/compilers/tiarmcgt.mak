@@ -87,7 +87,7 @@ $(_MODULE)_COPT +=-mv=7M3
 else ifeq ($(TARGET_CPU),M4)
 $(_MODULE)_COPT +=-mv=7M4 --float_support=vfplib
 else ifeq ($(TARGET_CPU),R5F)
-$(_MODULE)_COPT +=-mv=7R5
+$(_MODULE)_COPT +=-mv=7R5 --float_support=vfpv3d16
 endif
 
 ifneq ($(MISRA_RULES),) # If module specifies rules,
@@ -105,7 +105,7 @@ $(_MODULE)_INCLUDES := $(foreach inc,$($(_MODULE)_IDIRS),-I="$(basename $(inc))"
 $(_MODULE)_DEFINES  := $(foreach def,$($(_MODULE)_DEFS),-D=$(def))
 $(_MODULE)_LIBRARIES:= $(foreach ldir,$($(_MODULE)_LDIRS),--search_path="$(ldir)") $(foreach ldir,$($(_MODULE)_SYSLDIRS),--search_path="$(ldir)") $(foreach lib,$(STATIC_LIBS),--library=$(LIB_PRE)$(lib).$(LIB_EXT)) $(foreach lib,$(SYS_STATIC_LIBS),--library=$(LIB_PRE)$(lib).$(LIB_EXT)) $(foreach linkerf,$(LINKER_FILES),--library=$(linkerf))
 $(_MODULE)_AFLAGS   := $($(_MODULE)_INCLUDES)
-$(_MODULE)_CFLAGS   := $($(_MODULE)_INCLUDES) $($(_MODULE)_DEFINES) $($(_MODULE)_COPT) $(CFLAGS) 
+$(_MODULE)_CFLAGS   := $($(_MODULE)_INCLUDES) $($(_MODULE)_DEFINES) $($(_MODULE)_COPT) $(CFLAGS)
 $(_MODULE)_LDFLAGS  := $($(_MODULE)_CFLAGS) -z --warn_sections --reread_libs --rom_model
 
 ###################################################

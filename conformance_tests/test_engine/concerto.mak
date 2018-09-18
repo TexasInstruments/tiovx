@@ -1,4 +1,4 @@
-# 
+#
 
 # Copyright (c) 2012-2017 The Khronos Group Inc.
 #
@@ -31,6 +31,10 @@ CFLAGS += --diag_suppress=552
 endif
 
 ifeq ($(HOST_COMPILER),GCC)
+CFLAGS += -Wno-unused-function
+endif
+
+ifeq ($(HOST_COMPILER),GCC_SYSBIOS_ARM)
 CFLAGS += -Wno-unused-function
 endif
 
