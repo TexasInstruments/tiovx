@@ -43,19 +43,23 @@ void tivxInit(void)
 
     /* Note: eventually register HWA kernels here (deferring for now) */
 
-#if defined (EVE) && defined (BUILD_IVISION_KERNELS)
-    tivxRegisterIVisionTargetKernels();
-#endif
-
     tivxObjDescInit();
 
     tivxPlatformCreateTargets();
+    
+#if defined (A72)    
+    tivxHostInit();
+#endif    
 
     VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
 }
 
 void tivxDeInit(void)
 {
+#if defined (A72)    
+    tivxHostDeInit();
+#endif    
+    
     tivxPlatformDeleteTargets();
 
     /* DeInitialize Host */
@@ -66,11 +70,7 @@ void tivxDeInit(void)
     #endif
 #endif
 
-/* Note: may need to run tivxHwaUnLoadKernels or something similar */
-
-#if defined (EVE) && defined (BUILD_IVISION_KERNELS)
-    tivxUnRegisterIVisionTargetKernels();
-#endif
+    /* Note: may need to run tivxHwaUnLoadKernels or something similar */
 
     /* DeInitialize Target */
     tivxTargetDeInit();

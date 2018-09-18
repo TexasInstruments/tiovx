@@ -49,7 +49,7 @@ vx_status tivxMutexDelete(tivx_mutex *mutex)
     if ((NULL != mutex) && (*mutex != NULL))
     {
         handle = (tivx_mutex)*mutex;
-        SemaphoreP_delete(&handle);
+        SemaphoreP_delete(handle);
         *mutex = NULL;
         status = VX_SUCCESS;
     }
@@ -67,7 +67,7 @@ vx_status tivxMutexLock(tivx_mutex mutex)
         retVal = SemaphoreP_pend((SemaphoreP_Handle)mutex,
             SemaphoreP_WAIT_FOREVER);
 
-        if (0U == retVal)
+        if (SemaphoreP_OK != retVal)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMutexLock: Semaphore wait failed\n");
             status = VX_FAILURE;

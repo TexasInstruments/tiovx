@@ -48,7 +48,7 @@ vx_status tivxEventDelete(tivx_event *event)
     if ((NULL != event) && (*event != NULL))
     {
         handle = (SemaphoreP_Handle)*event;
-        SemaphoreP_delete(&handle);
+        SemaphoreP_delete(handle);
         *event = NULL;
         status = VX_SUCCESS;
     }

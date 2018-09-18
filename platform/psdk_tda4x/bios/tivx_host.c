@@ -28,5 +28,6 @@ void tivxHostDeInit(void)
     VX_PRINT(VX_ZONE_INIT, "De-Initialization Done for HOST !!!\n");
     tivxObjectDeInit();
     tivxUnRegisterOpenVXCoreKernels();
+    /* Note: eventually unregister HWA kernels here (deferring for now) */
 }
 

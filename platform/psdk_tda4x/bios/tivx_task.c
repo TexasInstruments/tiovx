@@ -92,7 +92,7 @@ vx_status tivxTaskDelete(tivx_task *task)
 
     if ((NULL != task) && (NULL != task->tsk_handle))
     {
-        Task_delete(task->tsk_handle);
+        Task_delete((Task_Handle*)&task->tsk_handle);
     }
     else
     {
