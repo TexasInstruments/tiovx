@@ -110,8 +110,6 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *gsize_desc;
     uint32_t size;
-    unsigned short *imgInput[2];
-    unsigned short *imgOutput[SCALER_NUM_PIPES] = {0};
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_HALFSCALE_GAUSSIAN_MAX_PARAMS);
@@ -155,9 +153,6 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
     if (VX_SUCCESS == status)
     {
         int32_t gsize_value = gsize_desc->data.s32;
-
-        imgInput[0] = prms->src16;
-        imgOutput[0] = prms->dst16;
 
         prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
         prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
@@ -212,9 +207,15 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
         status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_HALFSCALE_GAUSSIAN", sizeof(msc_config), &prms->config);
 
 #else
+        {
+            unsigned short *imgInput[2];
+            unsigned short *imgOutput[SCALER_NUM_PIPES] = {0};
 
-        scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+            imgInput[0] = prms->src16;
+            imgOutput[0] = prms->dst16;
 
+            scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+        }
 #endif
     }
 

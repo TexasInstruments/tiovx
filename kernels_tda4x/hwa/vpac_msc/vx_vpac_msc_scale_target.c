@@ -111,8 +111,6 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
     tivx_obj_desc_image_t *src, *dst;
     tivx_obj_desc_scalar_t *sc;
     uint32_t size;
-    unsigned short *imgInput[2];
-    unsigned short *imgOutput[SCALER_NUM_PIPES] = {0};
 
     status = tivxCheckNullParams(obj_desc, num_params,
                 TIVX_KERNEL_SCALE_MAX_PARAMS);
@@ -162,9 +160,6 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         uint32_t hzScale = ((float)(4096*iw)/(float)ow) + 0.5f;
         uint32_t vtScale = ((float)(4096*ih)/(float)oh) + 0.5f;
         uint32_t i;
-
-        imgInput[0] = prms->src16;
-        imgOutput[0] = prms->dst16;
 
         prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
         prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
@@ -245,9 +240,15 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
         status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_SCALE", sizeof(msc_config), &prms->config);
 
 #else
+        {
+            unsigned short *imgInput[2];
+            unsigned short *imgOutput[SCALER_NUM_PIPES] = {0};
 
-        scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+            imgInput[0] = prms->src16;
+            imgOutput[0] = prms->dst16;
 
+            scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+        }
 #endif
     }
 

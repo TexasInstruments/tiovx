@@ -361,7 +361,7 @@ vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t 
     if (VX_SUCCESS == status)
     {
         /* Set config address, and start processing */
-        SET_REG(REG_ADDR_LO, &pConfig);
+        SET_REG(REG_ADDR_LO, (uintptr_t)&pConfig);
         SET_REG(REG_STATUS, 1);
 
         /* Read STATUS register; DONE bit should be cleared before checking output */
