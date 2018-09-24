@@ -119,6 +119,9 @@
 #include <bmp_rd_wr.h>
 #include <utility.h>
 
+/* in some systems file IO is not present, so skip it using below flag */
+/* #define SKIP_FILEIO */
+
 /** \brief Input file name */
 #define IN_FILE_NAME       "colors.bmp"
 
@@ -245,12 +248,25 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
      * after copying the pixel values from 'data_ptr' into a vx_image object.
      * \code
      */
+    #ifdef SKIP_FILEIO
+    status = 0;
+    width = 640;
+    height = 480;
+    stride = 640;
+    if(convert_to_gray_scale)        
+        df = VX_DF_IMAGE_U8;
+    else
+        df = VX_DF_IMAGE_RGB;
+    data_ptr = NULL;
+    bmp_file_context = NULL;
+    #else
     status = bmp_file_read(
                 filename,
                 convert_to_gray_scale,
                 &width, &height, &stride, &df, &data_ptr,
                 &bmp_file_context);
     /** \endcode */
+    #endif
 
     if(status==VX_SUCCESS)
     {
@@ -323,15 +339,17 @@ vx_image  create_image_from_file(vx_context context, char *filename, vx_bool con
             rect.end_x = width;
             rect.end_y = height;
 
-            vxCopyImagePatch(image,
-                &rect,
-                0,
-                &image_addr,
-                data_ptr,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST
-                );
-
+            if(data_ptr!=NULL)
+            {
+                vxCopyImagePatch(image,
+                    &rect,
+                    0,
+                    &image_addr,
+                    data_ptr,
+                    VX_WRITE_ONLY,
+                    VX_MEMORY_TYPE_HOST
+                    );
+            }
             /** \endcode */
         }
         /** - Release BMP file context.
@@ -421,7 +439,11 @@ vx_status save_image_to_file(char *filename, vx_image image)
              * above
              * \code
              */
+            #ifdef SKIP_FILEIO
+            
+            #else
             bmp_file_write(filename, width, height, image_addr.stride_y, df, data_ptr);
+            #endif
             /** \endcode */
 
             /** - Unmapped a previously mapped image object
@@ -462,14 +484,27 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
     vx_df_image df;
     uint32_t img_width, img_height;
     vx_df_image img_df;
-    vx_status status;
+    vx_status status = 0;
     void *data_ptr, *bmp_file_context;
 
+    #ifdef SKIP_FILEIO
+    status = 0;
+    width = 640;
+    height = 480;
+    stride = 640;
+    if(convert_to_gray_scale)        
+        df = VX_DF_IMAGE_U8;
+    else
+        df = VX_DF_IMAGE_RGB;
+    data_ptr = NULL;
+    bmp_file_context = NULL;
+    #else
     status = bmp_file_read(
                 filename,
                 convert_to_gray_scale,
                 &width, &height, &stride, &df, &data_ptr,
                 &bmp_file_context);
+    #endif
 
     if(status==VX_SUCCESS)
     {
@@ -510,14 +545,17 @@ vx_status load_image_from_file(vx_image image, char *filename, vx_bool convert_t
             rect.end_x = width;
             rect.end_y = height;
 
-            vxCopyImagePatch(image,
-                &rect,
-                0,
-                &image_addr,
-                data_ptr,
-                VX_WRITE_ONLY,
-                VX_MEMORY_TYPE_HOST
-                );
+            if(data_ptr!=NULL)
+            {
+                vxCopyImagePatch(image,
+                    &rect,
+                    0,
+                    &image_addr,
+                    data_ptr,
+                    VX_WRITE_ONLY,
+                    VX_MEMORY_TYPE_HOST
+                    );
+            }
         }
         else
         {
