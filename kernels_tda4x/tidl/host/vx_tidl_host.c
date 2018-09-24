@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_enum config_item_type;
         vx_size config_capacity, config_item_size;
 
-        config = (const vx_array)parameters[0];
+        config = (vx_array)parameters[0];
 
         tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_ITEMTYPE, &config_item_type, sizeof(config_item_type)));
         tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_CAPACITY, &config_capacity, sizeof(config_capacity)));
@@ -111,7 +111,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_enum network_data_type;
         vx_size network_dims;
 
-        network = (const vx_tensor)parameters[1];
+        network = (vx_tensor)parameters[1];
 
         tivxCheckStatus(&status, vxQueryTensor(network, VX_TENSOR_DATA_TYPE, &network_data_type, sizeof(network_data_type)));
         tivxCheckStatus(&status, vxQueryTensor(network, VX_TENSOR_NUMBER_OF_DIMS, &network_dims, sizeof(network_dims)));

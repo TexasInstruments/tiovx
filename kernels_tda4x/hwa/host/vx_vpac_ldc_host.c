@@ -151,20 +151,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (const vx_array)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
-        region_params = (const vx_array)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
-        mesh_table = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_TABLE_IDX];
-        warp_matrix = (const vx_matrix)parameters[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
-        out_2_luma_lut = (const vx_lut)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_LUT_IDX];
-        out_3_chroma_lut = (const vx_lut)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_LUT_IDX];
-        bandwidth_params = (const vx_array)parameters[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
-        in_luma_or_422 = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
-        in_chroma = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
-        out_0_luma_or_422 = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
-        out_1_chroma = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX];
-        out_2_luma_or_422 = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_OR_422_IDX];
-        out_3_chroma = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_IDX];
-        error_status = (const vx_scalar)parameters[TIVX_KERNEL_VPAC_LDC_ERROR_STATUS_IDX];
+        configuration = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
+        region_params = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
+        mesh_table = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_TABLE_IDX];
+        warp_matrix = (vx_matrix)parameters[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
+        out_2_luma_lut = (vx_lut)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_LUT_IDX];
+        out_3_chroma_lut = (vx_lut)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_LUT_IDX];
+        bandwidth_params = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
+        in_luma_or_422 = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
+        in_chroma = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
+        out_0_luma_or_422 = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
+        out_1_chroma = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX];
+        out_2_luma_or_422 = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_OR_422_IDX];
+        out_3_chroma = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_IDX];
+        error_status = (vx_scalar)parameters[TIVX_KERNEL_VPAC_LDC_ERROR_STATUS_IDX];
     }
 
 
@@ -581,11 +581,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
 
         if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX])
         {
-            prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
+            prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
         }
         else if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX])
         {
-            prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
+            prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
         }
         else
         {
@@ -594,11 +594,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
 
         if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX])
         {
-            prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
+            prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
         }
         else if(NULL != parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX])
         {
-            prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX];
+            prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_1_CHROMA_IDX];
         }
         else
         {

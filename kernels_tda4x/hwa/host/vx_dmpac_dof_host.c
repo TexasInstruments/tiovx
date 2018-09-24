@@ -131,13 +131,13 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (const vx_array)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
-        input_current = (const vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
-        input_reference = (const vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
-        flow_vector_in = (const vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
-        sparse_of_map = (const vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
-        flow_vector_out = (const vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
-        confidence_histogram = (const vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
+        configuration = (vx_array)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
+        input_current = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
+        input_reference = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
+        flow_vector_in = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
+        sparse_of_map = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
+        flow_vector_out = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
+        confidence_histogram = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
     }
 
 

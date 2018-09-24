@@ -113,10 +113,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (const vx_array)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
-        input = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
-        conv = (const vx_convolution)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
+        configuration = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
+        conv = (vx_convolution)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
     }
 
 
@@ -250,8 +250,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericInitialize(vx_node node,
             }
         }
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
 
         prms.num_input_images = 1;
         prms.num_output_images = 1;

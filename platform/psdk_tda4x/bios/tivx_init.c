@@ -46,20 +46,12 @@ void tivxInit(void)
     tivxObjDescInit();
 
     tivxPlatformCreateTargets();
-    
-#if defined (A72)    
-    tivxHostInit();
-#endif    
 
     VX_PRINT(VX_ZONE_INIT, "Initialization Done !!!\n");
 }
 
 void tivxDeInit(void)
 {
-#if defined (A72)    
-    tivxHostDeInit();
-#endif    
-    
     tivxPlatformDeleteTargets();
 
     /* DeInitialize Host */

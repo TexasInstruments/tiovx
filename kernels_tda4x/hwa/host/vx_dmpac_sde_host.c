@@ -119,11 +119,11 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (const vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
-        left = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
-        right = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
-        confidence_histogram = (const vx_distribution)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
+        configuration = (vx_array)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
+        left = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+        right = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
+        confidence_histogram = (vx_distribution)parameters[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
     }
 
 
@@ -243,9 +243,9 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
-        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
 
         prms.num_input_images = 2;
         prms.num_output_images = 1;

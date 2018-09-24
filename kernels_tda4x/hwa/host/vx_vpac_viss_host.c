@@ -146,18 +146,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (const vx_array)parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
-        ae_awb_result = (const vx_array)parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
-        raw0 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
-        raw1 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW1_IDX];
-        raw2 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW2_IDX];
-        y12 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
-        uv12_c1 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
-        y8_r8_c2 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
-        uv8_g8_c3 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
-        s8_b8_c4 = (const vx_image)parameters[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
-        histogram = (const vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
-        h3a_aew_af = (const vx_array)parameters[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+        configuration = (vx_array)parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        ae_awb_result = (vx_array)parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
+        raw0 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
+        raw1 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW1_IDX];
+        raw2 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW2_IDX];
+        y12 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
+        uv12_c1 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
+        y8_r8_c2 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
+        uv8_g8_c3 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
+        s8_b8_c4 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
+        histogram = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
+        h3a_aew_af = (vx_array)parameters[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
     }
 
 

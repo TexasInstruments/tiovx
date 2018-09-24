@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 R5F))
 
 include $(PRELUDE)
 TARGET      := vx_kernels_hwa_tests
@@ -18,6 +18,13 @@ ifeq ($(HOST_COMPILER),GCC_SYSBIOS_ARM)
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security
+endif
+
+ifeq ($(HOST_COMPILER),TIARMCGT)
+CFLAGS += --display_error_number
+CFLAGS += --diag_suppress=179
+CFLAGS += --diag_suppress=112
+CFLAGS += --diag_suppress=552
 endif
 
 include $(FINALE)

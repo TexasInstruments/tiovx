@@ -112,10 +112,10 @@ static vx_status VX_CALLBACK tivxAddKernelDofVisualizeValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        flow_vector = (const vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
-        confidence_threshold = (const vx_scalar)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
-        flow_vector_rgb = (const vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX];
-        confidence_image = (const vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
+        flow_vector = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_IDX];
+        confidence_threshold = (vx_scalar)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_THRESHOLD_IDX];
+        flow_vector_rgb = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_FLOW_VECTOR_RGB_IDX];
+        confidence_image = (vx_image)parameters[TIVX_KERNEL_DOF_VISUALIZE_CONFIDENCE_IMAGE_IDX];
     }
 
 
