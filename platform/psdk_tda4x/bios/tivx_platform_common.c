@@ -183,6 +183,18 @@ vx_bool tivxPlatformTargetMatch(
     return (status);
 }
 
+void tivxPlatformResetObjDescTableInfo()
+{
+    tivx_obj_desc_t *tmp_obj_desc = NULL;
+    uint32_t i;
+    /* Initializing all desc to be available */
+    for(i=0; i<TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST; i++)
+    {
+        tmp_obj_desc = (tivx_obj_desc_t*)&gTivxObjDescShmEntry[i];
+        tmp_obj_desc->type = TIVX_OBJ_DESC_INVALID;
+    }
+}
+
 void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
 {
     if (NULL != table_info)
@@ -193,22 +205,6 @@ void tivxPlatformGetObjDescTableInfo(tivx_obj_desc_table_info_t *table_info)
         /* Change this according available entries*/
         table_info->last_alloc_index = 0U;
     }
-
-#if defined (A72)
-    {
-        tivx_obj_desc_t *tmp_obj_desc = NULL;
-        uint32_t i;
-        /* Initializing all desc to be available */
-        for(i=0; i<table_info->num_entries; i++)
-        {
-            tmp_obj_desc = (tivx_obj_desc_t*)&table_info->table_base[i];
-            tmp_obj_desc->type = TIVX_OBJ_DESC_INVALID;
-        }
-
-        table_info->last_alloc_index = 0;
-    }
-#endif
-
 }
 
 void tivxPlatformSetHostTargetId(tivx_target_id_e host_target_id)

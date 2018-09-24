@@ -23,8 +23,8 @@ static void tivxIpcHandler(uint32_t src_cpu_id, uint32_t payload);
  */
 static uint32_t g_ipc_cpu_id_map[APP_IPC_CPU_MAX] = {
     APP_IPC_CPU_C6x_1,
-    APP_IPC_CPU_INVALID,
-    APP_IPC_CPU_INVALID,
+    APP_IPC_CPU_C6x_2,
+    APP_IPC_CPU_C7x_1,
     APP_IPC_CPU_INVALID,
     APP_IPC_CPU_INVALID,
     APP_IPC_CPU_INVALID,

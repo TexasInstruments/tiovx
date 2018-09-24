@@ -12,14 +12,26 @@
 
 void tivxRegisterOpenVXCoreKernels(void);
 void tivxUnRegisterOpenVXCoreKernels(void);
-
+void tivxPlatformResetObjDescTableInfo(void);
 
 void tivxHostInit(void)
 {
+    tivxPlatformResetObjDescTableInfo();
     tivxObjectInit();
     tivxRegisterOpenVXCoreKernels();
+    
+    if(tivxGetSelfCpuId()==TIVX_CPU_ID_IPU1_0)
+    {
+        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_IPU1_0);
+    }
+    else
+    if(tivxGetSelfCpuId()==TIVX_CPU_ID_A15_0)
+    {
+        tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A15_0);
+    }
+    
     /* Note: eventually register HWA kernels here (deferring for now) */
-    tivxPlatformSetHostTargetId(TIVX_TARGET_ID_A15_0);
+    
     VX_PRINT(VX_ZONE_INIT, "Initialization Done for HOST !!!\n");
 }
 
