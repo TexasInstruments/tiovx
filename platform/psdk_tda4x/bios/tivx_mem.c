@@ -13,6 +13,9 @@
 #include <ti/osal/CacheP.h>
 #include <utils/mem/include/app_mem.h>
 
+
+/* #define ENABLE_CACHE_OPS */
+
 /*! \brief Default buffer allocation alignment
  * \ingroup group_tivx_mem
  */
@@ -253,9 +256,11 @@ void tivxMemBufferMap(
      * to be safe, we still perform invalidate even in WRITE only mode. */
     if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type))
     {
+        #ifdef ENABLE_CACHE_OPS
         CacheP_Inv(
             host_ptr,
             size);
+        #endif
     }
 }
 
@@ -265,9 +270,11 @@ void tivxMemBufferUnmap(
     if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type) &&
         ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
+        #ifdef ENABLE_CACHE_OPS
         CacheP_wb(
             host_ptr,
             size);
+        #endif
     }
 }
 
