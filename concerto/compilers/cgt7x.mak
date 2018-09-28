@@ -63,7 +63,7 @@ $(_MODULE)_COPT += --opt_level=3 --gen_opt_info=2 --symdebug:none
 endif
 
 ifeq ($(TARGET_CPU),C71)
-$(_MODULE)_COPT += --silicon_version=7100 --vencode
+$(_MODULE)_COPT += --silicon_version=7100
 endif
 
 ifneq ($(MISRA_RULES),) # If module specifies rules,
