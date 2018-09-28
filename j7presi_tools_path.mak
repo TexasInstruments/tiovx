@@ -12,7 +12,7 @@ IVISION_PATH ?= $(PSDK_PATH)/ivision
 OPENCV_LIB_PATH ?= /usr/lib/x86_64-linux-gnu
 
 TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_16.9.4.LTS
-CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0A18023
+CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0A18263
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.2.2
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf
 BIOS_PATH ?= $(PSDK_PATH)/bios_6_75_00_06_eng
