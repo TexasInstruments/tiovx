@@ -125,6 +125,11 @@ void tivxHwaLoadKernels(vx_context context)
         tivxRegisterHwaKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_HWA);
 
+        #ifdef x86_64 
+        /* for PC register target kernels here */
+        /* for actual Si, target kernel registration will happen 
+         * during platform init on the CPU that supports the target
+         */ 
         /* These three lines only work on PC emulation mode ...
          * this will need to be updated when moving to target */
         tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);
@@ -144,8 +149,9 @@ void tivxHwaLoadKernels(vx_context context)
         tivxRegisterHwaTargetArmKernels();
 
         tivxRegisterHwaTargetVpacVissKernels();
-
+        
         tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+        #endif
 
         gIsHwaKernelsLoad = 1U;
     }
@@ -158,6 +164,7 @@ void tivxHwaUnLoadKernels(vx_context context)
         vxUnloadKernels(context, TIVX_MODULE_NAME_HWA);
         tivxUnRegisterHwaKernels();
 
+        #ifdef x86_64
         /* This line only work on PC emulation mode ...
          * this will need to be updated when moving to target */
 
@@ -176,6 +183,8 @@ void tivxHwaUnLoadKernels(vx_context context)
         tivxUnRegisterHwaTargetArmKernels();
 
         tivxUnRegisterHwaTargetVpacVissKernels();
+        
+        #endif
 
         gIsHwaKernelsLoad = 0U;
     }

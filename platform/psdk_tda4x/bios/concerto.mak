@@ -11,6 +11,7 @@ CSOURCES    := tivx_event.c tivx_init.c tivx_mem.c tivx_ipc.c \
                tivx_queue.c tivx_task.c tivx_host.c
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_tda4x/common
+IDIRS       += $(CUSTOM_KERNEL_PATH)/include
 IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
@@ -35,7 +36,7 @@ SKIPBUILD=0
 endif
 
 ifeq ($(TARGET_CPU),R5F)
-CSOURCES += tivx_target_config_mcu1_0.c
+CSOURCES += tivx_target_config_mcu2_0.c
 SKIPBUILD=0
 endif
 

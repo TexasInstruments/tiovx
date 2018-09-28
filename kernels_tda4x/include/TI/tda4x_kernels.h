@@ -564,6 +564,92 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
                             uint32_t num_input_tensors,
                             uint32_t num_output_tensors);
 
+
+/*!
+ * \brief Function to register HWA Kernels on the vpac_nf Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetVpacNfKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the vpac_nf Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetVpacNfKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the dmpac_sde Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetDmpacSdeKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the dmpac_sde Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the vpac_ldc Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetVpacLdcKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the vpac_ldc Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetVpacLdcKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the vpac_msc Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetVpacMscKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the vpac_msc Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetVpacMscKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the dmpac_dof Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetDmpacDofKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the dmpac_dof Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetDmpacDofKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the arm Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetArmKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the arm Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetArmKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the vpac_viss Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetVpacVissKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the vpac_viss Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetVpacVissKernels(void);
+
+
 #ifdef __cplusplus
 }
 #endif
