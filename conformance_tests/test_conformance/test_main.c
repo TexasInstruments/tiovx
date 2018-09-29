@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -27,6 +27,6 @@
 
 int vx_conformance_test_main(int argc, char* argv[])
 {
-    tivx_clr_debug_zone(VX_ZONE_ERROR);
+    /* tivx_clr_debug_zone(VX_ZONE_ERROR); */
     return CT_main(argc, argv, VERSION_STR);
 }

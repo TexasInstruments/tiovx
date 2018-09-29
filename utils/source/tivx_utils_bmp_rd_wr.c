@@ -63,30 +63,11 @@
 #include <TI/tivx_mem.h>
 #include <TI/tivx_debug.h>
 #include <tivx_utils_file_rd_wr.h>
-#include "png.h"
+#include <test_engine/test.h>
+#include <test_engine/test_image.h>
 
-typedef struct
-{
-    png_bytep *row_pointers;
-    png_byte *data_ptr;
-    uint32_t row_pointers_size;
-    uint32_t data_ptr_size;
-} png_context_t;
 
-/* we link to libpng v1.2 present by default on ubuntu,
- * but opencv used for DOF C model is compiled against
- * libpng v1.6, below function is not defined
- * in v1.6, hence to make the link succeed we define a empty
- * function as below.
- * NOTE: DOF C model API does not natively read/write PNG files
- *  so this is ok to do
- */
-void png_set_longjmp_fn(png_structp *ptr, int val)
-{
-
-}
-
-vx_status tivx_utils_png_file_read(
+vx_status tivx_utils_bmp_file_read(
             char *filename,
             vx_bool convert_to_gray_scale,
             uint32_t *width,
@@ -94,161 +75,60 @@ vx_status tivx_utils_png_file_read(
             uint32_t *stride,
             vx_df_image *df,
             void **data_ptr,
-            void **png_file_context)
+            void **bmp_file_context)
 {
-    FILE *fp;
-    vx_status status = VX_SUCCESS;
+    CT_Image image = NULL;
+    int dcn = convert_to_gray_scale ? 1 : -1;
+    uint32_t bpp;
+    vx_status status;
 
-    *width = 0;
-    *height = 0;
-    *stride = 0;
-    *df = VX_DF_IMAGE_U8;
-    *png_file_context = NULL;
+    /* workaround to enable CT context */
+    CT_SetHasRunningTest();
 
-    fp = fopen(filename, "rb");
-    if(fp==NULL)
+    image = ct_read_image3(filename, dcn);
+
+    if(image != NULL)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR, " PNG: unable to open file for reading [%s]\n", filename);
+        if( image->format == VX_DF_IMAGE_U8 )
+            bpp = 1;
+        else
+        if( image->format == VX_DF_IMAGE_RGB )
+            bpp = 3;
+        else
+            bpp = 4; /* RGBX */
+
+        *width = image->width;
+        *height = image->height;
+        *stride = image->stride * bpp;
+        *df = image->format;
+        *data_ptr = image->data.y;
+
+        *bmp_file_context = image;
+
+        status = VX_SUCCESS;
     }
-    if(status==VX_SUCCESS)
+    else
     {
-        uint8_t header[8];
-        png_structp png_ptr = NULL;
-        png_infop info_ptr = NULL;
-        png_uint_32  png_width, png_height;
-        int  bit_depth, color_type;
-        int nbytes;
+        *width = 0;
+        *height = 0;
+        *stride = 0;
+        *data_ptr = NULL;
 
-        nbytes = fread(header, 1, 8, fp);
-        if ( nbytes < 8 || png_sig_cmp(header, 0, 8) != 0 )
-        {
-            status = VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR, " PNG: Invalid PNG header [%s]\n", filename);
-        }
-        if(status==VX_SUCCESS)
-        {
-            png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-            if (png_ptr==NULL)
-            {
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR," PNG: Unable to alloc memory for read_struct [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            info_ptr = png_create_info_struct(png_ptr);
-            if (info_ptr==NULL)
-            {
-                png_destroy_read_struct(&png_ptr, NULL, NULL);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for info_struct [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            if (setjmp(png_jmpbuf(png_ptr)))
-            {
-                png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-
-            png_init_io(png_ptr, fp);
-            png_set_sig_bytes(png_ptr, 8);
-            png_read_info(png_ptr, info_ptr);
-
-            png_width = png_get_image_width(png_ptr, info_ptr);
-            png_height = png_get_image_height(png_ptr, info_ptr);
-            color_type = png_get_color_type(png_ptr, info_ptr);
-            bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-        }
-        if(status==VX_SUCCESS)
-        {
-            if (setjmp(png_jmpbuf(png_ptr)))
-            {
-                png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-                status = VX_SUCCESS;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            uint32_t y;
-            png_context_t *png_context = tivxMemAlloc(sizeof(png_context_t), TIVX_MEM_EXTERNAL);
-
-            if(png_context)
-            {
-                png_context->row_pointers_size = sizeof(png_bytep) * png_height;
-                png_context->data_ptr_size = 0;
-
-                png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
-                if(*data_ptr==NULL)
-                {
-                    /* allocate memory */
-                    png_context->data_ptr_size = png_get_rowbytes(png_ptr,info_ptr) * png_height;
-                    png_context->data_ptr = tivxMemAlloc(png_context->data_ptr_size, TIVX_MEM_EXTERNAL);
-                }
-                else
-                {
-                    /* use user provided memory */
-                    png_context->data_ptr = *data_ptr;
-                }
-            }
-            if(png_context == NULL || png_context->row_pointers == NULL || png_context->data_ptr == NULL)
-            {
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for data_ptr, row_pointers [%s]\n", filename);
-            }
-            if(status==VX_SUCCESS)
-            {
-                for (y=0; y<png_height; y++)
-                {
-                    png_context->row_pointers[y] = (png_byte*) &png_context->data_ptr[y*png_get_rowbytes(png_ptr,info_ptr)];
-                }
-                png_read_image(png_ptr, png_context->row_pointers);
-
-                *width = png_width;
-                *height = png_height;
-                *stride = png_get_rowbytes(png_ptr,info_ptr);
-                *data_ptr = png_context->data_ptr;
-                if(color_type == PNG_COLOR_TYPE_GRAY && bit_depth == 8)
-                {
-                    *df = VX_DF_IMAGE_U8;
-                }
-                if(color_type == PNG_COLOR_TYPE_RGB)
-                {
-                    *df = VX_DF_IMAGE_RGB;
-                }
-                *png_file_context = png_context;
-
-                png_read_end(png_ptr, NULL);
-                png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-            }
-        }
-        fclose(fp);
+        *bmp_file_context = NULL;
+        status = VX_FAILURE;
     }
     return status;
 }
 
-void tivx_utils_png_file_read_release(void *png_file_context)
+void tivx_utils_bmp_file_read_release(void *bmp_file_context)
 {
-    png_context_t *png_context = (png_context_t*)png_file_context;
-
-    if(png_context)
+    if(bmp_file_context)
     {
-        if(png_context->row_pointers)
-            tivxMemFree(png_context->row_pointers, png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
-        if(png_context->data_ptr && png_context->data_ptr_size > 0)
-            tivxMemFree(png_context->data_ptr, png_context->data_ptr_size, TIVX_MEM_EXTERNAL);
-        tivxMemFree(png_context, sizeof(png_context_t), TIVX_MEM_EXTERNAL);
+        CT_FreeObject(bmp_file_context);
     }
 }
 
-int32_t tivx_utils_png_file_write(
+int32_t tivx_utils_bmp_file_write(
             char *filename,
             uint32_t width,
             uint32_t height,
@@ -256,143 +136,36 @@ int32_t tivx_utils_png_file_write(
             vx_df_image df,
             void *data_ptr)
 {
-    FILE *fp;
-    vx_status status = VX_SUCCESS;
+    CT_Image image = NULL;
+    uint32_t bpp;
+    vx_status status;
 
-    fp = fopen(filename, "wb");
-    if(fp==NULL)
+    if( df == VX_DF_IMAGE_U8 )
+        bpp = 1;
+    else
+    if( df == VX_DF_IMAGE_RGB )
+        bpp = 3;
+    else
+    if( df == VX_DF_IMAGE_RGBX )
+        bpp = 4;
+    else
+        bpp = 0;
+
+    status = VX_FAILURE;
+    if( bpp > 0)
     {
-        status = VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR, " PNG: unable to open file for reading [%s]\n", filename);
+        image = ct_allocate_image_hdr(width, height, stride/bpp, df, data_ptr);
+
+        ct_write_image3(filename, image);
+
+        CT_FreeObject(image);
+
+        status = VX_SUCCESS;
     }
-    if(status==VX_SUCCESS)
-    {
-        png_structp png_ptr = NULL;
-        png_infop info_ptr = NULL;
-        int  bit_depth, color_type;
-        int y;
-        png_context_t *png_context = NULL;
-
-        if(status==VX_SUCCESS)
-        {
-            png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-            if (png_ptr==NULL)
-            {
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for write_struct [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            info_ptr = png_create_info_struct(png_ptr);
-            if (info_ptr==NULL)
-            {
-                png_destroy_write_struct(&png_ptr, NULL);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for info_struct [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            if (setjmp(png_jmpbuf(png_ptr)))
-            {
-                png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            png_init_io(png_ptr, fp);
-
-            if (setjmp(png_jmpbuf(png_ptr)))
-            {
-                png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            if(df==VX_DF_IMAGE_U8)
-            {
-                bit_depth = 8;
-                color_type = PNG_COLOR_TYPE_GRAY;
-            }
-            else
-            if(df==VX_DF_IMAGE_RGB)
-            {
-                bit_depth = 8;
-                color_type = PNG_COLOR_TYPE_RGB;
-            }
-            else
-            {
-                bit_depth = 8;
-                color_type = PNG_COLOR_TYPE_GRAY;
-            }
-
-            png_set_IHDR(png_ptr, info_ptr, width, height,
-                     bit_depth, color_type, PNG_INTERLACE_NONE,
-                     PNG_COMPRESSION_TYPE_BASE, PNG_FILTER_TYPE_BASE);
-
-            png_write_info(png_ptr, info_ptr);
-        }
-        if(status==VX_SUCCESS)
-        {
-            if (setjmp(png_jmpbuf(png_ptr)))
-            {
-                png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            png_context = tivxMemAlloc(sizeof(png_context_t), TIVX_MEM_EXTERNAL);
-
-            if(png_context)
-            {
-                png_context->row_pointers_size = sizeof(png_bytep) * height;
-                png_context->data_ptr_size = 0;
-                png_context->row_pointers = (png_bytep*) tivxMemAlloc(png_context->row_pointers_size, TIVX_MEM_EXTERNAL);
-                png_context->data_ptr = data_ptr;
-            }
-            if(png_context == NULL || png_context->row_pointers == NULL || png_context->data_ptr == NULL)
-            {
-                png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: Unable to alloc memory for data_ptr, row_pointers [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            for (y=0; y<height; y++)
-            {
-                png_context->row_pointers[y] = (png_byte*) &png_context->data_ptr[y*stride];
-            }
-            png_write_image(png_ptr, png_context->row_pointers);
-        }
-        if(status==VX_SUCCESS)
-        {
-            if (setjmp(png_jmpbuf(png_ptr)))
-            {
-                png_destroy_write_struct(&png_ptr, &info_ptr);
-                status = VX_FAILURE;
-                VX_PRINT(VX_ZONE_ERROR, " PNG: setjmp failure [%s]\n", filename);
-            }
-        }
-        if(status==VX_SUCCESS)
-        {
-            png_write_end(png_ptr, NULL);
-            png_destroy_write_struct(&png_ptr, &info_ptr);
-        }
-        tivx_utils_png_file_read_release(png_context);
-        fclose(fp);
-    }
-    return 0;
+    return status;
 }
 
-vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filename, vx_bool convert_to_gray_scale)
+vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filename, vx_bool convert_to_gray_scale)
 {
     vx_image image = NULL;
     uint32_t width, height, stride;
@@ -410,7 +183,7 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
      * after copying the pixel values from 'data_ptr' into a vx_image object.
      * \code
      */
-    status = tivx_utils_png_file_read(
+    status = tivx_utils_bmp_file_read(
                 filename,
                 convert_to_gray_scale,
                 &width, &height, &stride, &df, &data_ptr,
@@ -506,13 +279,13 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
          *  are free'ed by calling bmp_file_read_release()
          *  \code
          */
-        tivx_utils_png_file_read_release(bmp_file_context);
+        tivx_utils_bmp_file_read_release(bmp_file_context);
         /** \endcode */
     }
     return image;
 }
 
-vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
+vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image)
 {
     vx_uint32 width, height;
     vx_imagepatch_addressing_t image_addr;
@@ -578,7 +351,7 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
              * above
              * \code
              */
-            tivx_utils_png_file_write(filename, width, height, image_addr.stride_y, df, data_ptr);
+            tivx_utils_bmp_file_write(filename, width, height, image_addr.stride_y, df, data_ptr);
             /** \endcode */
 
             /** - Unmapped a previously mapped image object
@@ -595,7 +368,7 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image)
     return status;
 }
 
-vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, vx_bool convert_to_gray_scale)
+vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale)
 {
     uint32_t width, height, stride;
     vx_df_image df;
@@ -608,7 +381,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
     vx_bool enable_rgb2gray, enable_gray2rgb;
     vx_map_id map_id;
 
-    status = tivx_utils_png_file_read(
+    status = tivx_utils_bmp_file_read(
                 filename,
                 convert_to_gray_scale,
                 &width, &height, &stride, &df, &data_ptr,
@@ -654,13 +427,13 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, " PNG: Image data format mismatch [%s]\n", filename);
+                VX_PRINT(VX_ZONE_ERROR, " BMP: Image data format mismatch [%s]\n", filename);
                 status = VX_ERROR_INVALID_PARAMETERS;
             }
         }
 
         #if 0
-        printf(" PNG: src_start=(%d, %d), dst_start=(%d,%d), copy=(%dx%d), r2g=%d, g2r=%d\n",
+        printf(" BMP: src_start=(%d, %d), dst_start=(%d,%d), copy=(%dx%d), r2g=%d, g2r=%d\n",
             src_start_x, src_start_y, dst_start_x, dst_start_y, copy_width, copy_height, enable_rgb2gray, enable_gray2rgb);
         #endif
 
@@ -751,7 +524,7 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
 
             vxUnmapImagePatch(image, map_id);
         }
-        tivx_utils_png_file_read_release(bmp_file_context);
+        tivx_utils_bmp_file_read_release(bmp_file_context);
     }
     return status;
 }

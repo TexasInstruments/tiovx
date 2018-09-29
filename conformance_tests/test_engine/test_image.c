@@ -401,6 +401,76 @@ void ct_write_image(const char* fileName, CT_Image image)
     }
 }
 
+CT_Image ct_read_image3(const char* fileName, int dcn)
+{
+    FILE* f = 0;
+    size_t sz;
+    char* buf = 0;
+    CT_Image image = 0;
+    char file[MAXPATHLENGTH];
+
+    if (!fileName)
+    {
+        CT_ADD_FAILURE("Image file name not specified\n");
+        return 0;
+    }
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s", fileName);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+
+    f = fopen(file, "rb");
+    if (!f)
+    {
+        CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
+        return 0;
+    }
+
+    fseek(f, 0, SEEK_END);
+    sz = ftell(f);
+    if( sz > 0 )
+    {
+        buf = (char*)ct_alloc_mem(sz);
+        fseek(f, 0, SEEK_SET);
+        if( fread(buf, 1, sz, f) == sz )
+        {
+            image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
+        }
+    }
+
+    ct_free_mem(buf);
+    fclose(f);
+
+    if(!image)
+        CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
+
+    return image;
+}
+
+void ct_write_image3(const char* fileName, CT_Image image)
+{
+    char* dotpos;
+    int result = -1;
+    size_t size;
+    char file[MAXPATHLENGTH];
+
+    if (fileName)
+    {
+        size = snprintf(file, MAXPATHLENGTH, "%s", fileName);
+        ASSERT(size < MAXPATHLENGTH);
+
+        dotpos = strrchr(file, '.');
+        if(dotpos &&
+           (strcmp(dotpos, ".bmp") == 0 ||
+            strcmp(dotpos, ".BMP") == 0))
+            result = ct_write_bmp(file, image);
+        if( result < 0 )
+            CT_ADD_FAILURE("Can not write image to \"%s\"", fileName);
+    }
+    else
+    {
+        CT_ADD_FAILURE("Image name is not specified (NULL)");
+    }
+}
 static
 int own_elem_size(vx_df_image format, vx_uint32 plane)
 {

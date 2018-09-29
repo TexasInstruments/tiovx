@@ -150,6 +150,10 @@ uint8_t ct_image_data_constant_8u(CT_Image image, int32_t x, int32_t y, vx_uint3
 CT_Image ct_read_image(const char* fileName, int dcn);
 void ct_write_image(const char* fileName, CT_Image image);
 
+/* same as ct_read_image, ct_write_image but default path not added to filename */
+CT_Image ct_read_image3(const char* fileName, int dcn);
+void ct_write_image3(const char* fileName, CT_Image image);
+
 #define ct_image_from_vx_image(vximg) ct_image_from_vx_image_impl(vximg, __FUNCTION__, __FILE__, __LINE__)
 CT_Image ct_image_from_vx_image_impl(vx_image vximg, const char* func, const char* file, int line);
 

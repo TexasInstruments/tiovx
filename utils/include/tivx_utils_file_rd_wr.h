@@ -61,11 +61,11 @@
  */
 
 /**
- * \file png_rd_wr.h Utility APIs to read and write .PNG files
+ * \file tivx_utils_file_rd_wr.h Utility APIs to read and write .PNG, .BMP files
  */
 
-#ifndef TIVX_UTILS_PNG_RD_WR_H
-#define TIVX_UTILS_PNG_RD_WR_H
+#ifndef TIVX_UTILS_FILE_RD_WR_H
+#define TIVX_UTILS_FILE_RD_WR_H
 
 #include <VX/vx.h>
 
@@ -162,7 +162,7 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
 vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image);
 
 /**
- * \brief Load data from BMP file into a previously created vx_image object
+ * \brief Load data from PNG file into a previously created vx_image object
  *
  * This function is same as create_vximage_from_pngfile(). Only difference is
  * that the vx_image object is created outside this function.
@@ -180,6 +180,63 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image);
  * \return VX_SUCCESS if BMP file data could be loaded into the vx_image object.
  */
 vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
+
+/**
+ * \brief Read data from BMP file
+ *
+ * Same as tivx_utils_png_file_read() but with .bmp file
+ */
+vx_status tivx_utils_bmp_file_read(
+            char *filename,
+            vx_bool convert_to_gray_scale,
+            uint32_t *width,
+            uint32_t *height,
+            uint32_t *stride,
+            vx_df_image *df,
+            void **data_ptr,
+            void **png_file_context);
+
+/**
+ * \brief Free memory allocated during bmp file read
+ *
+ * Same as tivx_utils_png_file_read_release() but with .bmp file
+ *
+ */
+void tivx_utils_bmp_file_read_release(void *png_file_context);
+
+/**
+ * \brief Write data into BMP file
+ *
+ * Same as tivx_utils_png_file_write() but with .bmp file
+ */
+int32_t tivx_utils_bmp_file_write(
+            char *filename,
+            uint32_t width,
+            uint32_t height,
+            uint32_t stride,
+            vx_df_image df,
+            void *data_ptr);
+
+/**
+ * \brief Create a image data object given BMP filename as input
+ *
+ * Same as tivx_utils_create_vximage_from_pngfile() but with .bmp file
+ */
+vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filename, vx_bool convert_to_gray_scale);
+
+/**
+ * \brief Save data from image object to PNG file
+ *
+ * Same as tivx_utils_save_vximage_to_pngfile() but with .bmp file
+ */
+vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image);
+
+/**
+ * \brief Load data from BMP file into a previously created vx_image object
+ *
+ * Same as tivx_utils_load_vximage_from_pngfile() but with .bmp file
+ */
+vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
 
 #endif
 
