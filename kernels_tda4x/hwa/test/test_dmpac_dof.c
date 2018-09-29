@@ -65,7 +65,7 @@
 #include <TI/tda4x.h>
 #include "test_engine/test.h"
 #include <string.h>
-#include "tivx_utils_png_rd_wr.h"
+#include "tivx_utils_file_rd_wr.h"
 
 TESTCASE(tivxHwaDmpacDof, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -73,7 +73,7 @@ TESTCASE(tivxHwaDmpacDof, CT_VXContext, ct_setup_vx_context, 0)
 
 static void make_filename(char *abs_filename, char *filename_prefix, uint32_t level)
 {
-    snprintf(abs_filename, MAX_ABS_FILENAME, "%s/%s%d.png",
+    snprintf(abs_filename, MAX_ABS_FILENAME, "%s/%s%d.bmp",
         ct_get_test_file_path(), filename_prefix, level);
 }
 
@@ -81,11 +81,11 @@ static vx_status load_image_into_pyramid_level(vx_pyramid pyr, uint32_t level, c
 {
     char filename[MAX_ABS_FILENAME];
     vx_image image;
-    vx_status status;
+    vx_status status = 0;
 
     make_filename(filename, filename_prefix, level);
     image = vxGetPyramidLevel(pyr, level);
-    status = tivx_utils_load_vximage_from_pngfile(image, filename, vx_false_e);
+    status = tivx_utils_load_vximage_from_bmpfile(image, filename, vx_true_e);
     vxReleaseImage(&image);
     return status;
 }
@@ -95,16 +95,16 @@ static vx_status save_image_from_dof(vx_image flow_vector_img, vx_image confiden
     char filename[MAX_ABS_FILENAME];
     vx_status status;
 
-    snprintf(filename, MAX_ABS_FILENAME, "%s/%s_flow_img.png",
+    snprintf(filename, MAX_ABS_FILENAME, "%s/%s_flow_img.bmp",
         ct_get_test_file_path(), filename_prefix);
 
-    status = tivx_utils_save_vximage_to_pngfile(filename, flow_vector_img);
+    status = tivx_utils_save_vximage_to_bmpfile(filename, flow_vector_img);
     if(status == VX_SUCCESS)
     {
-        snprintf(filename, MAX_ABS_FILENAME, "%s/%s_confidence_img.png",
+        snprintf(filename, MAX_ABS_FILENAME, "%s/%s_confidence_img.bmp",
             ct_get_test_file_path(), filename_prefix);
 
-        status = tivx_utils_save_vximage_to_pngfile(filename, confidence_img);
+        status = tivx_utils_save_vximage_to_bmpfile(filename, confidence_img);
     }
 
     return status;

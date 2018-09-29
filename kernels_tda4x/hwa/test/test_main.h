@@ -60,8 +60,12 @@
  *
  */
 
+#if 1
+
 #ifdef TARGET_X86_64
 TESTCASE(tivxPngRdWr)
+#endif
+
 TESTCASE(tivxHwaVpacNfGeneric)
 TESTCASE(tivxHwaVpacNfBilateral)
 TESTCASE(tivxHwaVpacLdc)

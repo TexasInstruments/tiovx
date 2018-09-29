@@ -60,8 +60,9 @@
 *
 */
 
-
+#if 1
 #ifdef TARGET_X86_64
 TESTCASE(tivxTIDL)
+#endif
 #endif
 

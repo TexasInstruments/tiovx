@@ -64,7 +64,7 @@
 #include <TI/tivx.h>
 #include <TI/tda4x.h>
 #include "test_engine/test.h"
-#include "tivx_utils_png_rd_wr.h"
+#include "tivx_utils_file_rd_wr.h"
 #include <string.h>
 
 
@@ -81,7 +81,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     vx_array h3a_aew_af = NULL;
 
     tivx_vpac_viss_params_t params;
-    tivx_ae_awb_params_t ae_awb_params; 
+    tivx_ae_awb_params_t ae_awb_params;
 
     vx_enum params_type = VX_TYPE_INVALID;
 
@@ -198,7 +198,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     vx_array h3a_aew_af = NULL;
 
     tivx_vpac_viss_params_t params;
-    tivx_ae_awb_params_t ae_awb_params; 
+    tivx_ae_awb_params_t ae_awb_params;
 
     vx_enum params_type = VX_TYPE_INVALID;
 
@@ -221,10 +221,10 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(raw0 = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(raw1 = ct_image_to_vx_image(src1, context), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(raw2 = ct_image_to_vx_image(src2, context), VX_TYPE_IMAGE);
-        
+
         VX_CALL(vxQueryImage(raw0, VX_IMAGE_WIDTH, &width, sizeof(width)));
         VX_CALL(vxQueryImage(raw0, VX_IMAGE_HEIGHT, &height, sizeof(height)));
-        
+
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -341,7 +341,7 @@ static void ct_write_image2(vx_image image, const char* fileName)
         vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
         vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
-        
+
         if( (df == VX_DF_IMAGE_U16) || (df == VX_DF_IMAGE_S16) )
         {
             num_bytes = 2;
@@ -417,7 +417,7 @@ static void ct_read_image2(vx_image image, const char* fileName, uint16_t file_b
             vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
             vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
             vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
-            
+
             if( (df == VX_DF_IMAGE_U16) || (df == VX_DF_IMAGE_S16) )
             {
                 num_bytes = 2;
@@ -555,10 +555,10 @@ static vx_status save_image_from_viss(vx_image y8, char *filename_prefix)
     char filename[MAXPATHLENGTH];
     vx_status status;
 
-    snprintf(filename, MAXPATHLENGTH, "%s/%s_y8.png",
+    snprintf(filename, MAXPATHLENGTH, "%s/%s_y8.bmp",
         ct_get_test_file_path(), filename_prefix);
 
-    status = tivx_utils_save_vximage_to_pngfile(filename, y8);
+    status = tivx_utils_save_vximage_to_bmpfile(filename, y8);
 
     return status;
 }
@@ -578,7 +578,7 @@ static vx_int32 ct_cmp_image2(vx_image image, vx_image image_ref)
     vxQueryImage(image, VX_IMAGE_WIDTH, &width, sizeof(vx_uint32));
     vxQueryImage(image, VX_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
     vxQueryImage(image, VX_IMAGE_FORMAT, &df, sizeof(vx_df_image));
-    
+
     rect.start_x = 0;
     rect.start_y = 0;
     rect.end_x = width;
@@ -693,7 +693,7 @@ static vx_int32 ct_cmp_hist(vx_distribution hist, vx_distribution hist_ref)
 
     vxUnmapDistribution(hist, map_id);
     vxUnmapDistribution(hist_ref, map_id_ref);
-    
+
     return error;
 }
 
@@ -712,7 +712,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     vx_size h3a_output_size;
 
     tivx_vpac_viss_params_t params;
-    tivx_ae_awb_params_t ae_awb_params; 
+    tivx_ae_awb_params_t ae_awb_params;
     void *h3a_output;
 
     vx_enum params_type = VX_TYPE_INVALID;

@@ -64,7 +64,7 @@
 #include <TI/tivx.h>
 #include "test_engine/test.h"
 #include <string.h>
-#include "tivx_utils_png_rd_wr.h"
+#include "tivx_utils_file_rd_wr.h"
 
 #define MAX_ABS_FILENAME   (1024u)
 

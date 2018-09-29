@@ -32,9 +32,7 @@ STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils
 STATIC_LIBS += vx_target_kernels_tda4x_arm
 STATIC_LIBS += vx_utils
 
-ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 STATIC_LIBS += vx_tiovx_tidl_tests
-endif
 
 STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_common tidl_algo
 
