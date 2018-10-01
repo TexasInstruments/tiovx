@@ -85,6 +85,7 @@ typedef struct {
     int pyramid_size[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS][2];
     int confidence_histogram[TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS];
     DOFParams dofParams;
+    int resv4;
 } tivxDmpacDofParams;
 
 #else
@@ -216,7 +217,7 @@ static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms)
         tivxMemFree( prms->past_prediction, size, TIVX_MEM_EXTERNAL);
         prms->past_prediction = NULL;
     }
-    tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);
+    tivxMemFree(prms, sizeof(tivxDmpacDofParams), TIVX_MEM_EXTERNAL);
 }
 
 static vx_status VX_CALLBACK tivxDmpacDofProcess(
@@ -370,9 +371,43 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
         /* call kernel processing function */
 #ifdef VLAB_HWA
+        {
+                /* VLAB HWA are 64b models in backend, but int* pointers are 32b on R5F core 
+                 * Hence need to trick VLAB to think we are passing 64b pointer
+                 */ 
+                int *input_current_org[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
+                int *input_reference_org[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
+                                
+                /* save orignal 32b pointers */                                            
+                for(i=0; i<TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS; i++)
+                {
+                    input_current_org[i] = prms->input_current[i];
+                    input_reference_org[i] = prms->input_reference[i];
+                }
+                /* set pointers to how VLAB 64b C models will see it */
+                for(i=0; i<TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS; i++)
+                {
+                    prms->input_current[2*i] = input_current_org[i];
+                    prms->input_current[2*i+1] = NULL;
+                    prms->input_reference[2*i] = input_reference_org[i];
+                    prms->input_reference[2*i+1] = NULL;
+                }
+                
+                status = vlab_hwa_process(DMPAC_DOF_BASE_ADDRESS, "DMPAC_DOF", sizeof(tivxDmpacDofParams), prms);
+                prms->past_prediction = past_prediction;
 
-        status = vlab_hwa_process(DMPAC_DOF_BASE_ADDRESS, "DMPAC_DOF", sizeof(tivxDmpacDofParams), &prms);
-        prms->past_prediction = past_prediction;
+                /* restore pointer to how 32b R5F will see it  */
+                for(i=0; i<TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS; i++)
+                {
+                    prms->input_current[i] = input_current_org[i];
+                    prms->input_reference[i] = input_reference_org[i];
+                }
+                for(i=TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS; i<TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS*2; i++)
+                {
+                    prms->input_current[i] = NULL;
+                    prms->input_reference[i] = NULL;
+                }
+        }
 
 #else
 

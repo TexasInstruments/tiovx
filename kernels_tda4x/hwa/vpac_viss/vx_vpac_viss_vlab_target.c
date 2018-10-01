@@ -327,7 +327,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             h3a_aew_af_desc->num_items = 1;
         }
 
-        status = vlab_hwa_process(VPAC_VISS_BASE_ADDRESS, "VPAC_VISS", sizeof(viss_config), &prms);
+        status = vlab_hwa_process(VPAC_VISS_BASE_ADDRESS, "VPAC_VISS", sizeof(viss_config), prms);
 
         /* Fill non-NULL output buffers (up to 7) */
 
