@@ -65,7 +65,78 @@
 #include <tivx_utils_file_rd_wr.h>
 #include <test_engine/test.h>
 #include <test_engine/test_image.h>
+#include <test_engine/test_bmp.h>
 
+static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int dcn)
+{
+    FILE* f = 0;
+    size_t sz;
+    char* buf = 0;
+    CT_Image image = 0;
+    char file[MAXPATHLENGTH];
+
+    if (!fileName)
+    {
+        CT_ADD_FAILURE("Image file name not specified\n");
+        return 0;
+    }
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s", fileName);
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+
+    f = fopen(file, "rb");
+    if (!f)
+    {
+        CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
+        return 0;
+    }
+
+    fseek(f, 0, SEEK_END);
+    sz = ftell(f);
+    if( sz > 0 )
+    {
+        buf = (char*)ct_alloc_mem(sz);
+        fseek(f, 0, SEEK_SET);
+        if( fread(buf, 1, sz, f) == sz )
+        {
+            image = ct_read_bmp((unsigned char*)buf, (int)sz, dcn);
+        }
+    }
+
+    ct_free_mem(buf);
+    fclose(f);
+
+    if(!image)
+        CT_ADD_FAILURE("Can not read image from \"%s\"", fileName);
+
+    return image;
+}
+
+static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image)
+{
+    char* dotpos;
+    int result = -1;
+    size_t size;
+    char file[MAXPATHLENGTH];
+
+    if (fileName)
+    {
+        size = snprintf(file, MAXPATHLENGTH, "%s", fileName);
+        ASSERT(size < MAXPATHLENGTH);
+
+        dotpos = strrchr(file, '.');
+        if(dotpos &&
+           (strcmp(dotpos, ".bmp") == 0 ||
+            strcmp(dotpos, ".BMP") == 0))
+            result = ct_write_bmp(file, image);
+        if( result < 0 )
+            CT_ADD_FAILURE("Can not write image to \"%s\"", fileName);
+    }
+    else
+    {
+        CT_ADD_FAILURE("Image name is not specified (NULL)");
+    }
+}
 
 vx_status tivx_utils_bmp_file_read(
             char *filename,
@@ -85,7 +156,7 @@ vx_status tivx_utils_bmp_file_read(
     /* workaround to enable CT context */
     CT_SetHasRunningTest();
 
-    image = ct_read_image3(filename, dcn);
+    image = tivx_utils_load_ct_image_from_bmpfile(filename, dcn);
 
     if(image != NULL)
     {
@@ -156,7 +227,7 @@ int32_t tivx_utils_bmp_file_write(
     {
         image = ct_allocate_image_hdr(width, height, stride/bpp, df, data_ptr);
 
-        ct_write_image3(filename, image);
+        tivx_utils_save_ct_image_to_bmpfile(filename, image);
 
         CT_FreeObject(image);
 
