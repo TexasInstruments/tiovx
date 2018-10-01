@@ -1,6 +1,6 @@
 
 ifeq ($(TARGET_PLATFORM), TDA4X)
-ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66))
+ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72 R5F C66 C71))
 ifeq ($(TARGET_OS),SYSBIOS)
 
 include $(PRELUDE)
