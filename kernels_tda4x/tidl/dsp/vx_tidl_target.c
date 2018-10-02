@@ -201,28 +201,28 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
         void *in_tensor_target_ptr;
         void *out_tensor_target_ptr;
-        
+
         /* Idx 0 - config data, Idx 1 - network data, Idx 2 - input tensor */
         uint32_t in_tensor_idx = 2;
-        
+
         /* Idx N - output tensors, where N = Idx 2 + number of input tensors */
         uint32_t out_tensor_idx = in_tensor_idx + prms->inBufs.numBufs;
         uint32_t id;
-        
+
         for(id = 0; id < prms->inBufs.numBufs; id++) {
             inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
             in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
             tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
             prms->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
         }
-        
+
         for(id = 0; id < prms->outBufs.numBufs; id++) {
             outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
             out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
             tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
             prms->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
         }
-        
+
         status = tivxAlgiVisionProcess
                  (
                     prms->algHandle,
@@ -295,12 +295,17 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             status = VX_ERROR_NO_MEMORY;
         }
 
+        TIDL_createParamsInit(&prms->createParams);
+
         prms->createParams.visionParams.algParams.size   = sizeof(TIDL_CreateParams);
         prms->createParams.visionParams.cacheWriteBack   = NULL;
         prms->createParams.currLayersGroupId             = TIDL_TB_CURR_LAYERS_GROUP_ID;
         prms->createParams.isInbufsPaded                 = 1;
         prms->createParams.TIDLGetPhysicalAddress        = NULL;
         prms->createParams.optimiseExtMem                = TIDL_optimiseExtMemL1;
+        prms->createParams.l1MemSize                     = 0;
+        prms->createParams.l2MemSize                     = 0;
+        prms->createParams.l3MemSize                     = 0;
 
         network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
         tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
