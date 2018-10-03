@@ -645,7 +645,7 @@ class Direction(Enum):
     INPUT = 1
     ## OpenVX equivalent = VX_OUTPUT
     OUTPUT = 2
-    ## OpenVX equivalent = VX_BIDRECTIONAL
+    ## OpenVX equivalent = VX_BIDIRECTIONAL
     BIDIRECTIONAL = 3
 
     def get_vx_enum_name(type) :
