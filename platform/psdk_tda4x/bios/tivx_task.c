@@ -19,7 +19,7 @@ static void tivxTaskDefHandle(void* arg0, void* arg1)
 {
     tivx_task *task;
 
-    if (0U != arg0)
+    if (0U != (uintptr_t)arg0)
     {
         task = (tivx_task *)arg0;
 

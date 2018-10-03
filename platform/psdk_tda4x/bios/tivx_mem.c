@@ -60,13 +60,13 @@ vx_status tivxMemBufferAlloc(
 
         if (VX_SUCCESS == status)
         {
-            mem_ptr->shared_ptr = appMemAlloc(
+            mem_ptr->shared_ptr = (uintptr_t)appMemAlloc(
                 heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
 
-            if (NULL != mem_ptr->shared_ptr)
+            if ((uintptr_t)NULL != mem_ptr->shared_ptr)
             {
                 mem_ptr->mem_heap_region = mem_heap_region;
-                mem_ptr->host_ptr = tivxMemShared2HostPtr(
+                mem_ptr->host_ptr = (uint64_t)tivxMemShared2HostPtr(
                     mem_ptr->shared_ptr, mem_heap_region);
             }
             else
@@ -182,12 +182,12 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         if (VX_SUCCESS == status)
         {
             ret_val = appMemFree(
-                heap_id, mem_ptr->shared_ptr, size);
+                heap_id, (void*)(uintptr_t)mem_ptr->shared_ptr, size);
 
             if (0 == ret_val)
             {
-                mem_ptr->host_ptr = NULL;
-                mem_ptr->shared_ptr = NULL;
+                mem_ptr->host_ptr = (uintptr_t)NULL;
+                mem_ptr->shared_ptr = (uintptr_t)NULL;
             }
             else
             {
@@ -278,29 +278,29 @@ void tivxMemBufferUnmap(
     }
 }
 
-void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region)
+uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same */
     return (host_ptr);
 }
 
-void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region)
+uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same */
     return (shared_ptr);
 }
 
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region)
+void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same
      * However when used in Linux+BIOS mode, a translation maybe required
      * Utils_physToVirt abstracts this translation
      */
-    return (shared_ptr);
+    return (void*)(uintptr_t)(shared_ptr);
 }
 
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
+uint64_t tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
 {
-    return (target_ptr);
+    return (uint64_t)(target_ptr);
 }
 

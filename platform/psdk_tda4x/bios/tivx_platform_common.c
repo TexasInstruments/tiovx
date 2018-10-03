@@ -55,7 +55,7 @@ vx_status tivxPlatformInit(void)
     ((sizeof(tivx_obj_desc_shm_entry_t)) % (TIVX_PLATFORM_SHM_ENTRY_SIZE_ALIGN))
         == 0);
     BUILD_ASSERT(
-    (sizeof(tivx_obj_desc_shm_entry_t)) <= TIVX_PLATFORM_MAX_SHM_ENTRY_SIZE);
+    (sizeof(tivx_obj_desc_shm_entry_t)) <= TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE);
 
     retVal = appIpcGetTiovxObjDescSharedMemInfo( (void **) &gTivxObjDescShmEntry, &shmSize);
 
