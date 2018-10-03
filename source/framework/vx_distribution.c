@@ -73,8 +73,8 @@ vx_distribution VX_API_CALL vxCreateDistribution(
                     obj_desc->offset = offset;
                     obj_desc->num_win = (vx_uint32)range/(vx_uint32)num_bins;
                     obj_desc->mem_size = num_bins * sizeof(vx_int32);
-                    obj_desc->mem_ptr.host_ptr = NULL;
-                    obj_desc->mem_ptr.shared_ptr = NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     dist->base.obj_desc = (tivx_obj_desc_t*)obj_desc;
                 }
@@ -215,7 +215,7 @@ vx_status VX_API_CALL vxCopyDistribution(
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            (NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyDistribution: Memory still allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -235,12 +235,12 @@ vx_status VX_API_CALL vxCopyDistribution(
         /* Copy from dist object to user memory */
         if (VX_READ_ONLY == usage)
         {
-            tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+            tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-            memcpy(user_ptr, obj_desc->mem_ptr.host_ptr, size);
+            memcpy(user_ptr, (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size);
 
-            tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+            tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
         else /* Copy from user memory to dist object */
@@ -249,12 +249,12 @@ vx_status VX_API_CALL vxCopyDistribution(
 
             if (VX_SUCCESS == status)
             {
-                tivxMemBufferMap(obj_desc->mem_ptr.host_ptr, size,
+                tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-                memcpy(obj_desc->mem_ptr.host_ptr, user_ptr, size);
+                memcpy((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, user_ptr, size);
 
-                tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr, size,
+                tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr, size,
                     VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
             }
         }
@@ -275,7 +275,7 @@ vx_status VX_API_CALL vxMapDistribution(
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
+    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxMapDistribution: object descriptor is NULL or host ptr is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -284,11 +284,11 @@ vx_status VX_API_CALL vxMapDistribution(
     {
         if (NULL != ptr)
         {
-            tivxMemBufferMap(obj_desc->mem_ptr.host_ptr,
+            tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
                 obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_READ_AND_WRITE);
 
-            *ptr = obj_desc->mem_ptr.host_ptr;
+            *ptr = (void*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         }
     }
 
@@ -305,14 +305,14 @@ vx_status VX_API_CALL vxUnmapDistribution(vx_distribution dist, vx_map_id map_id
         obj_desc = (tivx_obj_desc_distribution_t *)dist->base.obj_desc;
     }
 
-    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == NULL))
+    if ((obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL))
     {
         VX_PRINT(VX_ZONE_ERROR, "vxUnmapDistribution: object descriptor is NULL or host ptr is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     else
     {
-        tivxMemBufferUnmap(obj_desc->mem_ptr.host_ptr,
+        tivxMemBufferUnmap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
             obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_AND_WRITE);
     }
@@ -331,13 +331,13 @@ static vx_status ownAllocDistributionBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR, "ownAllocDistributionBuffer: could not allocate memory\n");
@@ -376,7 +376,7 @@ static vx_status ownDestructDistribution(vx_reference ref)
         obj_desc = (tivx_obj_desc_distribution_t *)ref->obj_desc;
         if(obj_desc!=NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);

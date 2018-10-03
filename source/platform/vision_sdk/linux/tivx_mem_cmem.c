@@ -200,49 +200,50 @@ void tivxMemBufferUnmap(
     }
 }
 
-void *tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region)
+uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
     void *addr = NULL;
 
     if (NULL != host_ptr)
     {
-        if (System_ovxIsValidCMemVirtAddr((unsigned int)host_ptr))
+        if (System_ovxIsValidCMemVirtAddr((uintptr_t)host_ptr))
         {
-            addr = (void *)CMEM_getPhys(host_ptr);
+            addr = (void *)CMEM_getPhys((void*)(uintptr_t)host_ptr);
         }
         else
         {
-            addr = (void *)System_ovxVirt2Phys((unsigned int)host_ptr);
+            addr = (void *)System_ovxVirt2Phys((uintptr_t)host_ptr);
         }
     }
 
-    return (addr);
+    return (uint64_t)(uintptr_t)(addr);
 }
 
-void *tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region)
+uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     void *addr = NULL;
 
     if (NULL != shared_ptr)
     {
-        if (!System_ovxIsValidCMemPhysAddr((unsigned int)shared_ptr))
+        if (!System_ovxIsValidCMemPhysAddr((uintptr_t)shared_ptr))
         {
-            addr = (void *)System_ovxPhys2Virt((unsigned int)shared_ptr);
+            addr = (void *)System_ovxPhys2Virt((uintptr_t)shared_ptr);
         }
     }
 
-    return (addr);
+    return (uint64_t)(uintptr_t)(addr);
 }
 
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region)
+void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
-    return (shared_ptr);
+    return (void*)(shared_ptr);
 }
 
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
+uint64_t tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
 {
-    return (target_ptr);
+    return (uint64_t)(target_ptr);
 }
+
 
 vx_status tivxMemInit(void)
 {

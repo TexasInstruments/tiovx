@@ -348,7 +348,7 @@ static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_o
     {
         prm_ref[i] = ownReferenceGetHandleFromObjDescId(prm_obj_desc_id[i]);
     }
-    node_obj_desc->exe_status = ownNodeUserKernelExecute((vx_node)node_obj_desc->base.host_ref, prm_ref);
+    node_obj_desc->exe_status = ownNodeUserKernelExecute((vx_node)(uintptr_t)node_obj_desc->base.host_ref, prm_ref);
 }
 
 vx_bool tivxTargetNodeDescIsPrevPipeNodeBlocked(tivx_obj_desc_node_t *node_obj_desc)
@@ -705,14 +705,14 @@ static void tivxTargetCmdDescHandleAck(tivx_obj_desc_cmd_t *cmd_obj_desc)
     {
         tivxFlagBitClear( &cmd_obj_desc->flags, TIVX_CMD_FLAG_IS_ACK);
 
-        tivxEventPost((tivx_event)cmd_obj_desc->ack_event_handle);
+        tivxEventPost((tivx_event)(uintptr_t)cmd_obj_desc->ack_event_handle);
     }
 }
 
 static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
     vx_action action;
-    vx_node node = (vx_node)node_obj_desc->base.host_ref;
+    vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
     vx_bool is_send_graph_complete_event = vx_false_e;
 
     /* return action is ignored */
@@ -745,7 +745,7 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
 static void tivxTargetSetGraphStateAbandon(
     const tivx_obj_desc_node_t *node_obj_desc)
 {
-    vx_node node = (vx_node)node_obj_desc->base.host_ref;
+    vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
 
     ownSetGraphState(node->graph, node_obj_desc->pipeline_id, VX_GRAPH_STATE_ABANDONED);
 }

@@ -473,7 +473,7 @@ vx_reference ownReferenceGetHandleFromObjDescId(uint16_t obj_desc_id)
     vx_reference ref = NULL;
 
     if(obj_desc!=NULL)
-        ref = (vx_reference)obj_desc->host_ref;
+        ref = (vx_reference)(uintptr_t)obj_desc->host_ref;
 
     return ref;
 }

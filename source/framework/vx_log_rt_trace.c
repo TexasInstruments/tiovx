@@ -79,7 +79,7 @@ void tivxLogRtTraceNodeExeStart(uint64_t time, tivx_obj_desc_node_t *node_obj_de
         printf("#%" PRIu64 "\n" "b"BYTE_TO_BINARY_PATTERN" n_%" PRIuPTR "\n",
             time,
             BYTE_TO_BINARY(node_obj_desc->pipeline_id),
-            node_obj_desc->base.host_ref);
+            (uintptr_t)node_obj_desc->base.host_ref);
     }
 }
 
@@ -89,7 +89,7 @@ void tivxLogRtTraceNodeExeEnd(uint64_t time, tivx_obj_desc_node_t *node_obj_desc
     {
         printf("#%" PRIu64 "\n" "bZ n_%" PRIuPTR "\n",
             time,
-            node_obj_desc->base.host_ref);
+            (uintptr_t)node_obj_desc->base.host_ref);
     }
 }
 

@@ -77,6 +77,11 @@ extern "C" {
  * \brief Interface to object descriptor
  */
 
+/*! \brief Macro to check max shared mem entry size
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (384U)
+
 /*!
  * \brief Max possible planes of data in an image
  *
@@ -270,13 +275,16 @@ typedef struct _tivx_obj_desc_t {
     uint16_t scope_obj_desc_id;
 
     /*! \brief reserved field to make this structure a multiple of 64b */
-    uint16_t rsv[1];
+    uint16_t rsv1[1];
 
     /*! \brief Host reference, accessible only on HOST side */
-    uintptr_t host_ref;
+    uint64_t host_ref;
 
     /*! \brief reference flags */
     uint32_t flags;
+    
+    /*! \brief reserved field to make this structure a multiple of 64b */
+    uint32_t rsv2[1];
 
 } tivx_obj_desc_t;
 
@@ -416,6 +424,8 @@ typedef struct _tivx_obj_desc_image
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
+    /*! \brief image plane buffer addresses */
+    tivx_shared_mem_ptr_t mem_ptr[TIVX_IMAGE_MAX_PLANES];
     /*! \brief Width of image in pixels */
     uint32_t width;
     /*! \brief Height of image in lines */
@@ -443,8 +453,6 @@ typedef struct _tivx_obj_desc_image
     uint32_t uniform_image_pixel_value;
     /*! \brief method by which image was created, see \ref tivx_image_create_type_e */
     uint32_t create_type;
-    /*! \brief image plane buffer addresses */
-    tivx_shared_mem_ptr_t mem_ptr[TIVX_IMAGE_MAX_PLANES];
     /*! \brief image plane addressing parameters */
     vx_imagepatch_addressing_t imagepatch_addr[TIVX_IMAGE_MAX_PLANES];
     /*! \brief valid region of image to use for processing */
@@ -461,6 +469,8 @@ typedef struct _tivx_obj_desc_remap
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
+    /*! \brief buffer address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief The source width */
     uint32_t src_width;
     /*! \brief The source height */
@@ -471,8 +481,6 @@ typedef struct _tivx_obj_desc_remap
     uint32_t dst_height;
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
-    /*! \brief buffer address */
-    tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_remap_t;
 
 /*!
@@ -484,28 +492,23 @@ typedef struct _tivx_obj_desc_matrix
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-    /*! \brief The source width */
-
+    /*! \brief matrix memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief number of rows */
     uint32_t rows;
     /*! \brief number of columns */
     uint32_t columns;
-
     /*! \brief position at which to place the mask */
     uint32_t origin_x;
     /*! \brief position at which to place the mask  */
     uint32_t origin_y;
-
     /*! \brief Pattern of the matrix \ref vx_pattern_e */
     vx_enum pattern;
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
-
     /*! \brief From \ref vx_type_e */
     vx_enum data_type;
 
-    /*! \brief matrix memory address */
-    tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_matrix_t;
 
 /*!
@@ -517,7 +520,8 @@ typedef struct _tivx_obj_desc_lut
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-
+    /*! \brief lut memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief The item type of the lut. */
     vx_enum item_type;
     /*! \brief size of each item */
@@ -527,8 +531,6 @@ typedef struct _tivx_obj_desc_lut
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
-    /*! \brief lut memory address */
-    tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_lut_t;
 
 /*!
@@ -540,7 +542,6 @@ typedef struct _tivx_obj_desc_pyramid
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-
     /*! \brief number of pyramid levels */
     vx_size num_levels;
     /*! \brief width of the level0 image */
@@ -549,10 +550,8 @@ typedef struct _tivx_obj_desc_pyramid
     uint32_t height;
     /*! \brief Scaling factor between levels of the pyramid. */
     vx_float32 scale;
-
     /*! \brief image format */
     vx_df_image format;
-
     /*! \brief array of object descriptor ids for the image object */
     uint16_t obj_desc_id[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
 } tivx_obj_desc_pyramid_t;
@@ -566,8 +565,8 @@ typedef struct _tivx_obj_desc_convolution
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-    /*! \brief The source width */
-
+    /*! \brief convolution memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief number of rows */
     uint32_t rows;
     /*! \brief number of columns */
@@ -576,9 +575,6 @@ typedef struct _tivx_obj_desc_convolution
     uint32_t scale;
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
-
-    /*! \brief convolution memory address */
-    tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_convolution_t;
 
 /*!
@@ -590,23 +586,18 @@ typedef struct _tivx_obj_desc_threshold
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-    /*! \brief The source width */
-
     /*! \brief type of threshold */
     vx_enum type;
-
     /*! \brief threshold value*/
     int32_t value;
     /*! \brief upper limit */
     int32_t upper;
     /*! \brief lower limit*/
     int32_t lower;
-
     /*! \brief threshold true value*/
     int32_t true_value;
     /*! \brief threshold false value*/
     int32_t false_value;
-
     /*! \brief data type of the threshold */
     vx_enum data_type;
 } tivx_obj_desc_threshold_t;
@@ -620,8 +611,8 @@ typedef struct _tivx_obj_desc_distribution
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-    /*! \brief The source width */
-
+    /*! \brief distribution memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief number of rows */
     uint32_t num_bins;
     /*! \brief number of columns */
@@ -633,8 +624,6 @@ typedef struct _tivx_obj_desc_distribution
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
-    /*! \brief distribution memory address */
-    tivx_shared_mem_ptr_t mem_ptr;
 } tivx_obj_desc_distribution_t;
 
 /*!
@@ -646,8 +635,8 @@ typedef struct _tivx_obj_desc_array
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-    /*! \brief The source width */
-
+    /*! \brief array memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief The item type of the array. */
     vx_enum item_type;
     /*! \brief Size of the array item */
@@ -656,11 +645,9 @@ typedef struct _tivx_obj_desc_array
     uint32_t num_items;
     /*! \brief Max size of the array */
     uint32_t capacity;
-
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
-    /*! \brief array memory address */
-    tivx_shared_mem_ptr_t mem_ptr;
+
 } tivx_obj_desc_array_t;
 
 /*!
@@ -672,15 +659,13 @@ typedef struct _tivx_obj_desc_object_array
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-    /*! \brief The source width */
-
     /*! \brief The item type of the lut. */
     vx_enum item_type;
     /*! \brief number of valid items in array */
     uint32_t num_items;
-
     /*! \brief array of descriptor ids of the objects */
     uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    
 } tivx_obj_desc_object_array_t;
 
 /*!
@@ -692,13 +677,11 @@ typedef struct _tivx_obj_desc_scalar
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-
     /*! \brief The value contained in the reference for a scalar type */
     uint32_t  data_type;
-
     /*! \brief Reserved field to make below union on 64b aligned boundary */
     uint32_t rsv;
-
+    
     union {
         /*! \brief A character */
         vx_char   chr;
@@ -747,17 +730,16 @@ typedef struct _tivx_obj_desc_tensor
 {
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
-
+    /*! \brief buffer address */
+    tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief Number of dimensions in the tensor */
     uint32_t number_of_dimensions;
     /*! \brief Data type of tensor */
     uint32_t data_type;
     /*! \brief Fixed point precision of the tensor */
     uint32_t fixed_point_position;
-
     /*! \brief Size of all dimensions */
     uint32_t dimensions[TIVX_CONTEXT_MAX_TENSOR_DIMS];
-
     /*! \brief Stride of all dimensions
      *
      * stride[0] is more like bytes per element
@@ -774,10 +756,6 @@ typedef struct _tivx_obj_desc_tensor
     uint32_t stride[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     /*! \brief Buffer size */
     uint32_t mem_size;
-
-    /*! \brief buffer address */
-    tivx_shared_mem_ptr_t mem_ptr;
-
 } tivx_obj_desc_tensor_t;
 
 /*!

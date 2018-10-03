@@ -137,19 +137,22 @@ typedef enum _tivx_memory_type_e {
 typedef struct _tivx_shared_mem_ptr_t {
 
     /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e */
-    vx_enum mem_heap_region;
+    uint32_t mem_heap_region;
+    
+    /*! \brief reserved field to make this structure a multiple of 64b */    
+    uint32_t rsv1[1];
 
     /*! \brief Value of pointer as seen in shared memory
      *         All CPUs will have method to convert from shared memory pointer
      *         to CPU local memory pointer
      */
-    void *shared_ptr;
+    uint64_t shared_ptr;
 
     /*! \brief Value of pointer as seen as by host CPU
      *         Host CPU will have method to convert to/from shared memory
      *         pointer
      */
-    void *host_ptr;
+    uint64_t host_ptr;
 
 } tivx_shared_mem_ptr_t;
 
@@ -233,7 +236,7 @@ void tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region);
+uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Convert Shared memory pointer to host pointer
@@ -245,7 +248,7 @@ void* tivxMemHost2SharedPtr(void *host_ptr, vx_enum mem_heap_region);
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region);
+uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Convert shared pointer to target pointer
@@ -257,7 +260,7 @@ void* tivxMemShared2HostPtr(void *shared_ptr, vx_enum mem_heap_region);
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region);
+void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Convert target memory pointer to shared pointer
@@ -269,7 +272,7 @@ void* tivxMemShared2TargetPtr(void *shared_ptr, vx_enum mem_heap_region);
  *
  * \ingroup group_tivx_mem
  */
-void* tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region);
+uint64_t tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Allocates memory of given size

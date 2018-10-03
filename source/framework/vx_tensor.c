@@ -71,13 +71,13 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR,"Could not allocate tensor memory\n");
@@ -114,7 +114,7 @@ static vx_status ownDestructTensor(vx_reference ref)
         obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
         if(obj_desc != NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
@@ -160,8 +160,8 @@ static void ownInitTensorObject(
         obj_desc->stride[i] = 0;
     }
 
-    obj_desc->mem_ptr.host_ptr = NULL;
-    obj_desc->mem_ptr.shared_ptr = NULL;
+    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
+    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
 
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i ++)
@@ -407,7 +407,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            (NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Memory is not allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -459,7 +459,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
     if (VX_SUCCESS == status)
     {
         vx_uint8* user_curr_ptr = (vx_uint8*)user_ptr;
-        vx_uint8* tensor_ptr = (vx_uint8*)obj_desc->mem_ptr.host_ptr;
+        vx_uint8* tensor_ptr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         vx_size patch_size = ownComputePatchSize (view_start, view_end, number_of_dimensions);
         vx_uint32 elements_per_line = view_end[0]-view_start[0];
         vx_uint32 bytes_per_line = obj_desc->stride[0] * elements_per_line;
@@ -558,7 +558,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
         uint32_t map_size = 0;
         uint32_t map_idx;
 
-        map_addr = (vx_uint8*)obj_desc->mem_ptr.host_ptr;
+        map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr;
         map_size = obj_desc->mem_size;
 
         if (NULL != map_addr)

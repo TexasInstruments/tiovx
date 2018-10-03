@@ -244,7 +244,7 @@ static vx_status ownDestructImage(vx_reference ref)
             {
                 for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
                 {
-                    if(obj_desc->mem_ptr[plane_idx].host_ptr!=NULL)
+                    if(obj_desc->mem_ptr[plane_idx].host_ptr!=(uint64_t)NULL)
                     {
                         tivxMemBufferFree(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx]);
                     }
@@ -279,11 +279,11 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
                 for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
                 {
                     /* memory is not allocated, so allocate it */
-                    if(obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
+                    if(obj_desc->mem_ptr[plane_idx].host_ptr==(uint64_t)NULL)
                     {
                         tivxMemBufferAlloc(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL);
 
-                        if(obj_desc->mem_ptr[plane_idx].host_ptr==NULL)
+                        if(obj_desc->mem_ptr[plane_idx].host_ptr==(uint64_t)NULL)
                         {
                             /* could not allocate memory */
                             VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: could not allocate memory\n");
@@ -369,8 +369,8 @@ static void ownInitPlane(vx_image image,
         obj_desc->mem_size[index] = mem_size;
 
         obj_desc->mem_ptr[index].mem_heap_region = TIVX_MEM_EXTERNAL;
-        obj_desc->mem_ptr[index].host_ptr = NULL;
-        obj_desc->mem_ptr[index].shared_ptr = NULL;
+        obj_desc->mem_ptr[index].host_ptr = (uint64_t)NULL;
+        obj_desc->mem_ptr[index].shared_ptr = (uint64_t)NULL;
 
         image->mem_offset[index] = 0;
     }
@@ -689,8 +689,8 @@ void ownPrintImage(vx_image image)
     {
         VX_PRINT(VX_ZONE_IMAGE,"Plane %d: host_ptr:%p, shared_ptr:%p, mem_size:%d B\n",
             p,
-            obj_desc->mem_ptr[p].host_ptr,
-            obj_desc->mem_ptr[p].shared_ptr,
+            (void*)(uintptr_t)obj_desc->mem_ptr[p].host_ptr,
+            (void*)(uintptr_t)obj_desc->mem_ptr[p].shared_ptr,
             obj_desc->mem_size[p]);
         ownPrintImageAddressing(&obj_desc->imagepatch_addr[p]);
         VX_PRINT(VX_ZONE_IMAGE,"\n");
@@ -770,13 +770,13 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
                 obj_desc->mem_size[plane_idx] = (imagepatch_addr->stride_y*imagepatch_addr->dim_y)/imagepatch_addr->step_y;
 
                 mem_ptr->mem_heap_region =  TIVX_MEM_EXTERNAL;
-                mem_ptr->host_ptr = ptrs[plane_idx];
-                if(mem_ptr->host_ptr)
+                mem_ptr->host_ptr = (uint64_t)ptrs[plane_idx];
+                if(mem_ptr->host_ptr!=(uint64_t)NULL)
                 {
                     /* ptrs[plane_idx] can be NULL */
                     mem_ptr->shared_ptr = tivxMemHost2SharedPtr(mem_ptr->host_ptr, TIVX_MEM_EXTERNAL);
 
-                    tivxMemBufferUnmap(mem_ptr->host_ptr,
+                    tivxMemBufferUnmap((void*)(uintptr_t)mem_ptr->host_ptr,
                         obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL,
                         VX_WRITE_ONLY);
                 }
@@ -1025,10 +1025,10 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromROI(vx_image image, const vx_
                                 ownComputePatchOffset(rect->start_x, rect->start_y, subimage_imagepatch_addr);
 
                             subimage_mem_ptr->shared_ptr =
-                                (void*)((uintptr_t)image_mem_ptr->shared_ptr + subimage->mem_offset[plane_idx]);
+                                (uint64_t)((uint64_t)image_mem_ptr->shared_ptr + subimage->mem_offset[plane_idx]);
 
                             subimage_mem_ptr->host_ptr =
-                                (void*)((uintptr_t)image_mem_ptr->host_ptr + subimage->mem_offset[plane_idx]);
+                                (uint64_t)((uint64_t)image_mem_ptr->host_ptr + subimage->mem_offset[plane_idx]);
                         }
                     }
                 }
@@ -1668,7 +1668,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
         image_addr = &obj_desc->imagepatch_addr[plane_index];
-        pImagePtr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
+        pImagePtr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr[plane_index].host_ptr;
 
         if (user_addr->stride_x < image_addr->stride_x)
         {
@@ -1903,7 +1903,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
         obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
         image_addr = &obj_desc->imagepatch_addr[plane_index];
-        map_addr = (vx_uint8*)obj_desc->mem_ptr[plane_index].host_ptr;
+        map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr[plane_index].host_ptr;
         map_size = obj_desc->mem_size[plane_index];
 
         if (NULL != map_addr)
@@ -2088,7 +2088,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
                 /* return previous image handles */
                 for (p = 0; p < image_planes; p++)
                 {
-                    prev_ptrs[p] = obj_desc->mem_ptr[p].host_ptr;
+                    prev_ptrs[p] = (void*)(uintptr_t)obj_desc->mem_ptr[p].host_ptr;
 
                     if (NULL != prev_ptrs[p])
                     {
@@ -2147,14 +2147,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSwapImageHandle(vx_image image, void* const
             {
                 if (new_ptrs == NULL)
                 {
-                    obj_desc->mem_ptr[p].host_ptr = NULL;
-                    obj_desc->mem_ptr[p].shared_ptr = NULL;
+                    obj_desc->mem_ptr[p].host_ptr = (uint64_t)NULL;
+                    obj_desc->mem_ptr[p].shared_ptr = (uint64_t)NULL;
                 }
                 else
                 {
                     /* set new pointers for subimage */
-                    obj_desc->mem_ptr[p].host_ptr = new_ptrs[p];
-                    obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr(new_ptrs[p], obj_desc->mem_ptr[p].mem_heap_region);
+                    obj_desc->mem_ptr[p].host_ptr = (uint64_t)new_ptrs[p];
+                    obj_desc->mem_ptr[p].shared_ptr = tivxMemHost2SharedPtr((uint64_t)new_ptrs[p], obj_desc->mem_ptr[p].mem_heap_region);
 
                     if (NULL != new_ptrs[p])
                     {

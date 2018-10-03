@@ -151,6 +151,11 @@ typedef struct _tivx_obj_desc_cmd
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
 
+    /*! \brief Handle of ACK event that is posted when ACK is received
+     *     MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set
+     */
+    uint64_t ack_event_handle;
+
     /*! \brief command to execute */
     uint32_t cmd_id;
 
@@ -167,11 +172,6 @@ typedef struct _tivx_obj_desc_cmd
      *  TIVX_TARGET_ID_INVALID
      */
     uint32_t src_target_id;
-
-    /*! \brief Handle of ACK event that is posted when ACK is received
-     *     MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set
-     */
-    uintptr_t ack_event_handle;
 
     /*! \brief Number of object descriptor parameters with this command */
     uint32_t num_obj_desc;
@@ -342,6 +342,8 @@ typedef struct _tivx_obj_desc_graph
 
 } tivx_obj_desc_graph_t;
 
+
+
 /*!
  * \brief Object Descriptor Shared memory entry which can hold any of the
  *         supported object descriptor types
@@ -368,6 +370,8 @@ typedef union {
     tivx_obj_desc_queue_t obj_desc_queue;
     tivx_obj_desc_data_ref_q_t obj_desc_data_ref_q;
     tivx_obj_desc_graph_t obj_desc_graph;
+    
+    uint8_t rsv[TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE];
 
 } tivx_obj_desc_shm_entry_t;
 

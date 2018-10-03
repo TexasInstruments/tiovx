@@ -885,7 +885,7 @@ void ownNodeSetObjDescParamDirection(vx_node node)
 
 void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp)
 {
-    vx_node node = (vx_node)node_obj_desc->base.host_ref;
+    vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
 
     if(node!=NULL && node->base.context!=NULL)
     {
@@ -1607,7 +1607,7 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
 
         if(next_node_obj_desc)
         {
-            next_node = (vx_node)next_node_obj_desc->base.host_ref;
+            next_node = (vx_node)(uintptr_t)next_node_obj_desc->base.host_ref;
         }
     }
     return next_node;
