@@ -217,7 +217,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             prms->config.buffer[8]  = prms->outY2_16;
             prms->config.buffer[10] = prms->outC3_16;
 
-            status = vlab_hwa_process(VPAC_LDC_BASE_ADDRESS, "VPAC_LDC", sizeof(ldc_config), &prms->config);
+            vlab_hwa_process(VPAC_LDC_BASE_ADDRESS, "VPAC_LDC", sizeof(ldc_config), &prms->config);
 
 #else
 

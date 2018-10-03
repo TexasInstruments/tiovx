@@ -353,7 +353,24 @@ vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t 
 
         if( data )
         {
-            VX_PRINT(VX_ZONE_ERROR, "%s: vlab model returned error %d\n", kernel_prefix, data);
+            if( VLAB_MODEL_ERROR == data )
+            {
+                data = GET_REG(REG_MODEL_ERROR);
+                VX_PRINT(VX_ZONE_ERROR, "%s: vlab model returned error VLAB_MODEL_ERROR: %d\n", kernel_prefix, data);
+            }
+            else if ( VLAB_BUS_ERROR == data )
+            {
+                VX_PRINT(VX_ZONE_ERROR, "%s: vlab model returned error VLAB_BUS_ERROR\n", kernel_prefix);
+            }
+            else if ( VLAB_MALLOC_ERROR == data )
+            {
+                VX_PRINT(VX_ZONE_ERROR, "%s: vlab model returned error VLAB_MALLOC_ERROR\n", kernel_prefix);
+            }
+            else if ( REG_MODEL_ERROR == data )
+            {
+                VX_PRINT(VLAB_PARAM_ERROR, "%s: vlab model returned error VLAB_PARAM_ERROR\n", kernel_prefix);
+            }
+
             status = VX_FAILURE;
         }
     }
