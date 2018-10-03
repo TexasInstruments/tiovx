@@ -69,15 +69,15 @@
 #include "itidl_ti.h"
 
 /* This is to be removed in future TIDL algo releases. */
-#define DMEM0_SIZE (8*1024)
-#define DMEM1_SIZE (148*1024)
-#define OCMC_SIZE  (320*1024)
+#define DMEM0_SIZE (256)
+#define DMEM1_SIZE (4*1024)
+
+#define L1_MEM_SIZE (0) /* (16*1024)  */
+#define L2_MEM_SIZE (0) /* (128*1024) */
+#define L3_MEM_SIZE (0) /* (128*1024) */
 
 #define TIDL_TB_CURR_CORE_ID            (1)
 #define TIDL_TB_CURR_LAYERS_GROUP_ID    (1)
-
-#define TIDL_BLOCK_WIDTH			(32U)
-#define TIDL_BLOCK_HEIGHT			(32U)
 
 #define ALIGN_SIZE(x,y) (((x + (y-1)) / y) * y)
 
@@ -303,9 +303,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         prms->createParams.isInbufsPaded                 = 1;
         prms->createParams.TIDLGetPhysicalAddress        = NULL;
         prms->createParams.optimiseExtMem                = TIDL_optimiseExtMemL1;
-        prms->createParams.l1MemSize                     = 0;
-        prms->createParams.l2MemSize                     = 0;
-        prms->createParams.l3MemSize                     = 0;
+
+        prms->createParams.TIDLGetPhysicalAddress        = NULL;
+        prms->createParams.quantRangeExpansionFactor     = 1.0;
+        prms->createParams.quantRangeUpdateFactor        = 0.1;
+
+        prms->createParams.l1MemSize = L1_MEM_SIZE;
+        prms->createParams.l2MemSize = L2_MEM_SIZE;
+        prms->createParams.l3MemSize = L3_MEM_SIZE;
 
         network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
         tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
@@ -457,4 +462,3 @@ static void tivxTIDLFreeMem(tivxTIDLParams *prms)
         tivxMemFree(prms, sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
     }
 }
-
