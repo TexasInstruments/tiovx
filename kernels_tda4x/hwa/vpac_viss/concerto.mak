@@ -10,16 +10,15 @@ IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(TDA4X_C_MODELS_PATH)/include
 IDIRS       += $(VXLIB_PATH)/packages
 
-# Temporary until viss is fixed for file read
-ifeq ($(TARGET_CPU),R5F)
-SKIPBUILD=1
-endif
-
 ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA
 CSOURCES    += vx_vpac_viss_vlab_target.c
 else
 CSOURCES    += vx_vpac_viss_target.c
+endif
+
+ifeq ($(HOST_COMPILER),GCC_LINUX)
+CFLAGS += -Wno-unused-result
 endif
 
 include $(FINALE)

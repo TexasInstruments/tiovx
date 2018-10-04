@@ -61,8 +61,6 @@
  */
 
 #include <stdio.h>
-#include <dirent.h>
-#include <errno.h>
 #include "TI/tivx.h"
 #include "TI/tda4x.h"
 #include "VX/vx.h"
@@ -91,6 +89,7 @@
 #define Y8_POST_COPY  DOWN_SHIFT
 
 #define VISS_MAX_PATH_SIZE 256
+#define VISS_FILE_PREFIX_MAX_SIZE 32
 
 typedef struct
 {
@@ -158,6 +157,7 @@ typedef struct
 } tivxVpacVissParams;
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
+static char file_prefix[VISS_FILE_PREFIX_MAX_SIZE];
 
 static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_target_kernel_instance kernel,
@@ -178,7 +178,7 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms);
 static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, uint16_t shift_policy);
 static uint32_t tivxVpacVissFindFile(char *root_name, char *dir_name, char *substring, char *full_path);
-
+static uint32_t tivxVpacVissGetFileConfig(char *root_name, char *file_name, char *full_path);
 
 static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_target_kernel_instance kernel,
@@ -609,6 +609,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             uint32_t width = raw0_desc->imagepatch_addr[0].dim_x;
             uint32_t height = raw0_desc->imagepatch_addr[0].dim_y;
             uint32_t i;
+            char temp_name[VISS_MAX_PATH_SIZE];
 
             memset(prms, 0, sizeof(tivxVpacVissParams));
 
@@ -736,7 +737,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
             if (VX_SUCCESS == status)
             {
-                DIR *dir;
                 void *configuration_target_ptr;
                 void *ae_awb_result_target_ptr;
 
@@ -753,19 +753,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
 
                 /* Check for top level directory */
-                dir = opendir(params->sensor_name);
-                if (NULL != dir)
+                if(0 == tivxVpacVissGetFileConfig(params->sensor_name, "/config.txt", temp_name))
                 {
-                    closedir(dir);
-                }
-                else if (ENOENT == errno)
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Directory does not exist: %s\n", params->sensor_name);
-                    status = VX_FAILURE;
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Directory is not accessible: %s\n", params->sensor_name);
+                    VX_PRINT(VX_ZONE_ERROR, "File not found: %s\n", temp_name);
                     status = VX_FAILURE;
                 }
             }
@@ -776,7 +766,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 char path_flexcfa[] = "/FlexCFA_tasks/";
                 char path_flexcc[] =  "/FlexCC_tasks/";
                 char temp_path[VISS_MAX_PATH_SIZE];
-                char temp_name[VISS_MAX_PATH_SIZE];
   
                 FILE *h3a_config;
                 int32_t bits = 12;
@@ -1333,27 +1322,50 @@ static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, 
 
 static uint32_t tivxVpacVissFindFile(char *root_name, char *dir_name, char *substring, char *full_path)
 {
-    DIR *dir;
-    struct dirent *ent;
+    FILE *file;
     uint32_t found = 0;
-    
+
     strncpy(full_path, root_name, VISS_MAX_PATH_SIZE);
     strncat(full_path, dir_name, VISS_MAX_PATH_SIZE-1);
+    strncat(full_path, file_prefix, VISS_MAX_PATH_SIZE-1);
+    strncat(full_path, substring, VISS_MAX_PATH_SIZE-1);
+    strncat(full_path, "_0.txt", VISS_MAX_PATH_SIZE-1);
 
-    if ((dir = opendir (full_path)) != NULL)
+    if ((file = fopen(full_path, "r")) != NULL)
     {
-        char *ptr;
-        while ((ent = readdir (dir)) != NULL)
+        fclose(file);
+        found = 1;
+    }
+
+    return found;
+}
+
+static uint32_t tivxVpacVissGetFileConfig(char *root_name, char *file_name, char *full_path)
+{
+    FILE *file;
+    uint32_t found = 0;
+
+    strncpy(full_path, root_name, VISS_MAX_PATH_SIZE);
+    strncat(full_path, file_name, VISS_MAX_PATH_SIZE-1);
+
+    if ((file = fopen(full_path, "r")) != NULL)
+    {
+        char *nl;
+        fgets(file_prefix, VISS_FILE_PREFIX_MAX_SIZE, file);
+        fclose(file);
+
+        nl = strrchr(file_prefix, '\r');
+        if (nl)
         {
-            ptr = strstr(ent->d_name, substring);
-            if (NULL != ptr)
-            {
-                strncat(full_path, ent->d_name, VISS_MAX_PATH_SIZE-1);
-                found = 1;
-                break;
-            }
+            *nl = '\0';
         }
-        closedir (dir);
+        nl = strrchr(file_prefix, '\n');
+        if (nl)
+        {
+            *nl = '\0';
+        }
+
+        found = 1;
     }
 
     return found;
