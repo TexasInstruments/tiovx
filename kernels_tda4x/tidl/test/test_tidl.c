@@ -456,11 +456,11 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/network.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
-    ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(input_tensor = createInputTensor(context, config), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(input_tensor = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(output_tensor = createOutputTensor(context, config), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(output_tensor = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
     vx_reference params[] = {
             (vx_reference)config,

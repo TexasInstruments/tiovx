@@ -610,8 +610,8 @@ static vx_int32 ct_cmp_image2(vx_image image, vx_image image_ref)
     {
         for(j=0; j<height; j++)
         {
-            vx_uint8 *d_ptr = (vx_uint8 *)(data_ptr + (j * image_addr.stride_y));
-            vx_uint8 *r_ptr = (vx_uint8 *)(ref_ptr + (j * ref_addr.stride_y));
+            vx_uint8 *d_ptr = (vx_uint8 *)((vx_uint8 *)data_ptr + (j * image_addr.stride_y));
+            vx_uint8 *r_ptr = (vx_uint8 *)((vx_uint8 *)ref_ptr + (j * ref_addr.stride_y));
             for(i=0; i<width; i++)
             {
                 if(d_ptr[i] != r_ptr[i])
@@ -625,8 +625,8 @@ static vx_int32 ct_cmp_image2(vx_image image, vx_image image_ref)
     {
         for(j=0; j<height; j++)
         {
-            vx_uint16 *d_ptr = (vx_uint16 *)(data_ptr + (j * image_addr.stride_y));
-            vx_uint16 *r_ptr = (vx_uint16 *)(ref_ptr + (j * ref_addr.stride_y));
+            vx_uint16 *d_ptr = (vx_uint16 *)((vx_uint16 *)data_ptr + (j * image_addr.stride_y));
+            vx_uint16 *r_ptr = (vx_uint16 *)((vx_uint16 *)ref_ptr + (j * ref_addr.stride_y));
             for(i=0; i<width; i++)
             {
                 if(d_ptr[i] != r_ptr[i])
@@ -640,8 +640,8 @@ static vx_int32 ct_cmp_image2(vx_image image, vx_image image_ref)
     {
         for(j=0; j<height; j++)
         {
-            vx_uint32 *d_ptr = (vx_uint32 *)(data_ptr + (j * image_addr.stride_y));
-            vx_uint32 *r_ptr = (vx_uint32 *)(ref_ptr + (j * ref_addr.stride_y));
+            vx_uint32 *d_ptr = (vx_uint32 *)((vx_uint32 *)data_ptr + (j * image_addr.stride_y));
+            vx_uint32 *r_ptr = (vx_uint32 *)((vx_uint32 *)ref_ptr + (j * ref_addr.stride_y));
             for(i=0; i<width; i++)
             {
                 if(d_ptr[i] != r_ptr[i])
