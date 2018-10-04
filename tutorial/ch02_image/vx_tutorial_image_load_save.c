@@ -583,6 +583,8 @@ void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum dat
     vx_uint8* u8;
     vx_int32* i32;
     vx_float32* f32;
+    uint8_t val_u8;
+    int32_t val_int32;
 
     // Try reading in file
     ptr_file = fopen(filename, "r");
@@ -605,13 +607,13 @@ void ascii_file_read(char *filename, int num_elements, void* buffer, vx_enum dat
 
                 case VX_TYPE_UINT8:
                     u8 = buffer;
-                    uint8_t val_u8 = val;
+                    val_u8 = val;
                     u8[i] = val_u8;
                     break;
 
                 case VX_TYPE_INT32:
                     i32 = buffer;
-                    int32_t val_int32 = val;
+                    val_int32 = val;
                     i32[i] = val_int32;
                     break;
 

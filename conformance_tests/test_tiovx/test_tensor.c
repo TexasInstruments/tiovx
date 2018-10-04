@@ -55,19 +55,19 @@ TEST_WITH_ARG(tivxTensor, testCreateTensor, Arg,
         dims[i] = TENSOR_DIMS_LENGTH;
     }
 
-    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_int8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT8, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_int8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_int16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT16, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_int16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT16, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_int32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_int32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_INT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     EXPECT_VX_ERROR(tensor_uint64 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT64, 0), VX_ERROR_INVALID_TYPE);
 
@@ -114,7 +114,7 @@ TEST_WITH_ARG(tivxTensor, testQueryTensor, Arg,
 
 
 
-    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, max_dims, dims, VX_TYPE_UINT8, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, max_dims, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     VX_CALL(vxQueryTensor(tensor_uint8, VX_TENSOR_DATA_TYPE, &data_type, sizeof(vx_enum)));
 
@@ -185,13 +185,13 @@ TEST_WITH_ARG(tivxTensor, testCopyTensor, Arg,
         dataf32[i] = i*1.0f;
     }
 
-    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
     
-    ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     VX_CALL(vxCopyTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, start, dims, strides8, data8, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
@@ -301,13 +301,13 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
         dataf32[i] = i*1.0f;
     }
 
-    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint8 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT8, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint16 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT16, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_uint32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_UINT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(tensor_float32 = vxCreateTensor(context, TENSOR_DIMS_NUM, dims, VX_TYPE_FLOAT32, 0), (enum vx_type_e)VX_TYPE_TENSOR);
 
     VX_CALL(vxCopyTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, start, dims, strides8, data8, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
