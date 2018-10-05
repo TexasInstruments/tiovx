@@ -39,15 +39,15 @@ ARP32CGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 GCC_LINUX_ROOT ?= /usr/
 endif
 
-VXLIB_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/vxlib_c66x_1_1_1_0
-EVE_SW_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/eve_sw_01_17_00_00
+VXLIB_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/vxlib_c66x_1_1_3_0
+EVE_SW_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/eve_sw_01_19_00_00
 XDIAS_PATH ?= $(VSDK_TOOLS_PATH)/codecs/xdais_7_24_00_04
 EDMA3_LLD_PATH ?= $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20
 BIOS_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/bios_6_46_04_53
 
 DMAUTILS_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.DMAUTILS.00.08.00.02/dmautils
 ALGFRAMEWORK_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/REL.ALGFRAMEWORK.02.08.00.00/algframework
-PDK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk
+PDK_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/drivers/pdk_01_10_01_06
 CMEM_PATH ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/kernel/cmem
 TARGETFS ?= $(VSDK_INSTALL_PATH)/ti_components/os_tools/linux/targetfs
 
