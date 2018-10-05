@@ -62,6 +62,8 @@
 
 
 #if 1
+#ifdef x86_64
 TESTCASE(tivxIVisionHarrisCorners)
+#endif
 #endif
 
