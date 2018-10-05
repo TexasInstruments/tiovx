@@ -507,6 +507,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             memset(prms, 0, sizeof(viss_config));
 
             prms->buffer_size = (width * height) * 2;
+            prms->magic = 0xC0DEFACE;
             
             if(NULL != raw0_desc)
             {
