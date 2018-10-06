@@ -77,6 +77,7 @@
 
 #define VISS_MAX_PATH_SIZE 256
 #define VISS_FILE_PREFIX_MAX_SIZE 32
+#define H3A_AEW_HEADER_SIZE 12 /* sizeof(h3a_aew_header) */
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
 static char file_prefix[VISS_FILE_PREFIX_MAX_SIZE];
@@ -323,6 +324,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivx_h3a_data_t *pH3a_buf = (tivx_h3a_data_t*)h3a_aew_af_target_ptr;
             pH3a_buf->aew_af_mode = params->mux_h3a_out;
             pH3a_buf->h3a_source_data = params->mux_h3a_in;
+            pH3a_buf->size = prms->af_buffer_size;
+            if(0 == params->mux_h3a_out)
+            {
+                pH3a_buf->size = prms->aew_buffer_size + H3A_AEW_HEADER_SIZE;
+            }
             prms->h3a = (uint32_t*)&pH3a_buf->data;
             h3a_aew_af_desc->num_items = 1;
         }
@@ -701,10 +707,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                         if (VX_SUCCESS == status)
                         {
+                            uint32_t full_aew_size = prms->aew_buffer_size + H3A_AEW_HEADER_SIZE;
                             prms->h3a_buffer_size = prms->af_buffer_size;
-                            if(prms->aew_buffer_size > prms->h3a_buffer_size)
+                            if((full_aew_size) > prms->h3a_buffer_size)
                             {
-                                prms->h3a_buffer_size = prms->aew_buffer_size;
+                                prms->h3a_buffer_size = full_aew_size;
                             }
                         }
                     }
