@@ -83,8 +83,11 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a276c964b2670f2df2a98c13d17699a8b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__matrix__t.html#a276c964b2670f2df2a98c13d17699a8b">base</a></td></tr>
 <tr class="memdesc:a276c964b2670f2df2a98c13d17699a8b"><td class="mdescLeft">&#160;</td><td class="mdescRight">base object descriptor  <a href="#a276c964b2670f2df2a98c13d17699a8b">More...</a><br/></td></tr>
 <tr class="separator:a276c964b2670f2df2a98c13d17699a8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3eba6f8e6813d20df3b67d09f99642a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__matrix__t.html#a3eba6f8e6813d20df3b67d09f99642a1">mem_ptr</a></td></tr>
+<tr class="memdesc:a3eba6f8e6813d20df3b67d09f99642a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">matrix memory address  <a href="#a3eba6f8e6813d20df3b67d09f99642a1">More...</a><br/></td></tr>
+<tr class="separator:a3eba6f8e6813d20df3b67d09f99642a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0252937faa83e16b6641b98bc492539b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__matrix__t.html#a0252937faa83e16b6641b98bc492539b">rows</a></td></tr>
-<tr class="memdesc:a0252937faa83e16b6641b98bc492539b"><td class="mdescLeft">&#160;</td><td class="mdescRight">The source width.  <a href="#a0252937faa83e16b6641b98bc492539b">More...</a><br/></td></tr>
+<tr class="memdesc:a0252937faa83e16b6641b98bc492539b"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of rows  <a href="#a0252937faa83e16b6641b98bc492539b">More...</a><br/></td></tr>
 <tr class="separator:a0252937faa83e16b6641b98bc492539b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a04862a30820c064dc70b413f1a85208f"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__matrix__t.html#a04862a30820c064dc70b413f1a85208f">columns</a></td></tr>
 <tr class="memdesc:a04862a30820c064dc70b413f1a85208f"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of columns  <a href="#a04862a30820c064dc70b413f1a85208f">More...</a><br/></td></tr>
@@ -104,9 +107,6 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a773602ec4c1604ff8a92a064fad62573"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__matrix__t.html#a773602ec4c1604ff8a92a064fad62573">data_type</a></td></tr>
 <tr class="memdesc:a773602ec4c1604ff8a92a064fad62573"><td class="mdescLeft">&#160;</td><td class="mdescRight">From <a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6">vx_type_e</a>.  <a href="#a773602ec4c1604ff8a92a064fad62573">More...</a><br/></td></tr>
 <tr class="separator:a773602ec4c1604ff8a92a064fad62573"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3eba6f8e6813d20df3b67d09f99642a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__matrix__t.html#a3eba6f8e6813d20df3b67d09f99642a1">mem_ptr</a></td></tr>
-<tr class="memdesc:a3eba6f8e6813d20df3b67d09f99642a1"><td class="mdescLeft">&#160;</td><td class="mdescRight">matrix memory address  <a href="#a3eba6f8e6813d20df3b67d09f99642a1">More...</a><br/></td></tr>
-<tr class="separator:a3eba6f8e6813d20df3b67d09f99642a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>matrix object descriptor as placed in shared memory </p>
@@ -125,6 +125,20 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a3eba6f8e6813d20df3b67d09f99642a1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a> tivx_obj_desc_matrix_t::mem_ptr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>matrix memory address </p>
+
+</div>
+</div>
 <a class="anchor" id="a0252937faa83e16b6641b98bc492539b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -135,7 +149,6 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>The source width. </p>
 <p>number of rows </p>
 
 </div>
@@ -221,20 +234,6 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>From <a class="el" href="vx__types_8h.html#a44aa67e15168e5912a0800090a120be6">vx_type_e</a>. </p>
-
-</div>
-</div>
-<a class="anchor" id="a3eba6f8e6813d20df3b67d09f99642a1"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a> tivx_obj_desc_matrix_t::mem_ptr</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>matrix memory address </p>
 
 </div>
 </div>

@@ -80,25 +80,28 @@ $(document).ready(function(){initNavTree('structtivx__shared__mem__ptr__t.html',
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:a8bc9d61ab3d1497321e331c0057608d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#a8bc9d61ab3d1497321e331c0057608d1">mem_heap_region</a></td></tr>
-<tr class="memdesc:a8bc9d61ab3d1497321e331c0057608d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory region to which this pointer belongs, see <a class="el" href="group__group__tivx__mem.html#ga453747d90eef05b464e633ea644ac0ed">tivx_mem_heap_region_e</a>.  <a href="#a8bc9d61ab3d1497321e331c0057608d1">More...</a><br/></td></tr>
-<tr class="separator:a8bc9d61ab3d1497321e331c0057608d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd358584426137febe5a29ba465987e1"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#acd358584426137febe5a29ba465987e1">shared_ptr</a></td></tr>
-<tr class="memdesc:acd358584426137febe5a29ba465987e1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value of pointer as seen in shared memory All CPUs will have method to convert from shared memory pointer to CPU local memory pointer.  <a href="#acd358584426137febe5a29ba465987e1">More...</a><br/></td></tr>
-<tr class="separator:acd358584426137febe5a29ba465987e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a08ec9977d4f04424859d6ceea157bf2c"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#a08ec9977d4f04424859d6ceea157bf2c">host_ptr</a></td></tr>
-<tr class="memdesc:a08ec9977d4f04424859d6ceea157bf2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value of pointer as seen as by host CPU Host CPU will have method to convert to/from shared memory pointer.  <a href="#a08ec9977d4f04424859d6ceea157bf2c">More...</a><br/></td></tr>
-<tr class="separator:a08ec9977d4f04424859d6ceea157bf2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2d60b4280e477c4989fe9c726b1ca2"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#a7d2d60b4280e477c4989fe9c726b1ca2">mem_heap_region</a></td></tr>
+<tr class="memdesc:a7d2d60b4280e477c4989fe9c726b1ca2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Memory region to which this pointer belongs, see <a class="el" href="group__group__tivx__mem.html#ga453747d90eef05b464e633ea644ac0ed">tivx_mem_heap_region_e</a>.  <a href="#a7d2d60b4280e477c4989fe9c726b1ca2">More...</a><br/></td></tr>
+<tr class="separator:a7d2d60b4280e477c4989fe9c726b1ca2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ad89a515c89d6f323c642b23bbbb6e2"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#a8ad89a515c89d6f323c642b23bbbb6e2">rsv1</a> [1]</td></tr>
+<tr class="memdesc:a8ad89a515c89d6f323c642b23bbbb6e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserved field to make this structure a multiple of 64b  <a href="#a8ad89a515c89d6f323c642b23bbbb6e2">More...</a><br/></td></tr>
+<tr class="separator:a8ad89a515c89d6f323c642b23bbbb6e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a659a39f01eff82573352faae7707fc71"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#a659a39f01eff82573352faae7707fc71">shared_ptr</a></td></tr>
+<tr class="memdesc:a659a39f01eff82573352faae7707fc71"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value of pointer as seen in shared memory All CPUs will have method to convert from shared memory pointer to CPU local memory pointer.  <a href="#a659a39f01eff82573352faae7707fc71">More...</a><br/></td></tr>
+<tr class="separator:a659a39f01eff82573352faae7707fc71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa731e7934332b3ad65bed503e43316eb"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__shared__mem__ptr__t.html#aa731e7934332b3ad65bed503e43316eb">host_ptr</a></td></tr>
+<tr class="memdesc:aa731e7934332b3ad65bed503e43316eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Value of pointer as seen as by host CPU Host CPU will have method to convert to/from shared memory pointer.  <a href="#aa731e7934332b3ad65bed503e43316eb">More...</a><br/></td></tr>
+<tr class="separator:aa731e7934332b3ad65bed503e43316eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Structure describing a shared memory pointer. </p>
 </div><h2 class="groupheader">Field Documentation</h2>
-<a class="anchor" id="a8bc9d61ab3d1497321e331c0057608d1"></a>
+<a class="anchor" id="a7d2d60b4280e477c4989fe9c726b1ca2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> tivx_shared_mem_ptr_t::mem_heap_region</td>
+          <td class="memname">uint32_t tivx_shared_mem_ptr_t::mem_heap_region</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -107,12 +110,26 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="acd358584426137febe5a29ba465987e1"></a>
+<a class="anchor" id="a8ad89a515c89d6f323c642b23bbbb6e2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void* tivx_shared_mem_ptr_t::shared_ptr</td>
+          <td class="memname">uint32_t tivx_shared_mem_ptr_t::rsv1[1]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>reserved field to make this structure a multiple of 64b </p>
+
+</div>
+</div>
+<a class="anchor" id="a659a39f01eff82573352faae7707fc71"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t tivx_shared_mem_ptr_t::shared_ptr</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -121,12 +138,12 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a08ec9977d4f04424859d6ceea157bf2c"></a>
+<a class="anchor" id="aa731e7934332b3ad65bed503e43316eb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void* tivx_shared_mem_ptr_t::host_ptr</td>
+          <td class="memname">uint64_t tivx_shared_mem_ptr_t::host_ptr</td>
         </tr>
       </table>
 </div><div class="memdoc">

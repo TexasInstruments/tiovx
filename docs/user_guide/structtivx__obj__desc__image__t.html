@@ -83,6 +83,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a5007c18b86466d554a9957a8b7cd0514"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__image__t.html#a5007c18b86466d554a9957a8b7cd0514">base</a></td></tr>
 <tr class="memdesc:a5007c18b86466d554a9957a8b7cd0514"><td class="mdescLeft">&#160;</td><td class="mdescRight">base object descriptor  <a href="#a5007c18b86466d554a9957a8b7cd0514">More...</a><br/></td></tr>
 <tr class="separator:a5007c18b86466d554a9957a8b7cd0514"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61381d3666b015372353a2fb75a2a004"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__image__t.html#a61381d3666b015372353a2fb75a2a004">mem_ptr</a> [<a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">TIVX_IMAGE_MAX_PLANES</a>]</td></tr>
+<tr class="memdesc:a61381d3666b015372353a2fb75a2a004"><td class="mdescLeft">&#160;</td><td class="mdescRight">image plane buffer addresses  <a href="#a61381d3666b015372353a2fb75a2a004">More...</a><br/></td></tr>
+<tr class="separator:a61381d3666b015372353a2fb75a2a004"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26f4741fcb370f706d690a92b772e7f4"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__image__t.html#a26f4741fcb370f706d690a92b772e7f4">width</a></td></tr>
 <tr class="memdesc:a26f4741fcb370f706d690a92b772e7f4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Width of image in pixels.  <a href="#a26f4741fcb370f706d690a92b772e7f4">More...</a><br/></td></tr>
 <tr class="separator:a26f4741fcb370f706d690a92b772e7f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -110,9 +113,6 @@ Data Fields</h2></td></tr>
 <tr class="memitem:aba13fb726e4d1d6d91d3f3d7df987448"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__image__t.html#aba13fb726e4d1d6d91d3f3d7df987448">create_type</a></td></tr>
 <tr class="memdesc:aba13fb726e4d1d6d91d3f3d7df987448"><td class="mdescLeft">&#160;</td><td class="mdescRight">method by which image was created, see <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77">tivx_image_create_type_e</a>  <a href="#aba13fb726e4d1d6d91d3f3d7df987448">More...</a><br/></td></tr>
 <tr class="separator:aba13fb726e4d1d6d91d3f3d7df987448"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61381d3666b015372353a2fb75a2a004"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__image__t.html#a61381d3666b015372353a2fb75a2a004">mem_ptr</a> [<a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">TIVX_IMAGE_MAX_PLANES</a>]</td></tr>
-<tr class="memdesc:a61381d3666b015372353a2fb75a2a004"><td class="mdescLeft">&#160;</td><td class="mdescRight">image plane buffer addresses  <a href="#a61381d3666b015372353a2fb75a2a004">More...</a><br/></td></tr>
-<tr class="separator:a61381d3666b015372353a2fb75a2a004"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4b82e50bb7c4e11eb776488f7221676e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structvx__imagepatch__addressing__t.html">vx_imagepatch_addressing_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__image__t.html#a4b82e50bb7c4e11eb776488f7221676e">imagepatch_addr</a> [<a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">TIVX_IMAGE_MAX_PLANES</a>]</td></tr>
 <tr class="memdesc:a4b82e50bb7c4e11eb776488f7221676e"><td class="mdescLeft">&#160;</td><td class="mdescRight">image plane addressing parameters  <a href="#a4b82e50bb7c4e11eb776488f7221676e">More...</a><br/></td></tr>
 <tr class="separator:a4b82e50bb7c4e11eb776488f7221676e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -134,6 +134,20 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>base object descriptor </p>
+
+</div>
+</div>
+<a class="anchor" id="a61381d3666b015372353a2fb75a2a004"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a> tivx_obj_desc_image_t::mem_ptr[<a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">TIVX_IMAGE_MAX_PLANES</a>]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>image plane buffer addresses </p>
 
 </div>
 </div>
@@ -262,20 +276,6 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>method by which image was created, see <a class="el" href="tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77">tivx_image_create_type_e</a> </p>
-
-</div>
-</div>
-<a class="anchor" id="a61381d3666b015372353a2fb75a2a004"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structtivx__shared__mem__ptr__t.html">tivx_shared_mem_ptr_t</a> tivx_obj_desc_image_t::mem_ptr[<a class="el" href="group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4">TIVX_IMAGE_MAX_PLANES</a>]</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>image plane buffer addresses </p>
 
 </div>
 </div>

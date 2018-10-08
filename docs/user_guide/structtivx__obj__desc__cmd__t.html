@@ -83,6 +83,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:abbde3c76adf07e8ed051e90629298cad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#abbde3c76adf07e8ed051e90629298cad">base</a></td></tr>
 <tr class="memdesc:abbde3c76adf07e8ed051e90629298cad"><td class="mdescLeft">&#160;</td><td class="mdescRight">base object descriptor  <a href="#abbde3c76adf07e8ed051e90629298cad">More...</a><br/></td></tr>
 <tr class="separator:abbde3c76adf07e8ed051e90629298cad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71c52192606f4da6868312ce7fdcae1e"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#a71c52192606f4da6868312ce7fdcae1e">ack_event_handle</a></td></tr>
+<tr class="memdesc:a71c52192606f4da6868312ce7fdcae1e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle of ACK event that is posted when ACK is received MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set.  <a href="#a71c52192606f4da6868312ce7fdcae1e">More...</a><br/></td></tr>
+<tr class="separator:a71c52192606f4da6868312ce7fdcae1e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a686e8441d435077ae4cfa95726386b01"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#a686e8441d435077ae4cfa95726386b01">cmd_id</a></td></tr>
 <tr class="memdesc:a686e8441d435077ae4cfa95726386b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">command to execute  <a href="#a686e8441d435077ae4cfa95726386b01">More...</a><br/></td></tr>
 <tr class="separator:a686e8441d435077ae4cfa95726386b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -93,9 +96,6 @@ Data Fields</h2></td></tr>
 <tr class="separator:a82453559b60353f667545ed0a8aab3b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5bdea19afd18cae6784668d4bc44d935"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#a5bdea19afd18cae6784668d4bc44d935">src_target_id</a></td></tr>
 <tr class="separator:a5bdea19afd18cae6784668d4bc44d935"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8d1a973ae86056611b3803daacde1c8"><td class="memItemLeft" align="right" valign="top">uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#ad8d1a973ae86056611b3803daacde1c8">ack_event_handle</a></td></tr>
-<tr class="memdesc:ad8d1a973ae86056611b3803daacde1c8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Handle of ACK event that is posted when ACK is received MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set.  <a href="#ad8d1a973ae86056611b3803daacde1c8">More...</a><br/></td></tr>
-<tr class="separator:ad8d1a973ae86056611b3803daacde1c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae974949d6a8911959979eeefadf412a3"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#ae974949d6a8911959979eeefadf412a3">num_obj_desc</a></td></tr>
 <tr class="memdesc:ae974949d6a8911959979eeefadf412a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of object descriptor parameters with this command.  <a href="#ae974949d6a8911959979eeefadf412a3">More...</a><br/></td></tr>
 <tr class="separator:ae974949d6a8911959979eeefadf412a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +126,20 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>base object descriptor </p>
+
+</div>
+</div>
+<a class="anchor" id="a71c52192606f4da6868312ce7fdcae1e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t tivx_obj_desc_cmd_t::ack_event_handle</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Handle of ACK event that is posted when ACK is received MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set. </p>
 
 </div>
 </div>
@@ -180,20 +194,6 @@ Data Fields</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>source target ID to which ACK should be sent if ACK flag is not set then this field is not used and can be set to TIVX_TARGET_ID_INVALID </p>
-
-</div>
-</div>
-<a class="anchor" id="ad8d1a973ae86056611b3803daacde1c8"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">uintptr_t tivx_obj_desc_cmd_t::ack_event_handle</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Handle of ACK event that is posted when ACK is received MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set. </p>
 
 </div>
 </div>

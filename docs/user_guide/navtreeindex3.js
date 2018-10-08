@@ -1,5 +1,6 @@
 var NAVTREEINDEX3 =
 {
+"structtivxKernelValidRectParams.html#a544c0b4e574739b1dc1c65a8dacf1b62":[17,0,69,4],
 "structtivxKernelValidRectParams.html#a54b891de72b4b3e1994270c42389ac9e":[17,0,69,6],
 "structtivxKernelValidRectParams.html#a5a0833626c1df908f8d00eafc332c13e":[17,0,69,0],
 "structtivxKernelValidRectParams.html#a6a95ab8250778b3d651a4df52e96a092":[17,0,69,5],
@@ -248,6 +249,5 @@ var NAVTREEINDEX3 =
 "structtivx__node__t.html#a8b70f4725a6a1637eb37f6d01e8d3541":[16,1,0,1,4,0,18],
 "structtivx__node__t.html#a8bff1817014630a7f22df39c988b0a2d":[16,1,0,1,4,0,4],
 "structtivx__node__t.html#a908361336b39f39d9be2d9c62a4bf4e1":[16,1,0,1,4,0,3],
-"structtivx__node__t.html#a95ce8a74b691cc7118edda085b301d3d":[16,1,0,1,4,0,5],
-"structtivx__node__t.html#a9af66f0a39421f47de473a5a8f38e7b3":[16,1,0,1,4,0,6]
+"structtivx__node__t.html#a95ce8a74b691cc7118edda085b301d3d":[16,1,0,1,4,0,5]
 };

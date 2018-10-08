@@ -11,6 +11,7 @@ var group__group__tivx__obj__desc__cfg =
     [ "TIVX_GRAPH_MAX_NODES", "group__group__tivx__obj__desc__cfg.html#gaa345cc795baa95e1d5ff39694700ad87", null ],
     [ "TIVX_GRAPH_MAX_PIPELINE_DEPTH", "group__group__tivx__obj__desc__cfg.html#gae5d32d340ee632f0c72e0a757fbdf0d6", null ],
     [ "TIVX_NODE_MAX_REPLICATE", "group__group__tivx__obj__desc__cfg.html#ga5851041910fe499bd7839500a534a293", null ],
+    [ "TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE", "group__group__tivx__obj__desc__cfg.html#ga8370f72ea4cdac3efe90a60716f35298", null ],
     [ "TIVX_IMAGE_MAX_PLANES", "group__group__tivx__obj__desc__cfg.html#gad471d737678c451088d2904a41c53bc4", null ],
     [ "TIVX_CONTEXT_MAX_TENSOR_DIMS", "group__group__tivx__obj__desc__cfg.html#gaf5364e8e14f6d868523d9624d51c98da", null ],
     [ "tivxGetObjDescList", "group__group__tivx__obj__desc__cfg.html#ga1e02e5d729613194b6a7aa2c441688df", null ]

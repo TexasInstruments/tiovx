@@ -89,15 +89,18 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a3b4114c51dfc1ab12a7194711ee70409"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a3b4114c51dfc1ab12a7194711ee70409">scope_obj_desc_id</a></td></tr>
 <tr class="memdesc:a3b4114c51dfc1ab12a7194711ee70409"><td class="mdescLeft">&#160;</td><td class="mdescRight">object descriptor ID of the scope in which this object is created For element of pyramid and object array, this is obj_desc_id of excompassing pyramid, object array  <a href="#a3b4114c51dfc1ab12a7194711ee70409">More...</a><br/></td></tr>
 <tr class="separator:a3b4114c51dfc1ab12a7194711ee70409"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad732606f34283c471317f74c9c50b4c0"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#ad732606f34283c471317f74c9c50b4c0">rsv</a> [1]</td></tr>
-<tr class="memdesc:ad732606f34283c471317f74c9c50b4c0"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserved field to make this structure a multiple of 64b  <a href="#ad732606f34283c471317f74c9c50b4c0">More...</a><br/></td></tr>
-<tr class="separator:ad732606f34283c471317f74c9c50b4c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a699179e997a531d046ab43993bd0d3c4"><td class="memItemLeft" align="right" valign="top">uintptr_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a699179e997a531d046ab43993bd0d3c4">host_ref</a></td></tr>
-<tr class="memdesc:a699179e997a531d046ab43993bd0d3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host reference, accessible only on HOST side.  <a href="#a699179e997a531d046ab43993bd0d3c4">More...</a><br/></td></tr>
-<tr class="separator:a699179e997a531d046ab43993bd0d3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a027013d1b04d9ccc0fbbdc55a0342f48"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a027013d1b04d9ccc0fbbdc55a0342f48">rsv1</a> [1]</td></tr>
+<tr class="memdesc:a027013d1b04d9ccc0fbbdc55a0342f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserved field to make this structure a multiple of 64b  <a href="#a027013d1b04d9ccc0fbbdc55a0342f48">More...</a><br/></td></tr>
+<tr class="separator:a027013d1b04d9ccc0fbbdc55a0342f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee2651437d718743e7162721cd7726e"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#aaee2651437d718743e7162721cd7726e">host_ref</a></td></tr>
+<tr class="memdesc:aaee2651437d718743e7162721cd7726e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host reference, accessible only on HOST side.  <a href="#aaee2651437d718743e7162721cd7726e">More...</a><br/></td></tr>
+<tr class="separator:aaee2651437d718743e7162721cd7726e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fdf281335848aa9293b97cea2387f79"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a4fdf281335848aa9293b97cea2387f79">flags</a></td></tr>
 <tr class="memdesc:a4fdf281335848aa9293b97cea2387f79"><td class="mdescLeft">&#160;</td><td class="mdescRight">reference flags  <a href="#a4fdf281335848aa9293b97cea2387f79">More...</a><br/></td></tr>
 <tr class="separator:a4fdf281335848aa9293b97cea2387f79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af48a09edfeec03085e21ddffce17d068"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#af48a09edfeec03085e21ddffce17d068">rsv2</a> [1]</td></tr>
+<tr class="memdesc:af48a09edfeec03085e21ddffce17d068"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserved field to make this structure a multiple of 64b  <a href="#af48a09edfeec03085e21ddffce17d068">More...</a><br/></td></tr>
+<tr class="separator:af48a09edfeec03085e21ddffce17d068"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Object descriptor. </p>
@@ -146,12 +149,12 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ad732606f34283c471317f74c9c50b4c0"></a>
+<a class="anchor" id="a027013d1b04d9ccc0fbbdc55a0342f48"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t tivx_obj_desc_t::rsv[1]</td>
+          <td class="memname">uint16_t tivx_obj_desc_t::rsv1[1]</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -160,12 +163,12 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a699179e997a531d046ab43993bd0d3c4"></a>
+<a class="anchor" id="aaee2651437d718743e7162721cd7726e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uintptr_t tivx_obj_desc_t::host_ref</td>
+          <td class="memname">uint64_t tivx_obj_desc_t::host_ref</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -185,6 +188,20 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>reference flags </p>
+
+</div>
+</div>
+<a class="anchor" id="af48a09edfeec03085e21ddffce17d068"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t tivx_obj_desc_t::rsv2[1]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>reserved field to make this structure a multiple of 64b </p>
 
 </div>
 </div>

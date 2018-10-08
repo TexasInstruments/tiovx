@@ -1,5 +1,7 @@
 var NAVTREEINDEX5 =
 {
+"structtivx__object__t.html#adc9d4e03b77ece80b4566826772c6161":[16,1,0,1,5,0,39],
+"structtivx__object__t.html#ae2e65b300a4f8ab37e303321281c902d":[16,1,0,1,5,0,13],
 "structtivx__object__t.html#ae66bb0af9daedd1ccd541bdef33a7da8":[16,1,0,1,5,0,16],
 "structtivx__object__t.html#aeaffeb7a1eed56dcbd85215b4a3d1b62":[16,1,0,1,5,0,22],
 "structtivx__object__t.html#af94fa6b9d2023d6861e4e3c5c90656a2":[16,1,0,1,5,0,24],
@@ -54,9 +56,10 @@ var NAVTREEINDEX5 =
 "structtivx__scalar__t.html":[16,1,0,0,10,0],
 "structtivx__scalar__t.html#a68cebc55d84b1e0c481d64118956a5e8":[16,1,0,0,10,0,0],
 "structtivx__shared__mem__ptr__t.html":[16,0,0,0,0],
-"structtivx__shared__mem__ptr__t.html#a08ec9977d4f04424859d6ceea157bf2c":[16,0,0,0,0,2],
-"structtivx__shared__mem__ptr__t.html#a8bc9d61ab3d1497321e331c0057608d1":[16,0,0,0,0,0],
-"structtivx__shared__mem__ptr__t.html#acd358584426137febe5a29ba465987e1":[16,0,0,0,0,1],
+"structtivx__shared__mem__ptr__t.html#a659a39f01eff82573352faae7707fc71":[16,0,0,0,0,2],
+"structtivx__shared__mem__ptr__t.html#a7d2d60b4280e477c4989fe9c726b1ca2":[16,0,0,0,0,0],
+"structtivx__shared__mem__ptr__t.html#a8ad89a515c89d6f323c642b23bbbb6e2":[16,0,0,0,0,1],
+"structtivx__shared__mem__ptr__t.html#aa731e7934332b3ad65bed503e43316eb":[16,0,0,0,0,3],
 "structtivx__signature__t.html":[16,1,0,1,2,0],
 "structtivx__signature__t.html#a33289a39c86d7e237820c2fd50f6b140":[16,1,0,1,2,0,3],
 "structtivx__signature__t.html#a4804fd57a0f029c43c7872aa64a35e4f":[16,1,0,1,2,0,1],
@@ -246,8 +249,5 @@ var NAVTREEINDEX5 =
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa23df6ff4453761e35f6eae30a53c5aa8":[18,0,13,25,11],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa3f0e2f38cf7a9c6dd48078cc31b182d2":[18,0,13,25,10],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa431c12c168d1c32cb48e82cde09e4fcf":[18,0,13,25,0],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa4e23aec1caf5cfa2e3ca2f9feede9b48":[18,0,13,25,12],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa51856910203e6babff84d35dcc536309":[18,0,13,25,4],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa5318ebc57b8179bb55e48ce9cdd4ba21":[18,0,13,25,1],
-"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa63ca2783561208dc6e076224f9b74001":[18,0,13,25,8]
+"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa4e23aec1caf5cfa2e3ca2f9feede9b48":[18,0,13,25,12]
 };

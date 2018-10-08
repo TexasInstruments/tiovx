@@ -1,5 +1,6 @@
 var NAVTREEINDEX2 =
 {
+"group__group__tivx__target__kernel__cfg.html#gae392680631db17e50dff61e0f8bdc273":[16,0,0,2,10,1],
 "group__group__tivx__target__kernel__instance.html":[16,1,0,1,10],
 "group__group__tivx__target__kernel__instance.html#ga33b0e8b85ed190c95b903719d8bb6af2":[16,1,0,1,10,5],
 "group__group__tivx__target__kernel__instance.html#ga3b14be7e87e6c02f763f61b01bf3a8b9":[16,1,0,1,10,7],
@@ -248,6 +249,5 @@ var NAVTREEINDEX2 =
 "structTivx__Target__Kernel__List.html#a343ab90f83ab349534c732b43936a73e":[17,0,61,1],
 "structTivx__Target__Kernel__List.html#aefd2b8444b261854013c0f1755e5cfef":[17,0,61,0],
 "structtivxKernelValidRectParams.html":[17,0,69],
-"structtivxKernelValidRectParams.html#a1f90d1b1807d1cdbb63a14f6eb10e79f":[17,0,69,2],
-"structtivxKernelValidRectParams.html#a544c0b4e574739b1dc1c65a8dacf1b62":[17,0,69,4]
+"structtivxKernelValidRectParams.html#a1f90d1b1807d1cdbb63a14f6eb10e79f":[17,0,69,2]
 };

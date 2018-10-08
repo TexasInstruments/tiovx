@@ -17,5 +17,6 @@ var uniontivx__obj__desc__shm__entry__t =
     [ "kernel_name", "uniontivx__obj__desc__shm__entry__t.html#a761f6c18e35edbffcfecf1af0858123f", null ],
     [ "obj_desc_queue", "uniontivx__obj__desc__shm__entry__t.html#a04a2ff00a4bc6d6cee4d2044a056dcb9", null ],
     [ "obj_desc_data_ref_q", "uniontivx__obj__desc__shm__entry__t.html#adaf5144dd14cd6115046d1807655fc4c", null ],
-    [ "obj_desc_graph", "uniontivx__obj__desc__shm__entry__t.html#a79a94870f5ce9f649e896a86f2f57b8f", null ]
+    [ "obj_desc_graph", "uniontivx__obj__desc__shm__entry__t.html#a79a94870f5ce9f649e896a86f2f57b8f", null ],
+    [ "rsv", "uniontivx__obj__desc__shm__entry__t.html#a0dbb1a174ad3509a15b978cd7f7d23f6", null ]
 ];

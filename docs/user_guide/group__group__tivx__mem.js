@@ -1,9 +1,10 @@
 var group__group__tivx__mem =
 [
     [ "tivx_shared_mem_ptr_t", "structtivx__shared__mem__ptr__t.html", [
-      [ "mem_heap_region", "structtivx__shared__mem__ptr__t.html#a8bc9d61ab3d1497321e331c0057608d1", null ],
-      [ "shared_ptr", "structtivx__shared__mem__ptr__t.html#acd358584426137febe5a29ba465987e1", null ],
-      [ "host_ptr", "structtivx__shared__mem__ptr__t.html#a08ec9977d4f04424859d6ceea157bf2c", null ]
+      [ "mem_heap_region", "structtivx__shared__mem__ptr__t.html#a7d2d60b4280e477c4989fe9c726b1ca2", null ],
+      [ "rsv1", "structtivx__shared__mem__ptr__t.html#a8ad89a515c89d6f323c642b23bbbb6e2", null ],
+      [ "shared_ptr", "structtivx__shared__mem__ptr__t.html#a659a39f01eff82573352faae7707fc71", null ],
+      [ "host_ptr", "structtivx__shared__mem__ptr__t.html#aa731e7934332b3ad65bed503e43316eb", null ]
     ] ],
     [ "tivx_mem_stats", "structtivx__mem__stats.html", [
       [ "mem_size", "structtivx__mem__stats.html#a62e469f9bc1c18e5f33aef706bbb462a", null ],
@@ -21,10 +22,10 @@ var group__group__tivx__mem =
     [ "tivxMemBufferFree", "group__group__tivx__mem.html#gabe21a01434fffe5237e13436c669a3b3", null ],
     [ "tivxMemBufferMap", "group__group__tivx__mem.html#gad0a080f8f697f50ce522f05e1e646cfc", null ],
     [ "tivxMemBufferUnmap", "group__group__tivx__mem.html#ga7eb36b10bc001dc9946b032828bd3e4d", null ],
-    [ "tivxMemHost2SharedPtr", "group__group__tivx__mem.html#gaeb40aea3cb3cd7a70648ed48d51a38a1", null ],
-    [ "tivxMemShared2HostPtr", "group__group__tivx__mem.html#ga45a3e1260e60822143c5cb134f4cf281", null ],
-    [ "tivxMemShared2TargetPtr", "group__group__tivx__mem.html#ga9460cb914de0b87f57548a608d40938d", null ],
-    [ "tivxMemTarget2SharedPtr", "group__group__tivx__mem.html#ga9c4aba410c7a2a7158ebce871de33abe", null ],
+    [ "tivxMemHost2SharedPtr", "group__group__tivx__mem.html#ga5c87e8a8dc99d5098ed38f25440d5fe8", null ],
+    [ "tivxMemShared2HostPtr", "group__group__tivx__mem.html#ga548e764f3277b2f1def4685d2a2669a8", null ],
+    [ "tivxMemShared2TargetPtr", "group__group__tivx__mem.html#ga241093f30386e2f28b9d5fe323399afb", null ],
+    [ "tivxMemTarget2SharedPtr", "group__group__tivx__mem.html#gab0cdc4269825cc616e65962e486fe94b", null ],
     [ "tivxMemAlloc", "group__group__tivx__mem.html#ga99635ddb13baefecfbb1cf262437ca46", null ],
     [ "tivxMemFree", "group__group__tivx__mem.html#ga9c487e78534a06bf56eff7dbda470d3a", null ],
     [ "tivxMemStats", "group__group__tivx__mem.html#gac455e3957a61a111ced55bff62564ed0", null ]

@@ -2,11 +2,11 @@ var group__group__tivx__obj__desc__priv =
 [
     [ "tivx_obj_desc_cmd_t", "structtivx__obj__desc__cmd__t.html", [
       [ "base", "structtivx__obj__desc__cmd__t.html#abbde3c76adf07e8ed051e90629298cad", null ],
+      [ "ack_event_handle", "structtivx__obj__desc__cmd__t.html#a71c52192606f4da6868312ce7fdcae1e", null ],
       [ "cmd_id", "structtivx__obj__desc__cmd__t.html#a686e8441d435077ae4cfa95726386b01", null ],
       [ "flags", "structtivx__obj__desc__cmd__t.html#af41ac3ca5543b4cbc165a806c9b2ae0b", null ],
       [ "dst_target_id", "structtivx__obj__desc__cmd__t.html#a82453559b60353f667545ed0a8aab3b3", null ],
       [ "src_target_id", "structtivx__obj__desc__cmd__t.html#a5bdea19afd18cae6784668d4bc44d935", null ],
-      [ "ack_event_handle", "structtivx__obj__desc__cmd__t.html#ad8d1a973ae86056611b3803daacde1c8", null ],
       [ "num_obj_desc", "structtivx__obj__desc__cmd__t.html#ae974949d6a8911959979eeefadf412a3", null ],
       [ "obj_desc_id", "structtivx__obj__desc__cmd__t.html#ae50e715c328dc6bf0c32f55d35e9e19b", null ],
       [ "cmd_status", "structtivx__obj__desc__cmd__t.html#a4cf2da3d32601bfcea792221785bf6b8", null ],
@@ -73,7 +73,8 @@ var group__group__tivx__obj__desc__priv =
       [ "kernel_name", "uniontivx__obj__desc__shm__entry__t.html#a761f6c18e35edbffcfecf1af0858123f", null ],
       [ "obj_desc_queue", "uniontivx__obj__desc__shm__entry__t.html#a04a2ff00a4bc6d6cee4d2044a056dcb9", null ],
       [ "obj_desc_data_ref_q", "uniontivx__obj__desc__shm__entry__t.html#adaf5144dd14cd6115046d1807655fc4c", null ],
-      [ "obj_desc_graph", "uniontivx__obj__desc__shm__entry__t.html#a79a94870f5ce9f649e896a86f2f57b8f", null ]
+      [ "obj_desc_graph", "uniontivx__obj__desc__shm__entry__t.html#a79a94870f5ce9f649e896a86f2f57b8f", null ],
+      [ "rsv", "uniontivx__obj__desc__shm__entry__t.html#a0dbb1a174ad3509a15b978cd7f7d23f6", null ]
     ] ],
     [ "tivx_obj_desc_table_info_t", "structtivx__obj__desc__table__info__t.html", [
       [ "table_base", "structtivx__obj__desc__table__info__t.html#a874928b32eae2c8ec8175a2db902ff89", null ],

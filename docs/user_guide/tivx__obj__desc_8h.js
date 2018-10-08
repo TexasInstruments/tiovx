@@ -15,6 +15,7 @@ var tivx__obj__desc_8h =
     [ "tivx_obj_desc_object_array_t", "structtivx__obj__desc__object__array__t.html", "structtivx__obj__desc__object__array__t" ],
     [ "tivx_obj_desc_scalar_t", "structtivx__obj__desc__scalar__t.html", "structtivx__obj__desc__scalar__t" ],
     [ "tivx_obj_desc_tensor_t", "structtivx__obj__desc__tensor__t.html", "structtivx__obj__desc__tensor__t" ],
+    [ "TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE", "tivx__obj__desc_8h.html#ga8370f72ea4cdac3efe90a60716f35298", null ],
     [ "TIVX_IMAGE_MAX_PLANES", "tivx__obj__desc_8h.html#gad471d737678c451088d2904a41c53bc4", null ],
     [ "TIVX_CONTEXT_MAX_TENSOR_DIMS", "tivx__obj__desc_8h.html#gaf5364e8e14f6d868523d9624d51c98da", null ],
     [ "TIVX_REF_FLAG_LOG_RT_TRACE", "tivx__obj__desc_8h.html#ad862cb4bc5aa68f2856c1e76b0d4b744", null ],

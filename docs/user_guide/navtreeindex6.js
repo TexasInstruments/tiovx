@@ -1,5 +1,8 @@
 var NAVTREEINDEX6 =
 {
+"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa51856910203e6babff84d35dcc536309":[18,0,13,25,4],
+"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa5318ebc57b8179bb55e48ce9cdd4ba21":[18,0,13,25,1],
+"tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa63ca2783561208dc6e076224f9b74001":[18,0,13,25,8],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa6748e946383394fbf5f4960b14448275":[18,0,13,25,6],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa8cbaa812acb08885cd58173a8c72e989":[18,0,13,25,5],
 "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6faad7dc7685f5bc5fb4ea9bf8e9fcced1c":[18,0,13,25,2],
@@ -246,8 +249,5 @@ var NAVTREEINDEX6 =
 "tivx__kernel__accumulate__square_8h_source.html":[18,0,24],
 "tivx__kernel__accumulate__weighted_8h.html":[18,0,25],
 "tivx__kernel__accumulate__weighted_8h.html#ga1c60a168a524646a85a44cf3255f5550":[18,0,25,1],
-"tivx__kernel__accumulate__weighted_8h.html#ga7dffcf89c58b480e5e9bc784e62b0730":[18,0,25,2],
-"tivx__kernel__accumulate__weighted_8h.html#gad9b23eb74ce7a3453e3c897a70469480":[18,0,25,3],
-"tivx__kernel__accumulate__weighted_8h.html#gadc30ef244fbe4951c3a8984ef18b0250":[18,0,25,0],
-"tivx__kernel__accumulate__weighted_8h_source.html":[18,0,25]
+"tivx__kernel__accumulate__weighted_8h.html#ga7dffcf89c58b480e5e9bc784e62b0730":[18,0,25,2]
 };
