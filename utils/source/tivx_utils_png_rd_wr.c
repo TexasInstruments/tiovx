@@ -263,7 +263,7 @@ int32_t tivx_utils_png_file_write(
     if(fp==NULL)
     {
         status = VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR, " PNG: unable to open file for reading [%s]\n", filename);
+        VX_PRINT(VX_ZONE_ERROR, " PNG: unable to open file for writing [%s]\n", filename);
     }
     if(status==VX_SUCCESS)
     {
