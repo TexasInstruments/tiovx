@@ -510,10 +510,14 @@ typedef struct {
     uint16_t  h3a_source_data;     /*!< Indicates the source data corresponding to this data: 0: RAW0, 1: RAW1, 2: RAW2, 3: LSC (not yet supported) */
     uint32_t  exposure_time;       /*!< Measured in micro seconds (us) (not yet supported) */
     uint16_t  analog_gain;         /*!< Analog Gain (not yet supported) */
+    uint16_t  ae_valid;            /*!< Is AE output valid */
+    uint16_t  ae_converged;        /*!< Is AE converged */
     uint16_t  digital_gain;        /*!< Digital Gain (not yet supported) */
     uint16_t  wb_gains[4];         /*!< White Balance Gains (not yet supported) */
     int16_t   wb_offsets[4];       /*!< White Balance Offsets (not yet supported) */
     uint16_t  color_temperature;   /*!< Color Temperature (K) (not yet supported) */
+    uint16_t  awb_valid;            /*!< Is AWB output valid */
+    uint16_t  awb_converged;        /*!< Is AWB converged */
 } tivx_ae_awb_params_t;
 
 /*!
@@ -521,12 +525,30 @@ typedef struct {
  *
  * \ingroup group_vision_function_vpac_viss
  */
+/*Allocating 24KB buffer which is large enough for 32x32 windows*/
+#define MAX_H3A_STAT_NUMBYTES  (24576)
 typedef struct {
     uint16_t  aew_af_mode;     /*!< Indicates the contents of this buffer:                0: AEW data, 1:AF data */
     uint16_t  h3a_source_data; /*!< Indicates the source data corresponding to this data: 0: RAW0, 1: RAW1, 2: RAW2, 3: LSC */
     uint32_t  size;            /*!< Total size of the data buffer in bytes */
-    uint16_t  data;            /*!< Payload of the AWE or AF data */
+    uint8_t  data[MAX_H3A_STAT_NUMBYTES];            /*!< Payload of the AWE or AF data */
 } tivx_h3a_data_t;
+
+/*!
+ * \brief H3A configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ *
+ * \ingroup group_vision_function_vpac_viss
+ */
+
+typedef struct
+{
+    uint16_t aewwin1_WINH;
+    uint16_t aewwin1_WINW;
+    uint16_t aewwin1_WINVC;
+    uint16_t aewwin1_WINHC;
+    uint16_t aewsubwin_AEWINCV;
+    uint16_t aewsubwin_AEWINCH;
+} h3a_aew_header;
 
 /*********************************
  *      Function Prototypes

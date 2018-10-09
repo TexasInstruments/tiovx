@@ -91,15 +91,6 @@
 #define VISS_MAX_PATH_SIZE 256
 #define VISS_FILE_PREFIX_MAX_SIZE 32
 
-typedef struct
-{
-    uint16_t aewwin1_WINH;
-    uint16_t aewwin1_WINW;
-    uint16_t aewwin1_WINVC;
-    uint16_t aewwin1_WINHC;
-    uint16_t aewsubwin_AEWINCV;
-    uint16_t aewsubwin_AEWINCH;
-} h3a_aew_header;
 
 typedef struct
 {
@@ -392,6 +383,17 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             prms->rawfe_params.h3a_mux_sel = 3;
         }
+        /*Apply AWB Gains*/
+        {
+                tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
+                if(aewb_result->awb_valid)
+                {
+                    prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
+                    prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
+                    prms->rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
+                    prms->rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
+                }
+        }    
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
         /* H3A */
@@ -796,6 +798,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if( h3a_aew_af_desc != NULL)
                 {
                     int32_t num_aew_windows, ae_size, af_pad;
+                    uint32_t max_h3a_out_buffer_size;
+
 
                     if(0 != tivxVpacVissFindFile(params->sensor_name, "/H3a_tasks/", "cfg_h3a_master", temp_name))
                     {
@@ -861,6 +865,13 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                                 af_pad = 4*prms->h3a_params.afpax2_PAXVC;
                             }
                             prms->af_buffer_size = ((12 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) + af_pad) * sizeof(uint32_t);
+                        }
+                        /* H3A can operate in AF or AEWB mode. */
+                        /* Therefore total memory needed is the max(aew_buffer_size, af_buffer_size) */
+                        max_h3a_out_buffer_size = (prms->aew_buffer_size > prms->af_buffer_size ? prms->aew_buffer_size : prms->af_buffer_size)
+                        if(max_h3a_out_buffer_size > MAX_H3A_STAT_NUMBYTES)
+                        {
+                            status = VX_ERROR_NO_MEMORY;
                         }
 
                         if (VX_SUCCESS == status)

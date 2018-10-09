@@ -771,8 +771,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
         VX_CALL(vxAddArrayItems(ae_awb_result, 1, &ae_awb_params, sizeof(tivx_ae_awb_params_t)));
 
-        /* Create h3a_aew_af output buffer (uninitialized) */
-        h3a_output_size = 9516; /* Offline calculation, may provide size calculator function later */
+        /* Create h3a_aew_af output buffer. tivx_h3a_data_t includes memory for H3A payload  */
+        h3a_output_size = sizeof(tivx_h3a_data_t);
         params_type = vxRegisterUserStruct(context, h3a_output_size);
         ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         ASSERT_VX_OBJECT(h3a_aew_af = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
