@@ -1374,6 +1374,14 @@ class KernelExportCode :
             self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_newline(files=self.prms_write)
+
+            # Place to create BAM graph
+            self.target_c_code.write_line("if (NULL != prms)", files=1)
+            self.target_c_code.write_open_brace(files=1)
+            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Create BAM graph using graph_handle >", files=1)
+            self.target_c_code.write_close_brace(files=1)
+            self.target_c_code.write_newline(files=1)
+
             self.target_c_code.write_line("if (VX_SUCCESS == status)", files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
             self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,", files=self.prms_write)
@@ -1426,7 +1434,8 @@ class KernelExportCode :
                      self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, TIVX_MEM_EXTERNAL);" %
                          (local.name, local.name) , files=self.prms_write)
 
-            self.target_c_code.write_line("tivxBamDestroyHandle(prms->graph_handle);", files=1)
+            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
+            self.target_c_code.write_comment_line("tivxBamDestroyHandle(prms->graph_handle);", files=1)
             self.target_c_code.write_line("tivxMemFree(prms, size, TIVX_MEM_EXTERNAL);", files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_close_brace(files=self.prms_write)
@@ -1468,7 +1477,8 @@ class KernelExportCode :
             if prm.type == Type.IMAGE :
                 self.target_c_code.write_line("img_ptrs[%s] = %s_addr;" % (idx, prm.name_lower), files=1)
                 idx += 1
-        self.target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumInputImages(), self.kernel.getNumOutputImages()), files=1)
+        self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
+        self.target_c_code.write_comment_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumInputImages(), self.kernel.getNumOutputImages()), files=1)
         self.target_c_code.write_newline(files=1)
 
     def generate_optional_bam_pointers(self, num_scenarios) :
@@ -1505,7 +1515,8 @@ class KernelExportCode :
                    (prm.name_lower in included_str):
                     self.target_c_code.write_line("img_ptrs[%s] = %s_addr;" % (idx, prm.name_lower), files=1)
                     idx += 1
-            self.target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumRequiredInputImages()+num_included_optional_input, \
+            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
+            self.target_c_code.write_comment_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumRequiredInputImages()+num_included_optional_input, \
                 self.kernel.getNumRequiredOutputImages()+num_included_optional_output), files=1)
             self.target_c_code.write_close_brace(files=1)
             binary_mask -= 1
@@ -1517,7 +1528,8 @@ class KernelExportCode :
             if (prm.type == Type.IMAGE and prm.state == ParamState.REQUIRED) :
                 self.target_c_code.write_line("img_ptrs[%s] = %s_addr;" % (idx, prm.name_lower), files=1)
                 idx += 1
-        self.target_c_code.write_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumRequiredInputImages(), \
+        self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
+        self.target_c_code.write_comment_line("tivxBamUpdatePointers(prms->graph_handle, %sU, %sU, img_ptrs);" % (self.kernel.getNumRequiredInputImages(), \
             self.kernel.getNumRequiredOutputImages()), files=1)
         self.target_c_code.write_close_brace(files=1)
 
@@ -1752,7 +1764,8 @@ class KernelExportCode :
                     self.generate_optional_bam_pointers(num_scenarios)
                 else :
                     self.generate_optional_bam_pointers(num_scenarios)
-                self.target_c_code.write_line("status  = tivxBamProcessGraph(prms->graph_handle);", files=1)
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
+                self.target_c_code.write_comment_line("status  = tivxBamProcessGraph(prms->graph_handle);", files=1)
                 self.target_c_code.write_newline(files=1)
 
         self.target_c_code.write_comment_line("call kernel processing function")
@@ -1982,8 +1995,10 @@ class KernelExportCode :
             self.module_target_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom preprocessor defines or build options needed using")
             self.module_target_concerto_code.write_line("#                   'CFLAGS'. >")
             self.module_target_concerto_code.write_line("# < DEVELOPER_TODO: Adjust which cores this library gets built on using 'SKIPBUILD'. >")
-            self.module_target_concerto_code.write_newline();
+            self.module_target_concerto_code.write_newline()
+            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
             self.module_target_concerto_code.write_line("DEFS += CORE_DSP")
+            self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.write_newline();
             self.module_target_concerto_code.write_line("ifeq ($(BUILD_BAM),yes)")
             self.module_target_concerto_code.write_line("DEFS += BUILD_BAM")
@@ -2112,6 +2127,7 @@ class KernelExportCode :
             self.module_test_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
             self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/conformance_tests")
             self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/source/include")
+            self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_APPLICATION_PATH)/kernels/" + self.module + "/include")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
             self.module_test_concerto_code.write_line("SKIPBUILD=1")
