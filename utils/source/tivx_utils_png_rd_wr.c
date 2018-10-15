@@ -73,18 +73,22 @@ typedef struct
     uint32_t data_ptr_size;
 } png_context_t;
 
-/* we link to libpng v1.2 present by default on ubuntu,
+#ifdef USING_LIBPNG_1_2
+/* In Ubuntu 14.04 and 16.04, we link to libpng v1.2 present by default,
  * but opencv used for DOF C model is compiled against
  * libpng v1.6, below function is not defined
  * in v1.6, hence to make the link succeed we define a empty
  * function as below.
  * NOTE: DOF C model API does not natively read/write PNG files
  *  so this is ok to do
+ * NOTE: Ubuntu 18.04 uses 1.6, so build option is used to conditionally
+ *  build this.
  */
 void png_set_longjmp_fn(png_structp *ptr, int val)
 {
 
 }
+#endif
 
 vx_status tivx_utils_png_file_read(
             char *filename,

@@ -11,6 +11,10 @@ CSOURCES :=
 ifeq ($(TARGET_PLATFORM),PC)
 ifeq ($(TARGET_OS),LINUX)
 CSOURCES += tivx_utils_png_rd_wr.c
+PNGVERSION := $(shell pkg-config --modversion libpng)
+ifeq ($(findstring 1.2.,$(PNGVERSION)),1.2.)
+DEFS += USING_LIBPNG_1_2
+endif
 endif
 endif
 
