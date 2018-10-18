@@ -77,7 +77,7 @@
 
 #define VISS_MAX_PATH_SIZE 256
 #define VISS_FILE_PREFIX_MAX_SIZE 32
-#define H3A_AEW_HEADER_SIZE 12 /* sizeof(h3a_aew_header) */
+#define H3A_AEW_HEADER_SIZE 12 /* sizeof(tivx_h3a_aew_header) */
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
 static char file_prefix[VISS_FILE_PREFIX_MAX_SIZE];
@@ -331,6 +331,18 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
             prms->h3a = (uint32_t*)&pH3a_buf->data;
             h3a_aew_af_desc->num_items = 1;
+        }
+
+        /*Apply AWB Gains*/
+        {
+            tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
+            if(1 == aewb_result->awb_valid)
+            {
+                prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
+                prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
+                prms->rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
+                prms->rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
+            }
         }
 
         status = vlab_hwa_process(VPAC_VISS_BASE_ADDRESS, "VPAC_VISS", sizeof(viss_config), prms);
@@ -712,6 +724,13 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             if((full_aew_size) > prms->h3a_buffer_size)
                             {
                                 prms->h3a_buffer_size = full_aew_size;
+                            }
+
+                            if(prms->h3a_buffer_size > MAX_H3A_STAT_NUMBYTES)
+                            {
+                                VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than MAX_H3A_STAT_NUMBYTES (%d bytes)\n", 
+                                                         prms->h3a_buffer_size, MAX_H3A_STAT_NUMBYTES);
+                                status = VX_ERROR_NO_MEMORY;
                             }
                         }
                     }

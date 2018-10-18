@@ -140,7 +140,7 @@ typedef struct
     nsf4_settings nsf4_params;
     h3a_settings h3a_params;
     h3a_image h3a_in;
-    h3a_aew_header aew_header;
+    tivx_h3a_aew_header aew_header;
     FLXD_Config flexcfa_params;
     Flexcc_Config flexcc_params;
     ee_Config ee_params;
@@ -385,14 +385,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         }
         /*Apply AWB Gains*/
         {
-                tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
-                if(aewb_result->awb_valid)
-                {
-                    prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
-                    prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
-                    prms->rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
-                    prms->rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
-                }
+            tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
+            if(1 == aewb_result->awb_valid)
+            {
+                prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
+                prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
+                prms->rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
+                prms->rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
+            }
         }    
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
@@ -468,9 +468,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             if(0 == params->mux_h3a_out)
             {
                 void *pData = (void *)&pH3a_buf->data;
-                pH3a_buf->size = prms->aew_buffer_size + sizeof(h3a_aew_header);
-                memcpy(pData, &prms->aew_header, sizeof(h3a_aew_header));
-                pData += sizeof(h3a_aew_header);
+                pH3a_buf->size = prms->aew_buffer_size + sizeof(tivx_h3a_aew_header);
+                memcpy(pData, &prms->aew_header, sizeof(tivx_h3a_aew_header));
+                pData += sizeof(tivx_h3a_aew_header);
                 memcpy(pData, prms->scratch_aew_result, prms->aew_buffer_size);
             }
             else
@@ -866,11 +866,15 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             }
                             prms->af_buffer_size = ((12 * (prms->h3a_params.afpax2_PAXHC * prms->h3a_params.afpax2_PAXVC)) + af_pad) * sizeof(uint32_t);
                         }
+
                         /* H3A can operate in AF or AEWB mode. */
-                        /* Therefore total memory needed is the max(aew_buffer_size, af_buffer_size) */
-                        max_h3a_out_buffer_size = (prms->aew_buffer_size > prms->af_buffer_size ? prms->aew_buffer_size : prms->af_buffer_size)
+                        /* Therefore total memory needed is the max(aew_buffer_size + sizeof(tivx_h3a_aew_header), af_buffer_size) */
+                        max_h3a_out_buffer_size = ((prms->aew_buffer_size + sizeof(tivx_h3a_aew_header)) > prms->af_buffer_size ? 
+                                                   prms->aew_buffer_size + sizeof(tivx_h3a_aew_header) : prms->af_buffer_size);
                         if(max_h3a_out_buffer_size > MAX_H3A_STAT_NUMBYTES)
                         {
+                            VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than MAX_H3A_STAT_NUMBYTES (%d bytes)\n", 
+                                                     max_h3a_out_buffer_size, MAX_H3A_STAT_NUMBYTES);
                             status = VX_ERROR_NO_MEMORY;
                         }
 

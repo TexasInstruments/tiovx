@@ -132,6 +132,15 @@ extern "C" {
  */
 #define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
 
+
+/*! \brief Maximum H3A number of bytes in statistics data array
+ * 
+ *   Allocating 24KB buffer which is large enough for 32x32 windows
+ * 
+ *  \ingroup group_vision_function_vpac_viss
+ */
+#define MAX_H3A_STAT_NUMBYTES  (24576U)
+
 /*! End of group_vision_function_hwa */
 
 /*********************************
@@ -516,8 +525,8 @@ typedef struct {
     uint16_t  wb_gains[4];         /*!< White Balance Gains (not yet supported) */
     int16_t   wb_offsets[4];       /*!< White Balance Offsets (not yet supported) */
     uint16_t  color_temperature;   /*!< Color Temperature (K) (not yet supported) */
-    uint16_t  awb_valid;            /*!< Is AWB output valid */
-    uint16_t  awb_converged;        /*!< Is AWB converged */
+    uint16_t  awb_valid;           /*!< Is AWB output valid */
+    uint16_t  awb_converged;       /*!< Is AWB converged */
 } tivx_ae_awb_params_t;
 
 /*!
@@ -525,30 +534,27 @@ typedef struct {
  *
  * \ingroup group_vision_function_vpac_viss
  */
-/*Allocating 24KB buffer which is large enough for 32x32 windows*/
-#define MAX_H3A_STAT_NUMBYTES  (24576)
 typedef struct {
     uint16_t  aew_af_mode;     /*!< Indicates the contents of this buffer:                0: AEW data, 1:AF data */
     uint16_t  h3a_source_data; /*!< Indicates the source data corresponding to this data: 0: RAW0, 1: RAW1, 2: RAW2, 3: LSC */
-    uint32_t  size;            /*!< Total size of the data buffer in bytes */
-    uint8_t  data[MAX_H3A_STAT_NUMBYTES];            /*!< Payload of the AWE or AF data */
+    uint32_t  size;            /*!< Total used size of the data buffer in bytes */
+    uint8_t   data[MAX_H3A_STAT_NUMBYTES];    /*!< Payload of the AWE or AF data */
 } tivx_h3a_data_t;
 
 /*!
- * \brief H3A configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ * \brief H3A AEW header data structure used by the TIVX_KERNEL_VISS kernel.
  *
  * \ingroup group_vision_function_vpac_viss
  */
-
 typedef struct
 {
-    uint16_t aewwin1_WINH;
-    uint16_t aewwin1_WINW;
-    uint16_t aewwin1_WINVC;
-    uint16_t aewwin1_WINHC;
-    uint16_t aewsubwin_AEWINCV;
-    uint16_t aewsubwin_AEWINCH;
-} h3a_aew_header;
+    uint16_t aewwin1_WINH;          /*!< AEW Window Height */
+    uint16_t aewwin1_WINW;          /*!< AEW Window Width */
+    uint16_t aewwin1_WINVC;         /*!< AEW Vertical Count */
+    uint16_t aewwin1_WINHC;         /*!< AEW Horizontal Count */
+    uint16_t aewsubwin_AEWINCV;     /*!< AEW Subwindow Vertical Increment Value */
+    uint16_t aewsubwin_AEWINCH;     /*!< AEW Subwindow Horizontal Increment Value */
+} tivx_h3a_aew_header;
 
 /*********************************
  *      Function Prototypes
