@@ -329,7 +329,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 pH3a_buf->size = prms->aew_buffer_size + H3A_AEW_HEADER_SIZE;
             }
-            prms->h3a = (uint32_t*)&pH3a_buf->data;
+            prms->h3a = (uint32_t*)pH3a_buf->data;
             h3a_aew_af_desc->num_items = 1;
         }
 

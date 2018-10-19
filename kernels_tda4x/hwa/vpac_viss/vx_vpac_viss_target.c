@@ -467,7 +467,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             pH3a_buf->h3a_source_data = params->mux_h3a_in;
             if(0 == params->mux_h3a_out)
             {
-                void *pData = (void *)&pH3a_buf->data;
+                void *pData = (void *)pH3a_buf->data;
                 pH3a_buf->size = prms->aew_buffer_size + sizeof(tivx_h3a_aew_header);
                 memcpy(pData, &prms->aew_header, sizeof(tivx_h3a_aew_header));
                 pData += sizeof(tivx_h3a_aew_header);
@@ -476,7 +476,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             else
             {
                 pH3a_buf->size = prms->af_buffer_size;
-                memcpy((void *)&pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
+                memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
             }
             h3a_aew_af_desc->num_items = 1;
         }
