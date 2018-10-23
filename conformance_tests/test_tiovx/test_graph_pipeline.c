@@ -16,6 +16,7 @@
 
 #include "test_tiovx.h"
 #include <VX/vx.h>
+#include <VX/vxu.h>
 #include <VX/vx_khr_pipelining.h>
 #include <TI/tivx.h>
 #include <TI/tivx_config.h>
@@ -29,6 +30,7 @@ TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
 #define MAX_NUM_BUF               (8u)
 #define MAX_IMAGE_PLANES          (3u)
 #define MAX_NUM_OBJ_ARR_ELEMENTS  (4u)
+#define MAX_NUM_PYR_ELEMENTS  (4u)
 
 typedef struct {
     const char* testName;
@@ -88,7 +90,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG)/*, \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
@@ -96,7 +98,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \*/
 
 #if 0
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
@@ -1922,6 +1924,23 @@ static inline vx_object_array get_object_array_parent_of_image(vx_image out_img,
     return objarr;
 }
 
+static inline vx_pyramid get_pyramid_parent_of_image(vx_image out_img,
+                vx_pyramid d2[], vx_image img[], vx_uint32 num_buf)
+{
+    vx_pyramid pyr = NULL;
+    vx_uint32 buf_id;
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        if(out_img==img[buf_id])
+        {
+            pyr = d2[buf_id];
+            break;
+        }
+    }
+    return pyr;
+}
+
 
 /*
  *  d0     n0     d1     n1     d2
@@ -1930,7 +1949,7 @@ static inline vx_object_array get_object_array_parent_of_image(vx_image out_img,
  * replicate     replicate     replicate
  *
  * This test case test the below
- * - Object array with replciate attribute set
+ * - Object array with replicate attribute set
  *
  */
 TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
@@ -2166,6 +2185,405 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
     VX_CALL(vxReleaseImage(&img1));
     VX_CALL(vxReleaseObjectArray(&d1));
     VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
+typedef enum
+{
+    ADD = 0,
+    SUB,
+    MUL
+
+} OWN_OPERATION_TYPE;
+
+static CT_Image own_generate_random(const char* fileName, int width, int height)
+{
+    CT_Image image;
+
+    ASSERT_NO_FAILURE_(return 0,
+        image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U8, &CT()->seed_, 0, 256));
+
+    return image;
+}
+
+static void tst_replicate_op_2(vx_context context, vx_image input1_img, vx_image input2_img, vx_pyramid input1, vx_pyramid input2, vx_pyramid output, OWN_OPERATION_TYPE op)
+{
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0;
+    vx_image src1 = 0;
+    vx_image src2 = 0;
+    vx_image dst = 0;
+    vx_enum policy = VX_CONVERT_POLICY_SATURATE;
+    vx_size levels = 0;
+    vx_enum type = VX_TYPE_INVALID;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    {
+        ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)input1, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)input2, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst = vxGetPyramidLevel((vx_pyramid)output, 0), VX_TYPE_IMAGE);
+
+        VX_CALL(vxQueryPyramid((vx_pyramid)input1, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
+
+        ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input1_img, input1), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node2 = vxGaussianPyramidNode(graph, input2_img, input2), VX_TYPE_NODE);
+        vx_bool replicate[] = { vx_true_e, vx_true_e, vx_false_e, vx_true_e };
+        ASSERT_VX_OBJECT(node3 = vxAddNode(graph, src1, src2, policy, dst), VX_TYPE_NODE);
+        VX_CALL(vxReplicateNode(graph, node3, replicate, 4));
+    }
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseImage(&src1));
+    VX_CALL(vxReleaseImage(&src2));
+    VX_CALL(vxReleaseImage(&dst));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    return;
+}
+
+static void ref_replicate_op_2(vx_context context, vx_pyramid input1, vx_pyramid input2, vx_pyramid output, OWN_OPERATION_TYPE op)
+{
+    vx_uint32 i, k;
+    vx_size levels = 0;
+    vx_enum type = VX_TYPE_INVALID;
+
+    {
+        VX_CALL(vxQueryPyramid((vx_pyramid)input1, VX_PYRAMID_LEVELS, &levels, sizeof(vx_size)));
+
+        // add, sub, mul
+        for (k = 0; k < levels; k++)
+        {
+            vx_image src1 = 0;
+            vx_image src2 = 0;
+            vx_image dst = 0;
+            vx_enum policy = VX_CONVERT_POLICY_SATURATE;
+            vx_float32 scale_val = 1.0f;
+            vx_enum rounding = VX_ROUND_POLICY_TO_ZERO;
+
+            ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)input1, k), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)input2, k), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(dst = vxGetPyramidLevel((vx_pyramid)output, k), VX_TYPE_IMAGE);
+
+            VX_CALL(vxuAdd(context, src1, src2, policy, dst));
+
+            VX_CALL(vxReleaseImage(&src1));
+            VX_CALL(vxReleaseImage(&src2));
+            VX_CALL(vxReleaseImage(&dst));
+        }
+    }
+
+    return;
+}
+
+static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
+{
+    vx_uint32 i;
+    vx_size ref_levels = 0;
+    vx_size tst_levels = 0;
+    vx_uint32 ref_width1, ref_width2;
+    vx_enum type = VX_TYPE_INVALID;
+
+    {
+        vx_float32 scale;
+        VX_CALL(vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_LEVELS, &ref_levels, sizeof(vx_size)));
+        VX_CALL(vxQueryPyramid((vx_pyramid)tst, VX_PYRAMID_LEVELS, &tst_levels, sizeof(vx_size)));
+        VX_CALL(vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_SCALE, &scale, sizeof(scale)));
+        EXPECT_EQ_INT(ref_levels, tst_levels);
+
+        for (i = 0; i < ref_levels; i++)
+        {
+            vx_image src1 = 0;
+            vx_image src2 = 0;
+            CT_Image img1 = 0;
+            CT_Image img2 = 0;
+
+            ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)ref, i), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)tst, i), VX_TYPE_IMAGE);
+
+            vxQueryImage(src1, VX_IMAGE_WIDTH, &ref_width1, sizeof(ref_width1));
+            vxQueryImage(src2, VX_IMAGE_WIDTH, &ref_width2, sizeof(ref_width2));
+
+            ASSERT_NO_FAILURE(img1 = ct_image_from_vx_image(src1));
+            ASSERT_NO_FAILURE(img2 = ct_image_from_vx_image(src2));
+
+            if (VX_BORDER_UNDEFINED == border.mode)
+            {
+                if (i > 0)
+                {
+                    if (VX_SCALE_PYRAMID_ORB == scale)
+                    {
+                        ct_adjust_roi(img1, 2, 2, 2, 2);
+                        ct_adjust_roi(img2, 2, 2, 2, 2);
+                    }
+                    else if (VX_SCALE_PYRAMID_HALF == scale)
+                    {
+                        ct_adjust_roi(img1, 1, 1, 1, 1);
+                        ct_adjust_roi(img2, 1, 1, 1, 1);
+                    }
+                }
+            }
+
+            /* Currently only passing on base level of pyramid */
+            //if (0 == i)
+            {
+                EXPECT_EQ_CTIMAGE(img1, img2);
+            }
+
+            VX_CALL(vxReleaseImage(&src1));
+            VX_CALL(vxReleaseImage(&src2));
+        }
+    }
+
+    return;
+}
+
+/*
+ *  d0     n0     d1     n1     d2
+ * OBJ -- NOT -- OBJ -- NOT -- OBJ
+ * ARR           ARR           ARR
+ * replicate     replicate     replicate
+ *
+ * This test case test the below
+ * - Object array with replicate attribute set
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    CT_Image src = 0;
+    vx_pyramid src1_0 = 0, src1_0_ref = 0;
+    vx_pyramid src2_0 = 0, src2_0_ref = 0;
+    vx_pyramid ref;
+    vx_pyramid tst[MAX_NUM_BUF];
+    vx_image input1_0[MAX_NUM_BUF];
+    vx_image input2_0[MAX_NUM_BUF];
+    vx_pixel_value_t value1, value2;
+    vx_border_t border;
+
+    CT_Image ref_src[MAX_NUM_PYR_ELEMENTS], vxdst[MAX_NUM_PYR_ELEMENTS];
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0;
+    vx_image pyr_src1 = 0;
+    vx_image pyr_src2 = 0;
+    vx_image pyr_dst[MAX_NUM_BUF];
+    vx_enum policy = VX_CONVERT_POLICY_SATURATE;
+    vx_size levels = 0;
+    vx_enum type = VX_TYPE_INVALID;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[3];
+
+    uint32_t width, height, seq_init, pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt;
+    uint32_t idx, pyr_idx;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    levels = 4;
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    ASSERT_NO_FAILURE(src = own_generate_random(NULL, width, height));
+
+    {
+
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            value1.reserved[0] = buf_id;
+            value2.reserved[0] = 255 - buf_id;
+            ASSERT_VX_OBJECT(input1_0[buf_id] = vxCreateUniformImage(context, width, height, VX_DF_IMAGE_U8, &value1), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(input2_0[buf_id] = vxCreateUniformImage(context, width, height, VX_DF_IMAGE_U8, &value2), VX_TYPE_IMAGE);
+        }
+
+        ASSERT_VX_OBJECT(src1_0 = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(src2_0 = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(pyr_src1 = vxGetPyramidLevel(src1_0, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(pyr_src2 = vxGetPyramidLevel(src2_0, 0), VX_TYPE_IMAGE);
+
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            ASSERT_VX_OBJECT(tst[buf_id] = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+            ASSERT_VX_OBJECT(pyr_dst[buf_id] = vxGetPyramidLevel(tst[buf_id], 0), VX_TYPE_IMAGE);
+        }
+
+        ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input1_0[0], src1_0), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node2 = vxGaussianPyramidNode(graph, input2_0[0], src2_0), VX_TYPE_NODE);
+
+        vx_bool replicate[] = { vx_true_e, vx_true_e, vx_false_e, vx_true_e };
+        ASSERT_VX_OBJECT(node3 = vxAddNode(graph, pyr_src1, pyr_src2, policy, pyr_dst[0]), VX_TYPE_NODE);
+        VX_CALL(vxReplicateNode(graph, node3, replicate, 4));
+
+        /* Pipelining stuff below */
+        VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+        /* input @ node1 index 0, becomes graph parameter 0 */
+        add_graph_parameter_by_node_index(graph, node1, 0);
+        /* input @ node2 index 0, becomes graph parameter 1 */
+        add_graph_parameter_by_node_index(graph, node2, 0);
+        /* output @ node3 index 3, becomes graph parameter 2 */
+        add_graph_parameter_by_node_index(graph, node3, 3);
+
+        /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+        graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+        graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&input1_0[0];
+
+        graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+        graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&input2_0[0];
+
+        graph_parameters_queue_params_list[2].graph_parameter_index = 1;
+        graph_parameters_queue_params_list[2].refs_list_size = num_buf;
+        graph_parameters_queue_params_list[2].refs_list = (vx_reference*)&pyr_dst[0];
+
+        /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+         * Graph gets scheduled automatically as refs are enqueued to it
+         */
+        vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                3,
+                graph_parameters_queue_params_list
+                );
+
+        /* set number of buffer at intermediate output */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(node1, 1, num_buf));
+
+        /* set number of buffer at intermediate output */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(node2, 1, num_buf));
+
+        /* set pipeline depth explicitly */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+        export_graph_to_file(graph, "test_graph_pipeline_replicate_node2");
+        log_graph_rt_trace(graph);
+
+        exe_time = tivxPlatformGetTimeInUsecs();
+
+        /* enqueue input and output references,
+         * input and output can be enqueued in any order
+         * can be enqueued all together, here they are enqueue one by one just as a example
+         */
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            vx_image image;
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&input1_0[buf_id], 1);
+
+            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&input2_0[buf_id], 1);
+
+            image = (vx_image)vxGetPyramidLevel(tst[buf_id], 0);
+            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&image, 1);
+            vxReleaseImage(&image);
+        }
+
+        buf_id = 0;
+
+        /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+        for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+        {
+            vx_image out_img, in_img1, in_img2;
+            vx_pyramid out_pyr;
+            uint32_t num_refs;
+
+            /* Get output reference, waits until a reference is available */
+            vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs);
+
+            /* Get consumed input reference, waits until a reference is available
+             */
+            vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&in_img2, 1, &num_refs);
+            vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img1, 1, &num_refs);
+
+            /* A graph execution completed, since we dequeued both input and output refs */
+            if(arg_->measure_perf==0)
+            {
+
+                if(loop_cnt > 100)
+                {
+                    ct_update_progress(loop_id, loop_cnt+num_buf);
+                }
+
+                out_pyr = get_pyramid_parent_of_image(out_img, tst, pyr_dst, num_buf);
+
+                ASSERT_VX_OBJECT(src1_0_ref = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+                ASSERT_VX_OBJECT(src2_0_ref = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+                ASSERT_VX_OBJECT(ref = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
+
+                tst_replicate_op_2(context, in_img1, in_img2, src1_0_ref, src2_0_ref, ref, ADD);
+
+                /* Checking values */
+                VX_CALL(vxQueryContext(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
+                check_replicas_2(ref, out_pyr, border);
+
+                VX_CALL(vxReleasePyramid(&src1_0_ref));
+                VX_CALL(vxReleasePyramid(&src2_0_ref));
+                VX_CALL(vxReleasePyramid(&ref));
+            }
+
+            buf_id = (buf_id+1)%num_buf;
+
+            /* recycles dequeued input and output refs 'loop_cnt' times */
+            if(loop_id<loop_cnt)
+            {
+                /* input and output can be enqueued in any order */
+                vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img1, 1);
+                vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&in_img2, 1);
+                vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1);
+            }
+        }
+
+        /* Pipelining stuff above */
+
+        exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+        if(arg_->measure_perf==1)
+        {
+            vx_node nodes[] = { node1, node2, node3 };
+
+            printGraphPipelinePerformance(graph, nodes, 3, exe_time, loop_cnt+num_buf, arg_->width*arg_->height);
+        }
+
+        VX_CALL(vxReleaseImage(&pyr_src1));
+        VX_CALL(vxReleaseImage(&pyr_src2));
+
+        VX_CALL(vxReleaseNode(&node1));
+        VX_CALL(vxReleaseNode(&node2));
+        VX_CALL(vxReleaseNode(&node3));
+        VX_CALL(vxReleaseGraph(&graph));
+
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            VX_CALL(vxReleaseImage(&input1_0[buf_id]));
+            VX_CALL(vxReleaseImage(&input2_0[buf_id]));
+        }
+
+        VX_CALL(vxReleasePyramid(&src1_0));
+        VX_CALL(vxReleasePyramid(&src2_0));
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            VX_CALL(vxReleaseImage(&pyr_dst[buf_id]));
+            VX_CALL(vxReleasePyramid(&tst[buf_id]));
+        }
+    }
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
@@ -4315,7 +4733,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
 }
 
 TESTCASE_TESTS(tivxGraphPipeline,
-    testOneNode,
+    /*testOneNode,
     testTwoNodesBasic,
     testTwoNodes,
     testFourNodes,
@@ -4326,7 +4744,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testScalarOutput,
     testEventHandling,
     testEventHandlingDisableEvents,
-    testReplicateImage,
+    testReplicateImage,*/
+    testReplicateImage2/*,
     testUserKernel,
     testManualSchedule,
     testDelay1,
@@ -4334,7 +4753,7 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay3,
     testDelay4,
     negativeTestPipelineDepth,
-    testLoopCarriedDependency
+    testLoopCarriedDependency*/
     )
 
 

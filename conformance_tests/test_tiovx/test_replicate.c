@@ -483,6 +483,231 @@ TEST_WITH_ARG(tivxReplicate, tivxReplicateNode, Test_Replicate_Arg, TEST_REPLICA
     VX_CALL(vxReleaseReference(&tst));
 }
 
+static void ref_replicate_op_2(vx_context context, vx_pyramid input1, vx_pyramid input2, vx_pyramid output, OWN_OPERATION_TYPE op)
+{
+    vx_uint32 i, k;
+    vx_size levels = 0;
+    vx_enum type = VX_TYPE_INVALID;
+
+    {
+        VX_CALL(vxQueryPyramid((vx_pyramid)input1, VX_PYRAMID_LEVELS, &levels, sizeof(vx_size)));
+
+        // add, sub, mul
+        for (k = 0; k < levels; k++)
+        {
+            vx_image src1 = 0;
+            vx_image src2 = 0;
+            vx_image dst = 0;
+            vx_enum policy = VX_CONVERT_POLICY_SATURATE;
+            vx_float32 scale_val = 1.0f;
+            vx_enum rounding = VX_ROUND_POLICY_TO_ZERO;
+
+            ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)input1, k), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)input2, k), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(dst = vxGetPyramidLevel((vx_pyramid)output, k), VX_TYPE_IMAGE);
+
+            switch (op)
+            {
+            case ADD:
+                VX_CALL(vxuAdd(context, src1, src2, policy, dst));
+                break;
+
+            case SUB:
+                VX_CALL(vxuSubtract(context, src1, src2, policy, dst));
+                break;
+
+            case MUL:
+                VX_CALL(vxuMultiply(context, src1, src2, scale_val, policy, rounding, dst));
+                break;
+
+            default:
+                ASSERT(0);
+            }
+
+            VX_CALL(vxReleaseImage(&src1));
+            VX_CALL(vxReleaseImage(&src2));
+            VX_CALL(vxReleaseImage(&dst));
+        }
+    }
+
+    return;
+}
+
+static void tst_replicate_op_2(vx_context context, vx_image input1_img, vx_image input2_img, vx_pyramid input1, vx_pyramid input2, vx_pyramid output, OWN_OPERATION_TYPE op)
+{
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0;
+    vx_object_array object_array = 0;
+    vx_image src1 = 0;
+    vx_image src2 = 0;
+    vx_image dst = 0;
+    vx_enum policy = VX_CONVERT_POLICY_SATURATE;
+    vx_float32 scale_val = 1.0f;
+    vx_scalar scale = 0;
+    vx_enum rounding = VX_ROUND_POLICY_TO_ZERO;
+    vx_size levels = 0;
+    vx_enum type = VX_TYPE_INVALID;
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    {
+        ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)input1, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)input2, 0), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst = vxGetPyramidLevel((vx_pyramid)output, 0), VX_TYPE_IMAGE);
+
+        VX_CALL(vxQueryPyramid((vx_pyramid)input1, VX_PYRAMID_LEVELS, &levels, sizeof(levels)));
+
+        ASSERT_VX_OBJECT(node1 = vxGaussianPyramidNode(graph, input1_img, input1), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node2 = vxGaussianPyramidNode(graph, input2_img, input2), VX_TYPE_NODE);
+
+        // add, sub, mul
+        switch (op)
+        {
+        case ADD:
+        {
+            vx_bool replicate[] = { vx_true_e, vx_true_e, vx_false_e, vx_true_e };
+            ASSERT_VX_OBJECT(node3 = vxAddNode(graph, src1, src2, policy, dst), VX_TYPE_NODE);
+            VX_CALL(vxReplicateNode(graph, node3, replicate, 4));
+            break;
+        }
+
+        case SUB:
+        {
+            vx_bool replicate[] = { vx_true_e, vx_true_e, vx_false_e, vx_true_e };
+            ASSERT_VX_OBJECT(node3 = vxSubtractNode(graph, src1, src2, policy, dst), VX_TYPE_NODE);
+            VX_CALL(vxReplicateNode(graph, node3, replicate, 4));
+            break;
+        }
+
+        case MUL:
+        {
+            vx_bool replicate[] = { vx_true_e, vx_true_e, vx_false_e, vx_false_e, vx_false_e, vx_true_e };
+            ASSERT_VX_OBJECT(scale = vxCreateScalar(context, VX_TYPE_FLOAT32, &scale_val), VX_TYPE_SCALAR);
+            ASSERT_VX_OBJECT(node3 = vxMultiplyNode(graph, src1, src2, scale, policy, rounding, dst), VX_TYPE_NODE);
+            VX_CALL(vxReplicateNode(graph, node3, replicate, 6));
+            VX_CALL(vxReleaseScalar(&scale));
+            break;
+        }
+
+        default:
+            ASSERT(0);
+        }
+    }
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseImage(&src1));
+    VX_CALL(vxReleaseImage(&src2));
+    VX_CALL(vxReleaseImage(&dst));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    return;
+}
+
+static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
+{
+    vx_uint32 i;
+    vx_size ref_levels = 0;
+    vx_size tst_levels = 0;
+    vx_enum type = VX_TYPE_INVALID;
+
+    {
+        vx_float32 scale;
+        VX_CALL(vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_LEVELS, &ref_levels, sizeof(vx_size)));
+        VX_CALL(vxQueryPyramid((vx_pyramid)tst, VX_PYRAMID_LEVELS, &tst_levels, sizeof(vx_size)));
+        VX_CALL(vxQueryPyramid((vx_pyramid)ref, VX_PYRAMID_SCALE, &scale, sizeof(scale)));
+        EXPECT_EQ_INT(ref_levels, tst_levels);
+
+        for (i = 0; i < ref_levels; i++)
+        {
+            vx_image src1 = 0;
+            vx_image src2 = 0;
+            CT_Image img1 = 0;
+            CT_Image img2 = 0;
+
+            ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)ref, i), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)tst, i), VX_TYPE_IMAGE);
+
+            ASSERT_NO_FAILURE(img1 = ct_image_from_vx_image(src1));
+            ASSERT_NO_FAILURE(img2 = ct_image_from_vx_image(src2));
+
+            if (VX_BORDER_UNDEFINED == border.mode)
+            {
+                if (i > 0)
+                {
+                    if (VX_SCALE_PYRAMID_ORB == scale)
+                    {
+                        ct_adjust_roi(img1, 2, 2, 2, 2);
+                        ct_adjust_roi(img2, 2, 2, 2, 2);
+                    }
+                    else if (VX_SCALE_PYRAMID_HALF == scale)
+                    {
+                        ct_adjust_roi(img1, 1, 1, 1, 1);
+                        ct_adjust_roi(img2, 1, 1, 1, 1);
+                    }
+                }
+            }
+
+            EXPECT_EQ_CTIMAGE(img1, img2);
+
+            VX_CALL(vxReleaseImage(&src1));
+            VX_CALL(vxReleaseImage(&src2));
+        }
+    }
+
+    return;
+}
+
+TEST_WITH_ARG(tivxReplicate, tivxReplicateNode2, Test_Replicate_Arg, TEST_REPLICATE_PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    CT_Image src = 0;
+    vx_pyramid src1 = 0, src1_0 = 0;
+    vx_pyramid src2 = 0, src2_0 = 0;
+    vx_pyramid ref = 0;
+    vx_pyramid tst = 0;
+    vx_image input1, input1_0 = 0;
+    vx_image input2, input2_0 = 0;
+    vx_pixel_value_t value = {{ 2 }};
+    vx_border_t border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    if ( (arg_->scale >= 0) && (VX_SCALE_PYRAMID_ORB != arg_->scale))
+    {
+        ASSERT_VX_OBJECT(input1 = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input1_0 = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input2 = vxCreateUniformImage(context, arg_->width, arg_->height, arg_->format, &value), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(input2_0 = vxCreateUniformImage(context, arg_->width, arg_->height, arg_->format, &value), VX_TYPE_IMAGE);
+
+        ASSERT_VX_OBJECT(src1_0 = vxCreatePyramid(context, arg_->levels, arg_->scale, arg_->width, arg_->height, arg_->format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(src2_0 = vxCreatePyramid(context, arg_->levels, arg_->scale, arg_->width, arg_->height, arg_->format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(ref = vxCreatePyramid(context, arg_->levels, arg_->scale, arg_->width, arg_->height, arg_->format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(tst = vxCreatePyramid(context, arg_->levels, arg_->scale, arg_->width, arg_->height, arg_->format), VX_TYPE_PYRAMID);
+
+        tst_replicate_op_2(context, input1_0, input2_0, src1_0, src2_0, tst, arg_->op);
+        ref_replicate_op_2(context, src1_0, src2_0, ref, arg_->op);
+
+        VX_CALL(vxQueryContext(context, VX_CONTEXT_IMMEDIATE_BORDER, &border, sizeof(border)));
+        check_replicas_2(ref, tst, border);
+
+        VX_CALL(vxReleaseImage(&input1));
+        VX_CALL(vxReleaseImage(&input2));
+        VX_CALL(vxReleaseImage(&input1_0));
+        VX_CALL(vxReleaseImage(&input2_0));
+
+        VX_CALL(vxReleasePyramid(&src1_0));
+        VX_CALL(vxReleasePyramid(&src2_0));
+        VX_CALL(vxReleasePyramid(&ref));
+        VX_CALL(vxReleasePyramid(&tst));
+    }
+}
+
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 2)
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME "org.khronos.openvx.test.own_user"
 
@@ -947,5 +1172,6 @@ TEST_WITH_ARG(tivxReplicate, tivxReplicateUserNode, Test_UserNode_Arg, TEST_USER
 
 TESTCASE_TESTS(tivxReplicate,
         tivxReplicateNode,
+        tivxReplicateNode2,
         tivxReplicateUserNode
 )
