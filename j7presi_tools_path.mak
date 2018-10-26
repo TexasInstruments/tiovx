@@ -11,7 +11,7 @@ TIDL_PATH ?= $(PSDK_PATH)/tidl_j7_00_03_00_01/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 OPENCV_LIB_PATH ?= /usr/lib/x86_64-linux-gnu
 
-TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_16.9.4.LTS
+TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_16.9.9.LTS
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0A18263
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.2.4
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf
