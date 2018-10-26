@@ -10,8 +10,6 @@
 #include <vx_internal.h>
 
 #include <ti/osal/TaskP.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Clock.h>
 
 static void tivxTaskDefHandle(void* arg0, void* arg1);
 
@@ -41,8 +39,8 @@ void tivxTaskSetDefaultCreateParams(tivx_task_create_params_t *params)
 vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
 {
     vx_status status = VX_SUCCESS;
-    Task_Handle tskHndl;
-    Task_Params bios_task_prms;
+    TaskP_Handle tskHndl;
+    TaskP_Params bios_task_prms;
 
     if ((NULL != task) && (NULL != params))
     {
@@ -55,17 +53,17 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
         task->app_var              = params->app_var;
 
         /* Filling TaskP_Params structure as defined in TaskP.h */
-        Task_Params_init(&bios_task_prms);
+        TaskP_Params_init(&bios_task_prms);
 
-        bios_task_prms.stackSize = params->stack_size;
-        bios_task_prms.stack = params->stack_ptr;
-        bios_task_prms.priority = params->priority;
-        bios_task_prms.arg0 = (UArg)(task);
-        bios_task_prms.arg1 = (UArg)(task);
+        bios_task_prms.stacksize = params->stack_size;
+        bios_task_prms.stack     = params->stack_ptr;
+        bios_task_prms.priority  = params->priority;
+        bios_task_prms.arg0      = (void*)(task);
+        bios_task_prms.arg1      = (void*)(task);
 
-        tskHndl = (void*)Task_create(
-                            (Task_FuncPtr)tivxTaskDefHandle,
-                            &bios_task_prms, NULL);
+        tskHndl = (void*)TaskP_create(
+                            tivxTaskDefHandle,
+                            &bios_task_prms);
 
         if (NULL == tskHndl)
         {
@@ -92,7 +90,7 @@ vx_status tivxTaskDelete(tivx_task *task)
 
     if ((NULL != task) && (NULL != task->tsk_handle))
     {
-        Task_delete((Task_Handle*)&task->tsk_handle);
+        TaskP_delete((TaskP_Handle*)&task->tsk_handle);
     }
     else
     {
@@ -106,12 +104,7 @@ vx_status tivxTaskDelete(tivx_task *task)
 void tivxTaskWaitMsecs(uint32_t msec)
 {
     #if 1
-    uint32_t ticks;
-
-    /* Clock_tickPeriod is in units of usecs */
-    ticks = (msec * 1000) / Clock_tickPeriod;
-
-    TaskP_sleep(ticks);
+    TaskP_sleepInMsecs(msec);
     #else
     TaskP_yield(); /* using this until task sleep works fine in VLAB */
     #endif
