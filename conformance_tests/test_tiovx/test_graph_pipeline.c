@@ -90,7 +90,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG)/*, \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_256x256, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, MEASURE_PERF_OFF, ARG)/*, \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
@@ -2325,8 +2325,8 @@ static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
                     }
                     else if (VX_SCALE_PYRAMID_HALF == scale)
                     {
-                        ct_adjust_roi(img1, 1, 1, 1, 1);
-                        ct_adjust_roi(img2, 1, 1, 1, 1);
+                        ct_adjust_roi(img1, 4, 4, 4, 4);
+                        ct_adjust_roi(img2, 4, 4, 4, 4);
                     }
                 }
             }
@@ -2399,11 +2399,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
     ASSERT_NO_FAILURE(src = own_generate_random(NULL, width, height));
 
     {
-
         for(buf_id=0; buf_id<num_buf; buf_id++)
         {
-            value1.reserved[0] = buf_id;
-            value2.reserved[0] = 255 - buf_id;
+            value1.reserved[0] = 50*buf_id + 10;
+            value2.reserved[0] = 50*buf_id + 20;
             ASSERT_VX_OBJECT(input1_0[buf_id] = vxCreateUniformImage(context, width, height, VX_DF_IMAGE_U8, &value1), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(input2_0[buf_id] = vxCreateUniformImage(context, width, height, VX_DF_IMAGE_U8, &value2), VX_TYPE_IMAGE);
         }
@@ -2431,7 +2430,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
 
         /* Pipelining stuff below */
         VX_CALL(vxSetNodeTarget(node1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
-        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+        VX_CALL(vxSetNodeTarget(node2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
         VX_CALL(vxSetNodeTarget(node3, VX_TARGET_STRING, TIVX_TARGET_DSP2));
 
         /* input @ node1 index 0, becomes graph parameter 0 */
@@ -2476,6 +2475,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
 
         export_graph_to_file(graph, "test_graph_pipeline_replicate_node2");
         log_graph_rt_trace(graph);
+
+        #if 1
 
         exe_time = tivxPlatformGetTimeInUsecs();
 
@@ -2551,6 +2552,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
             }
         }
 
+        /* ensure all graph processing is complete */
+        vxWaitGraph(graph);
+
         /* Pipelining stuff above */
 
         exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
@@ -2561,6 +2565,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
 
             printGraphPipelinePerformance(graph, nodes, 3, exe_time, loop_cnt+num_buf, arg_->width*arg_->height);
         }
+        #endif
 
         VX_CALL(vxReleaseImage(&pyr_src1));
         VX_CALL(vxReleaseImage(&pyr_src2));
@@ -4561,7 +4566,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
         *(pdata+i) = 1;
     }
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_1, map_id));
-    
+
 
     ASSERT_VX_OBJECT(n0    = vxAddNode(graph, d0[0], (vx_image)vxGetReferenceFromDelay(delay, -1), VX_CONVERT_POLICY_WRAP, d2[0]), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = vxNotNode(graph, d2[0], (vx_image)vxGetReferenceFromDelay(delay, 0)), VX_TYPE_NODE);
@@ -4733,7 +4738,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
 }
 
 TESTCASE_TESTS(tivxGraphPipeline,
-    /*testOneNode,
+    #if 0
+    testOneNode,
     testTwoNodesBasic,
     testTwoNodes,
     testFourNodes,
@@ -4744,8 +4750,10 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testScalarOutput,
     testEventHandling,
     testEventHandlingDisableEvents,
-    testReplicateImage,*/
-    testReplicateImage2/*,
+    #endif
+    testReplicateImage,
+    testReplicateImage2
+    #if 0
     testUserKernel,
     testManualSchedule,
     testDelay1,
@@ -4753,7 +4761,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay3,
     testDelay4,
     negativeTestPipelineDepth,
-    testLoopCarriedDependency*/
+    testLoopCarriedDependency
+    #endif
     )
 
 

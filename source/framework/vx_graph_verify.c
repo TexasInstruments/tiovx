@@ -124,6 +124,15 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
     {
         VX_PRINT(VX_ZONE_WARNING, "ownGraphAddDataReference: May need to increase the value of TIVX_GRAPH_MAX_DATA_REF in tiovx/include/tivx_config.h\n");
     }
+
+    if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+            ||
+        ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+       )
+    {
+        ownGraphAddDataReference(graph, ref->scope, prm_dir);
+    }
+
     return status;
 }
 
@@ -799,9 +808,21 @@ static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph,
             vx_reference ref;
 
             ref = ownNodeGetParameterRef(node, prm_id);
-            if(ref==node_prm_ref)
+            if(ref!=NULL && node_prm_ref !=NULL)
             {
-                ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+                if(ref==node_prm_ref)
+                {
+                    ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+                }
+                else
+                if(node_prm_ref==ref->scope)
+                {
+                    ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+                }
+                if(node_prm_ref->scope==ref)
+                {
+                    ownNodeLinkDataRefQueue(node, prm_id, data_ref_q);
+                }
             }
         }
     }

@@ -160,7 +160,7 @@ static int exportAsJpg(char *output_file_path, char *output_file_prefix, char *o
     return status;
 }
 
-static void exportDataRef(FILE *fp, vx_reference ref, vx_bool is_replicated)
+static void exportDataRef(FILE *fp, vx_reference ref)
 {
     if(ref)
     {
@@ -175,9 +175,14 @@ static void exportDataRef(FILE *fp, vx_reference ref, vx_bool is_replicated)
             snprintf(is_virtual_label, 64, "| virtual");
         }
 
-        if(is_replicated && ref->scope)
         {
-            snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
+            if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                    ||
+                ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+               )
+            {
+                snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
+            }
         }
         TIVX_EXPORT_WRITELN(fp, "%s [shape=record %s, label=\"{%s %s %s}\"]",
                 ref->name,
@@ -186,6 +191,13 @@ static void exportDataRef(FILE *fp, vx_reference ref, vx_bool is_replicated)
                 is_virtual_label,
                 is_replicated_label
                 );
+        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                ||
+            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+           )
+        {
+            exportDataRef(fp, ref->scope);
+        }
     }
 }
 
@@ -212,7 +224,7 @@ static void exportNodeObjDesc(FILE *fp, vx_node node, uint32_t pipe_id, char *pr
     }
 }
 
-static void exportDataRefObjDesc(FILE *fp, vx_reference ref, vx_bool is_replicated)
+static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
 {
     if(ref)
     {
@@ -226,7 +238,10 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref, vx_bool is_replicat
             snprintf(is_virtual, 64, ", style=filled, fillcolor=lightgrey");
             snprintf(is_virtual_label, 64, "| virtual");
         }
-        if(is_replicated && ref->scope)
+        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+            ||
+            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+        )
         {
             snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
         }
@@ -240,6 +255,13 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref, vx_bool is_replicat
                 is_replicated_label,
                 ref->obj_desc->obj_desc_id
                 );
+        }
+        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+            ||
+            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+        )
+        {
+            exportDataRefObjDesc(fp, ref->scope);
         }
     }
 }
@@ -386,7 +408,7 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
         {
             ref = graph->data_ref[data_id];
 
-            exportDataRef(fp, ref, vx_false_e);
+            exportDataRef(fp, ref);
 
         }
         TIVX_EXPORT_WRITELN(fp, "");
@@ -404,7 +426,7 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
                     (delay->refs[(slot_id+1)%delay->count] != NULL)
                 )
                 {
-                    exportDataRef(fp, delay->refs[slot_id], vx_false_e);
+                    exportDataRef(fp, delay->refs[slot_id]);
 
                     TIVX_EXPORT_WRITELN(fp, "%s -> %s [label = %d, style=dashed, color=gray]\n",
                         delay->refs[slot_id]->name,
@@ -440,7 +462,8 @@ static vx_status tivxExportGraphTopLevelToDot(vx_graph graph, char *output_file_
                     {
                         if(is_replicated)
                         {
-                            exportDataRef(fp, ref, vx_true_e);
+                            ref = ref->scope;
+                            exportDataRef(fp, ref);
                         }
                         if(dir==VX_INPUT)
                         {
@@ -572,7 +595,17 @@ static void tivxExportGraphDataRefQueueToDot(FILE *fp, vx_graph graph,
                     uint16_t obj_desc_id = obj_desc_queue->queue_mem[data_id];
                     vx_reference ref = ownReferenceGetHandleFromObjDescId(obj_desc_id);
 
-                    exportDataRefObjDesc(fp, ref, vx_false_e);
+                    if(ref!=NULL)
+                    {
+                        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                            ||
+                            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                        )
+                        {
+                            ref = ref->scope;
+                        }
+                        exportDataRefObjDesc(fp, ref);
+                    }
 
                     if(ref && ref->obj_desc)
                     {
@@ -656,7 +689,6 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
     {
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
         uint32_t node_id, data_id, pipe_id, linked_node_idx, prm_id, buf_id;
-        vx_bool is_replicated;
         tivx_obj_desc_node_t *node_desc;
         vx_reference ref;
         vx_node node;
@@ -718,6 +750,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             }
             TIVX_EXPORT_WRITELN(fp, "");
         }
+
         /* link the node descriptors across pipelines to each other based on dependancy across pipelines */
         for(pipe_id=0; pipe_id<graph->pipeline_depth; pipe_id++)
         {
@@ -742,16 +775,16 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             }
             TIVX_EXPORT_WRITELN(fp, "");
         }
-
         /* List data references within a graph */
         TIVX_EXPORT_WRITELN(fp, "/* List of Data References */");
         for(data_id=0; data_id<graph->num_data_ref; data_id++)
         {
             ref = graph->data_ref[data_id];
 
-            exportDataRefObjDesc(fp, ref, vx_false_e);
+            exportDataRefObjDesc(fp, ref);
         }
         TIVX_EXPORT_WRITELN(fp, "");
+
 
         for(prm_id=0; prm_id<graph->num_params; prm_id++)
         {
@@ -766,12 +799,18 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 {
                     ref = graph->parameters[prm_id].refs_list[buf_id];
 
-                    is_replicated = ownNodeIsPrmReplicated(
-                            graph->parameters[prm_id].node,
-                            graph->parameters[prm_id].index);
+                    if(ref!=NULL)
+                    {
+                        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                            ||
+                            ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                        )
+                        {
+                            ref = ref->scope;
+                        }
 
-                    exportDataRefObjDesc(fp, ref, is_replicated);
-
+                        exportDataRefObjDesc(fp, ref);
+                    }
                     if(ref && ref->obj_desc)
                     {
                         TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
@@ -796,11 +835,15 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                 {
                     ref = graph->data_ref_q_list[prm_id].refs_list[buf_id];
 
-                    is_replicated = ownNodeIsPrmReplicated(
-                            graph->data_ref_q_list[prm_id].node,
-                            graph->data_ref_q_list[prm_id].index);
+                    if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+                        ||
+                        ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+                    )
+                    {
+                        ref = ref->scope;
+                    }
 
-                    exportDataRefObjDesc(fp, ref, is_replicated);
+                    exportDataRefObjDesc(fp, ref);
                     if(ref && ref->obj_desc)
                     {
                         TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
@@ -826,11 +869,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                     ref = ownNodeGetParameterRef(graph->delay_data_ref_q_list[prm_id].node,
                             graph->delay_data_ref_q_list[prm_id].index);
 
-                    is_replicated = ownNodeIsPrmReplicated(
-                            graph->delay_data_ref_q_list[prm_id].node,
-                            graph->delay_data_ref_q_list[prm_id].index);
-
-                    exportDataRefObjDesc(fp, ref, is_replicated);
+                    exportDataRefObjDesc(fp, ref);
                     if(ref && ref->obj_desc)
                     {
                         TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
@@ -848,7 +887,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
                         ref = delay->refs[delay_slot_index];
                         if(ref)
                         {
-                            exportDataRefObjDesc(fp, ref, vx_false_e);
+                            exportDataRefObjDesc(fp, ref);
                             if(ref && ref->obj_desc)
                             {
                                 TIVX_EXPORT_WRITELN(fp, "d_%d -> d_%s",
@@ -861,7 +900,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             }
         }
         TIVX_EXPORT_WRITELN(fp, "");
-
+        #if 1
         TIVX_EXPORT_WRITELN(fp, "/* List of data reference queues */");
         for(data_id=0; data_id<graph->num_params; data_id++)
         {
@@ -954,6 +993,7 @@ static vx_status tivxExportGraphPipelineToDot(vx_graph graph, char *output_file_
             }
             TIVX_EXPORT_WRITELN(fp, "");
         }
+        #endif
 
         TIVX_EXPORT_WRITELN(fp, "");
         TIVX_EXPORT_WRITELN(fp, "}");

@@ -290,6 +290,8 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
         {
             parent_obj_desc[i] = NULL;
 
+            prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
+
             if(is_prm_replicated & (1U<<i))
             {
                 prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
@@ -297,6 +299,12 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                 {
                     parent_obj_desc[i] = tivxObjDescGet(
                         prm_obj_desc->scope_obj_desc_id);
+
+                    /* if parent is NULL, then prm_obj_desc itself is the parent */
+                    if(parent_obj_desc[i]==NULL)
+                    {
+                        parent_obj_desc[i] = prm_obj_desc;
+                    }
                 }
             }
         }
@@ -332,6 +340,27 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             {
                 params[i] = tivxObjDescGet(prm_obj_desc_id[i]);
             }
+
+            #if 0
+            if(params[i])
+            {
+                VX_PRINT(VX_ZONE_INFO," Param %d is %d of type %d (node=%d, pipe=%d)\n",
+                        i,
+                        params[i]->obj_desc_id,
+                        params[i]->type,
+                        node_obj_desc->base.obj_desc_id,
+                        node_obj_desc->pipeline_id
+                );
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_INFO," Param %d is NULL (node=%d, pipe=%d)\n",
+                        i,
+                        node_obj_desc->base.obj_desc_id,
+                        node_obj_desc->pipeline_id
+                );
+            }
+            #endif
         }
 
         exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
