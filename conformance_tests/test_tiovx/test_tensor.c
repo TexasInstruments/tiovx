@@ -253,11 +253,6 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
     vx_size strides_map32[TENSOR_DIMS_NUM]= { 0 };
     vx_size strides_mapf32[TENSOR_DIMS_NUM]= { 0 };
 
-    vx_size dims_map8[TENSOR_DIMS_NUM]= { 0 };
-    vx_size dims_map16[TENSOR_DIMS_NUM]= { 0 };
-    vx_size dims_map32[TENSOR_DIMS_NUM]= { 0 };
-    vx_size dims_mapf32[TENSOR_DIMS_NUM]= { 0 };
-    
     vx_size start_map0[TENSOR_DIMS_NUM]= { 0 };
     vx_size start_map5[TENSOR_DIMS_NUM]= { 5, 6, 7, 8 };
     vx_size end_map0[TENSOR_DIMS_NUM]= { TENSOR_DIMS_LENGTH, TENSOR_DIMS_LENGTH, TENSOR_DIMS_LENGTH, TENSOR_DIMS_LENGTH };
@@ -317,10 +312,10 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
 
     VX_CALL(vxCopyTensorPatch(tensor_float32, TENSOR_DIMS_NUM, start, dims, stridesf32, dataf32, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
-    VX_CALL(tivxMapTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, start_map0, end_map0, &id8, dims_map8, strides_map8, (void **)&ptr8, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
-    VX_CALL(tivxMapTensorPatch(tensor_uint16, TENSOR_DIMS_NUM, start_map0, end_map0, &id16, dims_map16, strides_map16, (void **)&ptr16, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
-    VX_CALL(tivxMapTensorPatch(tensor_uint32, TENSOR_DIMS_NUM, start_map0, end_map0, &id32, dims_map32, strides_map32, (void **)&ptr32, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
-    VX_CALL(tivxMapTensorPatch(tensor_float32, TENSOR_DIMS_NUM, start_map0, end_map0, &idf32, dims_mapf32, strides_mapf32, (void **)&ptrf32, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
+    VX_CALL(tivxMapTensorPatch(tensor_uint8, TENSOR_DIMS_NUM, start_map0, end_map0, &id8, strides_map8, (void **)&ptr8, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+    VX_CALL(tivxMapTensorPatch(tensor_uint16, TENSOR_DIMS_NUM, start_map0, end_map0, &id16, strides_map16, (void **)&ptr16, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+    VX_CALL(tivxMapTensorPatch(tensor_uint32, TENSOR_DIMS_NUM, start_map0, end_map0, &id32, strides_map32, (void **)&ptr32, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
+    VX_CALL(tivxMapTensorPatch(tensor_float32, TENSOR_DIMS_NUM, start_map0, end_map0, &idf32, strides_mapf32, (void **)&ptrf32, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST));
 
     for(j = 0; j < bytes8; j++)
     {
@@ -330,7 +325,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
         vx_size i;
         for (i = 0; i < TENSOR_DIMS_NUM; i++)
         {
-            divisor = dims_map8[i];
+            divisor = TENSOR_DIMS_LENGTH;
             tensor_pos += strides_map8[i] * (index_leftover%divisor);
             index_leftover = index_leftover / divisor;
         }
@@ -346,7 +341,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
         vx_size i;
         for (i = 0; i < TENSOR_DIMS_NUM; i++)
         {
-            divisor = dims_map16[i];
+            divisor = TENSOR_DIMS_LENGTH;
             tensor_pos += strides_map16[i] * (index_leftover%divisor);
             index_leftover = index_leftover / divisor;
         }
@@ -362,7 +357,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
         vx_size i;
         for (i = 0; i < TENSOR_DIMS_NUM; i++)
         {
-            divisor = dims_map32[i];
+            divisor = TENSOR_DIMS_LENGTH;
             tensor_pos += strides_map32[i] * (index_leftover%divisor);
             index_leftover = index_leftover / divisor;
         }
@@ -378,7 +373,7 @@ TEST_WITH_ARG(tivxTensor, testMapTensor, Arg,
         vx_size i;
         for (i = 0; i < TENSOR_DIMS_NUM; i++)
         {
-            divisor = dims_mapf32[i];
+            divisor = TENSOR_DIMS_LENGTH;
             tensor_pos += strides_mapf32[i] * (index_leftover%divisor);
             index_leftover = index_leftover / divisor;
         }

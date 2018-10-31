@@ -503,12 +503,10 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     const vx_size * view_start,
     const vx_size * view_end,
     vx_map_id* map_id,
-    vx_size * dims,
-    vx_size * strides,
-    void** user_ptr,
+    vx_size * stride,
+    void** ptr,
     vx_enum usage,
-    vx_enum user_memory_type,
-    vx_uint32 flags)
+    vx_enum memory_type)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_tensor_t *obj_desc = NULL;
@@ -523,7 +521,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
 
     if(status == VX_SUCCESS)
     {
-        if (user_ptr == NULL)
+        if (ptr == NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: User pointer is null\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -577,7 +575,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 {
                     tensor->maps[map_idx].map_addr = host_addr;
                     tensor->maps[map_idx].map_size = map_size;
-                    tensor->maps[map_idx].mem_type = user_memory_type;
+                    tensor->maps[map_idx].mem_type = memory_type;
                     tensor->maps[map_idx].usage = usage;
                     break;
                 }
@@ -586,12 +584,11 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
             {
                 uint32_t i;
                 *map_id = map_idx;
-                *user_ptr = map_addr;
+                *ptr = map_addr;
                 
                 for(i=0; i < number_of_dims; i++)
                 {
-                    dims[i] = view_end[i] - view_start[i];
-                    strides[i] = obj_desc->stride[i];
+                    stride[i] = obj_desc->stride[i];
                 }
 
                 end_addr = host_addr + map_size;
@@ -599,7 +596,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 end_addr = (vx_uint8*)TIVX_ALIGN((uintptr_t)end_addr, 128U);
                 map_size = end_addr - host_addr;
                 tivxMemBufferMap(map_addr, map_size,
-                    user_memory_type, usage);
+                    memory_type, usage);
 
                 tivxLogSetResourceUsedValue("TIVX_TENSOR_MAX_MAPS", map_idx+1);
             }

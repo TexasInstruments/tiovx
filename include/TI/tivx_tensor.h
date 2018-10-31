@@ -183,59 +183,56 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(vx_tensor tensor, vx_enum attri
 VX_API_ENTRY vx_status VX_API_CALL vxReleaseTensor(vx_tensor *tensor);
 
 
-
-/*! \brief Allows the application to get direct access to a view of an tensor object.
- * \param [in] tensor The reference to the tensor object that contains the patch to map.
- * \param [in] number_of_dims Number of patch dimension. Error return if 0 or greater than number of
- * tensor dimensions. If smaller than number of tensor dimensions, the lower dimensions are assumed.
- * \param [in] view_start Array of patch start points in each dimension
- * \param [in] view_end Array of patch end points in each dimension
- * \param [out] map_id The address of a vx_map_id variable where the function
- * returns a map identifier.
- * \arg (*map_id) must eventually be provided as the map_id parameter of a call to
- * <tt>\ref vxUnmapTensorPatch</tt>.
- * \param [out] dims Array of mapped sizes (in elements) corresponding to each dimension.
- * \param [out] strides Array of mapped strides (in bytes) corresponding to each dimension.
- * \param [out] user_ptr The address of a pointer that the function sets to the
- * address where the requested data can be accessed. This returned (*user_ptr) address
- * is only valid between the call to this function and the corresponding call to
- * <tt>\ref vxUnmapTensorPatch</tt>.
+/*! \brief Allows the application to get direct access to a patch of tensor object.
+ * \param [in] tensor The reference to the tensor object that is the source or the
+ * destination for direct access.
+ * \param [in] number_of_dims The number of dimensions. Must be same as tensor number_of_dims.
+ * \param [in] view_start Array of patch start points in each dimension. This is optional parameter and will be zero when NULL.
+ * \param [in] view_end Array of patch end points in each dimension. This is optional parameter and will be dims[] of tensor when NULL.
+ * \param [out] map_id The address of a vx_map_id variable where the function returns a map identifier.
+ * \arg (*map_id) must eventually be provided as the map_id parameter of a call to <tt>\ref vxUnmapTensorPatch</tt>.
+ * \param [out] stride An array of stride in all dimensions in bytes. The stride value at index 0 must be size of the tensor data element type.
+ * \param [out] ptr The address of a pointer that the function sets to the
+ * address where the requested data can be accessed. The returned (*ptr) address
+ * is only valid between the call to the function and the corresponding call to
+ * <tt>\ref tivxUnmapTensorPatch</tt>.
  * \param [in] usage This declares the access mode for the tensor patch, using
  * the <tt>\ref vx_accessor_e</tt> enumeration.
  * \arg VX_READ_ONLY: after the function call, the content of the memory location
- * pointed by (*user_ptr) contains the tensor patch data. Writing into this memory location
+ * pointed by (*ptr) contains the tensor patch data. Writing into this memory location
  * is forbidden and its behavior is undefined.
  * \arg VX_READ_AND_WRITE : after the function call, the content of the memory
- * location pointed by (*user_ptr) contains the tensor patch data; writing into this memory
- * is allowed only for the location of pixels only and will result in a modification
- * of the written pixels in the tensor object once the patch is unmapped.
- * \arg VX_WRITE_ONLY: after the function call, the memory location pointed by (*user_ptr)
- * contains undefined data; writing each pixel of the patch is required prior to
- * unmapping. Pixels not written by the application before unmap will become
- * undefined after unmap, even if they were well defined before map.
- * \param [in] user_memory_type A <tt>\ref vx_memory_type_e</tt> enumeration that
+ * location pointed by (*ptr) contains the tensor patch data; writing into this memory
+ * is allowed only for the location of items and will result in a modification of the
+ * affected items in the tensor object once the range is unmapped. Writing into
+ * a gap between items (when (*stride) > item size in bytes) is forbidden and its
+ * behavior is undefined.
+ * \arg VX_WRITE_ONLY: after the function call, the memory location pointed by (*ptr)
+ * contains undefined data; writing each item of the range is required prior to
+ * unmapping. Items not written by the application before unmap will become
+ * undefined after unmap, even if they were well defined before map. Like for
+ * VX_READ_AND_WRITE, writing into a gap between items is forbidden and its behavior
+ * is undefined.
+ * \param [in] mem_type A <tt>\ref vx_memory_type_e</tt> enumeration that
  * specifies the type of the memory where the tensor patch is requested to be mapped.
- * \param [in] flags An integer that allows passing options to the map operation. 
- * Use the <tt>\ref vx_map_flag_e</tt> enumeration.
  * \return A <tt>\ref vx_status_e</tt> enumeration.
- * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually a tensor
- * reference.
+ * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual tensor that cannot be accessed by the application.
+ * \retval VX_ERROR_INVALID_REFERENCE The tensor reference is not actually an tensor reference.
  * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
- * \ingroup group_object_tensor
+ * \retval VX_ERROR_NO_MEMORY Internal memory allocation failed.
+ * \ingroup group_tensor
  * \post <tt>\ref vxUnmapTensorPatch </tt> with same (*map_id) value.
- */ 
+ */
 VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     vx_tensor tensor,
     vx_size number_of_dims,
     const vx_size * view_start,
     const vx_size * view_end,
-    vx_map_id* map_id,
-    vx_size * dims,
-    vx_size * strides,
-    void** user_ptr,
+    vx_map_id * map_id,
+    vx_size * stride,
+    void ** ptr,
     vx_enum usage,
-    vx_enum user_memory_type,
-    vx_uint32 flags);
+    vx_enum mem_type);
 
 
 /*! \brief Unmap and commit potential changes to a tensor object patch that were previously mapped.
