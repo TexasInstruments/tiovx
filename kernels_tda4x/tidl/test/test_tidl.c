@@ -171,7 +171,7 @@ static vx_tensor readNetwork(vx_context context, char *network_file)
     start[0] = 0;
     network_strides[0] = stride;
 
-    status = tivxMapTensorPatch(network_tensor, 1, start, network_sizes, &map_id, network_sizes, network_strides, &network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    status = tivxMapTensorPatch(network_tensor, 1, start, network_sizes, &map_id, network_strides, &network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
     if (VX_SUCCESS == status)
     {
@@ -274,7 +274,7 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
     input_strides[1] = input_sizes[0];
     input_strides[2] = input_sizes[1] * input_strides[1];
 
-    status = tivxMapTensorPatch(input_tensor, 3, start, input_sizes, &map_id_input, input_sizes, input_strides, &input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    status = tivxMapTensorPatch(input_tensor, 3, start, input_sizes, &map_id_input, input_strides, &input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
     if (VX_SUCCESS == status)
     {
@@ -361,7 +361,7 @@ static void checkOutput(vx_array config, vx_tensor output_tensor, vx_int32 refid
  	  output_strides[1] = output_sizes[0];
  	  output_strides[2] = output_sizes[1] * output_strides[1];
 
- 	  tivxMapTensorPatch(output_tensor, 3, start, output_sizes, &map_id_output, output_sizes, output_strides, &output_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+ 	  tivxMapTensorPatch(output_tensor, 3, start, output_sizes, &map_id_output, output_strides, &output_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
 
       if (VX_SUCCESS == status)
       {
