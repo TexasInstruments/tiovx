@@ -2325,8 +2325,8 @@ static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
                     }
                     else if (VX_SCALE_PYRAMID_HALF == scale)
                     {
-                        ct_adjust_roi(img1, 4, 4, 4, 4);
-                        ct_adjust_roi(img2, 4, 4, 4, 4);
+                        ct_adjust_roi(img1, i, i, i, i);
+                        ct_adjust_roi(img2, i, i, i, i);
                     }
                 }
             }

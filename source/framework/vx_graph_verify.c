@@ -1174,6 +1174,178 @@ static vx_status ownGraphCreateGraphParameterDataReferenceQueues(vx_graph graph)
     return status;
 }
 
+static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image exemplar, vx_image ref)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(exemplar!=NULL && ref!=NULL)
+    {
+        tivx_obj_desc_image_t *img_ref_obj_desc = (tivx_obj_desc_image_t *)ref->base.obj_desc;
+        tivx_obj_desc_image_t *img_exemplar_obj_desc = (tivx_obj_desc_image_t *)exemplar->base.obj_desc;
+
+        if(img_ref_obj_desc!= NULL
+            && img_exemplar_obj_desc!=NULL
+            && img_ref_obj_desc->base.type == TIVX_OBJ_DESC_IMAGE
+            && img_exemplar_obj_desc->base.type == TIVX_OBJ_DESC_IMAGE
+            )
+        {
+            img_ref_obj_desc->valid_roi = img_exemplar_obj_desc->valid_roi;
+        }
+        else
+        {
+            status = VX_FAILURE;
+        }
+    }
+    else
+    {
+        status = VX_FAILURE;
+    }
+    if(status!=VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to update image meta data after kernel init\n");
+    }
+    return status;
+}
+
+static vx_status ownGraphUpdatePyramidRefAfterKernetInit(vx_graph graph, vx_pyramid exemplar, vx_pyramid ref)
+{
+    vx_status status = VX_SUCCESS;
+    vx_size ref_levels, exemplar_levels, i;
+
+    status |= vxQueryPyramid(exemplar, VX_PYRAMID_LEVELS, &exemplar_levels, sizeof(exemplar_levels));
+    status |= vxQueryPyramid(ref, VX_PYRAMID_LEVELS, &ref_levels, sizeof(ref_levels));
+
+    if(ref_levels==exemplar_levels && status == VX_SUCCESS)
+    {
+        for(i=0; i<ref_levels; i++)
+        {
+            status |= ownGraphUpdateImageRefAfterKernetInit(graph, exemplar->img[i], ref->img[i]);
+        }
+    }
+    if(status!=VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to update pyramid meta data after kernel init\n");
+    }
+    return status;
+}
+
+static vx_status ownGraphUpdateObjArrRefAfterKernetInit(vx_graph graph, vx_object_array exemplar, vx_object_array ref)
+{
+    vx_status status = VX_SUCCESS;
+    vx_size ref_count, exemplar_count, i;
+
+    status |= vxQueryObjectArray(exemplar, VX_OBJECT_ARRAY_NUMITEMS, &exemplar_count, sizeof(exemplar_count));
+    status |= vxQueryObjectArray(ref, VX_OBJECT_ARRAY_NUMITEMS, &ref_count, sizeof(ref_count));
+
+    if(ref_count==exemplar_count && status == VX_SUCCESS)
+    {
+        for(i=0; i<ref_count; i++)
+        {
+            if (ownIsValidSpecificReference(ref->ref[i], VX_TYPE_IMAGE) == vx_true_e
+              && ownIsValidSpecificReference(exemplar->ref[i], VX_TYPE_IMAGE) == vx_true_e)
+            {
+                status |= ownGraphUpdateImageRefAfterKernetInit(graph, (vx_image)exemplar->ref[i], (vx_image)ref->ref[i]);
+            }
+            else
+            if (ownIsValidSpecificReference(ref->ref[i], VX_TYPE_PYRAMID) == vx_true_e
+              && ownIsValidSpecificReference(exemplar->ref[i], VX_TYPE_PYRAMID) == vx_true_e)
+            {
+                status |= ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar->ref[i], (vx_pyramid)ref->ref[i]);
+            }
+
+        }
+    }
+    if(status!=VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to update pyramid meta data after kernel init\n");
+    }
+    return status;
+}
+
+static vx_status ownGraphUpdateDataRefAfterKernetInit(vx_graph graph, vx_reference exemplar, vx_reference ref)
+{
+    vx_status status = VX_SUCCESS;
+
+    if (ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == vx_true_e
+        && ownIsValidSpecificReference(exemplar, VX_TYPE_PYRAMID) == vx_true_e)
+    {
+        status = ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar, (vx_pyramid)ref);
+    }
+    else
+    if (ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+        && ownIsValidSpecificReference(exemplar, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+    {
+        status = ownGraphUpdateObjArrRefAfterKernetInit(graph, (vx_object_array)exemplar, (vx_object_array)ref);
+    }
+    else
+    if (ownIsValidSpecificReference(ref, VX_TYPE_IMAGE) == vx_true_e
+      && ownIsValidSpecificReference(exemplar, VX_TYPE_IMAGE) == vx_true_e)
+    {
+        status = ownGraphUpdateImageRefAfterKernetInit(graph, (vx_image)exemplar, (vx_image)ref);
+    }
+
+    /* below is to take care of replicate case */
+    if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e
+      && ownIsValidSpecificReference(exemplar->scope, VX_TYPE_PYRAMID) == vx_true_e)
+    {
+        status = ownGraphUpdatePyramidRefAfterKernetInit(graph, (vx_pyramid)exemplar->scope, (vx_pyramid)ref->scope);
+    }
+    else
+    if (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
+      && ownIsValidSpecificReference(exemplar->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+    {
+        status = ownGraphUpdateObjArrRefAfterKernetInit(graph, (vx_object_array)exemplar->scope, (vx_object_array)ref->scope);
+    }
+    if(status!=VX_SUCCESS)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to update data ref queue data refs meta data after kernel init\n");
+    }
+
+    return status;
+}
+
+/* kernel init could update meta data for some data ref's like valid_roi for image
+ * This get updated for 0th data ref in a data ref queue
+ * This function updates for other ref's in a data ref queue based on
+ * updates in 0th data ref
+ */
+static vx_status ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(vx_graph graph)
+{
+    uint32_t buf_id, i;
+    vx_status status = VX_SUCCESS;
+
+    for(i=0; i<graph->num_params; i++)
+    {
+        if(graph->parameters[i].queue_enable)
+        {
+            for(buf_id=1; buf_id<graph->parameters[i].num_buf; buf_id++)
+            {
+                if(graph->parameters[i].refs_list[buf_id]!=NULL
+                    && graph->parameters[i].refs_list[0]!=NULL )
+                {
+                    status = ownGraphUpdateDataRefAfterKernetInit(graph,
+                            graph->parameters[i].refs_list[0], /* exemplar */
+                            graph->parameters[i].refs_list[buf_id]);
+                }
+            }
+        }
+    }
+    for(i=0; i<graph->num_data_ref_q; i++)
+    {
+        for(buf_id=1; buf_id<graph->data_ref_q_list[i].num_buf; buf_id++)
+        {
+            if(graph->data_ref_q_list[i].refs_list[buf_id]!=NULL
+              && graph->data_ref_q_list[i].refs_list[0]!=NULL  )
+            {
+                status = ownGraphUpdateDataRefAfterKernetInit(graph,
+                        graph->data_ref_q_list[i].refs_list[0], /* exemplar */
+                        graph->data_ref_q_list[i].refs_list[buf_id]);
+            }
+        }
+    }
+    return status;
+}
+
 static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
 {
     vx_status status;
@@ -1560,7 +1732,15 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
                 }
             }
-
+            if(status == VX_SUCCESS)
+            {
+                /* update data refs within data ref queues for meta data updated during kernel init */
+                status = ownGraphUpdateDataReferenceQueueRefsAfterKernelInit(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
+                }
+            }
             if(status == VX_SUCCESS)
             {
                 /* alloc object descriptor for graph and enqueue them */

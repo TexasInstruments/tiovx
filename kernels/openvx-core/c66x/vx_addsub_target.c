@@ -123,6 +123,27 @@ static vx_status tivxKernelAddSub(
         dst_target_ptr = tivxMemShared2TargetPtr(
             dst_desc->mem_ptr[0U].shared_ptr, dst_desc->mem_ptr[0U].mem_heap_region);
 
+        #if 0
+        VX_PRINT(VX_ZONE_WARNING, "src0 roi is %d,%d %d,%d\n",
+                src0_desc->valid_roi.start_x,
+                src0_desc->valid_roi.start_y,
+                src0_desc->valid_roi.end_x,
+                src0_desc->valid_roi.end_y
+                );
+        VX_PRINT(VX_ZONE_WARNING, "src1 roi is %d,%d %d,%d\n",
+                src1_desc->valid_roi.start_x,
+                src1_desc->valid_roi.start_y,
+                src1_desc->valid_roi.end_x,
+                src1_desc->valid_roi.end_y
+                );
+        VX_PRINT(VX_ZONE_WARNING, "dst  roi is %d,%d %d,%d\n",
+                dst_desc->valid_roi.start_x,
+                dst_desc->valid_roi.start_y,
+                dst_desc->valid_roi.end_x,
+                dst_desc->valid_roi.end_y
+                );
+        #endif
+
         tivxMemBufferMap(src0_target_ptr, src0_desc->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         tivxMemBufferMap(src1_target_ptr, src1_desc->mem_size[0],
