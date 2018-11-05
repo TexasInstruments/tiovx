@@ -19,6 +19,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include <math.h>
 
 TESTCASE(tivxReplicate, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -332,6 +333,7 @@ static void check_replicas(vx_reference ref, vx_reference tst, vx_border_t borde
     vx_size ref_levels = 0;
     vx_size tst_levels = 0;
     vx_enum type = VX_TYPE_INVALID;
+    int roi_adj = 0;
 
     VX_CALL(vxQueryReference(ref, VX_REFERENCE_TYPE, &type, sizeof(type)));
 
@@ -360,16 +362,15 @@ static void check_replicas(vx_reference ref, vx_reference tst, vx_border_t borde
             {
                 if (i > 0)
                 {
-                    if (VX_SCALE_PYRAMID_ORB == scale)
+                    int next_roi_adj = ceil((double)scale*(2+roi_adj));
+
+                    if (next_roi_adj != roi_adj)
                     {
-                        ct_adjust_roi(img1, 2, 2, 2, 2);
-                        ct_adjust_roi(img2, 2, 2, 2, 2);
+                        roi_adj = roi_adj + ceil((double)(scale) * 2);
                     }
-                    else if (VX_SCALE_PYRAMID_HALF == scale)
-                    {
-                        ct_adjust_roi(img1, 1, 1, 1, 1);
-                        ct_adjust_roi(img2, 1, 1, 1, 1);
-                    }
+
+                    ct_adjust_roi(img1, roi_adj, roi_adj, roi_adj, roi_adj);
+                    ct_adjust_roi(img2, roi_adj, roi_adj, roi_adj, roi_adj);
                 }
             }
 
@@ -615,6 +616,7 @@ static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
     vx_size ref_levels = 0;
     vx_size tst_levels = 0;
     vx_enum type = VX_TYPE_INVALID;
+    int roi_adj = 0;
 
     {
         vx_float32 scale;
@@ -640,16 +642,15 @@ static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
             {
                 if (i > 0)
                 {
-                    if (VX_SCALE_PYRAMID_ORB == scale)
+                    int next_roi_adj = ceil((double)scale*(2+roi_adj));
+
+                    if (next_roi_adj != roi_adj)
                     {
-                        ct_adjust_roi(img1, 2, 2, 2, 2);
-                        ct_adjust_roi(img2, 2, 2, 2, 2);
+                        roi_adj = roi_adj + ceil((double)(scale) * 2);
                     }
-                    else if (VX_SCALE_PYRAMID_HALF == scale)
-                    {
-                        ct_adjust_roi(img1, 1, 1, 1, 1);
-                        ct_adjust_roi(img2, 1, 1, 1, 1);
-                    }
+
+                    ct_adjust_roi(img1, roi_adj, roi_adj, roi_adj, roi_adj);
+                    ct_adjust_roi(img2, roi_adj, roi_adj, roi_adj, roi_adj);
                 }
             }
 
