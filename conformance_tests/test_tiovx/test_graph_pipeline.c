@@ -90,7 +90,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_256x256, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, MEASURE_PERF_OFF, ARG)/*, \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_256x256, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
@@ -98,7 +98,7 @@ typedef struct {
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_1, ADD_BUF_1, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_1000, MEASURE_PERF_OFF, ARG), \
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_6, ADD_BUF_2, ADD_LOOP_100000, MEASURE_PERF_ON, ARG), \
-    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \*/
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_2048x1024, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_1000, MEASURE_PERF_ON, ARG), \
 
 #if 0
     CT_GENERATE_PARAMETERS("random", ADD_SIZE_64x64, ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_0, MEASURE_PERF_OFF, ARG), \
@@ -2325,8 +2325,9 @@ static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
                     }
                     else if (VX_SCALE_PYRAMID_HALF == scale)
                     {
-                        ct_adjust_roi(img1, i, i, i, i);
-                        ct_adjust_roi(img2, i, i, i, i);
+                        int roi_adj = ceil((double)(1+i)/2);
+                        ct_adjust_roi(img1, roi_adj, roi_adj, roi_adj, roi_adj);
+                        ct_adjust_roi(img2, roi_adj, roi_adj, roi_adj, roi_adj);
                     }
                 }
             }
@@ -4738,7 +4739,6 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
 }
 
 TESTCASE_TESTS(tivxGraphPipeline,
-    #if 0
     testOneNode,
     testTwoNodesBasic,
     testTwoNodes,
@@ -4750,10 +4750,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testScalarOutput,
     testEventHandling,
     testEventHandlingDisableEvents,
-    #endif
     testReplicateImage,
-    testReplicateImage2
-    #if 0
+    testReplicateImage2,
     testUserKernel,
     testManualSchedule,
     testDelay1,
@@ -4762,7 +4760,6 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay4,
     negativeTestPipelineDepth,
     testLoopCarriedDependency
-    #endif
     )
 
 
