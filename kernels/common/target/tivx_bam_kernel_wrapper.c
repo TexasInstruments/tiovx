@@ -1497,15 +1497,23 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                             uint32_t idx = edge_params[m].data_block_index;
                             uint32_t new_block_width_reduction = data_blocks[idx].total_block_width_reduction+block_width_reduction;
                             uint32_t new_block_height_reduction = data_blocks[idx].total_block_height_reduction+block_height_reduction;
+                            uint32_t new_opt_x = data_blocks[idx].total_opt_x+opt_x;
+
+                            /* Now we can know the (1) upstream block size information */
+                            data_blocks[i].upstream_node = upstream_node;
+                            data_blocks[i].upstream_data_block_index = idx;
 
                             if(new_block_width_reduction > data_blocks[i].total_block_width_reduction)
                             {
-                                /* Now we can know the (1) upstream block size information */
-                                data_blocks[i].upstream_node = upstream_node;
-                                data_blocks[i].upstream_data_block_index = idx;
                                 data_blocks[i].total_block_width_reduction = new_block_width_reduction;
+                            }
+                            if(new_block_height_reduction > data_blocks[i].total_block_height_reduction)
+                            {
                                 data_blocks[i].total_block_height_reduction = new_block_height_reduction;
-                                data_blocks[i].total_opt_x = data_blocks[idx].total_opt_x+opt_x;
+                            }
+                            if(new_opt_x > data_blocks[i].total_opt_x)
+                            {
+                                data_blocks[i].total_opt_x = new_opt_x;
                             }
                         }
                     }
