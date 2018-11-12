@@ -222,6 +222,11 @@ class KernelExportCode :
 
         self.workarea = os.environ.get(self.env_var)
 
+        if module == Module.TEST_KERNELS:
+            self.idirs_path = "$(HOST_ROOT)/conformance_tests/kernels"
+        else:
+            self.idirs_path = "$("+self.env_var+")"
+
         if self.workarea == None or self.workarea == "":
             sys.exit("ERROR: You must define %s environment variable as the root of the kernel workarea." % self.env_var);
 
@@ -1950,9 +1955,10 @@ class KernelExportCode :
             self.module_host_concerto_code.write_line("TARGETTYPE  := library")
             self.module_host_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
             if self.env_var == 'CUSTOM_KERNEL_PATH' :
-                self.module_host_concerto_code.write_line("IDIRS       += $("+self.env_var+")/" + self.module + "/include")
+                self.module_host_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/include")
+                self.module_host_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/" + self.module + "/include")
             else:
-                self.module_host_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/include")
+                self.module_host_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
             self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
             self.module_host_concerto_code.write_line("SKIPBUILD=1")
@@ -1985,10 +1991,11 @@ class KernelExportCode :
             self.module_target_concerto_code.write_line("TARGETTYPE  := library")
             self.module_target_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
             if self.env_var == 'CUSTOM_KERNEL_PATH' :
-                self.module_target_concerto_code.write_line("IDIRS       += $("+self.env_var+")/" + self.module + "/include")
+                self.module_target_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/include")
+                self.module_target_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/" + self.module + "/include")
             else:
-                self.module_target_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/include")
-                self.module_target_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/host")
+                self.module_target_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
+                self.module_target_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/host")
             self.module_target_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
             self.module_target_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
             self.module_target_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom include paths using 'IDIRS' >")
@@ -2065,10 +2072,11 @@ class KernelExportCode :
                 self.module_target_bam_concerto_code.write_line("TARGETTYPE  := library")
                 self.module_target_bam_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
                 if self.env_var == 'CUSTOM_KERNEL_PATH' :
-                    self.module_target_bam_concerto_code.write_line("IDIRS       += $("+self.env_var+")/" + self.module + "/include")
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/include")
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/" + self.module + "/include")
                 else:
-                    self.module_target_bam_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/include")
-                    self.module_target_bam_concerto_code.write_line("IDIRS       += $("+self.env_var+")/kernels/" + self.module + "/host")
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/host")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/inc")
@@ -2127,7 +2135,11 @@ class KernelExportCode :
             self.module_test_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
             self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/conformance_tests")
             self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/source/include")
-            self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_APPLICATION_PATH)/kernels/" + self.module + "/include")
+            if self.env_var == 'CUSTOM_KERNEL_PATH' :
+                self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/include")
+                self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/" + self.module + "/include")
+            else:
+                self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
             self.module_test_concerto_code.write_line("SKIPBUILD=1")

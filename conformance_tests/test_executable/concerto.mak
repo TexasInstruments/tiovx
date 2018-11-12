@@ -28,6 +28,7 @@ LDIRS       := $(TIOVX_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS := vx_conformance_tests
 
 include $(HOST_ROOT)/kernels/concerto_inc.mak
+include $(HOST_ROOT)/conformance_tests/kernels/concerto_inc.mak
 
 STATIC_LIBS += vx_tiovx_tests
 

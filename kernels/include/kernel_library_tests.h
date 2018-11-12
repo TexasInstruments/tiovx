@@ -60,6 +60,8 @@
 *
 */
 
+#include "test_kernel_library_tests.h"
+
 #ifdef CUSTOM_KERNEL_PATH
 #include "custom_kernel_library_tests.h"
 #endif
