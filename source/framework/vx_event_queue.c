@@ -113,7 +113,7 @@ void tivxEventQueueDelete(tivx_event_queue_t *event_q)
     tivxQueueDelete(&event_q->ready_queue);
 }
 
-static void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
+void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
 {
     event_q->enable = enable;
 }
@@ -218,59 +218,69 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitEvent(
     }
     else
     {
-        uint32_t index, timeout;
-        tivx_event_queue_t *event_q = &context->event_queue;
+        /* Call general wait function */
+        status = vxWaitEventQueue(&context->event_queue, event, do_not_block);
+    }
 
-        if(do_not_block)
+    return status;
+}
+
+vx_status vxWaitEventQueue(
+                    tivx_event_queue_t *event_q, vx_event_t *event,
+                    vx_bool do_not_block)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t index, timeout;
+
+    if(vx_true_e == do_not_block)
+    {
+        timeout = 0;
+    }
+    else
+    {
+        timeout = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
+    }
+
+    status = tivxQueueGet(&event_q->ready_queue, &index, timeout);
+
+    if(status==VX_SUCCESS && index < TIVX_EVENT_QUEUE_MAX_SIZE)
+    {
+        tivx_event_queue_elem_t *elem;
+        elem = &event_q->event_list[index];
+
+        /* copy internal event info to user event structure */
+        if(event!=NULL)
         {
-            timeout = 0;
-        }
-        else
-        {
-            timeout = TIVX_EVENT_TIMEOUT_WAIT_FOREVER;
-        }
+            event->type = elem->event_id;
+            event->timestamp = elem->timestamp;
 
-        status = tivxQueueGet(&event_q->ready_queue, &index, timeout);
-        if(status==VX_SUCCESS && index < TIVX_EVENT_QUEUE_MAX_SIZE)
-        {
-            tivx_event_queue_elem_t *elem;
-
-            elem = &event_q->event_list[index];
-
-            /* copy internal event info to user event structure */
-            if(event!=NULL)
+            if(elem->event_id==VX_EVENT_GRAPH_PARAMETER_CONSUMED)
             {
-                event->type = elem->event_id;
-                event->timestamp = elem->timestamp;
-
-                if(elem->event_id==VX_EVENT_GRAPH_PARAMETER_CONSUMED)
-                {
-                    event->event_info.graph_parameter_consumed.graph = (vx_graph)elem->param1;
-                    event->event_info.graph_parameter_consumed.graph_parameter_index = (uint32_t)elem->param2;
-                }
-                else
-                if(elem->event_id==VX_EVENT_GRAPH_COMPLETED)
-                {
-                    event->event_info.graph_completed.graph = (vx_graph)elem->param1;
-                }
-                else
-                if(elem->event_id==VX_EVENT_NODE_COMPLETED)
-                {
-                    event->event_info.node_completed.graph = (vx_graph)elem->param1;
-                    event->event_info.node_completed.node = (vx_node)elem->param2;
-                }
-                else
-                if(elem->event_id==VX_EVENT_USER)
-                {
-                    event->event_info.user_event.user_event_id = (uint32_t)elem->param1;
-                    event->event_info.user_event.user_event_parameter = (void*)elem->param2;
-                }
+                event->event_info.graph_parameter_consumed.graph = (vx_graph)elem->param1;
+                event->event_info.graph_parameter_consumed.graph_parameter_index = (uint32_t)elem->param2;
             }
-
-            /* release index into free queue,
-             * this wont fail since the index was dequeued from free queue to begin with */
-            tivxQueuePut(&event_q->free_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
+            else
+            if(elem->event_id==VX_EVENT_GRAPH_COMPLETED)
+            {
+                event->event_info.graph_completed.graph = (vx_graph)elem->param1;
+            }
+            else
+            if(elem->event_id==VX_EVENT_NODE_COMPLETED)
+            {
+                event->event_info.node_completed.graph = (vx_graph)elem->param1;
+                event->event_info.node_completed.node = (vx_node)elem->param2;
+            }
+            else
+            if(elem->event_id==VX_EVENT_USER)
+            {
+                event->event_info.user_event.user_event_id = (uint32_t)elem->param1;
+                event->event_info.user_event.user_event_parameter = (void*)elem->param2;
+            }
         }
+
+        /* release index into free queue,
+         * this wont fail since the index was dequeued from free queue to begin with */
+        tivxQueuePut(&event_q->free_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
     }
 
     return status;
@@ -281,11 +291,43 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref,
 {
     vx_status status = VX_ERROR_NOT_SUPPORTED;
 
+    status = tivxRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param);
+
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
+                enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
+                vx_uint32 param)
+{
+    vx_status status = VX_ERROR_NOT_SUPPORTED;
+
     if (ownIsValidSpecificReference(ref, VX_TYPE_NODE) == vx_true_e)
     {
         if(type==VX_EVENT_NODE_COMPLETED)
         {
-            status = ownNodeRegisterEvent((vx_node)ref, type);
+            vx_node node = (vx_node)ref;
+
+            if (TIVX_EVENT_GRAPH_QUEUE == queue_type)
+            {
+                node->is_graph_event = vx_true_e;
+                status = VX_SUCCESS;
+            }
+            else if (TIVX_EVENT_CONTEXT_QUEUE == queue_type)
+            {
+                node->is_context_event = vx_true_e;
+                status = VX_SUCCESS;
+            }
+            else
+            {
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "vxRegisterEvent: Invalid queue type given\n");
+            }
+
+            if (VX_SUCCESS == status)
+            {
+                status = ownNodeRegisterEvent((vx_node)ref, type);
+            }
         }
     }
     else

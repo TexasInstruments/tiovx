@@ -67,6 +67,7 @@
 #define VX_EXT_TI_H_
 
 #include <VX/vx.h>
+#include <VX/vx_khr_pipelining.h>
 #include <TI/tivx_debug.h>
 #include <TI/tivx_kernels.h>
 #include <TI/tivx_nodes.h>
@@ -279,6 +280,16 @@ typedef enum _tivx_df_image_e {
 
 } tivx_df_image_e;
 
+/*! \brief Based on the vx_graph_attribute_e definition.
+ * \note Use <tt>\ref tivx_graph_attribute</tt> to contain these values.
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_graph_attribute_e {
+
+    /*! \brief Returns the graph stream executions. Read-only. Use a <tt>\ref vx_uint32</tt> parameter. */
+    TIVX_GRAPH_STREAM_EXECUTIONS = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x5,
+
+} tivx_graph_attribute_e;
 
 /*!
  * \brief Function to initialize OpenVX framework
@@ -508,6 +519,11 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  */
 vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
 
+/*! \brief Enables streaming and sets the given node as a trigger node of the graph
+ *
+ * \ingroup group_tivx_ext_host
+ */
+vx_status VX_API_CALL tivxGraphEnableStreaming(vx_graph graph, vx_node node);
 
 #ifdef __cplusplus
 }

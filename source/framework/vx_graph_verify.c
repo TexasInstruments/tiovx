@@ -1528,6 +1528,8 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
         if(graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO
             ||
             graph->schedule_mode == VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL
+            ||
+            graph->pipeline_depth > 1
             )
         {
             for(node_id=0; node_id<graph->num_nodes; node_id++)
@@ -1748,6 +1750,26 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 if(status != VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to alloc obj desc for graph\n");
+                }
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                /* alloc everything for streaming */
+                status = ownGraphAllocForStreaming(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"Unable to alloc streaming objects for graph\n");
+                }
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                /* verify graph schedule mode with streaming */
+                status = ownGraphVerifyStreamingMode(graph);
+                if(status != VX_SUCCESS)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"If streaming is enabled, schedule mode must be normal\n");
                 }
             }
 

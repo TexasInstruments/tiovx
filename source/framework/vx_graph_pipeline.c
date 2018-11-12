@@ -643,7 +643,8 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
         }
     }
 
-    if(graph->schedule_mode!=VX_GRAPH_SCHEDULE_MODE_NORMAL)
+    if( (graph->schedule_mode!=VX_GRAPH_SCHEDULE_MODE_NORMAL) ||
+        (vx_true_e == graph->is_streaming_enabled) )
     {
         /* Below logic updates the pending graph schedule
          */
@@ -668,7 +669,7 @@ vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule)
 
 vx_bool ownGraphDoScheduleGraphAfterEnqueue(vx_graph graph, uint32_t graph_parameter_index)
 {
-    vx_bool do_scehedule_graph_after_enqueue = vx_false_e;
+    vx_bool do_schedule_graph_after_enqueue = vx_false_e;
 
     if(graph != NULL)
     {
@@ -676,11 +677,11 @@ vx_bool ownGraphDoScheduleGraphAfterEnqueue(vx_graph graph, uint32_t graph_param
         {
             if(graph_parameter_index == 0)
             {
-                do_scehedule_graph_after_enqueue = vx_true_e;
+                do_schedule_graph_after_enqueue = vx_true_e;
             }
         }
     }
-    return do_scehedule_graph_after_enqueue;
+    return do_schedule_graph_after_enqueue;
 }
 
 tivx_data_ref_queue ownGraphGetParameterDataRefQueue(vx_graph graph, vx_uint32 graph_parameter_index)

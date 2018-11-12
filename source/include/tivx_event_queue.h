@@ -127,7 +127,24 @@ typedef struct _tivx_event_queue_t
 } tivx_event_queue_t;
 
 
+/*! \brief Type of event that can be generated during system execution
+ *
+ * \ingroup group_tivx_event_queue
+ */
+enum tivx_queue_type_e {
 
+    /*! \brief Graph event queue
+     *
+     * The registered event will be used in the graph event queue
+     */
+    TIVX_EVENT_GRAPH_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x1,
+
+    /*! \brief Context event queue
+     *
+     * The registered event will be used in the context event queue
+     */
+    TIVX_EVENT_CONTEXT_QUEUE = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x2
+};
 
 /*!
  * \brief Create a event queue
@@ -157,6 +174,31 @@ void tivxEventQueueDelete(tivx_event_queue_t *event_q);
  */
 vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
         vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2);
+
+
+/*!
+ * \brief Enable an event queue
+ *
+ * \ingroup group_tivx_event_queue
+ */
+void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable);
+
+/*!
+ * \brief Generic wait event queue API
+ *
+ * \ingroup group_tivx_event_queue
+ */
+vx_status vxWaitEventQueue(
+                    tivx_event_queue_t *event_q, vx_event_t *event,
+                    vx_bool do_not_block);
+
+/*! \brief Registers an event to a given event queue
+ *
+ * \ingroup group_tivx_event_queue
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
+                enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
+                vx_uint32 param);
 
 #ifdef __cplusplus
 }

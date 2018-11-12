@@ -150,6 +150,27 @@ typedef struct _vx_graph {
     /*! \brief graph pipeline depth */
     uint32_t pipeline_depth;
 
+    /*! \brief graph streaming executions */
+    uint32_t streaming_executions;
+
+    /*! \brief is graph currently streaming */
+    vx_bool is_streaming;
+
+    /*! \brief is streaming enabled for graph */
+    vx_bool is_streaming_enabled;
+
+    /*! \brief trigger node has been set for graph */
+    vx_bool trigger_node_set;
+
+    /*! \brief index of trigger node */
+    vx_uint32 trigger_node_index;
+
+    /*! \brief event to indicate that streaming is deleted     */
+    tivx_event  delete_done;
+
+    /*! \brief event to indicate that streaming has stopped    */
+    tivx_event  stop_done;
+
     /*! \brief graph object descriptors */
     tivx_obj_desc_graph_t *obj_desc[TIVX_GRAPH_MAX_PIPELINE_DEPTH];
 
@@ -188,7 +209,11 @@ typedef struct _vx_graph {
     /*! \brief number nodes that take this data reference as output */
     uint8_t data_ref_num_out_nodes[TIVX_GRAPH_MAX_DATA_REF];
 
+    /*! Event queue */
+    tivx_event_queue_t event_queue;
 
+    /*! Streaming task handle */
+    tivx_task streaming_task_handle;
 
 } tivx_graph_t;
 
@@ -266,12 +291,30 @@ tivx_data_ref_queue ownGraphGetParameterDataRefQueue(vx_graph graph, vx_uint32 g
  */
 vx_status ownGraphAllocAndEnqueueObjDescForPipeline(vx_graph graph);
 
+/*! \brief Alloc objects for graph streaming
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphAllocForStreaming(vx_graph graph);
+
+/*! \brief verify graph schedule mode with streaming
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphVerifyStreamingMode(vx_graph graph);
+
 /*! \brief Free graph obj desc based allocated during
  *         ownGraphAllocAndEnqueueObjDescForPipeline()
  *
  * \ingroup group_vx_graph
  */
 void ownGraphFreeObjDesc(vx_graph graph);
+
+/*! \brief Free graph streaming objects
+ *
+ * \ingroup group_vx_graph
+ */
+void ownGraphFreeStreaming(vx_graph graph);
 
 /*! \brief Create queues to maintain submitted graph desc and free graph desc
  *
@@ -286,11 +329,17 @@ vx_status ownGraphCreateQueues(vx_graph graph);
 void ownGraphDeleteQueues(vx_graph graph);
 
 
-/*! \brief Scehdule a graph for execution 'num_schedule' times
+/*! \brief Schedule a graph for execution 'num_schedule' times
  *
  * \ingroup group_vx_graph
  */
 vx_status ownGraphScheduleGraph(vx_graph graph, uint32_t num_schedule);
+
+/*! \brief Wrapper for ownGraphScheduleGraph
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphScheduleGraphWrapper(vx_graph graph);
 
 /*! \brief Check if a previoulsy scehduled graph execution is complete
  *
@@ -371,6 +420,20 @@ vx_status ownGraphParameterCheckValidEnqueueRef(vx_graph graph, uint32_t graph_p
  * \ingroup group_vx_graph
  */
 uint32_t ownGraphGetNumSchedule(vx_graph graph);
+
+/*! \brief Sends user event to graph event queue
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 id, void *parameter);
+
+/*! \brief Waits for user event from graph event queue
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status VX_API_CALL tivxWaitGraphEvent(
+                    vx_graph graph, vx_event_t *event,
+                    vx_bool do_not_block);
 
 #ifdef __cplusplus
 }

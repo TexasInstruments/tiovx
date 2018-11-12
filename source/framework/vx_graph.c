@@ -93,6 +93,7 @@ static vx_status ownDestructGraph(vx_reference ref)
 
     ownGraphDeleteQueues(graph);
     ownGraphFreeObjDesc(graph);
+    ownGraphFreeStreaming(graph);
     tivxEventDelete(&graph->all_graph_completed_event);
 
     return VX_SUCCESS;
@@ -302,7 +303,13 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_leaf_nodes = 0;
             graph->num_params = 0;
             graph->pipeline_depth = 1;
+            graph->streaming_executions = 0;
+            graph->is_streaming   = vx_false_e;
+            graph->is_streaming_enabled   = vx_false_e;
+            graph->trigger_node_set   = vx_false_e;
             graph->is_enable_send_complete_event = vx_false_e;
+            graph->stop_done = NULL;
+            graph->delete_done = NULL;
             graph->schedule_mode = VX_GRAPH_SCHEDULE_MODE_NORMAL;
             graph->schedule_pending_count = 0;
             graph->submitted_count = 0;
@@ -417,6 +424,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of parameters failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case TIVX_GRAPH_STREAM_EXECUTIONS:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = graph->streaming_executions;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryGraph: query graph number of streaming executions\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -631,6 +649,60 @@ VX_API_ENTRY vx_status VX_API_CALL vxProcessGraph(vx_graph graph)
     return status;
 }
 
+vx_status ownGraphScheduleGraphWrapper(vx_graph graph)
+{
+    vx_status status = VX_SUCCESS;
+
+    if(vx_false_e == vxIsGraphVerified(graph))
+    {
+        /* verify graph if not already verified */
+        status = vxVerifyGraph(graph);
+    }
+
+    if ((status == VX_SUCCESS)
+        && ( (graph->state == VX_GRAPH_STATE_VERIFIED) ||
+             (graph->state == VX_GRAPH_STATE_COMPLETED) ||
+             (graph->state == VX_GRAPH_STATE_ABANDONED)
+            ))
+    {
+        /* If streaming and pipelining are enabled, AUTO scheduling will schedule one at a time */
+        if( graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_NORMAL )
+        {
+            /* schedule graph one time */
+            ownGraphScheduleGraph(graph, 1);
+        }
+        else
+        if( (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
+            (vx_false_e == graph->is_streaming_enabled) )
+        {
+            uint32_t num_schedule = ownGraphGetNumSchedule(graph);
+
+            if(num_schedule>0)
+            {
+                /* schedule graph 'num_schedule' times */
+                ownGraphScheduleGraph(graph, num_schedule);
+            }
+        }
+        else
+        if( (graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL) &&
+            (vx_true_e == graph->is_streaming_enabled) )
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraphWrapper: manual mode is not allowed with streaming enabled\n");
+        }
+        else
+        {
+            /* Do nothing, required by MISRA-C */
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownGraphScheduleGraphWrapper: graph is not in a state required to be scheduled\n");
+    }
+
+    return status;
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
 {
     vx_status status = VX_SUCCESS;
@@ -638,45 +710,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxScheduleGraph(vx_graph graph)
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
-        if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
+        if (graph->is_streaming_enabled)
         {
-            status = VX_ERROR_NOT_SUPPORTED;
-            VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph is already streaming\n");
+            status = VX_ERROR_INVALID_REFERENCE;
         }
         else
         {
-            if(vx_false_e == vxIsGraphVerified(graph))
+            if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO)
             {
-                /* verify graph if not already verified */
-                status = vxVerifyGraph(graph);
-            }
-
-            if ((status == VX_SUCCESS)
-                && ( (graph->state == VX_GRAPH_STATE_VERIFIED) ||
-                     (graph->state == VX_GRAPH_STATE_COMPLETED) ||
-                     (graph->state == VX_GRAPH_STATE_ABANDONED)
-                    ))
-            {
-                if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_NORMAL)
-                {
-                    /* schedule graph one time */
-                    ownGraphScheduleGraph(graph, 1);
-                }
-                else
-                if(graph->schedule_mode==VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL)
-                {
-                    uint32_t num_schedule = ownGraphGetNumSchedule(graph);
-
-                    if(num_schedule>0)
-                    {
-                        /* schedule graph 'num_schedule' times */
-                        ownGraphScheduleGraph(graph, num_schedule);
-                    }
-                }
+                status = VX_ERROR_NOT_SUPPORTED;
+                VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: not supported for VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO\n");
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "vxScheduleGraph: graph is not in a state required to be scheduled\n");
+                status = ownGraphScheduleGraphWrapper(graph);
             }
         }
     }
@@ -705,7 +753,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxWaitGraph(vx_graph graph)
              *
              */
             status = tivxEventWait(graph->all_graph_completed_event, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-
             if(status == VX_SUCCESS)
             {
                 if(graph->state == VX_GRAPH_STATE_ABANDONED)

@@ -891,9 +891,19 @@ void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uin
     {
         if(node->is_enable_send_complete_event)
         {
-            tivxEventQueueAddEvent(&node->base.context->event_queue,
-                        VX_EVENT_NODE_COMPLETED, timestamp,
-                        (uintptr_t)node->graph, (uintptr_t)node);
+            if (vx_true_e == node->is_context_event)
+            {
+                tivxEventQueueAddEvent(&node->base.context->event_queue,
+                            VX_EVENT_NODE_COMPLETED, timestamp,
+                            (uintptr_t)node->graph, (uintptr_t)node);
+            }
+
+            if (vx_true_e == node->is_graph_event)
+            {
+                tivxEventQueueAddEvent(&node->graph->event_queue,
+                            VX_EVENT_NODE_COMPLETED, timestamp,
+                            (uintptr_t)node->graph, (uintptr_t)node);
+            }
         }
     }
 }
@@ -943,6 +953,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->local_data_ptr_is_alloc = vx_false_e;
                     node->local_data_set_allow = vx_false_e;
                     node->pipeline_depth = 1;
+                    node->is_context_event = vx_false_e;
+                    node->is_graph_event = vx_false_e;
                     node->is_enable_send_complete_event = vx_false_e;
 
                     /* assign refernce type specific callback's */
