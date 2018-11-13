@@ -317,7 +317,7 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 id, void 
                 &graph->event_queue,
                 VX_EVENT_USER,
                 timestamp,
-                (uintptr_t)id, (uintptr_t)parameter);
+                (uintptr_t)id, (uintptr_t)parameter, (uintptr_t)0);
 
     return status;
 }

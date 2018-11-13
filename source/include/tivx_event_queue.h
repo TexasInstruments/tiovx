@@ -93,6 +93,7 @@ typedef struct _tivx_event_queue_elem_t
     uint64_t  timestamp;
     uintptr_t param1;
     uintptr_t param2;
+    uintptr_t param3;
 } tivx_event_queue_elem_t;
 
 /*!
@@ -173,7 +174,7 @@ void tivxEventQueueDelete(tivx_event_queue_t *event_q);
  * \ingroup group_tivx_event_queue
  */
 vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
-        vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2);
+        vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2, uintptr_t param3);
 
 
 /*!

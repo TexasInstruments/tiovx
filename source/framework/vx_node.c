@@ -895,14 +895,39 @@ void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uin
             {
                 tivxEventQueueAddEvent(&node->base.context->event_queue,
                             VX_EVENT_NODE_COMPLETED, timestamp,
-                            (uintptr_t)node->graph, (uintptr_t)node);
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0);
             }
 
             if (vx_true_e == node->is_graph_event)
             {
                 tivxEventQueueAddEvent(&node->graph->event_queue,
                             VX_EVENT_NODE_COMPLETED, timestamp,
-                            (uintptr_t)node->graph, (uintptr_t)node);
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0);
+            }
+        }
+    }
+}
+
+void ownNodeCheckAndSendErrorEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t timestamp, vx_status status)
+{
+    vx_node node = (vx_node)(uintptr_t)node_obj_desc->base.host_ref;
+
+    if(node!=NULL && node->base.context!=NULL)
+    {
+        if(node->is_enable_send_complete_event)
+        {
+            if (vx_true_e == node->is_context_event)
+            {
+                tivxEventQueueAddEvent(&node->base.context->event_queue,
+                            VX_EVENT_NODE_ERROR, timestamp,
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status);
+            }
+
+            if (vx_true_e == node->is_graph_event)
+            {
+                tivxEventQueueAddEvent(&node->graph->event_queue,
+                            VX_EVENT_NODE_ERROR, timestamp,
+                            (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status);
             }
         }
     }

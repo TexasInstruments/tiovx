@@ -100,6 +100,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_NOT_NOT_NAME     "com.ti.test_kernels.not_not"
 
+/*! \brief scalar_source_error kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_SCALAR_SOURCE_ERROR_NAME     "com.ti.test_kernels.scalar_source_error"
+
 /*! End of group_vision_function_test_kernels */
 
 /*!

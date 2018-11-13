@@ -21,10 +21,10 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <VX/vx_khr_pipelining.h>
+#include <TI/tivx_test_kernels.h>
 #include <TI/tivx_config.h>
 #include <TI/tivx_capture.h>
 #include <TI/tivx_task.h>
-#include <TI/tivx_test_kernels.h>
 #include "math.h"
 #include <limits.h>
 
@@ -392,6 +392,65 @@ TEST(tivxGraphStreaming, negativeTestStreamingState)
     VX_CALL(vxStopGraphStreaming(graph));
 
     ASSERT_NE_VX_STATUS(VX_SUCCESS, vxStopGraphStreaming(graph));
+
+    VX_CALL(vxReleaseScalar(&scalar));
+    VX_CALL(vxReleaseScalar(&scalar_out));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
+TEST(tivxGraphStreaming, negativeTestStreamingError)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar, scalar_out;
+    vx_node n1, n2;
+    vx_bool done;
+    vx_event_t event;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(scalar_out = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    /* modify to use an "error" node */
+    ASSERT_VX_OBJECT(n1 = tivxScalarSourceErrorNode(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_ERROR, 0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n2, VX_EVENT_NODE_ERROR, 0));
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n1));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxStartGraphStreaming(graph));
+
+    done = vx_false_e;
+
+    while(!done)
+    {
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &event, vx_false_e));
+
+        if( (event.type==VX_EVENT_NODE_ERROR) &&
+            (event.event_info.node_error.node == n1) &&
+            (event.event_info.node_error.status == VX_FAILURE) )
+        {
+            done = vx_true_e;
+        }
+    }
+
+    VX_CALL(vxStopGraphStreaming(graph));
 
     VX_CALL(vxReleaseScalar(&scalar));
     VX_CALL(vxReleaseScalar(&scalar_out));
@@ -1496,4 +1555,6 @@ TESTCASE_TESTS(tivxGraphStreaming,
                negativeTestStreamingState,
                negativeTestScalar,
                negativeTestStreamingPipelining1,
-               negativeTestStreamingPipelining2)
+               negativeTestStreamingPipelining2,
+               negativeTestStreamingError)
+

@@ -270,7 +270,6 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
     tivx_target_kernel_instance target_kernel_instance;
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
     uint32_t i, cnt, loop_max = 1;
-    int32_t exe_status = 0;
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
     tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
     tivx_obj_desc_t *prm_obj_desc;
@@ -363,7 +362,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             #endif
         }
 
-        exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
+        node_obj_desc->exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
             node_obj_desc->num_params);
     }
 }
@@ -761,6 +760,12 @@ static vx_action tivxTargetCmdDescHandleUserCallback(tivx_obj_desc_node_t *node_
     /* first do all booking keeping and then send event q events */
     /* send completion event if enabled */
     ownNodeCheckAndSendCompletionEvent(node_obj_desc, timestamp);
+
+    /* if an error occurred within the node, then send an error completion event */
+    if (VX_SUCCESS != node_obj_desc->exe_status)
+    {
+        ownNodeCheckAndSendErrorEvent(node_obj_desc, timestamp, node_obj_desc->exe_status);
+    }
 
     /* first we let any node events to go thru before sending graph events */
     if(is_send_graph_complete_event)

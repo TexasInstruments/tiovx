@@ -119,7 +119,7 @@ void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
 }
 
 vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
-        vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2)
+        vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2, uintptr_t param3)
 {
     vx_status status = VX_FAILURE;
 
@@ -138,6 +138,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
             elem->timestamp = timestamp;
             elem->param1 = param1;
             elem->param2 = param2;
+            elem->param3 = param3;
 
             status = tivxQueuePut(&event_q->ready_queue, index, TIVX_EVENT_TIMEOUT_NO_WAIT);
         }
@@ -200,7 +201,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
                 &context->event_queue,
                 VX_EVENT_USER,
                 timestamp,
-                (uintptr_t)id, (uintptr_t)parameter);
+                (uintptr_t)id, (uintptr_t)parameter, (uintptr_t)0);
     }
     return status;
 }
@@ -271,6 +272,13 @@ vx_status vxWaitEventQueue(
                 event->event_info.node_completed.node = (vx_node)elem->param2;
             }
             else
+            if(elem->event_id==VX_EVENT_NODE_ERROR)
+            {
+                event->event_info.node_error.graph = (vx_graph)elem->param1;
+                event->event_info.node_error.node = (vx_node)elem->param2;
+                event->event_info.node_error.status = (vx_status)elem->param3;
+            }
+            else
             if(elem->event_id==VX_EVENT_USER)
             {
                 event->event_info.user_event.user_event_id = (uint32_t)elem->param1;
@@ -304,7 +312,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 
     if (ownIsValidSpecificReference(ref, VX_TYPE_NODE) == vx_true_e)
     {
-        if(type==VX_EVENT_NODE_COMPLETED)
+        if( (type==VX_EVENT_NODE_COMPLETED) ||
+            (type==VX_EVENT_NODE_ERROR) )
         {
             vx_node node = (vx_node)ref;
 

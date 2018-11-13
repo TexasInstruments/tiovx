@@ -61,75 +61,49 @@
  */
 
 #include <TI/tivx.h>
-#include <TI/tivx_test_kernels.h>
+#include <TI/tivx_target_kernel.h>
 #include "tivx_test_kernels_kernels.h"
-#include "tivx_capture_kernels.h"
-#include "tivx_kernels_host_utils.h"
+#include "tivx_kernels_target_utils.h"
 
-static vx_status VX_CALLBACK publishKernels(vx_context context);
-static vx_status VX_CALLBACK unPublishKernels(vx_context context);
+#ifdef BUILD_BAM
 
-static uint32_t gIsTestKernelsKernelsLoad = 0u;
+void tivxAddTargetKernelBamScalarSourceError(void);
 
-vx_status tivxAddKernelNotNot(vx_context context);
-vx_status tivxAddKernelScalarSink(vx_context context);
-vx_status tivxAddKernelScalarSource(vx_context context);
-vx_status tivxAddKernelScalarIntermediate(vx_context context);
-vx_status tivxAddKernelScalarSourceError(vx_context context);
+#else
 
-vx_status tivxRemoveKernelScalarSink(vx_context context);
-vx_status tivxRemoveKernelScalarSource(vx_context context);
-vx_status tivxRemoveKernelScalarIntermediate(vx_context context);
-vx_status tivxRemoveKernelNotNot(vx_context context);
-vx_status tivxRemoveKernelScalarSourceError(vx_context context);
+void tivxAddTargetKernelScalarSourceError(void);
 
-static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
-    {&tivxAddKernelNotNot, &tivxRemoveKernelNotNot},
-    {&tivxAddKernelScalarSink, &tivxRemoveKernelScalarSink},
-    {&tivxAddKernelScalarSource, &tivxRemoveKernelScalarSource},
-    {&tivxAddKernelScalarIntermediate, &tivxRemoveKernelScalarIntermediate},
-    {&tivxAddKernelScalarSourceError, &tivxRemoveKernelScalarSourceError},
+#endif
+
+#ifdef BUILD_BAM
+
+void tivxRemoveTargetKernelBamScalarSourceError(void);
+
+#else
+
+void tivxRemoveTargetKernelScalarSourceError(void);
+
+#endif
+
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+#ifdef BUILD_BAM
+
+    {&tivxAddTargetKernelBamScalarSourceError, &tivxRemoveTargetKernelBamScalarSourceError},
+
+#else
+
+    {&tivxAddTargetKernelScalarSourceError, &tivxRemoveTargetKernelScalarSourceError},
+
+#endif
 };
 
-static vx_status VX_CALLBACK publishKernels(vx_context context)
+void tivxRegisterTestKernelsTargetArmKernels(void)
 {
-    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
-static vx_status VX_CALLBACK unPublishKernels(vx_context context)
+void tivxUnRegisterTestKernelsTargetArmKernels(void)
 {
-    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
-}
-
-void tivxRegisterTestKernelsKernels(void)
-{
-    tivxRegisterModule(TIVX_MODULE_NAME_TEST_KERNELS, publishKernels, unPublishKernels);
-}
-
-void tivxUnRegisterTestKernelsKernels(void)
-{
-    tivxUnRegisterModule(TIVX_MODULE_NAME_TEST_KERNELS);
-}
-
-void tivxTestKernelsLoadKernels(vx_context context)
-{
-    if ((0 == gIsTestKernelsKernelsLoad) && (NULL != context))
-    {
-        tivxRegisterTestKernelsKernels();
-        vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
-
-        gIsTestKernelsKernelsLoad = 1U;
-    }
-}
-
-void tivxTestKernelsUnLoadKernels(vx_context context)
-{
-    if ((1u == gIsTestKernelsKernelsLoad) && (NULL != context))
-    {
-        vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
-        tivxUnRegisterTestKernelsKernels();
-
-        gIsTestKernelsKernelsLoad = 0U;
-    }
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 

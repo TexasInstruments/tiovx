@@ -798,7 +798,7 @@ void ownSendGraphCompletedEvent(vx_graph graph)
 
             tivxEventQueueAddEvent(&graph->base.context->event_queue,
                         VX_EVENT_GRAPH_COMPLETED, timestamp,
-                        (uintptr_t)graph, (uintptr_t)0);
+                        (uintptr_t)graph, (uintptr_t)0, (uintptr_t)0);
         }
     }
 }
