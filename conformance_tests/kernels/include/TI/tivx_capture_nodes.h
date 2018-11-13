@@ -60,62 +60,67 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_test_kernels.h>
-#include <TI/tivx_capture.h>
+#ifndef TIVX_CAPTURE_NODES_H_
+#define TIVX_CAPTURE_NODES_H_
 
-VX_API_ENTRY vx_node VX_API_CALL tivxNotNotNode(vx_graph graph,
-                                      vx_image             input,
-                                      vx_image             output)
-{
-    vx_reference prms[] = {
-            (vx_reference)input,
-            (vx_reference)output
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_NOT_NOT_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+#include <VX/vx.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/*! \brief [Graph] Creates a FILE_READ_CAPTURE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] configuration
+ * \param [out] output_image
+ * \see <tt>TIVX_KERNEL_FILE_READ_CAPTURE_NAME</tt>
+ * \ingroup group_vision_function_file_read_capture
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxFileReadCaptureNode(vx_graph graph,
+                                      vx_array             configuration,
+                                      vx_object_array      output_image);
+
+/*! \brief [Graph] Creates a SCALAR_SINK Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] in
+ * \see <tt>TIVX_KERNEL_SCALAR_SINK_NAME</tt>
+ * \ingroup group_vision_function_scalar_sink
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkNode(vx_graph graph,
-                                      vx_scalar            in)
-{
-    vx_reference prms[] = {
-            (vx_reference)in
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_SINK_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+                                      vx_scalar            in);
 
+/*! \brief [Graph] Creates a SCALAR_SOURCE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [out] out
+ * \see <tt>TIVX_KERNEL_SCALAR_SOURCE_NAME</tt>
+ * \ingroup group_vision_function_scalar_source
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceNode(vx_graph graph,
-                                      vx_scalar            out)
-{
-    vx_reference prms[] = {
-            (vx_reference)out
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_SOURCE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+                                      vx_scalar            out);
 
+/*! \brief [Graph] Creates a SCALAR_INTERMEDIATE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] in
+ * \param [out] out
+ * \see <tt>TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME</tt>
+ * \ingroup group_vision_function_scalar_intermediate
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediateNode(vx_graph graph,
                                       vx_scalar            in,
-                                      vx_scalar            out)
-{
-    vx_reference prms[] = {
-            (vx_reference)in,
-            (vx_reference)out
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
+                                      vx_scalar            out);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* TIVX_CAPTURE_NODES_H_ */
+
+

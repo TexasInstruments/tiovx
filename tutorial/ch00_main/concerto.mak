@@ -20,6 +20,7 @@ STATIC_LIBS += vx_platform_pc vx_framework
 STATIC_LIBS += vx_kernels_openvx_core vx_target_kernels_openvx_core
 
 include $(HOST_ROOT)/kernels/concerto_inc.mak
+include $(HOST_ROOT)/conformance_tests/kernels/concerto_inc.mak
 
 STATIC_LIBS += vx_target_kernels_tutorial
 ifeq ($(BUILD_BAM),yes)
@@ -32,7 +33,6 @@ STATIC_LIBS += algframework_$(TARGET_CPU) dmautils_$(TARGET_CPU) vxlib_bamplugin
 endif
 
 STATIC_LIBS += vxlib_$(TARGET_CPU) c6xsim_$(TARGET_CPU)_C66
-
 
 include $(FINALE)
 

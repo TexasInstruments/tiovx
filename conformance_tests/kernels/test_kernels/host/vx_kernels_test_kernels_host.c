@@ -71,11 +71,20 @@ static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 static uint32_t gIsTestKernelsKernelsLoad = 0u;
 
 vx_status tivxAddKernelNotNot(vx_context context);
+vx_status tivxAddKernelScalarSink(vx_context context);
+vx_status tivxAddKernelScalarSource(vx_context context);
+vx_status tivxAddKernelScalarIntermediate(vx_context context);
 
+vx_status tivxRemoveKernelScalarSink(vx_context context);
+vx_status tivxRemoveKernelScalarSource(vx_context context);
+vx_status tivxRemoveKernelScalarIntermediate(vx_context context);
 vx_status tivxRemoveKernelNotNot(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelNotNot, &tivxRemoveKernelNotNot},
+    {&tivxAddKernelScalarSink, &tivxRemoveKernelScalarSink},
+    {&tivxAddKernelScalarSource, &tivxRemoveKernelScalarSource},
+    {&tivxAddKernelScalarIntermediate, &tivxRemoveKernelScalarIntermediate},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
@@ -105,13 +114,6 @@ void tivxTestKernelsLoadKernels(vx_context context)
         tivxRegisterTestKernelsKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
 
-        /* These three lines only work on PC emulation mode ...
-         * this will need to be updated when moving to target */
-        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
-        tivxRegisterTestKernelsTargetC66Kernels();
-        tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
-        tivxRegisterTestKernelsTargetC66Kernels();
-
         gIsTestKernelsKernelsLoad = 1U;
     }
 }
@@ -122,10 +124,6 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
     {
         vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
         tivxUnRegisterTestKernelsKernels();
-
-        /* This line only work on PC emulation mode ...
-         * this will need to be updated when moving to target */
-        tivxUnRegisterTestKernelsTargetC66Kernels();
 
         gIsTestKernelsKernelsLoad = 0U;
     }

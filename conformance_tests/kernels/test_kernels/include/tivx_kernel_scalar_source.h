@@ -60,62 +60,23 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_test_kernels.h>
-#include <TI/tivx_capture.h>
+#ifndef _TIVX_KERNEL_SCALAR_SOURCE_
+#define _TIVX_KERNEL_SCALAR_SOURCE_
 
-VX_API_ENTRY vx_node VX_API_CALL tivxNotNotNode(vx_graph graph,
-                                      vx_image             input,
-                                      vx_image             output)
-{
-    vx_reference prms[] = {
-            (vx_reference)input,
-            (vx_reference)output
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_NOT_NOT_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkNode(vx_graph graph,
-                                      vx_scalar            in)
-{
-    vx_reference prms[] = {
-            (vx_reference)in
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_SINK_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
 
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceNode(vx_graph graph,
-                                      vx_scalar            out)
-{
-    vx_reference prms[] = {
-            (vx_reference)out
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_SOURCE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+#define TIVX_KERNEL_SCALAR_SOURCE_OUT_IDX (0U)
 
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediateNode(vx_graph graph,
-                                      vx_scalar            in,
-                                      vx_scalar            out)
-{
-    vx_reference prms[] = {
-            (vx_reference)in,
-            (vx_reference)out
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
+#define TIVX_KERNEL_SCALAR_SOURCE_MAX_PARAMS (1U)
+
+#ifdef __cplusplus
 }
+#endif
+
+
+#endif /* _TIVX_KERNEL_SCALAR_SOURCE_ */
+
+

@@ -71,6 +71,12 @@ void tivxUnRegisterOpenVXCoreTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
 
+void tivxRegisterCaptureTargetArmKernels(void);
+void tivxUnRegisterCaptureTargetArmKernels(void);
+
+void tivxRegisterTestKernelsTargetC66Kernels(void);
+void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+
 void tivxInit(void)
 {
     tivx_set_debug_zone(VX_ZONE_INIT);
@@ -87,6 +93,25 @@ void tivxInit(void)
     tivxTargetInit();
 
     /* Initialize Host */
+
+    #ifdef BUILD_CONFORMANCE_TEST
+    tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);
+    tivxRegisterCaptureTargetArmKernels();
+
+    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxRegisterCaptureTargetArmKernels();
+    tivxRegisterTestKernelsTargetC66Kernels();
+
+    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
+    tivxRegisterCaptureTargetArmKernels();
+    tivxRegisterTestKernelsTargetC66Kernels();
+
+    tivxSetSelfCpuId(TIVX_CPU_ID_IPU2_0);
+    tivxRegisterCaptureTargetArmKernels();
+
+    tivxSetSelfCpuId(TIVX_CPU_ID_A15_0);
+    tivxRegisterCaptureTargetArmKernels();
+    #endif
 
     /* trick target kernel used in DSP emulation mode to think
      * they are being invoked from a DSP
@@ -116,6 +141,11 @@ void tivxInit(void)
 void tivxDeInit(void)
 {
     tivxPlatformDeleteTargets();
+
+    #ifdef BUILD_CONFORMANCE_TEST
+    tivxUnRegisterCaptureTargetArmKernels();
+    tivxUnRegisterTestKernelsTargetC66Kernels();
+    #endif
 
     /* DeInitialize Host */
     tivxUnRegisterOpenVXCoreTargetKernels();

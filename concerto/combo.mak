@@ -114,6 +114,10 @@ ifeq ($(BUILD_TUTORIAL),yes)
 $(TARGET_COMBO_NAME)_DEFS += BUILD_TUTORIAL
 endif
 
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
+$(TARGET_COMBO_NAME)_DEFS += BUILD_CONFORMANCE_TEST
+endif
+
 # Include platform definition
 include $(BUILD_PLATFORM)
 

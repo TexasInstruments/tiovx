@@ -3,11 +3,14 @@
 # to make it easier to add/extend kernels without needing to modify
 # several concerto.mak files which depend on kernel libraries.
 
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 STATIC_LIBS += vx_kernels_test_kernels_tests vx_kernels_test_kernels
 STATIC_LIBS += vx_target_kernels_c66
 ifeq ($(BUILD_BAM),yes)
 STATIC_LIBS += vx_target_kernels_c66_bam
 endif
 STATIC_LIBS += vx_conformance_engine
-# < DEVELOPER_TODO: Add any additional dependent libraries >
+
+STATIC_LIBS += vx_target_kernels_capture
+endif
 

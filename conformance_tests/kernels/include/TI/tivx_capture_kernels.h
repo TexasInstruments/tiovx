@@ -60,62 +60,101 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_test_kernels.h>
-#include <TI/tivx_capture.h>
+#ifndef TIVX_CAPTURE_KERNELS_H_
+#define TIVX_CAPTURE_KERNELS_H_
 
-VX_API_ENTRY vx_node VX_API_CALL tivxNotNotNode(vx_graph graph,
-                                      vx_image             input,
-                                      vx_image             output)
-{
-    vx_reference prms[] = {
-            (vx_reference)input,
-            (vx_reference)output
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_NOT_NOT_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+#include <VX/vx.h>
+#include <VX/vx_kernels.h>
 
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkNode(vx_graph graph,
-                                      vx_scalar            in)
-{
-    vx_reference prms[] = {
-            (vx_reference)in
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_SINK_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceNode(vx_graph graph,
-                                      vx_scalar            out)
-{
-    vx_reference prms[] = {
-            (vx_reference)out
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_SOURCE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
-}
+/*!
+ * \file
+ * \brief The list of supported kernels in this kernel extension.
+ */
 
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediateNode(vx_graph graph,
-                                      vx_scalar            in,
-                                      vx_scalar            out)
-{
-    vx_reference prms[] = {
-            (vx_reference)in,
-            (vx_reference)out
-    };
-    vx_node node = tivxCreateNodeByKernelName(graph,
-                                           TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME,
-                                           prms,
-                                           dimof(prms));
-    return node;
+/*! \brief Name for OpenVX Extension kernel module: capture
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_MODULE_NAME_CAPTURE    "capture"
+
+/*! \brief The list of kernels supported in capture module
+ *
+ * Each kernel listed here can be used with the <tt>\ref vxGetKernelByName</tt> call.
+ * When programming the parameters, use
+ * \arg <tt>\ref VX_INPUT</tt> for [in]
+ * \arg <tt>\ref VX_OUTPUT</tt> for [out]
+ * \arg <tt>\ref VX_BIDIRECTIONAL</tt> for [in,out]
+ *
+ * When programming the parameters, use
+ * \arg <tt>\ref VX_TYPE_IMAGE</tt> for a <tt>\ref vx_image</tt> in the size field of <tt>\ref vxGetParameterByIndex</tt> or <tt>\ref vxSetParameterByIndex</tt>
+ * \arg <tt>\ref VX_TYPE_ARRAY</tt> for a <tt>\ref vx_array</tt> in the size field of <tt>\ref vxGetParameterByIndex</tt> or <tt>\ref vxSetParameterByIndex</tt>
+ * \arg or other appropriate types in \ref vx_type_e.
+ * \ingroup group_kernel
+ */
+
+/*! \brief file_read_capture kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_FILE_READ_CAPTURE_NAME     "com.ti.capture.file_read_capture"
+
+/*! \brief scalar_sink kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_SCALAR_SINK_NAME     "com.ti.capture.scalar_sink"
+
+/*! \brief scalar_source kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_SCALAR_SOURCE_NAME     "com.ti.capture.scalar_source"
+
+/*! \brief scalar_intermediate kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_SCALAR_INTERMEDIATE_NAME     "com.ti.capture.scalar_intermediate"
+
+/*! End of group_vision_function_capture */
+
+/*!
+ * \brief Used for the Application to load the capture kernels into the context.
+ * \ingroup group_kernel
+ */
+void tivxCaptureLoadKernels(vx_context context);
+
+/*!
+ * \brief Used for the Application to unload the capture kernels from the context.
+ * \ingroup group_kernel
+ */
+void tivxCaptureUnLoadKernels(vx_context context);
+
+/*!
+ * \brief Used to print the performance of the kernels.
+ * \ingroup group_kernel
+ */
+void tivxCapturePrintPerformance(vx_perf_t performance, uint32_t numPixels, const char* testName);
+
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ *
+ * \ingroup group_vision_function_vpac_viss
+ */
+typedef struct {
+    /* not needed from algo */
+    char      file_name[256];
+    uint32_t  start_val;
+    uint32_t  end_val;
+    uint32_t  num_sensors;
+    uint32_t  width;
+    uint32_t  height;
+    vx_df_image  format;
+} tivx_file_read_params_t;
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif /* TIVX_CAPTURE_KERNELS_H_ */
+
+

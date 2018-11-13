@@ -12,6 +12,8 @@
 
 void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
+void tivxRegisterCaptureTargetArmKernels(void);
+void tivxUnRegisterCaptureTargetArmKernels(void);
 void tivxRegisterIVisionTargetKernels(void);
 void tivxUnRegisterIVisionTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
@@ -32,6 +34,16 @@ void tivxInit(void)
 
     /* Initialize Target */
     tivxTargetInit();
+
+#ifdef BUILD_CONFORMANCE_TEST
+#if defined (C66) || (M4) || (A15)
+    tivxRegisterCaptureTargetArmKernels();
+#endif
+
+#if defined (C66)
+    tivxRegisterTestKernelsTargetC66Kernels();
+#endif
+#endif
 
     /* Initialize Host */
 #if defined (C66)
@@ -55,6 +67,16 @@ void tivxInit(void)
 void tivxDeInit(void)
 {
     tivxPlatformDeleteTargets();
+
+#ifdef BUILD_CONFORMANCE_TEST
+#if defined (C66) || (M4)
+    tivxUnRegisterCaptureTargetArmKernels();
+#endif
+
+#if defined (C66)
+    tivxUnRegisterTestKernelsTargetC66Kernels();
+#endif
+#endif
 
     /* DeInitialize Host */
 #if defined (C66)
