@@ -3,24 +3,7 @@
 BUILD_SDK?=vsdk
 
 include $(BUILD_SDK)_tools_path.mak
-
-
-BUILD_TARGET_MODE?=yes
-BUILD_EMULATION_MODE?=no
-# valid values: X86 x86_64 all
-BUILD_EMULATION_ARCH?=all
-
-BUILD_CONFORMANCE_TEST?=yes
-BUILD_TUTORIAL?=yes
-BUILD_BAM?=yes
-BUILD_LINUX_A15?=yes
-BUILD_EVE?=yes
-BUILD_IGNORE_LIB_ORDER?=no
-
-# Kernel Library Extensions
-BUILD_IVISION_KERNELS?=yes
-
-PROFILE?=all
+include build_flags.mak
 
 DIRECTORIES :=
 DIRECTORIES += source/platform

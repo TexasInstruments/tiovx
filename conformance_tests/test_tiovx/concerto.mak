@@ -16,6 +16,7 @@
 #
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 include $(PRELUDE)
 TARGET      := vx_tiovx_tests
@@ -68,4 +69,5 @@ endif
 
 include $(FINALE)
 
+endif
 endif
