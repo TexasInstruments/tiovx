@@ -2,19 +2,7 @@
 BUILD_SDK?=tiovx_dev/j7presi
 
 include $(BUILD_SDK)_tools_path.mak
-
-BUILD_TARGET_MODE?=yes
-BUILD_EMULATION_MODE?=yes
-BUILD_EMULATION_ARCH?=x86_64
-
-BUILD_CONFORMANCE_TEST?=yes
-BUILD_TUTORIAL?=yes
-BUILD_BAM?=no
-
-# Applied to target mode only
-BUILD_VLAB?=yes
-
-PROFILE?=all
+include $(TIOVX_PATH)/build_flags.mak
 
 DIRECTORIES :=
 DIRECTORIES += source/platform

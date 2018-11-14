@@ -1,5 +1,6 @@
 
 ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A72 R5F))
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
 
 include $(PRELUDE)
 TARGET      := vx_kernels_hwa_tests
@@ -29,4 +30,5 @@ endif
 
 include $(FINALE)
 
+endif
 endif
