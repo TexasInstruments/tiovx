@@ -24,6 +24,7 @@
 #include <TI/tivx_config.h>
 #include <TI/tivx_capture.h>
 #include <TI/tivx_task.h>
+#include <TI/tivx_test_kernels.h>
 #include "math.h"
 #include <limits.h>
 
