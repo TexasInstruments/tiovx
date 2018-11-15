@@ -109,6 +109,11 @@ typedef struct _tivx_object_t
     vx_bool                 isArrayUse[TIVX_ARRAY_MAX_OBJECTS];
     /**< Flag indicating if Array object is in use or not */
 
+    tivx_user_data_object_t user_data_object[TIVX_USER_DATA_OBJECT_MAX_OBJECTS];
+    /**< User Data Objects */
+    vx_bool                 isUserDataObjectUse[TIVX_USER_DATA_OBJECT_MAX_OBJECTS];
+    /**< Flag indicating if User data object is in use or not */
+
     tivx_convolution_t      convolution[TIVX_CONVOLUTION_MAX_OBJECTS];
     /**< Convolution Objects */
     vx_bool                 isConvolutionUse[TIVX_CONVOLUTION_MAX_OBJECTS];

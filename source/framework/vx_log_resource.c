@@ -108,6 +108,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_ARRAY_MAX_OBJECTS, 0, 0, "TIVX_ARRAY_MAX_OBJECTS"
     },
     {
+        TIVX_USER_DATA_OBJECT_MAX_OBJECTS, 0, 0, "TIVX_USER_DATA_OBJECT_MAX_OBJECTS"
+    },
+    {
         TIVX_CONVOLUTION_MAX_OBJECTS, 0, 0, "TIVX_CONVOLUTION_MAX_OBJECTS"
     },
     {
@@ -181,6 +184,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_ARRAY_MAX_MAPS, 0, 0, "TIVX_ARRAY_MAX_MAPS"
+    },
+    {
+        TIVX_USER_DATA_OBJECT_MAX_MAPS, 0, 0, "TIVX_USER_DATA_OBJECT_MAX_MAPS"
     },
     {
         TIVX_GRAPH_MAX_HEAD_NODES, 0, 0, "TIVX_GRAPH_MAX_HEAD_NODES"

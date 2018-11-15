@@ -88,6 +88,10 @@ static vx_reference ownCreateLutFromExemplar(
     vx_context context, vx_lut exemplar);
 static vx_reference ownCreateObjectArrayFromExemplar(
     vx_context context, vx_object_array exemplar);
+static vx_reference ownCreateTensorFromExemplar(
+    vx_context context, vx_tensor exemplar);
+static vx_reference ownCreateUserDataObjectFromExemplar(
+    vx_context context, vx_user_data_object exemplar);
 
 
 vx_reference ownCreateReferenceFromExemplar(
@@ -140,6 +144,12 @@ vx_reference ownCreateReferenceFromExemplar(
         case VX_TYPE_OBJECT_ARRAY:
             ref = ownCreateObjectArrayFromExemplar(
                 context, (vx_object_array)exemplar);
+        case VX_TYPE_TENSOR:
+            ref = ownCreateTensorFromExemplar(
+                context, (vx_tensor)exemplar);
+        case VX_TYPE_USER_DATA_OBJECT:
+            ref = ownCreateUserDataObjectFromExemplar(
+                context, (vx_user_data_object)exemplar);
         default:
             break;
     }
@@ -381,3 +391,46 @@ static vx_reference ownCreateObjectArrayFromExemplar(
 
     return (vx_reference)objarr;
 }
+
+static vx_reference ownCreateTensorFromExemplar(
+    vx_context context, vx_tensor exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_size num_dims;
+    vx_size dims[TIVX_CONTEXT_MAX_TENSOR_DIMS];
+    vx_enum type;
+    vx_int8 fixed;
+    vx_tensor tensor = NULL;
+
+    status |= vxQueryTensor(exemplar, VX_TENSOR_NUMBER_OF_DIMS, &num_dims, sizeof(num_dims));
+    status |= vxQueryTensor(exemplar, VX_TENSOR_DIMS, &dims, sizeof(dims));
+    status |= vxQueryTensor(exemplar, VX_TENSOR_DATA_TYPE, &type, sizeof(type));
+    status |= vxQueryTensor(exemplar, VX_TENSOR_FIXED_POINT_POSITION, &fixed, sizeof(fixed));
+
+    if (VX_SUCCESS == status)
+    {
+        tensor = vxCreateTensor(context, num_dims, dims, type, fixed);
+    }
+
+    return (vx_reference)tensor;
+}
+
+static vx_reference ownCreateUserDataObjectFromExemplar(
+    vx_context context, vx_user_data_object exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    vx_char type_name[VX_MAX_REFERENCE_NAME];
+    vx_size size;
+    vx_user_data_object user_data_object = NULL;
+
+    status |= vxQueryUserDataObject(exemplar, VX_USER_DATA_OBJECT_NAME, &type_name, sizeof(type_name));
+    status |= vxQueryUserDataObject(exemplar, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
+
+    if (VX_SUCCESS == status)
+    {
+        user_data_object = vxCreateUserDataObject(context, type_name, size, NULL);
+    }
+
+    return (vx_reference)user_data_object;
+}
+

@@ -363,6 +363,7 @@ typedef union {
     tivx_obj_desc_threshold_t threshold;
     tivx_obj_desc_distribution_t distribution;
     tivx_obj_desc_array_t array;
+    tivx_obj_desc_user_data_object_t user_data_object;
     tivx_obj_desc_object_array_t objarray;
     tivx_obj_desc_tensor_t tensor;
     tivx_obj_desc_scalar_t scalar;

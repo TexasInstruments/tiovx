@@ -152,6 +152,13 @@ extern "C" {
 #define TIVX_ARRAY_MAX_OBJECTS                      (96u)
 
 /*!
+ * \brief Max number user data objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_USER_DATA_OBJECT_MAX_OBJECTS           (96u)
+
+/*!
  * \brief Max number convolution objects supported
  *
  * \ingroup group_tivx_obj_cfg
@@ -322,6 +329,13 @@ extern "C" {
  * \ingroup group_vx_array_cfg
  */
 #define TIVX_ARRAY_MAX_MAPS     (16u)
+
+/*!
+ * \brief Max possible mapping via vxMapUserDataObject supported
+ *
+ * \ingroup group_vx_user_data_object_cfg
+ */
+#define TIVX_USER_DATA_OBJECT_MAX_MAPS     (16u)
 
 
 /*! \brief Max possible head nodes in graph

@@ -100,6 +100,8 @@ vx_status tivxObjectInit(void)
             TIVX_KERNEL_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isArrayUse,
             TIVX_ARRAY_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isUserDataObjectUse,
+            TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isDelayUse,
@@ -178,6 +180,12 @@ vx_status tivxObjectDeInit(void)
         if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is array use failed\n");
+        }
+        status = ownCheckUseFlag(g_tivx_objects.isUserDataObjectUse,
+            TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is user data object use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
@@ -310,6 +318,12 @@ vx_reference tivxObjectAlloc(vx_enum type)
                     (uint8_t *)g_tivx_objects.array, g_tivx_objects.isArrayUse,
                     TIVX_ARRAY_MAX_OBJECTS, sizeof(tivx_array_t),
                     "TIVX_ARRAY_MAX_OBJECTS");
+                break;
+            case VX_TYPE_USER_DATA_OBJECT:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.user_data_object, g_tivx_objects.isUserDataObjectUse,
+                    TIVX_USER_DATA_OBJECT_MAX_OBJECTS, sizeof(tivx_user_data_object_t),
+                    "TIVX_USER_DATA_OBJECT_MAX_OBJECTS");
                 break;
             case VX_TYPE_CONVOLUTION:
                 ref = (vx_reference)ownAllocObject(
@@ -524,6 +538,16 @@ vx_status tivxObjectFree(vx_reference ref)
                     if (VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free array object failed\n");
+                    }
+                    break;
+                case VX_TYPE_USER_DATA_OBJECT:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.user_data_object, g_tivx_objects.isUserDataObjectUse,
+                        TIVX_USER_DATA_OBJECT_MAX_OBJECTS, sizeof(tivx_user_data_object_t),
+                        "TIVX_USER_DATA_OBJECT_MAX_OBJECTS");
+                    if (VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free user data object failed\n");
                     }
                     break;
                 case VX_TYPE_CONVOLUTION:

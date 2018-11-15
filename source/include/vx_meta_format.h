@@ -161,6 +161,28 @@ typedef struct _vx_meta_format
         vx_size num_items;
     } objarr;
 
+    /*!< \brief structure containing information about tensor
+                used when type is set to VX_TYPE_TENSOR */
+    struct _tensor {
+        /*! \brief The number of dimensions in the tensor */
+        vx_size number_of_dimensions;
+        /*! \brief The size of all dimensions */
+        vx_size dimensions[TIVX_CONTEXT_MAX_TENSOR_DIMS];
+        /*! \brief The data type of tensor */
+        vx_enum data_type;
+        /*! \brief The fixed point precision of the tensor */
+        vx_int8 fixed_point_position;
+    } tensor;
+
+    /*!< \brief structure containing information about user data object
+                used when type is set to VX_TYPE_USER_DATA_OBJECT */
+    struct _user_data_object {
+        /*!< \brief The type name of the user data object. */
+        vx_char type_name[VX_MAX_REFERENCE_NAME];
+        /*!< \brief The size in bytes of the user data object */
+        vx_size size;
+    } user_data_object;
+
 } tivx_meta_format_t;
 
 

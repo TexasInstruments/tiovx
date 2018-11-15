@@ -50,6 +50,10 @@ static vx_status ownInitMetaFormatWithThreshold(
     vx_meta_format meta, vx_threshold exemplar);
 static vx_status ownInitMetaFormatWithObjectArray(
     vx_meta_format meta, vx_object_array exemplar);
+static vx_status ownInitMetaFormatWithTensor(
+    vx_meta_format meta, vx_tensor exemplar);
+static vx_status ownInitMetaFormatWithUserDataObject(
+    vx_meta_format meta, vx_user_data_object exemplar);
 
 
 vx_meta_format vxCreateMetaFormat(vx_context context)
@@ -437,6 +441,90 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 }
                 break;
 
+            case VX_TENSOR_NUMBER_OF_DIMS:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->tensor.number_of_dimensions = *(vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_NUMBER_OF_DIMS error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_TENSOR_DIMS:
+                if (size <= (sizeof(vx_size)*TIVX_CONTEXT_MAX_TENSOR_DIMS) && ((vx_size)ptr & 0x3) == 0)
+                {
+                    int i;
+                    const vx_size *p = ptr;
+                    vx_size num_dims = size / sizeof(vx_size);
+
+                    /* Use 'for' loop instead of memcpy since interface type size is different from obj_desc size */
+                    for(i=0; i<num_dims; i++)
+                    {
+                        meta->tensor.dimensions[i] = p[i];
+                    }
+                    for(;i<TIVX_CONTEXT_MAX_TENSOR_DIMS; i++)
+                    {
+                        meta->tensor.dimensions[i] = 0;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_DIMS error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_TENSOR_DATA_TYPE:
+                if (VX_CHECK_PARAM(ptr, size, vx_enum, 0x3U))
+                {
+                    meta->tensor.data_type = *(vx_enum *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_DATA_TYPE error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_TENSOR_FIXED_POINT_POSITION:
+                if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
+                {
+                    meta->tensor.fixed_point_position = *(vx_int8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_TENSOR_FIXED_POINT_POSITION error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_USER_DATA_OBJECT_NAME:
+                if ((ptr != NULL) && (size <= VX_MAX_REFERENCE_NAME))
+                {
+                    strncpy(meta->user_data_object.type_name, ptr, VX_MAX_REFERENCE_NAME);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: VX_USER_DATA_OBJECT_NAME error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case VX_USER_DATA_OBJECT_SIZE:
+                if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
+                {
+                    meta->user_data_object.size = *(vx_size *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_USER_DATA_OBJECT_SIZE error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
@@ -545,6 +633,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                     VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Object array init meta format failure\n");
                 }
                 break;
+            case VX_TYPE_TENSOR:
+                status = ownInitMetaFormatWithTensor(meta, (vx_tensor)exemplar);
+                if (VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Tensor init meta format failure\n");
+                }
+                break;
+            case VX_TYPE_USER_DATA_OBJECT:
+                status = ownInitMetaFormatWithUserDataObject(meta, (vx_user_data_object)exemplar);
+                if (VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: User Data Object init meta format failure\n");
+                }
+                break;
+
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: invalid attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
@@ -695,4 +798,34 @@ static vx_status ownInitMetaFormatWithObjectArray(
         sizeof(meta->objarr.num_items));
 
     return status;
+}
+
+static vx_status ownInitMetaFormatWithTensor(
+    vx_meta_format meta, vx_tensor exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryTensor(exemplar, VX_TENSOR_NUMBER_OF_DIMS, &meta->tensor.number_of_dimensions,
+        sizeof(meta->tensor.number_of_dimensions));
+    status |= vxQueryTensor(exemplar, VX_TENSOR_DIMS, &meta->tensor.dimensions,
+        sizeof(meta->tensor.dimensions));
+    status |= vxQueryTensor(exemplar, VX_TENSOR_DATA_TYPE, &meta->tensor.data_type,
+        sizeof(meta->tensor.data_type));
+    status |= vxQueryTensor(exemplar, VX_TENSOR_FIXED_POINT_POSITION, &meta->tensor.fixed_point_position,
+        sizeof(meta->tensor.fixed_point_position));
+
+    return (status);
+}
+
+static vx_status ownInitMetaFormatWithUserDataObject(
+    vx_meta_format meta, vx_user_data_object exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= vxQueryUserDataObject(exemplar, VX_USER_DATA_OBJECT_NAME, &meta->user_data_object.type_name,
+        sizeof(meta->user_data_object.type_name));
+    status |= vxQueryUserDataObject(exemplar, VX_USER_DATA_OBJECT_SIZE, &meta->user_data_object.size,
+        sizeof(meta->user_data_object.size));
+
+    return (status);
 }

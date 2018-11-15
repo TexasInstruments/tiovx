@@ -75,6 +75,7 @@
 #include <vx_pyramid.h>
 #include <vx_objarray.h>
 #include <vx_array.h>
+#include <vx_user_data_object.h>
 #include <vx_tensor.h>
 #include <vx_delay.h>
 #include <vx_module.h>

@@ -62,8 +62,8 @@
 
 
 
-#ifndef VX_TENSOR_H_
-#define VX_TENSOR_H_
+#ifndef VX_USER_DATA_OBJECT_H_
+#define VX_USER_DATA_OBJECT_H_
 
 
 #ifdef __cplusplus
@@ -72,40 +72,40 @@ extern "C" {
 
 /*!
  * \file
- * \brief Implementation of Tensor object
+ * \brief Implementation of user data object
  */
 
 /*!
- * \brief Information about a image mapping
+ * \brief Information about user data object mapping
  *
- * \ingroup group_vx_image
+ * \ingroup group_vx_user_data_object
  */
-typedef struct _tivx_tensor_map_info_t
+typedef struct _tivx_user_data_object_map_info_t
 {
-    /*! \brief Address mapped via vxMapTensorPatch() */
+    /*! \brief Address mapped via vxMapUserDataObject() */
     uint8_t *map_addr;
-    /*! \brief Size of memory region mapped via vxMapTensorPatch() */
+    /*! \brief Size of memory region mapped via vxMapUserDataObject() */
     vx_size  map_size;
-    /*! \brief Type of memory mapped via vxMapTensorPatch(), see \ref vx_memory_type_e and \ref tivx_memory_type_e */
+    /*! \brief Type of memory mapped via vxMapUserDataObject(), see \ref vx_memory_type_e and \ref tivx_memory_type_e */
     vx_enum  mem_type;
     /*! \brief Type of access being done by user, see \ref vx_accessor_e */
     vx_enum usage;
-} tivx_tensor_map_info_t;
+} tivx_user_data_object_map_info_t;
 
 
 /*!
- * \brief Tensor object internal state
+ * \brief User data object internal state
  *
- * \ingroup group_vx_tensor
+ * \ingroup group_vx_user_data_object
  */
-typedef struct _vx_tensor
+typedef struct _vx_user_data_object
 {
     /*! \brief reference object */
     tivx_reference_t base;
-    /*! \brief Mapping done via vxMapTensorPatch() */
-    tivx_tensor_map_info_t maps[TIVX_TENSOR_MAX_MAPS];
+    /*! \brief Mapping done via vxMapUserDataObject() */
+    tivx_user_data_object_map_info_t maps[TIVX_USER_DATA_OBJECT_MAX_MAPS];
 
-} tivx_tensor_t;
+} tivx_user_data_object_t;
 
 
 

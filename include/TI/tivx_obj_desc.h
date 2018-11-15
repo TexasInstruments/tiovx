@@ -211,6 +211,10 @@ typedef enum _tivx_obj_desc_type_e {
         tensor object */
     TIVX_OBJ_DESC_TENSOR        = 0x11,
 
+    /*! \brief Object desciptor that has information related to
+        user data object */
+    TIVX_OBJ_DESC_USER_DATA_OBJECT = 0x12,
+
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID       = 0xFFFFu
 
@@ -649,6 +653,24 @@ typedef struct _tivx_obj_desc_array
     uint32_t mem_size;
 
 } tivx_obj_desc_array_t;
+
+/*!
+ * \brief user data object descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_user_data_object
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief user data object memory address */
+    tivx_shared_mem_ptr_t mem_ptr;
+    /*! \brief size of buffer pointed to by mem_ptr */
+    uint32_t size;
+    /*! \brief The type name of the user data object. */
+    vx_char type_name[VX_MAX_REFERENCE_NAME];
+
+} tivx_obj_desc_user_data_object_t;
 
 /*!
  * \brief object array object descriptor as placed in shared memory
