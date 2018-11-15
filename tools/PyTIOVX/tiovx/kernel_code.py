@@ -1873,7 +1873,6 @@ class KernelExportCode :
         self.target_c_code.write_include(self.h_filename)
         self.target_c_code.write_include("TI/tivx_target_kernel.h")
         self.target_c_code.write_include("tivx_kernels_target_utils.h")
-        self.target_c_code.write_include("ti/vxlib/vxlib.h")
         if self.target_uses_dsp :
             self.target_c_code.write_include("tivx_bam_kernel_wrapper.h", files=1)
         self.target_c_code.write_newline()
@@ -1924,11 +1923,15 @@ class KernelExportCode :
                 if self.env_var == 'CUSTOM_KERNEL_PATH' :
                     self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core)
                     if self.target_uses_dsp :
+                        self.concerto_inc_code.write_line("ifeq ($(BUILD_BAM),yes)")
                         self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.core + "_bam")
+                        self.concerto_inc_code.write_line("endif")
                 else:
                     self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core)
                     if self.target_uses_dsp :
+                        self.concerto_inc_code.write_line("ifeq ($(BUILD_BAM),yes)")
                         self.concerto_inc_code.write_line("STATIC_LIBS += vx_target_kernels_" + self.module + "_" + self.core + "_bam")
+                        self.concerto_inc_code.write_line("endif")
                 self.concerto_inc_code.write_line("STATIC_LIBS += vx_conformance_engine")
                 self.concerto_inc_code.write_line("# < DEVELOPER_TODO: Add any additional dependent libraries >")
                 self.concerto_inc_code.close()
@@ -1950,6 +1953,9 @@ class KernelExportCode :
         if not os.path.exists(self.module_host_concerto_filename):
             print("Creating " + self.module_host_concerto_filename)
             self.module_host_concerto_code = CodeGenerate(self.module_host_concerto_filename, header=False)
+            self.module_host_concerto_code.write_newline()
+            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))")
+            self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("include $(PRELUDE)")
             self.module_host_concerto_code.write_line("TARGET      := vx_kernels_" + self.module)
             self.module_host_concerto_code.write_line("TARGETTYPE  := library")
@@ -1960,29 +1966,36 @@ class KernelExportCode :
             else:
                 self.module_host_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
             self.module_host_concerto_code.write_newline()
-            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
-            self.module_host_concerto_code.write_line("SKIPBUILD=1")
-            self.module_host_concerto_code.write_line("endif")
-            self.module_host_concerto_code.write_newline()
-            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),EVE)")
-            self.module_host_concerto_code.write_line("SKIPBUILD=1")
-            self.module_host_concerto_code.write_line("endif")
-            self.module_host_concerto_code.write_newline()
-            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-            self.module_host_concerto_code.write_line("SKIPBUILD=0")
-            self.module_host_concerto_code.write_line("endif")
-            self.module_host_concerto_code.write_newline()
-            self.module_host_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-            self.module_host_concerto_code.write_line("SKIPBUILD=0")
-            self.module_host_concerto_code.write_line("endif")
-            self.module_host_concerto_code.write_newline()
             self.module_host_concerto_code.write_line("include $(FINALE)")
+            self.module_host_concerto_code.write_newline()
+            self.module_host_concerto_code.write_line("endif")
             self.module_host_concerto_code.close()
 
         self.module_target_concerto_filename = self.workarea_module_core + "/concerto.mak"
         if not os.path.exists(self.module_target_concerto_filename):
             print("Creating " + self.module_target_concerto_filename)
             self.module_target_concerto_code = CodeGenerate(self.module_target_concerto_filename, header=False)
+            dspAdded = False
+            eveAdded = False
+            armAdded = False
+            ipuAdded = False
+            targetCpuListString = "X86 x86_64 "
+            for tar in kernel.targets :
+                if (tar == Target.DSP1 or tar == Target.DSP2) and (dspAdded == False) :
+                    targetCpuListString+="C66 "
+                    dspAdded = True
+                if (tar == Target.EVE1 or tar == Target.EVE2 or tar == Target.EVE3 or tar == Target.EVE4) and (eveAdded == False) :
+                    targetCpuListString+="EVE "
+                    eveAdded = True
+                if (tar == Target.A15_0) and (armAdded == False) :
+                    targetCpuListString+="A15 A72 "
+                    armAdded = True
+                if (tar == Target.IPU1_0 or tar == Target.IPU1_1 or tar == Target.IPU2) and (ipuAdded == False) :
+                    targetCpuListString+="M4 R5F "
+                    ipuAdded = True
+            self.module_target_concerto_code.write_newline()
+            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), " + targetCpuListString + "))")
+            self.module_target_concerto_code.write_newline()
             self.module_target_concerto_code.write_line("include $(PRELUDE)")
             if self.env_var == 'CUSTOM_KERNEL_PATH' :
                 self.module_target_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.core)
@@ -2014,49 +2027,9 @@ class KernelExportCode :
             self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))")
             self.module_target_concerto_code.write_line("DEFS += _HOST_BUILD _TMS320C6600 TMS320C66X HOST_EMULATION")
             self.module_target_concerto_code.write_line("endif")
-            self.module_target_concerto_code.write_newline();
-            targetListContainsC66 = False
-            targetListContainsEVE = False
-            targetListContainsA15 = False
-            targetListContainsM4  = False
-            for tar in kernel.targets :
-                if tar == Target.DSP1 or tar == Target.DSP2 :
-                    targetListContainsC66 = True
-                if tar == Target.EVE1 or tar == Target.EVE2 or tar == Target.EVE3 or tar == Target.EVE4 :
-                    targetListContainsEVE = True
-                if tar == Target.A15_0 :
-                    targetListContainsA15 = True
-                if tar == Target.IPU1_0 or tar == Target.IPU1_1 or tar == Target.IPU2 :
-                    targetListContainsM4  = True
-            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
-            if targetListContainsC66 :
-                self.module_target_concerto_code.write_line("SKIPBUILD=0")
-            else :
-                self.module_target_concerto_code.write_line("SKIPBUILD=1")
-            self.module_target_concerto_code.write_line("endif")
-            self.module_target_concerto_code.write_newline();
-            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),EVE)")
-            if targetListContainsEVE :
-                self.module_target_concerto_code.write_line("SKIPBUILD=0")
-            else :
-                self.module_target_concerto_code.write_line("SKIPBUILD=1")
-            self.module_target_concerto_code.write_line("endif")
-            self.module_target_concerto_code.write_newline();
-            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-            if targetListContainsA15 :
-                self.module_target_concerto_code.write_line("SKIPBUILD=0")
-            else :
-                self.module_target_concerto_code.write_line("SKIPBUILD=1")
-            self.module_target_concerto_code.write_line("endif")
-            self.module_target_concerto_code.write_newline();
-            self.module_target_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-            if targetListContainsM4 :
-                self.module_target_concerto_code.write_line("SKIPBUILD=0")
-            else :
-                self.module_target_concerto_code.write_line("SKIPBUILD=1")
-            self.module_target_concerto_code.write_line("endif")
-            self.module_target_concerto_code.write_newline();
+            self.module_target_concerto_code.write_newline()
             self.module_target_concerto_code.write_line("include $(FINALE)")
+            self.module_target_concerto_code.write_line("endif")
             self.module_target_concerto_code.close()
 
         if self.target_uses_dsp :
@@ -2064,6 +2037,7 @@ class KernelExportCode :
             if not os.path.exists(self.module_target_bam_concerto_filename):
                 print("Creating " + self.module_target_bam_concerto_filename)
                 self.module_target_bam_concerto_code = CodeGenerate(self.module_target_bam_concerto_filename, header=False)
+                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))")
                 self.module_target_bam_concerto_code.write_line("include $(PRELUDE)")
                 if self.env_var == 'CUSTOM_KERNEL_PATH' :
                     self.module_target_bam_concerto_code.write_line("TARGET      := vx_target_kernels_" + self.core + "_bam")
@@ -2078,7 +2052,6 @@ class KernelExportCode :
                     self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
                     self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/host")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
-                self.module_target_bam_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/inc")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc")
@@ -2086,6 +2059,7 @@ class KernelExportCode :
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc/edma_utils")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc/edma_csl")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc/baseaddress/vayu/dsp")
+                self.module_target_bam_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
                 self.module_target_bam_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom include paths using 'IDIRS' >")
                 self.module_target_bam_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom preprocessor defines or build options needed using")
                 self.module_target_bam_concerto_code.write_line("#                   'CFLAGS'. >")
@@ -2107,28 +2081,18 @@ class KernelExportCode :
                 self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
                 self.module_target_bam_concerto_code.write_line("endif")
                 self.module_target_bam_concerto_code.write_newline()
-                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
-                self.module_target_bam_concerto_code.write_line("endif")
-                self.module_target_bam_concerto_code.write_newline()
-                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),EVE)")
-                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
-                self.module_target_bam_concerto_code.write_line("endif")
-                self.module_target_bam_concerto_code.write_newline()
-                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
-                self.module_target_bam_concerto_code.write_line("endif")
-                self.module_target_bam_concerto_code.write_newline()
-                self.module_target_bam_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-                self.module_target_bam_concerto_code.write_line("SKIPBUILD=1")
-                self.module_target_bam_concerto_code.write_line("endif")
-                self.module_target_bam_concerto_code.write_newline()
                 self.module_target_bam_concerto_code.write_line("include $(FINALE)")
+                self.module_target_bam_concerto_code.write_newline()
+                self.module_target_bam_concerto_code.write_line("endif")
                 self.module_target_bam_concerto_code.close()
 
         self.module_test_concerto_filename = self.workarea_module_test + "/concerto.mak"
         if not os.path.exists(self.module_test_concerto_filename):
             print("Creating " + self.module_test_concerto_filename)
             self.module_test_concerto_code = CodeGenerate(self.module_test_concerto_filename, header=False)
+            self.module_test_concerto_code.write_newline()
+            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 A15 M4 A72 R5F))")
+            self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("include $(PRELUDE)")
             self.module_test_concerto_code.write_line("TARGET      := vx_kernels_" + self.module + "_tests")
             self.module_test_concerto_code.write_line("TARGETTYPE  := library")
@@ -2140,24 +2104,51 @@ class KernelExportCode :
                 self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/" + self.module + "/include")
             else:
                 self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
+            self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_KERNEL_PATH)")
+            self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_APPLICATION_PATH)")
+            self.module_test_concerto_code.write_line("CFLAGS      += -DHAVE_VERSION_INC")
             self.module_test_concerto_code.write_newline()
-            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),C66)")
-            self.module_test_concerto_code.write_line("SKIPBUILD=1")
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),TIARMCGT)")
+            self.module_test_concerto_code.write_line("CFLAGS += --display_error_number")
+            self.module_test_concerto_code.write_line("CFLAGS += --diag_suppress=179")
+            self.module_test_concerto_code.write_line("CFLAGS += --diag_suppress=112")
+            self.module_test_concerto_code.write_line("CFLAGS += --diag_suppress=552")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
-            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),EVE)")
-            self.module_test_concerto_code.write_line("SKIPBUILD=1")
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),GCC)")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-function")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-variable")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-format-security")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
-            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),A15)")
-            self.module_test_concerto_code.write_line("SKIPBUILD=0")
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),GCC_SYSBIOS_ARM)")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-function")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-variable")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-format-security")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
-            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),M4)")
-            self.module_test_concerto_code.write_line("SKIPBUILD=0")
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),GCC_LINUX)")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-function")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-variable")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-format-security")
+            self.module_test_concerto_code.write_line("endif")
+            self.module_test_concerto_code.write_newline()
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),GCC_LINARO)")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-function")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-variable")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-format-security")
+            self.module_test_concerto_code.write_line("endif")
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),GCC_WINDOWS)")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-function")
+            self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-variable")
+            self.module_test_concerto_code.write_line("endif")
+            self.module_test_concerto_code.write_newline()
+            self.module_test_concerto_code.write_line("ifeq ($(TARGET_CPU),x86_64)")
+            self.module_test_concerto_code.write_line("CFLAGS      += -DTARGET_X86_64")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("include $(FINALE)")
+            self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.close()
 
     def generate_headers(self) :
