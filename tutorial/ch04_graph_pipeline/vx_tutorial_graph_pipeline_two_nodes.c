@@ -168,8 +168,8 @@ void vx_tutorial_graph_pipeline_two_nodes()
     context = vxCreateContext();
     /** \endcode */
 
-    width = 1000;
-    height = 1000;
+    width = 64;
+    height = 64;
     num_buf = MAX_NUM_BUF;
     pipeline_depth = MAX_NUM_BUF;
     loop_cnt = 10 - num_buf; /* runs the graph 10 times */
@@ -264,8 +264,8 @@ void vx_tutorial_graph_pipeline_two_nodes()
      */
     vxVerifyGraph(graph);
 
-    tivxExportGraphToDot(graph, ".", "vx_tutorial_graph_pipeline_two_nodes");
     #if 0
+    tivxExportGraphToDot(graph, ".", "vx_tutorial_graph_pipeline_two_nodes");
     tivxLogRtTrace(graph);
     #endif
     /** \endcode */
