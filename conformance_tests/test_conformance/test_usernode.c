@@ -626,6 +626,7 @@ TEST_WITH_ARG(UserNode, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
     vx_node node = 0;
     vx_bool is_meta_from_ref = arg_->is_meta_from_ref;
 
+    uint64_t *seed = &CT()->seed_;
     vx_uint8 value = 0;
     vx_enum format = VX_DF_IMAGE_U8;
     vx_uint32 src_width = 128, src_height = 128;
@@ -638,8 +639,10 @@ TEST_WITH_ARG(UserNode, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
     vx_int32 offset = 0;
     vx_uint32 range = 360;
     vx_enum thresh_type = VX_THRESHOLD_TYPE_BINARY;
+    vx_int32 thresh_val = 128;
     vx_size num_items = 100;
     vx_size m = 5, n = 5;
+    vx_size i, j;
 
     int phase = 0;
 
@@ -666,41 +669,111 @@ TEST_WITH_ARG(UserNode, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
     switch (type)
     {
     case VX_TYPE_IMAGE:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateImage(context, src_width, src_height, format), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateImage(context, src_width, src_height, format), type);
+        {
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateImage(context, src_width, src_height, format), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateImage(context, src_width, src_height, format), type);
+        }
         break;
+
     case VX_TYPE_ARRAY:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateArray(context, item_type, capacity), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateArray(context, item_type, capacity), type);
+        {
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateArray(context, item_type, capacity), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateArray(context, item_type, capacity), type);
+        }
         break;
+
     case VX_TYPE_PYRAMID:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreatePyramid(context, levels, scale, src_width, src_height, format), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreatePyramid(context, levels, scale, src_width, src_height, format), type);
+        {
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreatePyramid(context, levels, scale, src_width, src_height, format), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreatePyramid(context, levels, scale, src_width, src_height, format), type);
+        }
         break;
+
     case VX_TYPE_SCALAR:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateScalar(context, item_type, &value), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateScalar(context, item_type, &value), type);
+        {
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateScalar(context, item_type, &value), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateScalar(context, item_type, &value), type);
+        }
         break;
+
     case VX_TYPE_MATRIX:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateMatrix(context, item_type, m, n), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateMatrix(context, item_type, m, n), type);
+        {
+            vx_uint8 *data = ct_alloc_mem(m * n * sizeof(vx_uint8));
+
+            for (i = 0; i < m * n; i++)
+            {
+                data[i] = (vx_uint8)CT_RNG_NEXT_INT(*seed, 0, 256);
+            }
+
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateMatrix(context, item_type, m, n), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateMatrix(context, item_type, m, n), type);
+
+            VX_CALL(vxCopyMatrix((vx_matrix)src, (void *)data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+            ct_free_mem(data);
+        }
         break;
+
     case VX_TYPE_DISTRIBUTION:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateDistribution(context, bins, offset, range), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateDistribution(context, bins, offset, range), type);
+        {
+            vx_uint32 *data = ct_alloc_mem(bins * sizeof(vx_uint32));
+
+            for (i = 0; i < bins; i++)
+            {
+                data[i] = (vx_uint32)CT_RNG_NEXT_INT(*seed, 0, 256);
+            }
+
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateDistribution(context, bins, offset, range), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateDistribution(context, bins, offset, range), type);
+
+            VX_CALL(vxCopyDistribution((vx_distribution)src, (void *)data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+            ct_free_mem(data);
+        }
         break;
+
     case VX_TYPE_REMAP:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateRemap(context, src_width, src_height, dst_width, dst_height), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateRemap(context, src_width, src_height, dst_width, dst_height), type);
+        {
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateRemap(context, src_width, src_height, dst_width, dst_height), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateRemap(context, src_width, src_height, dst_width, dst_height), type);
+
+            for (i = 0; i < dst_width; i++)
+            {
+                for (j = 0; j < dst_height; j++)
+                {
+                    VX_CALL(vxSetRemapPoint((vx_remap)src, i, j, (vx_float32)((i + j) % src_width), (vx_float32)((i * j) % src_height)));
+                }
+            }
+        }
         break;
+
     case VX_TYPE_LUT:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateLUT(context, item_type, num_items), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateLUT(context, item_type, num_items), type);
+        {
+            vx_uint8 *data = ct_alloc_mem(num_items * sizeof(vx_uint8));
+
+            for (i = 0; i < num_items; i++)
+            {
+                data[i] = (vx_uint8)CT_RNG_NEXT_INT(*seed, 0, 256);
+            }
+
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateLUT(context, item_type, num_items), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateLUT(context, item_type, num_items), type);
+
+            VX_CALL(vxCopyLUT((vx_lut)src, (void *)data, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+            ct_free_mem(data);
+        }
         break;
+
     case VX_TYPE_THRESHOLD:
-        ASSERT_VX_OBJECT(src = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
-        ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
+        {
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), type);
+
+            VX_CALL(vxSetThresholdAttribute((vx_threshold)src, VX_THRESHOLD_THRESHOLD_VALUE, (void *)&thresh_val, sizeof(thresh_val)));
+        }
         break;
+
     default:
         break;
     }
