@@ -8,7 +8,7 @@ BUILD_BAM?=no
 BUILD_IGNORE_LIB_ORDER?=yes
 
 
-BUILD_TARGET_MODE?=no
+BUILD_TARGET_MODE?=yes
 BUILD_EMULATION_MODE?=yes
 # valid values: X86 x86_64 all
 BUILD_EMULATION_ARCH?=x86_64
@@ -17,7 +17,7 @@ BUILD_EMULATION_ARCH?=x86_64
 PROFILE?=all
 
 # Applied to target mode only
-BUILD_VLAB?=no
+BUILD_VLAB?=yes
 
 # TDA2/3 Only
 BUILD_LINUX_A15?=no
