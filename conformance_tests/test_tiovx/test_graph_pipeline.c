@@ -4758,8 +4758,8 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testDelay2,
     testDelay3,
     testDelay4,
-    negativeTestPipelineDepth,
-    testLoopCarriedDependency
+    negativeTestPipelineDepth
+    /* testLoopCarriedDependency */
     )
 
 

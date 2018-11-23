@@ -271,6 +271,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
     uint32_t i, cnt, loop_max = 1;
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
+    uint32_t is_prm_data_ref_q_flag = node_obj_desc->is_prm_data_ref_q;
     tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
     tivx_obj_desc_t *prm_obj_desc;
 
@@ -365,6 +366,30 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
         node_obj_desc->exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
             node_obj_desc->num_params);
     }
+
+    /* params[] contain pointer to obj_desc for each parameter, 
+     * A node could change the obj_desc value of params[i] as part of its execution
+     * below logic changes prm_obj_desc_id, based on updated params[i] value.
+     * This logic will not take effect for replicated parameters and for non data ref queue parameters
+     * i.e it will take effect only for data ref queue parameters and non-replicated parameters
+     */     
+    for(i=0; i<node_obj_desc->num_params ; i++)
+    {
+        if(    (tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1<<i)) == vx_true_e)
+            && (tivxFlagIsBitSet(is_prm_replicated, (1<<i)) == vx_false_e)
+            )
+        {
+            if(params[i]==NULL)
+            {
+                prm_obj_desc_id[i] = TIVX_OBJ_DESC_INVALID;
+            }
+            else
+            {
+                prm_obj_desc_id[i] = params[i]->obj_desc_id;
+            }
+        }
+    }
+    
 }
 
 static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])

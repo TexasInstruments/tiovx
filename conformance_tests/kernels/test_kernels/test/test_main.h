@@ -63,5 +63,8 @@
 #if 1
 TESTCASE(tivxTestKernelsNotNot)
 TESTCASE(tivxGraphStreaming)
+TESTCASE(tivxTestSinkNode)
 #endif
+
+
 

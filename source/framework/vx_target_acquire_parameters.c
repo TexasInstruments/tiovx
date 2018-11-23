@@ -152,11 +152,19 @@ static void tivxTargetNodeDescAcquireParameter(
         }
         else
         {
+            tivx_obj_desc_t *obj_desc;
+			
             tivxFlagBitSet(&flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED);
 
             data_ref_q_obj_desc->ref_obj_desc_id = ref_obj_desc_id;
             data_ref_q_obj_desc->in_node_done_cnt = 0;
             data_ref_q_obj_desc->flags = flags;
+            
+            obj_desc = tivxObjDescGet(ref_obj_desc_id);
+            if(obj_desc) 
+            {
+                obj_desc->in_node_done_cnt = 0;
+            }
 
             *prm_obj_desc_id = ref_obj_desc_id;
 
@@ -251,13 +259,17 @@ static void tivxTargetNodeDescReleaseParameter(
     uint16_t node_id;
     tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
     vx_bool do_release_ref;
-
+    vx_bool do_release_ref_to_queue;
+    tivx_obj_desc_t *obj_desc;
+        
     *is_prm_released = vx_false_e;
     blocked_nodes.num_nodes = 0;
     do_release_ref = vx_false_e;
-
+    do_release_ref_to_queue = vx_false_e;
+    obj_desc = tivxObjDescGet(ref_obj_desc_id);
+	
     tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
-
+    
     flags = data_ref_q_obj_desc->flags;
 
     if(is_prm_input == vx_true_e)
@@ -267,6 +279,14 @@ static void tivxTargetNodeDescReleaseParameter(
         {
             do_release_ref = vx_true_e;
         }
+        if(obj_desc!=NULL)
+        {
+            obj_desc->in_node_done_cnt++;
+            if(obj_desc->in_node_done_cnt==data_ref_q_obj_desc->num_in_nodes)
+            {
+                do_release_ref_to_queue = vx_true_e;
+            }
+        }
     }
     else
     if( (is_prm_input == vx_false_e)
@@ -274,63 +294,88 @@ static void tivxTargetNodeDescReleaseParameter(
         )
     {
         do_release_ref = vx_true_e;
-    }
-    if(do_release_ref)
-    {
-        uint16_t obj_desc_q_id;
-
-        /* all input nodes have released this input
-         */
-        obj_desc_q_id = data_ref_q_obj_desc->release_q_obj_desc_id;
-
-        tivxObjDescQueueEnqueue(
-            obj_desc_q_id,
-            ref_obj_desc_id
-            );
-        /* check if anyone was blocked on this buffer being available
-         * if yes then get the node IDs and trigger them
-         */
-        tivxObjDescQueueExtractBlockedNodes(
-            obj_desc_q_id,
-            &blocked_nodes
-            );
-
-        *is_prm_released = vx_true_e;
-
-        /* handle ref auto age for delay
-         * if delay is connected to some input node then acquire/release
-         * at the node takes care of ref ageing at the delay slot
-         * However if a delay slot is not connected to any node then
-         * ageing must be done explicitly here.
-         */
-        if(tivxFlagIsBitSet(data_ref_q_obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+        if(obj_desc!=NULL)
         {
-            tivxTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
+            do_release_ref_to_queue = vx_true_e;
         }
-
-        VX_PRINT(VX_ZONE_INFO,"Parameter released (node=%d, pipe=%d, data_ref_q=%d, queue=%d, ref=%d)\n",
-                             node_obj_desc->base.obj_desc_id,
-                             node_obj_desc->pipeline_id,
-                             data_ref_q_obj_desc->base.obj_desc_id,
-                             obj_desc_q_id,
-                             ref_obj_desc_id
-                       );
-
-        tivxFlagBitClear(&flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED);
-
-        data_ref_q_obj_desc->flags = flags;
     }
     else
     {
-        VX_PRINT(VX_ZONE_INFO,"Parameter NOT released (node=%d, pipe=%d, data_ref_q=%d, ref=%d, users=%d)\n",
+        /* this is a output and is used as input but some other node */
+        data_ref_q_obj_desc->ref_obj_desc_id = ref_obj_desc_id;
+    }
+    if(do_release_ref || do_release_ref_to_queue)
+    {
+        if(do_release_ref_to_queue)
+        {
+            uint16_t obj_desc_q_id;
+
+            /* all input nodes have released this input
+             */
+            obj_desc_q_id = data_ref_q_obj_desc->release_q_obj_desc_id;
+    
+            tivxObjDescQueueEnqueue(
+                obj_desc_q_id,
+                ref_obj_desc_id
+                );
+            /* check if anyone was blocked on this buffer being available
+             * if yes then get the node IDs and trigger them
+             */
+            tivxObjDescQueueExtractBlockedNodes(
+                obj_desc_q_id,
+                &blocked_nodes
+                );
+    
+            *is_prm_released = vx_true_e;
+            
+            /* handle ref auto age for delay
+             * if delay is connected to some input node then acquire/release
+             * at the node takes care of ref ageing at the delay slot
+             * However if a delay slot is not connected to any node then
+             * ageing must be done explicitly here.
+             */
+            if(tivxFlagIsBitSet(data_ref_q_obj_desc->flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY))
+            {
+                tivxTargetNodeDescReleaseParameterInDelay(data_ref_q_obj_desc, &blocked_nodes);
+            }
+    
+            VX_PRINT(VX_ZONE_INFO,"Parameter released (node=%d, pipe=%d, data_ref_q=%d, queue=%d, ref=%d)\n",
+                                 node_obj_desc->base.obj_desc_id,
+                                 node_obj_desc->pipeline_id,
+                                 data_ref_q_obj_desc->base.obj_desc_id,
+                                 obj_desc_q_id,
+                                 ref_obj_desc_id
+                           );
+        }
+        if(do_release_ref)
+        {
+            tivxFlagBitClear(&flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED);
+            data_ref_q_obj_desc->flags = flags;
+        }
+    }
+    else
+    {
+        if(obj_desc!=NULL)
+        {
+            VX_PRINT(VX_ZONE_INFO,"Parameter NOT released (node=%d, pipe=%d, data_ref_q=%d, ref=%d, users=%d)\n",
                              node_obj_desc->base.obj_desc_id,
                              node_obj_desc->pipeline_id,
                              data_ref_q_obj_desc->base.obj_desc_id,
                              ref_obj_desc_id,
-                             data_ref_q_obj_desc->num_in_nodes - data_ref_q_obj_desc->in_node_done_cnt
+                             data_ref_q_obj_desc->num_in_nodes - obj_desc->in_node_done_cnt
                        );
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_INFO,"Parameter NOT released (node=%d, pipe=%d, data_ref_q=%d, ref=%d, max_users=%d)\n",
+                             node_obj_desc->base.obj_desc_id,
+                             node_obj_desc->pipeline_id,
+                             data_ref_q_obj_desc->base.obj_desc_id,
+                             ref_obj_desc_id,
+                             data_ref_q_obj_desc->num_in_nodes
+                       );
+        }
     }
-
     tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
 
     for(node_id=0; node_id<blocked_nodes.num_nodes; node_id++)

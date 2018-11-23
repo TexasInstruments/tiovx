@@ -110,6 +110,16 @@ extern "C" {
  */
 #define TIVX_KERNEL_SCALAR_SOURCE_NAME     "com.ti.capture.scalar_source"
 
+/*! \brief scalar_sink kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_SCALAR_SINK2_NAME     "com.ti.capture.scalar_sink2"
+
+/*! \brief scalar_source kernel name
+ *  \see group_vision_function_capture
+ */
+#define TIVX_KERNEL_SCALAR_SOURCE2_NAME     "com.ti.capture.scalar_source2"
+
 /*! \brief scalar_intermediate kernel name
  *  \see group_vision_function_capture
  */

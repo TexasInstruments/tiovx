@@ -105,6 +105,32 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarSink2Node(vx_graph graph,
+                                      vx_scalar            in)
+{
+    vx_reference prms[] = {
+            (vx_reference)in
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_SCALAR_SINK2_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarSource2Node(vx_graph graph,
+                                      vx_scalar            out)
+{
+    vx_reference prms[] = {
+            (vx_reference)out
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_SCALAR_SOURCE2_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarIntermediateNode(vx_graph graph,
                                       vx_scalar            in,
                                       vx_scalar            out)

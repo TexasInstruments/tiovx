@@ -67,15 +67,21 @@
 
 void tivxAddTargetKernelScalarSink(void);
 void tivxAddTargetKernelScalarSource(void);
+void tivxAddTargetKernelScalarSink2(void);
+void tivxAddTargetKernelScalarSource2(void);
 void tivxAddTargetKernelScalarIntermediate(void);
 
 void tivxRemoveTargetKernelScalarSink(void);
 void tivxRemoveTargetKernelScalarSource(void);
+void tivxRemoveTargetKernelScalarSink2(void);
+void tivxRemoveTargetKernelScalarSource2(void);
 void tivxRemoveTargetKernelScalarIntermediate(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelScalarSink, &tivxRemoveTargetKernelScalarSink},
     {&tivxAddTargetKernelScalarSource, &tivxRemoveTargetKernelScalarSource},
+    {&tivxAddTargetKernelScalarSink2, &tivxRemoveTargetKernelScalarSink2},
+    {&tivxAddTargetKernelScalarSource2, &tivxRemoveTargetKernelScalarSource2},
     {&tivxAddTargetKernelScalarIntermediate, &tivxRemoveTargetKernelScalarIntermediate},
 };
 

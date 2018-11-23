@@ -278,8 +278,8 @@ typedef struct _tivx_obj_desc_t {
      */
     uint16_t scope_obj_desc_id;
 
-    /*! \brief reserved field to make this structure a multiple of 64b */
-    uint16_t rsv1[1];
+    /*! \brief number of input nodes that have consumed this obj_desc, used in pipelining mode only for data references */
+    uint16_t in_node_done_cnt;
 
     /*! \brief Host reference, accessible only on HOST side */
     uint64_t host_ref;
