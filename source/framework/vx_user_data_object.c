@@ -226,6 +226,14 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                     vx_status status;
                     status = ownInitUserDataObjectObject(user_data_object, type_name, size);
 
+                    if(status == VX_SUCCESS)
+                    {
+                        if (NULL != ptr)
+                        {
+                            status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+                        }
+                    }
+
                     if(status != VX_SUCCESS)
                     {
                         user_data_object = (vx_user_data_object)ownGetErrorObject(

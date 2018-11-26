@@ -538,6 +538,27 @@ int CT_main(int argc, char* argv[], const char* version_str)
     int total_run_tests = 0;
     int total_run_testcases = 0;
 
+    //================ OpenVX Specific ===================
+    int total_openvx_core_tests = 0;
+    int total_openvx_passed_core_tests = 0;
+    int total_openvx_failed_core_tests = 0;
+#ifdef OPENVX_USE_NN
+    int total_openvx_nn_tests = 0;
+    int total_openvx_passed_nn_tests = 0;
+    int total_openvx_failed_nn_tests = 0;
+#endif
+#ifdef OPENVX_USE_IX
+    int total_openvx_ix_tests = 0;
+    int total_openvx_passed_ix_tests = 0;
+    int total_openvx_failed_ix_tests = 0;
+#endif
+#ifdef OPENVX_USE_USER_DATA_OBJECT
+    int total_openvx_udo_tests = 0;
+    int total_openvx_passed_udo_tests = 0;
+    int total_openvx_failed_udo_tests = 0;
+#endif
+    //====================================================
+
     int use_global_context = 0;
 
 #ifdef CT_TEST_TIME
@@ -720,6 +741,31 @@ int CT_main(int argc, char* argv[], const char* version_str)
 #endif
                 printf("[ -------- ] %d tests from test case %s%s\n\n", run_tests, testcase->name_, timestr);
             }
+
+            //================ OpenVX Specific ===================
+#ifdef OPENVX_USE_NN
+            if (strcmp("TensorNN", testcase->name_) == 0) {
+                total_openvx_nn_tests += run_tests;
+            }
+            else
+#endif
+#ifdef OPENVX_USE_IX
+            if (strcmp("ExtensionObject", testcase->name_) == 0) {
+                    total_openvx_ix_tests += run_tests;
+            }
+            else
+#endif
+#ifdef OPENVX_USE_USER_DATA_OBJECT
+            if (strcmp("UserDataObject", testcase->name_) == 0) {
+                    total_openvx_udo_tests += run_tests;
+            }
+            else
+#endif
+            {
+                    total_openvx_core_tests += run_tests;
+            }
+            //====================================================
+
             total_run_tests += run_tests;
             total_run_testcases++;
         }
@@ -735,6 +781,7 @@ int CT_main(int argc, char* argv[], const char* version_str)
         printf("[ ======== ]\n");
         printf("[ ALL DONE ] %d test(s) from %d test case(s) ran%s\n", total_run_tests, total_run_testcases, timestr);
         printf("[ PASSED   ] %d test(s)\n", total_run_tests - g_context.internal_->g_num_failed_tests_);
+
         if (g_context.internal_->g_num_failed_tests_ > 0)
         {
             struct CT_FailedTestEntry* f = g_context.internal_->g_failed_tests_;
@@ -745,6 +792,32 @@ int CT_main(int argc, char* argv[], const char* version_str)
                 void *parg = get_test_params(f->test_, f->param_idx_);
                 get_test_name(test_name, sizeof(test_name), f->testcase_, f->test_, parg, f->param_idx_);
                 printf("[ FAILED   ] %s\n", test_name);
+
+
+                //================ OpenVX Specific ===================
+#ifdef OPENVX_USE_NN
+                if (strncmp("TensorNN", test_name, sizeof("TensorNN") - 1) == 0) {
+                    total_openvx_failed_nn_tests ++;
+                }
+                else
+#endif
+#ifdef OPENVX_USE_IX
+                if (strncmp("ExtensionObject", test_name, sizeof("ExtensionObject") - 1) == 0) {
+                    total_openvx_failed_ix_tests ++;
+                }
+                else
+#endif
+#ifdef OPENVX_USE_USER_DATA_OBJECT
+                if (strncmp("UserDataObject", test_name, sizeof("UserDataObject") - 1) == 0) {
+                    total_openvx_failed_udo_tests ++;
+                }
+                else
+#endif
+                {
+                    total_openvx_failed_core_tests ++;
+                }
+                //====================================================
+
             }
         }
         else
@@ -752,7 +825,46 @@ int CT_main(int argc, char* argv[], const char* version_str)
             printf("[ FAILED   ] %d test(s)\n", g_context.internal_->g_num_failed_tests_);
         }
         printf("[ DISABLED ] %d test(s)\n", g_context.internal_->g_num_disabled_tests_);
-        printf("\nTo be conformant %d required test(s) must pass. Disabled %d test(s) are optional.\n", total_run_tests, g_context.internal_->g_num_disabled_tests_);
+
+        //================ OpenVX Specific ===================
+        printf("\n");
+        printf("=================================\n");
+        printf("OpenVX Conformance report summary\n");
+        printf("=================================\n");
+        printf("\n");
+
+        total_openvx_passed_core_tests = total_openvx_core_tests - total_openvx_failed_core_tests;
+        printf("To be conformant to the OpenVX baseline, %d required test(s) must pass. %d tests passed, %d tests failed. %s.\n",
+               total_openvx_core_tests, total_openvx_passed_core_tests, total_openvx_failed_core_tests,
+               (total_openvx_failed_core_tests==0?"PASSED":"FAILED")
+               );
+#ifdef OPENVX_USE_NN
+        total_openvx_passed_nn_tests = total_openvx_nn_tests - total_openvx_failed_nn_tests;
+        printf("To be conformant to the Neural Network extension, %d required test(s) must pass. %d tests passed, %d tests failed. %s.\n",
+               total_openvx_nn_tests, total_openvx_passed_nn_tests, total_openvx_failed_nn_tests,
+               (total_openvx_failed_nn_tests==0?"PASSED":"FAILED")
+               );
+#endif
+#ifdef OPENVX_USE_IX
+        total_openvx_passed_ix_tests = total_openvx_ix_tests - total_openvx_failed_ix_tests;
+        printf("To be conformant to the Import/Export extension, %d required test(s) must pass. %d tests passed, %d tests failed. %s.\n",
+               total_openvx_ix_tests, total_openvx_passed_ix_tests, total_openvx_failed_ix_tests,
+               (total_openvx_failed_ix_tests==0?"PASSED":"FAILED")
+               );
+#endif
+#ifdef OPENVX_USE_USER_DATA_OBJECT
+        total_openvx_passed_udo_tests = total_openvx_udo_tests - total_openvx_failed_udo_tests;
+        printf("To be conformant to the User Data Object extension, %d required test(s) must pass. %d tests passed, %d tests failed. %s.\n",
+               total_openvx_udo_tests, total_openvx_passed_udo_tests, total_openvx_failed_udo_tests,
+               (total_openvx_failed_udo_tests==0?"PASSED":"FAILED")
+               );
+#endif
+
+        printf("Note: The %d disabled tests are optional and are not considered for conformance.\n",
+               g_context.internal_->g_num_disabled_tests_);
+
+
+        //====================================================
     }
     fflush(stdout);
     ct_release_global_vx_context();

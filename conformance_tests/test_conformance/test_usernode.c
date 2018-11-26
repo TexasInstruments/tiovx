@@ -18,7 +18,6 @@
 #include "test_engine/test.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
-#include <VX/vx_khr_user_data_object.h>
 
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_BAD (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 0)
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_BAD_NAME "org.khronos.openvx.test.own_bad"
@@ -53,14 +52,6 @@ static vx_status query_local_ptr_status_deinit = VX_SUCCESS;
 static vx_status set_local_size_status_deinit = VX_SUCCESS;
 static vx_status set_local_ptr_status_deinit = VX_SUCCESS;
 
-static const vx_char user_data_object_name[] = "wb_t";
-
-typedef struct
-{
-    vx_int32 mode;
-    vx_int32 gain[4];
-    vx_int32 offset[4];
-} wb_t;
 
 static vx_status VX_CALLBACK own_set_image_valid_rect(
     vx_node node,
@@ -265,24 +256,6 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
                 return VX_ERROR_INVALID_PARAMETERS;
             }
             break;
-        case VX_TYPE_USER_DATA_OBJECT:
-            {
-                char actual_name[VX_REFERENCE_NAME];
-                vx_size actual_size;
-
-                VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
-                VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));
-
-                if ((strcmp(user_data_object_name, actual_name) == 0) && (actual_size == sizeof(wb_t)))
-                {
-                    VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
-                }
-                else
-                {
-                    return VX_ERROR_INVALID_PARAMETERS;
-                }
-            }
-            break;
         default:
             return VX_ERROR_INVALID_PARAMETERS;
             break;
@@ -482,26 +455,6 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             return VX_ERROR_INVALID_PARAMETERS;
         }
         break;
-    case VX_TYPE_USER_DATA_OBJECT:
-        {
-            vx_size actual_size;
-            vx_size user_data_size = sizeof(wb_t);
-            char actual_name[VX_REFERENCE_NAME];
-
-            VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
-            VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));
-
-            if ((strcmp(user_data_object_name, actual_name) == 0) && (actual_size == sizeof(wb_t)))
-            {
-                VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_NAME, &user_data_object_name, sizeof(user_data_object_name)));
-                VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_SIZE, &user_data_size, sizeof(vx_size)));
-            }
-            else
-            {
-                return VX_ERROR_INVALID_PARAMETERS;
-            }
-        }
-        break;
     default:
         return VX_ERROR_INVALID_PARAMETERS;
         break;
@@ -650,8 +603,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "MATRIX", __VA_ARGS__, VX_TYPE_MATRIX)), \
     CT_EXPAND(nextmacro(testArgName "THRESHOLD", __VA_ARGS__, VX_TYPE_THRESHOLD)), \
     CT_EXPAND(nextmacro(testArgName "LUT", __VA_ARGS__, VX_TYPE_LUT)), \
-    CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP)), \
-    CT_EXPAND(nextmacro(testArgName "USER_DATA_OBJECT", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT))
+    CT_EXPAND(nextmacro(testArgName "REMAP", __VA_ARGS__, VX_TYPE_REMAP))
 
 #define ADD_FROM_FLAG(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "_FROM_REF", __VA_ARGS__, vx_true_e)), \
@@ -822,13 +774,6 @@ TEST_WITH_ARG(UserNode, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
         }
         break;
 
-    case VX_TYPE_USER_DATA_OBJECT:
-        {
-            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), type);
-            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), type);
-        }
-        break;
-
     default:
         break;
     }
@@ -958,7 +903,6 @@ TEST_WITH_ARG(UserNode, testUserKernelObjectArray, type_arg,
     ARG("THRESHOLD_FROM_REF", VX_TYPE_THRESHOLD, vx_true_e),
     ARG("LUT_FROM_REF", VX_TYPE_LUT, vx_true_e),
     ARG("REMAP_FROM_REF", VX_TYPE_REMAP, vx_true_e),
-    ARG("USER_DATA_OBJECT_FROM_REF",VX_TYPE_USER_DATA_OBJECT, vx_true_e),
     ARG("IMAGE_FROM_ATTR", VX_TYPE_IMAGE, vx_false_e),
     ARG("ARRAY_FROM_ATTR",VX_TYPE_ARRAY, vx_false_e),
     ARG("PYRAMID_FROM_ATTR",VX_TYPE_PYRAMID, vx_false_e),
@@ -967,8 +911,7 @@ TEST_WITH_ARG(UserNode, testUserKernelObjectArray, type_arg,
     ARG("MATRIX_FROM_ATTR",VX_TYPE_MATRIX, vx_false_e),
     ARG("THRESHOLD_FROM_ATTR",VX_TYPE_THRESHOLD, vx_false_e),
     ARG("LUT_FROM_ATTR",VX_TYPE_LUT, vx_false_e),
-    ARG("REMAP_FROM_ATTR",VX_TYPE_REMAP, vx_false_e),
-    ARG("USER_DATA_OBJECT_FROM_ATTR",VX_TYPE_USER_DATA_OBJECT, vx_false_e)
+    ARG("REMAP_FROM_ATTR",VX_TYPE_REMAP, vx_false_e)
 )
 {
     vx_context context = context_->vx_context_;
@@ -1027,9 +970,6 @@ TEST_WITH_ARG(UserNode, testUserKernelObjectArray, type_arg,
         break;
     case VX_TYPE_THRESHOLD:
         ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateThreshold(context, thresh_type, item_type), objarray_itemtype);
-        break;
-    case VX_TYPE_USER_DATA_OBJECT:
-        ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), objarray_itemtype);
         break;
     default:
         break;

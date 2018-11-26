@@ -107,6 +107,10 @@ TESTCASE(Target)
 TESTCASE(Convolution)
 TESTCASE(Matrix)
 
+#ifdef OPENVX_USE_USER_DATA_OBJECT
+TESTCASE(UserDataObject)
+#endif
+
 #endif
 
 

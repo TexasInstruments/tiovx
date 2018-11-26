@@ -22,6 +22,7 @@ TARGET      := vx_conformance_engine
 TARGETTYPE  := library
 CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/conformance_tests
+DEFS        += OPENVX_USE_USER_DATA_OBJECT
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number

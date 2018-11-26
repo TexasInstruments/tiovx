@@ -29,6 +29,7 @@ IDIRS       += $(HOST_ROOT)/kernels
 IDIRS       += $(CUSTOM_KERNEL_PATH)
 IDIRS       += $(CUSTOM_APPLICATION_PATH)
 CFLAGS      += -DHAVE_VERSION_INC
+DEFS        += OPENVX_USE_USER_DATA_OBJECT
 
 ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
