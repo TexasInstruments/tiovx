@@ -10,6 +10,7 @@ TDA4X_C_MODELS_PATH ?= $(PSDK_PATH)/tda4x_c_models
 TIDL_PATH ?= $(PSDK_PATH)/tidl_j7_00_03_00_01/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 OPENCV_LIB_PATH ?= /usr/lib/x86_64-linux-gnu
+IMAGING_PATH ?= $(PSDK_PATH)/imaging
 
 TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_16.9.9.LTS
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0A18263

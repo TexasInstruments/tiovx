@@ -257,6 +257,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
  *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] histogram (optional)     The output histogram with 256 bins.
  * \param [out] h3a_aew_af (optional)    The output array of a single params structure of type <tt>\ref tivx_h3a_data_t</tt>.
+ * \param [in] dcc_param   (optional)    DCC tuning data for the given sensor <tt>\ref vx_user_data_object </tt> .
  * \see <tt>TIVX_KERNEL_VPAC_VISS_NAME</tt>
  * \ingroup group_vision_function_vpac_viss
  * \return <tt>\ref vx_node</tt>.
@@ -274,7 +275,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
                                       vx_image             uv8_g8_c3,
                                       vx_image             s8_b8_c4,
                                       vx_distribution      histogram,
-                                      vx_array             h3a_aew_af);
+                                      vx_array             h3a_aew_af,
+                                      vx_user_data_object  dcc_param);
 
 /*! \brief [Graph] Creates a TIDL Node.
  * \param [in] Reference to vx_graph.

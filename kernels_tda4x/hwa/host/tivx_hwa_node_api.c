@@ -217,7 +217,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
                                       vx_image             uv8_g8_c3,
                                       vx_image             s8_b8_c4,
                                       vx_distribution      histogram,
-                                      vx_array             h3a_aew_af)
+                                      vx_array             h3a_aew_af,
+                                      vx_user_data_object  dcc_param)
 {
     vx_reference prms[] = {
             (vx_reference)configuration,
@@ -231,7 +232,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
             (vx_reference)uv8_g8_c3,
             (vx_reference)s8_b8_c4,
             (vx_reference)histogram,
-            (vx_reference)h3a_aew_af
+            (vx_reference)h3a_aew_af,
+            (vx_reference)dcc_param
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_VPAC_VISS_NAME,

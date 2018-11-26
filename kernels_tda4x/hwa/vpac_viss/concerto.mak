@@ -9,6 +9,8 @@ IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(TDA4X_C_MODELS_PATH)/include
 IDIRS       += $(VXLIB_PATH)/packages
+IDIRS       += $(IMAGING_PATH)/algos/dcc/include
+IDIRS       += $(IMAGING_PATH)/algos/awb/include
 
 ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA

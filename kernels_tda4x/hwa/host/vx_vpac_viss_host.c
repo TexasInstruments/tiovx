@@ -671,6 +671,16 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         }
         if (status == VX_SUCCESS)
         {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_USER_DATA_OBJECT,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
             /* add supported target's */
             tivxAddKernelTarget(kernel, TIVX_TARGET_VPAC_VISS1);
         }

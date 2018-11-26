@@ -116,7 +116,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
                                                 raw0, raw1, raw2, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                histogram, h3a_aew_af), VX_TYPE_NODE);
+                                                histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -265,7 +265,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
                                                 raw0, raw1, raw2, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                histogram, h3a_aew_af), VX_TYPE_NODE);
+                                                histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
@@ -782,7 +782,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
                                                 raw0, raw1, raw2, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                histogram, h3a_aew_af), VX_TYPE_NODE);
+                                                histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxVerifyGraph(graph));
 
