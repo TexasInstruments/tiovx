@@ -159,6 +159,13 @@ extern "C" {
 #define TIVX_USER_DATA_OBJECT_MAX_OBJECTS           (96u)
 
 /*!
+ * \brief Max number raw image objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_RAW_IMAGE_MAX_OBJECTS                  (96u)
+
+/*!
  * \brief Max number convolution objects supported
  *
  * \ingroup group_tivx_obj_cfg
@@ -337,6 +344,12 @@ extern "C" {
  */
 #define TIVX_USER_DATA_OBJECT_MAX_MAPS     (16u)
 
+/*!
+ * \brief Max possible mapping via vxMapRawImagePatch supported
+ *
+ * \ingroup group_vx_raw_image_cfg
+ */
+#define TIVX_RAW_IMAGE_MAX_MAPS            (16u)
 
 /*! \brief Max possible head nodes in graph
  * \ingroup group_vx_graph_cfg
@@ -376,6 +389,13 @@ extern "C" {
  * \ingroup group_vx_image_cfg
  */
 #define TIVX_IMAGE_MAX_SUBIMAGES     (16u)
+
+/*!
+ * \brief Max possible sub images from a raw image
+ *
+ * \ingroup group_tivx_raw_image_cfg
+ */
+#define TIVX_RAW_IMAGE_MAX_SUBIMAGES     (16u)
 
 /*!
  * \brief Max possible mapping via vxMapImagePatch supported

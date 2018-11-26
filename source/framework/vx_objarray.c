@@ -48,6 +48,7 @@ static vx_bool ownIsValidObject(vx_enum type)
         (VX_TYPE_TENSOR == type) ||
         (VX_TYPE_ARRAY == type) ||
         (VX_TYPE_USER_DATA_OBJECT == type) ||
+        (TIVX_TYPE_RAW_IMAGE == type) ||
         (VX_TYPE_SCALAR == type) ||
         (VX_TYPE_DISTRIBUTION == type) ||
         (VX_TYPE_THRESHOLD == type) ||

@@ -74,6 +74,7 @@
 #include <TI/tivx_nodes.h>
 #include <TI/tivx_mem.h>
 #include <TI/tivx_tensor.h>
+#include <TI/tivx_ext_raw_image.h>
 
 #ifdef __cplusplus
 extern "C" {

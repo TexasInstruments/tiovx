@@ -92,6 +92,8 @@ static vx_reference ownCreateTensorFromExemplar(
     vx_context context, vx_tensor exemplar);
 static vx_reference ownCreateUserDataObjectFromExemplar(
     vx_context context, vx_user_data_object exemplar);
+static vx_reference ownCreateRawImageFromExemplar(
+    vx_context context, tivx_raw_image exemplar);
 
 
 vx_reference ownCreateReferenceFromExemplar(
@@ -152,6 +154,10 @@ vx_reference ownCreateReferenceFromExemplar(
         case VX_TYPE_USER_DATA_OBJECT:
             ref = ownCreateUserDataObjectFromExemplar(
                 context, (vx_user_data_object)exemplar);
+            break;
+        case TIVX_TYPE_RAW_IMAGE:
+            ref = ownCreateRawImageFromExemplar(
+                context, (tivx_raw_image)exemplar);
             break;
         default:
             break;
@@ -435,5 +441,28 @@ static vx_reference ownCreateUserDataObjectFromExemplar(
     }
 
     return (vx_reference)user_data_object;
+}
+
+static vx_reference ownCreateRawImageFromExemplar(
+    vx_context context, tivx_raw_image exemplar)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_raw_image img = NULL;
+    tivx_raw_image_create_params_t params;
+
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_WIDTH, &params.width, sizeof(params.width));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_HEIGHT, &params.height, sizeof(params.height));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_NUM_EXPOSURES, &params.num_exposures, sizeof(params.num_exposures));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &params.line_interleaved, sizeof(params.line_interleaved));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_FORMAT, &params.format, sizeof(params.format));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT, &params.meta_height, sizeof(params.meta_height));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_LOCATION, &params.meta_location, sizeof(params.meta_location));
+
+    if (VX_SUCCESS == status)
+    {
+        img = tivxCreateRawImage(context, &params);
+    }
+
+    return (vx_reference)img;
 }
 

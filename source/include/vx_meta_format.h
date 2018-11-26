@@ -183,6 +183,10 @@ typedef struct _vx_meta_format
         vx_size size;
     } user_data_object;
 
+    /*!< \brief structure containing information about raw image
+                used when type is set to TIVX_TYPE_RAW_IMAGE */
+    tivx_raw_image_create_params_t raw_image;
+
 } tivx_meta_format_t;
 
 

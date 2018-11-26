@@ -74,5 +74,6 @@ TESTCASE(tivxLaplacianReconstruct)
 TESTCASE(tivxMaxNodes)
 TESTCASE(tivxGraphPipeline)
 TESTCASE(tivxPackedDataFormat)
+TESTCASE(tivxRawImage)
 #endif
 

@@ -102,6 +102,8 @@ vx_status tivxObjectInit(void)
             TIVX_ARRAY_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isUserDataObjectUse,
             TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isRawImageUse,
+            TIVX_RAW_IMAGE_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isDelayUse,
@@ -186,6 +188,12 @@ vx_status tivxObjectDeInit(void)
         if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is user data object use failed\n");
+        }
+        status = ownCheckUseFlag(g_tivx_objects.isRawImageUse,
+            TIVX_RAW_IMAGE_MAX_OBJECTS);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is raw image use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
@@ -324,6 +332,12 @@ vx_reference tivxObjectAlloc(vx_enum type)
                     (uint8_t *)g_tivx_objects.user_data_object, g_tivx_objects.isUserDataObjectUse,
                     TIVX_USER_DATA_OBJECT_MAX_OBJECTS, sizeof(tivx_user_data_object_t),
                     "TIVX_USER_DATA_OBJECT_MAX_OBJECTS");
+                break;
+            case TIVX_TYPE_RAW_IMAGE:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.raw_image, g_tivx_objects.isRawImageUse,
+                    TIVX_RAW_IMAGE_MAX_OBJECTS, sizeof(tivx_raw_image_t),
+                    "TIVX_RAW_IMAGE_MAX_OBJECTS");
                 break;
             case VX_TYPE_CONVOLUTION:
                 ref = (vx_reference)ownAllocObject(
@@ -548,6 +562,16 @@ vx_status tivxObjectFree(vx_reference ref)
                     if (VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free user data object failed\n");
+                    }
+                    break;
+                case TIVX_TYPE_RAW_IMAGE:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.raw_image, g_tivx_objects.isRawImageUse,
+                        TIVX_RAW_IMAGE_MAX_OBJECTS, sizeof(tivx_raw_image_t),
+                        "TIVX_RAW_IMAGE_MAX_OBJECTS");
+                    if (VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free raw image failed\n");
                     }
                     break;
                 case VX_TYPE_CONVOLUTION:

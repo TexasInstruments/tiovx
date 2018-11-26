@@ -15,12 +15,10 @@
  * limitations under the License.
  */
 
-#ifdef OPENVX_USE_USER_DATA_OBJECT
-
 #include "test_engine/test.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
-#include <VX/vx_khr_user_data_object.h>
+#include <TI/tivx_ext_raw_image.h>
 
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_BAD (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 0)
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_BAD_NAME "org.khronos.openvx.test.own_bad"
@@ -31,7 +29,7 @@
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 2)
 #define VX_KERNEL_CONFORMANCE_TEST_OWN_USER_NAME "org.khronos.openvx.test.own_user"
 
-TESTCASE(UserDataObject, CT_VXContext, ct_setup_vx_context, 0)
+TESTCASE(tivxRawImage, CT_VXContext, ct_setup_vx_context, 0)
 
 typedef enum _own_params_e
 {
@@ -55,15 +53,28 @@ static vx_status query_local_ptr_status_deinit = VX_SUCCESS;
 static vx_status set_local_size_status_deinit = VX_SUCCESS;
 static vx_status set_local_ptr_status_deinit = VX_SUCCESS;
 
-static const vx_char user_data_object_name[] = "wb_t";
-
-typedef struct
+#if 0
+static vx_status VX_CALLBACK own_set_image_valid_rect(
+    vx_node node,
+    vx_uint32 index,
+    const vx_rectangle_t* const input_valid[],
+    vx_rectangle_t* const output_valid[])
 {
-    vx_int32 mode;
-    vx_int32 gain[4];
-    vx_int32 offset[4];
-} wb_t;
+    vx_status status = VX_FAILURE;
 
+    if (index == OWN_PARAM_OUTPUT)
+    {
+        output_valid[0]->start_x = input_valid[0]->start_x + 2;
+        output_valid[0]->start_y = input_valid[0]->start_y + 2;
+        output_valid[0]->end_x   = input_valid[0]->end_x - 2;
+        output_valid[0]->end_y   = input_valid[0]->end_y - 2;
+
+        status = VX_SUCCESS;
+    }
+
+    return status;
+}
+#endif
 static vx_bool is_validator_called = vx_false_e;
 static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_reference parameters[], vx_uint32 num, vx_meta_format metas[])
 {
@@ -86,9 +97,27 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
     {
         vx_enum item_type = (type == VX_TYPE_OBJECT_ARRAY) ? objarray_itemtype : VX_TYPE_UINT8;
         vx_size capacity = 20;
+        vx_uint32 src_width = 128, src_height = 128;
+        vx_uint32 num_exposures = 3;
+        vx_bool line_interleaved = vx_false_e;
+        vx_uint32 meta_height = 5, meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+        tivx_raw_image_format_t format[3];
 
         vx_enum actual_item_type = VX_TYPE_INVALID;
         vx_size actual_capacity = 0;
+        vx_uint32 actual_src_width = 0, actual_src_height = 0;
+        vx_uint32 actual_num_exposures = 0;
+        vx_bool actual_line_interleaved = vx_true_e;
+        vx_uint32 actual_meta_height = 0, actual_meta_location = TIVX_RAW_IMAGE_META_AFTER;
+        tivx_raw_image_format_t actual_format[3];
+
+        format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+        format[0].msb = 12;
+        format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+        format[1].msb = 7;
+        format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+        format[2].msb = 11;
+
         switch (type)
         {
         case VX_TYPE_OBJECT_ARRAY:
@@ -104,22 +133,31 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
                 return VX_ERROR_INVALID_PARAMETERS;
             }
             break;
-        case VX_TYPE_USER_DATA_OBJECT:
+        case TIVX_TYPE_RAW_IMAGE:
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_WIDTH, &actual_src_width, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_HEIGHT, &actual_src_height, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_NUM_EXPOSURES, &actual_num_exposures, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &actual_line_interleaved, sizeof(vx_bool)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_FORMAT, &actual_format, sizeof(actual_format)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_HEIGHT, &actual_meta_height, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_LOCATION, &actual_meta_location, sizeof(vx_uint32)));
+
+            if (src_width == actual_src_width && 
+                src_height == actual_src_height &&
+                num_exposures == actual_num_exposures &&
+                line_interleaved == actual_line_interleaved &&
+                meta_height == actual_meta_height &&
+                meta_location == actual_meta_location &&
+                memcmp(format, actual_format, sizeof(format)) == 0
+                )
             {
-                char actual_name[VX_REFERENCE_NAME];
-                vx_size actual_size;
-
-                VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
-                VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));
-
-                if ((strcmp(user_data_object_name, actual_name) == 0) && (actual_size == sizeof(wb_t)))
-                {
-                    VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
-                }
-                else
-                {
-                    return VX_ERROR_INVALID_PARAMETERS;
-                }
+                VX_CALL_(return VX_FAILURE, vxSetMetaFormatFromReference(meta, input));
+                //vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
+                //VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, sizeof(callback)));
+            }
+            else
+            {
+                return VX_ERROR_INVALID_PARAMETERS;
             }
             break;
         default:
@@ -143,9 +181,27 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
 
     vx_enum item_type = (type == VX_TYPE_OBJECT_ARRAY) ? objarray_itemtype : VX_TYPE_UINT8;
     vx_size capacity = 20;
+    vx_uint32 src_width = 128, src_height = 128;
+    vx_uint32 num_exposures = 3;
+    vx_bool line_interleaved = vx_false_e;
+    vx_uint32 meta_height = 5, meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    tivx_raw_image_format_t format[3];
 
     vx_enum actual_item_type = VX_TYPE_INVALID;
     vx_size actual_capacity = 0;
+    vx_uint32 actual_src_width = 0, actual_src_height = 0;
+    vx_uint32 actual_num_exposures = 0;
+    vx_bool actual_line_interleaved = vx_true_e;
+    vx_uint32 actual_meta_height = 0, actual_meta_location = TIVX_RAW_IMAGE_META_AFTER;
+    tivx_raw_image_format_t actual_format[3];
+
+    format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    format[0].msb = 12;
+    format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    format[1].msb = 7;
+    format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    format[2].msb = 11;
+
     switch (type)
     {
 
@@ -163,24 +219,37 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromAttr(vx_node node, const vx_re
             return VX_ERROR_INVALID_PARAMETERS;
         }
         break;
-    case VX_TYPE_USER_DATA_OBJECT:
+    case TIVX_TYPE_RAW_IMAGE:
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_WIDTH, &actual_src_width, sizeof(vx_uint32)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_HEIGHT, &actual_src_height, sizeof(vx_uint32)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_NUM_EXPOSURES, &actual_num_exposures, sizeof(vx_uint32)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &actual_line_interleaved, sizeof(vx_bool)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_FORMAT, &actual_format, sizeof(actual_format)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_HEIGHT, &actual_meta_height, sizeof(vx_uint32)));
+        VX_CALL_(return VX_FAILURE, tivxQueryRawImage((tivx_raw_image)input, TIVX_RAW_IMAGE_META_LOCATION, &actual_meta_location, sizeof(vx_uint32)));
+
+        if (src_width == actual_src_width && 
+            src_height == actual_src_height &&
+            num_exposures == actual_num_exposures &&
+            line_interleaved == actual_line_interleaved &&
+            meta_height == actual_meta_height &&
+            meta_location == actual_meta_location &&
+            memcmp(format, actual_format, sizeof(format)) == 0
+            )
         {
-            vx_size actual_size;
-            vx_size user_data_size = sizeof(wb_t);
-            char actual_name[VX_REFERENCE_NAME];
-
-            VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
-            VX_CALL_(return VX_FAILURE, vxQueryUserDataObject((vx_user_data_object)input, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));
-
-            if ((strcmp(user_data_object_name, actual_name) == 0) && (actual_size == sizeof(wb_t)))
-            {
-                VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_NAME, &user_data_object_name, sizeof(user_data_object_name)));
-                VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_USER_DATA_OBJECT_SIZE, &user_data_size, sizeof(vx_size)));
-            }
-            else
-            {
-                return VX_ERROR_INVALID_PARAMETERS;
-            }
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_WIDTH, &src_width, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_HEIGHT, &src_height, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_NUM_EXPOSURES, &num_exposures, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &line_interleaved, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_FORMAT, &format, sizeof(format)));
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_META_HEIGHT, &meta_height, sizeof(vx_uint32)));
+            VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, TIVX_RAW_IMAGE_META_LOCATION, &meta_location, sizeof(vx_uint32)));
+            //vx_kernel_image_valid_rectangle_f callback = &own_set_image_valid_rect;
+            //VX_CALL_(return VX_FAILURE, vxSetMetaFormatAttribute(meta, VX_VALID_RECT_CALLBACK, &callback, sizeof(callback)));
+        }
+        else
+        {
+            return VX_ERROR_INVALID_PARAMETERS;
         }
         break;
     default:
@@ -323,7 +392,7 @@ typedef struct {
 } type_arg;
 
 #define ADD_TYPE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "USER_DATA_OBJECT", __VA_ARGS__, VX_TYPE_USER_DATA_OBJECT)) \
+    CT_EXPAND(nextmacro(testArgName "RAW_IMAGE", __VA_ARGS__, TIVX_TYPE_RAW_IMAGE)) \
 
 #define ADD_FROM_FLAG(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "_FROM_REF", __VA_ARGS__, vx_true_e)), \
@@ -337,7 +406,7 @@ typedef struct {
 #define USERKERNEL_PARAMETERS \
     CT_GENERATE_PARAMETERS("", ADD_TYPE, ADD_FROM_FLAG, ADD_LOCAL_SIZE_AND_ALLOC, ARG)
 
-TEST_WITH_ARG(UserDataObject, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
+TEST_WITH_ARG(tivxRawImage, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_reference src = 0, dst = 0;
@@ -347,6 +416,19 @@ TEST_WITH_ARG(UserDataObject, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
     vx_bool is_meta_from_ref = arg_->is_meta_from_ref;
 
     int phase = 0;
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height = 5;
+    params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
 
     type = (enum vx_type_e)arg_->type;
     local_size = arg_->local_size;
@@ -371,10 +453,10 @@ TEST_WITH_ARG(UserDataObject, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
     switch (type)
     {
 
-    case VX_TYPE_USER_DATA_OBJECT:
+    case TIVX_TYPE_RAW_IMAGE:
         {
-            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), type);
-            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), type);
+            ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), type);
         }
         break;
 
@@ -483,9 +565,9 @@ TEST_WITH_ARG(UserDataObject, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
     ASSERT(src == 0);
 }
 
-TEST_WITH_ARG(UserDataObject, testUserKernelObjectArray, type_arg,
-    ARG("USER_DATA_OBJECT_FROM_REF", VX_TYPE_USER_DATA_OBJECT, vx_true_e),
-    ARG("USER_DATA_OBJECT_FROM_ATTR",VX_TYPE_USER_DATA_OBJECT, vx_false_e)
+TEST_WITH_ARG(tivxRawImage, testUserKernelObjectArray, type_arg,
+    ARG("USER_DATA_OBJECT_FROM_REF", TIVX_TYPE_RAW_IMAGE, vx_true_e),
+    ARG("USER_DATA_OBJECT_FROM_ATTR",TIVX_TYPE_RAW_IMAGE, vx_false_e)
 )
 {
     vx_context context = context_->vx_context_;
@@ -504,10 +586,24 @@ TEST_WITH_ARG(UserDataObject, testUserKernelObjectArray, type_arg,
 
     vx_size capacity = 20;
 
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height = 5;
+    params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+
     switch (objarray_itemtype)
     {
-    case VX_TYPE_USER_DATA_OBJECT:
-        ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), objarray_itemtype);
+    case TIVX_TYPE_RAW_IMAGE:
+        ASSERT_VX_OBJECT(exemplar = (vx_reference)tivxCreateRawImage(context, &params), objarray_itemtype);
         break;
     default:
         break;
@@ -551,7 +647,7 @@ TEST_WITH_ARG(UserDataObject, testUserKernelObjectArray, type_arg,
     ASSERT(is_deinitialize_called == vx_true_e);
 }
 
-TEST(UserDataObject, testRemoveKernel)
+TEST(tivxRawImage, testRemoveKernel)
 {
     vx_context context = context_->vx_context_;
     vx_kernel kernel = 0;
@@ -574,7 +670,7 @@ TEST(UserDataObject, testRemoveKernel)
     VX_CALL(vxRemoveKernel(kernel));
 }
 
-TEST(UserDataObject, testOutDelay)
+TEST(tivxRawImage, testOutDelay)
 {
     vx_context context = context_->vx_context_;
     vx_kernel kernel = 0;
@@ -596,222 +692,219 @@ TEST(UserDataObject, testOutDelay)
 
 
 
-TEST(UserDataObject, test_vxCreateUserDataObject)
+TEST(tivxRawImage, test_tivxCreateRawImage)
 {
     vx_context context = context_->vx_context_;
-    char actual_name[VX_REFERENCE_NAME];
-    vx_size actual_size = 0;
-    vx_user_data_object user_data_object = 0;
+    tivx_raw_image raw_image = 0;
+    vx_uint32 actual_line_interleaved;
+    vx_uint32 actual_width;
 
-    /* 1. check if user data object can be created with empty type_name and not initialized */
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, NULL, sizeof(wb_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_true_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height = 5;
+    params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
 
-    /* 2. check if user data object actual name is a string with a null termination */
-    VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
-    ASSERT(strncmp("", actual_name, VX_REFERENCE_NAME) == 0);
+    /* 1. check if raw image can be created */
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
 
-    /* 3. check if user data object actual size corresponds to requested size */
-    VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &actual_size, sizeof(vx_size)));
-    ASSERT_EQ_INT(sizeof(wb_t), actual_size);
+    /* 2. check if raw image can be queried */
+    VX_CALL(tivxQueryRawImage(raw_image, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &actual_line_interleaved, sizeof(vx_uint32)));
+    ASSERT(actual_line_interleaved == vx_true_e);
 
-    /* 4. Initialize empty user data object after creation */
+    /* 3. check if raw image can be queried */
+    VX_CALL(tivxQueryRawImage(raw_image, TIVX_RAW_IMAGE_WIDTH, &actual_width, sizeof(vx_uint32)));
+    ASSERT_EQ_INT(128, actual_width);
+
+    /* 4. Initialize empty raw image after creation */
 	{
-		wb_t *p = NULL;
         vx_map_id map_id;
         vx_int32 i;
+        vx_rectangle_t rect;
+        vx_imagepatch_addressing_t addr;
+        uint16_t *ptr = NULL;
+        uint16_t *ptr2 = NULL;
+        
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = 128;
+        rect.end_y = 128;
 
 		/* Initialize data using WRITE ONLY MAP */
-        VX_CALL(vxMapUserDataObject(user_data_object, 0, sizeof(wb_t), &map_id, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        ASSERT(p != NULL);
-		p->mode = 2;
-		for (i = 0; i < 4; i++)
-		{
-			p->gain[i] = i;
-			p->offset[i] = i+4;
-		}
-        VX_CALL(vxUnmapUserDataObject(user_data_object, map_id));
+        VX_CALL(tivxMapRawImagePatch(raw_image, &rect, 0, &map_id, &addr, (void **)&ptr,
+                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+        ASSERT(ptr != NULL);
 
-    /* 5. check data in user data object */
-
-        VX_CALL(vxMapUserDataObject(user_data_object, 0, sizeof(wb_t), &map_id, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
-		ASSERT(2 == p->mode);
-		for (i = 0; i < 4; i++)
+		for (i = 0; i < 128*128; i++)
 		{
-			ASSERT(p->gain[i] == i);
-			ASSERT(p->offset[i] == i+4);
+			ptr[i] = i;
 		}
-        VX_CALL(vxUnmapUserDataObject(user_data_object, map_id));
+        VX_CALL(tivxUnmapRawImagePatch(raw_image, map_id));
+
+    /* 5. check data in raw image */
+
+        VX_CALL(tivxMapRawImagePatch(raw_image, &rect, 0, &map_id, &addr, (void **)&ptr2,
+                                      VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
+
+		for (i = 0; i < 128*128; i++)
+		{
+			ASSERT(ptr[i] == i);
+		}
+        VX_CALL(tivxUnmapRawImagePatch(raw_image, map_id));
 	}
 
-    VX_CALL(vxReleaseUserDataObject(&user_data_object));
-    ASSERT(user_data_object == 0);
+    VX_CALL(tivxReleaseRawImage(&raw_image));
+    ASSERT(raw_image == 0);
 }
 
-TEST(UserDataObject, test_vxCopyUserDataObjectWrite)
+TEST(tivxRawImage, test_tivxCopyRawImageWrite)
 {
     vx_context context = context_->vx_context_;
-    wb_t localUserDataObjectInit;
-    wb_t localUserDataObject;
-    vx_user_data_object user_data_object;
-    int i;
+    tivx_raw_image raw_image;
+    int i, j;
+    vx_rectangle_t rect;
+    vx_imagepatch_addressing_t addr, addr1;
+    uint8_t *ptr = NULL;
+            
+    rect.start_x = 16;
+    rect.start_y = 19;
+    rect.end_x = 16+16;
+    rect.end_y = 19+21;
 
+    addr.dim_x = 16;
+    addr.dim_y = 21;
+    addr.stride_x = 1;
+    addr.stride_y = 16;
+    addr.step_x = 1;
+    addr.step_y = 1;
+
+    uint8_t img[16*21];
+
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_true_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height = 5;
+    params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    
     /* Initialization */
-    localUserDataObjectInit.mode = 0;
-    localUserDataObject.mode = 1;
-
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 16*21; i++)
     {
-        localUserDataObjectInit.gain[i] = 0;
-        localUserDataObjectInit.offset[i] = 0;
-
-        localUserDataObject.gain[i] = i;
-        localUserDataObject.offset[i] = i+4;
+        img[i] = i%256;
     }
 
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), &localUserDataObjectInit), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
 
     /* Write, COPY gains */
-    {
-        vx_size local_offset = offsetof(wb_t, gain);
-        vx_size local_bytes = sizeof(vx_int32)*4;
-        vx_int32 *p = &localUserDataObject.gain[0];
-        VX_CALL(vxCopyUserDataObject(user_data_object, local_offset, local_bytes, (void *)p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-    }
+    VX_CALL(tivxCopyRawImagePatch(raw_image, &rect, 1, &addr, (void *)&img,
+                                      VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
 
     /* Check (MAP) */
     {
-        vx_int32 *p = NULL;
-        vx_size local_offset = offsetof(wb_t, gain);
-        vx_size local_bytes = sizeof(vx_int32)*4;
         vx_map_id map_id;
-        VX_CALL(vxMapUserDataObject(user_data_object, local_offset, local_bytes, &map_id, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL(tivxMapRawImagePatch(raw_image, &rect, 1, &map_id, &addr1, (void **)&ptr,
+                                      VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
 
-        ASSERT(p != NULL);
-        for (i = 0; i<4; i++)
+        ASSERT(ptr != NULL);
+        for (j = 0; j < 21; j++)
         {
-            ASSERT(p[i] == i);
+            for (i = 0; i < 16; i++)
+            {
+                ASSERT(ptr[j*addr1.stride_y + i] == (i+j*16)%256);
+            }
         }
 
-        VX_CALL(vxUnmapUserDataObject(user_data_object, map_id));
+        VX_CALL(tivxUnmapRawImagePatch(raw_image, map_id));
     }
 
-    VX_CALL(vxReleaseUserDataObject(&user_data_object));
-    ASSERT(user_data_object == 0);
+    VX_CALL(tivxReleaseRawImage(&raw_image));
+    ASSERT(raw_image == 0);
 }
 
-TEST(UserDataObject, test_vxCopyUserDataObjectRead)
+TEST(tivxRawImage, test_tivxCopyRawImageRead)
 {
     vx_context context = context_->vx_context_;
-    wb_t localUserDataObjectInit;
-    wb_t localUserDataObject;
-    vx_user_data_object user_data_object;
+    tivx_raw_image raw_image;
     int i;
+    vx_rectangle_t rect;
+    vx_imagepatch_addressing_t addr, addrMap;
+    uint16_t *ptr = NULL;
+    vx_map_id map_id;
+
+    rect.start_x = 16;
+    rect.start_y = 19;
+    rect.end_x = 16+16;
+    rect.end_y = 19+21;
+
+    addr.dim_x = 16*sizeof(uint16_t);
+
+    uint16_t img[16];
+
+    tivx_raw_image_create_params_t params;
+    params.width = 128;
+    params.height = 128;
+    params.num_exposures = 3;
+    params.line_interleaved = vx_false_e;
+    params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    params.format[0].msb = 12;
+    params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    params.format[1].msb = 7;
+    params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    params.format[2].msb = 11;
+    params.meta_height = 5;
+    params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+    
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+
+    /* Initialize data using WRITE ONLY MAP */
+    VX_CALL(tivxMapRawImagePatch(raw_image, NULL, 0, &map_id, &addrMap, (void **)&ptr,
+                                 VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_BUFFER));
 
     /* Initialization */
-    localUserDataObjectInit.mode = 1;
-    localUserDataObject.mode =0;
-
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < addrMap.dim_x/2; i++)
     {
-        localUserDataObjectInit.gain[i] = i;
-        localUserDataObjectInit.offset[i] = i+4;
-
-        localUserDataObject.gain[i] = 0;
-        localUserDataObject.offset[i] = 0;
+        ptr[i] = i;
     }
 
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), &localUserDataObjectInit), VX_TYPE_USER_DATA_OBJECT);
+    VX_CALL(tivxUnmapRawImagePatch(raw_image, map_id));
 
     /* READ, COPY offsets */
     {
-        vx_size local_offset = offsetof(wb_t, offset);
-        vx_size local_bytes = sizeof(vx_int32)*4;
-        vx_int32 *p = &localUserDataObject.offset[0];
-        VX_CALL(vxCopyUserDataObject(user_data_object, local_offset, local_bytes, (void *)p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(tivxCopyRawImagePatch(raw_image, NULL, 0, &addr, (void *)img,
+                                      VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_META_BUFFER));
     }
     /* Check */
-    for (i = 0; i < 4; i++)
+    for (i = 0; i < 16; i++)
     {
-        ASSERT(localUserDataObject.offset[i] == i+4);
+        ASSERT(img[i] == i);
     }
 
-    VX_CALL(vxReleaseUserDataObject(&user_data_object));
-    ASSERT(user_data_object == 0);
+    VX_CALL(tivxReleaseRawImage(&raw_image));
+    ASSERT(raw_image == 0);
 }
 
-TEST(UserDataObject, test_vxMapUserDataObjectWrite)
-{
-    vx_context context = context_->vx_context_;
-    wb_t localUserDataObjectInit;
-    vx_user_data_object user_data_object;
-    int i;
-
-    /* Initialization */
-    localUserDataObjectInit.mode = 1;
-
-    for (i = 0; i < 4; i++)
-    {
-        localUserDataObjectInit.gain[i] = i+0x10000000;
-        localUserDataObjectInit.offset[i] = i+0x10000004;
-    }
-
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), NULL), VX_TYPE_USER_DATA_OBJECT);
-
-    {
-		wb_t *p = NULL;
-        vx_map_id map_id;
-
-		/* Map, WRITE_ONLY mode*/
-        VX_CALL(vxMapUserDataObject(user_data_object, 0, sizeof(wb_t), &map_id, (void **)&p, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
-        ASSERT(p != NULL);
-        memcpy(p, &localUserDataObjectInit, sizeof(wb_t));
-        VX_CALL(vxUnmapUserDataObject(user_data_object, map_id));
-
-		/* Map, READ_AND_WRITE mode*/
-
-        VX_CALL(vxMapUserDataObject(user_data_object, 0, sizeof(wb_t), &map_id, (void **)&p, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0));
-        ASSERT(p != NULL);
-        /* Check */
-		ASSERT(localUserDataObjectInit.mode == p->mode);
-		for (i = 0; i < 4; i++)
-		{
-			ASSERT(localUserDataObjectInit.gain[i] == p->gain[i]);
-			ASSERT(localUserDataObjectInit.offset[i] == p->offset[i]);
-		}
-
-        /* Write into user data object */
-		p->mode = 2;
-		for (i = 0; i < 4; i++)
-		{
-			p->gain[i] = i;
-			p->offset[i] = i+4;
-		}
-        VX_CALL(vxUnmapUserDataObject(user_data_object, map_id));
-
-        /* Check */
-        VX_CALL(vxMapUserDataObject(user_data_object, 0, sizeof(wb_t), &map_id, (void **)&p, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0));
-		ASSERT(2 == p->mode);
-		for (i = 0; i < 4; i++)
-		{
-			ASSERT(p->gain[i] == i);
-			ASSERT(p->offset[i] == i+4);
-		}
-        VX_CALL(vxUnmapUserDataObject(user_data_object, map_id));
-    }
-
-    VX_CALL(vxReleaseUserDataObject(&user_data_object));
-    ASSERT(user_data_object == 0);
-}
-
-TESTCASE_TESTS(UserDataObject,
-        test_vxCreateUserDataObject,
-        test_vxCopyUserDataObjectRead,
-        test_vxCopyUserDataObjectWrite,
-        test_vxMapUserDataObjectWrite,
+TESTCASE_TESTS(tivxRawImage,
+        test_tivxCreateRawImage,
+        test_tivxCopyRawImageRead,
+        test_tivxCopyRawImageWrite,
         testUserKernel,
         testUserKernelObjectArray,
         testRemoveKernel,
         testOutDelay
         )
 
-#endif

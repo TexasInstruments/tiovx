@@ -54,6 +54,8 @@ static vx_status ownInitMetaFormatWithTensor(
     vx_meta_format meta, vx_tensor exemplar);
 static vx_status ownInitMetaFormatWithUserDataObject(
     vx_meta_format meta, vx_user_data_object exemplar);
+static vx_status ownInitMetaFormatWithRawImage(
+    vx_meta_format meta, tivx_raw_image exemplar);
 
 
 vx_meta_format vxCreateMetaFormat(vx_context context)
@@ -102,6 +104,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: Invalid meta format type\n");
             status = VX_ERROR_INVALID_TYPE;
         }
+    }
+    
+    if( NULL == ptr)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: ptr is NULL\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
     }
 
     if (VX_SUCCESS == status)
@@ -502,7 +510,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 break;
 
             case VX_USER_DATA_OBJECT_NAME:
-                if ((ptr != NULL) && (size <= VX_MAX_REFERENCE_NAME))
+                if (size <= VX_MAX_REFERENCE_NAME)
                 {
                     strncpy(meta->user_data_object.type_name, ptr, VX_MAX_REFERENCE_NAME);
                 }
@@ -521,6 +529,92 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: VX_USER_DATA_OBJECT_SIZE error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_WIDTH:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->raw_image.width = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_WIDTH error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_HEIGHT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->raw_image.height = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_HEIGHT error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_NUM_EXPOSURES:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->raw_image.num_exposures = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_NUM_EXPOSURES error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_LINE_INTERLEAVED:
+                if (VX_CHECK_PARAM(ptr, size, vx_bool, 0x3U))
+                {
+                    meta->raw_image.line_interleaved =  *(vx_bool *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_LINE_INTERLEAVED error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_FORMAT:
+                if (size <= (sizeof(tivx_raw_image_format_t)*TIVX_RAW_IMAGE_MAX_EXPOSURES) && ((vx_size)ptr & 0x3) == 0)
+                {
+                    vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
+
+                    memcpy(&meta->raw_image.format, ptr, sizeof(tivx_raw_image_format_t)*num_dims);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_FORMAT error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_META_HEIGHT:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->raw_image.meta_height = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_HEIGHT error\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+
+            case TIVX_RAW_IMAGE_META_LOCATION:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    meta->raw_image.meta_location = *(vx_uint32 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: TIVX_RAW_IMAGE_META_LOCATION error\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -645,6 +739,14 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatFromReference(
                 if (VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: User Data Object init meta format failure\n");
+                }
+                break;
+
+            case TIVX_TYPE_RAW_IMAGE:
+                status = ownInitMetaFormatWithRawImage(meta, (tivx_raw_image)exemplar);
+                if (VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatFromReference: Raw image init meta format failure\n");
                 }
                 break;
 
@@ -829,3 +931,27 @@ static vx_status ownInitMetaFormatWithUserDataObject(
 
     return (status);
 }
+
+static vx_status ownInitMetaFormatWithRawImage(
+    vx_meta_format meta, tivx_raw_image exemplar)
+{
+    vx_status status = VX_SUCCESS;
+
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_WIDTH, &meta->raw_image.width,
+        sizeof(meta->raw_image.width));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_HEIGHT, &meta->raw_image.height,
+        sizeof(meta->raw_image.height));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_NUM_EXPOSURES, &meta->raw_image.num_exposures,
+        sizeof(meta->raw_image.num_exposures));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &meta->raw_image.line_interleaved,
+        sizeof(meta->raw_image.line_interleaved));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_FORMAT, &meta->raw_image.format,
+        sizeof(meta->raw_image.format));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_HEIGHT, &meta->raw_image.meta_height,
+        sizeof(meta->raw_image.meta_height));
+    status |= tivxQueryRawImage(exemplar, TIVX_RAW_IMAGE_META_LOCATION, &meta->raw_image.meta_location,
+        sizeof(meta->raw_image.meta_location));
+
+    return (status);
+}
+

@@ -114,6 +114,11 @@ typedef struct _tivx_object_t
     vx_bool                 isUserDataObjectUse[TIVX_USER_DATA_OBJECT_MAX_OBJECTS];
     /**< Flag indicating if User data object is in use or not */
 
+    tivx_raw_image_t raw_image[TIVX_RAW_IMAGE_MAX_OBJECTS];
+    /**< Raw Image Objects */
+    vx_bool                 isRawImageUse[TIVX_RAW_IMAGE_MAX_OBJECTS];
+    /**< Flag indicating if raw image object is in use or not */
+
     tivx_convolution_t      convolution[TIVX_CONVOLUTION_MAX_OBJECTS];
     /**< Convolution Objects */
     vx_bool                 isConvolutionUse[TIVX_CONVOLUTION_MAX_OBJECTS];

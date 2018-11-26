@@ -67,6 +67,7 @@
 
 #include <TI/tivx_mem.h>
 #include <TI/tivx_config.h>
+#include <TI/tivx_ext_raw_image.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -80,7 +81,7 @@ extern "C" {
 /*! \brief Macro to check max shared mem entry size
  * \ingroup group_tivx_obj_desc_cfg
  */
-#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (384U)
+#define TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE        (416U)
 
 /*!
  * \brief Max possible planes of data in an image
@@ -214,6 +215,10 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to
         user data object */
     TIVX_OBJ_DESC_USER_DATA_OBJECT = 0x12,
+
+    /*! \brief Object desciptor that has information related to
+        raw image object */
+    TIVX_OBJ_DESC_RAW_IMAGE     = 0x13,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID       = 0xFFFFu
@@ -671,6 +676,34 @@ typedef struct _tivx_obj_desc_user_data_object
     vx_char type_name[VX_MAX_REFERENCE_NAME];
 
 } tivx_obj_desc_user_data_object_t;
+
+/*!
+ * \brief raw image descriptor as placed in shared memory
+ *
+ * \ingroup group_tivx_obj_desc
+ */
+typedef struct _tivx_obj_desc_raw_image
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+    /*! \brief allocated buffer addresses (max 1 for each combined image and meta data) */
+    tivx_shared_mem_ptr_t mem_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief image data buffer addresses */
+    tivx_shared_mem_ptr_t img_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief meta buffer addresses */
+    tivx_shared_mem_ptr_t meta_ptr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief create parameters for raw image */
+    tivx_raw_image_create_params_t params;
+    /*! \brief image plane buffer size */
+    uint32_t mem_size[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief method by which raw image was created, see \ref tivx_image_create_type_e */
+    uint32_t create_type;
+    /*! \brief raw image exposure addressing parameters */
+    vx_imagepatch_addressing_t imagepatch_addr[TIVX_RAW_IMAGE_MAX_EXPOSURES];
+    /*! \brief valid region of raw image to use for processing */
+    vx_rectangle_t valid_roi;
+
+} tivx_obj_desc_raw_image_t;
 
 /*!
  * \brief object array object descriptor as placed in shared memory
