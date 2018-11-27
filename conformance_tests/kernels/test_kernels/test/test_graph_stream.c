@@ -221,6 +221,15 @@ TEST_WITH_ARG(tivxGraphStreaming, testScalar, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Scalar source node connected to scalar sink node
+ * Both nodes on DSP1
+ * Error will be shown in a print statement if the scalar sink fails
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testSourceSink1, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -265,6 +274,15 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSink1, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Scalar source node connected to scalar sink node
+ * One node on DSP1 and the other on DSP2
+ * Error will be shown in a print statement if the scalar sink fails
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testSourceSink2, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -309,6 +327,15 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSink2, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Scalar source node connected to scalar sink node
+ * Both nodes on IPU1_0
+ * Error will be shown in a print statement if the scalar sink fails
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testSourceSink3, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -353,6 +380,17 @@ TEST_WITH_ARG(tivxGraphStreaming, testSourceSink3, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1          scalar            n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Negative test for streaming
+ * Tries to start streaming prior to trigger node being set
+ * Tries to stop streaming before streaming has begun
+ * Tries to start streaming after streaming has begun
+ * Tries to stop streaming after streaming has stopped
+ *
+ */
 TEST(tivxGraphStreaming, negativeTestStreamingState)
 {
     vx_graph graph;
@@ -401,6 +439,14 @@ TEST(tivxGraphStreaming, negativeTestStreamingState)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1               scalar            n2             scalar_out
+ * SCALAR_SOURCE_ERROR -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Test for node error event
+ * Uses a special "error" source node that returns an error
+ *
+ */
 TEST(tivxGraphStreaming, negativeTestStreamingError)
 {
     vx_graph graph;
@@ -460,6 +506,15 @@ TEST(tivxGraphStreaming, negativeTestStreamingError)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Negative test for streaming
+ * Tries to call schedule graph while graph is streaming
+ * Tries to call process graph while graph is streaming
+ *
+ */
 TEST(tivxGraphStreaming, negativeTestScalar)
 {
     vx_graph graph;
@@ -512,6 +567,15 @@ TEST(tivxGraphStreaming, negativeTestScalar)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Negative test for streaming
+ * Tries to enable streaming by calling set trigger node and enable auto pipelining
+ * Verify will fail in this case
+ *
+ */
 TEST(tivxGraphStreaming, negativeTestStreamingPipelining1)
 {
     vx_graph graph;
@@ -553,6 +617,15 @@ TEST(tivxGraphStreaming, negativeTestStreamingPipelining1)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar         n2                scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Negative test for streaming
+ * Tries to enable streaming by calling set trigger node and enable manual pipelining
+ * Verify will fail in this case
+ *
+ */
 TEST(tivxGraphStreaming, negativeTestStreamingPipelining2)
 {
     vx_graph graph;
@@ -594,6 +667,20 @@ TEST(tivxGraphStreaming, negativeTestStreamingPipelining2)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Graph2
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Tests multiple graphs with streaming enabled
+ * Both nodes of graph1 are on DSP1
+ * Both nodes of graph2 are on DSP2
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph1, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -686,6 +773,20 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph1, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Graph2
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Tests multiple graphs with streaming enabled
+ * Both nodes of graph1 are on DSP1
+ * Both nodes of graph2 are on DSP1
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph2, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -778,6 +879,20 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph2, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Graph2
+ *       n1         scalar             n2             scalar_out
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Tests multiple graphs with streaming enabled
+ * Node1 of graph1 is on DSP1 while node2 of graph1 is on DSP2
+ * Node1 of graph2 is on DSP1 while node2 of graph2 is on DSP2
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph3, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -870,6 +985,20 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraph3, Arg, STREAMING_PARAMETERS)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Graph2
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Tests multiple graphs with streaming and pipelining enabled
+ * Both nodes of graph1 are on DSP1
+ * Both nodes of graph2 are on DSP2
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined1, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -961,6 +1090,20 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined1, Arg, STREAMING_PARAM
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Graph2
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Tests multiple graphs with streaming and pipelining enabled
+ * Both nodes of graph1 are on DSP1
+ * Both nodes of graph2 are on DSP1
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined2, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1052,6 +1195,20 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined2, Arg, STREAMING_PARAM
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Graph2
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Tests multiple graphs with streaming and pipelining enabled
+ * Node1 of graph1 is on DSP1 while node2 of graph1 is on DSP2
+ * Node1 of graph2 is on DSP1 while node2 of graph2 is on DSP2
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined3, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1143,6 +1300,20 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined3, Arg, STREAMING_PARAM
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ * Graph1
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
+ *
+ * Graph2
+ *       n1         scalar             n2            scalar         n3
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR -- SCALAR_SINK
+ *
+ * Tests multiple graphs with streaming and pipelining enabled
+ * Node1 of graph1 is on DSP1 while node2 of graph1 is on DSP2
+ * Node1 of graph2 is on DSP1 while node2 and node3 of graph2 are on DSP2
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined4, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph1, graph2;
@@ -1241,6 +1412,13 @@ TEST_WITH_ARG(tivxGraphStreaming, testMultiGraphPipelined4, Arg, STREAMING_PARAM
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/*
+ *       n1         scalar             n2            scalar
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
+ *
+ * Tests starting and stopping capabilities of streaming
+ *
+ */
 TEST_WITH_ARG(tivxGraphStreaming, testStreamStartStop, Arg, STREAMING_PARAMETERS)
 {
     vx_graph graph;
@@ -1317,9 +1495,12 @@ TEST_WITH_ARG(tivxGraphStreaming, testStreamStartStop, Arg, STREAMING_PARAMETERS
 }
 
 /*
+ *       n1         scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
  *
- * This test case test the below
- * - Pipelining and streaming on a source and sink node
+ * Scalar source node connected to scalar sink node with streaming and pipelining enabled
+ * Both nodes on DSP1
+ * Error will be shown in a print statement if the scalar sink fails
  *
  */
 TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming1, Arg, STREAMING_PARAMETERS)
@@ -1388,9 +1569,12 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming1, Arg, STREAMING_PARAM
 }
 
 /*
+ *       n0         scalar         n1
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_SINK
  *
- * This test case test the below
- * - Pipelining and streaming on a source and sink node
+ * Scalar source node connected to scalar sink node with streaming and pipelining enabled
+ * N0 is on DSP1 while N1 is on DSP2
+ * Error will be shown in a print statement if the scalar sink fails
  *
  */
 TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming2, Arg, STREAMING_PARAMETERS)
@@ -1459,9 +1643,12 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming2, Arg, STREAMING_PARAM
 }
 
 /*
+ *       n0         scalar             n1            scalar         n2
+ * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR -- SCALAR_SINK
  *
- * This test case test the below
- * - Pipelining and streaming on a source and sink node with intermediate node
+ * Scalar source node connected to scalar sink node with streaming and pipelining enabled
+ * All nodes are on DSP1
+ * Error will be shown in a print statement if the scalar sink fails
  *
  */
 TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS)
