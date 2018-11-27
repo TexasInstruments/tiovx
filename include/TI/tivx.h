@@ -524,7 +524,7 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
  *
  * \ingroup group_tivx_ext_host
  */
-vx_status VX_API_CALL tivxGraphEnableStreaming(vx_graph graph, vx_node node);
+vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node node);
 
 #ifdef __cplusplus
 }

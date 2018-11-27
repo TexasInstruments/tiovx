@@ -343,7 +343,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
     return status;
 }
 
-vx_status VX_API_CALL tivxGraphEnableStreaming(vx_graph graph, vx_node node)
+vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node node)
 {
     vx_status status = VX_SUCCESS;
 
