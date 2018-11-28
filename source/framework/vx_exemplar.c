@@ -144,12 +144,15 @@ vx_reference ownCreateReferenceFromExemplar(
         case VX_TYPE_OBJECT_ARRAY:
             ref = ownCreateObjectArrayFromExemplar(
                 context, (vx_object_array)exemplar);
+            break;
         case VX_TYPE_TENSOR:
             ref = ownCreateTensorFromExemplar(
                 context, (vx_tensor)exemplar);
+            break;
         case VX_TYPE_USER_DATA_OBJECT:
             ref = ownCreateUserDataObjectFromExemplar(
                 context, (vx_user_data_object)exemplar);
+            break;
         default:
             break;
     }
