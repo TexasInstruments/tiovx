@@ -355,6 +355,9 @@ vx_status ownNodeKernelInit(vx_node node)
                     /* set kernel name */
                     strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
 
+                    /* set the number of pipeup buffers */
+                    kernel_name_obj_desc->num_pipeup_bufs = node->kernel->num_pipeup_bufs;
+
                     /* associated kernel name object descriptor with node object */
                     node->obj_desc[0]->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
 
@@ -1848,13 +1851,20 @@ void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue 
 
 uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
 {
-    vx_uint32 num_buf = 0;
+    vx_uint32 num_buf = 0, num_pipeup_bufs = 0;
 
     if(node != NULL
       && index < ownNodeGetNumParameters(node)
       && ownNodeGetParameterDir(node, index) == VX_OUTPUT)
     {
         num_buf = node->parameter_index_num_buf[index];
+
+        num_pipeup_bufs = node->kernel->num_pipeup_bufs;
+
+        if (num_pipeup_bufs > num_buf)
+        {
+            num_buf = num_pipeup_bufs;
+        }
     }
     return num_buf;
 }

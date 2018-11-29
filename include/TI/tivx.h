@@ -364,6 +364,13 @@ void tivxHostDeInit(void);
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *target_name);
 
+/*!
+ * \brief Set the number of pipeup buffers
+ *
+ *
+ * \ingroup group_tivx_ext_host
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelPipeupDepth(vx_kernel kernel, uint32_t num_pipeup_bufs);
 
 /*!
  * \brief Register publish and unpublish functions against a module name.

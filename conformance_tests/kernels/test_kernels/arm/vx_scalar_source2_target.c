@@ -68,9 +68,6 @@
 #include "TI/tivx_target_kernel.h"
 #include <TI/tivx_task.h>
 
-#define NUM_BUFS 2U
-
-/* Note: does this implementation not allow amount of buffers to be overwritten? */
 #define MAX_OLD_OBJ_DESC    (TIVX_GRAPH_MAX_PIPELINE_DEPTH-1U)
 
 typedef struct
@@ -78,7 +75,6 @@ typedef struct
     uint8_t local_val;
     uint8_t pipeup_frame;
     tivx_obj_desc_t *old_obj_desc[MAX_OLD_OBJ_DESC];
-    uint8_t do_error_print;
 } tivxScalarSource2Params;
 
 static tivx_target_kernel vx_scalar_source_target_kernel = NULL;
@@ -198,7 +194,6 @@ static vx_status VX_CALLBACK tivxScalarSource2Create(
 
     prms->local_val = 0;
     prms->pipeup_frame = 0;
-    prms->do_error_print = 10; /* max number of times to do error print */
 
     for(i=0; i<MAX_OLD_OBJ_DESC; i++)
     {
@@ -296,8 +291,6 @@ void tivxAddTargetKernelScalarSource2(void)
                             tivxScalarSource2Delete,
                             tivxScalarSource2Control,
                             NULL);
-
-        tivxSetTargetKernelPipeupDepth(vx_scalar_source_target_kernel, NUM_BUFS);
     }
 }
 

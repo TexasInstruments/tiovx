@@ -177,6 +177,14 @@ vx_status tivxAddKernelScalarSource2(vx_context context)
 
         status = vxGetStatus((vx_reference)kernel);
     }
+
+    if (status == VX_SUCCESS)
+    {
+        tivxSetKernelPipeupDepth(kernel, TIVX_KERNEL_SCALAR_SOURCE_NUM_BUFS);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
+
     if (status == VX_SUCCESS)
     {
         index = 0;

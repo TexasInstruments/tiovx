@@ -72,6 +72,8 @@ extern "C" {
 
 #define TIVX_KERNEL_SCALAR_SOURCE_MAX_PARAMS (1U)
 
+#define TIVX_KERNEL_SCALAR_SOURCE_NUM_BUFS (2U)
+
 #ifdef __cplusplus
 }
 #endif

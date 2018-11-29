@@ -622,6 +622,18 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
         }
         else
         {
+            /* Set the target kernel instance number of pipeup bufs */
+            target_kernel_instance->kernel->num_pipeup_bufs = kernel_name_obj_desc->num_pipeup_bufs;
+
+            if (target_kernel_instance->kernel->num_pipeup_bufs > 1)
+            {
+                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
+            }
+            else
+            {
+                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+            }
+
             /* save index key for fast retrival of handle during run-time */
             node_obj_desc->target_kernel_index[cnt] =
                 tivxTargetKernelInstanceGetIndex(target_kernel_instance);

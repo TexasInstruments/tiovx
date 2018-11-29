@@ -273,6 +273,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->initialize = initialize;
                 kernel->deinitialize = deinitialize;
                 kernel->num_targets = 0;
+                kernel->num_pipeup_bufs = 1;
+                kernel->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
                 kernel->signature.num_parameters = numParams;
                 kernel->local_data_size = 0;
                 kernel->lock_kernel_remove = ownContextGetKernelRemoveLock(context);
@@ -379,6 +381,27 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
             status = VX_ERROR_NO_RESOURCES;
             VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Number of targets greater than maximum allowable\n");
             VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: May need to increase the value of TIVX_MAX_TARGETS_PER_KERNEL in tiovx/include/tivx_config.h\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Invalid kernel reference\n");
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelPipeupDepth(vx_kernel kernel, uint32_t num_pipeup_bufs)
+{
+    vx_status status = VX_SUCCESS;
+
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    {
+        kernel->num_pipeup_bufs = num_pipeup_bufs;
+        if (num_pipeup_bufs > 1)
+        {
+            kernel->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
         }
     }
     else

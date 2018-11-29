@@ -210,15 +210,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
             vx_enum *state);
 
 /*!
- * \brief Set the number of buffers needed for a given parameter
- *
- * \ingroup group_tivx_target_kernel
- */
-VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelPipeupDepth(
-            tivx_target_kernel kernel,
-            uint32_t num_bufs);
-
-/*!
  * \brief Get the border mode for the target kernel instance
  *
  *        Used by the kernel implemention to get border mode

@@ -94,6 +94,10 @@ typedef struct _vx_kernel
      *         remove kernel API
      */
     vx_bool                 lock_kernel_remove;
+    /*! \brief number of pipeup buffers */
+    vx_uint32               num_pipeup_bufs;
+    /*! \brief capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE)*/
+    vx_enum                 state;
 
 } tivx_kernel_t;
 

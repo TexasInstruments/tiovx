@@ -203,6 +203,9 @@ typedef struct _tivx_obj_desc_kernel_name
     /*! \brief kernel name */
     char kernel_name[VX_MAX_KERNEL_NAME];
 
+    /*! \brief number of pipeup bufs needed */
+    uint32_t num_pipeup_bufs;
+
 } tivx_obj_desc_kernel_name_t;
 
 /*!
