@@ -373,6 +373,14 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
 VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelPipeupDepth(vx_kernel kernel, uint32_t num_pipeup_bufs);
 
 /*!
+ * \brief Set the number of sink buffers
+ *
+ *
+ * \ingroup group_tivx_ext_host
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint32_t num_sink_bufs);
+
+/*!
  * \brief Register publish and unpublish functions against a module name.
  *
  *        These functions are invoked when vxLoadKernels is called with

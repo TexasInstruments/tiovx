@@ -274,6 +274,9 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->deinitialize = deinitialize;
                 kernel->num_targets = 0;
                 kernel->num_pipeup_bufs = 1;
+                kernel->num_sink_bufs = 1;
+                kernel->connected_sink_bufs = 1;
+                kernel->source_sink_connection = vx_false_e;
                 kernel->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
                 kernel->signature.num_parameters = numParams;
                 kernel->local_data_size = 0;
@@ -403,6 +406,23 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelPipeupDepth(vx_kernel kernel, ui
         {
             kernel->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
         }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Invalid kernel reference\n");
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint32_t num_sink_bufs)
+{
+    vx_status status = VX_SUCCESS;
+
+    if ((NULL != kernel) &&
+        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
+    {
+        kernel->num_sink_bufs = num_sink_bufs;
     }
     else
     {

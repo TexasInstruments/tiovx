@@ -82,6 +82,7 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
 static vx_status ownGraphAllocateDataObjects(vx_graph graph);
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index);
+static vx_status ownGraphDetectSourceSink(vx_graph graph);
 
 /* Add's data reference to a list, increments number of times it is refered as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir)
@@ -132,6 +133,40 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
        )
     {
         ownGraphAddDataReference(graph, ref->scope, prm_dir);
+    }
+
+    return status;
+}
+
+static vx_status ownGraphDetectSourceSink(vx_graph graph)
+{
+    vx_status status = VX_SUCCESS;
+    uint16_t cur_node_idx, out_node_idx, num_out_nodes;
+    vx_node cur_node, next_node;
+
+    for(cur_node_idx=0; cur_node_idx<graph->num_nodes; cur_node_idx++)
+    {
+        cur_node = graph->nodes[cur_node_idx];
+
+        if (cur_node->kernel->num_pipeup_bufs > 1)
+        {
+            num_out_nodes = ownNodeGetNumOutNodes(cur_node);
+
+            for(out_node_idx=0; out_node_idx < num_out_nodes; out_node_idx++)
+            {
+                next_node = ownNodeGetNextNode(cur_node, out_node_idx);
+
+                if (next_node->kernel->num_sink_bufs > 1)
+                {
+                    graph->nodes[cur_node_idx]->kernel->source_sink_connection = vx_true_e;
+
+                    if (next_node->kernel->num_sink_bufs > graph->nodes[cur_node_idx]->kernel->connected_sink_bufs)
+                    {
+                        graph->nodes[cur_node_idx]->kernel->connected_sink_bufs = next_node->kernel->num_sink_bufs;
+                    }
+                }
+            }
+        }
     }
 
     return status;
@@ -1501,7 +1536,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
 
     for(node_id=0; node_id<graph->num_nodes; node_id++)
     {
-        if(graph->nodes[node_id]->kernel->num_pipeup_bufs > graph->pipeline_depth)
+        if(graph->nodes[node_id]->kernel->num_pipeup_bufs >= graph->pipeline_depth)
         {
             graph->pipeline_depth = graph->nodes[node_id]->kernel->num_pipeup_bufs;
         }
@@ -1610,7 +1645,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             if(status == VX_SUCCESS)
             {
                 /* Find out nodes and in nodes for each node in the graph
-                 * No resources are allcoated in this step
+                 * No resources are allocated in this step
                  */
                 status = ownGraphCalcInAndOutNodes(graph);
                 if(status != VX_SUCCESS)
@@ -1643,11 +1678,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 }
             }
 
+            /* Detects connection between source and sink nodes */
+            if(status == VX_SUCCESS)
+            {
+                ownGraphDetectSourceSink(graph);
+            }
+
             if(status == VX_SUCCESS)
             {
                 /* Call validate function for each node
                  * If validation fails then return with error
-                 * No resources are allcoated in this step
+                 * No resources are allocated in this step
                  */
                 status = ownGraphNodeKernelValidate(graph, meta);
 
@@ -1661,7 +1702,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             {
                 /* Find head nodes and leaf nodes
                  * in graph
-                 * No resources are allcoated in this step
+                 * No resources are allocated in this step
                  */
                 status = ownGraphCalcHeadAndLeafNodes(graph);
                 if(status != VX_SUCCESS)
@@ -1682,7 +1723,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
             if(status == VX_SUCCESS)
             {
                 /* Allocate memory associated with data objects of this graph
-                 * Memory resources are allcoated in this step
+                 * Memory resources are allocated in this step
                  * No need to free them in case of error, since they get free'ed during
                  * data object release
                  */

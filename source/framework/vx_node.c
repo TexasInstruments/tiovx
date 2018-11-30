@@ -1851,7 +1851,7 @@ void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue 
 
 uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
 {
-    vx_uint32 num_buf = 0, num_pipeup_bufs = 0;
+    vx_uint32 num_buf = 0, num_pipeup_bufs = 0, sink_bufs = 0;
 
     if(node != NULL
       && index < ownNodeGetNumParameters(node)
@@ -1859,7 +1859,9 @@ uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
     {
         num_buf = node->parameter_index_num_buf[index];
 
-        num_pipeup_bufs = node->kernel->num_pipeup_bufs;
+        sink_bufs = node->kernel->connected_sink_bufs - 1;
+
+        num_pipeup_bufs = node->kernel->num_pipeup_bufs + sink_bufs;
 
         if (num_pipeup_bufs > num_buf)
         {

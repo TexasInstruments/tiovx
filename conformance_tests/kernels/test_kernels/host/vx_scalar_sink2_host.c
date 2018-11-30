@@ -179,6 +179,12 @@ vx_status tivxAddKernelScalarSink2(vx_context context)
     }
     if (status == VX_SUCCESS)
     {
+        tivxSetKernelSinkDepth(kernel, 2);
+
+        status = vxGetStatus((vx_reference)kernel);
+    }
+    if (status == VX_SUCCESS)
+    {
         index = 0;
 
         {
