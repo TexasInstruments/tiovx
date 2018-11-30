@@ -256,7 +256,7 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph)
         }
         else
         {
-            VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: trigger node has not been set. Please set trigger node prior to verifying graph\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxStartGraphStreaming: streaming has not been enabled. Please enable streaming prior to verifying graph\n");
             status = VX_ERROR_INVALID_REFERENCE;
         }
     }
@@ -343,23 +343,24 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
     return status;
 }
 
-vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node node)
+vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node trigger_node)
 {
     vx_status status = VX_SUCCESS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
-        if( NULL != node )
+        graph->is_streaming_enabled = vx_true_e;
+
+        if( NULL != trigger_node )
         {
             int i;
 
             for (i = 0; i < graph->num_nodes; i++)
             {
-                if (graph->nodes[i] == node)
+                if (graph->nodes[i] == trigger_node)
                 {
                     graph->trigger_node_index = i;
-                    graph->is_streaming_enabled = vx_true_e;
                     graph->trigger_node_set = vx_true_e;
                     break;
                 }
@@ -370,11 +371,6 @@ vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node node)
                 VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: node does not belong to graph\n");
                 status = VX_ERROR_INVALID_PARAMETERS;
             }
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: invalid node reference\n");
-            status = VX_ERROR_INVALID_REFERENCE;
         }
     }
     else
@@ -396,65 +392,66 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
     {
         if (vx_true_e == graph->is_streaming_enabled)
         {
-            if (vx_true_e == graph->trigger_node_set)
+            tivxTaskSetDefaultCreateParams(&streamingTaskParams);
+
+            streamingTaskParams.app_var = graph;
+            streamingTaskParams.stack_ptr = NULL;
+            streamingTaskParams.stack_size = TIVX_STREAMING_STACK_SIZE;
+            streamingTaskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
+            streamingTaskParams.priority = TIVX_STREAMING_TASK_PRIORITY;
+
+            status = tivxEventQueueCreate(&graph->event_queue);
+
+            if (VX_SUCCESS == status)
             {
-                tivxTaskSetDefaultCreateParams(&streamingTaskParams);
+                tivxEventQueueEnableEvents(&graph->event_queue, vx_true_e);
 
-                streamingTaskParams.app_var = graph;
-                streamingTaskParams.stack_ptr = NULL;
-                streamingTaskParams.stack_size = TIVX_STREAMING_STACK_SIZE;
-                streamingTaskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
-                streamingTaskParams.priority = TIVX_STREAMING_TASK_PRIORITY;
-
-                status = tivxEventQueueCreate(&graph->event_queue);
-
-                if (VX_SUCCESS == status)
+                if (graph->pipeline_depth > 1)
                 {
-                    tivxEventQueueEnableEvents(&graph->event_queue, vx_true_e);
-
-                    if (graph->pipeline_depth > 1)
+                    if (vx_true_e == graph->trigger_node_set)
                     {
                         streamingTaskParams.task_main = &tivxStreamingNoPipeliningTask;
                     }
                     else
                     {
-                        /* Note: if pipelining with AUTO or MANUAL mode is enabled, re-trigger is done by pipelining and this is not needed */
-                        if (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
-                        {
-                            status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0);
-                        }
-
-                        if (VX_SUCCESS == status)
-                        {
-                            streamingTaskParams.task_main = &tivxStreamingPipeliningTask;
-                        }
-                        else
-                        {
-                            status = VX_ERROR_INVALID_REFERENCE;
-                            VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be registered\n");
-                        }
+                        status = VX_ERROR_INVALID_REFERENCE;
+                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: trigger node must be set when pipelining is enabled\n");
+                    }
+                }
+                else
+                {
+                    /* Note: if pipelining with AUTO or MANUAL mode is enabled, re-trigger is done by pipelining and this is not needed */
+                    if (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
+                    {
+                        status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0);
                     }
 
                     if (VX_SUCCESS == status)
                     {
-                        status = tivxEventCreate(&graph->delete_done);
+                        streamingTaskParams.task_main = &tivxStreamingPipeliningTask;
+                    }
+                    else
+                    {
+                        status = VX_ERROR_INVALID_REFERENCE;
+                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be registered\n");
+                    }
+                }
+
+                if (VX_SUCCESS == status)
+                {
+                    status = tivxEventCreate(&graph->delete_done);
+
+                    if (VX_SUCCESS == status)
+                    {
+                        status = tivxEventCreate(&graph->stop_done);
 
                         if (VX_SUCCESS == status)
                         {
-                            status = tivxEventCreate(&graph->stop_done);
+                            status = tivxTaskCreate(&graph->streaming_task_handle, &streamingTaskParams);
 
-                            if (VX_SUCCESS == status)
+                            if (VX_SUCCESS != status)
                             {
-                                status = tivxTaskCreate(&graph->streaming_task_handle, &streamingTaskParams);
-
-                                if (VX_SUCCESS != status)
-                                {
-                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: streaming task could not be created\n");
-                                }
-                            }
-                            else
-                            {
-                                VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be created\n");
+                                VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: streaming task could not be created\n");
                             }
                         }
                         else
@@ -464,8 +461,12 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: graph event queue could not be registered\n");
+                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be created\n");
                     }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: graph event queue could not be registered\n");
                 }
             }
         }
