@@ -1501,6 +1501,14 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
 
     for(node_id=0; node_id<graph->num_nodes; node_id++)
     {
+        if(graph->nodes[node_id]->kernel->num_pipeup_bufs > graph->pipeline_depth)
+        {
+            graph->pipeline_depth = graph->nodes[node_id]->kernel->num_pipeup_bufs;
+        }
+    }
+
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
+    {
         ownNodeSetObjDescParamDirection(graph->nodes[node_id]);
 
         status = ownNodeAllocObjDescForPipeline(graph->nodes[node_id], graph->pipeline_depth);
