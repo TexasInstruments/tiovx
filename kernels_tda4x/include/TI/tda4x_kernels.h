@@ -126,17 +126,37 @@ extern "C" {
  */
 #define TIVX_KERNEL_VPAC_VISS_NAME     "com.ti.hwa.vpac_viss"
 
+/*! \brief Display Kernel Name
+ *  \ingroup group_vision_function_display
+ */
+#define TIVX_KERNEL_DISPLAY_NAME       "com.ti.hwa.display"
 
 /*! \brief tidl kernel name
  *  \ingroup group_vision_function_tidl
  */
 #define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
 
+/**
+ *  \anchor Display_opMode
+ *  \name   Display Kernel 's Operation Mode
+ *  \brief  Display kernel can be run in two modes: it can be used to display
+ *          only one buffer repeatedly or application provides a new buffer
+ *          every VSYNC. In case of one buffer, kernel needs to maintain a local
+ *          copy of the buffer.
+ *
+ *  @{
+ */
+/** \brief Display Kernel does not need to maintain buffer copy i.e. application
+ *   gives new frame at every VSYNC */
+#define TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE            ((uint32_t) 0U)
+/** \brief Display Kernel needs to maintain buffer copy */
+#define TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE                 ((uint32_t) 1U)
+/* @} */
 
 /*! \brief Maximum H3A number of bytes in statistics data array
- * 
+ *
  *   Allocating 24KB buffer which is large enough for 32x32 windows
- * 
+ *
  *  \ingroup group_vision_function_vpac_viss
  */
 #define MAX_H3A_STAT_NUMBYTES  (24576U)
@@ -557,6 +577,23 @@ typedef struct
 } tivx_h3a_aew_header;
 
 /*********************************
+ *      DISPLAY STRUCTURES
+ *********************************/
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_DISPLAY kernel.
+ *
+ * \ingroup group_vision_function_display
+ */
+typedef struct {
+    uint32_t  opMode;      /*!< Operation Mode of display kernel. Refer \ref Display_opMode for values */
+    uint32_t  pipeId;      /*!< 0:VID1, 1:VIDL1, 2:VID2 and 3:VIDL2 */
+    uint32_t  outWidth;    /*!< Horizontal Size of picture at display output */
+    uint32_t  outHeight;   /*!< Vertical Size of picture at display output */
+    uint32_t  posX;        /*!< X position of the video buffer */
+    uint32_t  posY;        /*!< Y position of the video buffer */
+} tivx_display_params_t;
+
+/*********************************
  *      Function Prototypes
  *********************************/
 
@@ -677,6 +714,17 @@ void tivxRegisterHwaTargetVpacVissKernels(void);
  */
 void tivxUnRegisterHwaTargetVpacVissKernels(void);
 
+/*!
+ * \brief Function to register HWA Kernels on the display Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxRegisterHwaTargetDisplayKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the display Target
+ * \ingroup group_vision_function_hwa
+ */
+void tivxUnRegisterHwaTargetDisplayKernels(void);
 
 #ifdef __cplusplus
 }

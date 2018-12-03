@@ -291,6 +291,25 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_reference params[],
                                               vx_uint32 num_params);
 
+/*! \brief [Graph] Creates a DSS Display Node.
+ *
+ * \param [in] graph         The reference to the graph.
+ * \param [in] configuration The input array of a single display params structure of type <tt>\ref tivx_display_params_t</tt>.
+ * \param [in] image         The input image in one of the below formats:
+ *                           <tt>\ref VX_DF_IMAGE_RGB</tt>,
+ *                           <tt>\ref VX_DF_IMAGE_RGBX</tt>,
+ *                           <tt>\ref VX_DF_IMAGE_UYVY</tt> or
+ *                           <tt>\ref VX_DF_IMAGE_NV12</tt>.
+ *
+ * \see <tt>TIVX_KERNEL_DISPLAY_NAME</tt>
+ * \ingroup group_vision_function_display
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(vx_graph graph,
+                                                 vx_array configuration,
+                                                 vx_image image);
+
 #ifdef __cplusplus
 }
 #endif
