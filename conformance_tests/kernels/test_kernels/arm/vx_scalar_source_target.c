@@ -101,6 +101,7 @@ static vx_status VX_CALLBACK tivxScalarSourceProcess(
     tivx_obj_desc_scalar_t *out_desc;
     tivxScalarSourceParams *prms = NULL;
     uint32_t size;
+    vx_enum state;
 
     if ( (num_params != TIVX_KERNEL_SCALAR_SOURCE_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OUT_IDX])
@@ -122,20 +123,31 @@ static vx_status VX_CALLBACK tivxScalarSourceProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
 
-        if (255 == prms->local_val)
+        if (VX_SUCCESS == status)
         {
-            prms->local_val = 0;
+            status = tivxGetTargetKernelInstanceState(kernel, &state);
+
+            if (VX_SUCCESS == status)
+            {
+                if (TIVX_TARGET_KERNEL_STATE_STEADY_STATE == state)
+                {
+                    if (255 == prms->local_val)
+                    {
+                        prms->local_val = 0;
+                    }
+                    else
+                    {
+                        prms->local_val++;
+                    }
+
+                    tivxTaskWaitMsecs(1);
+
+                    out_value = prms->local_val;
+
+                    out_desc->data.u08 = out_value;
+                }
+            }
         }
-        else
-        {
-            prms->local_val++;
-        }
-
-        tivxTaskWaitMsecs(1);
-
-        out_value = prms->local_val;
-
-        out_desc->data.u08 = out_value;
 
     }
 

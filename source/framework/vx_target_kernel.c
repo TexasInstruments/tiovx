@@ -130,6 +130,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                     g_target_kernel_table[i].delete_func = delete_func;
                     g_target_kernel_table[i].control_func = control_func;
                     g_target_kernel_table[i].caller_priv_arg = priv_arg;
+                    g_target_kernel_table[i].num_pipeup_bufs = 1;
 
                     knl = &g_target_kernel_table[i];
 
@@ -383,5 +384,25 @@ vx_status tivxTargetKernelControl(
     }
 
     return (status);
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelPipeupDepth(
+    tivx_target_kernel kernel,
+    uint32_t num_bufs)
+{
+    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+
+    if(NULL != kernel)
+    {
+        kernel->num_pipeup_bufs = num_bufs;
+
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxSetTargetKernelInstanceContext: target kernel instance is NULL\n");
+    }
+
+    return status;
 }
 

@@ -115,7 +115,7 @@ static vx_status log_graph_rt_trace(vx_graph graph)
  */
 static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
 {
-    return tivxGraphEnableStreaming(graph, node);
+    return tivxEnableGraphStreaming(graph, node);
 }
 
 static void printGraphPipelinePerformance(vx_graph graph,
@@ -381,6 +381,94 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_node n1, n2, n0;
+    vx_scalar scalar[MAX_NUM_BUF];
+    uint8_t scalar_val = 0;
+    uint32_t pipeline_depth, num_buf, i, buf_id, loop_id, num_streams;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+    uint64_t exe_time;
+
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    for(i=0; i<num_buf; i++)
+    {
+        ASSERT_VX_OBJECT(scalar[i] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+    }
+
+    ASSERT_VX_OBJECT(n0 = tivxScalarSource2Node(graph, scalar[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* explicitly set graph pipeline depth */
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 0, num_buf));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n0));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_source_sink_node");
+    log_graph_rt_trace(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    VX_CALL(vxStartGraphStreaming(graph));
+
+    tivxTaskWaitMsecs(arg_->stream_time);
+
+    VX_CALL(vxStopGraphStreaming(graph));
+
+    VX_CALL(vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &num_streams, sizeof(num_streams)));
+
+    ASSERT(num_streams != 0);
+
+    printf(" Graph executed %d times\n", num_streams);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    {
+        vx_node nodes[] = { n0, n1, n2  };
+
+        printGraphPipelinePerformance(graph, nodes, 3, exe_time, num_streams, 1);
+    }
+
+    for(i=0; i<num_buf; i++)
+    {
+        VX_CALL(vxReleaseScalar(&scalar[i]));
+    }
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivxTestKernelsUnLoadKernels(context);
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
 TESTCASE_TESTS(tivxTestSinkNode, 
     testSinkNode, 
-    testSourceSinkNode)
+    testSourceSinkNode,
+    testSourceSinkNode2)

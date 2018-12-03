@@ -147,7 +147,7 @@ static vx_status VX_CALLBACK tivxScalarSink2Process(
         {
             if(prms->do_error_print>0)
                 prms->do_error_print--;
-            VX_PRINT(VX_ZONE_ERROR, "error #%d, %d != %d !!!\n", prms->do_error_print, prms->local_val, in_value);
+            VX_PRINT(VX_ZONE_ERROR, "error #%d, local val %d != given val %d !!!\n", prms->do_error_print, prms->local_val, in_value);
             status = VX_FAILURE;
         }
     }

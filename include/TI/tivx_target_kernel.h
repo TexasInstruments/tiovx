@@ -88,6 +88,25 @@ typedef struct _tivx_target_kernel *tivx_target_kernel;
  */
 typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 
+/*! \brief Capture state for a given kernel parameter
+ *
+ *         TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE
+ *
+ * \ingroup group_tivx_ext_host
+ */
+typedef enum _tivx_target_kernel_instance_state_e {
+
+    /*! \brief CPU ID for DSP1 */
+    TIVX_TARGET_KERNEL_STATE_PIPE_UP = 0,
+
+    /*! \brief CPU ID for DSP2 */
+    TIVX_TARGET_KERNEL_STATE_STEADY_STATE = 1,
+
+    /*! \brief Invalid CPU ID */
+    TIVX_TARGET_KERNEL_STATE_INVALID_STATE = 0xFF
+
+} tivx_target_kernel_instance_state_e;
+
 /*!
 * \brief The target kernel callback
 *
@@ -178,6 +197,26 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
 VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceContext(
             tivx_target_kernel_instance target_kernel_instance,
             void **kernel_context, uint32_t *kernel_context_size);
+
+/*!
+ * \brief Get a kernel state with a target kernel instance
+ *
+ *        Typically used by a capture kernel function during process to track state
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
+            tivx_target_kernel_instance target_kernel_instance,
+            vx_enum *state);
+
+/*!
+ * \brief Set the number of buffers needed for a given parameter
+ *
+ * \ingroup group_tivx_target_kernel
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelPipeupDepth(
+            tivx_target_kernel kernel,
+            uint32_t num_bufs);
 
 /*!
  * \brief Get the border mode for the target kernel instance

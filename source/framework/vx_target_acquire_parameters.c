@@ -153,7 +153,7 @@ static void tivxTargetNodeDescAcquireParameter(
         else
         {
             tivx_obj_desc_t *obj_desc;
-			
+
             tivxFlagBitSet(&flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED);
 
             data_ref_q_obj_desc->ref_obj_desc_id = ref_obj_desc_id;
@@ -161,7 +161,7 @@ static void tivxTargetNodeDescAcquireParameter(
             data_ref_q_obj_desc->flags = flags;
             
             obj_desc = tivxObjDescGet(ref_obj_desc_id);
-            if(obj_desc) 
+            if(obj_desc)
             {
                 obj_desc->in_node_done_cnt = 0;
             }
@@ -180,6 +180,78 @@ static void tivxTargetNodeDescAcquireParameter(
     else
     {
         VX_PRINT(VX_ZONE_INFO,"Parameter ALREADY acquired (node=%d, pipe=%d, data_ref_q=%d, ref=%d)\n",
+                                node_obj_desc->base.obj_desc_id,
+                                node_obj_desc->pipeline_id,
+                                data_ref_q_obj_desc->base.obj_desc_id,
+                                data_ref_q_obj_desc->ref_obj_desc_id
+                            );
+
+        *prm_obj_desc_id = data_ref_q_obj_desc->ref_obj_desc_id;
+    }
+
+    tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+}
+
+static void tivxTargetNodeDescAcquireParameterForPipeup(
+                    tivx_obj_desc_node_t *node_obj_desc,
+                    tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc, /* data ref q obj desc */
+                    uint16_t *prm_obj_desc_id /* extracted parameter ref */
+                    )
+{
+    uint32_t flags;
+
+    *prm_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+
+    tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_DATA_REF_QUEUE);
+
+    flags = data_ref_q_obj_desc->flags;
+
+    if(tivxFlagIsBitSet(flags, TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_REF_ACQUIRED)==vx_false_e)
+    {
+        uint16_t ref_obj_desc_id, obj_desc_q_id;
+
+        obj_desc_q_id = data_ref_q_obj_desc->acquire_q_obj_desc_id;
+
+        tivxObjDescQueueDequeue(
+            obj_desc_q_id,
+            &ref_obj_desc_id
+            );
+
+        if(ref_obj_desc_id==TIVX_OBJ_DESC_INVALID /* did not get a ref */
+            )
+        {
+            VX_PRINT(VX_ZONE_INFO,"Parameter acquire for pipe up failed ... (node=%d, pipe=%d, data_ref_q=%d, queue=%d)\n",
+                             node_obj_desc->base.obj_desc_id,
+                             node_obj_desc->pipeline_id,
+                             data_ref_q_obj_desc->base.obj_desc_id,
+                             obj_desc_q_id
+                       );
+        }
+        else
+        {
+            tivx_obj_desc_t *obj_desc;
+
+            /* dont set acquired flag, since this is pipe up phase, just extract the data obj desc */
+            obj_desc = tivxObjDescGet(ref_obj_desc_id);
+            if(obj_desc)
+            {
+                obj_desc->in_node_done_cnt = 0;
+            }
+
+            *prm_obj_desc_id = ref_obj_desc_id;
+
+            VX_PRINT(VX_ZONE_INFO,"Parameter acquired for pipe up (node=%d, pipe=%d, data_ref_q=%d, queue=%d, ref=%d)\n",
+                                node_obj_desc->base.obj_desc_id,
+                                node_obj_desc->pipeline_id,
+                                data_ref_q_obj_desc->base.obj_desc_id,
+                                obj_desc_q_id,
+                                ref_obj_desc_id
+                           );
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_INFO,"Parameter ALREADY acquired for pipe up (node=%d, pipe=%d, data_ref_q=%d, ref=%d)\n",
                                 node_obj_desc->base.obj_desc_id,
                                 node_obj_desc->pipeline_id,
                                 data_ref_q_obj_desc->base.obj_desc_id,
@@ -436,6 +508,42 @@ void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             break;
         }
         #endif
+    }
+}
+
+void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
+            uint16_t prm_obj_desc_id[])
+{
+    uint32_t prm_id;
+    vx_bool is_prm_data_ref_q_flag;
+
+    is_prm_data_ref_q_flag = node_obj_desc->is_prm_data_ref_q;
+
+    for(prm_id=0; prm_id<node_obj_desc->num_params; prm_id++)
+    {
+        if(tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1<<prm_id))==vx_false_e)
+        {
+            prm_obj_desc_id[prm_id] = node_obj_desc->data_id[prm_id];
+        }
+        else
+        {
+            tivx_obj_desc_data_ref_q_t *data_ref_q_obj_desc;
+
+            data_ref_q_obj_desc = (tivx_obj_desc_data_ref_q_t*)tivxObjDescGet(node_obj_desc->data_ref_q_id[prm_id]);
+
+            if(tivxObjDescIsValidType((tivx_obj_desc_t*)data_ref_q_obj_desc, TIVX_OBJ_DESC_DATA_REF_Q))
+            {
+                tivxTargetNodeDescAcquireParameterForPipeup(
+                    node_obj_desc,
+                    data_ref_q_obj_desc, /* data ref q obj desc */
+                    &prm_obj_desc_id[prm_id] /* extracted parameter ref */
+                    );
+            }
+            else
+            {
+                prm_obj_desc_id[prm_id] = TIVX_OBJ_DESC_INVALID;
+            }
+        }
     }
 }
 

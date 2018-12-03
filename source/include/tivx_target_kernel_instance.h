@@ -90,17 +90,20 @@ typedef struct _tivx_target_kernel_instance {
     /*! kernel ID */
     vx_enum kernel_id;
 
-    /*! index in target kernel instance */
+    /*! index in target kernel instance table */
     uint32_t index;
 
-    /* Kernel function context or handle */
+    /*! Kernel function context or handle */
     void *kernel_context;
 
-    /* Kernel function context size */
+    /*! Kernel function context size */
     uint32_t kernel_context_size;
 
     /*! \brief border mode */
     vx_border_t border_mode;
+
+    /*! \brief capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE)*/
+    vx_enum state;
 
 } tivx_target_kernel_instance_t;
 

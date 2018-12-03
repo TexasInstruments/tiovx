@@ -461,6 +461,9 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
         if(tivxTargetNodeDescIsPrevPipeNodeBlocked(node_obj_desc)==vx_false_e)
         {
             vx_bool is_node_blocked;
+            tivx_target_kernel_instance target_kernel_instance;
+            vx_enum kernel_instance_state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+            uint32_t num_bufs = 1;
 
             is_node_blocked = vx_false_e;
 
@@ -469,6 +472,40 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                                  node_obj_desc->pipeline_id,
                                  target->target_id
                            );
+
+            /* Note: not taking into account replicated node */
+            target_kernel_instance = tivxTargetKernelInstanceGet(
+                node_obj_desc->target_kernel_index[0], node_obj_desc->kernel_id);
+
+            /* Note: in the case of user kernel, target_kernel instance is NULL */
+            if (NULL != target_kernel_instance)
+            {
+                num_bufs = target_kernel_instance->kernel->num_pipeup_bufs;
+
+                kernel_instance_state = target_kernel_instance->state;
+            }
+
+            if ( (TIVX_TARGET_KERNEL_STATE_PIPE_UP == kernel_instance_state) &&
+                 (num_bufs > 1) )
+            {
+                int buf_idx;
+
+                for (buf_idx = 0; buf_idx < (num_bufs - 1); buf_idx++)
+                {
+                    tivxTargetNodeDescAcquireAllParametersForPipeup(node_obj_desc, prm_obj_desc_id);
+
+                    if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                    {
+                        tivxTargetNodeDescNodeExecuteTargetKernel(node_obj_desc, prm_obj_desc_id);
+                    }
+                    else
+                    {
+                        tivxTargetNodeDescNodeExecuteUserKernel(node_obj_desc, prm_obj_desc_id);
+                    }
+                }
+
+                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+            }
 
             tivxTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked);
 
@@ -531,7 +568,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
             }
             else
             {
-                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for resrouces on target %08x\n",
+                VX_PRINT(VX_ZONE_INFO,"Node (node=%d, pipe=%d) ... BLOCKED for resources on target %08x\n",
                                  node_obj_desc->base.obj_desc_id,
                                  node_obj_desc->pipeline_id,
                                  target->target_id

@@ -109,6 +109,10 @@ typedef struct _tivx_target_kernel {
     tivx_target_kernel_f control_func;
 
     void *caller_priv_arg;
+
+    /*! \brief Number of buffers needed for this kernel */
+    vx_uint32      num_pipeup_bufs;
+
 } tivx_target_kernel_t;
 
 /*!

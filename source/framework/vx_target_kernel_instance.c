@@ -76,6 +76,7 @@ vx_status tivxTargetKernelInstanceInit(void)
     {
         g_target_kernel_instance_table[i].kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
         g_target_kernel_instance_table[i].index = i;
+        g_target_kernel_instance_table[i].state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
     }
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
@@ -120,6 +121,14 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, cha
                     tmp_kernel_instance->kernel_context = NULL;
                     tmp_kernel_instance->kernel_context_size = 0;
                     tmp_kernel_instance->kernel = kernel;
+                    if (kernel->num_pipeup_bufs > 1)
+                    {
+                        tmp_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
+                    }
+                    else
+                    {
+                        tmp_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+                    }
 
                     kernel_instance = tmp_kernel_instance;
 
@@ -220,6 +229,25 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetTargetKernelInstanceContext(
     else
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxSetTargetKernelInstanceContext: target kernel instance is NULL\n");
+    }
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL tivxGetTargetKernelInstanceState(
+            tivx_target_kernel_instance target_kernel_instance,
+            vx_enum *state)
+{
+    vx_status status = VX_ERROR_INVALID_PARAMETERS;
+
+    if(NULL != target_kernel_instance)
+    {
+        *state = target_kernel_instance->state;
+
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxGetTargetKernelInstanceContext: target kernel instance is NULL\n");
     }
     return status;
 }

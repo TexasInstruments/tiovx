@@ -73,6 +73,9 @@ static vx_status ownDestructGraph(vx_reference ref)
 
                     graph->data_ref_q_list[i].refs_list[buf_id] = NULL;
                 }
+
+                graph->data_ref_q_list[i].node  = NULL;
+                graph->data_ref_q_list[i].index = 0;
             }
         }
         for(i=0; i<graph->num_delay_data_ref_q; i++)

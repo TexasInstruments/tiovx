@@ -275,6 +275,14 @@ void tivxTargetTriggerNode(uint16_t node_obj_desc_id);
 void tivxTargetNodeDescAcquireAllParameters(tivx_obj_desc_node_t *node_obj_desc,
             uint16_t prm_obj_desc_id[], vx_bool *is_node_blocked);
 
+
+/*! \brief Acquire parameters for node execution during pipeup phase
+ *
+ * \ingroup group_tivx_target
+ */
+void tivxTargetNodeDescAcquireAllParametersForPipeup(tivx_obj_desc_node_t *node_obj_desc,
+            uint16_t prm_obj_desc_id[]);
+
 /*! \brief Release parameters that were previously acquired
  *
  * \ingroup group_tivx_target

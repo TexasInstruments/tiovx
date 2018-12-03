@@ -368,7 +368,7 @@ vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node trigger_n
 
             if (vx_false_e == graph->trigger_node_set)
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: node does not belong to graph\n");
+                VX_PRINT(VX_ZONE_ERROR, "tivxGraphSetStreamingTriggerNode: trigger_node does not belong to graph\n");
                 status = VX_ERROR_INVALID_PARAMETERS;
             }
         }

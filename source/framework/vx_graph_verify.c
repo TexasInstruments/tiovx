@@ -81,6 +81,7 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph);
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
 static vx_status ownGraphAllocateDataObjects(vx_graph graph);
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
+static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index);
 
 /* Add's data reference to a list, increments number of times it is refered as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir)
@@ -1367,7 +1368,7 @@ static vx_status ownGraphCreateAndLinkDataReferenceQueues(vx_graph graph)
 }
 
 /* called during graph verify,
- * this function is called for non-graph parameters that are intermeidate data objects
+ * this function is called for non-graph parameters that are intermediate data objects
  * within a graph
  */
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index)
@@ -1422,6 +1423,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
 
             /* if user has requested more than 1 buf at this node, then allocate the additional references */
             num_buf = ownNodeGetParameterNumBuf(node, index);
+
             if(num_buf>0)
             {
                 uint32_t buf_id;
@@ -1437,7 +1439,6 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                 for(buf_id=1; buf_id<num_buf; buf_id++)
                 {
                     vx_reference ref;
-
                     ref = ownCreateReferenceFromExemplar(graph->base.context, exemplar);
                     if(ref==NULL)
                     {
@@ -1451,13 +1452,11 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
                             if (ownIsValidSpecificReference(ref, VX_TYPE_PYRAMID) == vx_true_e)
                             {
                                 vx_pyramid pyramid = (vx_pyramid)ref;
-
                                 ref = (vx_reference)pyramid->img[0];
                             }
                             else if (ownIsValidSpecificReference(ref, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
                             {
                                 vx_object_array object_array = (vx_object_array)ref;
-
                                 ref = object_array->ref[0];
                             }
                             else
@@ -1734,6 +1733,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     VX_PRINT(VX_ZONE_ERROR,"Node kernel init failed\n");
                 }
             }
+
             if(status == VX_SUCCESS)
             {
                 /* update data refs within data ref queues for meta data updated during kernel init */
