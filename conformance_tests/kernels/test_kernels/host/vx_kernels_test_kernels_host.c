@@ -124,6 +124,8 @@ void tivxTestKernelsLoadKernels(vx_context context)
         tivxRegisterTestKernelsKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
 
+        tivxRegisterCaptureTargetArmKernels();
+
         gIsTestKernelsKernelsLoad = 1U;
     }
 }
@@ -134,6 +136,8 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
     {
         vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
         tivxUnRegisterTestKernelsKernels();
+
+        tivxUnRegisterCaptureTargetArmKernels();
 
         gIsTestKernelsKernelsLoad = 0U;
     }

@@ -276,7 +276,6 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->num_pipeup_bufs = 1;
                 kernel->num_sink_bufs = 1;
                 kernel->connected_sink_bufs = 1;
-                kernel->source_sink_connection = vx_false_e;
                 kernel->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
                 kernel->signature.num_parameters = numParams;
                 kernel->local_data_size = 0;

@@ -155,40 +155,43 @@ void tivxAddTargetKernelScalarSourceError(void)
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ( self_cpu == TIVX_CPU_ID_IPU1_0 )
+    if ( (self_cpu == TIVX_CPU_ID_IPU1_0) ||
+          (self_cpu == TIVX_CPU_ID_A15_0) ||
+          (self_cpu == TIVX_CPU_ID_IPU2_0) ||
+          (self_cpu == TIVX_CPU_ID_IPU1_1) ||
+          (self_cpu == TIVX_CPU_ID_DSP1) ||
+          (self_cpu == TIVX_CPU_ID_DSP2))
     {
-        strncpy(target_name, TIVX_TARGET_IPU1_0, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == TIVX_CPU_ID_A15_0 )
-    {
-        strncpy(target_name, TIVX_TARGET_A15_0, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == TIVX_CPU_ID_IPU1_1 )
-    {
-        strncpy(target_name, TIVX_TARGET_IPU1_1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == TIVX_CPU_ID_IPU2_0 )
-    {
-        strncpy(target_name, TIVX_TARGET_IPU2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == TIVX_CPU_ID_DSP1 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
-    }
-    else
-    if ( self_cpu == TIVX_CPU_ID_DSP2 )
-    {
-        strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        status = VX_SUCCESS;
+        if (self_cpu == TIVX_CPU_ID_IPU1_0)
+        {
+            strncpy(target_name, TIVX_TARGET_IPU1_0, TIVX_TARGET_MAX_NAME);
+            status = VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_A15_0)
+        {
+            strncpy(target_name, TIVX_TARGET_A15_0, TIVX_TARGET_MAX_NAME);
+            status = VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_IPU2_0)
+        {
+            strncpy(target_name, TIVX_TARGET_IPU2, TIVX_TARGET_MAX_NAME);
+            status = VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_IPU1_1)
+        {
+            strncpy(target_name, TIVX_TARGET_IPU1_1, TIVX_TARGET_MAX_NAME);
+            status = VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_DSP1)
+        {
+            strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
+            status = VX_SUCCESS;
+        }
+        else if (self_cpu == TIVX_CPU_ID_DSP2)
+        {
+            strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
+            status = VX_SUCCESS;
+        }
     }
     else
     {

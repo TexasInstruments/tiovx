@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxAddKernelScalarSourceErrorValidate(vx_node node
 
     if (VX_SUCCESS == status)
     {
-        out = (const vx_scalar)parameters[TIVX_KERNEL_SCALAR_SOURCE_ERROR_OUT_IDX];
+        out = (vx_scalar)parameters[TIVX_KERNEL_SCALAR_SOURCE_ERROR_OUT_IDX];
     }
 
 
@@ -193,6 +193,7 @@ vx_status tivxAddKernelScalarSourceError(vx_context context)
         if (status == VX_SUCCESS)
         {
             /* add supported target's */
+            tivxAddKernelTarget(kernel, TIVX_TARGET_HOST);
             tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_0);
             tivxAddKernelTarget(kernel, TIVX_TARGET_A15_0);
             tivxAddKernelTarget(kernel, TIVX_TARGET_IPU1_1);

@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxAddKernelScalarSinkValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        in = (const vx_scalar)parameters[TIVX_KERNEL_SCALAR_SINK_IN_IDX];
+        in = (vx_scalar)parameters[TIVX_KERNEL_SCALAR_SINK_IN_IDX];
     }
 
 

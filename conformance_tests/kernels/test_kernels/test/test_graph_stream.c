@@ -1875,7 +1875,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming4, Pipeline_Arg, PARAME
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_streaming3");
+    export_graph_to_file(graph, "test_graph_pipeline_streaming4");
     log_graph_rt_trace(graph);
 
     exe_time = tivxPlatformGetTimeInUsecs();
@@ -1929,8 +1929,24 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming5, Pipeline_Arg, PARAME
 
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
-    pipeline_depth = arg_->pipe_depth;
-    num_buf = arg_->num_buf;
+    /* Needs to be at least 2 since trigger node is the third node */
+    if (arg_->pipe_depth == 1)
+    {
+        pipeline_depth = 2;
+    }
+    else
+    {
+        pipeline_depth = arg_->pipe_depth;
+    }
+
+    if (arg_->num_buf == 1)
+    {
+        num_buf = 2;
+    }
+    else
+    {
+        num_buf = arg_->num_buf;
+    }
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -1957,7 +1973,7 @@ TEST_WITH_ARG(tivxGraphStreaming, testPipeliningStreaming5, Pipeline_Arg, PARAME
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_graph_pipeline_streaming3");
+    export_graph_to_file(graph, "test_graph_pipeline_streaming5");
     log_graph_rt_trace(graph);
 
     exe_time = tivxPlatformGetTimeInUsecs();

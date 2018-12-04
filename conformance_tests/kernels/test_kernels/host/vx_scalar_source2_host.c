@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxAddKernelScalarSource2Validate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        out = (const vx_scalar)parameters[TIVX_KERNEL_SCALAR_SOURCE_OUT_IDX];
+        out = (vx_scalar)parameters[TIVX_KERNEL_SCALAR_SOURCE_OUT_IDX];
     }
 
 

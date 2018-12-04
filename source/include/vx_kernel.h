@@ -102,8 +102,6 @@ typedef struct _vx_kernel
     vx_uint32               connected_sink_bufs;
     /*! \brief capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE)*/
     vx_enum                 state;
-    /*! \brief flag to indicate whether a direct connection is made between source and sink */
-    vx_bool source_sink_connection;
 
 } tivx_kernel_t;
 

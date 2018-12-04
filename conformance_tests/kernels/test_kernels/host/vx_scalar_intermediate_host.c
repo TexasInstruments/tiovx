@@ -102,8 +102,8 @@ static vx_status VX_CALLBACK tivxAddKernelScalarIntermediateValidate(vx_node nod
 
     if (VX_SUCCESS == status)
     {
-        in = (const vx_scalar)parameters[TIVX_KERNEL_SCALAR_INTERMEDIATE_IN_IDX];
-        out = (const vx_scalar)parameters[TIVX_KERNEL_SCALAR_INTERMEDIATE_OUT_IDX];
+        in = (vx_scalar)parameters[TIVX_KERNEL_SCALAR_INTERMEDIATE_IN_IDX];
+        out = (vx_scalar)parameters[TIVX_KERNEL_SCALAR_INTERMEDIATE_OUT_IDX];
     }
 
 

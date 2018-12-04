@@ -158,8 +158,6 @@ static vx_status ownGraphDetectSourceSink(vx_graph graph)
 
                 if (next_node->kernel->num_sink_bufs > 1)
                 {
-                    graph->nodes[cur_node_idx]->kernel->source_sink_connection = vx_true_e;
-
                     if (next_node->kernel->num_sink_bufs > graph->nodes[cur_node_idx]->kernel->connected_sink_bufs)
                     {
                         graph->nodes[cur_node_idx]->kernel->connected_sink_bufs = next_node->kernel->num_sink_bufs;

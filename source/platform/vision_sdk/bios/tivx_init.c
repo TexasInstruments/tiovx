@@ -14,8 +14,6 @@ void tivxRegisterOpenVXCoreTargetKernels(void);
 void tivxUnRegisterOpenVXCoreTargetKernels(void);
 void tivxRegisterCaptureTargetArmKernels(void);
 void tivxUnRegisterCaptureTargetArmKernels(void);
-void tivxRegisterTestKernelsTargetArmKernels(void);
-void tivxUnRegisterTestKernelsTargetArmKernels(void);
 void tivxRegisterIVisionTargetKernels(void);
 void tivxUnRegisterIVisionTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
@@ -40,7 +38,6 @@ void tivxInit(void)
 #ifdef BUILD_CONFORMANCE_TEST
 #if defined (C66) || (M4) || (A15)
     tivxRegisterCaptureTargetArmKernels();
-    tivxRegisterTestKernelsTargetArmKernels();
 #endif
 
 #if defined (C66)
@@ -74,7 +71,6 @@ void tivxDeInit(void)
 #ifdef BUILD_CONFORMANCE_TEST
 #if defined (C66) || (M4) || (A15)
     tivxUnRegisterCaptureTargetArmKernels();
-    tivxUnRegisterTestKernelsTargetArmKernels();
 #endif
 
 #if defined (C66)
