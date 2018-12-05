@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,38 +60,29 @@
  *
  */
 
-#ifndef VX_HWA_KERNELS_H_
-#define VX_HWA_KERNELS_H_
-
-#include "tivx_kernels_host_utils.h"
+#ifndef _TIVX_KERNEL_DISPLAY_
+#define _TIVX_KERNEL_DISPLAY_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!
- * \file
- * \brief Interface file for the HWA kernels
- */
 
+#define TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX (0U)
 
-/*!
- * \brief Function to register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaKernels(void);
+#define TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX   (1U)
 
-/*!
- * \brief Function to un-register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaKernels(void);
+#define TIVX_KERNEL_DISPLAY_MAX_PARAMS        (2U)
 
+#define TIVX_DISPLAY_MIN_PRIME_BUFS           (1U)
+
+#define TIVX_DISPLAY_MAX_NUM_BUFS             (16U)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* VX_HWA_KERNELS_H_ */
+
+#endif /* _TIVX_KERNEL_DISPLAY_ */
 
 

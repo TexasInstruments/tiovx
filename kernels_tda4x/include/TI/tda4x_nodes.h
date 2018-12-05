@@ -308,9 +308,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
-VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(vx_graph graph,
-                                                 vx_array configuration,
-                                                 vx_image image);
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
+                                            vx_graph graph,
+                                            vx_user_data_object configuration,
+                                            vx_image image);
 
 #ifdef __cplusplus
 }

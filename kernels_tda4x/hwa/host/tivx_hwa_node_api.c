@@ -242,3 +242,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
+                                            vx_graph graph,
+                                            vx_user_data_object configuration,
+                                            vx_image image)
+{
+    vx_reference prms[] = {
+            (vx_reference)configuration,
+            (vx_reference)image
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_DISPLAY_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

@@ -60,38 +60,26 @@
  *
  */
 
-#ifndef VX_HWA_KERNELS_H_
-#define VX_HWA_KERNELS_H_
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
 
-#include "tivx_kernels_host_utils.h"
+void tivxAddTargetKernelDisplay();
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+void tivxRemoveTargetKernelDisplay();
 
-/*!
- * \file
- * \brief Interface file for the HWA kernels
- */
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelDisplay, &tivxRemoveTargetKernelDisplay}
+};
 
-
-/*!
- * \brief Function to register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaKernels(void);
-
-
-#ifdef __cplusplus
+void tivxRegisterHwaTargetDisplayKernels()
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
-#endif
 
-#endif /* VX_HWA_KERNELS_H_ */
-
+void tivxUnRegisterHwaTargetDisplayKernels()
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

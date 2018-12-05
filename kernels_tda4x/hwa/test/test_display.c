@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,38 +60,49 @@
  *
  */
 
-#ifndef VX_HWA_KERNELS_H_
-#define VX_HWA_KERNELS_H_
+#include <VX/vx.h>
+#include <TI/tivx.h>
+#include <TI/tda4x.h>
+#include "test_engine/test.h"
+#include <string.h>
 
-#include "tivx_kernels_host_utils.h"
+TESTCASE(tivxHwaDisplay, CT_VXContext, ct_setup_vx_context, 0)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+TEST(tivxHwaDisplay, testNodeCreation)
+{
+    vx_context context = context_->vx_context_;
 
-/*!
- * \file
- * \brief Interface file for the HWA kernels
- */
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY))
+    {
+        tivxHwaLoadKernels(context);
 
+        printf("This is dummy test for node creation");
 
-/*!
- * \brief Function to register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterHwaKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterHwaKernels(void);
-
-
-#ifdef __cplusplus
+        tivxHwaUnLoadKernels(context);
+    }
 }
-#endif
 
-#endif /* VX_HWA_KERNELS_H_ */
+typedef struct {
+    const char* testName;
+} Arg;
 
+#define PARAMETERS \
+    CT_GENERATE_PARAMETERS("dummy")
 
+TEST_WITH_ARG(tivxHwaDisplay, testGraphProcessing, Arg,
+    PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY))
+    {
+        tivxHwaLoadKernels(context);
+
+        printf("This is dummy test for graph processing");
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaDisplay, testNodeCreation, testGraphProcessing)
