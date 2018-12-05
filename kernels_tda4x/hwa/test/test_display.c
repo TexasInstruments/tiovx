@@ -87,11 +87,9 @@ typedef struct {
 } Arg;
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("dummy")
+    CT_GENERATE_PARAMETERS("dummy", ARG)
 
-TEST_WITH_ARG(tivxHwaDisplay, testGraphProcessing, Arg,
-    PARAMETERS
-)
+TEST_WITH_ARG(tivxHwaDisplay, testGraphProcessing, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
 
