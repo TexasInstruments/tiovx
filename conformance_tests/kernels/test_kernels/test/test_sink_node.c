@@ -151,6 +151,13 @@ static void printGraphPipelinePerformance(vx_graph graph,
         );
 }
 
+/* 
+ * User enqueuing data to two ScalarSink2Node's
+ * 
+ *   scalar (data)-----> ScalarSink2Node
+ *      |
+ *      |--------------> ScalarSink2Node
+ */ 
 TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -294,6 +301,13 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/* 
+ * ScalarSourceNode "streaming" data to two ScalarSink2Node's
+ * 
+ *   ScalarSourceNode --> scalar (data) -----> ScalarSink2Node
+ *                          |
+ *                          |----------------> ScalarSink2Node
+ */ 
 TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -381,6 +395,15 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/* 
+ * ScalarSource2Node "streaming" data to two ScalarSink2Node's
+ * 
+ * Here Source2Node has a pipeup requirement
+ * 
+ *   ScalarSource2Node --> scalar (data) -----> ScalarSink2Node
+ *                          |
+ *                          |-----------------> ScalarSink2Node
+ */ 
 TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;

@@ -141,14 +141,16 @@ static vx_status VX_CALLBACK tivxScalarSource2Process(
                     prms->local_val++;
                 }
 
-                tivxTaskWaitMsecs(1);
-
                 out_value = prms->local_val;
 
                 out_desc->data.u08 = out_value;
 
                 if (TIVX_TARGET_KERNEL_STATE_STEADY_STATE == state)
                 {
+                    /* typically in a capture driver during pipeup there 
+                     * is no delay in processing, hence moving the delay here in steady state */
+                    tivxTaskWaitMsecs(1);
+                    
                     obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OUT_IDX] = prms->old_obj_desc[0];
 
                     for (i = 0; i < prms->pipeup_frame-1; i++)
