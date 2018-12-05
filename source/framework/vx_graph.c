@@ -37,6 +37,8 @@ static vx_status ownDestructGraph(vx_reference ref)
 {
     vx_graph graph = (vx_graph)ref;
 
+    ownGraphFreeStreaming(graph);
+
     {
         uint32_t i;
 
@@ -96,7 +98,6 @@ static vx_status ownDestructGraph(vx_reference ref)
 
     ownGraphDeleteQueues(graph);
     ownGraphFreeObjDesc(graph);
-    ownGraphFreeStreaming(graph);
     tivxEventDelete(&graph->all_graph_completed_event);
 
     return VX_SUCCESS;

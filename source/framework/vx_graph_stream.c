@@ -164,6 +164,7 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     (STOP == event.event_info.user_event.user_event_id) )
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
+                    vxWaitGraph(graph);
                     tivxEventPost(graph->stop_done);
                 }
 
@@ -205,7 +206,6 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     (DELETE == event.event_info.user_event.user_event_id) )
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
-                    vxWaitGraph(graph);
                     state = IDLE;
                     done = vx_true_e;
                 }
@@ -345,14 +345,17 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
 
 vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node trigger_node)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
     if((NULL != graph) &&
        (ownIsValidSpecificReference((vx_reference)graph, VX_TYPE_GRAPH)))
     {
         graph->is_streaming_enabled = vx_true_e;
 
-        if( NULL != trigger_node )
+        status = VX_SUCCESS;
+
+        if((NULL != trigger_node) &&
+           (ownIsValidSpecificReference((vx_reference)trigger_node, VX_TYPE_NODE)))
         {
             int i;
 
@@ -408,22 +411,16 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
 
                 if (graph->pipeline_depth > 1)
                 {
-                    if (vx_true_e == graph->trigger_node_set)
+                    /* Note: if pipelining with AUTO or MANUAL mode is enabled, re-trigger is done by pipelining and this is not needed */
+                    if ( (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
+                         (vx_true_e == graph->trigger_node_set) )
                     {
-                        streamingTaskParams.task_main = &tivxStreamingNoPipeliningTask;
+                        status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0);
                     }
                     else
                     {
                         status = VX_ERROR_INVALID_REFERENCE;
-                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: trigger node must be set when pipelining is enabled\n");
-                    }
-                }
-                else
-                {
-                    /* Note: if pipelining with AUTO or MANUAL mode is enabled, re-trigger is done by pipelining and this is not needed */
-                    if (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode)
-                    {
-                        status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0);
+                        VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: trigger node is not set with pipelining\n");
                     }
 
                     if (VX_SUCCESS == status)
@@ -435,6 +432,10 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                         status = VX_ERROR_INVALID_REFERENCE;
                         VX_PRINT(VX_ZONE_ERROR, "ownGraphAllocForStreaming: event could not be registered\n");
                     }
+                }
+                else
+                {
+                    streamingTaskParams.task_main = &tivxStreamingNoPipeliningTask;
                 }
 
                 if (VX_SUCCESS == status)
