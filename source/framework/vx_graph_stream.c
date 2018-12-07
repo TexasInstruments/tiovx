@@ -164,7 +164,6 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     (STOP == event.event_info.user_event.user_event_id) )
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
-                    vxWaitGraph(graph);
                     tivxEventPost(graph->stop_done);
                 }
 
