@@ -108,12 +108,6 @@ void tivxInit(void)
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
     tivxRegisterCaptureTargetArmKernels();
     tivxRegisterTestKernelsTargetC66Kernels();
-
-    tivxSetSelfCpuId(TIVX_CPU_ID_IPU2_0);
-    tivxRegisterCaptureTargetArmKernels();
-
-    tivxSetSelfCpuId(TIVX_CPU_ID_A15_0);
-    tivxRegisterCaptureTargetArmKernels();
     #endif
 
     /* trick target kernel used in DSP emulation mode to think

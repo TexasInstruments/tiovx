@@ -103,6 +103,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
     uint32_t i;
     tivx_target_kernel knl = NULL;
     vx_status status;
+    vx_bool resource_added = vx_false_e;
 
     if ((NULL != target_name) &&
         (process_func != NULL) && (create_func != NULL) &&
@@ -135,19 +136,23 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                     knl = &g_target_kernel_table[i];
 
                     tivxLogResourceAlloc("TIVX_TARGET_KERNEL_MAX", 1);
+                    resource_added = vx_true_e;
 
                     break;
                 }
             }
 
-            if (TIVX_TARGET_KERNEL_ID_INVALID ==
-                g_target_kernel_table[i].kernel_id)
+            if (vx_false_e == resource_added)
             {
                 VX_PRINT(VX_ZONE_WARNING, "tivxAddTargetKernelInternal: May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/tivx_config.h\n");
             }
 
             tivxMutexUnlock(g_target_kernel_lock);
         }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxAddTargetKernelInternal: Invalid parameters given to function\n");
     }
 
     return (knl);
