@@ -12,7 +12,7 @@
 
 #include <xdc/std.h>
 #include <osal/bsp_osal.h>
-
+#include <ti/sysbios/knl/Semaphore.h>
 
 vx_status tivxEventCreate(tivx_event *event)
 {
@@ -100,6 +100,17 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
 vx_status tivxEventClear(tivx_event event)
 {
-    /* Should call Semaphore_reset (0) */
-    return VX_SUCCESS;
+    vx_status status = VX_SUCCESS;
+
+    if (NULL != event)
+    {
+        Semaphore_reset((Semaphore_Handle)event, 0);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxEventWait: Event was NULL\n");
+        status = VX_FAILURE;
+    }
+
+    return status;
 }
