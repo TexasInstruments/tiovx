@@ -102,6 +102,17 @@ vx_status tivxEventWait(tivx_event event, uint32_t timeout)
 
 vx_status tivxEventClear(tivx_event event)
 {
-    /* Should call Semaphore_reset (0) */
-    return VX_SUCCESS;
+    vx_status status = VX_SUCCESS;
+
+    if (NULL != event)
+    {
+        status = SemaphoreP_reset((SemaphoreP_Handle)event);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxEventClear: Event was NULL\n");
+        status = VX_FAILURE;
+    }
+
+    return status;
 }
