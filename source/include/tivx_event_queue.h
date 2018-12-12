@@ -79,11 +79,6 @@ extern "C" {
  *        to the user in a first-in first out manner
  */
 
-/*! \brief Max size of event queue
- * \ingroup group_vx_event_cfg
- */
-#define TIVX_EVENT_QUEUE_MAX_SIZE       (256u)
-
 /*! \brief Element inserted into event queue
  * \ingroup group_tivx_event_queue
  */

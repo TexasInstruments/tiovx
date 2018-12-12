@@ -401,6 +401,11 @@ extern "C" {
  */
 #define TIVX_DELAY_MAX_PRM_OBJECT       (16u)
 
+/*! \brief Max size of event queue
+ * \ingroup group_vx_event_cfg
+ */
+#define TIVX_EVENT_QUEUE_MAX_SIZE       (256u)
+
 #ifdef __cplusplus
 }
 #endif

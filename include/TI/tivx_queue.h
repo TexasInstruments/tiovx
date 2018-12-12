@@ -65,6 +65,9 @@
 #ifndef TIVX_QUEUE_H_
 #define TIVX_QUEUE_H_
 
+#include <TI/tivx_event.h>
+#include <TI/tivx_mutex.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
