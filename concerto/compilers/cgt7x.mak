@@ -73,7 +73,7 @@ $(_MODULE)_XDC_TARGET := ti.targets.elf.nda.C71
 $(_MODULE)_OBJS := $(call PATH_CONV,$($(_MODULE)_OBJS))
 
 ifeq ($(TARGET_BUILD),debug)
-$(_MODULE)_COPT += -g -DDEBUG
+$(_MODULE)_COPT += -g -D_DEBUG_=1
 else ifneq ($(filter $(TARGET_BUILD),release production),)
 $(_MODULE)_COPT += --opt_level=3 --gen_opt_info=2 -DNDEBUG
 endif

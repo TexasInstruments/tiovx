@@ -106,7 +106,7 @@ endif
 $(_MODULE)_COPT += -Wno-unknown-pragmas
 
 ifeq ($(TARGET_BUILD),debug)
-$(_MODULE)_COPT += -ggdb -ggdb3 -gdwarf-2 -DDEBUG
+$(_MODULE)_COPT += -ggdb -ggdb3 -gdwarf-2 -D_DEBUG_=1
 else ifneq ($(filter $(TARGET_BUILD),release production),)
 $(_MODULE)_COPT += -O3 -DNDEBUG
 endif
