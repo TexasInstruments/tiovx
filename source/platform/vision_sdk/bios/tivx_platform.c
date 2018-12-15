@@ -32,3 +32,14 @@ void tivxPlatformDeactivate()
 {
     System_openvxDeactivate();
 }
+
+char *tivxPlatformGetEnv(char *env_var)
+{
+    char *value=" ";
+    
+    if(strcmp(env_var, "VX_TEST_DATA_PATH")==0)
+    {
+        value="sd:test_data/";
+    }
+    return value;
+}

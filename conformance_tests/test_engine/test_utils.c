@@ -1002,8 +1002,10 @@ void ct_destroy_vx_context(void **pContext)
 
 char *ct_get_test_file_path()
 {
+    char *tivxPlatformGetEnv(char *env_var);
+    
     #if defined(SYSBIOS)
-    return "sd:test_data/";
+    return tivxPlatformGetEnv("VX_TEST_DATA_PATH");
     #else
     return getenv("VX_TEST_DATA_PATH");
     #endif
