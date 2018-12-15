@@ -149,8 +149,12 @@ class Type(Enum):
     KEYPOINT     = 37
     ## OpenVX equivalent = VX_TYPE_COORDINATES2D
     COORDINATES2D = 38
+    ## OpenVX equivalent = VX_TYPE_USER_DATA_OBJECT
+    USER_DATA_OBJECT = 39
+    ## OpenVX equivalent = TIVX_TYPE_RAW_IMAGE
+    RAW_IMAGE = 40
     ## Used when optional parameters
-    NULL = 39
+    NULL = 41
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:
@@ -170,11 +174,16 @@ class Type(Enum):
     def get_vx_enum_name(type) :
         if type == Type.NULL :
             return NULL
+        elif type == Type.RAW_IMAGE :
+            return "TIVX_TYPE_" + type.name
         else :
             return "VX_TYPE_" + type.name
 
     def get_vx_name(type) :
-        return "vx_" + type.name.lower()
+        if type == Type.RAW_IMAGE :
+            return "tivx_" + type.name.lower()
+        else :
+            return "vx_" + type.name.lower()
 
     def is_scalar_type(type) :
         if type > Type.INVALID and type < Type.REFERENCE :

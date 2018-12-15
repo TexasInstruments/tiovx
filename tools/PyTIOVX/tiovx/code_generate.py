@@ -61,6 +61,8 @@
 
 from . import *
 
+import datetime
+
 class CodeGenerate :
     def __init__(self, filename, header=True, additional_filename="") :
         self.indent_level = 0
@@ -89,9 +91,10 @@ class CodeGenerate :
             self.additional_file.close()
 
     def write_header(self) :
+        self.now = datetime.datetime.now()
         self.write_line('/*')
         self.write_line(' *')
-        self.write_line(' * Copyright (c) 2017 Texas Instruments Incorporated')
+        self.write_line(' * Copyright (c) ' + str(self.now.year) + ' Texas Instruments Incorporated')
         self.write_line(' *')
         self.write_line(' * All rights reserved not granted herein.')
         self.write_line(' *')

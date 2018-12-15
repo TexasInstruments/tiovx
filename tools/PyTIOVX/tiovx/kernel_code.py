@@ -499,11 +499,20 @@ class KernelExportCode :
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
 
-    def verify_parameter_relationship_items(self, relationship_list, prm, attribute) :
+    def verify_parameter_relationship_items(self, relationship_list, prm, attribute, name) :
         for rel in relationship_list :
-            if prm in rel.prm_list and attribute in rel.attribute_list :
-                return True
+            if prm in rel.prm_list :
+                if attribute in rel.attribute_list :
+                    return True
+                # Sometimes we want to compare attributes from different object types (e.g. image and pyramid width)
+                for local_name in rel.attribute_list :
+                    if local_name.name == name :
+                        return True
         if attribute == ImageAttribute.FORMAT :
+            return True
+        elif attribute == UserDataObjectAttribute.NAME :
+            return True
+        elif attribute == UserDataObjectAttribute.SIZE :
             return True
         elif attribute == ArrayAttribute.ITEMSIZE :
             return True
@@ -535,8 +544,11 @@ class KernelExportCode :
             else :
                 self.host_c_code.write_line("%s %s = NULL;" % (Type.get_vx_name(prm.type), prm.name_lower))
                 for name, member in attr.__members__.items() :
-                    if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member) :
-                        self.host_c_code.write_line("%s %s_%s;" % (member.value[1], prm.name_lower, member.value[0]))
+                    if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member, name) :
+                        if member == UserDataObjectAttribute.NAME :
+                            self.host_c_code.write_line("%s %s_%s[VX_MAX_REFERENCE_NAME];" % (member.value[1], prm.name_lower, member.value[0]))
+                        else :
+                            self.host_c_code.write_line("%s %s_%s;" % (member.value[1], prm.name_lower, member.value[0]))
             self.num_params += 1
 
         self.host_c_code.write_newline()
@@ -586,8 +598,11 @@ class KernelExportCode :
                 self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryScalar(%s, VX_SCALAR_TYPE, &%s_scalar_type, sizeof(%s_scalar_type)));" % (prm.name_lower, prm.name_lower, prm.name_lower))
             else :
                 for name, member in attr.__members__.items() :
-                    if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member) :
-                        self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+                    if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member, name) :
+                        if prm.type == Type.RAW_IMAGE :
+                            self.host_c_code.write_line("tivxCheckStatus(&status, tivxQuery%s(%s, TIVX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+                        else :
+                            self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
 
             if prm.state is ParamState.OPTIONAL :
                 self.host_c_code.write_close_brace()
@@ -603,7 +618,7 @@ class KernelExportCode :
         self.host_c_code.write_line("if (VX_SUCCESS == status)")
         self.host_c_code.write_open_brace()
         for prm in self.kernel.params :
-            if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.is_scalar_type(prm.type) is True :
+            if Type.IMAGE == prm.type or Type.PYRAMID == prm.type or Type.ARRAY == prm.type or Type.MATRIX == prm.type or Type.LUT == prm.type or Type.USER_DATA_OBJECT == prm.type or Type.is_scalar_type(prm.type) is True :
                 if prm.state is ParamState.OPTIONAL :
                     self.host_c_code.write_line("if (NULL != %s)" % (prm.name_lower))
                     self.host_c_code.write_open_brace()
@@ -652,9 +667,22 @@ class KernelExportCode :
                         self.host_c_code.write_line("    (%s != %s_scalar_type))" % (self.print_data_type[-1], prm.name_lower))
                     else :
                         self.host_c_code.write_line("if (%s != %s_scalar_type)" % (self.print_data_type[0], prm.name_lower))
+                elif Type.USER_DATA_OBJECT == prm.type :
+                    if len(prm.data_types) > 1 :
+                        self.host_c_code.write_line("if( ((%s_size != sizeof(%s)) ||" % (prm.name_lower, self.print_data_type[0]))
+                        self.host_c_code.write_line("     (strncmp(%s_name, \"%s\", sizeof(%s_name)) != 0)) &&" % (prm.name_lower, self.print_data_type[0], prm.name_lower))
+                        for dt in self.print_data_type[1:-1] :
+                            self.host_c_code.write_line("    ((%s_size != sizeof(%s)) ||" % (prm.name_lower, dt))
+                            self.host_c_code.write_line("     (strncmp(%s_name, \"%s\", sizeof(%s_name)) != 0)) &&" % (prm.name_lower, dt, prm.name_lower))
+                        self.host_c_code.write_line("    ((%s_size != sizeof(%s)) ||" % (prm.name_lower, self.print_data_type[-1]))
+                        self.host_c_code.write_line("     (strncmp(%s_name, \"%s\", sizeof(%s_name)) != 0)))" % (prm.name_lower, self.print_data_type[-1], prm.name_lower))
+                    else :
+                        self.host_c_code.write_line("if ((%s_size != sizeof(%s)) ||" % (prm.name_lower, self.print_data_type[0]))
+                        self.host_c_code.write_line("    (strncmp(%s_name, \"%s\", sizeof(%s_name)) != 0))" % (prm.name_lower, self.print_data_type[0], prm.name_lower))
+
                 self.host_c_code.write_open_brace()
                 self.host_c_code.write_line("status = VX_ERROR_INVALID_PARAMETERS;")
-                vowel = ["a","e","i","o","u"]
+                vowel = ["a","e","i","o"]
                 if Type.is_scalar_type(prm.type) :
                     self.host_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"'%s' should be a scalar of type:\\n " % (prm.name_lower), new_line=False)
                 else :

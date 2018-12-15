@@ -350,6 +350,58 @@ class ObjectArrayAttribute(Enum) :
     def object_type() :
         return Type.OBJECT_ARRAY
 
+## Object/Data type (OpenVX equivalent = vx_user_data_object_attribute_e)
+#
+# \par Example usage:
+# \code
+# UserDataObjectAttribute.NAME
+# UserDataObjectAttribute.SIZE
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class UserDataObjectAttribute(Enum) :
+    ## OpenVX equivalent = VX_USER_DATA_OBJECT_NAME
+    NAME        = ('name', 'vx_char')
+    ## OpenVX equivalent = VX_USER_DATA_OBJECT_SIZE
+    SIZE        = ('size', 'vx_size')
+
+    def vx_enum_name(attr) :
+        return "VX_USER_DATA_OBJECT_" + attr.name
+
+    def object_type() :
+        return Type.USER_DATA_OBJECT
+
+## Object/Data type (OpenVX equivalent = tivx_raw_image_attribute_e)
+#
+# \par Example usage:
+# \code
+# RawImageAttribute.WIDTH
+# RawImageAttribute.HEIGHT
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class RawImageAttribute(Enum) :
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_WIDTH
+    WIDTH              = ('w', 'vx_uint32')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_HEIGHT
+    HEIGHT             = ('h', 'vx_uint32')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_NUM_EXPOSURES
+    MUM_EXPOSURES      = ('num_exposures', 'vx_uint32')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_LINE_INTERLEAVED
+    LINE_INTERLEAVED   = ('line_interleaved', 'vx_bool')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_FORMAT
+    FORMAT             = ('format', 'tivx_raw_image_format_t')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_META_HEIGHT
+    META_HEIGHT        = ('meta_height', 'vx_uint32')
+    ## OpenVX equivalent = TIVX_RAW_IMAGE_META_LOCATION
+    META_LOCATION      = ('meta_location', 'vx_uint32')
+
+    def vx_enum_name(attr) :
+        return "TIVX_RAW_IMAGE_" + attr.name
+
+    def object_type() :
+        return Type.RAW_IMAGE
+
 ## Object/Data type (OpenVX equivalent = none ... type aggregator for all attributes)
 #
 # \par Example usage:
@@ -371,6 +423,8 @@ class Attribute :
     Threshold = ThresholdAttribute
     Remap = RemapAttribute
     ObjectArray = ObjectArrayAttribute
+    UserDataObject = UserDataObjectAttribute
+    RawImage = RawImageAttribute
 
     def from_type(type) :
         if type == Type.IMAGE :
@@ -395,4 +449,8 @@ class Attribute :
             return Attribute.Remap
         if type == Type.OBJECT_ARRAY :
             return Attribute.ObjectArray
+        if type == Type.USER_DATA_OBJECT :
+            return Attribute.UserDataObject
+        if type == Type.RAW_IMAGE :
+            return Attribute.RawImage
         return "INVALID"
