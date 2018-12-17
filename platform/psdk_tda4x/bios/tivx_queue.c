@@ -13,7 +13,7 @@
 #include <ti/osal/HwiP.h>
 
 vx_status tivxQueueCreate(
-    tivx_queue *queue, uint32_t max_elements, uint32_t *queue_memory,
+    tivx_queue *queue, uint32_t max_elements, uintptr_t *queue_memory,
     uint32_t flags)
 {
     vx_status status = VX_FAILURE;
@@ -98,7 +98,7 @@ vx_status tivxQueueDelete(tivx_queue *queue)
     return (status);
 }
 
-vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout)
+vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout)
 {
     vx_status status = VX_FAILURE;
     uint32_t cookie;
@@ -190,7 +190,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout)
     return (status);
 }
 
-vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout)
+vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout)
 {
     vx_status status = VX_FAILURE;/* init status to error */
     uint32_t cookie;
@@ -302,7 +302,7 @@ vx_bool tivxQueueIsEmpty(tivx_queue *queue)
     return is_empty;
 }
 
-vx_status tivxQueuePeek(tivx_queue *queue, uint32_t *data)
+vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data)
 {
     vx_status status = VX_FAILURE;/* init status to error */
 
