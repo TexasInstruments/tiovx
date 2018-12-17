@@ -10,11 +10,8 @@
 
 #include <vx_internal.h>
 
-#include <ti/osal/CacheP.h>
 #include <utils/mem/include/app_mem.h>
 
-
-/* #define ENABLE_CACHE_OPS */
 
 /*! \brief Default buffer allocation alignment
  * \ingroup group_tivx_mem
@@ -60,14 +57,14 @@ vx_status tivxMemBufferAlloc(
 
         if (VX_SUCCESS == status)
         {
-            mem_ptr->shared_ptr = (uintptr_t)appMemAlloc(
+            mem_ptr->host_ptr = (uintptr_t)appMemAlloc(
                 heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
 
-            if ((uintptr_t)NULL != mem_ptr->shared_ptr)
+            if ((uintptr_t)NULL != mem_ptr->host_ptr)
             {
                 mem_ptr->mem_heap_region = mem_heap_region;
-                mem_ptr->host_ptr = (uint64_t)tivxMemShared2HostPtr(
-                    mem_ptr->shared_ptr, mem_heap_region);
+                mem_ptr->shared_ptr = (uint64_t)tivxMemHost2SharedPtr(
+                    mem_ptr->host_ptr, mem_heap_region);
             }
             else
             {
@@ -182,7 +179,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         if (VX_SUCCESS == status)
         {
             ret_val = appMemFree(
-                heap_id, (void*)(uintptr_t)mem_ptr->shared_ptr, size);
+                heap_id, (void*)(uintptr_t)mem_ptr->host_ptr, size);
 
             if (0 == ret_val)
             {
@@ -256,11 +253,9 @@ void tivxMemBufferMap(
      * to be safe, we still perform invalidate even in WRITE only mode. */
     if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type))
     {
-        #ifdef ENABLE_CACHE_OPS
-        CacheP_Inv(
+        appMemCacheInv(
             host_ptr,
             size);
-        #endif
     }
 }
 
@@ -270,37 +265,46 @@ void tivxMemBufferUnmap(
     if ((NULL != host_ptr) && (0U != size) && (TIVX_MEMORY_TYPE_DMA != mem_type) &&
         ((VX_WRITE_ONLY == maptype) || (VX_READ_AND_WRITE == maptype)))
     {
-        #ifdef ENABLE_CACHE_OPS
-        CacheP_wb(
+        appMemCacheWb(
             host_ptr,
             size);
-        #endif
     }
 }
 
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
-    /* For Bios implementation, host and shared pointers are same */
-    return (host_ptr);
-}
-
-uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
-{
-    /* For Bios implementation, host and shared pointers are same */
-    return (shared_ptr);
+    uint32_t heap_id;
+    vx_status status = VX_SUCCESS;
+    uint64_t phys = 0;
+    
+    switch (mem_heap_region)
+    {
+        case TIVX_MEM_EXTERNAL:
+            heap_id = APP_MEM_HEAP_DDR;
+            break;
+        case TIVX_MEM_INTERNAL_L3:
+            heap_id = APP_MEM_HEAP_L3_MSMC;
+            break;
+        case TIVX_MEM_INTERNAL_L2:
+            heap_id = APP_MEM_HEAP_L2_LOCAL;
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemStats: Invalid memtype\n");
+            status = VX_FAILURE;
+            break;
+    }
+    if(status == VX_SUCCESS)
+    {
+        phys = appMemGetVirt2PhyBufPtr(host_ptr, heap_id);
+    }
+    return phys;
 }
 
 void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
-    /* For Bios implementation, host and shared pointers are same
-     * However when used in Linux+BIOS mode, a translation maybe required
-     * Utils_physToVirt abstracts this translation
+    /* TODO need to fill for Linux
      */
     return (void*)(uintptr_t)(shared_ptr);
 }
 
-uint64_t tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
-{
-    return (uint64_t)(target_ptr);
-}
 

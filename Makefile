@@ -43,6 +43,9 @@ ifeq ($(BUILD_TARGET_MODE),yes)
         TARGET_COMBOS += TDA4X:SYSBIOS:A72:1:debug:GCC_SYSBIOS_ARM
         TARGET_COMBOS += TDA4X:SYSBIOS:C66:1:debug:CGT6X
         TARGET_COMBOS += TDA4X:SYSBIOS:C71:1:debug:CGT7X
+		ifeq ($(BUILD_LINUX_A72),yes)
+		TARGET_COMBOS += TDA4X:LINUX:A72:1:debug:GCC_LINUX_ARM
+		endif
     endif
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
@@ -50,6 +53,9 @@ ifeq ($(BUILD_TARGET_MODE),yes)
         TARGET_COMBOS += TDA4X:SYSBIOS:A72:1:release:GCC_SYSBIOS_ARM
         TARGET_COMBOS += TDA4X:SYSBIOS:C66:1:release:CGT6X
         TARGET_COMBOS += TDA4X:SYSBIOS:C71:1:release:CGT7X
+		ifeq ($(BUILD_LINUX_A72),yes)
+		TARGET_COMBOS += TDA4X:LINUX:A72:1:release:GCC_LINUX_ARM
+		endif
     endif
 endif
 
