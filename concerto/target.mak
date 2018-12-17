@@ -40,8 +40,13 @@ else
             SYSIDIRS += $(GCC_ROOT)/include
             SYSLDIRS += $(GCC_ROOT)/lib
         else ifeq ($(TARGET_CPU),A72)
-            SYSIDIRS += $(GCC_SYSBIOS_ARM_ROOT)/include
-            SYSLDIRS += $(GCC_SYSBIOS_ARM_ROOT)/lib
+			ifeq ($(TARGET_OS),SYSBIOS)
+				SYSIDIRS += $(GCC_SYSBIOS_ARM_ROOT)/include
+				SYSLDIRS += $(GCC_SYSBIOS_ARM_ROOT)/lib
+			else
+				SYSIDIRS += $(GCC_LINUX_ARM_ROOT)/include
+				SYSLDIRS += $(GCC_LINUX_ARM_ROOT)/lib
+			endif
         else
             SYSIDIRS += $(TIARMCGT_ROOT)/include
             SYSLDIRS += $(TIARMCGT_ROOT)/lib

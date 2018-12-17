@@ -32,35 +32,7 @@ CFLAGS += --diag_suppress=112
 CFLAGS += --diag_suppress=552
 endif
 
-ifeq ($(HOST_COMPILER),GCC)
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security
-CFLAGS += -Wno-unused-but-set-variable
-endif
-
-ifeq ($(HOST_COMPILER),GCC_SYSBIOS_ARM)
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security
-CFLAGS += -Wno-unused-but-set-variable
-endif
-
-ifeq ($(HOST_COMPILER),GCC_LINARO)
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security
-CFLAGS += -Wno-unused-but-set-variable
-endif
-
-ifeq ($(HOST_COMPILER),GCC_LINUX)
-CFLAGS += -Wno-unused-function
-CFLAGS += -Wno-unused-variable
-CFLAGS += -Wno-format-security
-CFLAGS += -Wno-unused-but-set-variable
-endif
-
-ifeq ($(HOST_COMPILER),GCC_WINDOWS)
+ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_LINARO GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM))
 CFLAGS += -Wno-unused-function
 CFLAGS += -Wno-unused-variable
 CFLAGS += -Wno-format-security
