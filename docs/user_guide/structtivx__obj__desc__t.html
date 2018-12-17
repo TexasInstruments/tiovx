@@ -89,9 +89,9 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a3b4114c51dfc1ab12a7194711ee70409"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a3b4114c51dfc1ab12a7194711ee70409">scope_obj_desc_id</a></td></tr>
 <tr class="memdesc:a3b4114c51dfc1ab12a7194711ee70409"><td class="mdescLeft">&#160;</td><td class="mdescRight">object descriptor ID of the scope in which this object is created For element of pyramid and object array, this is obj_desc_id of excompassing pyramid, object array  <a href="#a3b4114c51dfc1ab12a7194711ee70409">More...</a><br/></td></tr>
 <tr class="separator:a3b4114c51dfc1ab12a7194711ee70409"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a027013d1b04d9ccc0fbbdc55a0342f48"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a027013d1b04d9ccc0fbbdc55a0342f48">rsv1</a> [1]</td></tr>
-<tr class="memdesc:a027013d1b04d9ccc0fbbdc55a0342f48"><td class="mdescLeft">&#160;</td><td class="mdescRight">reserved field to make this structure a multiple of 64b  <a href="#a027013d1b04d9ccc0fbbdc55a0342f48">More...</a><br/></td></tr>
-<tr class="separator:a027013d1b04d9ccc0fbbdc55a0342f48"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4444c544407d8035f6113eb77d30349b"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#a4444c544407d8035f6113eb77d30349b">in_node_done_cnt</a></td></tr>
+<tr class="memdesc:a4444c544407d8035f6113eb77d30349b"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of input nodes that have consumed this obj_desc, used in pipelining mode only for data references  <a href="#a4444c544407d8035f6113eb77d30349b">More...</a><br/></td></tr>
+<tr class="separator:a4444c544407d8035f6113eb77d30349b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaee2651437d718743e7162721cd7726e"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__t.html#aaee2651437d718743e7162721cd7726e">host_ref</a></td></tr>
 <tr class="memdesc:aaee2651437d718743e7162721cd7726e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Host reference, accessible only on HOST side.  <a href="#aaee2651437d718743e7162721cd7726e">More...</a><br/></td></tr>
 <tr class="separator:aaee2651437d718743e7162721cd7726e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -149,17 +149,17 @@ Data Fields</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a027013d1b04d9ccc0fbbdc55a0342f48"></a>
+<a class="anchor" id="a4444c544407d8035f6113eb77d30349b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">uint16_t tivx_obj_desc_t::rsv1[1]</td>
+          <td class="memname">uint16_t tivx_obj_desc_t::in_node_done_cnt</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>reserved field to make this structure a multiple of 64b </p>
+<p>number of input nodes that have consumed this obj_desc, used in pipelining mode only for data references </p>
 
 </div>
 </div>

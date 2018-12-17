@@ -11,6 +11,7 @@ var uniontivx__obj__desc__shm__entry__t =
     [ "threshold", "uniontivx__obj__desc__shm__entry__t.html#a56f98a968bca292f84db0ac8893d9e5c", null ],
     [ "distribution", "uniontivx__obj__desc__shm__entry__t.html#ac081c0323d4218a09cb83341162a7796", null ],
     [ "array", "uniontivx__obj__desc__shm__entry__t.html#a5bdee0acc3780763ee89fb194706db78", null ],
+    [ "user_data_object", "uniontivx__obj__desc__shm__entry__t.html#ae09ff31527144e5905cff3eb4b5b1a2a", null ],
     [ "objarray", "uniontivx__obj__desc__shm__entry__t.html#a1ddb8fc31bb9e79d9e77274382eeea85", null ],
     [ "tensor", "uniontivx__obj__desc__shm__entry__t.html#a691e3f9ec1a6bbb078b86df75325dc1e", null ],
     [ "scalar", "uniontivx__obj__desc__shm__entry__t.html#af4332967abf73a5279afb492d5deda52", null ],

@@ -25,6 +25,7 @@ var vx__node_8h =
     [ "ownCheckNodeCompleted", "vx__node_8h.html#gaf02478e398de8f3c27bd24b224788d85", null ],
     [ "ownNodeRegisterEvent", "vx__node_8h.html#gac3b8a6cdee32d11569b54dde95668546", null ],
     [ "ownNodeCheckAndSendCompletionEvent", "vx__node_8h.html#gaa8197e713a1cc96169d4c621eadac39e", null ],
+    [ "ownNodeCheckAndSendErrorEvent", "vx__node_8h.html#ga942f11de97457400abd09516c80d7db0", null ],
     [ "ownNodeAllocObjDescForPipeline", "vx__node_8h.html#gab75a96c43f8eae022477682d13a4cf91", null ],
     [ "ownNodeSetObjDescParamDirection", "vx__node_8h.html#gaa07e6eeb3da5bfadc80a370ee57deb61", null ],
     [ "ownNodeLinkObjDescForPipeline", "vx__node_8h.html#ga7cd7696b18559246d7477c36f7285341", null ],

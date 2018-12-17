@@ -7,10 +7,14 @@ var vx__graph_8h =
     [ "ownGraphSetReverify", "vx__graph_8h.html#ga8f66ba30fd30e78b86621bafd1b5b04c", null ],
     [ "ownGraphGetParameterDataRefQueue", "vx__graph_8h.html#ga9c754a767f2953d2c8c81e5b96e60614", null ],
     [ "ownGraphAllocAndEnqueueObjDescForPipeline", "vx__graph_8h.html#ga7f2b56be40845d86bbf4c40d2720ec67", null ],
+    [ "ownGraphAllocForStreaming", "vx__graph_8h.html#ga5a5d305b00bf1436dd95af557ae1fe1c", null ],
+    [ "ownGraphVerifyStreamingMode", "vx__graph_8h.html#gab5c17455c1a1216b9b99bc30f1ea3699", null ],
     [ "ownGraphFreeObjDesc", "vx__graph_8h.html#gae3431482401f42af15be2fbac65637de", null ],
+    [ "ownGraphFreeStreaming", "vx__graph_8h.html#ga1dd728bcdf9d898072b12ae2cade3216", null ],
     [ "ownGraphCreateQueues", "vx__graph_8h.html#gab451cc8cdf76f3702af058d7efa55ed9", null ],
     [ "ownGraphDeleteQueues", "vx__graph_8h.html#gaff9c56d8749195e086b694ceee205d2b", null ],
     [ "ownGraphScheduleGraph", "vx__graph_8h.html#ga260641f346179abbbde7068e51138e65", null ],
+    [ "ownGraphScheduleGraphWrapper", "vx__graph_8h.html#ga83d925b8d12508e6b85c537cadf9a7d1", null ],
     [ "ownCheckGraphCompleted", "vx__graph_8h.html#gad6e0a2a9c916873547170186d4f03ae0", null ],
     [ "ownGraphDoScheduleGraphAfterEnqueue", "vx__graph_8h.html#ga7b606c52b87112cad75ef3903a7b903e", null ],
     [ "ownUpdateGraphPerf", "vx__graph_8h.html#ga37b2a9dd8a4178b479ba8aadf17863ff", null ],
@@ -20,5 +24,7 @@ var vx__graph_8h =
     [ "ownGraphRegisterParameterConsumedEvent", "vx__graph_8h.html#ga582be929e846bcf52eb72b094d3990f2", null ],
     [ "ownSendGraphCompletedEvent", "vx__graph_8h.html#ga37ba04c351e97a9aeeab9be00ee53c82", null ],
     [ "ownGraphParameterCheckValidEnqueueRef", "vx__graph_8h.html#gaa8642d9fe2b74c08d7149e1347e9e00a", null ],
-    [ "ownGraphGetNumSchedule", "vx__graph_8h.html#ga4b59dbdd09defe2e9a6aa5f5a79a4fd1", null ]
+    [ "ownGraphGetNumSchedule", "vx__graph_8h.html#ga4b59dbdd09defe2e9a6aa5f5a79a4fd1", null ],
+    [ "tivxSendUserGraphEvent", "vx__graph_8h.html#ga01ea03191de19a09c30cb856e1f20d37", null ],
+    [ "tivxWaitGraphEvent", "vx__graph_8h.html#gaeb1873dfdb6d0eac9e331fcab78ec58c", null ]
 ];

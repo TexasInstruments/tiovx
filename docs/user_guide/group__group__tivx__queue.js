@@ -5,7 +5,7 @@ var group__group__tivx__queue =
       [ "cur_wr", "structtivx__queue.html#a3448fad95c3935ea3e2df36ec9f546ea", null ],
       [ "count", "structtivx__queue.html#af0939d45094884ff5103d74b8b94263c", null ],
       [ "max_ele", "structtivx__queue.html#ae822a8207e3f93650a362941a80d3de7", null ],
-      [ "queue", "structtivx__queue.html#adfd38a9dbe00045dfa57b386360e38c9", null ],
+      [ "queue", "structtivx__queue.html#aa8ee2d8cfc8b4fe203f47fd7c43ec7ad", null ],
       [ "block_rd", "structtivx__queue.html#aef27d621b4712cee42014f7bdbd85cb6", null ],
       [ "block_wr", "structtivx__queue.html#aeafca819e65716771dc7261a2aa68f87", null ],
       [ "lock", "structtivx__queue.html#a5745579be2021958d718994524c2bd9a", null ],
@@ -16,10 +16,10 @@ var group__group__tivx__queue =
     ] ],
     [ "TIVX_QUEUE_FLAG_BLOCK_ON_PUT", "group__group__tivx__queue.html#ga4736bb537f0bc9b2b9cc14689da5c0e2", null ],
     [ "TIVX_QUEUE_FLAG_BLOCK_ON_GET", "group__group__tivx__queue.html#gaf76bc1eb122ceadf7c239d4c726ee226", null ],
-    [ "tivxQueueCreate", "group__group__tivx__queue.html#ga220fbb97bef3acbbb17f55b02ba4e386", null ],
+    [ "tivxQueueCreate", "group__group__tivx__queue.html#ga73b33fe4c8f050f265bedf2f9ed1285e", null ],
     [ "tivxQueueDelete", "group__group__tivx__queue.html#ga1f9f4c5863f9cc2b42edf051f1314310", null ],
-    [ "tivxQueuePut", "group__group__tivx__queue.html#ga18c7c8bf6d5f4405384bdaf1d454c9d9", null ],
-    [ "tivxQueueGet", "group__group__tivx__queue.html#ga7e2d85b5ee64e73cda934f514d522618", null ],
-    [ "tivxQueuePeek", "group__group__tivx__queue.html#ga38025c24cd0faefcb527b1375090b5eb", null ],
+    [ "tivxQueuePut", "group__group__tivx__queue.html#gaa1bfb004f3479a0766270ec3dab3f4cb", null ],
+    [ "tivxQueueGet", "group__group__tivx__queue.html#ga62788b546d08bf9639e70e070bfea35c", null ],
+    [ "tivxQueuePeek", "group__group__tivx__queue.html#ga4051dc70263e44ce11051561d0e7e2c6", null ],
     [ "tivxQueueIsEmpty", "group__group__tivx__queue.html#ga12fd84040573b5e771a5b9bfc223803b", null ]
 ];

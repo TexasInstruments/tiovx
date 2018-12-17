@@ -203,6 +203,7 @@ var NAVTREEINDEX0 =
 "classtiovx_1_1scalar_1_1Scalar.html":[1,4,2,13],
 "classtiovx_1_1scalar_1_1Scalar.html#af98d8bcdc83e2e89eb8dfc8a4be56003":[1,4,2,13,0],
 "classtiovx_1_1target__extended_1_1TargetExtended.html":[1,4,0,16],
+"classtiovx_1_1target__extended_1_1TargetExtended.html#af68fac92ca4f3ed2792714548e8e8cb7":[1,4,0,16,0],
 "classtiovx_1_1threshold_1_1Threshold.html":[1,4,2,14],
 "classtiovx_1_1threshold_1_1Threshold.html#a8279ef1548c47e4e8e85d0acebb25522":[1,4,2,14,0],
 "functions.html":[2,2,0,0],

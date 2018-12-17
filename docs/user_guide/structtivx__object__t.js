@@ -12,6 +12,8 @@ var structtivx__object__t =
     [ "isKernelUse", "structtivx__object__t.html#a166decdc785295da0b6fbdddcd75ab9c", null ],
     [ "array", "structtivx__object__t.html#ac9dff81b5ca35ea966aca1cc483c91a4", null ],
     [ "isArrayUse", "structtivx__object__t.html#a81f7486fe88b0b82e29b9c4617bfd42e", null ],
+    [ "user_data_object", "structtivx__object__t.html#ace35144918e2542f8a4e0fe91bf2e142", null ],
+    [ "isUserDataObjectUse", "structtivx__object__t.html#aebf72aa0affa5ca2bc26045b3d3a0656", null ],
     [ "convolution", "structtivx__object__t.html#a2e9b45b8816f674a8164de9928a481a3", null ],
     [ "isConvolutionUse", "structtivx__object__t.html#ae2e65b300a4f8ab37e303321281c902d", null ],
     [ "delay", "structtivx__object__t.html#a854b065603348454912c551c45809b2e", null ],

@@ -85,6 +85,10 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t_1_1__remap.html">_remap</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t_1_1__tensor.html">_tensor</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t_1_1__user__data__object.html">_user_data_object</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t_1_1array.html">array</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t_1_1distribution.html">distribution</a></td></tr>
@@ -146,7 +150,14 @@ Data Fields</h2></td></tr>
 <tr class="separator:a4ffaf22cdaa9dee6fa9abb027c539734"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9791b182518bb9482867125fd80742e9"><td class="memItemLeft" align="right" valign="top">struct <br class="typebreak"/>
 <a class="el" href="structtivx__meta__format__t_1_1object__array.html">tivx_meta_format_t::object_array</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t.html#a9791b182518bb9482867125fd80742e9">objarr</a></td></tr>
+<tr class="memdesc:a9791b182518bb9482867125fd80742e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">structure containing information about tensor used when type is set to VX_TYPE_TENSOR  <a href="#a9791b182518bb9482867125fd80742e9">More...</a><br/></td></tr>
 <tr class="separator:a9791b182518bb9482867125fd80742e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7a380e1e3abf47afd61aad5a4f245449"><td class="memItemLeft" align="right" valign="top">struct <a class="el" href="structtivx__meta__format__t_1_1__tensor.html">tivx_meta_format_t::_tensor</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t.html#a7a380e1e3abf47afd61aad5a4f245449">tensor</a></td></tr>
+<tr class="memdesc:a7a380e1e3abf47afd61aad5a4f245449"><td class="mdescLeft">&#160;</td><td class="mdescRight">structure containing information about user data object used when type is set to VX_TYPE_USER_DATA_OBJECT  <a href="#a7a380e1e3abf47afd61aad5a4f245449">More...</a><br/></td></tr>
+<tr class="separator:a7a380e1e3abf47afd61aad5a4f245449"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b1ab4be8e5f57eed30945001e84beb7"><td class="memItemLeft" align="right" valign="top">struct <br class="typebreak"/>
+<a class="el" href="structtivx__meta__format__t_1_1__user__data__object.html">tivx_meta_format_t::_user_data_object</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__meta__format__t.html#a5b1ab4be8e5f57eed30945001e84beb7">user_data_object</a></td></tr>
+<tr class="separator:a5b1ab4be8e5f57eed30945001e84beb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Meta Format object internal state. </p>
@@ -339,6 +350,34 @@ Data Fields</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">struct <a class="el" href="structtivx__meta__format__t_1_1object__array.html">tivx_meta_format_t::object_array</a>  tivx_meta_format_t::objarr</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>structure containing information about tensor used when type is set to VX_TYPE_TENSOR </p>
+
+</div>
+</div>
+<a class="anchor" id="a7a380e1e3abf47afd61aad5a4f245449"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structtivx__meta__format__t_1_1__tensor.html">tivx_meta_format_t::_tensor</a>  tivx_meta_format_t::tensor</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>structure containing information about user data object used when type is set to VX_TYPE_USER_DATA_OBJECT </p>
+
+</div>
+</div>
+<a class="anchor" id="a5b1ab4be8e5f57eed30945001e84beb7"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct <a class="el" href="structtivx__meta__format__t_1_1__user__data__object.html">tivx_meta_format_t::_user_data_object</a>  tivx_meta_format_t::user_data_object</td>
         </tr>
       </table>
 </div><div class="memdoc">

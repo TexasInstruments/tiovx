@@ -7,5 +7,6 @@ var structtivx__target__kernel__t =
     [ "create_func", "structtivx__target__kernel__t.html#aa5a9a77c15d6508725ff92cfc40c429a", null ],
     [ "delete_func", "structtivx__target__kernel__t.html#a162d1869fcf965af947ce95ca08884be", null ],
     [ "control_func", "structtivx__target__kernel__t.html#abc8d5a0d77c2b11ee3e496b990306b88", null ],
-    [ "caller_priv_arg", "structtivx__target__kernel__t.html#a29d852e531e6438320c0f864a5b9fa49", null ]
+    [ "caller_priv_arg", "structtivx__target__kernel__t.html#a29d852e531e6438320c0f864a5b9fa49", null ],
+    [ "num_pipeup_bufs", "structtivx__target__kernel__t.html#aea8addb78b4e305a0d033a8a35eb37b4", null ]
 ];

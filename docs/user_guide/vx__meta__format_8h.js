@@ -11,6 +11,8 @@ var vx__meta__format_8h =
     [ "_lut", "structtivx__meta__format__t_1_1__lut.html", "structtivx__meta__format__t_1_1__lut" ],
     [ "threshold", "structtivx__meta__format__t_1_1threshold.html", "structtivx__meta__format__t_1_1threshold" ],
     [ "object_array", "structtivx__meta__format__t_1_1object__array.html", "structtivx__meta__format__t_1_1object__array" ],
+    [ "_tensor", "structtivx__meta__format__t_1_1__tensor.html", "structtivx__meta__format__t_1_1__tensor" ],
+    [ "_user_data_object", "structtivx__meta__format__t_1_1__user__data__object.html", "structtivx__meta__format__t_1_1__user__data__object" ],
     [ "vxReleaseMetaFormat", "vx__meta__format_8h.html#acf128060353911d685e302c52748fe95", null ],
     [ "vxCreateMetaFormat", "vx__meta__format_8h.html#a87b348423748d94e37775e4fe8e8470a", null ]
 ];

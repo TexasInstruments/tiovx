@@ -12,6 +12,7 @@ var tivx__obj__desc_8h =
     [ "tivx_obj_desc_threshold_t", "structtivx__obj__desc__threshold__t.html", "structtivx__obj__desc__threshold__t" ],
     [ "tivx_obj_desc_distribution_t", "structtivx__obj__desc__distribution__t.html", "structtivx__obj__desc__distribution__t" ],
     [ "tivx_obj_desc_array_t", "structtivx__obj__desc__array__t.html", "structtivx__obj__desc__array__t" ],
+    [ "tivx_obj_desc_user_data_object_t", "structtivx__obj__desc__user__data__object__t.html", "structtivx__obj__desc__user__data__object__t" ],
     [ "tivx_obj_desc_object_array_t", "structtivx__obj__desc__object__array__t.html", "structtivx__obj__desc__object__array__t" ],
     [ "tivx_obj_desc_scalar_t", "structtivx__obj__desc__scalar__t.html", "structtivx__obj__desc__scalar__t" ],
     [ "tivx_obj_desc_tensor_t", "structtivx__obj__desc__tensor__t.html", "structtivx__obj__desc__tensor__t" ],
@@ -44,6 +45,7 @@ var tivx__obj__desc_8h =
       [ "TIVX_OBJ_DESC_DATA_REF_Q", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a750b7f755e65483db4690b9ad11289ec", null ],
       [ "TIVX_OBJ_DESC_GRAPH", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109ac5daf10eb248fbe91aeadd52b3a89154", null ],
       [ "TIVX_OBJ_DESC_TENSOR", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109aa5133d756d69058342b8ce290c4e43e5", null ],
+      [ "TIVX_OBJ_DESC_USER_DATA_OBJECT", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109af4da49adb5b8d3b0f036bdd81d8dccab", null ],
       [ "TIVX_OBJ_DESC_INVALID", "tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109a5fa1efc8e11c5988c7a38228143d4a7f", null ]
     ] ],
     [ "tivx_image_create_type_e", "tivx__obj__desc_8h.html#a25fa81b14d1e21751503d0b836ff5d77", [

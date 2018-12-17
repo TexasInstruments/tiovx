@@ -68,7 +68,7 @@ $(document).ready(function(){initNavTree('tivx__event__queue_8h.html','');});
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#define-members">Macros</a> &#124;
+<a href="#enum-members">Enumerations</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">tivx_event_queue.h File Reference</div>  </div>
@@ -89,11 +89,13 @@ Data Structures</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Event queue object.  <a href="structtivx__event__queue__t.html#details">More...</a><br/></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:a0b745cee6f1a786c1a6c374879ef4a7f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#a0b745cee6f1a786c1a6c374879ef4a7f">TIVX_EVENT_QUEUE_MAX_SIZE</a>&#160;&#160;&#160;(256u)</td></tr>
-<tr class="memdesc:a0b745cee6f1a786c1a6c374879ef4a7f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max size of event queue.  <a href="#a0b745cee6f1a786c1a6c374879ef4a7f">More...</a><br/></td></tr>
-<tr class="separator:a0b745cee6f1a786c1a6c374879ef4a7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:abc9f0970d75ddcb103b3e062783d2b27"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27">tivx_queue_type_e</a> { <a class="el" href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27acb68e16a241a5808e86f7246180698dc">TIVX_EVENT_GRAPH_QUEUE</a> = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x1, 
+<a class="el" href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27a8a5c6cd9e063cadcc2d3431cd886c043">TIVX_EVENT_CONTEXT_QUEUE</a> = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x2
+ }</td></tr>
+<tr class="memdesc:abc9f0970d75ddcb103b3e062783d2b27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Type of event that can be generated during system execution.  <a href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27">More...</a><br/></td></tr>
+<tr class="separator:abc9f0970d75ddcb103b3e062783d2b27"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -103,25 +105,44 @@ Functions</h2></td></tr>
 <tr class="memitem:a647b2e501150fa0302fc41e724fb5f39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#a647b2e501150fa0302fc41e724fb5f39">tivxEventQueueDelete</a> (<a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *event_q)</td></tr>
 <tr class="memdesc:a647b2e501150fa0302fc41e724fb5f39"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete a event queue.  <a href="#a647b2e501150fa0302fc41e724fb5f39">More...</a><br/></td></tr>
 <tr class="separator:a647b2e501150fa0302fc41e724fb5f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a44b5ef820f55f598d4327278c12a98d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#a44b5ef820f55f598d4327278c12a98d7">tivxEventQueueAddEvent</a> (<a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *event_q, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2)</td></tr>
-<tr class="memdesc:a44b5ef820f55f598d4327278c12a98d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add event to event queue.  <a href="#a44b5ef820f55f598d4327278c12a98d7">More...</a><br/></td></tr>
-<tr class="separator:a44b5ef820f55f598d4327278c12a98d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85b1e0fddc3b5d3402f62fd1af00f68a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#a85b1e0fddc3b5d3402f62fd1af00f68a">tivxEventQueueAddEvent</a> (<a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *event_q, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2, uintptr_t param3)</td></tr>
+<tr class="memdesc:a85b1e0fddc3b5d3402f62fd1af00f68a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add event to event queue.  <a href="#a85b1e0fddc3b5d3402f62fd1af00f68a">More...</a><br/></td></tr>
+<tr class="separator:a85b1e0fddc3b5d3402f62fd1af00f68a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c540c172a0420bdd13102bb68a7ac2e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#a5c540c172a0420bdd13102bb68a7ac2e">tivxEventQueueEnableEvents</a> (<a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *event_q, <a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a> enable)</td></tr>
+<tr class="memdesc:a5c540c172a0420bdd13102bb68a7ac2e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enable an event queue.  <a href="#a5c540c172a0420bdd13102bb68a7ac2e">More...</a><br/></td></tr>
+<tr class="separator:a5c540c172a0420bdd13102bb68a7ac2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19483db15cc1031538d032677f79a110"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#a19483db15cc1031538d032677f79a110">vxWaitEventQueue</a> (<a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *event_q, vx_event_t *event, <a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a> do_not_block)</td></tr>
+<tr class="memdesc:a19483db15cc1031538d032677f79a110"><td class="mdescLeft">&#160;</td><td class="mdescRight">Generic wait event queue API.  <a href="#a19483db15cc1031538d032677f79a110">More...</a><br/></td></tr>
+<tr class="separator:a19483db15cc1031538d032677f79a110"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefa2df58440c60695b4df8345f81f92d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="tivx__event__queue_8h.html#aefa2df58440c60695b4df8345f81f92d">tivxRegisterEvent</a> (<a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> ref, enum <a class="el" href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27">tivx_queue_type_e</a> queue_type, enum vx_event_type_e type, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> param)</td></tr>
+<tr class="memdesc:aefa2df58440c60695b4df8345f81f92d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Registers an event to a given event queue.  <a href="#aefa2df58440c60695b4df8345f81f92d">More...</a><br/></td></tr>
+<tr class="separator:aefa2df58440c60695b4df8345f81f92d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface to Event Queue APIs. </p>
 <p>Event Queue can be used to collect framework generated events into a queue. When user calls vxWaitEvent the event is returned to the user in a first-in first out manner </p>
-</div><h2 class="groupheader">Macro Definition Documentation</h2>
-<a class="anchor" id="a0b745cee6f1a786c1a6c374879ef4a7f"></a>
+</div><h2 class="groupheader">Enumeration Type Documentation</h2>
+<a class="anchor" id="abc9f0970d75ddcb103b3e062783d2b27"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define TIVX_EVENT_QUEUE_MAX_SIZE&#160;&#160;&#160;(256u)</td>
+          <td class="memname">enum <a class="el" href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27">tivx_queue_type_e</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Max size of event queue. </p>
+<p>Type of event that can be generated during system execution. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="abc9f0970d75ddcb103b3e062783d2b27acb68e16a241a5808e86f7246180698dc"></a>TIVX_EVENT_GRAPH_QUEUE</em>&#160;</td><td class="fielddoc">
+<p>Graph event queue. </p>
+<p>The registered event will be used in the graph event queue </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="abc9f0970d75ddcb103b3e062783d2b27a8a5c6cd9e063cadcc2d3431cd886c043"></a>TIVX_EVENT_CONTEXT_QUEUE</em>&#160;</td><td class="fielddoc">
+<p>Context event queue. </p>
+<p>The registered event will be used in the context event queue </p>
+</td></tr>
+</table>
 
 </div>
 </div>
@@ -164,7 +185,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a44b5ef820f55f598d4327278c12a98d7"></a>
+<a class="anchor" id="a85b1e0fddc3b5d3402f62fd1af00f68a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -196,7 +217,13 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">uintptr_t&#160;</td>
-          <td class="paramname"><em>param2</em>&#160;</td>
+          <td class="paramname"><em>param2</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uintptr_t&#160;</td>
+          <td class="paramname"><em>param3</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -208,6 +235,108 @@ Functions</h2></td></tr>
 
 <p>Add event to event queue. </p>
 <p>When events are disabled, event is not added to the event_q </p>
+
+</div>
+</div>
+<a class="anchor" id="a5c540c172a0420bdd13102bb68a7ac2e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void tivxEventQueueEnableEvents </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *&#160;</td>
+          <td class="paramname"><em>event_q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td>
+          <td class="paramname"><em>enable</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enable an event queue. </p>
+
+</div>
+</div>
+<a class="anchor" id="a19483db15cc1031538d032677f79a110"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> vxWaitEventQueue </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structtivx__event__queue__t.html">tivx_event_queue_t</a> *&#160;</td>
+          <td class="paramname"><em>event_q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">vx_event_t *&#160;</td>
+          <td class="paramname"><em>event</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td>
+          <td class="paramname"><em>do_not_block</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Generic wait event queue API. </p>
+
+</div>
+</div>
+<a class="anchor" id="aefa2df58440c60695b4df8345f81f92d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a> tivxRegisterEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a>&#160;</td>
+          <td class="paramname"><em>ref</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">enum <a class="el" href="tivx__event__queue_8h.html#abc9f0970d75ddcb103b3e062783d2b27">tivx_queue_type_e</a>&#160;</td>
+          <td class="paramname"><em>queue_type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">enum vx_event_type_e&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>&#160;</td>
+          <td class="paramname"><em>param</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Registers an event to a given event queue. </p>
 
 </div>
 </div>

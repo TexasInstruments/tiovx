@@ -4,7 +4,7 @@ var structtivx__queue =
     [ "cur_wr", "structtivx__queue.html#a3448fad95c3935ea3e2df36ec9f546ea", null ],
     [ "count", "structtivx__queue.html#af0939d45094884ff5103d74b8b94263c", null ],
     [ "max_ele", "structtivx__queue.html#ae822a8207e3f93650a362941a80d3de7", null ],
-    [ "queue", "structtivx__queue.html#adfd38a9dbe00045dfa57b386360e38c9", null ],
+    [ "queue", "structtivx__queue.html#aa8ee2d8cfc8b4fe203f47fd7c43ec7ad", null ],
     [ "block_rd", "structtivx__queue.html#aef27d621b4712cee42014f7bdbd85cb6", null ],
     [ "block_wr", "structtivx__queue.html#aeafca819e65716771dc7261a2aa68f87", null ],
     [ "lock", "structtivx__queue.html#a5745579be2021958d718994524c2bd9a", null ],

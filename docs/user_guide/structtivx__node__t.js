@@ -18,5 +18,7 @@ var structtivx__node__t =
     [ "local_data_set_allow", "structtivx__node__t.html#a6ccc51f440958963f1f74bdf6d5473fb", null ],
     [ "incounter", "structtivx__node__t.html#ad252d988ed09a3bbc49f2f13aaed2984", null ],
     [ "is_enable_send_complete_event", "structtivx__node__t.html#a8a9f3e2e955e84683e7ebe3cac81c347", null ],
+    [ "is_graph_event", "structtivx__node__t.html#afff6cdf57562dd3999d1a3f31e3cf6ff", null ],
+    [ "is_context_event", "structtivx__node__t.html#aa0de1e030e38c922620f5bd618aebb77", null ],
     [ "parameter_index_num_buf", "structtivx__node__t.html#a8b70f4725a6a1637eb37f6d01e8d3541", null ]
 ];

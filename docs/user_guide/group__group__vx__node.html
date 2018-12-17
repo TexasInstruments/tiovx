@@ -154,6 +154,9 @@ Functions</h2></td></tr>
 <tr class="memitem:gaa8197e713a1cc96169d4c621eadac39e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__node.html#gaa8197e713a1cc96169d4c621eadac39e">ownNodeCheckAndSendCompletionEvent</a> (<a class="el" href="structtivx__obj__desc__node__t.html">tivx_obj_desc_node_t</a> *node_obj_desc, uint64_t timestamp)</td></tr>
 <tr class="memdesc:gaa8197e713a1cc96169d4c621eadac39e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send node completion event if enabled.  <a href="#gaa8197e713a1cc96169d4c621eadac39e">More...</a><br/></td></tr>
 <tr class="separator:gaa8197e713a1cc96169d4c621eadac39e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga942f11de97457400abd09516c80d7db0"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__node.html#ga942f11de97457400abd09516c80d7db0">ownNodeCheckAndSendErrorEvent</a> (<a class="el" href="structtivx__obj__desc__node__t.html">tivx_obj_desc_node_t</a> *node_obj_desc, uint64_t timestamp, <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> status)</td></tr>
+<tr class="memdesc:ga942f11de97457400abd09516c80d7db0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send node error event if node failed.  <a href="#ga942f11de97457400abd09516c80d7db0">More...</a><br/></td></tr>
+<tr class="separator:ga942f11de97457400abd09516c80d7db0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab75a96c43f8eae022477682d13a4cf91"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__node.html#gab75a96c43f8eae022477682d13a4cf91">ownNodeAllocObjDescForPipeline</a> (<a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a> node, uint32_t pipeline_depth)</td></tr>
 <tr class="memdesc:gab75a96c43f8eae022477682d13a4cf91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Alloc additional node obj desc's for pipelining.  <a href="#gab75a96c43f8eae022477682d13a4cf91">More...</a><br/></td></tr>
 <tr class="separator:gab75a96c43f8eae022477682d13a4cf91"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -824,6 +827,40 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Send node completion event if enabled. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga942f11de97457400abd09516c80d7db0"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void ownNodeCheckAndSendErrorEvent </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structtivx__obj__desc__node__t.html">tivx_obj_desc_node_t</a> *&#160;</td>
+          <td class="paramname"><em>node_obj_desc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>timestamp</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td>
+          <td class="paramname"><em>status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Send node error event if node failed. </p>
 
 </div>
 </div>

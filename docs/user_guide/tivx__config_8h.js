@@ -14,6 +14,7 @@ var tivx__config_8h =
     [ "TIVX_NODE_MAX_OBJECTS", "tivx__config_8h.html#gacafdc8b7549448d5ccd0c780c6680f5b", null ],
     [ "TIVX_KERNEL_MAX_OBJECTS", "tivx__config_8h.html#gab6578bf00139abafd71b1efe04bfe904", null ],
     [ "TIVX_ARRAY_MAX_OBJECTS", "tivx__config_8h.html#ga732e4fea12fd457f6ad3cdee542c2a11", null ],
+    [ "TIVX_USER_DATA_OBJECT_MAX_OBJECTS", "tivx__config_8h.html#ga277d57e677b1635a209d8299b9075fab", null ],
     [ "TIVX_CONVOLUTION_MAX_OBJECTS", "tivx__config_8h.html#gae2b7782852a2e83e506b3d995dee7a67", null ],
     [ "TIVX_DELAY_MAX_OBJECTS", "tivx__config_8h.html#gaa203c9efa0d3d12a6ebe2876533bde30", null ],
     [ "TIVX_DISTRIBUTION_MAX_OBJECTS", "tivx__config_8h.html#ga02ea4b092003272d24cdc3ac81ab1d74", null ],
@@ -39,6 +40,7 @@ var tivx__config_8h =
     [ "TIVX_PYRAMID_MAX_LEVELS_ORB", "tivx__config_8h.html#ga631b626be04e080b287b6ba8bb951143", null ],
     [ "TIVX_TARGET_KERNEL_INSTANCE_MAX", "tivx__config_8h.html#gac307474d850020473abe32898aa1759c", null ],
     [ "TIVX_ARRAY_MAX_MAPS", "tivx__config_8h.html#gabbd167c37dae1c0efaf80b88ce66d870", null ],
+    [ "TIVX_USER_DATA_OBJECT_MAX_MAPS", "tivx__config_8h.html#af10b51d73ca443f326004cc2ddd84426", null ],
     [ "TIVX_GRAPH_MAX_HEAD_NODES", "tivx__config_8h.html#ga98742f4b8c0d0aefaa0e0a3b8a08c223", null ],
     [ "TIVX_GRAPH_MAX_LEAF_NODES", "tivx__config_8h.html#gaa4e83abd40c45fbd296008ad79d8d9b9", null ],
     [ "TIVX_GRAPH_MAX_PARAMS", "tivx__config_8h.html#ga1e90c432483f28c0c32b249577b46dde", null ],
@@ -49,5 +51,6 @@ var tivx__config_8h =
     [ "TIVX_IMAGE_MAX_MAPS", "tivx__config_8h.html#gaef582205a6921f7a3a4e8cddb5db47cb", null ],
     [ "TIVX_TENSOR_MAX_MAPS", "tivx__config_8h.html#afe9e94a8988c60e1dc743e985fcf7beb", null ],
     [ "TIVX_DELAY_MAX_OBJECT", "tivx__config_8h.html#gaa945633d04f86c392278ca20867eac85", null ],
-    [ "TIVX_DELAY_MAX_PRM_OBJECT", "tivx__config_8h.html#ga4e91cbe375e45cb4403dca2f72d60ab1", null ]
+    [ "TIVX_DELAY_MAX_PRM_OBJECT", "tivx__config_8h.html#ga4e91cbe375e45cb4403dca2f72d60ab1", null ],
+    [ "TIVX_EVENT_QUEUE_MAX_SIZE", "tivx__config_8h.html#a0b745cee6f1a786c1a6c374879ef4a7f", null ]
 ];

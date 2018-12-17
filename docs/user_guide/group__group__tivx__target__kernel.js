@@ -8,5 +8,6 @@ var group__group__tivx__target__kernel =
     [ "tivxRemoveTargetKernel", "group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e", null ],
     [ "tivxSetTargetKernelInstanceContext", "group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9", null ],
     [ "tivxGetTargetKernelInstanceContext", "group__group__tivx__target__kernel.html#ga08730671086c805df9f4e00d4a4ef383", null ],
+    [ "tivxGetTargetKernelInstanceState", "group__group__tivx__target__kernel.html#ga85a82f18dc6c5c3ad653dde6567d9ec3", null ],
     [ "tivxGetTargetKernelInstanceBorderMode", "group__group__tivx__target__kernel.html#gac6174a4e92a4bf4a19ab77a78963ddf5", null ]
 ];

@@ -16,5 +16,7 @@ var group__ENUMS =
     [ "PyramidScale", "classtiovx_1_1enums_1_1PyramidScale.html", null ],
     [ "ThresholdType", "classtiovx_1_1enums_1_1ThresholdType.html", null ],
     [ "TermCriteria", "classtiovx_1_1enums_1_1TermCriteria.html", null ],
-    [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", null ]
+    [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", [
+      [ "get_vx_enum_name", "classtiovx_1_1target__extended_1_1TargetExtended.html#af68fac92ca4f3ed2792714548e8e8cb7", null ]
+    ] ]
 ];

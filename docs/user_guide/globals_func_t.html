@@ -187,6 +187,9 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 <li>tivxDeInit()
 : <a class="el" href="group__group__tivx__ext__host.html#gafe743fcbf54158387579a1f36ec1070b">tivx.h</a>
 </li>
+<li>tivxEnableGraphStreaming()
+: <a class="el" href="group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e">tivx.h</a>
+</li>
 <li>tivxEventClear()
 : <a class="el" href="group__group__tivx__event.html#ga6a7a33c9f8ae1268f03eede0db2eefe3">tivx_event.h</a>
 </li>
@@ -200,13 +203,16 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 : <a class="el" href="group__group__tivx__event.html#gad927ee36bfd675b340952338567dd87c">tivx_event.h</a>
 </li>
 <li>tivxEventQueueAddEvent()
-: <a class="el" href="tivx__event__queue_8h.html#a44b5ef820f55f598d4327278c12a98d7">tivx_event_queue.h</a>
+: <a class="el" href="tivx__event__queue_8h.html#a85b1e0fddc3b5d3402f62fd1af00f68a">tivx_event_queue.h</a>
 </li>
 <li>tivxEventQueueCreate()
 : <a class="el" href="tivx__event__queue_8h.html#aa7e0f7d48d25a2b112be7e2b3aea9674">tivx_event_queue.h</a>
 </li>
 <li>tivxEventQueueDelete()
 : <a class="el" href="tivx__event__queue_8h.html#a647b2e501150fa0302fc41e724fb5f39">tivx_event_queue.h</a>
+</li>
+<li>tivxEventQueueEnableEvents()
+: <a class="el" href="tivx__event__queue_8h.html#a5c540c172a0420bdd13102bb68a7ac2e">tivx_event_queue.h</a>
 </li>
 <li>tivxEventWait()
 : <a class="el" href="group__group__tivx__event.html#ga826c9dce98759d1ec7bd2ecaa94c113e">tivx_event.h</a>
@@ -237,6 +243,9 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 </li>
 <li>tivxGetTargetKernelInstanceContext()
 : <a class="el" href="group__group__tivx__target__kernel.html#ga08730671086c805df9f4e00d4a4ef383">tivx_target_kernel.h</a>
+</li>
+<li>tivxGetTargetKernelInstanceState()
+: <a class="el" href="group__group__tivx__target__kernel.html#ga85a82f18dc6c5c3ad653dde6567d9ec3">tivx_target_kernel.h</a>
 </li>
 <li>tivxHostDeInit()
 : <a class="el" href="group__group__tivx__ext__host.html#gafa17594a1ffb93ab47b3da495242bfd1">tivx.h</a>
@@ -332,7 +341,7 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 : <a class="el" href="tivx__log__resource_8h.html#a8a1b9e258862fe495de069d88783e002">tivx_log_resource.h</a>
 </li>
 <li>tivxMapTensorPatch()
-: <a class="el" href="tivx__tensor_8h.html#ab2cd3aa0cf6f229c090e10ebed9828eb">tivx_tensor.h</a>
+: <a class="el" href="tivx__tensor_8h.html#a89931f9141f73fe6814efb7ae9851adf">tivx_tensor.h</a>
 </li>
 <li>tivxMemAlloc()
 : <a class="el" href="group__group__tivx__mem.html#ga99635ddb13baefecfbb1cf262437ca46">tivx_mem.h</a>
@@ -455,8 +464,8 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 : <a class="el" href="group__group__tivx__platform.html#gaee443bc84c911575a11dcfbe03531cc4">tivx_platform.h</a>
 </li>
 <li>tivxPlatformGetTimeInUsecs()
-: <a class="el" href="group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180">tivx_platform.h</a>
-, <a class="el" href="group__group__tivx__ext__host.html#gafe9199791da44e9a0b0a26c81cf49180">tivx.h</a>
+: <a class="el" href="group__group__tivx__ext__host.html#gafe9199791da44e9a0b0a26c81cf49180">tivx.h</a>
+, <a class="el" href="group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180">tivx_platform.h</a>
 </li>
 <li>tivxPlatformInit()
 : <a class="el" href="group__group__tivx__platform.html#gadfc3155b433c4d7d5327803d984abfd4">tivx_platform.h</a>
@@ -483,25 +492,28 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 : <a class="el" href="group__group__tivx__ext__host.html#ga793cd319dcdc028451acc952bbaaff80">tivx.h</a>
 </li>
 <li>tivxQueueCreate()
-: <a class="el" href="group__group__tivx__queue.html#ga220fbb97bef3acbbb17f55b02ba4e386">tivx_queue.h</a>
+: <a class="el" href="group__group__tivx__queue.html#ga73b33fe4c8f050f265bedf2f9ed1285e">tivx_queue.h</a>
 </li>
 <li>tivxQueueDelete()
 : <a class="el" href="group__group__tivx__queue.html#ga1f9f4c5863f9cc2b42edf051f1314310">tivx_queue.h</a>
 </li>
 <li>tivxQueueGet()
-: <a class="el" href="group__group__tivx__queue.html#ga7e2d85b5ee64e73cda934f514d522618">tivx_queue.h</a>
+: <a class="el" href="group__group__tivx__queue.html#ga62788b546d08bf9639e70e070bfea35c">tivx_queue.h</a>
 </li>
 <li>tivxQueueIsEmpty()
 : <a class="el" href="group__group__tivx__queue.html#ga12fd84040573b5e771a5b9bfc223803b">tivx_queue.h</a>
 </li>
 <li>tivxQueuePeek()
-: <a class="el" href="group__group__tivx__queue.html#ga38025c24cd0faefcb527b1375090b5eb">tivx_queue.h</a>
+: <a class="el" href="group__group__tivx__queue.html#ga4051dc70263e44ce11051561d0e7e2c6">tivx_queue.h</a>
 </li>
 <li>tivxQueuePut()
-: <a class="el" href="group__group__tivx__queue.html#ga18c7c8bf6d5f4405384bdaf1d454c9d9">tivx_queue.h</a>
+: <a class="el" href="group__group__tivx__queue.html#gaa1bfb004f3479a0766270ec3dab3f4cb">tivx_queue.h</a>
 </li>
 <li>tivxReferenceGetObjDescId()
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#gae19ec92d7558538be397f29b891091fa">tivx_obj_desc_priv.h</a>
+</li>
+<li>tivxRegisterEvent()
+: <a class="el" href="tivx__event__queue_8h.html#aefa2df58440c60695b4df8345f81f92d">tivx_event_queue.h</a>
 </li>
 <li>tivxRegisterModule()
 : <a class="el" href="group__group__tivx__ext__host.html#ga7194f59e8a633e8ffb01b2780c4fa2e3">tivx.h</a>
@@ -521,8 +533,17 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 <li>tivxReserveC66xL2MEM()
 : <a class="el" href="group__group__tivx__ext__target.html#ga1f77fc7970f4dd6df8d4cc577c3ec5e1">tivx_kernels_target_utils.h</a>
 </li>
+<li>tivxSendUserGraphEvent()
+: <a class="el" href="group__group__vx__graph.html#ga01ea03191de19a09c30cb856e1f20d37">vx_graph.h</a>
+</li>
 <li>tivxSetGraphPipelineDepth()
 : <a class="el" href="group__group__tivx__ext__host.html#ga24b3d2d4a691c652efa0399803164b23">tivx.h</a>
+</li>
+<li>tivxSetKernelPipeupDepth()
+: <a class="el" href="group__group__tivx__ext__host.html#ga0c676a52741b4b83e516deacaf022847">tivx.h</a>
+</li>
+<li>tivxSetKernelSinkDepth()
+: <a class="el" href="group__group__tivx__ext__host.html#ga478906745b2118b2a9e8a332adac113c">tivx.h</a>
 </li>
 <li>tivxSetNodeParameterNumBufByIndex()
 : <a class="el" href="group__group__tivx__ext__host.html#ga6916eb6d3932500e5732d02e85b8b591">tivx.h</a>
@@ -596,6 +617,9 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 <li>tivxTargetNodeDescAcquireAllParameters()
 : <a class="el" href="group__group__tivx__target.html#gad2f6e6b0d101644ab0c841d579b7f990">tivx_target.h</a>
 </li>
+<li>tivxTargetNodeDescAcquireAllParametersForPipeup()
+: <a class="el" href="group__group__tivx__target.html#ga6274b7209751cbbe5dc26e899b4e2f1d">tivx_target.h</a>
+</li>
 <li>tivxTargetNodeDescReleaseAllParameters()
 : <a class="el" href="group__group__tivx__target.html#gadd1c6b17a9332f56facaec73bebe66a9">tivx_target.h</a>
 </li>
@@ -637,6 +661,9 @@ $(document).ready(function(){initNavTree('globals_func_t.html','');});
 </li>
 <li>tivxUnRegisterTargetKernels()
 : <a class="el" href="group__group__tivx__ext__target.html#ga4cc127dcd179ac1d7ac0543e290e2ce7">tivx_kernels_target_utils.h</a>
+</li>
+<li>tivxWaitGraphEvent()
+: <a class="el" href="group__group__vx__graph.html#gaeb1873dfdb6d0eac9e331fcab78ec58c">vx_graph.h</a>
 </li>
 </ul>
 </div><!-- contents -->

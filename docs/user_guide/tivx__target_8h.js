@@ -24,6 +24,7 @@ var tivx__target_8h =
     [ "tivxTargetQueueObjDesc", "tivx__target_8h.html#ga75b9a3e518e3eff982210fb179a5c35c", null ],
     [ "tivxTargetTriggerNode", "tivx__target_8h.html#gaa9ec0462c0d317f02c1949197d4599a9", null ],
     [ "tivxTargetNodeDescAcquireAllParameters", "tivx__target_8h.html#gad2f6e6b0d101644ab0c841d579b7f990", null ],
+    [ "tivxTargetNodeDescAcquireAllParametersForPipeup", "tivx__target_8h.html#ga6274b7209751cbbe5dc26e899b4e2f1d", null ],
     [ "tivxTargetNodeDescReleaseAllParameters", "tivx__target_8h.html#gadd1c6b17a9332f56facaec73bebe66a9", null ],
     [ "tivxTargetSetDefaultCreateParams", "tivx__target_8h.html#ga5e59a1fe631ed63d7a225af8dcf6aa44", null ],
     [ "tivxTargetCreate", "tivx__target_8h.html#gafc790d4875704d2d35d0b2df0e875c6d", null ],

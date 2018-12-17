@@ -5,5 +5,6 @@ var structtivx__target__kernel__instance__t =
     [ "index", "structtivx__target__kernel__instance__t.html#a5c6d1ed9b496233a3417715246f6a86c", null ],
     [ "kernel_context", "structtivx__target__kernel__instance__t.html#aff9619544cb3171f7e15022d1dfc5d15", null ],
     [ "kernel_context_size", "structtivx__target__kernel__instance__t.html#a5902c63a3b4c6f8f139a596f9b6f799f", null ],
-    [ "border_mode", "structtivx__target__kernel__instance__t.html#a909ef9ea964fa2f05052f8a06fdda914", null ]
+    [ "border_mode", "structtivx__target__kernel__instance__t.html#a909ef9ea964fa2f05052f8a06fdda914", null ],
+    [ "state", "structtivx__target__kernel__instance__t.html#abbd860c355e6c23a25644ab1fc3ca1cb", null ]
 ];

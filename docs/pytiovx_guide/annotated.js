@@ -144,7 +144,7 @@ var annotated =
         [ "Scalar", "classtiovx_1_1scalar_1_1Scalar.html", "classtiovx_1_1scalar_1_1Scalar" ]
       ] ],
       [ "target_extended", null, [
-        [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", null ]
+        [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", "classtiovx_1_1target__extended_1_1TargetExtended" ]
       ] ],
       [ "threshold", null, [
         [ "Threshold", "classtiovx_1_1threshold_1_1Threshold.html", "classtiovx_1_1threshold_1_1Threshold" ]

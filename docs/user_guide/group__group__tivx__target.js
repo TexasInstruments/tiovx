@@ -5,7 +5,7 @@ var group__group__tivx__target =
       [ "task_handle", "structtivx__target__t.html#a0c66df840eb31311136334a662fbd905", null ],
       [ "task_params", "structtivx__target__t.html#ae6ba4d3b80daa3f4155f205467d6917f", null ],
       [ "job_queue_handle", "structtivx__target__t.html#ad8a879320dbc50898853cb87c39c2c05", null ],
-      [ "job_queue_memory", "structtivx__target__t.html#a9bad213eb3acdf54a8d316ebc59a7a5e", null ],
+      [ "job_queue_memory", "structtivx__target__t.html#a366879919683d13e8ea7258ba6c8cddc", null ],
       [ "target_main", "structtivx__target__t.html#a1732a7c5991338bb7ab4b038cbfd4150", null ],
       [ "targetExitRequest", "structtivx__target__t.html#aaeec0307b0da4d8ef5b477b6a2ad2657", null ],
       [ "targetExitDone", "structtivx__target__t.html#a88f9d191258baa5a1ecb7632c35879f2", null ]
@@ -39,6 +39,7 @@ var group__group__tivx__target =
     [ "tivxTargetQueueObjDesc", "group__group__tivx__target.html#ga75b9a3e518e3eff982210fb179a5c35c", null ],
     [ "tivxTargetTriggerNode", "group__group__tivx__target.html#gaa9ec0462c0d317f02c1949197d4599a9", null ],
     [ "tivxTargetNodeDescAcquireAllParameters", "group__group__tivx__target.html#gad2f6e6b0d101644ab0c841d579b7f990", null ],
+    [ "tivxTargetNodeDescAcquireAllParametersForPipeup", "group__group__tivx__target.html#ga6274b7209751cbbe5dc26e899b4e2f1d", null ],
     [ "tivxTargetNodeDescReleaseAllParameters", "group__group__tivx__target.html#gadd1c6b17a9332f56facaec73bebe66a9", null ],
     [ "tivxTargetSetDefaultCreateParams", "group__group__tivx__target.html#ga5e59a1fe631ed63d7a225af8dcf6aa44", null ],
     [ "tivxTargetCreate", "group__group__tivx__target.html#gafc790d4875704d2d35d0b2df0e875c6d", null ],

@@ -180,6 +180,16 @@ Enumerations</h2></td></tr>
  }</td></tr>
 <tr class="memdesc:ga2934cd1d530431f23bb7c461abc528df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Based on the VX_DF_IMAGE definition.  <a href="group__group__tivx__ext__host.html#ga2934cd1d530431f23bb7c461abc528df">More...</a><br/></td></tr>
 <tr class="separator:ga2934cd1d530431f23bb7c461abc528df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa56812cd13b0cee25bf1080c5fe39c8c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gaa56812cd13b0cee25bf1080c5fe39c8c">tivx_graph_attribute_e</a> { <a class="el" href="group__group__tivx__ext__host.html#ggaa56812cd13b0cee25bf1080c5fe39c8ca3522252575a5fea9da733b03bd094bf7">TIVX_GRAPH_STREAM_EXECUTIONS</a> = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_GRAPH) + 0x5
+ }</td></tr>
+<tr class="memdesc:gaa56812cd13b0cee25bf1080c5fe39c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Based on the vx_graph_attribute_e definition.  <a href="group__group__tivx__ext__host.html#gaa56812cd13b0cee25bf1080c5fe39c8c">More...</a><br/></td></tr>
+<tr class="separator:gaa56812cd13b0cee25bf1080c5fe39c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa97b9016596b27246172b6d7b1b03cd5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">tivx_target_kernel_instance_state_e</a> { <a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5ac326f623f8ef93104548ba5e20a3b1cd">TIVX_TARGET_KERNEL_STATE_PIPE_UP</a> = 0, 
+<a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a20520026c5b8ddf53d86fe3eaee08e8a">TIVX_TARGET_KERNEL_STATE_STEADY_STATE</a> = 1, 
+<a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a5f8b19523e1b01e07efa6eae77c45b0d">TIVX_TARGET_KERNEL_STATE_INVALID_STATE</a> = 0xFF
+ }</td></tr>
+<tr class="memdesc:gaa97b9016596b27246172b6d7b1b03cd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture state for a given kernel parameter.  <a href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">More...</a><br/></td></tr>
+<tr class="separator:gaa97b9016596b27246172b6d7b1b03cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -198,6 +208,12 @@ Functions</h2></td></tr>
 <tr class="memitem:gada61688ef8d7e4dbfc343b3152ec7219"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gada61688ef8d7e4dbfc343b3152ec7219">tivxAddKernelTarget</a> (<a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, char *target_name)</td></tr>
 <tr class="memdesc:gada61688ef8d7e4dbfc343b3152ec7219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associate a target with a kernel.  <a href="#gada61688ef8d7e4dbfc343b3152ec7219">More...</a><br/></td></tr>
 <tr class="separator:gada61688ef8d7e4dbfc343b3152ec7219"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0c676a52741b4b83e516deacaf022847"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga0c676a52741b4b83e516deacaf022847">tivxSetKernelPipeupDepth</a> (<a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, uint32_t num_pipeup_bufs)</td></tr>
+<tr class="memdesc:ga0c676a52741b4b83e516deacaf022847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of pipeup buffers.  <a href="#ga0c676a52741b4b83e516deacaf022847">More...</a><br/></td></tr>
+<tr class="separator:ga0c676a52741b4b83e516deacaf022847"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga478906745b2118b2a9e8a332adac113c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga478906745b2118b2a9e8a332adac113c">tivxSetKernelSinkDepth</a> (<a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, uint32_t num_sink_bufs)</td></tr>
+<tr class="memdesc:ga478906745b2118b2a9e8a332adac113c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of sink buffers.  <a href="#ga478906745b2118b2a9e8a332adac113c">More...</a><br/></td></tr>
+<tr class="separator:ga478906745b2118b2a9e8a332adac113c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7194f59e8a633e8ffb01b2780c4fa2e3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga7194f59e8a633e8ffb01b2780c4fa2e3">tivxRegisterModule</a> (const char *name, <a class="el" href="vx__types_8h.html#a3d14bc552df0c0dc582ec082310c2fd8">vx_publish_kernels_f</a> publish, <a class="el" href="vx__types_8h.html#a939c334c93669e3754b671381eab5042">vx_unpublish_kernels_f</a> unpublish)</td></tr>
 <tr class="memdesc:ga7194f59e8a633e8ffb01b2780c4fa2e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Register publish and unpublish functions against a module name.  <a href="#ga7194f59e8a633e8ffb01b2780c4fa2e3">More...</a><br/></td></tr>
 <tr class="separator:ga7194f59e8a633e8ffb01b2780c4fa2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -246,6 +262,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga24b3d2d4a691c652efa0399803164b23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga24b3d2d4a691c652efa0399803164b23">tivxSetGraphPipelineDepth</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> pipeline_depth)</td></tr>
 <tr class="memdesc:ga24b3d2d4a691c652efa0399803164b23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates to the implementation the depth of the graph pipeline.  <a href="#ga24b3d2d4a691c652efa0399803164b23">More...</a><br/></td></tr>
 <tr class="separator:ga24b3d2d4a691c652efa0399803164b23"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0df519455e9ddf8fad8c88983ba3970e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e">tivxEnableGraphStreaming</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a> trigger_node)</td></tr>
+<tr class="memdesc:ga0df519455e9ddf8fad8c88983ba3970e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables streaming and sets the given node as a trigger node of the graph.  <a href="#ga0df519455e9ddf8fad8c88983ba3970e">More...</a><br/></td></tr>
+<tr class="separator:ga0df519455e9ddf8fad8c88983ba3970e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>APIs accessible only on host. </p>
@@ -565,6 +584,52 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gaa56812cd13b0cee25bf1080c5fe39c8c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__group__tivx__ext__host.html#gaa56812cd13b0cee25bf1080c5fe39c8c">tivx_graph_attribute_e</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Based on the vx_graph_attribute_e definition. </p>
+<dl class="section note"><dt>Note</dt><dd>Use <code>tivx_graph_attribute</code> to contain these values. </dd></dl>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ggaa56812cd13b0cee25bf1080c5fe39c8ca3522252575a5fea9da733b03bd094bf7"></a>TIVX_GRAPH_STREAM_EXECUTIONS</em>&#160;</td><td class="fielddoc">
+<p>Returns the graph stream executions. Read-only. Use a <code><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a></code> parameter. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a class="anchor" id="gaa97b9016596b27246172b6d7b1b03cd5"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">tivx_target_kernel_instance_state_e</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Capture state for a given kernel parameter. </p>
+<p>TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="ggaa97b9016596b27246172b6d7b1b03cd5ac326f623f8ef93104548ba5e20a3b1cd"></a>TIVX_TARGET_KERNEL_STATE_PIPE_UP</em>&#160;</td><td class="fielddoc">
+<p>CPU ID for DSP1. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="ggaa97b9016596b27246172b6d7b1b03cd5a20520026c5b8ddf53d86fe3eaee08e8a"></a>TIVX_TARGET_KERNEL_STATE_STEADY_STATE</em>&#160;</td><td class="fielddoc">
+<p>CPU ID for DSP2. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="ggaa97b9016596b27246172b6d7b1b03cd5a5f8b19523e1b01e07efa6eae77c45b0d"></a>TIVX_TARGET_KERNEL_STATE_INVALID_STATE</em>&#160;</td><td class="fielddoc">
+<p>Invalid CPU ID. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="gad7aa0fdded06205fb515f77c60e8cac7"></a>
 <div class="memitem">
@@ -675,6 +740,62 @@ Functions</h2></td></tr>
 <p>If given target is not valid on current platform then error VX_ERROR_NOT_SUPPORTED is returned.</p>
 <p>Typically VX_ERROR_NOT_SUPPORTED error should be ignored for this API, since this code is typically kept same across platforms</p>
 <p>During graph verify however if user asks to run the kernel on a target not supported by this platform it results in a error and graph cannot execute. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga0c676a52741b4b83e516deacaf022847"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a> tivxSetKernelPipeupDepth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a>&#160;</td>
+          <td class="paramname"><em>kernel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_pipeup_bufs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the number of pipeup buffers. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga478906745b2118b2a9e8a332adac113c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a> tivxSetKernelSinkDepth </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a>&#160;</td>
+          <td class="paramname"><em>kernel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_sink_bufs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Set the number of sink buffers. </p>
 
 </div>
 </div>
@@ -1107,6 +1228,34 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Indicates to the implementation the depth of the graph pipeline. </p>
+
+</div>
+</div>
+<a class="anchor" id="ga0df519455e9ddf8fad8c88983ba3970e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a> tivxEnableGraphStreaming </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a>&#160;</td>
+          <td class="paramname"><em>graph</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a>&#160;</td>
+          <td class="paramname"><em>trigger_node</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Enables streaming and sets the given node as a trigger node of the graph. </p>
 
 </div>
 </div>

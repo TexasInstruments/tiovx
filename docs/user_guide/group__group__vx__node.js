@@ -19,6 +19,8 @@ var group__group__vx__node =
       [ "local_data_set_allow", "structtivx__node__t.html#a6ccc51f440958963f1f74bdf6d5473fb", null ],
       [ "incounter", "structtivx__node__t.html#ad252d988ed09a3bbc49f2f13aaed2984", null ],
       [ "is_enable_send_complete_event", "structtivx__node__t.html#a8a9f3e2e955e84683e7ebe3cac81c347", null ],
+      [ "is_graph_event", "structtivx__node__t.html#afff6cdf57562dd3999d1a3f31e3cf6ff", null ],
+      [ "is_context_event", "structtivx__node__t.html#aa0de1e030e38c922620f5bd618aebb77", null ],
       [ "parameter_index_num_buf", "structtivx__node__t.html#a8b70f4725a6a1637eb37f6d01e8d3541", null ]
     ] ],
     [ "ownSetNodeImmTarget", "group__group__vx__node.html#gaa40301a5bc1bd16df614c3c7eab93feb", null ],
@@ -46,6 +48,7 @@ var group__group__vx__node =
     [ "ownCheckNodeCompleted", "group__group__vx__node.html#gaf02478e398de8f3c27bd24b224788d85", null ],
     [ "ownNodeRegisterEvent", "group__group__vx__node.html#gac3b8a6cdee32d11569b54dde95668546", null ],
     [ "ownNodeCheckAndSendCompletionEvent", "group__group__vx__node.html#gaa8197e713a1cc96169d4c621eadac39e", null ],
+    [ "ownNodeCheckAndSendErrorEvent", "group__group__vx__node.html#ga942f11de97457400abd09516c80d7db0", null ],
     [ "ownNodeAllocObjDescForPipeline", "group__group__vx__node.html#gab75a96c43f8eae022477682d13a4cf91", null ],
     [ "ownNodeSetObjDescParamDirection", "group__group__vx__node.html#gaa07e6eeb3da5bfadc80a370ee57deb61", null ],
     [ "ownNodeLinkObjDescForPipeline", "group__group__vx__node.html#ga7cd7696b18559246d7477c36f7285341", null ],

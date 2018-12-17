@@ -32,9 +32,16 @@ var structtivx__graph__t =
     [ "out_valid_rect", "structtivx__graph__t.html#a71d84165dc249dc246575e10ae524d8e", null ],
     [ "out_valid_rect_ptr", "structtivx__graph__t.html#a162ec377600e281973558b4fa4d5c429", null ],
     [ "pipeline_depth", "structtivx__graph__t.html#a434fdbce9fa357cf7c3384e59a899321", null ],
+    [ "streaming_executions", "structtivx__graph__t.html#a56367bd9a482d30401453284a72e6041", null ],
+    [ "is_streaming", "structtivx__graph__t.html#a6c0b86ce058609367e3369ebcb18d218", null ],
+    [ "is_streaming_enabled", "structtivx__graph__t.html#ad4887684aa873a33b6cb93150f64db41", null ],
+    [ "trigger_node_set", "structtivx__graph__t.html#aed915970b7e459d2bac9dfd7b9e1d1a4", null ],
+    [ "trigger_node_index", "structtivx__graph__t.html#a795e8f9db485ce93bf97e98fd9548bc3", null ],
+    [ "delete_done", "structtivx__graph__t.html#ad90f7962d1c32c7fb889ab7e9be64ac7", null ],
+    [ "stop_done", "structtivx__graph__t.html#a37a90a8cf753254f45dff8bba91ede32", null ],
     [ "obj_desc", "structtivx__graph__t.html#a22af52a9ecb54e936dbabae54db5d9aa", null ],
     [ "free_q", "structtivx__graph__t.html#a1756d956612bef680ad3e8fb8bce3308", null ],
-    [ "free_q_mem", "structtivx__graph__t.html#a4bd847b336ed807c9a0984737bd03f34", null ],
+    [ "free_q_mem", "structtivx__graph__t.html#a88ddfbf5bc8c6d58dc989800744fc493", null ],
     [ "schedule_mode", "structtivx__graph__t.html#a413232d987dd24b31fcaefa4bf1173d2", null ],
     [ "schedule_pending_count", "structtivx__graph__t.html#a9fa7b956a2ecb6c5de027f278e0d35b2", null ],
     [ "is_enable_send_complete_event", "structtivx__graph__t.html#ac7e4d1a59522d4d29414b52b5a06b4a7", null ],
@@ -43,5 +50,7 @@ var structtivx__graph__t =
     [ "num_data_ref", "structtivx__graph__t.html#a42feb9ce23ef899ffad02c6c55e31fda", null ],
     [ "data_ref", "structtivx__graph__t.html#a9a7c0e96ff4d088c376c0f0f25559fa7", null ],
     [ "data_ref_num_in_nodes", "structtivx__graph__t.html#aab0e778b8ce53fa96fca6d855110ed64", null ],
-    [ "data_ref_num_out_nodes", "structtivx__graph__t.html#ad29665f211a0bbf4967503f8b207a6d4", null ]
+    [ "data_ref_num_out_nodes", "structtivx__graph__t.html#ad29665f211a0bbf4967503f8b207a6d4", null ],
+    [ "event_queue", "structtivx__graph__t.html#a79125925749c2125b312b4ba473e6239", null ],
+    [ "streaming_task_handle", "structtivx__graph__t.html#a68e754f27754d24dcc0b3806d9797a5d", null ]
 ];

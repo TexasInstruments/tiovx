@@ -134,6 +134,12 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a8a9f3e2e955e84683e7ebe3cac81c347"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__node__t.html#a8a9f3e2e955e84683e7ebe3cac81c347">is_enable_send_complete_event</a></td></tr>
 <tr class="memdesc:a8a9f3e2e955e84683e7ebe3cac81c347"><td class="mdescLeft">&#160;</td><td class="mdescRight">when true a event is sent when a node execution is completed  <a href="#a8a9f3e2e955e84683e7ebe3cac81c347">More...</a><br/></td></tr>
 <tr class="separator:a8a9f3e2e955e84683e7ebe3cac81c347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afff6cdf57562dd3999d1a3f31e3cf6ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__node__t.html#afff6cdf57562dd3999d1a3f31e3cf6ff">is_graph_event</a></td></tr>
+<tr class="memdesc:afff6cdf57562dd3999d1a3f31e3cf6ff"><td class="mdescLeft">&#160;</td><td class="mdescRight">flag to indicate whether event is using graph event queue  <a href="#afff6cdf57562dd3999d1a3f31e3cf6ff">More...</a><br/></td></tr>
+<tr class="separator:afff6cdf57562dd3999d1a3f31e3cf6ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0de1e030e38c922620f5bd618aebb77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__node__t.html#aa0de1e030e38c922620f5bd618aebb77">is_context_event</a></td></tr>
+<tr class="memdesc:aa0de1e030e38c922620f5bd618aebb77"><td class="mdescLeft">&#160;</td><td class="mdescRight">flag to indicate whether event is using context event queue  <a href="#aa0de1e030e38c922620f5bd618aebb77">More...</a><br/></td></tr>
+<tr class="separator:aa0de1e030e38c922620f5bd618aebb77"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b70f4725a6a1637eb37f6d01e8d3541"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__node__t.html#a8b70f4725a6a1637eb37f6d01e8d3541">parameter_index_num_buf</a> [<a class="el" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">TIVX_KERNEL_MAX_PARAMS</a>]</td></tr>
 <tr class="memdesc:a8b70f4725a6a1637eb37f6d01e8d3541"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of buffer to allocate at a node parameter Valid only for output parameters and when graph containing the node is pipelined. Default is 1  <a href="#a8b70f4725a6a1637eb37f6d01e8d3541">More...</a><br/></td></tr>
 <tr class="separator:a8b70f4725a6a1637eb37f6d01e8d3541"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -390,6 +396,34 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>when true a event is sent when a node execution is completed </p>
+
+</div>
+</div>
+<a class="anchor" id="afff6cdf57562dd3999d1a3f31e3cf6ff"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a> tivx_node_t::is_graph_event</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>flag to indicate whether event is using graph event queue </p>
+
+</div>
+</div>
+<a class="anchor" id="aa0de1e030e38c922620f5bd618aebb77"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a> tivx_node_t::is_context_event</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>flag to indicate whether event is using context event queue </p>
 
 </div>
 </div>

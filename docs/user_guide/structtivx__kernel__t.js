@@ -12,5 +12,9 @@ var structtivx__kernel__t =
     [ "target_name", "structtivx__kernel__t.html#a7c5a152bcb2070d29d63e36fc8c67de8", null ],
     [ "local_data_size", "structtivx__kernel__t.html#aa9c7555b6d372c72a6c3cdfac04ff6b5", null ],
     [ "is_target_kernel", "structtivx__kernel__t.html#aae966b4e2d599a0af197c4dd117c1ba7", null ],
-    [ "lock_kernel_remove", "structtivx__kernel__t.html#ab7dd06f256af6a728ac64620022e392f", null ]
+    [ "lock_kernel_remove", "structtivx__kernel__t.html#ab7dd06f256af6a728ac64620022e392f", null ],
+    [ "num_pipeup_bufs", "structtivx__kernel__t.html#ae39df83a31bbadcc807f430943d03c33", null ],
+    [ "num_sink_bufs", "structtivx__kernel__t.html#adcea120592200e7f269d835b6957a09e", null ],
+    [ "connected_sink_bufs", "structtivx__kernel__t.html#a4577638e4b3067d171f485138bb3aa96", null ],
+    [ "state", "structtivx__kernel__t.html#a6bc16f050b783fa8ec09d8c7917a0e4e", null ]
 ];

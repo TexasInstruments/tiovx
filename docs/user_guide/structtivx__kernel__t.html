@@ -119,6 +119,18 @@ Data Fields</h2></td></tr>
 <tr class="memitem:ab7dd06f256af6a728ac64620022e392f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__kernel__t.html#ab7dd06f256af6a728ac64620022e392f">lock_kernel_remove</a></td></tr>
 <tr class="memdesc:ab7dd06f256af6a728ac64620022e392f"><td class="mdescLeft">&#160;</td><td class="mdescRight">when this flag is true, kernel cannot be removed via remove kernel API  <a href="#ab7dd06f256af6a728ac64620022e392f">More...</a><br/></td></tr>
 <tr class="separator:ab7dd06f256af6a728ac64620022e392f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae39df83a31bbadcc807f430943d03c33"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__kernel__t.html#ae39df83a31bbadcc807f430943d03c33">num_pipeup_bufs</a></td></tr>
+<tr class="memdesc:ae39df83a31bbadcc807f430943d03c33"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of pipeup buffers  <a href="#ae39df83a31bbadcc807f430943d03c33">More...</a><br/></td></tr>
+<tr class="separator:ae39df83a31bbadcc807f430943d03c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adcea120592200e7f269d835b6957a09e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__kernel__t.html#adcea120592200e7f269d835b6957a09e">num_sink_bufs</a></td></tr>
+<tr class="memdesc:adcea120592200e7f269d835b6957a09e"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of buffers needed for sink node  <a href="#adcea120592200e7f269d835b6957a09e">More...</a><br/></td></tr>
+<tr class="separator:adcea120592200e7f269d835b6957a09e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4577638e4b3067d171f485138bb3aa96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__kernel__t.html#a4577638e4b3067d171f485138bb3aa96">connected_sink_bufs</a></td></tr>
+<tr class="memdesc:a4577638e4b3067d171f485138bb3aa96"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of buffers needed for allocation at source node when sink node directly connected  <a href="#a4577638e4b3067d171f485138bb3aa96">More...</a><br/></td></tr>
+<tr class="separator:a4577638e4b3067d171f485138bb3aa96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bc16f050b783fa8ec09d8c7917a0e4e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__kernel__t.html#a6bc16f050b783fa8ec09d8c7917a0e4e">state</a></td></tr>
+<tr class="memdesc:a6bc16f050b783fa8ec09d8c7917a0e4e"><td class="mdescLeft">&#160;</td><td class="mdescRight">capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE)  <a href="#a6bc16f050b783fa8ec09d8c7917a0e4e">More...</a><br/></td></tr>
+<tr class="separator:a6bc16f050b783fa8ec09d8c7917a0e4e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Kernel object internal state. </p>
@@ -302,6 +314,62 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>when this flag is true, kernel cannot be removed via remove kernel API </p>
+
+</div>
+</div>
+<a class="anchor" id="ae39df83a31bbadcc807f430943d03c33"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> tivx_kernel_t::num_pipeup_bufs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>number of pipeup buffers </p>
+
+</div>
+</div>
+<a class="anchor" id="adcea120592200e7f269d835b6957a09e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> tivx_kernel_t::num_sink_bufs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>number of buffers needed for sink node </p>
+
+</div>
+</div>
+<a class="anchor" id="a4577638e4b3067d171f485138bb3aa96"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> tivx_kernel_t::connected_sink_bufs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>number of buffers needed for allocation at source node when sink node directly connected </p>
+
+</div>
+</div>
+<a class="anchor" id="a6bc16f050b783fa8ec09d8c7917a0e4e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> tivx_kernel_t::state</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE) </p>
 
 </div>
 </div>

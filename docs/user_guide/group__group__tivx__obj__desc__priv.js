@@ -15,7 +15,8 @@ var group__group__tivx__obj__desc__priv =
     ] ],
     [ "tivx_obj_desc_kernel_name_t", "structtivx__obj__desc__kernel__name__t.html", [
       [ "base", "structtivx__obj__desc__kernel__name__t.html#ae3dfcf4f7a5000164a39032653cfc1d7", null ],
-      [ "kernel_name", "structtivx__obj__desc__kernel__name__t.html#a5782da1ec8e7da1d406cff58663afd2f", null ]
+      [ "kernel_name", "structtivx__obj__desc__kernel__name__t.html#a5782da1ec8e7da1d406cff58663afd2f", null ],
+      [ "num_pipeup_bufs", "structtivx__obj__desc__kernel__name__t.html#aea250a5c46d45920a1937bbc6e3d0acb", null ]
     ] ],
     [ "tivx_obj_desc_queue_blocked_nodes_t", "structtivx__obj__desc__queue__blocked__nodes__t.html", [
       [ "num_nodes", "structtivx__obj__desc__queue__blocked__nodes__t.html#ac61977f277d6f7656e9caa7ebb1f02ba", null ],
@@ -67,6 +68,7 @@ var group__group__tivx__obj__desc__priv =
       [ "threshold", "uniontivx__obj__desc__shm__entry__t.html#a56f98a968bca292f84db0ac8893d9e5c", null ],
       [ "distribution", "uniontivx__obj__desc__shm__entry__t.html#ac081c0323d4218a09cb83341162a7796", null ],
       [ "array", "uniontivx__obj__desc__shm__entry__t.html#a5bdee0acc3780763ee89fb194706db78", null ],
+      [ "user_data_object", "uniontivx__obj__desc__shm__entry__t.html#ae09ff31527144e5905cff3eb4b5b1a2a", null ],
       [ "objarray", "uniontivx__obj__desc__shm__entry__t.html#a1ddb8fc31bb9e79d9e77274382eeea85", null ],
       [ "tensor", "uniontivx__obj__desc__shm__entry__t.html#a691e3f9ec1a6bbb078b86df75325dc1e", null ],
       [ "scalar", "uniontivx__obj__desc__shm__entry__t.html#af4332967abf73a5279afb492d5deda52", null ],

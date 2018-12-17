@@ -102,5 +102,9 @@ var files =
       [ "tivx_tensor_t", "structtivx__tensor__t.html", "structtivx__tensor__t" ]
     ] ],
     [ "vx_threshold.h", "vx__threshold_8h.html", null ],
-    [ "vx_types.h", "vx__types_8h.html", "vx__types_8h" ]
+    [ "vx_types.h", "vx__types_8h.html", "vx__types_8h" ],
+    [ "vx_user_data_object.h", "vx__user__data__object_8h.html", [
+      [ "tivx_user_data_object_map_info_t", "structtivx__user__data__object__map__info__t.html", "structtivx__user__data__object__map__info__t" ],
+      [ "tivx_user_data_object_t", "structtivx__user__data__object__t.html", "structtivx__user__data__object__t" ]
+    ] ]
 ];

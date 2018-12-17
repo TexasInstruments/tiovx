@@ -17,6 +17,6 @@ var tivx__tensor_8h =
     [ "vxCopyTensorPatch", "tivx__tensor_8h.html#abee62d7d3d87f516c2a175e61866f56b", null ],
     [ "vxQueryTensor", "tivx__tensor_8h.html#a723001bce8b53ba153f4f76b907d512e", null ],
     [ "vxReleaseTensor", "tivx__tensor_8h.html#a678a8bcddad77e22736ab1f0fb08c59d", null ],
-    [ "tivxMapTensorPatch", "tivx__tensor_8h.html#ab2cd3aa0cf6f229c090e10ebed9828eb", null ],
+    [ "tivxMapTensorPatch", "tivx__tensor_8h.html#a89931f9141f73fe6814efb7ae9851adf", null ],
     [ "tivxUnmapTensorPatch", "tivx__tensor_8h.html#abb401487123518b0964c35e22d26399d", null ]
 ];
