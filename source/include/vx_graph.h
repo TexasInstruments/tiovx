@@ -178,7 +178,7 @@ typedef struct _vx_graph {
     tivx_queue free_q;
 
     /*! \brief memory used by free Q */
-    uint32_t free_q_mem[TIVX_GRAPH_MAX_PIPELINE_DEPTH];
+    uintptr_t free_q_mem[TIVX_GRAPH_MAX_PIPELINE_DEPTH];
 
     /*! \brief graph schedule mode as defined by vx_graph_schedule_mode_type_e */
     vx_enum schedule_mode;

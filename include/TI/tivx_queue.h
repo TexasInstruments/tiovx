@@ -114,7 +114,7 @@ typedef struct _tivx_queue_t {
   uint32_t max_ele;
   /**< Max elements that be present in the queue  */
 
-  uint32_t *queue;
+  uintptr_t *queue;
   /**< Address of data area of the queue elements */
 
   tivx_event block_rd;
@@ -152,7 +152,7 @@ typedef struct _tivx_queue_t {
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueueCreate(tivx_queue *queue, uint32_t max_elements, uint32_t *queue_memory, uint32_t flags);
+vx_status tivxQueueCreate(tivx_queue *queue, uint32_t max_elements, uintptr_t *queue_memory, uint32_t flags);
 
 /*!
  * \brief Delete a queue
@@ -178,7 +178,7 @@ vx_status tivxQueueDelete(tivx_queue *queue);
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout);
+vx_status tivxQueuePut(tivx_queue *queue, uintptr_t data, uint32_t timeout);
 
 /*!
  * \brief Extract a element from the queue
@@ -193,7 +193,7 @@ vx_status tivxQueuePut(tivx_queue *queue, uint32_t data, uint32_t timeout);
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout);
+vx_status tivxQueueGet(tivx_queue *queue, uintptr_t *data, uint32_t timeout);
 
 /*!
  * \brief Peek an element from the queue but dont extract it
@@ -205,7 +205,7 @@ vx_status tivxQueueGet(tivx_queue *queue, uint32_t *data, uint32_t timeout);
  *
  * \ingroup group_tivx_queue
  */
-vx_status tivxQueuePeek(tivx_queue *queue, uint32_t *data);
+vx_status tivxQueuePeek(tivx_queue *queue, uintptr_t *data);
 
 /*!
  * \brief Check if queue is empty

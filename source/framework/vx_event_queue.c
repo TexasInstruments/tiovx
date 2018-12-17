@@ -125,7 +125,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 
     if(event_q != NULL && event_q->enable==vx_true_e)
     {
-        uint32_t index;
+        uintptr_t index;
 
         status = tivxQueueGet(&event_q->free_queue, &index, TIVX_EVENT_TIMEOUT_NO_WAIT);
         if(status==VX_SUCCESS && index < TIVX_EVENT_QUEUE_MAX_SIZE)
@@ -231,7 +231,8 @@ vx_status vxWaitEventQueue(
                     vx_bool do_not_block)
 {
     vx_status status = VX_SUCCESS;
-    uint32_t index, timeout;
+    uintptr_t index;
+    uint32_t timeout;
 
     if(vx_true_e == do_not_block)
     {

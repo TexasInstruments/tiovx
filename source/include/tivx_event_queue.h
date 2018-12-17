@@ -107,7 +107,7 @@ typedef struct _tivx_event_queue_t
     tivx_queue free_queue;
 
     /*! \brief free queue memory */
-    uint32_t free_queue_memory[TIVX_EVENT_QUEUE_MAX_SIZE];
+    uintptr_t free_queue_memory[TIVX_EVENT_QUEUE_MAX_SIZE];
 
     /*! \brief handle to ready queue holding tivx_event_queue_elem_t's which are ready to be delivered to users
      * NOTE: queue holds index's to event_list[]
@@ -115,7 +115,7 @@ typedef struct _tivx_event_queue_t
     tivx_queue ready_queue;
 
     /*! \brief free queue memory */
-    uint32_t ready_queue_memory[TIVX_EVENT_QUEUE_MAX_SIZE];
+    uintptr_t ready_queue_memory[TIVX_EVENT_QUEUE_MAX_SIZE];
 
     /*! \brief flag to control enable/disable of event addition to event queue  */
     vx_bool enable;

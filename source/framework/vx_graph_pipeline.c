@@ -329,7 +329,7 @@ static tivx_obj_desc_graph_t *ownGraphDequeueFreeObjDesc(vx_graph graph)
 {
     vx_status status;
     tivx_obj_desc_graph_t *obj_desc = NULL;
-    uint32_t pipeline_id;
+    uintptr_t pipeline_id;
 
     status = tivxQueueGet(&graph->free_q, &pipeline_id, 0);
     if(status==VX_SUCCESS && pipeline_id < graph->pipeline_depth)

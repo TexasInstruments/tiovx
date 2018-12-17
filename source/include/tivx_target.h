@@ -189,7 +189,7 @@ typedef struct _tivx_target {
     tivx_queue job_queue_handle;
 
     /*! \brief queue memory */
-    uint32_t job_queue_memory[TIVX_TARGET_MAX_JOB_QUEUE_DEPTH];
+    uintptr_t job_queue_memory[TIVX_TARGET_MAX_JOB_QUEUE_DEPTH];
 
     /*! \brief target main */
     tivx_task_main_f target_main;
