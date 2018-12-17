@@ -239,18 +239,6 @@ void tivxMemBufferUnmap(void *host_ptr, uint32_t size, vx_enum mem_type, vx_enum
 uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region);
 
 /*!
- * \brief Convert Shared memory pointer to host pointer
- *
- * \param [in] shared_ptr Shared memory pointer
- * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
- *
- * \return Converted host memory pointer
- *
- * \ingroup group_tivx_mem
- */
-uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
-
-/*!
  * \brief Convert shared pointer to target pointer
  *
  * \param [in] shared_ptr Host memory pointer
@@ -261,18 +249,6 @@ uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
  * \ingroup group_tivx_mem
  */
 void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
-
-/*!
- * \brief Convert target memory pointer to shared pointer
- *
- * \param [in] target_ptr Target memory pointer
- * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
- *
- * \return Converted host memory pointer
- *
- * \ingroup group_tivx_mem
- */
-uint64_t tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Allocates memory of given size

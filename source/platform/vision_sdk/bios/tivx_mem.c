@@ -62,14 +62,14 @@ vx_status tivxMemBufferAlloc(
 
         if (VX_SUCCESS == status)
         {
-            mem_ptr->shared_ptr = Utils_memAlloc(
+            mem_ptr->host_ptr = Utils_memAlloc(
                 heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
 
-            if (NULL != mem_ptr->shared_ptr)
+            if (NULL != mem_ptr->host_ptr)
             {
                 mem_ptr->mem_heap_region = mem_heap_region;
-                mem_ptr->host_ptr = tivxMemShared2HostPtr(
-                    mem_ptr->shared_ptr, mem_heap_region);
+                mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
+                    mem_ptr->host_ptr, mem_heap_region);
             }
             else
             {
@@ -288,12 +288,6 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     return (host_ptr);
 }
 
-uint64_t tivxMemShared2HostPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
-{
-    /* For Bios implementation, host and shared pointers are same */
-    return (shared_ptr);
-}
-
 void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     /* For Bios implementation, host and shared pointers are same
@@ -303,8 +297,4 @@ void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     return Utils_memPhysToVirt((void*)(uintptr_t)shared_ptr);
 }
 
-uint64_t tivxMemTarget2SharedPtr(void *target_ptr, vx_enum mem_heap_region)
-{
-    return (uint64_t)(target_ptr);
-}
 
