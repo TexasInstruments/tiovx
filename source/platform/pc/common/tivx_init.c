@@ -98,8 +98,6 @@ void tivxInit(void)
     /* Initialize Host */
 
     #ifdef BUILD_CONFORMANCE_TEST
-    tivxSetSelfCpuId(TIVX_CPU_ID_IPU1_0);
-    tivxRegisterCaptureTargetArmKernels();
 
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
     tivxRegisterCaptureTargetArmKernels();
