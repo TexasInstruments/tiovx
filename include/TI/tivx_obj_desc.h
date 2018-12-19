@@ -671,7 +671,7 @@ typedef struct _tivx_obj_desc_user_data_object
     /*! \brief user data object memory address */
     tivx_shared_mem_ptr_t mem_ptr;
     /*! \brief size of buffer pointed to by mem_ptr */
-    uint32_t size;
+    uint32_t mem_size;
     /*! \brief The type name of the user data object. */
     vx_char type_name[VX_MAX_REFERENCE_NAME];
 

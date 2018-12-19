@@ -87,7 +87,7 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
             if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
             {
                 tivxMemBufferAlloc(
-                    &obj_desc->mem_ptr, obj_desc->size,
+                    &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
                 if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
@@ -130,7 +130,7 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
             if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
             {
                 tivxMemBufferFree(
-                    &obj_desc->mem_ptr, obj_desc->size);
+                    &obj_desc->mem_ptr, obj_desc->mem_size);
             }
 
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
@@ -149,7 +149,7 @@ static vx_status ownInitUserDataObjectObject(
 
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
-    obj_desc->size = size;
+    obj_desc->mem_size = size;
     
     /* Initialize string with zeros, which safely fills with null terminators */
     memset(obj_desc->type_name, 0, VX_MAX_REFERENCE_NAME);
@@ -285,7 +285,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
             case VX_USER_DATA_OBJECT_SIZE:
                 if (VX_CHECK_PARAM(ptr, size, vx_size, 0x3U))
                 {
-                    *(vx_size *)ptr = obj_desc->size;
+                    *(vx_size *)ptr = obj_desc->mem_size;
                 }
                 else
                 {
@@ -341,7 +341,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((offset < 0) || (size < 1) || ((offset + size) > obj_desc->size))
+        if ((offset < 0) || (size < 1) || ((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -424,7 +424,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
     {
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
-        if ((offset < 0) || (size < 0) || ((offset + size) > obj_desc->size))
+        if ((offset < 0) || (size < 0) || ((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -452,7 +452,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
             uint32_t map_size;
 
             map_addr = (vx_uint8*)(uintptr_t)obj_desc->mem_ptr.host_ptr + offset;
-            map_size = (size > 0) ? size : obj_desc->size - offset;
+            map_size = (size > 0) ? size : obj_desc->mem_size - offset;
 
             user_data_object->maps[i].map_addr = map_addr;
             user_data_object->maps[i].map_size = map_size;
