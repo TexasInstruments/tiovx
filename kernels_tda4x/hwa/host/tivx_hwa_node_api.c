@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -64,7 +64,7 @@
 #include <TI/tda4x.h>
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_image             input,
                                       vx_convolution       conv,
                                       vx_image             output)
@@ -83,9 +83,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_image             input,
-                                      vx_array             sigmas,
+                                      vx_user_data_object  sigmas,
                                       vx_image             output)
 {
     vx_reference prms[] = {
@@ -102,7 +102,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_image             left,
                                       vx_image             right,
                                       vx_image             output,
@@ -123,13 +123,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
-                                      vx_array             configuration,
-                                      vx_array             region_params,
+                                      vx_user_data_object  configuration,
+                                      vx_user_data_object  region_params,
                                       vx_image             mesh_table,
                                       vx_matrix            warp_matrix,
                                       vx_lut               out_2_luma_lut,
                                       vx_lut               out_3_chroma_lut,
-                                      vx_array             bandwidth_params,
+                                      vx_user_data_object  bandwidth_params,
                                       vx_image             in_luma_or_422,
                                       vx_image             in_chroma,
                                       vx_image             out_0_luma_or_422,
@@ -162,7 +162,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_pyramid           input_current,
                                       vx_pyramid           input_reference,
                                       vx_image             flow_vector_in,
@@ -206,8 +206,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
 }
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
-                                      vx_array             configuration,
-                                      vx_array             ae_awb_result,
+                                      vx_user_data_object  configuration,
+                                      vx_user_data_object  ae_awb_result,
                                       vx_image             raw0,
                                       vx_image             raw1,
                                       vx_image             raw2,
@@ -217,7 +217,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
                                       vx_image             uv8_g8_c3,
                                       vx_image             s8_b8_c4,
                                       vx_distribution      histogram,
-                                      vx_array             h3a_aew_af,
+                                      vx_user_data_object  h3a_aew_af,
                                       vx_user_data_object  dcc_param)
 {
     vx_reference prms[] = {

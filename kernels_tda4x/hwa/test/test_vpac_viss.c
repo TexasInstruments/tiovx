@@ -73,17 +73,15 @@ TESTCASE(tivxHwaVpacViss, CT_VXContext, ct_setup_vx_context, 0)
 TEST(tivxHwaVpacViss, testNodeCreation)
 {
     vx_context context = context_->vx_context_;
-    vx_array configuration = NULL;
-    vx_array ae_awb_result = NULL;
+    vx_user_data_object configuration = NULL;
+    vx_user_data_object ae_awb_result = NULL;
     vx_image raw0 = NULL, raw1 = NULL, raw2 = NULL;
     vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
     vx_distribution histogram = NULL;
-    vx_array h3a_aew_af = NULL;
+    vx_user_data_object h3a_aew_af = NULL;
 
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
-
-    vx_enum params_type = VX_TYPE_INVALID;
 
     vx_graph graph = 0;
     vx_node node = 0;
@@ -102,15 +100,13 @@ TEST(tivxHwaVpacViss, testNodeCreation)
         ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_viss_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
-        ASSERT_VX_OBJECT(configuration = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_ae_awb_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
-        ASSERT_VX_OBJECT(ae_awb_result = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
+                                                            sizeof(tivx_ae_awb_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -131,8 +127,8 @@ TEST(tivxHwaVpacViss, testNodeCreation)
         VX_CALL(vxReleaseImage(&raw2));
         VX_CALL(vxReleaseImage(&raw1));
         VX_CALL(vxReleaseImage(&raw0));
-        VX_CALL(vxReleaseArray(&ae_awb_result));
-        VX_CALL(vxReleaseArray(&configuration));
+        VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
+        VX_CALL(vxReleaseUserDataObject(&configuration));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
@@ -190,17 +186,15 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 )
 {
     vx_context context = context_->vx_context_;
-    vx_array configuration = NULL;
-    vx_array ae_awb_result = NULL;
+    vx_user_data_object configuration = NULL;
+    vx_user_data_object ae_awb_result = NULL;
     vx_image raw0 = NULL, raw1 = NULL, raw2 = NULL;
     vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
     vx_distribution histogram = NULL;
-    vx_array h3a_aew_af = NULL;
+    vx_user_data_object h3a_aew_af = NULL;
 
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
-
-    vx_enum params_type = VX_TYPE_INVALID;
 
     vx_graph graph = 0;
     vx_node node = 0;
@@ -233,11 +227,13 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
         /* Create/Configure configuration input structure */
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_viss_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        ASSERT_VX_OBJECT(configuration = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+
+        memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
+        ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
+                                                            sizeof(tivx_ae_awb_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         snprintf(params.sensor_name, 256, "%s/viss_config/example_sensor/0/0", ct_get_test_file_path());
 
@@ -251,15 +247,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
-        VX_CALL(vxAddArrayItems(configuration, 1, &params, sizeof(tivx_vpac_viss_params_t)));
-
-
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_ae_awb_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        ASSERT_VX_OBJECT(ae_awb_result = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
-        memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
-        VX_CALL(vxAddArrayItems(ae_awb_result, 1, &ae_awb_params, sizeof(tivx_ae_awb_params_t)));
+        VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -284,8 +273,8 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         VX_CALL(vxReleaseImage(&raw2));
         VX_CALL(vxReleaseImage(&raw1));
         VX_CALL(vxReleaseImage(&raw0));
-        VX_CALL(vxReleaseArray(&ae_awb_result));
-        VX_CALL(vxReleaseArray(&configuration));
+        VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
+        VX_CALL(vxReleaseUserDataObject(&configuration));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
@@ -509,7 +498,7 @@ static void ct_read_hist(vx_distribution hist, const char* fileName, uint16_t fi
     fclose(f);
 }
 
-static void ct_read_array2(vx_array array, const char* fileName, uint16_t file_byte_pack)
+static void ct_read_user_data_object(vx_user_data_object user_data_object, const char* fileName, uint16_t file_byte_pack)
 {
     FILE* f = 0;
     size_t sz;
@@ -518,7 +507,7 @@ static void ct_read_array2(vx_array array, const char* fileName, uint16_t file_b
 
     if (!fileName)
     {
-        CT_ADD_FAILURE("Array file name not specified\n");
+        CT_ADD_FAILURE("User data object file name not specified\n");
         return;
     }
 
@@ -540,9 +529,16 @@ static void ct_read_array2(vx_array array, const char* fileName, uint16_t file_b
         fseek(f, 0, SEEK_SET);
         if( fread(buf, 1, sz, f) == sz )
         {
-            vx_size item_size;
-            vxQueryArray(array, VX_ARRAY_ITEMSIZE, &item_size, sizeof(item_size));
-            vxAddArrayItems(array, 1, buf, item_size);
+            uint32_t size;
+            vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_SIZE, &size, sizeof(size));
+            if (sz < size)
+            {
+                vxCopyUserDataObject(user_data_object, 0, sz, buf, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+            }
+            else
+            {
+                vxCopyUserDataObject(user_data_object, 0, size, buf, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+            }
         }
     }
 
@@ -700,22 +696,19 @@ static vx_int32 ct_cmp_hist(vx_distribution hist, vx_distribution hist_ref)
 TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 {
     vx_context context = context_->vx_context_;
-    vx_array configuration = NULL;
-    vx_array ae_awb_result = NULL;
+    vx_user_data_object configuration = NULL;
+    vx_user_data_object ae_awb_result = NULL;
     vx_image raw0 = NULL, raw1 = NULL, raw2 = NULL;
     vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
     vx_image y12_ref = NULL, uv12_c1_ref = NULL, y8_r8_c2_ref = NULL, uv8_g8_c3_ref = NULL, s8_b8_c4_ref = NULL;
     vx_distribution histogram = NULL;
     vx_distribution histogram_ref = NULL;
-    vx_array h3a_aew_af = NULL;
-    vx_array h3a_aew_af_ref = NULL;
-    vx_size h3a_output_size;
+    vx_user_data_object h3a_aew_af = NULL;
+    vx_user_data_object h3a_aew_af_ref = NULL;
 
     tivx_vpac_viss_params_t params;
     tivx_ae_awb_params_t ae_awb_params;
     void *h3a_output;
-
-    vx_enum params_type = VX_TYPE_INVALID;
 
     vx_graph graph = 0;
     vx_node node = 0;
@@ -743,11 +736,9 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
 
         /* Create/Configure configuration input structure */
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_viss_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        ASSERT_VX_OBJECT(configuration = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
+        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         snprintf(params.sensor_name, 256, "%s/viss_config/example_sensor/0/0", ct_get_test_file_path());
 
@@ -761,22 +752,18 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
-        VX_CALL(vxAddArrayItems(configuration, 1, &params, sizeof(tivx_vpac_viss_params_t)));
+        VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* Create/Configure ae_awb_result input structure */
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_ae_awb_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        ASSERT_VX_OBJECT(ae_awb_result = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
         memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
-        VX_CALL(vxAddArrayItems(ae_awb_result, 1, &ae_awb_params, sizeof(tivx_ae_awb_params_t)));
+        ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
+                                                            sizeof(tivx_ae_awb_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+
+        VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* Create h3a_aew_af output buffer. tivx_h3a_data_t includes memory for H3A payload  */
-        h3a_output_size = sizeof(tivx_h3a_data_t);
-        params_type = vxRegisterUserStruct(context, h3a_output_size);
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-        ASSERT_VX_OBJECT(h3a_aew_af = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
+        ASSERT_VX_OBJECT(h3a_aew_af = vxCreateUserDataObject(context, "tivx_h3a_data_t",
+                                                            sizeof(tivx_h3a_data_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -800,7 +787,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(uv8_g8_c3_ref = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(s8_b8_c4_ref = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(histogram_ref = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
-        ASSERT_VX_OBJECT(h3a_aew_af_ref = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(h3a_aew_af_ref = vxCreateUserDataObject(context, "tivx_h3a_data_t",
+                                                            sizeof(tivx_h3a_data_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         ct_read_image2(y12_ref, "out_y12.raw", 2);
         ct_read_image2(uv12_c1_ref, "out_uv12.raw", 2);
@@ -808,7 +796,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ct_read_image2(uv8_g8_c3_ref, "out_uv8.raw", 2);
         ct_read_image2(s8_b8_c4_ref, "out_s8.raw", 2);
         ct_read_hist(histogram_ref, "out_hist.raw", 4);
-        ct_read_array2(h3a_aew_af_ref, "out_h3a.raw", 4);
+        ct_read_user_data_object(h3a_aew_af_ref, "out_h3a.raw", 4);
 
         ASSERT(ct_cmp_image2(y12, y12_ref) == 0);
         ASSERT(ct_cmp_image2(uv12_c1, uv12_c1_ref) == 0);
@@ -824,16 +812,15 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
             int32_t error = 0;
             vx_map_id map_id, map_id_ref;
             int32_t i;
-            vx_size item_size;
 
-            vxMapArrayRange(h3a_aew_af, 0, 1, &map_id, &item_size,
+            vxMapUserDataObject(h3a_aew_af, 0, sizeof(tivx_h3a_data_t), &map_id,
                 (void *)&data_ptr,
                 VX_READ_ONLY,
                 VX_MEMORY_TYPE_HOST, 0);
             h3a_out = (tivx_h3a_data_t*)data_ptr;
             ptr = (uint8_t *)&h3a_out->data;
 
-            vxMapArrayRange(h3a_aew_af_ref, 0, 1, &map_id_ref, &item_size,
+            vxMapUserDataObject(h3a_aew_af_ref, 0, sizeof(tivx_h3a_data_t), &map_id_ref,
                 (void *)&ref_ptr,
                 VX_READ_ONLY,
                 VX_MEMORY_TYPE_HOST, 0);
@@ -845,12 +832,12 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
                     error++;
                 }
             }
-            vxUnmapArrayRange(h3a_aew_af, map_id);
-            vxUnmapArrayRange(h3a_aew_af_ref, map_id_ref);
+            vxUnmapUserDataObject(h3a_aew_af, map_id);
+            vxUnmapUserDataObject(h3a_aew_af_ref, map_id_ref);
             ASSERT(error == 0);
         }
 
-        VX_CALL(vxReleaseArray(&h3a_aew_af_ref));
+        VX_CALL(vxReleaseUserDataObject(&h3a_aew_af_ref));
         VX_CALL(vxReleaseDistribution(&histogram_ref));
         VX_CALL(vxReleaseImage(&s8_b8_c4_ref));
         VX_CALL(vxReleaseImage(&uv8_g8_c3_ref));
@@ -863,7 +850,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseArray(&h3a_aew_af));
+        VX_CALL(vxReleaseUserDataObject(&h3a_aew_af));
         VX_CALL(vxReleaseDistribution(&histogram));
         VX_CALL(vxReleaseImage(&s8_b8_c4));
         VX_CALL(vxReleaseImage(&uv8_g8_c3));
@@ -873,8 +860,8 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         //VX_CALL(vxReleaseImage(&raw2));
         //VX_CALL(vxReleaseImage(&raw1));
         VX_CALL(vxReleaseImage(&raw0));
-        VX_CALL(vxReleaseArray(&ae_awb_result));
-        VX_CALL(vxReleaseArray(&configuration));
+        VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
+        VX_CALL(vxReleaseUserDataObject(&configuration));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);

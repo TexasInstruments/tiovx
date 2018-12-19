@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -119,8 +119,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
     vx_image flow_vector_out_img = NULL, confidence_img = NULL;
     vx_distribution confidence_histogram = NULL;
     tivx_dmpac_dof_params_t params;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_array param_array = NULL;
+    vx_user_data_object param_obj;
     vx_graph graph = 0;
     vx_node node_dof = 0;
     vx_node node_dof_vis = 0;
@@ -134,10 +133,8 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
 
         tivxHwaLoadKernels(context);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_dmpac_dof_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&params, 0, sizeof(tivx_dmpac_dof_params_t));
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         params.vertical_search_range[0] = 48;
         params.vertical_search_range[1] = 48;
@@ -146,7 +143,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         params.motion_smoothness_factor = 24;
         params.motion_direction = 1; /* 1: forward direction */
 
-        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_dmpac_dof_params_t)));
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
         ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
@@ -160,7 +157,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node_dof = tivxDmpacDofNode(graph,
-                        param_array,
+                        param_obj,
                         input_current,
                         input_reference,
                         flow_vector_in,
@@ -198,7 +195,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         VX_CALL(vxReleaseImage(&flow_vector_in));
         VX_CALL(vxReleaseImage(&flow_vector_out));
         VX_CALL(vxReleaseDistribution(&confidence_histogram));
-        VX_CALL(vxReleaseArray(&param_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
 
         VX_CALL(vxReleaseImage(&flow_vector_out_img));
         VX_CALL(vxReleaseImage(&confidence_img));
@@ -211,7 +208,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         ASSERT(flow_vector_in == 0);
         ASSERT(flow_vector_out == 0);
         ASSERT(confidence_histogram == 0);
-        ASSERT(param_array == 0);
+        ASSERT(param_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }

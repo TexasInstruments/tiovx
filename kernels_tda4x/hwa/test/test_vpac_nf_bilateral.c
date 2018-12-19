@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -75,10 +75,8 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
     vx_image src_image = 0, dst_image = 0;
     tivx_vpac_nf_bilateral_params_t params;
     tivx_vpac_nf_bilateral_sigmas_t sigmas;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_enum sigmas_type = VX_TYPE_INVALID;
-    vx_array param_array;
-    vx_array sigma_array;
+    vx_user_data_object param_obj;
+    vx_user_data_object sigma_obj;
     vx_graph graph = 0;
     vx_node node = 0;
 
@@ -89,19 +87,17 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
         ASSERT_VX_OBJECT(src_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
+                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
-        sigmas_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT(sigmas_type >= VX_TYPE_USER_STRUCT_START && sigmas_type <= VX_TYPE_USER_STRUCT_END);
         memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT_VX_OBJECT(sigma_array = vxCreateArray(context, sigmas_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
+                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_array, src_image, sigma_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_obj, src_image, sigma_obj, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 
@@ -109,15 +105,15 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&src_image));
-        VX_CALL(vxReleaseArray(&param_array));
-        VX_CALL(vxReleaseArray(&sigma_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&sigma_obj));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
         ASSERT(dst_image == 0);
         ASSERT(src_image == 0);
-        ASSERT(param_array == 0);
-        ASSERT(sigma_array == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(sigma_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }
@@ -194,10 +190,8 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
     vx_image src_image = 0, dst_image = 0;
     tivx_vpac_nf_bilateral_params_t params;
     tivx_vpac_nf_bilateral_sigmas_t sigmas;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_enum sigmas_type = VX_TYPE_INVALID;
-    vx_array param_array;
-    vx_array sigma_array;
+    vx_user_data_object param_obj;
+    vx_user_data_object sigma_obj;
     vx_graph graph = 0;
     vx_node node = 0;
     int i;
@@ -214,15 +208,13 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
+                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
-        sigmas_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT(sigmas_type >= VX_TYPE_USER_STRUCT_START && sigmas_type <= VX_TYPE_USER_STRUCT_END);
         memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
-        ASSERT_VX_OBJECT(sigma_array = vxCreateArray(context, sigmas_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
+                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         params.params.output_downshift = arg_->shift;
 
@@ -237,12 +229,12 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
             params.adaptive_mode = 1;
         }
 
-        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_vpac_nf_bilateral_params_t)));
-        VX_CALL(vxAddArrayItems(sigma_array, 1, &sigmas, sizeof(tivx_vpac_nf_bilateral_sigmas_t)));
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_nf_bilateral_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(sigma_obj, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t), &sigmas, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_array, src_image, sigma_array, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfBilateralNode(graph, param_obj, src_image, sigma_obj, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 
@@ -259,13 +251,13 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&src_image));
-        VX_CALL(vxReleaseArray(&param_array));
-        VX_CALL(vxReleaseArray(&sigma_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&sigma_obj));
 
         ASSERT(dst_image == 0);
         ASSERT(src_image == 0);
-        ASSERT(param_array == 0);
-        ASSERT(sigma_array == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(sigma_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }

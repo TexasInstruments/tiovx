@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -226,7 +226,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_array_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_pyramid_t *input_current_desc;
     tivx_obj_desc_pyramid_t *input_ref_desc;
     tivx_obj_desc_image_t *flow_vector_in_desc;
@@ -272,7 +272,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         void *img_reference_target_ptr[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
 
         /* point to descriptors with correct type */
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
+        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
         input_current_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
         input_ref_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
         flow_vector_in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
@@ -500,7 +500,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         if (NULL != prms)
         {
             tivx_obj_desc_pyramid_t *pyr1 = (tivx_obj_desc_pyramid_t*)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
-            tivx_obj_desc_array_t *params_array = (tivx_obj_desc_array_t*)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
+            tivx_obj_desc_user_data_object_t *params_array = (tivx_obj_desc_user_data_object_t*)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
             tivx_obj_desc_image_t *img[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
             tivx_dmpac_dof_params_t *params;
             uint32_t i;

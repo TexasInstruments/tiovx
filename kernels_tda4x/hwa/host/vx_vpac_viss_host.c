@@ -85,13 +85,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 {
     vx_status status = VX_SUCCESS;
 
-    vx_array configuration = NULL;
-    vx_enum configuration_item_type;
-    vx_size configuration_capacity, configuration_item_size;
+    vx_user_data_object configuration = NULL;
+    vx_char configuration_name[VX_MAX_REFERENCE_NAME];
+    vx_size configuration_size;
 
-    vx_array ae_awb_result = NULL;
-    vx_enum ae_awb_result_item_type;
-    vx_size ae_awb_result_capacity, ae_awb_result_item_size;
+    vx_user_data_object ae_awb_result = NULL;
+    vx_char ae_awb_result_name[VX_MAX_REFERENCE_NAME];
+    vx_size ae_awb_result_size;
 
     vx_image raw0 = NULL;
     vx_df_image raw0_fmt;
@@ -130,9 +130,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_uint32 histogram_range = 0;
     vx_size histogram_numBins = 0;
 
-    vx_array h3a_aew_af = NULL;
-    vx_enum h3a_aew_af_item_type;
-    vx_size h3a_aew_af_capacity, h3a_aew_af_item_size;
+    vx_user_data_object h3a_aew_af = NULL;
+    vx_char h3a_aew_af_name[VX_MAX_REFERENCE_NAME];
+    vx_size h3a_aew_af_size;
+
+    vx_user_data_object dcc_param = NULL;
+    vx_char dcc_param_name[VX_MAX_REFERENCE_NAME];
+    vx_size dcc_param_size;
 
     if ( (num != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
@@ -146,8 +150,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (vx_array)parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
-        ae_awb_result = (vx_array)parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
+        configuration = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        ae_awb_result = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw0 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
         raw1 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW1_IDX];
         raw2 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW2_IDX];
@@ -157,7 +161,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         uv8_g8_c3 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
         s8_b8_c4 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
         histogram = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
-        h3a_aew_af = (vx_array)parameters[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+        h3a_aew_af = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+        dcc_param = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_DCC_PARAM_IDX];
     }
 
 
@@ -165,13 +170,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMTYPE, &configuration_item_type, sizeof(configuration_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_CAPACITY, &configuration_capacity, sizeof(configuration_capacity)));
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMSIZE, &configuration_item_size, sizeof(configuration_item_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
-        tivxCheckStatus(&status, vxQueryArray(ae_awb_result, VX_ARRAY_ITEMTYPE, &ae_awb_result_item_type, sizeof(ae_awb_result_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(ae_awb_result, VX_ARRAY_CAPACITY, &ae_awb_result_capacity, sizeof(ae_awb_result_capacity)));
-        tivxCheckStatus(&status, vxQueryArray(ae_awb_result, VX_ARRAY_ITEMSIZE, &ae_awb_result_item_size, sizeof(ae_awb_result_item_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_NAME, &ae_awb_result_name, sizeof(ae_awb_result_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_SIZE, &ae_awb_result_size, sizeof(ae_awb_result_size)));
 
         tivxCheckStatus(&status, vxQueryImage(raw0, VX_IMAGE_FORMAT, &raw0_fmt, sizeof(raw0_fmt)));
         tivxCheckStatus(&status, vxQueryImage(raw0, VX_IMAGE_WIDTH, &raw0_w, sizeof(raw0_w)));
@@ -235,9 +238,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != h3a_aew_af)
         {
-            tivxCheckStatus(&status, vxQueryArray(h3a_aew_af, VX_ARRAY_ITEMTYPE, &h3a_aew_af_item_type, sizeof(h3a_aew_af_item_type)));
-            tivxCheckStatus(&status, vxQueryArray(h3a_aew_af, VX_ARRAY_CAPACITY, &h3a_aew_af_capacity, sizeof(h3a_aew_af_capacity)));
-            tivxCheckStatus(&status, vxQueryArray(h3a_aew_af, VX_ARRAY_ITEMSIZE, &h3a_aew_af_item_size, sizeof(h3a_aew_af_item_size)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(h3a_aew_af, VX_USER_DATA_OBJECT_NAME, &h3a_aew_af_name, sizeof(h3a_aew_af_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(h3a_aew_af, VX_USER_DATA_OBJECT_SIZE, &h3a_aew_af_size, sizeof(h3a_aew_af_size)));
+        }
+
+        if (NULL != dcc_param)
+        {
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_param, VX_USER_DATA_OBJECT_NAME, &dcc_param_name, sizeof(dcc_param_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_param, VX_USER_DATA_OBJECT_SIZE, &dcc_param_size, sizeof(dcc_param_size)));
         }
     }
 
@@ -245,16 +253,18 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if ( configuration_item_size != sizeof(tivx_vpac_viss_params_t))
+        if ((configuration_size != sizeof(tivx_vpac_viss_params_t)) ||
+            (strncmp(configuration_name, "tivx_vpac_viss_params_t", sizeof(configuration_name)) != 0))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of type:\n tivx_vpac_viss_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_viss_params_t \n");
         }
 
-        if ( ae_awb_result_item_size != sizeof(tivx_ae_awb_params_t))
+        if ((ae_awb_result_size != sizeof(tivx_ae_awb_params_t)) ||
+            (strncmp(ae_awb_result_name, "tivx_ae_awb_params_t", sizeof(ae_awb_result_name)) != 0))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be an array of type:\n tivx_ae_awb_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be a user_data_object of type:\n tivx_ae_awb_params_t \n");
         }
 
         if( (VX_DF_IMAGE_U8 != raw0_fmt) &&
@@ -343,10 +353,21 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
         if (NULL != h3a_aew_af)
         {
-            if ( h3a_aew_af_item_size < sizeof(tivx_h3a_data_t))
+            if ((h3a_aew_af_size != sizeof(tivx_h3a_data_t)) ||
+                (strncmp(h3a_aew_af_name, "tivx_h3a_data_t", sizeof(h3a_aew_af_name)) != 0))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'h3a_aew_af' should be an array of size large enough for to contain the full H3A output:\n tivx_h3a_data_t \n");
+                VX_PRINT(VX_ZONE_ERROR, "'h3a_aew_af' should be a user_data_object of type:\n tivx_h3a_data_t \n");
+            }
+        }
+
+        if (NULL != dcc_param)
+        {
+            if ((dcc_param_size < 1U) ||
+                (strncmp(dcc_param_name, "dcc_viss", sizeof(dcc_param_name)) != 0))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'dcc_param' should be a user_data_object of name:\n dcc_viss \n");
             }
         }
     }
@@ -449,7 +470,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     {
         tivx_vpac_viss_params_t params;
-        vxCopyArrayRange(configuration, 0, 1, sizeof(tivx_vpac_viss_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
 
         if ((NULL == raw1) && (NULL != raw2))
         {
@@ -554,7 +575,7 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -564,7 +585,7 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -664,7 +685,7 @@ vx_status tivxAddKernelVpacViss(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_OUTPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_OPTIONAL
             );
             index++;

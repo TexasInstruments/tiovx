@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -85,9 +85,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 {
     vx_status status = VX_SUCCESS;
 
-    vx_array configuration = NULL;
-    vx_enum configuration_item_type;
-    vx_size configuration_capacity, configuration_item_size;
+    vx_user_data_object configuration = NULL;
+    vx_char configuration_name[VX_MAX_REFERENCE_NAME];
+    vx_size configuration_size;
 
     vx_image input = NULL;
     vx_df_image input_fmt;
@@ -113,7 +113,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (vx_array)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
+        configuration = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
         input = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
         conv = (vx_convolution)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
         output = (vx_image)parameters[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
@@ -124,9 +124,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMTYPE, &configuration_item_type, sizeof(configuration_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_CAPACITY, &configuration_capacity, sizeof(configuration_capacity)));
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMSIZE, &configuration_item_size, sizeof(configuration_item_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_FORMAT, &input_fmt, sizeof(input_fmt)));
         tivxCheckStatus(&status, vxQueryImage(input, VX_IMAGE_WIDTH, &input_w, sizeof(input_w)));
@@ -144,10 +143,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacNfGenericValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if ( configuration_item_size != sizeof(tivx_vpac_nf_common_params_t))
+        if ((configuration_size != sizeof(tivx_vpac_nf_common_params_t)) ||
+            (strncmp(configuration_name, "tivx_vpac_nf_common_params_t", sizeof(configuration_name)) != 0))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of type:\n tivx_vpac_nf_common_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_nf_common_params_t \n");
         }
 
         if( (VX_DF_IMAGE_U8 != input_fmt) &&
@@ -303,7 +303,7 @@ vx_status tivxAddKernelVpacNfGeneric(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;

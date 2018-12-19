@@ -179,8 +179,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_array_t *configuration_desc;
-    tivx_obj_desc_array_t *ae_awb_result_desc;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_image_t *raw0_desc;
     tivx_obj_desc_image_t *raw1_desc;
     tivx_obj_desc_image_t *raw2_desc;
@@ -190,7 +190,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     tivx_obj_desc_image_t *uv8_g8_c3_desc;
     tivx_obj_desc_image_t *s8_b8_c4_desc;
     tivx_obj_desc_distribution_t *histogram_desc;
-    tivx_obj_desc_array_t *h3a_aew_af_desc;
+    tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
     tivxVpacVissParams *prms = NULL;
     tivx_vpac_viss_params_t *params;
 
@@ -207,8 +207,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     {
         uint32_t size;
 
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
-        ae_awb_result_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
+        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
         raw1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW1_IDX];
         raw2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW2_IDX];
@@ -218,7 +218,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
         s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
         histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
-        h3a_aew_af_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+        h3a_aew_af_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -480,7 +480,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 pH3a_buf->size = prms->af_buffer_size;
                 memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
             }
-            h3a_aew_af_desc->num_items = 1;
         }
 
         /* kernel processing function complete */
@@ -572,8 +571,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 {
     vx_status status = VX_SUCCESS;
     vx_status dcc_status = VX_SUCCESS;
-    tivx_obj_desc_array_t *configuration_desc;
-    tivx_obj_desc_array_t *ae_awb_result_desc;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_image_t *raw0_desc;
     tivx_obj_desc_image_t *y12_desc;
     tivx_obj_desc_image_t *uv12_c1_desc;
@@ -581,7 +580,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     tivx_obj_desc_image_t *uv8_g8_c3_desc;
     tivx_obj_desc_image_t *s8_b8_c4_desc;
     tivx_obj_desc_distribution_t *histogram_desc;
-    tivx_obj_desc_array_t *h3a_aew_af_desc;
+    tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
     tivx_obj_desc_user_data_object_t *dcc_desc;
 
     dcc_parser_input_params_t dcc_input_params;
@@ -601,8 +600,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         tivxVpacVissParams *prms = NULL;
         tivx_vpac_viss_params_t *params;
 
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
-        ae_awb_result_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
+        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+        ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
         y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
         uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
@@ -610,7 +609,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
         s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
         histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
-        h3a_aew_af_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
+        h3a_aew_af_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
         dcc_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_DCC_PARAM_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxVpacVissParams), TIVX_MEM_EXTERNAL);
@@ -789,11 +788,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     dcc_input_params.color_temparature = 5000;
                     dcc_input_params.exposure_time = 33333;
 
-                    dcc_input_params.dcc_buf_size = dcc_desc->size;
+                    dcc_input_params.dcc_buf_size = dcc_desc->mem_size;
                     dcc_input_params.dcc_buf = tivxMemShared2TargetPtr(dcc_desc->mem_ptr.shared_ptr, dcc_desc->mem_ptr.mem_heap_region);
                     if(NULL != dcc_input_params.dcc_buf)
                     {
-                        tivxMemBufferMap(dcc_input_params.dcc_buf, dcc_desc->size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                        tivxMemBufferMap(dcc_input_params.dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                         prms->dcc_out_numbytes = calc_dcc_outbuf_size();
                         prms->dcc_out_buf = (uint8_t *)tivxMemAlloc(prms->dcc_out_numbytes, TIVX_MEM_EXTERNAL);
@@ -807,7 +806,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             status = VX_ERROR_NO_MEMORY;
                         }
 
-                        tivxMemBufferUnmap(dcc_input_params.dcc_buf, dcc_desc->size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                        tivxMemBufferUnmap(dcc_input_params.dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
                     }
                     else
                     {

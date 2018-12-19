@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -73,8 +73,7 @@ TEST(tivxHwaDmpacSde, testNodeCreation)
     vx_context context = context_->vx_context_;
     vx_image left_image = 0, right_image = 0, dst_image = 0;
     tivx_dmpac_sde_params_t params;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_array param_array;
+    vx_user_data_object param_obj;
     vx_graph graph = 0;
     vx_node node = 0;
 
@@ -86,14 +85,13 @@ TEST(tivxHwaDmpacSde, testNodeCreation)
         ASSERT_VX_OBJECT(right_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, 128, 128, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_dmpac_sde_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_sde_params_t",
+                                                            sizeof(tivx_dmpac_sde_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_array, left_image, right_image, dst_image, NULL), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_obj, left_image, right_image, dst_image, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
 
@@ -102,14 +100,14 @@ TEST(tivxHwaDmpacSde, testNodeCreation)
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&right_image));
         VX_CALL(vxReleaseImage(&left_image));
-        VX_CALL(vxReleaseArray(&param_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
         ASSERT(dst_image == 0);
         ASSERT(right_image == 0);
         ASSERT(left_image == 0);
-        ASSERT(param_array == 0);
+        ASSERT(param_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }
@@ -182,8 +180,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
     vx_image left_image = 0, right_image = 0, dst_image = 0;
     vx_distribution histogram = 0;
     tivx_dmpac_sde_params_t params;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_array param_array;
+    vx_user_data_object param_obj;
     vx_graph graph = 0;
     vx_node node = 0;
     int i;
@@ -206,11 +203,9 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
             ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 128, 0, 4096), VX_TYPE_DISTRIBUTION);
         }
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_dmpac_sde_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
         memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_sde_params_t",
+                                                            sizeof(tivx_dmpac_sde_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
         params.median_filter_enable = arg_->median;
         params.disparity_min = arg_->dispMin;
         params.disparity_max = arg_->dispMax;
@@ -224,11 +219,11 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
         params.aggregation_penalty_p2 = 0;
         params.reduced_range_search_enable = 0;
 
-        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_dmpac_sde_params_t)));
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_sde_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_array, left_image, right_image, dst_image, histogram), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_obj, left_image, right_image, dst_image, histogram), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
 
@@ -246,7 +241,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&right_image));
         VX_CALL(vxReleaseImage(&left_image));
-        VX_CALL(vxReleaseArray(&param_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
 
         if(arg_->hist_output) {
             VX_CALL(vxReleaseDistribution(&histogram));
@@ -255,7 +250,7 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
         ASSERT(dst_image == 0);
         ASSERT(right_image == 0);
         ASSERT(left_image == 0);
-        ASSERT(param_array == 0);
+        ASSERT(param_obj == 0);
         ASSERT(histogram == 0);
 
         tivxHwaUnLoadKernels(context);

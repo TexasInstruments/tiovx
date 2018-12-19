@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -71,7 +71,7 @@ extern "C" {
 
 /*! \brief [Graph] Creates a VPAC_NF_GENERIC Node.
  * \param [in] graph The reference to the graph.
- * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_nf_common_params_t</tt>.
+ * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_vpac_nf_common_params_t</tt>.
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.  Scale value is ignored.  Coefficients are 9-bit signed.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
@@ -81,16 +81,16 @@ extern "C" {
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_image             input,
                                       vx_convolution       conv,
                                       vx_image             output);
 
 /*! \brief [Graph] Creates a VPAC_NF_BILATERAL Node.
  * \param [in] graph The reference to the graph.
- * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_params_t</tt>.
+ * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_params_t</tt>.
  * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] sigmas The input array of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_sigmas_t</tt>.
+ * \param [in] sigmas The input object of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_sigmas_t</tt>.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \see <tt>TIVX_KERNEL_VPAC_NF_BILATERAL_NAME</tt>
  * \ingroup group_vision_function_vpac_nf
@@ -98,14 +98,14 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_image             input,
-                                      vx_array             sigmas,
+                                      vx_user_data_object  sigmas,
                                       vx_image             output);
 
 /*! \brief [Graph] Creates a DMPAC_SDE Node.
  * \param [in] graph The reference to the graph.
- * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
+ * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
  * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]
@@ -116,7 +116,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_image             left,
                                       vx_image             right,
                                       vx_image             output,
@@ -124,8 +124,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
 
 /*! \brief [Graph] Creates a VPAC_LDC Node.
  * \param [in] graph The reference to the graph.
- * \param [in] configuration The input array of a single params structure of type <tt>\ref tivx_vpac_ldc_params_t</tt>.
- * \param [in] region_params The input array of a single params structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt> or <tt>\ref tivx_vpac_ldc_subregion_params_t</tt>.
+ * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_vpac_ldc_params_t</tt>.
+ * \param [in] region_params The input object of a single params structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt> or <tt>\ref tivx_vpac_ldc_subregion_params_t</tt>.
  * \param [in] mesh_table (optional) The mesh table image. This can be a full remap table, but is typically sub-sampled by a power
  *              of 2 to save memory footprint and bandwidth. The coordinates are of type S16Q3, and are stored as X,Y pairs of type
  *              <tt>\ref VX_DF_IMAGE_U32</tt>.
@@ -135,7 +135,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
  *              data_type <tt>\ref VX_TYPE_UINT16</tt>, and count of <tt>513</tt>
  * \param [in] out_3_chroma_lut (optional) The bit depth conversion LUT for out_3_chroma channel. Use 12-bit data in a container of
  *              data_type <tt>\ref VX_TYPE_UINT16</tt>, and count of <tt>513</tt>
- * \param [in] bandwidth_params (optional) The input array of a single params structure of type <tt>\ref tivx_vpac_ldc_bandwidth_params_t</tt>.
+ * \param [in] bandwidth_params (optional) The input object of a single params structure of type <tt>\ref tivx_vpac_ldc_bandwidth_params_t</tt>.
  * \param [in] in_luma_or_422 (optional) The input image in <tt>\ref VX_DF_IMAGE_UYVY</tt>, <tt>\ref VX_DF_IMAGE_U8</tt>,
  *              <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] in_chroma (optional) The input chroma interleaved plane in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
@@ -156,13 +156,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
-                                      vx_array             configuration,
-                                      vx_array             region_params,
+                                      vx_user_data_object  configuration,
+                                      vx_user_data_object  region_params,
                                       vx_image             mesh_table,
                                       vx_matrix            warp_matrix,
                                       vx_lut               out_2_luma_lut,
                                       vx_lut               out_3_chroma_lut,
-                                      vx_array             bandwidth_params,
+                                      vx_user_data_object  bandwidth_params,
                                       vx_image             in_luma_or_422,
                                       vx_image             in_chroma,
                                       vx_image             out_0_luma_or_422,
@@ -180,7 +180,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
  * - The meta properties of input_current, input_ref MUST be identical
  *
  * \param [in] graph                              The reference to the graph.
- * \param [in] configuration                      The input array of a single params structure of
+ * \param [in] configuration                      The input object of a single params structure of
  *                                                type <tt>\ref tivx_dmpac_dof_params_t</tt>.
  * \param [in] input_current                      Current input pyramid.
  * \param [in] input_reference                    Reference input pyramid.
@@ -200,7 +200,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
-                                      vx_array             configuration,
+                                      vx_user_data_object  configuration,
                                       vx_pyramid           input_current,
                                       vx_pyramid           input_reference,
                                       vx_image             flow_vector_in,
@@ -239,8 +239,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
  * - The resolution of all the image ports should have the same width and height.  The only exception to this is if the configuration->chroma_out_mode
  * is set to 0:420 and the uv12 or uv8 multiplexors are selected on enabled ports, then the height is half of the input for these 2 ports.
  * \param [in] graph The reference to the graph.
- * \param [in] configuration             The input array of a single params structure of type <tt>\ref tivx_vpac_viss_params_t</tt>.
- * \param [in] ae_awb_result             The input array of a single params structure of type <tt>\ref tivx_ae_awb_params_t</tt>.
+ * \param [in] configuration             The input object of a single params structure of type <tt>\ref tivx_vpac_viss_params_t</tt>.
+ * \param [in] ae_awb_result             The input object of a single params structure of type <tt>\ref tivx_ae_awb_params_t</tt>.
  * \param [in] raw0                      The Very Short Exposure input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
  *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [in] raw1 (optional)           The Short Exposure input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
@@ -264,8 +264,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
-                                      vx_array             configuration,
-                                      vx_array             ae_awb_result,
+                                      vx_user_data_object  configuration,
+                                      vx_user_data_object  ae_awb_result,
                                       vx_image             raw0,
                                       vx_image             raw1,
                                       vx_image             raw2,
@@ -275,7 +275,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
                                       vx_image             uv8_g8_c3,
                                       vx_image             s8_b8_c4,
                                       vx_distribution      histogram,
-                                      vx_array             h3a_aew_af,
+                                      vx_user_data_object  h3a_aew_af,
                                       vx_user_data_object  dcc_param);
 
 /*! \brief [Graph] Creates a TIDL Node.

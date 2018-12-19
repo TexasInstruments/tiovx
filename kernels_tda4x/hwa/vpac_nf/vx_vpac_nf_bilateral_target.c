@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -150,8 +150,8 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
 {
     tivxVpacNfBilateralParams *prms = NULL;
     tivx_obj_desc_image_t *input_desc;
-    tivx_obj_desc_array_t *sigmas_desc;
-    tivx_obj_desc_array_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *sigmas_desc;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t *output_desc;
     vx_status status = VX_SUCCESS;
     uint32_t size;
@@ -166,9 +166,9 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         void *sigmas_target_ptr;
         void *output_target_ptr;
 
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
+        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
         input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
-        sigmas_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
+        sigmas_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
         output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
@@ -291,14 +291,14 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 tivx_vpac_nf_bilateral_params_t *params;
                 tivx_vpac_nf_bilateral_sigmas_t *sigmas;
    
-                tivx_obj_desc_array_t *params_array;
-                tivx_obj_desc_array_t *sigmas_array;
+                tivx_obj_desc_user_data_object_t *params_array;
+                tivx_obj_desc_user_data_object_t *sigmas_array;
 
                 void *params_array_target_ptr;
                 void *sigmas_array_target_ptr;
 
-                params_array = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
-                sigmas_array = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
+                params_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
+                sigmas_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
 
                 params_array_target_ptr = tivxMemShared2TargetPtr(
                     params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);

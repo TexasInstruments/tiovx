@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -289,10 +289,10 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
             if (VX_SUCCESS == status)
             {
                 tivx_vpac_nf_common_params_t *params;
-                tivx_obj_desc_array_t *params_array;
+                tivx_obj_desc_user_data_object_t *params_array;
                 void *params_array_target_ptr;
 
-                params_array = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
+                params_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
 
                 params_array_target_ptr = tivxMemShared2TargetPtr(
                     params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);

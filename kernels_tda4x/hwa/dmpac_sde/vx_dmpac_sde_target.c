@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -111,12 +111,12 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    tivx_obj_desc_array_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t *left_desc;
     tivx_obj_desc_image_t *right_desc;
     tivx_obj_desc_image_t *output_desc;
     tivx_obj_desc_distribution_t *confidence_histogram_desc;
-    
+ 
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
@@ -136,7 +136,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         void *confidence_histogram_target_ptr = NULL;
         void *output_target_ptr;
 
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
+        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         left_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
         right_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
         output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
@@ -321,9 +321,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
                 uint32_t disp_max;
                 void *params_array_target_ptr;
    
-                tivx_obj_desc_array_t *params_array;
+                tivx_obj_desc_user_data_object_t *params_array;
 
-                params_array = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
+                params_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
 
                 params_array_target_ptr = tivxMemShared2TargetPtr(
                     params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);

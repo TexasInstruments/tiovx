@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -85,13 +85,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 {
     vx_status status = VX_SUCCESS;
 
-    vx_array configuration = NULL;
-    vx_enum configuration_item_type;
-    vx_size configuration_capacity, configuration_item_size;
+    vx_user_data_object configuration = NULL;
+    vx_char configuration_name[VX_MAX_REFERENCE_NAME];
+    vx_size configuration_size;
 
-    vx_array region_params = NULL;
-    vx_enum region_params_item_type;
-    vx_size region_params_capacity, region_params_item_size;
+    vx_user_data_object region_params = NULL;
+    vx_char region_params_name[VX_MAX_REFERENCE_NAME];
+    vx_size region_params_size;
 
     vx_image mesh_table = NULL;
     vx_df_image mesh_table_fmt;
@@ -109,9 +109,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     vx_enum out_3_chroma_lut_type;
     vx_size out_3_chroma_lut_count;
 
-    vx_array bandwidth_params = NULL;
-    vx_enum bandwidth_params_item_type;
-    vx_size bandwidth_params_capacity, bandwidth_params_item_size;
+    vx_user_data_object bandwidth_params = NULL;
+    vx_char bandwidth_params_name[VX_MAX_REFERENCE_NAME];
+    vx_size bandwidth_params_size;
 
     vx_image in_luma_or_422 = NULL;
     vx_df_image in_luma_or_422_fmt;
@@ -151,13 +151,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
-        region_params = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
+        configuration = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
+        region_params = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
         mesh_table = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_TABLE_IDX];
         warp_matrix = (vx_matrix)parameters[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
         out_2_luma_lut = (vx_lut)parameters[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_LUT_IDX];
         out_3_chroma_lut = (vx_lut)parameters[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_LUT_IDX];
-        bandwidth_params = (vx_array)parameters[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
+        bandwidth_params = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
         in_luma_or_422 = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
         in_chroma = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
         out_0_luma_or_422 = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
@@ -172,13 +172,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMTYPE, &configuration_item_type, sizeof(configuration_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_CAPACITY, &configuration_capacity, sizeof(configuration_capacity)));
-        tivxCheckStatus(&status, vxQueryArray(configuration, VX_ARRAY_ITEMSIZE, &configuration_item_size, sizeof(configuration_item_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
-        tivxCheckStatus(&status, vxQueryArray(region_params, VX_ARRAY_ITEMTYPE, &region_params_item_type, sizeof(region_params_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(region_params, VX_ARRAY_CAPACITY, &region_params_capacity, sizeof(region_params_capacity)));
-        tivxCheckStatus(&status, vxQueryArray(region_params, VX_ARRAY_ITEMSIZE, &region_params_item_size, sizeof(region_params_item_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(region_params, VX_USER_DATA_OBJECT_NAME, &region_params_name, sizeof(region_params_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(region_params, VX_USER_DATA_OBJECT_SIZE, &region_params_size, sizeof(region_params_size)));
 
         if (NULL != mesh_table)
         {
@@ -208,9 +206,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
         if (NULL != bandwidth_params)
         {
-            tivxCheckStatus(&status, vxQueryArray(bandwidth_params, VX_ARRAY_ITEMTYPE, &bandwidth_params_item_type, sizeof(bandwidth_params_item_type)));
-            tivxCheckStatus(&status, vxQueryArray(bandwidth_params, VX_ARRAY_CAPACITY, &bandwidth_params_capacity, sizeof(bandwidth_params_capacity)));
-            tivxCheckStatus(&status, vxQueryArray(bandwidth_params, VX_ARRAY_ITEMSIZE, &bandwidth_params_item_size, sizeof(bandwidth_params_item_size)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(bandwidth_params, VX_USER_DATA_OBJECT_NAME, &bandwidth_params_name, sizeof(bandwidth_params_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(bandwidth_params, VX_USER_DATA_OBJECT_SIZE, &bandwidth_params_size, sizeof(bandwidth_params_size)));
         }
 
         if (NULL != in_luma_or_422)
@@ -265,17 +262,20 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        if ( configuration_item_size != sizeof(tivx_vpac_ldc_params_t))
+        if ((configuration_size != sizeof(tivx_vpac_ldc_params_t)) ||
+            (strncmp(configuration_name, "tivx_vpac_ldc_params_t", sizeof(configuration_name)) != 0))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be an array of type:\n tivx_vpac_ldc_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_ldc_params_t \n");
         }
 
-        if( (region_params_item_size != sizeof(tivx_vpac_ldc_region_params_t)) &&
-            (region_params_item_size != sizeof(tivx_vpac_ldc_subregion_params_t)))
+        if( ((region_params_size != sizeof(tivx_vpac_ldc_region_params_t)) ||
+             (strncmp(region_params_name, "tivx_vpac_ldc_region_params_t", sizeof(region_params_name)) != 0)) &&
+            ((region_params_size != sizeof(tivx_vpac_ldc_subregion_params_t)) ||
+             (strncmp(region_params_name, "tivx_vpac_ldc_subregion_params_t", sizeof(region_params_name)) != 0)))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'region_params' should be an array of type:\n tivx_vpac_ldc_region_params_t or tivx_vpac_ldc_subregion_params_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'region_params' should be a user_data_object of type:\n tivx_vpac_ldc_region_params_t or tivx_vpac_ldc_subregion_params_t \n");
         }
 
         if (NULL != mesh_table)
@@ -317,10 +317,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
         if (NULL != bandwidth_params)
         {
-            if ( bandwidth_params_item_size != sizeof(tivx_vpac_ldc_bandwidth_params_t))
+            if ((bandwidth_params_size != sizeof(tivx_vpac_ldc_bandwidth_params_t)) ||
+                (strncmp(bandwidth_params_name, "tivx_vpac_ldc_bandwidth_params_t", sizeof(bandwidth_params_name)) != 0))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'bandwidth_params' should be an array of type:\n tivx_vpac_ldc_bandwidth_params_t \n");
+                VX_PRINT(VX_ZONE_ERROR, "'bandwidth_params' should be a user_data_object of type:\n tivx_vpac_ldc_bandwidth_params_t \n");
             }
         }
 
@@ -660,7 +661,7 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -670,7 +671,7 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -720,7 +721,7 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_ARRAY,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_OPTIONAL
             );
             index++;

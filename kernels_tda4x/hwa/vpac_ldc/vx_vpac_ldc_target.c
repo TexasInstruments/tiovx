@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2017-2018 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -119,13 +119,13 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
 {
     vx_status status = VX_SUCCESS;
 #if 0
-    tivx_obj_desc_array_t *configuration_desc;
-    tivx_obj_desc_array_t *region_params_desc;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivx_obj_desc_user_data_object_t *region_params_desc;
     tivx_obj_desc_image_t *mesh_table_desc;
     tivx_obj_desc_matrix_t *warp_matrix_desc;
     tivx_obj_desc_lut_t *out_2_luma_lut_desc;
     tivx_obj_desc_lut_t *out_3_chroma_lut_desc;
-    tivx_obj_desc_array_t *bandwidth_params_desc;
+    tivx_obj_desc_user_data_object_t *bandwidth_params_desc;
 #endif
     tivx_obj_desc_image_t *in_luma_or_422_desc;
     tivx_obj_desc_image_t *in_chroma_desc;
@@ -135,7 +135,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
     tivx_obj_desc_image_t *out_3_chroma_desc;
     tivx_obj_desc_scalar_t *error_status_desc;
 
-    if ( num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX])
     )
@@ -156,13 +156,13 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         void *out_3_chroma_target_ptr = NULL;
 
 #if 0
-        configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
-        region_params_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
+        configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
+        region_params_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
         mesh_table_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_TABLE_IDX];
         warp_matrix_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
         out_2_luma_lut_desc = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_LUT_IDX];
         out_3_chroma_lut_desc = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_LUT_IDX];
-        bandwidth_params_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
+        bandwidth_params_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
 #endif
         in_luma_or_422_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
         in_chroma_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
@@ -318,13 +318,13 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
     if (VX_SUCCESS == status)
     {
-        tivx_obj_desc_array_t *configuration_desc;
-        tivx_obj_desc_array_t *region_params_desc;
+        tivx_obj_desc_user_data_object_t *configuration_desc;
+        tivx_obj_desc_user_data_object_t *region_params_desc;
         tivx_obj_desc_image_t *mesh_table_desc;
         tivx_obj_desc_matrix_t *warp_matrix_desc;
         tivx_obj_desc_lut_t *out_2_luma_lut_desc;
         tivx_obj_desc_lut_t *out_3_chroma_lut_desc;
-        //tivx_obj_desc_array_t *bandwidth_params_desc;
+        //tivx_obj_desc_user_data_object_t *bandwidth_params_desc;
         tivx_obj_desc_image_t *in_luma_or_422_desc;
         tivx_obj_desc_image_t *in_chroma_desc;
         tivx_obj_desc_image_t *out_0_luma_or_422_desc;
@@ -338,13 +338,13 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         {
             memset(prms, 0, sizeof(tivxVpacLdcParams));
 
-            configuration_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
-            region_params_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
+            configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
+            region_params_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PARAMS_IDX];
             mesh_table_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_TABLE_IDX];
             warp_matrix_desc = (tivx_obj_desc_matrix_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
             out_2_luma_lut_desc = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_OUT_2_LUMA_LUT_IDX];
             out_3_chroma_lut_desc = (tivx_obj_desc_lut_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_OUT_3_CHROMA_LUT_IDX];
-            //bandwidth_params_desc = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
+            //bandwidth_params_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_BANDWIDTH_PARAMS_IDX];
             in_luma_or_422_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_IN_LUMA_OR_422_IDX];
             in_chroma_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_IN_CHROMA_IDX];
             out_0_luma_or_422_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_LDC_OUT_0_LUMA_OR_422_IDX];
@@ -656,7 +656,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     region_params_desc->mem_size, VX_MEMORY_TYPE_HOST,
                     VX_READ_ONLY);
 
-                if( region_params_desc->item_size == sizeof(tivx_vpac_ldc_region_params_t) )
+                if( region_params_desc->mem_size == sizeof(tivx_vpac_ldc_region_params_t) )
                 {
                     tivx_vpac_ldc_region_params_t *region_params =
                         (tivx_vpac_ldc_region_params_t*)region_params_target_ptr;

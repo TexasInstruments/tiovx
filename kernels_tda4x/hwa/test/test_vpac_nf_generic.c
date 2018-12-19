@@ -65,8 +65,7 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
     vx_image src_image = 0, dst_image = 0;
     int cols = 3, rows = 3;
     tivx_vpac_nf_common_params_t params;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_array param_array;
+    vx_user_data_object param_obj;
     vx_int16 data[3 * 3] = { 0, 0, 0, 0, 1, 0, 0, 0, 0};
     vx_convolution convolution = 0;
     vx_graph graph = 0;
@@ -81,16 +80,13 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
 
         ASSERT_VX_OBJECT(convolution = convolution_create(context, cols, rows, data, 1), VX_TYPE_CONVOLUTION);
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_common_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-
         memset(&params, 0, sizeof(tivx_vpac_nf_common_params_t));
-
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_common_params_t",
+                                                            sizeof(tivx_vpac_nf_common_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_array, src_image, convolution, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_obj, src_image, convolution, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 
@@ -98,13 +94,13 @@ TEST(tivxHwaVpacNfGeneric, testNodeCreation)
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&src_image));
-        VX_CALL(vxReleaseArray(&param_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
         ASSERT(dst_image == 0);
         ASSERT(src_image == 0);
-        ASSERT(param_array == 0);
+        ASSERT(param_obj == 0);
 
         VX_CALL(vxReleaseConvolution(&convolution));
         ASSERT(convolution == NULL);
@@ -291,8 +287,7 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
     vx_convolution convolution = 0;
     vx_int16 data[MAX_CONV_SIZE * MAX_CONV_SIZE] = { 0 };
     tivx_vpac_nf_common_params_t params;
-    vx_enum params_type = VX_TYPE_INVALID;
-    vx_array param_array;
+    vx_user_data_object param_obj;
     vx_size conv_max_dim = 0;
     vx_graph graph = 0;
     vx_node node = 0;
@@ -320,19 +315,17 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
         ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data));
         ASSERT_NO_FAILURE(convolution = convolution_create(context, arg_->cols, arg_->rows, data, 1));
 
-        params_type = vxRegisterUserStruct(context, sizeof(tivx_vpac_nf_common_params_t));
-        ASSERT(params_type >= VX_TYPE_USER_STRUCT_START && params_type <= VX_TYPE_USER_STRUCT_END);
-
         memset(&params, 0, sizeof(tivx_vpac_nf_common_params_t));
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_common_params_t",
+                                                            sizeof(tivx_vpac_nf_common_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+
         params.output_downshift = arg_->shift;
 
-        ASSERT_VX_OBJECT(param_array = vxCreateArray(context, params_type, 1), VX_TYPE_ARRAY);
-
-        VX_CALL(vxAddArrayItems(param_array, 1, &params, sizeof(tivx_vpac_nf_common_params_t)));
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_nf_common_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_array, src_image, convolution, dst_image), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacNfGenericNode(graph, param_obj, src_image, convolution, dst_image), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_NF));
 
@@ -353,11 +346,11 @@ TEST_WITH_ARG(tivxHwaVpacNfGeneric, testGraphProcessing, Arg,
 
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&src_image));
-        VX_CALL(vxReleaseArray(&param_array));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
 
         ASSERT(dst_image == 0);
         ASSERT(src_image == 0);
-        ASSERT(param_array == 0);
+        ASSERT(param_obj == 0);
 
         VX_CALL(vxReleaseConvolution(&convolution));
         ASSERT(convolution == NULL);
