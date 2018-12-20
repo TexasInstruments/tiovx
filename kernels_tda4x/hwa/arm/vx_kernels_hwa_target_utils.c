@@ -322,6 +322,91 @@ void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst
     }
 }
 
+void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exp)
+{
+    /* Get the correct offset of the images from the valid roi parameter,
+       Assuming valid Roi is same images */
+    vx_rectangle_t rect = src->valid_roi;
+    int32_t i, j;
+    uint32_t w = src->imagepatch_addr[exp].dim_x;
+    uint32_t h = src->imagepatch_addr[exp].dim_y;
+    uint32_t stride = src->imagepatch_addr[exp].stride_y;
+    uint32_t idx = exp;
+    
+    if(src->params.line_interleaved)
+    {
+        idx = 0;
+    }
+
+    if (TIVX_RAW_IMAGE_8_BIT == src->params.format[idx].pixel_container)
+    {
+        uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
+            &src->imagepatch_addr[exp]));
+
+        for(j = 0; j < h; j++)
+        {
+            for(i=0; i < w; i++)
+            {
+                /* Put 8 bits to 12 */
+                src16[j*w+i] = src_addr8[j*stride+i] << 4;
+            }
+        }
+    }
+    else if(TIVX_RAW_IMAGE_16_BIT == src->params.format[idx].pixel_container)
+    {
+        uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
+            &src->imagepatch_addr[exp]));
+        stride /= 2;
+
+        for(j = 0; j < h; j++)
+        {
+            for(i=0; i < w; i++)
+            {
+                /* Take 16 as is */
+                src16[j*w+i] = src_addr16[j*stride+i];
+            }
+        }
+    }
+    else /* TIVX_RAW_IMAGE_P12_BIT */
+    {
+        uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
+            tivxComputePatchOffset(rect.start_x, rect.start_y,
+            &src->imagepatch_addr[exp]));
+        stride /= 4;
+
+        for(j = 0; j < h; j++)
+        {
+            int32_t k = 0;
+            /* This assumes that width is a multiple of 8 for now */
+            for(i=0; i < w; i+=8)
+            {
+                /* 8 pixels are packed among 3 32-bit words */
+                src16[j*w+i+0]  = src_addr32[j*stride+k] & 0xFFF;
+                src16[j*w+i+1]  = (src_addr32[j*stride+k] >> 12) & 0xFFF;
+                src16[j*w+i+2]  = (src_addr32[j*stride+k] >> 24) | ((src_addr32[j*stride+k+1] & 0xF) << 8);
+                src16[j*w+i+3]  = (src_addr32[j*stride+k+1] >> 4) & 0xFFF;
+                src16[j*w+i+4]  = (src_addr32[j*stride+k+1] >> 16) & 0xFFF;
+                src16[j*w+i+5]  = (src_addr32[j*stride+k+1] >> 28) | ((src_addr32[j*stride+k+2] & 0xFF) << 4);
+                src16[j*w+i+6]  = (src_addr32[j*stride+k+2] >> 8) & 0xFFF;
+                src16[j*w+i+7]  = (src_addr32[j*stride+k+2] >> 20);
+                k+=3;
+            }
+        }
+    }
+}
+
+void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits)
+{
+    tivx_obj_desc_image_t tmp;
+    
+    memcpy(&tmp.valid_roi, &src->valid_roi, sizeof(src->valid_roi));
+    
+    lse_reformat_out(&tmp, dst, dst_target_ptr, dst16, input_bits);
+}
+
+
 #ifdef VLAB_HWA
 vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t config_size, void *pConfig)
 {

@@ -181,9 +181,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
-    tivx_obj_desc_image_t *raw0_desc;
-    tivx_obj_desc_image_t *raw1_desc;
-    tivx_obj_desc_image_t *raw2_desc;
+    tivx_obj_desc_raw_image_t *raw_desc;
     tivx_obj_desc_image_t *y12_desc;
     tivx_obj_desc_image_t *uv12_c1_desc;
     tivx_obj_desc_image_t *y8_r8_c2_desc;
@@ -197,7 +195,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
         status = VX_FAILURE;
@@ -209,9 +207,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
-        raw0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
-        raw1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW1_IDX];
-        raw2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW2_IDX];
+        raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
         y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
         uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
         y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
@@ -235,9 +231,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         int32_t i;
         void *configuration_target_ptr;
         void *ae_awb_result_target_ptr;
-        void *raw0_target_ptr;
-        void *raw1_target_ptr = NULL;
-        void *raw2_target_ptr = NULL;
+        void *raw_target_ptr[3];
+        void *raw_mem_target_ptr[3];
         void *y12_target_ptr = NULL;
         void *uv12_c1_target_ptr = NULL;
         void *y8_r8_c2_target_ptr = NULL;
@@ -245,6 +240,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         void *s8_b8_c4_target_ptr = NULL;
         void *histogram_target_ptr = NULL;
         void *h3a_aew_af_target_ptr = NULL;
+        uint32_t num_exposures = raw_desc->params.num_exposures;
+        
+        raw_target_ptr[0] = NULL;
+        raw_target_ptr[1] = NULL;
+        raw_target_ptr[2] = NULL;
+        raw_mem_target_ptr[0] = NULL;
+        raw_mem_target_ptr[1] = NULL;
+        raw_mem_target_ptr[2] = NULL;
 
         configuration_target_ptr = tivxMemShared2TargetPtr(
           configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
@@ -258,28 +261,30 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
            ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        raw0_target_ptr = tivxMemShared2TargetPtr(
-          raw0_desc->mem_ptr[0].shared_ptr, raw0_desc->mem_ptr[0].mem_heap_region);
-        tivxMemBufferMap(raw0_target_ptr,
-           raw0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
-
-        if( raw1_desc != NULL)
+        /* Get image pointer(s) */
+        for(i=0; i < num_exposures; i++)
         {
-            raw1_target_ptr = tivxMemShared2TargetPtr(
-              raw1_desc->mem_ptr[0].shared_ptr, raw1_desc->mem_ptr[0].mem_heap_region);
-            tivxMemBufferMap(raw1_target_ptr,
-               raw1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+            raw_target_ptr[i] = tivxMemShared2TargetPtr(
+                raw_desc->img_ptr[i].shared_ptr, raw_desc->img_ptr[i].mem_heap_region);
         }
 
-        if( raw2_desc != NULL)
+        /* Map buffer(s) */
+        raw_mem_target_ptr[0] = tivxMemShared2TargetPtr(
+            raw_desc->mem_ptr[0].shared_ptr, raw_desc->mem_ptr[0].mem_heap_region);
+        tivxMemBufferMap(raw_mem_target_ptr[0],
+            raw_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+
+        if (!raw_desc->params.line_interleaved)
         {
-            raw2_target_ptr = tivxMemShared2TargetPtr(
-              raw2_desc->mem_ptr[0].shared_ptr, raw2_desc->mem_ptr[0].mem_heap_region);
-            tivxMemBufferMap(raw2_target_ptr,
-               raw2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+            for(i=1; i < num_exposures; i++)
+            {
+                raw_mem_target_ptr[i] = tivxMemShared2TargetPtr(
+                    raw_desc->mem_ptr[i].shared_ptr, raw_desc->mem_ptr[i].mem_heap_region);
+                tivxMemBufferMap(raw_mem_target_ptr[i],
+                    raw_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
+                    VX_READ_ONLY);
+            }
         }
 
         if( y12_desc != NULL)
@@ -350,14 +355,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* call kernel processing function */
 
         /* Read non-NUll input buffers (up to 3) */
-        lse_reformat_in(raw0_desc, raw0_target_ptr, prms->raw0_16);
-        if (raw1_desc != NULL)
+        lse_reformat_in_viss(raw_desc, raw_target_ptr[0], prms->raw0_16, 0);
+        if (num_exposures > 1U)
         {
-            lse_reformat_in(raw1_desc, raw1_target_ptr, prms->raw1_16);
+            lse_reformat_in_viss(raw_desc, raw_target_ptr[1], prms->raw1_16, 1);
         }
-        if (raw2_desc != NULL)
+        if (num_exposures > 2U)
         {
-            lse_reformat_in(raw2_desc, raw2_target_ptr, prms->raw2_16);
+            lse_reformat_in_viss(raw_desc, raw_target_ptr[2], prms->raw2_16, 2);
         }
 
         /* PROCESSING */
@@ -440,23 +445,23 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( y12_desc != NULL)
         {
-            lse_reformat_out(raw0_desc, y12_desc, y12_target_ptr, prms->out_y12_16, 12);
+            lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, prms->out_y12_16, 12);
         }
         if( uv12_c1_desc != NULL)
         {
-            lse_reformat_out(raw0_desc, uv12_c1_desc, uv12_c1_target_ptr, prms->out_uv12_c1_16, 12);
+            lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, prms->out_uv12_c1_16, 12);
         }
         if( y8_r8_c2_desc != NULL)
         {
-            lse_reformat_out(raw0_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, prms->out_y8_r8_c2_16, prms->out_y8_r8_c2_bit_align);
+            lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, prms->out_y8_r8_c2_16, prms->out_y8_r8_c2_bit_align);
         }
         if( uv8_g8_c3_desc != NULL)
         {
-            lse_reformat_out(raw0_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, prms->out_uv8_g8_c3_16, prms->out_uv8_g8_c3_bit_align);
+            lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, prms->out_uv8_g8_c3_16, prms->out_uv8_g8_c3_bit_align);
         }
         if( s8_b8_c4_desc != NULL)
         {
-            lse_reformat_out(raw0_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, prms->out_s8_b8_c4_16, prms->out_s8_b8_c4_bit_align);
+            lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, prms->out_s8_b8_c4_16, prms->out_s8_b8_c4_bit_align);
         }
         if( histogram_desc != NULL)
         {
@@ -492,22 +497,18 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
            ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        tivxMemBufferUnmap(raw0_target_ptr,
-           raw0_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+        tivxMemBufferUnmap(raw_mem_target_ptr[0],
+            raw_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        if( raw1_desc != NULL)
+        if (!raw_desc->params.line_interleaved)
         {
-            tivxMemBufferUnmap(raw1_target_ptr,
-               raw1_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
-        }
-
-        if( raw2_desc != NULL)
-        {
-            tivxMemBufferUnmap(raw2_target_ptr,
-               raw2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                VX_READ_ONLY);
+            for(i=1; i < num_exposures; i++)
+            {
+                tivxMemBufferUnmap(raw_mem_target_ptr[i],
+                    raw_desc->mem_size[i], VX_MEMORY_TYPE_HOST,
+                    VX_READ_ONLY);
+            }
         }
 
         if( y12_desc != NULL)
@@ -558,7 +559,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                h3a_aew_af_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
         }
-
     }
 
     return status;
@@ -573,7 +573,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     vx_status dcc_status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
-    tivx_obj_desc_image_t *raw0_desc;
+    tivx_obj_desc_raw_image_t *raw_desc;
     tivx_obj_desc_image_t *y12_desc;
     tivx_obj_desc_image_t *uv12_c1_desc;
     tivx_obj_desc_image_t *y8_r8_c2_desc;
@@ -589,7 +589,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
         status = VX_FAILURE;
@@ -602,7 +602,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
-        raw0_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX];
+        raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
         y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
         uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
         y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
@@ -615,8 +615,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         prms = tivxMemAlloc(sizeof(tivxVpacVissParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
         {
-            uint32_t width = raw0_desc->imagepatch_addr[0].dim_x;
-            uint32_t height = raw0_desc->imagepatch_addr[0].dim_y;
+            uint32_t width = raw_desc->imagepatch_addr[0].dim_x;
+            uint32_t height = raw_desc->imagepatch_addr[0].dim_y;
             uint32_t i;
             char temp_name[VISS_MAX_PATH_SIZE];
 
@@ -1199,7 +1199,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW0_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
         status = VX_FAILURE;

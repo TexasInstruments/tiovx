@@ -75,7 +75,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
     vx_user_data_object ae_awb_result = NULL;
-    vx_image raw0 = NULL, raw1 = NULL, raw2 = NULL;
+    tivx_raw_image raw = NULL;
     vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
     vx_distribution histogram = NULL;
     vx_user_data_object h3a_aew_af = NULL;
@@ -86,13 +86,25 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     vx_graph graph = 0;
     vx_node node = 0;
 
+    tivx_raw_image_create_params_t raw_params;
+    raw_params.width = 128;
+    raw_params.height = 128;
+    raw_params.num_exposures = 3;
+    raw_params.line_interleaved = vx_false_e;
+    raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    raw_params.format[0].msb = 11;
+    raw_params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    raw_params.format[1].msb = 7;
+    raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    raw_params.format[2].msb = 11;
+    raw_params.meta_height = 5;
+    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
         tivxHwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(raw0 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(raw1 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(raw2 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), TIVX_TYPE_RAW_IMAGE);
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, 128, 128/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -111,7 +123,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
-                                                raw0, raw1, raw2, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
+                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
@@ -124,9 +136,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
         VX_CALL(vxReleaseImage(&y8_r8_c2));
         VX_CALL(vxReleaseImage(&uv12_c1));
         VX_CALL(vxReleaseImage(&y12));
-        VX_CALL(vxReleaseImage(&raw2));
-        VX_CALL(vxReleaseImage(&raw1));
-        VX_CALL(vxReleaseImage(&raw0));
+        VX_CALL(tivxReleaseRawImage(&raw));
         VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
 
@@ -139,9 +149,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
         ASSERT(y8_r8_c2 == 0);
         ASSERT(uv12_c1 == 0);
         ASSERT(y12 == 0);
-        ASSERT(raw2 == 0);
-        ASSERT(raw1 == 0);
-        ASSERT(raw0 == 0);
+        ASSERT(raw == 0);
         ASSERT(ae_awb_result == 0);
         ASSERT(configuration == 0);
 
@@ -159,27 +167,39 @@ static CT_Image raw_read_image(const char* fileName, int width, int height)
     return image;
 }
 
-static CT_Image raw_generate_random(const char* fileName, int width, int height)
-{
-    CT_Image image;
-
-    ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, VX_DF_IMAGE_U16, &CT()->seed_, 0, 4096));
-
-    return image;
-}
-
 typedef struct {
     const char* testName;
-    CT_Image (*generator)(const char* fileName, int width, int height);
-    const char* fileName;
-    vx_border_t border;
-    int width, height;
+    int width, height, exposures;
+    vx_bool line_interleaved;
 } Arg;
 
+#define ADD_SIZE_2048x1024(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/sz=2048x1024", __VA_ARGS__, 2048, 1024))
+
+#define ADD_EXP1(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/n_exp=1", __VA_ARGS__, 1))
+
+#define ADD_EXP2(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/n_exp=2", __VA_ARGS__, 2))
+
+#define ADD_EXP3(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/n_exp=3", __VA_ARGS__, 3))
+
+#define ADD_LINE_FALSE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/line_intlv=false", __VA_ARGS__, vx_false_e))
+
+#define ADD_LINE_TRUE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/line_intlv=true", __VA_ARGS__, vx_true_e))
+
+
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_64x64, ARG, raw_generate_random, NULL), \
-    CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, raw_read_image, "lena.bmp")
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x64, ADD_EXP1, ADD_LINE_FALSE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x64, ADD_EXP2, ADD_LINE_FALSE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x64, ADD_EXP3, ADD_LINE_FALSE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x64, ADD_EXP1, ADD_LINE_TRUE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x64, ADD_EXP2, ADD_LINE_TRUE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_64x64, ADD_EXP3, ADD_LINE_TRUE, ARG), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_2048x1024, ADD_EXP1, ARG)
 
 TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     PARAMETERS
@@ -188,7 +208,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
     vx_user_data_object ae_awb_result = NULL;
-    vx_image raw0 = NULL, raw1 = NULL, raw2 = NULL;
+    tivx_raw_image raw = NULL;
     vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
     vx_distribution histogram = NULL;
     vx_user_data_object h3a_aew_af = NULL;
@@ -199,8 +219,19 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
     vx_graph graph = 0;
     vx_node node = 0;
 
-    CT_Image src0 = NULL, src1 = NULL,  src2 = NULL;
-    vx_border_t border = arg_->border;
+    tivx_raw_image_create_params_t raw_params;
+    raw_params.width = arg_->width;
+    raw_params.height = arg_->height;
+    raw_params.num_exposures = arg_->exposures;
+    raw_params.line_interleaved = arg_->line_interleaved;
+    raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    raw_params.format[0].msb = 11;
+    raw_params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
+    raw_params.format[1].msb = 7;
+    raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
+    raw_params.format[2].msb = 11;
+    raw_params.meta_height = 5;
+    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
     {
@@ -208,16 +239,10 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 
         tivxHwaLoadKernels(context);
 
-        ASSERT_NO_FAILURE(src0 = arg_->generator(arg_->fileName, arg_->width, arg_->height));
-        ASSERT_NO_FAILURE(src1 = arg_->generator(arg_->fileName, arg_->width, arg_->height));
-        ASSERT_NO_FAILURE(src2 = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), TIVX_TYPE_RAW_IMAGE);
 
-        ASSERT_VX_OBJECT(raw0 = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(raw1 = ct_image_to_vx_image(src1, context), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(raw2 = ct_image_to_vx_image(src2, context), VX_TYPE_IMAGE);
-
-        VX_CALL(vxQueryImage(raw0, VX_IMAGE_WIDTH, &width, sizeof(width)));
-        VX_CALL(vxQueryImage(raw0, VX_IMAGE_HEIGHT, &height, sizeof(height)));
+        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
+        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
 
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
@@ -253,11 +278,10 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
-                                                raw0, raw1, raw2, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
+                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
-        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
         VX_CALL(vxVerifyGraph(graph));
         VX_CALL(vxProcessGraph(graph));
@@ -270,9 +294,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         VX_CALL(vxReleaseImage(&y8_r8_c2));
         VX_CALL(vxReleaseImage(&uv12_c1));
         VX_CALL(vxReleaseImage(&y12));
-        VX_CALL(vxReleaseImage(&raw2));
-        VX_CALL(vxReleaseImage(&raw1));
-        VX_CALL(vxReleaseImage(&raw0));
+        VX_CALL(tivxReleaseRawImage(&raw));
         VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
 
@@ -285,9 +307,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT(y8_r8_c2 == 0);
         ASSERT(uv12_c1 == 0);
         ASSERT(y12 == 0);
-        ASSERT(raw2 == 0);
-        ASSERT(raw1 == 0);
-        ASSERT(raw0 == 0);
+        ASSERT(raw == 0);
         ASSERT(ae_awb_result == 0);
         ASSERT(configuration == 0);
 
@@ -447,6 +467,104 @@ static void ct_read_image2(vx_image image, const char* fileName, uint16_t file_b
                 }
             }
             vxUnmapImagePatch(image, map_id);
+        }
+    }
+
+    ct_free_mem(buf);
+    fclose(f);
+}
+
+static void ct_read_raw_image(tivx_raw_image image, const char* fileName, uint16_t file_byte_pack)
+{
+    FILE* f = 0;
+    size_t sz;
+    char* buf = 0;
+    char file[MAXPATHLENGTH];
+
+    if (!fileName)
+    {
+        CT_ADD_FAILURE("Image file name not specified\n");
+        return;
+    }
+
+    sz = snprintf(file, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), fileName);
+    ASSERT_(return, (sz < MAXPATHLENGTH));
+
+    f = fopen(file, "rb");
+    if (!f)
+    {
+        CT_ADD_FAILURE("Can't open image file: %s\n", fileName);
+        return;
+    }
+
+    fseek(f, 0, SEEK_END);
+    sz = ftell(f);
+    if( sz > 0 )
+    {
+        buf = (char*)ct_alloc_mem(sz);
+        fseek(f, 0, SEEK_SET);
+        if( fread(buf, 1, sz, f) == sz )
+        {
+            vx_uint32 width, height;
+            vx_imagepatch_addressing_t image_addr;
+            vx_rectangle_t rect;
+            vx_map_id map_id;
+            void *data_ptr;
+            vx_uint32 num_bytes = 1;
+            tivx_raw_image_format_t format[3];
+
+            tivxQueryRawImage(image, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(vx_uint32));
+            tivxQueryRawImage(image, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(vx_uint32));
+            tivxQueryRawImage(image, TIVX_RAW_IMAGE_FORMAT, &format, sizeof(format));
+
+            if( format[0].pixel_container == TIVX_RAW_IMAGE_16_BIT )
+            {
+                num_bytes = 2;
+            }
+            else if( format[0].pixel_container == TIVX_RAW_IMAGE_8_BIT )
+            {
+                num_bytes = 1;
+            }
+            else if( format[0].pixel_container == TIVX_RAW_IMAGE_P12_BIT )
+            {
+                num_bytes = 0;
+            }
+
+            rect.start_x = 0;
+            rect.start_y = 0;
+            rect.end_x = width;
+            rect.end_y = height;
+
+            tivxMapRawImagePatch(image,
+                &rect,
+                0,
+                &map_id,
+                &image_addr,
+                &data_ptr,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST,
+                TIVX_RAW_IMAGE_PIXEL_BUFFER
+                );
+
+            if(file_byte_pack == num_bytes)
+            {
+                memcpy(data_ptr, buf, width*height*num_bytes);
+            }
+            else if((file_byte_pack == 2) && (num_bytes == 1))
+            {
+                int i;
+                uint8_t *dst = data_ptr;
+                uint16_t *src = (uint16_t*)buf;
+                for(i = 0; i < width*height; i++)
+                {
+                    dst[i] = src[i];
+                }
+            }
+            else
+            {
+                ASSERT(file_byte_pack == num_bytes);
+            }
+            tivxUnmapRawImagePatch(image, map_id);
         }
     }
 
@@ -698,7 +816,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     vx_context context = context_->vx_context_;
     vx_user_data_object configuration = NULL;
     vx_user_data_object ae_awb_result = NULL;
-    vx_image raw0 = NULL, raw1 = NULL, raw2 = NULL;
+    tivx_raw_image raw = NULL;
     vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
     vx_image y12_ref = NULL, uv12_c1_ref = NULL, y8_r8_c2_ref = NULL, uv8_g8_c3_ref = NULL, s8_b8_c4_ref = NULL;
     vx_distribution histogram = NULL;
@@ -713,6 +831,20 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     vx_graph graph = 0;
     vx_node node = 0;
 
+    tivx_raw_image_create_params_t raw_params;
+    raw_params.width = 1280;
+    raw_params.height = 720;
+    raw_params.num_exposures = 1;
+    raw_params.line_interleaved = vx_false_e;
+    raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    raw_params.format[0].msb = 11;
+    raw_params.format[1].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    raw_params.format[1].msb = 11;
+    raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_16_BIT;
+    raw_params.format[2].msb = 11;
+    raw_params.meta_height = 0;
+    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
+
     CT_Image src0 = NULL, src1 = NULL,  src2 = NULL;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
@@ -721,12 +853,10 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         tivxHwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(raw0 = vxCreateImage(context, 1280, 720, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        //ASSERT_VX_OBJECT(raw0 = vxCreateImage(context, 1280, 720, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        //ASSERT_VX_OBJECT(raw0 = vxCreateImage(context, 1280, 720, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), TIVX_TYPE_RAW_IMAGE);
 
-        VX_CALL(vxQueryImage(raw0, VX_IMAGE_WIDTH, &width, sizeof(width)));
-        VX_CALL(vxQueryImage(raw0, VX_IMAGE_HEIGHT, &height, sizeof(height)));
+        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
+        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
 
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
@@ -768,12 +898,12 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
-                                                raw0, raw1, raw2, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
+                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
                                                 histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
 
         VX_CALL(vxVerifyGraph(graph));
 
-        ct_read_image2(raw0, "bayer_1280x720.raw", 2);
+        ct_read_raw_image(raw, "bayer_1280x720.raw", 2);
 
         VX_CALL(vxProcessGraph(graph));
 
@@ -857,9 +987,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         VX_CALL(vxReleaseImage(&y8_r8_c2));
         VX_CALL(vxReleaseImage(&uv12_c1));
         VX_CALL(vxReleaseImage(&y12));
-        //VX_CALL(vxReleaseImage(&raw2));
-        //VX_CALL(vxReleaseImage(&raw1));
-        VX_CALL(vxReleaseImage(&raw0));
+        VX_CALL(tivxReleaseRawImage(&raw));
         VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
 
@@ -872,9 +1000,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT(y8_r8_c2 == 0);
         ASSERT(uv12_c1 == 0);
         ASSERT(y12 == 0);
-        ASSERT(raw2 == 0);
-        ASSERT(raw1 == 0);
-        ASSERT(raw0 == 0);
+        ASSERT(raw == 0);
         ASSERT(ae_awb_result == 0);
         ASSERT(configuration == 0);
 

@@ -241,12 +241,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
  * \param [in] graph The reference to the graph.
  * \param [in] configuration             The input object of a single params structure of type <tt>\ref tivx_vpac_viss_params_t</tt>.
  * \param [in] ae_awb_result             The input object of a single params structure of type <tt>\ref tivx_ae_awb_params_t</tt>.
- * \param [in] raw0                      The Very Short Exposure input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
- *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] raw1 (optional)           The Short Exposure input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
- *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] raw2 (optional)           The Long Exposure input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
- *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
+ * \param [in] raw                       The RAW bayer input image (can contain up to 3 exposures plus meta data).
  * \param [out] y12 (optional)           The Y12 output image in <tt>\ref VX_DF_IMAGE_U16</tt> or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] uv12_c1 (optional)       The UV12 or C1 output image in <tt>\ref VX_DF_IMAGE_U16</tt> or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
  * \param [out] y8_r8_c2 (optional)      The Y8, R8, or C2 output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
@@ -266,9 +261,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_user_data_object  ae_awb_result,
-                                      vx_image             raw0,
-                                      vx_image             raw1,
-                                      vx_image             raw2,
+                                      tivx_raw_image       raw,
                                       vx_image             y12,
                                       vx_image             uv12_c1,
                                       vx_image             y8_r8_c2,
