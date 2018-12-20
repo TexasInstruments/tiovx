@@ -656,11 +656,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     dcc_input_params.color_temparature = 5000;
                     dcc_input_params.exposure_time = 33333;
 
-                    dcc_input_params.dcc_buf_size = dcc_desc->size;
+                    dcc_input_params.dcc_buf_size = dcc_desc->mem_size;
                     dcc_input_params.dcc_buf = tivxMemShared2TargetPtr(dcc_desc->mem_ptr.shared_ptr, dcc_desc->mem_ptr.mem_heap_region);
                     if(NULL != dcc_input_params.dcc_buf)
                     {
-                        tivxMemBufferMap(dcc_input_params.dcc_buf, dcc_desc->size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                        tivxMemBufferMap(dcc_input_params.dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                         prms->dcc_out_numbytes = calc_dcc_outbuf_size();
                         prms->dcc_out_buf = (uint8_t *)tivxMemAlloc(prms->dcc_out_numbytes, TIVX_MEM_EXTERNAL);
@@ -674,7 +674,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                             status = VX_ERROR_NO_MEMORY;
                         }
 
-                        tivxMemBufferUnmap(dcc_input_params.dcc_buf, dcc_desc->size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                        tivxMemBufferUnmap(dcc_input_params.dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
                     }
                     else
                     {
