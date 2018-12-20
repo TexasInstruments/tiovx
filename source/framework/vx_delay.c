@@ -57,7 +57,9 @@ static vx_bool ownIsValidObject(vx_enum type)
         (VX_TYPE_MATRIX == type) ||
         (VX_TYPE_REMAP == type)  ||
         (VX_TYPE_LUT == type) ||
-        (VX_TYPE_CONVOLUTION == type)
+        (VX_TYPE_CONVOLUTION == type) ||
+        (VX_TYPE_USER_DATA_OBJECT == type) ||
+        (TIVX_TYPE_RAW_IMAGE == type)
         )
     {
         status = vx_true_e;
