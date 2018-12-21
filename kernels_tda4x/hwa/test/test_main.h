@@ -60,7 +60,7 @@
  *
  */
 
-#if 1
+#if defined(TDA4X)
 
 #ifdef TARGET_X86_64
 TESTCASE(tivxPngRdWr)
@@ -75,6 +75,7 @@ TESTCASE(tivxHwaVpacMscScale)
 TESTCASE(tivxHwaDmpacDof)
 TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
+
 #endif
 
 
