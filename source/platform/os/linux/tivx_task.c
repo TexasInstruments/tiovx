@@ -128,8 +128,6 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
         else
         {
             pthread_attr_t thread_attr;
-            struct sched_param schedprm;
-            uint32_t pri;
 
             task->stack_ptr = params->stack_ptr;
             task->stack_size = params->stack_size;
@@ -142,25 +140,32 @@ vx_status tivxTaskCreate(tivx_task *task, tivx_task_create_params_t *params)
 
             if(status==0)
             {
-                if(task->stack_size>0)
+                #if 0
                 {
-                    status |= pthread_attr_setstacksize(&thread_attr, task->stack_size);
-                }
-                status |= pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
-
-                pri = PRI_MIN;
-                if(task->priority==TIVX_TASK_PRI_HIGHEST)
-                {
-                    pri = PRI_MAX;
-                }
-                else
-                if(task->priority==TIVX_TASK_PRI_LOWEST)
-                {
+                    struct sched_param schedprm;
+                    uint32_t pri;
+    
+                    if(task->stack_size>0)
+                    {
+                        status |= pthread_attr_setstacksize(&thread_attr, task->stack_size);
+                    }
+                    status |= pthread_attr_setschedpolicy(&thread_attr, SCHED_RR);
+    
                     pri = PRI_MIN;
+                    if(task->priority==TIVX_TASK_PRI_HIGHEST)
+                    {
+                        pri = PRI_MAX;
+                    }
+                    else
+                    if(task->priority==TIVX_TASK_PRI_LOWEST)
+                    {
+                        pri = PRI_MIN;
+                    }
+    
+                    schedprm.sched_priority = pri;
+                    status |= pthread_attr_setschedparam(&thread_attr, &schedprm);
                 }
-
-                schedprm.sched_priority = pri;
-                status |= pthread_attr_setschedparam(&thread_attr, &schedprm);
+                #endif
 
                 if(status==0)
                 {

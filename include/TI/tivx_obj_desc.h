@@ -826,6 +826,58 @@ typedef struct _tivx_obj_desc_tensor
 void tivxGetObjDescList(uint16_t obj_desc_id[],
     tivx_obj_desc_t *obj_desc[], uint32_t num_desc_id);
 
+
+/*!
+ * \brief Utility function for memory/string copy/set operation on object descriptor pointers
+ *
+ *   IMPORTANT NOTE:
+ *   On some SoCs, obj desc's are allocated in a memory region where
+ *   unaligned access results in 'Bus Error'. The fields with a obj desc
+ *   are properly aligned so making a access to obj desc fields is fine.
+ *   But when APIs like strncpy, memcpy, memset are
+ *   used, it could result in a unaligned access. To avoid this, below functions
+ *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
+ *   this kind of structure assignmen should be avoided and below function used instead
+ * 
+ * \ingroup group_tivx_obj_desc
+ */
+void tivx_obj_desc_strncpy(void *dst, void *src, uint32_t size);
+
+/*!
+ * \brief Utility function for memory/string copy/set operation on object descriptor pointers
+ *
+ *   IMPORTANT NOTE:
+ *   On some SoCs, obj desc's are allocated in a memory region where
+ *   unaligned access results in 'Bus Error'. The fields with a obj desc
+ *   are properly aligned so making a access to obj desc fields is fine.
+ *   But when APIs like strncpy, memcpy, memset are
+ *   used, it could result in a unaligned access. To avoid this, below functions
+ *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
+ *   this kind of structure assignmen should be avoided and below function used instead
+ * 
+ * \ingroup group_tivx_obj_desc
+ */
+void tivx_obj_desc_memcpy(void *dst, void *src, uint32_t size);
+
+/*!
+ * \brief Utility function for memory/string copy/set operation on object descriptor pointers
+ *
+ *   IMPORTANT NOTE:
+ *   On some SoCs, obj desc's are allocated in a memory region where
+ *   unaligned access results in 'Bus Error'. The fields with a obj desc
+ *   are properly aligned so making a access to obj desc fields is fine.
+ *   But when APIs like strncpy, memcpy, memset are
+ *   used, it could result in a unaligned access. To avoid this, below functions
+ *   should be used in place of standard strncpy, memcpy, meset functions.
+ *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
+ *   this kind of structure assignmen should be avoided and below function used instead
+ * 
+ * \ingroup group_tivx_obj_desc
+ */
+void tivx_obj_desc_memset(void *dst, uint8_t val, uint32_t size);
+
 #ifdef __cplusplus
 }
 #endif

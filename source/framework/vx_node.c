@@ -98,9 +98,9 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     obj_desc->node_complete_cmd_obj_desc_id = TIVX_OBJ_DESC_INVALID;
 
     obj_desc->border_mode.mode = VX_BORDER_UNDEFINED;
-    memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
+    tivx_obj_desc_memset(&obj_desc->border_mode.constant_value, 0, sizeof(vx_pixel_value_t));
 
-    memset(obj_desc->target_kernel_index, 0,
+    tivx_obj_desc_memset(obj_desc->target_kernel_index, 0,
         (TIVX_NODE_MAX_REPLICATE)*sizeof(uint32_t));
 
     obj_desc->target_kernel_index[0] = 0;
@@ -353,7 +353,7 @@ vx_status ownNodeKernelInit(vx_node node)
                 if(kernel_name_obj_desc!=NULL)
                 {
                     /* set kernel name */
-                    strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
+                    tivx_obj_desc_strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
 
                     /* set the number of pipeup buffers */
                     kernel_name_obj_desc->num_pipeup_bufs = node->kernel->num_pipeup_bufs;
@@ -383,7 +383,7 @@ vx_status ownNodeKernelInit(vx_node node)
 
                         for(i=1; i<node->pipeline_depth; i++)
                         {
-                            memcpy(node->obj_desc[i]->target_kernel_index,
+                            tivx_obj_desc_memcpy(node->obj_desc[i]->target_kernel_index,
                                 node->obj_desc[0]->target_kernel_index,
                                 sizeof(node->obj_desc[i]->target_kernel_index)
                                 );
@@ -1105,7 +1105,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
             case VX_NODE_BORDER:
                 if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                 {
-                    memcpy((vx_border_t *)ptr, &node->obj_desc[0]->border_mode, sizeof(vx_border_t));
+                    tivx_obj_desc_memcpy((vx_border_t *)ptr, &node->obj_desc[0]->border_mode, sizeof(vx_border_t));
                 }
                 else
                 {
@@ -1272,7 +1272,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetNodeAttribute(vx_node node, vx_enum attr
                     if (VX_CHECK_PARAM(ptr, size, vx_border_t, 0x3U))
                     {
                         /* set for pipeline index 0, assumed to be called before graph verify */
-                        memcpy(&node->obj_desc[0]->border_mode, (vx_border_t *)ptr, sizeof(vx_border_t));
+                        tivx_obj_desc_memcpy(&node->obj_desc[0]->border_mode, (vx_border_t *)ptr, sizeof(vx_border_t));
                     }
                     else
                     {

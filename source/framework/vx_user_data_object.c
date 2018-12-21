@@ -152,15 +152,11 @@ static vx_status ownInitUserDataObjectObject(
     obj_desc->mem_size = size;
     
     /* Initialize string with zeros, which safely fills with null terminators */
-    memset(obj_desc->type_name, 0, VX_MAX_REFERENCE_NAME);
+    obj_desc->type_name[0] = 0;
 
     if (type_name != NULL)
     {
-        if (snprintf(obj_desc->type_name, VX_MAX_REFERENCE_NAME, type_name) >= VX_MAX_REFERENCE_NAME)
-        {
-            status = VX_FAILURE;
-            VX_PRINT(VX_ZONE_ERROR, "vxCreateUserDataObject: type_name length is longer than VX_MAX_REFERENCE_NAME\n");
-        }
+        tivx_obj_desc_strncpy(obj_desc->type_name, (void*)type_name, VX_MAX_REFERENCE_NAME);
     }
 
     obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
@@ -274,7 +270,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryUserDataObject (
             case VX_USER_DATA_OBJECT_NAME:
                 if ((ptr != NULL) && (size >= VX_MAX_REFERENCE_NAME))
                 {
-                    strncpy(ptr, obj_desc->type_name, VX_MAX_REFERENCE_NAME);
+                    tivx_obj_desc_strncpy(ptr, obj_desc->type_name, VX_MAX_REFERENCE_NAME);
                 }
                 else
                 {

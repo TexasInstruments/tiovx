@@ -3,7 +3,7 @@
 BUILD_SDK?=vsdk
 
 include $(BUILD_SDK)_tools_path.mak
-include build_flags.mak
+include build_flags_$(BUILD_SDK).mak
 
 DIRECTORIES :=
 DIRECTORIES += source/platform

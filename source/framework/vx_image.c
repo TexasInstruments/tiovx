@@ -673,7 +673,7 @@ void ownPrintImage(vx_image image)
 
     obj_desc = (tivx_obj_desc_image_t *)image->base.obj_desc;
 
-    strncpy(df_image, (char *)&obj_desc->format, 4);
+    tivx_obj_desc_strncpy(df_image, (char *)&obj_desc->format, 4);
     df_image[4] = '\0';
     ownPrintReference(&image->base);
     VX_PRINT(VX_ZONE_IMAGE,
@@ -1887,7 +1887,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
-
     if(status == VX_SUCCESS)
     {
         status = ownCopyAndMapCheckParams(image, rect, plane_index, usage);
@@ -1928,7 +1927,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapImagePatch(
             if(map_idx<TIVX_IMAGE_MAX_MAPS)
             {
                 *map_id = map_idx;
-                *user_addr = *image_addr;
+                tivx_obj_desc_memcpy(user_addr, image_addr, sizeof(vx_imagepatch_addressing_t));
                 *user_ptr = map_addr;
 
                 user_addr->dim_x = rect->end_x - rect->start_x;

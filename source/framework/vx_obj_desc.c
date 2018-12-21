@@ -127,7 +127,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
     uint32_t i, idx;
 
     tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
-
+    
     idx = g_obj_desc_table.last_alloc_index;
 
     for(i=0; i<g_obj_desc_table.num_entries; i++)
@@ -136,7 +136,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
 
         if(tmp_obj_desc->type==TIVX_OBJ_DESC_INVALID)
         {
-            memset(tmp_obj_desc, 0, sizeof(tivx_obj_desc_shm_entry_t));
+            tivx_obj_desc_memset(tmp_obj_desc, 0, sizeof(tivx_obj_desc_shm_entry_t));
 
             /* init entry that is found */
             tmp_obj_desc->obj_desc_id = idx;
@@ -154,7 +154,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
 
         idx = (idx+1)%g_obj_desc_table.num_entries;
     }
-
+    
     tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return obj_desc;
@@ -258,5 +258,43 @@ void tivxGetObjDescList(uint16_t obj_desc_id[],
             obj_desc[i] =
                 (tivx_obj_desc_t*)&g_obj_desc_table.table_base[obj_desc_id[i]];
         }
+    }
+}
+
+void tivx_obj_desc_strncpy(void *dst, void *src, uint32_t size)
+{
+    uint8_t *d=(uint8_t*)dst;
+    uint8_t *s=(uint8_t*)src;
+    uint32_t i;
+    
+    for(i=0; i<size-1; i++)
+    {
+        d[i] = s[i];
+        if(s[i]==0)
+            break;
+    }
+    d[i] = 0;
+}
+
+void tivx_obj_desc_memcpy(void *dst, void *src, uint32_t size)
+{
+    uint8_t *d=(uint8_t*)dst;
+    uint8_t *s=(uint8_t*)src;
+    uint32_t i;
+    
+    for(i=0; i<size; i++)
+    {
+        d[i] = s[i];
+    }
+}
+
+void tivx_obj_desc_memset(void *dst, uint8_t val, uint32_t size)
+{
+    uint8_t *d=(uint8_t*)dst;
+    uint32_t i;
+    
+    for(i=0; i<size; i++)
+    {
+        d[i] = val;
     }
 }

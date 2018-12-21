@@ -3,7 +3,7 @@ BUILD_CONFORMANCE_TEST?=yes
 # currently required to be set to yes
 BUILD_TUTORIAL?=yes
 # currently required to be set to no
-BUILD_BAM?=no
+BUILD_BAM?=yes
 # currently required to be set to yes
 BUILD_IGNORE_LIB_ORDER?=yes
 
@@ -17,7 +17,6 @@ BUILD_EMULATION_ARCH?=x86_64
 # valid values: release debug all
 PROFILE?=all
 
-# Applied to target mode only
-BUILD_LINUX_A72?=yes
-# Applied to target mode only
-BUILD_VLAB?=yes
+BUILD_LINUX_A15?=yes
+BUILD_EVE?=yes
+BUILD_IVISION_KERNELS?=yes

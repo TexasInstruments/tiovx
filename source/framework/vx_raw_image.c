@@ -341,7 +341,7 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
         image->maps[map_idx].map_size = 0;
     }
 
-    memcpy(&obj_desc->params, params, sizeof(tivx_raw_image_create_params_t));
+    tivx_obj_desc_memcpy(&obj_desc->params, params, sizeof(tivx_raw_image_create_params_t));
 
     obj_desc->valid_roi.start_x = 0;
     obj_desc->valid_roi.start_y = 0;
@@ -399,9 +399,9 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
         obj_desc->mem_ptr[exp_idx].host_ptr = (uint64_t)NULL;
         obj_desc->mem_ptr[exp_idx].shared_ptr = (uint64_t)NULL;
 
-        memcpy(&obj_desc->imagepatch_addr[exp_idx], &imagepatch_addr, sizeof(vx_imagepatch_addressing_t));
-        memcpy(&obj_desc->img_ptr[exp_idx], &obj_desc->mem_ptr[exp_idx], sizeof(tivx_shared_mem_ptr_t));
-        memcpy(&obj_desc->meta_ptr[exp_idx], &obj_desc->mem_ptr[exp_idx], sizeof(tivx_shared_mem_ptr_t));
+        tivx_obj_desc_memcpy(&obj_desc->imagepatch_addr[exp_idx], &imagepatch_addr, sizeof(vx_imagepatch_addressing_t));
+        tivx_obj_desc_memcpy(&obj_desc->img_ptr[exp_idx], &obj_desc->mem_ptr[exp_idx], sizeof(tivx_shared_mem_ptr_t));
+        tivx_obj_desc_memcpy(&obj_desc->meta_ptr[exp_idx], &obj_desc->mem_ptr[exp_idx], sizeof(tivx_shared_mem_ptr_t));
 
         image->mem_offset[exp_idx] = 0;
     }
@@ -663,7 +663,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, v
                 {
                     vx_size num_dims = size / sizeof(tivx_raw_image_format_t);
 
-                    memcpy(ptr, &obj_desc->params.format, sizeof(tivx_raw_image_format_t)*num_dims);
+                    tivx_obj_desc_memcpy(ptr, &obj_desc->params.format, sizeof(tivx_raw_image_format_t)*num_dims);
                 }
                 else
                 {
@@ -1132,7 +1132,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
             if(map_idx<TIVX_RAW_IMAGE_MAX_MAPS)
             {
                 *map_id = map_idx;
-                *user_addr = *image_addr;
+                tivx_obj_desc_memcpy(user_addr, image_addr, sizeof(vx_imagepatch_addressing_t));
                 *user_ptr = map_addr;
 
                 if( buffer_select == TIVX_RAW_IMAGE_PIXEL_BUFFER)
