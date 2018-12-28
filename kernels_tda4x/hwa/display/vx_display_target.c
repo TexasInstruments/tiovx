@@ -151,7 +151,7 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
             format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case VX_DF_IMAGE_RGBX:
-            format->dataFormat = FVID2_DF_XRGB32_8888;
+            format->dataFormat = FVID2_DF_RGBA32_8888;
             format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case VX_DF_IMAGE_UYVY:
@@ -284,16 +284,23 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             SemaphoreP_Params_init(&semParams);
             semParams.mode = SemaphoreP_Mode_BINARY;
             displayParams->waitSem = SemaphoreP_create(0U, &semParams);
-            displayParams->drvHandle = Fvid2_create(DSS_DISP_DRV_ID,
-                                                    drvId,
-                                                    &displayParams->createParams,
-                                                    &displayParams->createStatus,
-                                                    &displayParams->cbParams);
-            if ((NULL == displayParams->drvHandle) ||
-                (displayParams->createStatus.retVal != FVID2_SOK))
+            if(NULL == displayParams->waitSem)
             {
-                VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Create Failed!\r\n");
-                status = displayParams->createStatus.retVal;
+                VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Semaphore Create Failed!\r\n");
+            }
+            else
+            {
+                displayParams->drvHandle = Fvid2_create(DSS_DISP_DRV_ID,
+                                                        drvId,
+                                                        &displayParams->createParams,
+                                                        &displayParams->createStatus,
+                                                        &displayParams->cbParams);
+                if((NULL == displayParams->drvHandle) ||
+                   (displayParams->createStatus.retVal != FVID2_SOK))
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display Create Failed!\r\n");
+                    status = displayParams->createStatus.retVal;
+                }
             }
         }
         if(VX_SUCCESS == status)
@@ -344,11 +351,11 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             }
         }
         /* Creating FVID2 frame Q */
-        if (VX_SUCCESS == status)
+        if((VX_SUCCESS == status) && (TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE == displayParams->opMode))
         {
             uint32_t bufId;
             status = tivxQueueCreate(&displayParams->fvid2FrameQ, TIVX_DISPLAY_MAX_NUM_BUFS, displayParams->fvid2FrameQMem, 0);
-            if (VX_SUCCESS != status)
+            if(VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Fvid2 queue create failed!\r\n");
             }
@@ -359,7 +366,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             }
         }
 
-        if (VX_SUCCESS == status)
+        if(VX_SUCCESS == status)
         {
             tivxMemBufferUnmap(display_config_target_ptr,
                                obj_desc_configuration->mem_size,
@@ -371,7 +378,7 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         }
         else
         {
-            if (NULL != displayParams)
+            if(NULL != displayParams)
             {
                 tivxMemFree(displayParams, sizeof(tivxDisplayParams), TIVX_MEM_EXTERNAL);
             }
@@ -401,27 +408,27 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
     {
         obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
         status = tivxGetTargetKernelInstanceContext(kernel,
-                                                    (void *)displayParams,
+                                                    (void **) &displayParams,
                                                     &size);
 
-        if (VX_SUCCESS != status)
+        if(VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Could not obtain display kernel instance context!\r\n");
         }
 
         /* Stop Display */
-        if (VX_SUCCESS == status)
+        if(VX_SUCCESS == status)
         {
             status = Fvid2_stop(displayParams->drvHandle, NULL);
 
-            if (VX_SUCCESS != status)
+            if(VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: FVID2 Stop Failed!\r\n");
             }
         }
 
         /* Dequeue all the request from the driver */
-        if (VX_SUCCESS == status)
+        if(VX_SUCCESS == status)
         {
             do
             {
@@ -429,19 +436,19 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
                                        &frmList,
                                        0,
                                        FVID2_TIMEOUT_NONE);
-            } while (VX_SUCCESS == status);
+            } while(VX_SUCCESS == status);
 
             /* Delete FVID2 handle */
             status = Fvid2_delete(displayParams->drvHandle, NULL);
 
-            if (VX_SUCCESS != status)
+            if(VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: FVID2 Delete Failed!\r\n");
             }
         }
 
         /* Deleting FVID2 frame Q */
-        if (VX_SUCCESS == status)
+        if((VX_SUCCESS == status) && (TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE == displayParams->opMode))
         {
             tivxQueueDelete(&displayParams->fvid2FrameQ);
         }
@@ -454,7 +461,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
         }
 
         /* Delete kernel instance params object */
-        if (VX_SUCCESS == status)
+        if(VX_SUCCESS == status)
         {
             displayParams->drvHandle = NULL;
 
@@ -472,7 +479,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
                 }
             }
 
-            if ((NULL != displayParams) && (sizeof(tivxDisplayParams) == size))
+            if((NULL != displayParams) && (sizeof(tivxDisplayParams) == size))
             {
                 tivxMemFree(displayParams, sizeof(tivxDisplayParams), TIVX_MEM_EXTERNAL);
             }
@@ -581,7 +588,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                                         &frmList,
                                         0U,
                                         FVID2_TIMEOUT_NONE);
-                } while (FVID2_EAGAIN == status);
+                } while(FVID2_EAGAIN == status);
                 if((1U == frmList.numFrames) && (VX_SUCCESS == status))
                 {
                     frm = frmList.frames[0U];
@@ -595,15 +602,15 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 }
             }
         }
-        else if (TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
+        else if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
         {
             /* Copy  and assign buffers */
             memcpy(displayParams->copyImagePtr[displayParams->currIdx][0], image_target_ptr1, displayParams->copyImageSize[0]);
-            displayParams->copyFrame[displayParams->currIdx].addr[0] = (uint64_t)displayParams->copyImagePtr[0][0];
+            displayParams->copyFrame[displayParams->currIdx].addr[0] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][0];
             if(VX_DF_IMAGE_NV12 == obj_desc_image->format)
             {
                 memcpy(displayParams->copyImagePtr[displayParams->currIdx][1], image_target_ptr2, displayParams->copyImageSize[1]);
-                displayParams->copyFrame[displayParams->currIdx].addr[1] = (uint64_t)displayParams->copyImagePtr[0][1];
+                displayParams->copyFrame[displayParams->currIdx].addr[1] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][1];
             }
             displayParams->copyFrame[displayParams->currIdx].fid = FVID2_FID_FRAME;
             displayParams->copyFrame[displayParams->currIdx].appData = NULL;
@@ -636,7 +643,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                                            &frmList,
                                            0U,
                                            FVID2_TIMEOUT_NONE);
-                } while (FVID2_EAGAIN == status);
+                } while(FVID2_EAGAIN == status);
                 if((1U == frmList.numFrames) && (VX_SUCCESS == status))
                 {
                     /* Change Curr Index */
@@ -682,7 +689,7 @@ void tivxAddTargetKernelDisplay()
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_DISPLAY,
             TIVX_TARGET_MAX_NAME);
@@ -703,7 +710,7 @@ void tivxRemoveTargetKernelDisplay()
     vx_status status = VX_SUCCESS;
 
     status = tivxRemoveTargetKernel(vx_display_target_kernel);
-    if (status == VX_SUCCESS)
+    if(status == VX_SUCCESS)
     {
         vx_display_target_kernel = NULL;
     }

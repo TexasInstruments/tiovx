@@ -66,41 +66,126 @@
 #include "test_engine/test.h"
 #include <string.h>
 
+#define DISPLAY_NUM_RUN_COUNT 100
+
+extern const uint32_t gDispArray1[];
+extern const uint32_t gDispArray2[];
+
 TESTCASE(tivxHwaDisplay, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxHwaDisplay, testNodeCreation)
+TEST(tivxHwaDisplay, testBufferCopyMode)
 {
     vx_context context = context_->vx_context_;
+    vx_image disp_image = 0;
+    vx_imagepatch_addressing_t image_addr;
+    tivx_display_params_t params;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    uint32_t loop_count = 0;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY))
     {
         tivxHwaLoadKernels(context);
 
-        printf("This is dummy test for node creation");
+        ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, 480, 360, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
+        
+        image_addr.dim_x = 480;
+        image_addr.dim_y = 360;
+        image_addr.stride_x = 4;
+        image_addr.stride_y = 480*4;
+        image_addr.scale_x = VX_SCALE_UNITY;
+        image_addr.scale_y = VX_SCALE_UNITY;
+        image_addr.step_x = 1;
+        image_addr.step_y = 1;
+        vx_rectangle_t rect;
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = 480;
+        rect.end_y = 360;
+
+        vxCopyImagePatch(disp_image,
+                &rect,
+                0,
+                &image_addr,
+                gDispArray1,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST
+                );
+
+        memset(&params, 0, sizeof(tivx_display_params_t));
+        
+        params.opMode=TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE;
+        params.pipeId=2; /* TODO: Change to DSS_DISP_INST_VID2; */
+        params.outWidth=480;
+        params.outHeight=360;
+        params.posX=800;
+        params.posY=440;
+        
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), VX_TYPE_USER_DATA_OBJECT);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxDisplayNode(graph, param_obj, disp_image), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DISPLAY));
+        VX_CALL(vxVerifyGraph(graph));
+
+        while(loop_count++<DISPLAY_NUM_RUN_COUNT)
+        {
+            VX_CALL(vxProcessGraph(graph));
+            if((loop_count%2) == 1)
+            {
+                vxCopyImagePatch(disp_image,
+                    &rect,
+                    0,
+                    &image_addr,
+                    gDispArray2,
+                    VX_WRITE_ONLY,
+                    VX_MEMORY_TYPE_HOST
+                    );
+            }
+            else
+            {
+                vxCopyImagePatch(disp_image,
+                    &rect,
+                    0,
+                    &image_addr,
+                    gDispArray1,
+                    VX_WRITE_ONLY,
+                    VX_MEMORY_TYPE_HOST
+                    );
+            }
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseImage(&disp_image));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(disp_image == 0);
+        ASSERT(param_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }
 }
 
-typedef struct {
-    const char* testName;
-} Arg;
-
-#define PARAMETERS \
-    CT_GENERATE_PARAMETERS("dummy", ARG)
-
-TEST_WITH_ARG(tivxHwaDisplay, testGraphProcessing, Arg, PARAMETERS)
+TEST(tivxHwaDisplay, testZeroBufferCopyMode)
 {
     vx_context context = context_->vx_context_;
-
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY))
     {
         tivxHwaLoadKernels(context);
 
-        printf("This is dummy test for graph processing");
+        /* Dummy Test */;
 
         tivxHwaUnLoadKernels(context);
     }
 }
 
-TESTCASE_TESTS(tivxHwaDisplay, testNodeCreation, testGraphProcessing)
+TESTCASE_TESTS(tivxHwaDisplay,
+    testBufferCopyMode,
+    testZeroBufferCopyMode
+    )
