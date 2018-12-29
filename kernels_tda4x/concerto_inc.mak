@@ -30,7 +30,9 @@ STATIC_LIBS += vx_target_kernels_vpac_viss
 STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils
 
 STATIC_LIBS += vx_target_kernels_tda4x_arm
+ifeq ($(TARGET_PLATFORM),TDA4X)
 STATIC_LIBS += vx_target_kernels_display
+endif
 STATIC_LIBS += vx_utils
 
 STATIC_LIBS += vx_tiovx_tidl_tests

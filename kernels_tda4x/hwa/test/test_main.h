@@ -60,6 +60,7 @@
  *
  */
 
+#if defined(BUILD_CT_TIOVX_HWA)
 #if defined(TDA4X)
 
 #ifdef TARGET_X86_64
@@ -77,6 +78,7 @@ TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
 TESTCASE(tivxHwaDisplay)
 
+#endif
 #endif
 
 

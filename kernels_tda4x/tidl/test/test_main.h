@@ -60,7 +60,7 @@
 *
 */
 
-#if 1
+#if defined(BUILD_CT_TIOVX_TIDL)
 #ifdef TARGET_X86_64
 TESTCASE(tivxTIDL)
 #endif
