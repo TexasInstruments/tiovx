@@ -236,7 +236,8 @@ vx_status tivxAddKernelDisplay(vx_context context)
         if (status == VX_SUCCESS)
         {
             /* add supported target's */
-            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY1);
+            tivxAddKernelTarget(kernel, TIVX_TARGET_DISPLAY2);
         }
         if (status == VX_SUCCESS)
         {

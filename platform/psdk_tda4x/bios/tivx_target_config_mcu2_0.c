@@ -11,7 +11,7 @@
 #include <tivx_platform_psdk_tda4x.h>
 
 
-#define TIVX_TARGET_MCU2_0_MAX          (8)
+#define TIVX_TARGET_MCU2_0_MAX          (12)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
 /**
@@ -62,6 +62,10 @@ void tivxPlatformCreateTargets(void)
     tivxPlatformCreateTargetId(TIVX_TARGET_ID_DMPAC_SDE, 5);
     tivxPlatformCreateTargetId(TIVX_TARGET_ID_DMPAC_DOF, 6);
     tivxPlatformCreateTargetId(TIVX_TARGET_ID_VPAC_VISS1, 7);
+    tivxPlatformCreateTargetId(TIVX_TARGET_ID_CAPTURE1, 8);
+    tivxPlatformCreateTargetId(TIVX_TARGET_ID_CAPTURE2, 9);
+    tivxPlatformCreateTargetId(TIVX_TARGET_ID_DISPLAY1, 10);
+    tivxPlatformCreateTargetId(TIVX_TARGET_ID_DISPLAY2, 11);
 }
 
 void tivxPlatformDeleteTargets(void)
@@ -74,4 +78,8 @@ void tivxPlatformDeleteTargets(void)
     tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DMPAC_SDE);
     tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DMPAC_DOF);
     tivxPlatformDeleteTargetId(TIVX_TARGET_ID_VPAC_VISS1);
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_CAPTURE1);
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_CAPTURE2);
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DISPLAY1);        
+    tivxPlatformDeleteTargetId(TIVX_TARGET_ID_DISPLAY2);        
 }

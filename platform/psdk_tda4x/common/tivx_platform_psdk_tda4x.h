@@ -26,7 +26,7 @@ extern "C" {
  *         MUST be <= TIVX_TARGET_MAX_TARGETS_IN_CPU defined in tivx_config.h
  * \ingroup group_tivx_platform
  */
-#define TIVX_PLATFORM_MAX_TARGETS            (13u)
+#define TIVX_PLATFORM_MAX_TARGETS            (17u)
 
 /*! \brief Maximum number obj descriptors that are present in shared memory
  * \ingroup group_tivx_platform
@@ -98,6 +98,18 @@ typedef enum _tivx_target_id_e {
     /*! \brief target ID for VISS1 */
     TIVX_TARGET_ID_VPAC_VISS1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 7u),
 
+    /*! \brief target ID for Capture */
+    TIVX_TARGET_ID_CAPTURE1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 8u),
+
+    /*! \brief target ID for Capture */
+    TIVX_TARGET_ID_CAPTURE2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 9u),
+
+    /*! \brief target ID for Display */
+    TIVX_TARGET_ID_DISPLAY1 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 10u),
+
+    /*! \brief target ID for Display */
+    TIVX_TARGET_ID_DISPLAY2 = TIVX_MAKE_TARGET_ID(TIVX_CPU_ID_IPU1_0, 11u),
+
 } tivx_target_id_e;
 
 
@@ -113,13 +125,17 @@ typedef enum _tivx_target_id_e {
     {TIVX_TARGET_EVE1, TIVX_TARGET_ID_EVE1},                                   \
     {TIVX_TARGET_IPU1_0, TIVX_TARGET_ID_IPU1_0},                               \
     {TIVX_TARGET_A15_0, TIVX_TARGET_ID_A15_0},                                 \
-    {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_VPAC_NF},                              \
-    {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_VPAC_LDC1},                            \
-    {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_VPAC_MSC1},                            \
-    {TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_ID_VPAC_MSC2},                            \
-    {TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_ID_DMPAC_SDE},                            \
-    {TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_ID_DMPAC_DOF},                            \
-    {TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_ID_VPAC_VISS1},                           \
+    {TIVX_TARGET_VPAC_NF, TIVX_TARGET_ID_VPAC_NF},                             \
+    {TIVX_TARGET_VPAC_LDC1, TIVX_TARGET_ID_VPAC_LDC1},                         \
+    {TIVX_TARGET_VPAC_MSC1, TIVX_TARGET_ID_VPAC_MSC1},                         \
+    {TIVX_TARGET_VPAC_MSC2, TIVX_TARGET_ID_VPAC_MSC2},                         \
+    {TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_ID_DMPAC_SDE},                         \
+    {TIVX_TARGET_DMPAC_DOF, TIVX_TARGET_ID_DMPAC_DOF},                         \
+    {TIVX_TARGET_VPAC_VISS1, TIVX_TARGET_ID_VPAC_VISS1},                       \
+    {TIVX_TARGET_CAPTURE1, TIVX_TARGET_ID_CAPTURE1},                           \
+    {TIVX_TARGET_CAPTURE2, TIVX_TARGET_ID_CAPTURE2},                           \
+    {TIVX_TARGET_DISPLAY1, TIVX_TARGET_ID_DISPLAY1},                           \
+    {TIVX_TARGET_DISPLAY2, TIVX_TARGET_ID_DISPLAY2},                           \
     /* TIVX_TARGET_HOST will be filled later during tivxHostInit()             \
      * by calling function tivxPlatformSetHostTargetId                         \
      */                                                                        \

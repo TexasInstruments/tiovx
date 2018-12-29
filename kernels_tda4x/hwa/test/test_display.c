@@ -84,7 +84,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
     vx_node node = 0;
     uint32_t loop_count = 0;
 
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
     {
         tivxHwaLoadKernels(context);
 
@@ -128,7 +128,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
 
         ASSERT_VX_OBJECT(node = tivxDisplayNode(graph, param_obj, disp_image), VX_TYPE_NODE);
 
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DISPLAY));
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DISPLAY1));
         VX_CALL(vxVerifyGraph(graph));
 
         while(loop_count++<DISPLAY_NUM_RUN_COUNT)
@@ -175,7 +175,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
 TEST(tivxHwaDisplay, testZeroBufferCopyMode)
 {
     vx_context context = context_->vx_context_;
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY))
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
     {
         tivxHwaLoadKernels(context);
 

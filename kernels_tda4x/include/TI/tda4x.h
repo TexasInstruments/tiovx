@@ -108,10 +108,22 @@ extern "C" {
  * \ingroup group_tivx_ext
  */
 #define TIVX_TARGET_VPAC_VISS1   "RESV07"
+/*! \brief Target name for Capture
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_TARGET_CAPTURE1     "RESV08"
+/*! \brief Target name for Capture
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_TARGET_CAPTURE2     "RESV09"
 /*! \brief Target name for Display
  * \ingroup group_tivx_ext
  */
-#define TIVX_TARGET_DISPLAY      "RESV08"
+#define TIVX_TARGET_DISPLAY1     "RESV10"
+/*! \brief Target name for Display
+ * \ingroup group_tivx_ext
+ */
+#define TIVX_TARGET_DISPLAY2     "RESV11"
 
 #ifdef __cplusplus
 }
