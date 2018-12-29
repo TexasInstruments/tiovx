@@ -61,8 +61,8 @@
 */
 
 
-#if 1
-#ifdef x86_64
+#if defined(BUILD_CT_TIOVX_IVISION)
+#ifdef TDAX
 TESTCASE(tivxIVisionHarrisCorners)
 #endif
 #endif

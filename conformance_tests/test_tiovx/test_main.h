@@ -16,7 +16,7 @@
  */
 
 
-#if 1
+#if defined(BUILD_CT_TIOVX)
 TESTCASE(tiovxPerformance)
 TESTCASE(tiovxPerformance2)
 

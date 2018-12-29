@@ -48,6 +48,30 @@ ifeq ($(TARGET_CPU),x86_64)
 CFLAGS      += -DTARGET_X86_64
 endif
 
+ifeq ($(BUILD_CT_KHR),yes)
+CFLAGS      += -DBUILD_CT_KHR
+endif
+
+ifeq ($(BUILD_CT_TIOVX),yes)
+CFLAGS      += -DBUILD_CT_TIOVX
+endif
+
+ifeq ($(BUILD_CT_TIOVX_TEST_KERNELS),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_TEST_KERNELS
+endif
+
+ifeq ($(BUILD_CT_TIOVX_TIDL),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_TIDL
+endif
+
+ifeq ($(BUILD_CT_TIOVX_IVISION),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_IVISION
+endif
+
+ifeq ($(BUILD_CT_TIOVX_HWA),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_HWA
+endif
+
 include $(FINALE)
 
 endif
