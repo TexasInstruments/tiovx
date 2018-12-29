@@ -68,8 +68,8 @@
 
 #define DISPLAY_NUM_RUN_COUNT 100
 
-extern const uint32_t gDispArray1[];
-extern const uint32_t gDispArray2[];
+extern uint32_t gTiovxCtDisplayArray1[];
+extern uint32_t gTiovxCtDisplayArray2[];
 
 TESTCASE(tivxHwaDisplay, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -89,7 +89,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
         tivxHwaLoadKernels(context);
 
         ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, 480, 360, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
-        
+
         image_addr.dim_x = 480;
         image_addr.dim_y = 360;
         image_addr.stride_x = 4;
@@ -108,20 +108,20 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
                 &rect,
                 0,
                 &image_addr,
-                gDispArray1,
+                (void *)gTiovxCtDisplayArray1,
                 VX_WRITE_ONLY,
                 VX_MEMORY_TYPE_HOST
                 );
 
         memset(&params, 0, sizeof(tivx_display_params_t));
-        
+
         params.opMode=TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE;
         params.pipeId=2; /* TODO: Change to DSS_DISP_INST_VID2; */
         params.outWidth=480;
         params.outHeight=360;
         params.posX=800;
         params.posY=440;
-        
+
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -140,7 +140,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
                     &rect,
                     0,
                     &image_addr,
-                    gDispArray2,
+                    (void *)gTiovxCtDisplayArray2,
                     VX_WRITE_ONLY,
                     VX_MEMORY_TYPE_HOST
                     );
@@ -151,7 +151,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
                     &rect,
                     0,
                     &image_addr,
-                    gDispArray1,
+                    (void *)gTiovxCtDisplayArray1,
                     VX_WRITE_ONLY,
                     VX_MEMORY_TYPE_HOST
                     );
