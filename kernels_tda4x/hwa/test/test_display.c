@@ -73,7 +73,52 @@ extern uint32_t gTiovxCtDisplayArray2[];
 
 TESTCASE(tivxHwaDisplay, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tivxHwaDisplay, testBufferCopyMode)
+typedef struct {
+    const char* name;
+    uint32_t pipeId;
+    uint32_t dataFormat;
+    uint32_t inWidth;
+    uint32_t inHeight;
+    uint32_t bpp;
+    uint32_t pitchY;
+    uint32_t pitchUV;
+    uint32_t outWidth;
+    uint32_t outHeight;
+    uint32_t posX;
+    uint32_t posY;
+    uint32_t loopCount;
+} Arg;
+
+#define ADD_PIPE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/pipeId=2", __VA_ARGS__, 2))
+#define ADD_DATA_FORMAT(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_RGBX", __VA_ARGS__, VX_DF_IMAGE_RGBX))
+#define ADD_IN_WIDTH(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/inWidth=480", __VA_ARGS__, 480))
+#define ADD_IN_HEIGHT(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/inHeight=360", __VA_ARGS__, 360))
+#define ADD_BPP_4(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/bpp=4", __VA_ARGS__, 4))
+#define ADD_PITCH_Y(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/pitchY=1920", __VA_ARGS__, 1920))
+#define ADD_PITCH_UV(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/pitchUV=0", __VA_ARGS__, 0))
+#define ADD_OUT_WIDTH(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/outWidth=480", __VA_ARGS__, 480))
+#define ADD_OUT_HEIGHT(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/outHeight=360", __VA_ARGS__, 360))
+#define ADD_POS_X(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/posX=800", __VA_ARGS__, 800))
+#define ADD_POS_Y(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/buf=440", __VA_ARGS__, 440))
+#define ADD_LOOP_100(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/loopCount=100", __VA_ARGS__, 100))
+
+#define PARAMETERS \
+    CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_100, ARG), \
+
+
+TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     vx_image disp_image = 0;
@@ -82,18 +127,18 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
     vx_user_data_object param_obj;
     vx_graph graph = 0;
     vx_node node = 0;
-    uint32_t loop_count = 0;
+    uint32_t loop_count = arg_->loopCount;
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
     {
         tivxHwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, 480, 360, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(disp_image = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
 
-        image_addr.dim_x = 480;
-        image_addr.dim_y = 360;
-        image_addr.stride_x = 4;
-        image_addr.stride_y = 480*4;
+        image_addr.dim_x = arg_->inWidth;
+        image_addr.dim_y = arg_->inHeight;
+        image_addr.stride_x = arg_->bpp;
+        image_addr.stride_y = arg_->pitchY;
         image_addr.scale_x = VX_SCALE_UNITY;
         image_addr.scale_y = VX_SCALE_UNITY;
         image_addr.step_x = 1;
@@ -101,8 +146,8 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
         vx_rectangle_t rect;
         rect.start_x = 0;
         rect.start_y = 0;
-        rect.end_x = 480;
-        rect.end_y = 360;
+        rect.end_x = arg_->inWidth;
+        rect.end_y = arg_->inHeight;
 
         vxCopyImagePatch(disp_image,
                 &rect,
@@ -116,11 +161,11 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
         memset(&params, 0, sizeof(tivx_display_params_t));
 
         params.opMode=TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE;
-        params.pipeId=2; /* TODO: Change to DSS_DISP_INST_VID2; */
-        params.outWidth=480;
-        params.outHeight=360;
-        params.posX=800;
-        params.posY=440;
+        params.pipeId=arg_->pipeId; /* TODO: Change to DSS_DISP_INST_VID2; */
+        params.outWidth=arg_->outWidth;
+        params.outHeight=arg_->outHeight;
+        params.posX=arg_->posX;
+        params.posY=arg_->posY;
 
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), VX_TYPE_USER_DATA_OBJECT);
 
@@ -131,7 +176,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DISPLAY1));
         VX_CALL(vxVerifyGraph(graph));
 
-        while(loop_count++<DISPLAY_NUM_RUN_COUNT)
+        while(loop_count-- > 0)
         {
             VX_CALL(vxProcessGraph(graph));
             if((loop_count%2) == 1)
@@ -172,7 +217,7 @@ TEST(tivxHwaDisplay, testBufferCopyMode)
     }
 }
 
-TEST(tivxHwaDisplay, testZeroBufferCopyMode)
+TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))

@@ -254,7 +254,11 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
             status = VX_ERROR_NO_MEMORY;
         }
 
-        /* TODO: Add check for name and size for tivx_display_params_t */
+        if(sizeof(tivx_display_params_t) != obj_desc_configuration->mem_size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Display params size is not correct!\r\n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
         if(VX_SUCCESS == status)
         {
             display_config_target_ptr = tivxMemShared2TargetPtr(obj_desc_configuration->mem_ptr.shared_ptr,
