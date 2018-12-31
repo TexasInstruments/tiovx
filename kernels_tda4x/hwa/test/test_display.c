@@ -117,6 +117,24 @@ typedef struct {
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_100, ARG), \
 
+/*
+ * Utility API used to add a graph parameter from a node, node parameter index
+ */
+static void add_graph_parameter_by_node_index(vx_graph graph, vx_node node, vx_uint32 node_parameter_index)
+{
+    vx_parameter parameter = vxGetParameterByIndex(node, node_parameter_index);
+
+    vxAddParameterToGraph(graph, parameter);
+    vxReleaseParameter(&parameter);
+}
+
+/*
+ * Utility API to set pipeline depth for a graph
+ */
+static vx_status set_graph_pipeline_depth(vx_graph graph, vx_uint32 pipeline_depth)
+{
+    return tivxSetGraphPipelineDepth(graph, pipeline_depth);
+}
 
 TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
 {
@@ -161,7 +179,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
         memset(&params, 0, sizeof(tivx_display_params_t));
 
         params.opMode=TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE;
-        params.pipeId=arg_->pipeId; /* TODO: Change to DSS_DISP_INST_VID2; */
+        params.pipeId=arg_->pipeId;
         params.outWidth=arg_->outWidth;
         params.outHeight=arg_->outHeight;
         params.posX=arg_->posX;
@@ -220,11 +238,122 @@ TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
 TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
+    vx_image disp_image[2];
+    vx_imagepatch_addressing_t image_addr;
+    tivx_display_params_t params;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_image disp_image_temp;
+    uint32_t num_refs;
+    uint32_t loop_count = arg_->loopCount;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1))
     {
         tivxHwaLoadKernels(context);
 
-        /* Dummy Test */;
+        ASSERT_VX_OBJECT(disp_image[0] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(disp_image[1] = vxCreateImage(context, arg_->inWidth, arg_->inHeight, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
+
+        image_addr.dim_x = arg_->inWidth;
+        image_addr.dim_y = arg_->inHeight;
+        image_addr.stride_x = arg_->bpp;
+        image_addr.stride_y = arg_->pitchY;
+        image_addr.scale_x = VX_SCALE_UNITY;
+        image_addr.scale_y = VX_SCALE_UNITY;
+        image_addr.step_x = 1;
+        image_addr.step_y = 1;
+        vx_rectangle_t rect;
+        rect.start_x = 0;
+        rect.start_y = 0;
+        rect.end_x = arg_->inWidth;
+        rect.end_y = arg_->inHeight;
+
+        vxCopyImagePatch(disp_image[0],
+                &rect,
+                0,
+                &image_addr,
+                (void *)gTiovxCtDisplayArray1,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST
+                );
+        vxCopyImagePatch(disp_image[1],
+                &rect,
+                0,
+                &image_addr,
+                (void *)gTiovxCtDisplayArray2,
+                VX_WRITE_ONLY,
+                VX_MEMORY_TYPE_HOST
+                );
+
+        memset(&params, 0, sizeof(tivx_display_params_t));
+
+        params.opMode=TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE;
+        params.pipeId=arg_->pipeId;
+        params.outWidth=arg_->outWidth;
+        params.outHeight=arg_->outHeight;
+        params.posX=arg_->posX;
+        params.posY=arg_->posY;
+
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), VX_TYPE_USER_DATA_OBJECT);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxDisplayNode(graph, param_obj, disp_image[0]), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DISPLAY1));
+
+        /* Image is parameter number 1 for Display Node and becomes graph parameter 0 */
+        add_graph_parameter_by_node_index(graph, node, 1);
+
+        /* Set graph schedule config such that graph parameter @ index 0 is enqueuable */
+        graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+        graph_parameters_queue_params_list[0].refs_list_size = 2; /* Two images */
+        graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&disp_image[0];
+
+        /* Schedule mode auto is used, here we don't need to call vxScheduleGraph
+         * Graph gets scheduled automatically as refs are enqueued to it
+         */
+        vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                1,
+                graph_parameters_queue_params_list
+                );
+
+        /* Explicitly set graph pipeline depth */
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, 2));
+
+        VX_CALL(vxVerifyGraph(graph));
+
+        /* Enqueue input references */
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&disp_image[0], 1);
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&disp_image[1], 1);
+
+        /* Wait for the loop count */
+        while(loop_count-- > 0)
+        {
+            /* Dequeue one image buffer */
+            vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&disp_image_temp, 1, &num_refs);
+
+            /* Enqueue the same image buffer */
+            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&disp_image_temp, 1);
+        }
+
+        /* ensure all graph processing is complete */
+        vxWaitGraph(graph);
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleaseImage(&disp_image[0]));
+        VX_CALL(vxReleaseImage(&disp_image[1]));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+        ASSERT(disp_image[0] == 0);
+        ASSERT(disp_image[1] == 0);
+        ASSERT(param_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }
