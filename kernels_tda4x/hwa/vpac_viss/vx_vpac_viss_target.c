@@ -147,6 +147,8 @@ typedef struct
     ee_Config ee_params;
     uint8_t * dcc_out_buf;
     vx_uint32 dcc_out_numbytes;
+    dcc_parser_input_params_t * dcc_input_params;
+    dcc_parser_output_params_t * dcc_output_params;
 } tivxVpacVissParams;
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
@@ -583,9 +585,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     tivx_obj_desc_user_data_object_t *h3a_aew_af_desc;
     tivx_obj_desc_user_data_object_t *dcc_desc;
 
-    dcc_parser_input_params_t dcc_input_params;
-    dcc_parser_output_params_t dcc_output_params;
-
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
@@ -621,6 +620,19 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             char temp_name[VISS_MAX_PATH_SIZE];
 
             memset(prms, 0, sizeof(tivxVpacVissParams));
+            prms->dcc_input_params = (dcc_parser_input_params_t *)tivxMemAlloc(sizeof(dcc_parser_input_params_t), TIVX_MEM_EXTERNAL);
+            if(NULL == prms->dcc_input_params)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
+                status = VX_ERROR_NO_MEMORY;
+            }
+
+            prms->dcc_output_params = (dcc_parser_output_params_t *)tivxMemAlloc(sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
+            if(NULL == prms->dcc_output_params)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "Memory Allocation Failed\n");
+                status = VX_ERROR_NO_MEMORY;
+            }
 
             prms->buffer_size = (width * height) * 2;
 
@@ -783,30 +795,30 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if(NULL != dcc_desc)
                 {
 /*TBD : read the camera ID from config structures*/
-                    dcc_input_params.analog_gain = 1000;
-                    dcc_input_params.cameraId = 390;
-                    dcc_input_params.color_temparature = 5000;
-                    dcc_input_params.exposure_time = 33333;
+                    prms->dcc_input_params->analog_gain = 1000;
+                    prms->dcc_input_params->cameraId = 390;
+                    prms->dcc_input_params->color_temparature = 5000;
+                    prms->dcc_input_params->exposure_time = 33333;
 
-                    dcc_input_params.dcc_buf_size = dcc_desc->mem_size;
-                    dcc_input_params.dcc_buf = tivxMemShared2TargetPtr(dcc_desc->mem_ptr.shared_ptr, dcc_desc->mem_ptr.mem_heap_region);
-                    if(NULL != dcc_input_params.dcc_buf)
+                    prms->dcc_input_params->dcc_buf_size = dcc_desc->mem_size;
+                    prms->dcc_input_params->dcc_buf = tivxMemShared2TargetPtr(dcc_desc->mem_ptr.shared_ptr, dcc_desc->mem_ptr.mem_heap_region);
+                    if(NULL != prms->dcc_input_params->dcc_buf)
                     {
-                        tivxMemBufferMap(dcc_input_params.dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                        tivxMemBufferMap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                         prms->dcc_out_numbytes = calc_dcc_outbuf_size();
                         prms->dcc_out_buf = (uint8_t *)tivxMemAlloc(prms->dcc_out_numbytes, TIVX_MEM_EXTERNAL);
                         if(NULL != prms->dcc_out_buf)
                         {
-                            dcc_status |= Dcc_Create(&dcc_output_params, prms->dcc_out_buf);
-                            dcc_status |= dcc_update(&dcc_input_params, &dcc_output_params);
+                            dcc_status |= Dcc_Create(prms->dcc_output_params, prms->dcc_out_buf);
+                            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
                         }
                         else
                         {
                             status = VX_ERROR_NO_MEMORY;
                         }
 
-                        tivxMemBufferUnmap(dcc_input_params.dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+                        tivxMemBufferUnmap(prms->dcc_input_params->dcc_buf, dcc_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
                     }
                     else
                     {
@@ -1006,21 +1018,21 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         prms->flexcc_params.inHeight = height;
                         if( (NULL != dcc_desc) && (VX_SUCCESS == dcc_status) )
                         {
-                            if(dcc_output_params.useRgb2Rgb1Cfg)
+                            if(prms->dcc_output_params->useRgb2Rgb1Cfg)
                             {
-                                prms->flexcc_params.CCM1.W11 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[0][0];
-                                prms->flexcc_params.CCM1.W12 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[0][1];
-                                prms->flexcc_params.CCM1.W13 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[0][2];
-                                prms->flexcc_params.CCM1.W21 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[1][0];
-                                prms->flexcc_params.CCM1.W22 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[1][1];
-                                prms->flexcc_params.CCM1.W23 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[1][2];
-                                prms->flexcc_params.CCM1.W31 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[2][0];
-                                prms->flexcc_params.CCM1.W32 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[2][1];
-                                prms->flexcc_params.CCM1.W33 = dcc_output_params.ipipeRgb2Rgb1Cfg->matrix[2][2];
+                                prms->flexcc_params.CCM1.W11 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][0];
+                                prms->flexcc_params.CCM1.W12 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][1];
+                                prms->flexcc_params.CCM1.W13 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][2];
+                                prms->flexcc_params.CCM1.W21 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][0];
+                                prms->flexcc_params.CCM1.W22 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][1];
+                                prms->flexcc_params.CCM1.W23 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][2];
+                                prms->flexcc_params.CCM1.W31 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][0];
+                                prms->flexcc_params.CCM1.W32 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][1];
+                                prms->flexcc_params.CCM1.W33 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][2];
 
-                                prms->flexcc_params.CCM1.Offset_1 = dcc_output_params.ipipeRgb2Rgb1Cfg->offset[0];
-                                prms->flexcc_params.CCM1.Offset_2 = dcc_output_params.ipipeRgb2Rgb1Cfg->offset[1];
-                                prms->flexcc_params.CCM1.Offset_3 = dcc_output_params.ipipeRgb2Rgb1Cfg->offset[2];
+                                prms->flexcc_params.CCM1.Offset_1 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[0];
+                                prms->flexcc_params.CCM1.Offset_2 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[1];
+                                prms->flexcc_params.CCM1.Offset_3 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[2];
                             }
                         }
                     }
@@ -1367,6 +1379,18 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
         {
             tivxMemFree(prms->dcc_out_buf, prms->dcc_out_numbytes, TIVX_MEM_EXTERNAL);
             prms->dcc_out_buf = NULL;
+        }
+
+        if(NULL != prms->dcc_input_params)
+        {
+            tivxMemFree(prms->dcc_input_params, sizeof(dcc_parser_input_params_t), TIVX_MEM_EXTERNAL);
+            prms->dcc_input_params = NULL;
+        }
+
+        if(NULL != prms->dcc_output_params)
+        {
+            tivxMemFree(prms->dcc_output_params, sizeof(dcc_parser_output_params_t), TIVX_MEM_EXTERNAL);
+            prms->dcc_output_params = NULL;
         }
 
         prms->out_y12_16 = NULL;
