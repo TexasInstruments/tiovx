@@ -28,7 +28,7 @@
 #endif
 
 
-#define HAVE_TIME_H
+//#define HAVE_TIME_H
 
 #ifdef HAVE_TIME_H
 #include <time.h>
