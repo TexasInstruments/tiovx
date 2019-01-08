@@ -33,7 +33,7 @@ STATIC_LIBS += vx_target_kernels_tda4x_arm
 
 ifeq ($(TARGET_PLATFORM),TDA4X)
 STATIC_LIBS += vx_target_kernels_display
-STATIC_LIBS += vx_target_kernels_capture_tda4
+STATIC_LIBS += vx_target_kernels_capture
 endif
 
 STATIC_LIBS += vx_utils
