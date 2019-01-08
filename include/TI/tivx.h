@@ -177,6 +177,19 @@ extern "C" {
  */
 #define TIVX_CONFIG_PATH_LENGTH   (512u)
 
+
+
+/*!
+ * \brief Flag used with tivxGraphParameterEnqueueReadyRef to 
+ *        indicate that this enqueue call if for pipeup phase
+ *        
+ * Typically used only with source nodes which have a pipeup
+ * requirement
+ *
+ * \ingroup group_tivx_ext_host
+ */
+#define TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP (0x00000001u)
+
 /*! \brief CPU ID for supported CPUs
  *
  *         CPU ID is defined in platform module since
@@ -541,6 +554,22 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
  * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node trigger_node);
+
+
+
+/*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a 
+ *         additional TIOVX specific flag parameter
+ *
+ *  For valid values of flag see 
+ *  - \ref TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP
+ * 
+ * \ingroup group_tivx_ext_host
+ */
+vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
+                vx_uint32 graph_parameter_index,
+                vx_reference *refs,
+                vx_uint32 num_refs, 
+                vx_uint32 flags);
 
 #ifdef __cplusplus
 }

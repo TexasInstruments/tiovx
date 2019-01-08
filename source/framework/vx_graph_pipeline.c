@@ -146,10 +146,11 @@ VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph graph,
+VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
                 vx_reference *refs,
-                vx_uint32 num_refs)
+                vx_uint32 num_refs, 
+                vx_uint32 flags)
 {
     tivx_data_ref_queue data_ref_q = NULL;
     vx_status status = VX_SUCCESS;
@@ -198,16 +199,36 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph grap
         }
         if(num_enqueue>0)
         {
-            /* if graph mode is 'VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO' and
-             * enqueue of a reference at this parameter should trigger
-             * a graph schedule then schedule the graph */
-            if(ownGraphDoScheduleGraphAfterEnqueue(graph, graph_parameter_index)==vx_true_e)
+            if(flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP)
             {
-                ownGraphScheduleGraph(graph, num_enqueue);
+                /* if enqueing buffers for pipeup then dont schedule graph, 
+                 * just enqueue the buffers 
+                 */ 
+            }
+            else
+            {
+                /* if graph mode is 'VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO' and
+                 * enqueue of a reference at this parameter should trigger
+                 * a graph schedule then schedule the graph */
+                if(ownGraphDoScheduleGraphAfterEnqueue(graph, graph_parameter_index)==vx_true_e)
+                {
+                    ownGraphScheduleGraph(graph, num_enqueue);
+                }
             }
         }
     }
     return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterEnqueueReadyRef(vx_graph graph,
+                vx_uint32 graph_parameter_index,
+                vx_reference *refs,
+                vx_uint32 num_refs)
+{
+    /* flags is set to 0, i.e no special handling during enqueue */
+    return tivxGraphParameterEnqueueReadyRef(
+                graph, graph_parameter_index, refs, num_refs, 0
+            );
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterDequeueDoneRef(vx_graph graph,
