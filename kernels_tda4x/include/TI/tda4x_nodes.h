@@ -306,6 +306,19 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
                                             vx_user_data_object configuration,
                                             vx_image image);
 
+/*! \brief [Graph] Creates a CAPTURE Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input
+ * \param [out] output
+ * \see <tt>TIVX_KERNEL_CAPTURE_NAME</tt>
+ * \ingroup group_vision_function_capture
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
+                                      vx_user_data_object  input,
+                                      vx_object_array      output);
+
 #ifdef __cplusplus
 }
 #endif

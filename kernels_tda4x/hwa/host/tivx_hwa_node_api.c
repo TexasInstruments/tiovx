@@ -254,3 +254,18 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
+                                      vx_user_data_object  input,
+                                      vx_object_array      output)
+{
+    vx_reference prms[] = {
+            (vx_reference)input,
+            (vx_reference)output
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_CAPTURE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

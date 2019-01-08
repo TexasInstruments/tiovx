@@ -60,26 +60,26 @@
  *
  */
 
-#if defined(TDA4X)
-#if defined(BUILD_CT_TIOVX_HWA)
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-#endif
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaCapture)
-#endif
+#include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernels_target_utils.h"
 
-#endif
+void tivxAddTargetKernelCapture(void);
 
+void tivxRemoveTargetKernelCapture(void);
 
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {&tivxAddTargetKernelCapture, &tivxRemoveTargetKernelCapture}
+};
 
+void tivxRegisterHwaTargetCaptureKernels(void)
+{
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
+
+void tivxUnRegisterHwaTargetCaptureKernels(void)
+{
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+}
 

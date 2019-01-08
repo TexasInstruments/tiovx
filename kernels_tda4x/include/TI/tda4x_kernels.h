@@ -131,6 +131,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_DISPLAY_NAME       "com.ti.hwa.display"
 
+/*! \brief capture kernel name
+ *  \ingroup group_vision_function_capture
+ */
+#define TIVX_KERNEL_CAPTURE_NAME          "com.ti.capture"
+
 /*! \brief tidl kernel name
  *  \ingroup group_vision_function_tidl
  */
@@ -580,6 +585,21 @@ typedef struct
  *      DISPLAY STRUCTURES
  *********************************/
 /*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_CAPTURE kernel.
+ *
+ * \ingroup group_vision_function_capture
+ */
+typedef struct
+{
+    uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
+    uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
+    uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
+} tivx_capture_params_t;
+
+/*********************************
+ *      DISPLAY STRUCTURES
+ *********************************/
+/*!
  * \brief The configuration data structure used by the TIVX_KERNEL_DISPLAY kernel.
  *
  * \ingroup group_vision_function_display
@@ -725,6 +745,18 @@ void tivxRegisterHwaTargetDisplayKernels(void);
  * \ingroup group_vision_function_hwa
  */
 void tivxUnRegisterHwaTargetDisplayKernels(void);
+
+/*!
+ * \brief Function to register HWA Kernels on the capture Target
+ * \ingroup group_tivx_ext
+ */
+void tivxRegisterHwaTargetCaptureKernels(void);
+
+/*!
+ * \brief Function to un-register HWA Kernels on the capture Target
+ * \ingroup group_tivx_ext
+ */
+void tivxUnRegisterHwaTargetCaptureKernels(void);
 
 #ifdef __cplusplus
 }

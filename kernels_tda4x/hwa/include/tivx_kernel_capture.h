@@ -60,26 +60,30 @@
  *
  */
 
-#if defined(TDA4X)
-#if defined(BUILD_CT_TIOVX_HWA)
-#ifdef TARGET_X86_64
-TESTCASE(tivxPngRdWr)
-#endif
-TESTCASE(tivxHwaVpacNfGeneric)
-TESTCASE(tivxHwaVpacNfBilateral)
-TESTCASE(tivxHwaVpacLdc)
-TESTCASE(tivxHwaVpacMscGaussianPyramid)
-TESTCASE(tivxHwaVpacMscHalfScaleGaussian)
-TESTCASE(tivxHwaVpacMscScale)
-TESTCASE(tivxHwaDmpacDof)
-TESTCASE(tivxHwaDmpacSde)
-TESTCASE(tivxHwaVpacViss)
-TESTCASE(tivxHwaDisplay)
-TESTCASE(tivxHwaCapture)
+#ifndef _TIVX_KERNEL_CAPTURE_
+#define _TIVX_KERNEL_CAPTURE_
+
+#ifdef __cplusplus
+extern "C" {
 #endif
 
+#define TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX (0U)
+
+#define TIVX_KERNEL_CAPTURE_OUTPUT_IDX (1U)
+
+#define TIVX_KERNEL_CAPTURE_MAX_PARAMS (2U)
+
+#define TIVX_CAPTURE_MIN_PIPEUP_BUFS (3U)
+
+#define TIVX_CAPTURE_MAX_NUM_BUFS (16U)
+
+#define TIVX_CAPTURE_MAX_CH (16U)
+
+#ifdef __cplusplus
+}
 #endif
 
 
+#endif /* _TIVX_KERNEL_CAPTURE_ */
 
 
