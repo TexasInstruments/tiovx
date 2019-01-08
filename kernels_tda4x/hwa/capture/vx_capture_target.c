@@ -83,7 +83,7 @@
 
 typedef struct
 {
-    tivx_obj_desc_image_t *img_obj_desc[TIVX_CAPTURE_MAX_CH];
+    tivx_obj_desc_t *img_obj_desc[TIVX_CAPTURE_MAX_CH];
     /* Captured Images */
     uint8_t steady_state_started;
     /**< Flag indicating whether or not steady state has begun. */
@@ -182,6 +182,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     void *output_image_target_ptr;
     uint64_t captured_frame;
     tivx_obj_desc_image_t *image;
+    tivx_obj_desc_raw_image_t *raw_image;
     uint32_t chId = 0U;
     static Fvid2_FrameList frmList;
     Fvid2_Frame *fvid2Frame;
@@ -193,7 +194,7 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
     for (chId = 0; chId < prms->numCh; chId++)
     {
-        image = prms->img_obj_desc[chId];
+        image = (tivx_obj_desc_image_t *)prms->img_obj_desc[chId];
 
         output_image_target_ptr = tivxMemShared2TargetPtr(
             image->mem_ptr[0].shared_ptr,
@@ -275,7 +276,7 @@ static uint32_t tivxCaptureExtractDataFormat(vx_df_image format)
             dataFormat = FVID2_DF_RGB24_888;
             break;
         case VX_DF_IMAGE_RGBX:
-            dataFormat = FVID2_DF_RGBA32_8888;
+            dataFormat = FVID2_DF_RGB24_888;
             break;
         case VX_DF_IMAGE_UYVY:
             dataFormat = FVID2_DF_YUV422I_UYVY;
@@ -297,6 +298,8 @@ static void tivxCaptureSetCreateParams(
     uint32_t loopCnt = 0U, i;
     void *capture_config_target_ptr;
     tivx_capture_params_t *params;
+    tivx_obj_desc_image_t *image;
+    tivx_obj_desc_raw_image_t *raw_image;
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(
         obj_desc->mem_ptr.shared_ptr, obj_desc->mem_ptr.mem_heap_region);
@@ -309,25 +312,28 @@ static void tivxCaptureSetCreateParams(
     /* set instance configuration parameters */
     Csirx_createParamsInit(&prms->createPrms);
 
+    image = (tivx_obj_desc_image_t *)prms->img_obj_desc[0];
+
     prms->createPrms.numCh = prms->numCh;
+
     for (loopCnt = 0U ; loopCnt < prms->createPrms.numCh ; loopCnt++)
     {
         prms->createPrms.chCfg[loopCnt].chId = loopCnt;
         prms->createPrms.chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
         prms->createPrms.chCfg[loopCnt].vcNum = loopCnt;
         prms->createPrms.chCfg[loopCnt].inCsiDataType =
-            tivxCaptureExtractInCsiDataType(prms->img_obj_desc[0]->format);
+            tivxCaptureExtractInCsiDataType(image->format);
         prms->createPrms.chCfg[loopCnt].outFmt.width =
-            prms->img_obj_desc[0]->imagepatch_addr[0].dim_x;
+            image->imagepatch_addr[0].dim_x;
         prms->createPrms.chCfg[loopCnt].outFmt.height =
-            prms->img_obj_desc[0]->imagepatch_addr[0].dim_y;
-        for (i = 0; i < prms->img_obj_desc[0]->planes; i ++)
+            image->imagepatch_addr[0].dim_y;
+        for (i = 0; i < image->planes; i ++)
         {
             prms->createPrms.chCfg[loopCnt].outFmt.pitch[i] =
-                prms->img_obj_desc[0]->imagepatch_addr[i].stride_y;
+                image->imagepatch_addr[i].stride_y;
         }
         prms->createPrms.chCfg[loopCnt].outFmt.dataFormat =
-            tivxCaptureExtractDataFormat(prms->img_obj_desc[0]->format);
+            tivxCaptureExtractDataFormat(image->format);
     }
     /* set module configuration parameters */
     prms->createPrms.instCfg.enableCsiv2p0Support = params->enableCsiv2p0Support;
@@ -633,7 +639,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status status = VX_SUCCESS;
+    vx_status status = VX_SUCCESS, retVal = VX_SUCCESS;
     tivxCaptureParams *prms = NULL;
     static Fvid2_FrameList frmList;
     uint32_t size, chId;
@@ -662,7 +668,7 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
 
             if (VX_SUCCESS != status)
             {
-                VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Capture Dequeue Failed !!!\n");
+                VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Capture not stopped !!!\n");
             }
         }
 
@@ -672,16 +678,17 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
             Fvid2FrameList_init(&frmList);
             do
             {
-                status = Fvid2_dequeue(
+                retVal = Fvid2_dequeue(
                     prms->drvHandle,
                     &frmList,
                     0,
                     FVID2_TIMEOUT_NONE);
-            } while (VX_SUCCESS == status);
+            } while (FVID2_SOK == retVal);
 
-            if (VX_SUCCESS != status)
+            if ((FVID2_SOK != retVal) && (FVID2_ENO_MORE_BUFFERS != retVal))
             {
                 VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Capture Dequeue Failed !!!\n");
+                status = retVal;
             }
         }
 

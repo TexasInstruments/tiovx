@@ -184,10 +184,16 @@ typedef struct {
 } Arg_Capture;
 
 #define STREAMING_PARAMETERS \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 100, 1), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 1000, 0), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 10000, 0), \
-    //CT_GENERATE_PARAMETERS("streaming", ARG, 100000)
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 0), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
+    //CT_GENERATE_PARAMETERS("streaming", ARG, 100, 1), \
 
 TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAMETERS)
 {
@@ -198,12 +204,12 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
     vx_user_data_object capture_config;
     tivx_capture_params_t local_capture_config;
     vx_image img_exemplar;
-    uint32_t width = 1920, height = 1080;
+    uint32_t width = 320, height = 240;
     uint32_t objarr_idx, num_capture_frames = 1; /* TODO: eventually move to 4, but use 1 for now */
-    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
     CT_Image tst_img;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
-    uint64_t exe_time;
+    uint64_t exe_time; /* TODO: Add in profiling info */
     char filename[MAX_ABS_FILENAME];
 
     /* Setting to num buf of capture node */
@@ -217,7 +223,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     /* Hardcoding since reading from sample image */
-    ASSERT_VX_OBJECT(img_exemplar = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(img_exemplar = vxCreateImage(context, width, height, VX_DF_IMAGE_RGBX), VX_TYPE_IMAGE);
 
     /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -227,6 +233,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
 
     /* Config initialization */
     local_capture_config.enableCsiv2p0Support = (uint32_t)vx_true_e;
+    local_capture_config.isRawCapture = (uint32_t)vx_false_e;
     local_capture_config.numDataLanes = 4U;
     for (loopCnt = 0U ;
          loopCnt < local_capture_config.numDataLanes ;
@@ -260,8 +267,8 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
     VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_CAPTURE1));
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_capture_node");
-    log_graph_rt_trace(graph);
+    /*export_graph_to_file(graph, "test_capture_node");
+    log_graph_rt_trace(graph);*/
 
     exe_time = tivxPlatformGetTimeInUsecs();
 
@@ -283,12 +290,40 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
         /* Get output reference, waits until a reference is available */
         vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_capture_frames, 1, &num_refs);
 
-        /* input and output can be enqueued in any order */
+        if(arg_->measure_perf==0)
+        {
+            for (frameIdx = 0; frameIdx < num_capture_frames; frameIdx++)
+            {
+                vx_image out_img;
+
+                ASSERT_VX_OBJECT(out_img = vxGetObjectArrayItem(out_capture_frames, frameIdx), VX_TYPE_IMAGE);
+
+                ASSERT_NO_FAILURE({
+                    tst_img = ct_image_from_vx_image(out_img);
+                });
+
+                /* test to make sure it contains data */
+                ASSERT(tst_img->data.y[0] != 0x0);
+
+                VX_CALL(vxReleaseImage(&out_img));
+            }
+        }
+
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
+
     }
 
     /* ensure all graph processing is complete */
     vxWaitGraph(graph);
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    /*if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0 };
+
+        printGraphPipelinePerformance(graph, nodes, 1, exe_time, loop_cnt+num_buf, width*height);
+    }*/
 
     VX_CALL(vxReleaseNode(&n0));
     VX_CALL(vxReleaseGraph(&graph));

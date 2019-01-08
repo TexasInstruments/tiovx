@@ -594,6 +594,7 @@ typedef struct
     uint32_t enableCsiv2p0Support;  /*!< Flag indicating CSIV2P0 support */
     uint32_t numDataLanes;          /*!< Number of CSIRX data lanes */
     uint32_t dataLanesMap[4];       /*!< Data Lanes map array; note: size from CSIRX_CAPT_DATA_LANES_MAX */
+    uint32_t isRawCapture;          /*!< Flag indicating raw capture */
 } tivx_capture_params_t;
 
 /*********************************
