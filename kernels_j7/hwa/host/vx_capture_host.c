@@ -88,7 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
     vx_user_data_object input = NULL;
     vx_object_array output = NULL;
     vx_char input_name[VX_MAX_REFERENCE_NAME];
-    vx_size input_size;
+    vx_size input_size, output_num_items;
     vx_reference obj_arr_element;
     vx_df_image img_fmt;
     vx_enum ref_type;
@@ -116,6 +116,8 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
         tivxCheckStatus(&status, vxQueryUserDataObject(input, VX_USER_DATA_OBJECT_NAME, &input_name, sizeof(input_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(input, VX_USER_DATA_OBJECT_SIZE, &input_size, sizeof(input_size)));
 
+        tivxCheckStatus(&status, vxQueryObjectArray(output, VX_OBJECT_ARRAY_NUMITEMS, &output_num_items, sizeof(output_num_items)));
+
     }
 
     /* PARAMETER CHECKING */
@@ -131,7 +133,6 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
     }
 
-
     if (VX_SUCCESS == status)
     {
         obj_arr_element = vxGetObjectArrayItem(output, 0);
@@ -142,12 +143,13 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
             if (VX_SUCCESS == status)
             {
-                if (VX_TYPE_IMAGE != ref_type)
+                if ( (TIVX_TYPE_RAW_IMAGE != ref_type) &&
+                     (VX_TYPE_IMAGE != ref_type) )
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "output object array must contain VX_TYPE_IMAGE \n");
+                    VX_PRINT(VX_ZONE_ERROR, "output object array must contain either TIVX_TYPE_RAW_IMAGE or VX_TYPE_IMAGE \n");
                 }
-                else
+                else if (VX_TYPE_IMAGE == ref_type)
                 {
                     tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, VX_IMAGE_FORMAT, &img_fmt, sizeof(img_fmt)));
 

@@ -105,16 +105,19 @@ typedef struct
     /**< FVID2 frame structs */
     uintptr_t pending_frame_free_q_mem[TIVX_CAPTURE_MAX_CH][TIVX_CAPTURE_MAX_NUM_BUFS];
     /**< pending frame queue mem */
+    uint8_t raw_capture;
+    /**< flag indicating raw capture */
 } tivxCaptureParams;
 
 static tivx_target_kernel vx_capture_target_kernel1 = NULL;
 static tivx_target_kernel vx_capture_target_kernel2 = NULL;
 
 static vx_status captDrvCallback(Fvid2_Handle handle, void *appData, void *reserved);
-static uint32_t tivxCaptureExtractInCsiDataType(vx_df_image format);
-static uint32_t tivxCaptureExtractDataFormat(vx_df_image format);
+static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format);
+static uint32_t tivxCaptureExtractCcsFormat(uint32_t format);
+static uint32_t tivxCaptureExtractDataFormat(uint32_t format);
 static vx_status tivxCaptureEnqueueFrameToDriver(
-       tivx_obj_desc_object_array_t *obj_desc,
+       tivx_obj_desc_object_array_t *output_desc,
        tivxCaptureParams *prms);
 static void tivxCaptureSetCreateParams(
        tivxCaptureParams *prms,
@@ -133,8 +136,19 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
        uint16_t num_params, void *priv_arg);
 
 static void App_sendFrame(void);
+static void App_sendRawFrame(void);
 
+/* Note: This is necessary for VLAB to know when to send a frame
+ *       When this function is executed, VLAB sends an RGB frame
+         to the capture driver */
 static void App_sendFrame(void)
+{
+}
+
+/* Note: This is necessary for VLAB to know when to send a frame
+ *       When this function is executed, VLAB sends a P12 raw frame
+         to the capture driver */
+static void App_sendRawFrame(void)
 {
 }
 
@@ -171,7 +185,6 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     vx_status status = VX_SUCCESS;
     void *output_image_target_ptr;
     uint64_t captured_frame;
-    tivx_obj_desc_image_t *image;
     uint32_t chId = 0U;
     static Fvid2_FrameList frmList;
     Fvid2_Frame *fvid2Frame;
@@ -183,14 +196,33 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
 
     for (chId = 0; chId < prms->numCh; chId++)
     {
-        image = (tivx_obj_desc_image_t *)prms->img_obj_desc[chId];
+        if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        {
+            tivx_obj_desc_raw_image_t *raw_image;
 
-        output_image_target_ptr = tivxMemShared2TargetPtr(
-            image->mem_ptr[0].shared_ptr,
-            image->mem_ptr[0].mem_heap_region);
+            raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[chId];
 
-        captured_frame = ((uintptr_t)output_image_target_ptr +
-            tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
+            /* Question: is the fact that we are just using mem_ptr[0] and not remaining planes correct? */
+            output_image_target_ptr = tivxMemShared2TargetPtr(
+                raw_image->mem_ptr[0].shared_ptr,
+                raw_image->mem_ptr[0].mem_heap_region);
+
+            captured_frame = ((uintptr_t)output_image_target_ptr +
+                tivxComputePatchOffset(0, 0, &raw_image->imagepatch_addr[0U]));
+        }
+        else
+        {
+            tivx_obj_desc_image_t *image;
+            image = (tivx_obj_desc_image_t *)prms->img_obj_desc[chId];
+
+            /* Question: is the fact that we are just using mem_ptr[0] and not remaining exposures correct? */
+            output_image_target_ptr = tivxMemShared2TargetPtr(
+                image->mem_ptr[0].shared_ptr,
+                image->mem_ptr[0].mem_heap_region);
+
+            captured_frame = ((uintptr_t)output_image_target_ptr +
+                tivxComputePatchOffset(0, 0, &image->imagepatch_addr[0U]));
+        }
 
         tivxQueueGet(&prms->freeFvid2FrameQ[chId], (uintptr_t*)&fvid2Frame, TIVX_EVENT_TIMEOUT_NO_WAIT);
 
@@ -220,25 +252,48 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     return status;
 }
 
-static uint32_t tivxCaptureExtractInCsiDataType(vx_df_image format)
+static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
 {
     uint32_t inCsiDataType = FVID2_CSI2_DF_RGB888;
 
-    return inCsiDataType;
-}
-
-static uint32_t tivxCaptureExtractDataFormat(vx_df_image format)
-{
-    uint32_t dataFormat = FVID2_DF_BGRX32_8888;
-
     switch (format)
     {
+        case VX_DF_IMAGE_RGB:
+            inCsiDataType = FVID2_CSI2_DF_RGB888;
+            break;
         case VX_DF_IMAGE_RGBX:
-            dataFormat = FVID2_DF_BGRX32_8888;
+            inCsiDataType = FVID2_CSI2_DF_RGB888;
+            break;
+        case TIVX_RAW_IMAGE_P12_BIT:
+            inCsiDataType = FVID2_CSI2_DF_RAW12;
             break;
         default:
             break;
     }
+
+    return inCsiDataType;
+}
+
+static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
+{
+    uint32_t ccsFormat = FVID2_CCSF_BITS12_PACKED;
+
+    switch (format)
+    {
+        case TIVX_RAW_IMAGE_P12_BIT:
+            ccsFormat = FVID2_CCSF_BITS12_PACKED;
+            break;
+        default:
+            break;
+    }
+
+    return ccsFormat;
+}
+
+/* TODO: Complete this case statement */
+static uint32_t tivxCaptureExtractDataFormat(uint32_t format)
+{
+    uint32_t dataFormat = FVID2_DF_BGRX32_8888;
 
     return dataFormat;
 }
@@ -247,10 +302,9 @@ static void tivxCaptureSetCreateParams(
        tivxCaptureParams *prms,
        tivx_obj_desc_user_data_object_t *obj_desc)
 {
-    uint32_t loopCnt = 0U, i;
+    uint32_t loopCnt = 0U, i, format, width, height, planes, stride[TIVX_IMAGE_MAX_PLANES];
     void *capture_config_target_ptr;
     tivx_capture_params_t *params;
-    tivx_obj_desc_image_t *image;
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(
         obj_desc->mem_ptr.shared_ptr, obj_desc->mem_ptr.mem_heap_region);
@@ -263,7 +317,34 @@ static void tivxCaptureSetCreateParams(
     /* set instance configuration parameters */
     Csirx_createParamsInit(&prms->createPrms);
 
-    image = (tivx_obj_desc_image_t *)prms->img_obj_desc[0];
+    if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+    {
+        tivx_obj_desc_raw_image_t *raw_image;
+        raw_image = (tivx_obj_desc_raw_image_t *)prms->img_obj_desc[0];
+        format = raw_image->params.format[0].pixel_container; /* TODO: Question: what should be done when this is different per exposure */
+        width = raw_image->params.width;
+        height = raw_image->params.height;
+        planes = raw_image->params.num_exposures;
+        for (i = 0; i < planes; i++)
+        {
+            stride[i] = raw_image->imagepatch_addr[i].stride_y;
+        }
+        prms->raw_capture = 1;
+    }
+    else
+    {
+        tivx_obj_desc_image_t *image;
+        image = (tivx_obj_desc_image_t *)prms->img_obj_desc[0];
+        format = image->format;
+        width = image->imagepatch_addr[0].dim_x;
+        height = image->imagepatch_addr[0].dim_y;
+        planes = image->planes;
+        for (i = 0; i < planes; i++)
+        {
+            stride[i] = image->imagepatch_addr[i].stride_y;
+        }
+        prms->raw_capture = 0;
+    }
 
     prms->createPrms.numCh = prms->numCh;
 
@@ -273,18 +354,24 @@ static void tivxCaptureSetCreateParams(
         prms->createPrms.chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
         prms->createPrms.chCfg[loopCnt].vcNum = loopCnt;
         prms->createPrms.chCfg[loopCnt].inCsiDataType =
-            tivxCaptureExtractInCsiDataType(image->format);
+            tivxCaptureExtractInCsiDataType(format);
         prms->createPrms.chCfg[loopCnt].outFmt.width =
-            image->imagepatch_addr[0].dim_x;
+            width;
         prms->createPrms.chCfg[loopCnt].outFmt.height =
-            image->imagepatch_addr[0].dim_y;
-        for (i = 0; i < image->planes; i ++)
+            height;
+        for (i = 0; i < planes; i ++)
         {
             prms->createPrms.chCfg[loopCnt].outFmt.pitch[i] =
-                image->imagepatch_addr[i].stride_y;
+                stride[i];
         }
+
         prms->createPrms.chCfg[loopCnt].outFmt.dataFormat =
-            tivxCaptureExtractDataFormat(image->format);
+            tivxCaptureExtractDataFormat(format);
+        if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        {
+            prms->createPrms.chCfg[loopCnt].outFmt.ccsFormat =
+                tivxCaptureExtractCcsFormat(format);
+        }
     }
     /* set module configuration parameters */
     prms->createPrms.instCfg.enableCsiv2p0Support = params->enableCsiv2p0Support;
@@ -373,7 +460,14 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                 }
             }
 
-            App_sendFrame();
+            if (0 == prms->raw_capture)
+            {
+                App_sendFrame();
+            }
+            else
+            {
+                App_sendRawFrame();
+            }
 
             /* Pends until a frame is available then dequeue frames from capture driver */
             if (VX_SUCCESS == status)
@@ -479,6 +573,8 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
 
         /* Initialize steady_state_started to 0 */
         prms->steady_state_started = 0;
+        /* Initialize raw capture to 0 */
+        prms->raw_capture = 0;
         /* set instance to be used for capture */
         prms->instId = CSIRX_INSTANCE_ID_0;
         /* Set number of channels to number of items in object array */
