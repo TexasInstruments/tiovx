@@ -60,7 +60,7 @@
  *
  */
 
-#if defined(TDA4X)
+#if defined(TDA4X) || defined(PC)
 #if defined(BUILD_CT_TIOVX_HWA)
 #ifdef TARGET_X86_64
 TESTCASE(tivxPngRdWr)
