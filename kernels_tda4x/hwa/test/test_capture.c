@@ -193,7 +193,11 @@ typedef struct {
     CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
     CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
     CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
-    //CT_GENERATE_PARAMETERS("streaming", ARG, 100, 1), \
+    
+    #if 0
+    CT_GENERATE_PARAMETERS("streaming", ARG, 100, 1), \
+    
+    #endif
 
 TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAMETERS)
 {
@@ -242,7 +246,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
         local_capture_config.dataLanesMap[loopCnt] = loopCnt;
     }
 
-    ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(capture_config = vxCreateUserDataObject(context, user_data_object_name, sizeof(tivx_capture_params_t), &local_capture_config), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     ASSERT_VX_OBJECT(n0 = tivxCaptureNode(graph, capture_config, capture_frames[0]), VX_TYPE_NODE);
 
@@ -296,7 +300,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
             {
                 vx_image out_img;
 
-                ASSERT_VX_OBJECT(out_img = vxGetObjectArrayItem(out_capture_frames, frameIdx), VX_TYPE_IMAGE);
+                ASSERT_VX_OBJECT(out_img = (vx_image)vxGetObjectArrayItem(out_capture_frames, frameIdx), VX_TYPE_IMAGE);
 
                 ASSERT_NO_FAILURE({
                     tst_img = ct_image_from_vx_image(out_img);

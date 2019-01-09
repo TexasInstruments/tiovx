@@ -185,7 +185,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testBufferCopyMode, Arg, PARAMETERS)
         params.posX=arg_->posX;
         params.posY=arg_->posY;
 
-        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -296,7 +296,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
         params.posX=arg_->posX;
         params.posY=arg_->posY;
 
-        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 

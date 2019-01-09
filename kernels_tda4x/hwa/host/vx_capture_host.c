@@ -100,7 +100,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_user_data_object)parameters[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX];
+        input = (vx_user_data_object)parameters[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX];
     }
 
 

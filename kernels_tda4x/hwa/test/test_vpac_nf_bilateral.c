@@ -89,11 +89,11 @@ TEST(tivxHwaVpacNfBilateral, testNodeCreation)
 
         memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
-                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
         ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
-                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -210,11 +210,11 @@ TEST_WITH_ARG(tivxHwaVpacNfBilateral, testGraphProcessing, Arg,
 
         memset(&params, 0, sizeof(tivx_vpac_nf_bilateral_params_t));
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_params_t",
-                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_nf_bilateral_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         memset(&sigmas, 0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
         ASSERT_VX_OBJECT(sigma_obj = vxCreateUserDataObject(context, "tivx_vpac_nf_bilateral_sigmas_t",
-                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_nf_bilateral_sigmas_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params.params.output_downshift = arg_->shift;
 

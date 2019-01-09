@@ -104,7 +104,7 @@ TEST(tivxHwaVpacViss, testNodeCreation)
     {
         tivxHwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), TIVX_TYPE_RAW_IMAGE);
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
         ASSERT_VX_OBJECT(y12 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, 128, 128/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, 128, 128, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
@@ -114,11 +114,11 @@ TEST(tivxHwaVpacViss, testNodeCreation)
 
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
-                                                            sizeof(tivx_vpac_viss_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
-                                                            sizeof(tivx_ae_awb_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -239,7 +239,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 
         tivxHwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), TIVX_TYPE_RAW_IMAGE);
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
@@ -254,11 +254,11 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         /* Create/Configure configuration input structure */
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
-                                                            sizeof(tivx_vpac_viss_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
-                                                            sizeof(tivx_ae_awb_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         snprintf(params.sensor_name, 256, "%s/viss_config/example_sensor/0/0", ct_get_test_file_path());
 
@@ -853,7 +853,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         tivxHwaLoadKernels(context);
 
-        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), TIVX_TYPE_RAW_IMAGE);
+        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
         VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
@@ -868,7 +868,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         /* Create/Configure configuration input structure */
         memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
-                                                            sizeof(tivx_vpac_viss_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         snprintf(params.sensor_name, 256, "%s/viss_config/example_sensor/0/0", ct_get_test_file_path());
 
@@ -887,13 +887,13 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         /* Create/Configure ae_awb_result input structure */
         memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
-                                                            sizeof(tivx_ae_awb_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* Create h3a_aew_af output buffer. tivx_h3a_data_t includes memory for H3A payload  */
         ASSERT_VX_OBJECT(h3a_aew_af = vxCreateUserDataObject(context, "tivx_h3a_data_t",
-                                                            sizeof(tivx_h3a_data_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_h3a_data_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -918,7 +918,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(s8_b8_c4_ref = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
         ASSERT_VX_OBJECT(histogram_ref = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
         ASSERT_VX_OBJECT(h3a_aew_af_ref = vxCreateUserDataObject(context, "tivx_h3a_data_t",
-                                                            sizeof(tivx_h3a_data_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_h3a_data_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ct_read_image2(y12_ref, "out_y12.raw", 2);
         ct_read_image2(uv12_c1_ref, "out_uv12.raw", 2);

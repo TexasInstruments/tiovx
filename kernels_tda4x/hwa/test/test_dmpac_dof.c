@@ -134,7 +134,7 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
         tivxHwaLoadKernels(context);
 
         memset(&params, 0, sizeof(tivx_dmpac_dof_params_t));
-        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params.vertical_search_range[0] = 48;
         params.vertical_search_range[1] = 48;

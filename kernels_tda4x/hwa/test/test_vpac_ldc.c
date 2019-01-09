@@ -124,8 +124,8 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
             }
         }
 
-        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t", sizeof(tivx_vpac_ldc_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
-        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t", sizeof(tivx_vpac_ldc_region_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t", sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t", sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
@@ -587,11 +587,11 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
         memset(&params, 0, sizeof(tivx_vpac_ldc_params_t));
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t",
-                                                            sizeof(tivx_vpac_ldc_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                            sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         memset(&region, 0, sizeof(tivx_vpac_ldc_region_params_t));
         ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t",
-                                                             sizeof(tivx_vpac_ldc_region_params_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+                                                             sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         params.luma_interpolation_type = arg_->interp_type;
         region.out_block_width = 16;

@@ -182,7 +182,6 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     void *output_image_target_ptr;
     uint64_t captured_frame;
     tivx_obj_desc_image_t *image;
-    tivx_obj_desc_raw_image_t *raw_image;
     uint32_t chId = 0U;
     static Fvid2_FrameList frmList;
     Fvid2_Frame *fvid2Frame;
@@ -299,7 +298,6 @@ static void tivxCaptureSetCreateParams(
     void *capture_config_target_ptr;
     tivx_capture_params_t *params;
     tivx_obj_desc_image_t *image;
-    tivx_obj_desc_raw_image_t *raw_image;
 
     capture_config_target_ptr = tivxMemShared2TargetPtr(
         obj_desc->mem_ptr.shared_ptr, obj_desc->mem_ptr.mem_heap_region);
