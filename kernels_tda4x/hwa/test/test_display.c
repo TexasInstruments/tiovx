@@ -110,7 +110,7 @@ typedef struct {
 #define ADD_POS_X(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/posX=800", __VA_ARGS__, 800))
 #define ADD_POS_Y(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/buf=440", __VA_ARGS__, 440))
+    CT_EXPAND(nextmacro(testArgName "/posY=440", __VA_ARGS__, 440))
 #define ADD_LOOP_100(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loopCount=100", __VA_ARGS__, 100))
 
@@ -289,7 +289,7 @@ TEST_WITH_ARG(tivxHwaDisplay, testZeroBufferCopyMode, Arg, PARAMETERS)
 
         memset(&params, 0, sizeof(tivx_display_params_t));
 
-        params.opMode=TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE;
+        params.opMode=TIVX_KERNEL_DISPLAY_ZERO_BUFFER_COPY_MODE;
         params.pipeId=arg_->pipeId;
         params.outWidth=arg_->outWidth;
         params.outHeight=arg_->outHeight;
