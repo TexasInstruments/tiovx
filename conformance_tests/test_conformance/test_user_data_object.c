@@ -71,9 +71,9 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
     ASSERT_VX_OBJECT_(return VX_FAILURE, node, VX_TYPE_NODE);
 
     vx_reference input = parameters[OWN_PARAM_INPUT];
-    ASSERT_VX_OBJECT_(return VX_FAILURE, input, type);
+    ASSERT_VX_OBJECT_(return VX_FAILURE, input, (enum vx_type_e)type);
     vx_reference output = parameters[OWN_PARAM_OUTPUT];
-    ASSERT_VX_OBJECT_(return VX_FAILURE, output, type);
+    ASSERT_VX_OBJECT_(return VX_FAILURE, output, (enum vx_type_e)type);
 
     vx_meta_format meta = metas[OWN_PARAM_OUTPUT];
 
@@ -200,8 +200,8 @@ static vx_status VX_CALLBACK own_Kernel(vx_node node, const vx_reference *parame
     EXPECT(num == 2);
     if (parameters != NULL && num == 2)
     {
-        EXPECT_VX_OBJECT(parameters[0], type);
-        EXPECT_VX_OBJECT(parameters[1], type);
+        EXPECT_VX_OBJECT(parameters[0], (enum vx_type_e)type);
+        EXPECT_VX_OBJECT(parameters[1], (enum vx_type_e)type);
     }
 
     return VX_SUCCESS;
@@ -218,8 +218,8 @@ static vx_status VX_CALLBACK own_Initialize(vx_node node, const vx_reference *pa
     EXPECT(num == 2);
     if (parameters != NULL && num == 2)
     {
-        EXPECT_VX_OBJECT(parameters[0], type);
-        EXPECT_VX_OBJECT(parameters[1], type);
+        EXPECT_VX_OBJECT(parameters[0], (enum vx_type_e)type);
+        EXPECT_VX_OBJECT(parameters[1], (enum vx_type_e)type);
     }
     if (local_size_kernel_alloc > 0)
     {
@@ -242,8 +242,8 @@ static vx_status VX_CALLBACK own_Deinitialize(vx_node node, const vx_reference *
     EXPECT(num == 2);
     if (parameters != NULL && num == 2)
     {
-        EXPECT_VX_OBJECT(parameters[0], type);
-        EXPECT_VX_OBJECT(parameters[1], type);
+        EXPECT_VX_OBJECT(parameters[0], (enum vx_type_e)type);
+        EXPECT_VX_OBJECT(parameters[1], (enum vx_type_e)type);
     }
     query_local_size_status_deinit = vxQueryNode(node, VX_NODE_LOCAL_DATA_SIZE, &size, sizeof(size));
     query_local_ptr_status_deinit = vxQueryNode(node, VX_NODE_LOCAL_DATA_PTR, &ptr, sizeof(ptr));
@@ -373,8 +373,8 @@ TEST_WITH_ARG(UserDataObject, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
 
     case VX_TYPE_USER_DATA_OBJECT:
         {
-            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), type);
-            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), type);
+            ASSERT_VX_OBJECT(src = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), (enum vx_type_e)type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), (enum vx_type_e)type);
         }
         break;
 
@@ -507,7 +507,7 @@ TEST_WITH_ARG(UserDataObject, testUserKernelObjectArray, type_arg,
     switch (objarray_itemtype)
     {
     case VX_TYPE_USER_DATA_OBJECT:
-        ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), objarray_itemtype);
+        ASSERT_VX_OBJECT(exemplar = (vx_reference)vxCreateUserDataObject(context, (const vx_char*)&user_data_object_name, sizeof(wb_t), NULL), (enum vx_type_e)objarray_itemtype);
         break;
     default:
         break;
@@ -604,7 +604,7 @@ TEST(UserDataObject, test_vxCreateUserDataObject)
     vx_user_data_object user_data_object = 0;
 
     /* 1. check if user data object can be created with empty type_name and not initialized */
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, NULL, sizeof(wb_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, NULL, sizeof(wb_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     /* 2. check if user data object actual name is a string with a null termination */
     VX_CALL(vxQueryUserDataObject(user_data_object, VX_USER_DATA_OBJECT_NAME, &actual_name, sizeof(actual_name)));
@@ -668,7 +668,7 @@ TEST(UserDataObject, test_vxCopyUserDataObjectWrite)
         localUserDataObject.offset[i] = i+4;
     }
 
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), &localUserDataObjectInit), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), &localUserDataObjectInit), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     /* Write, COPY gains */
     {
@@ -720,7 +720,7 @@ TEST(UserDataObject, test_vxCopyUserDataObjectRead)
         localUserDataObject.offset[i] = 0;
     }
 
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), &localUserDataObjectInit), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), &localUserDataObjectInit), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     /* READ, COPY offsets */
     {
@@ -755,7 +755,7 @@ TEST(UserDataObject, test_vxMapUserDataObjectWrite)
         localUserDataObjectInit.offset[i] = i+0x10000004;
     }
 
-    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), NULL), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(user_data_object = vxCreateUserDataObject(context, user_data_object_name, sizeof(wb_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     {
 		wb_t *p = NULL;

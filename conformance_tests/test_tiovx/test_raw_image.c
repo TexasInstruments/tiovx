@@ -82,9 +82,9 @@ static vx_status VX_CALLBACK own_ValidatorMetaFromRef(vx_node node, const vx_ref
     ASSERT_VX_OBJECT_(return VX_FAILURE, node, VX_TYPE_NODE);
 
     vx_reference input = parameters[OWN_PARAM_INPUT];
-    ASSERT_VX_OBJECT_(return VX_FAILURE, input, type);
+    ASSERT_VX_OBJECT_(return VX_FAILURE, input, (enum vx_type_e)type);
     vx_reference output = parameters[OWN_PARAM_OUTPUT];
-    ASSERT_VX_OBJECT_(return VX_FAILURE, output, type);
+    ASSERT_VX_OBJECT_(return VX_FAILURE, output, (enum vx_type_e)type);
 
     vx_meta_format meta = metas[OWN_PARAM_OUTPUT];
 
@@ -269,8 +269,8 @@ static vx_status VX_CALLBACK own_Kernel(vx_node node, const vx_reference *parame
     EXPECT(num == 2);
     if (parameters != NULL && num == 2)
     {
-        EXPECT_VX_OBJECT(parameters[0], type);
-        EXPECT_VX_OBJECT(parameters[1], type);
+        EXPECT_VX_OBJECT(parameters[0], (enum vx_type_e)type);
+        EXPECT_VX_OBJECT(parameters[1], (enum vx_type_e)type);
     }
 
     return VX_SUCCESS;
@@ -287,8 +287,8 @@ static vx_status VX_CALLBACK own_Initialize(vx_node node, const vx_reference *pa
     EXPECT(num == 2);
     if (parameters != NULL && num == 2)
     {
-        EXPECT_VX_OBJECT(parameters[0], type);
-        EXPECT_VX_OBJECT(parameters[1], type);
+        EXPECT_VX_OBJECT(parameters[0], (enum vx_type_e)type);
+        EXPECT_VX_OBJECT(parameters[1], (enum vx_type_e)type);
     }
     if (local_size_kernel_alloc > 0)
     {
@@ -311,8 +311,8 @@ static vx_status VX_CALLBACK own_Deinitialize(vx_node node, const vx_reference *
     EXPECT(num == 2);
     if (parameters != NULL && num == 2)
     {
-        EXPECT_VX_OBJECT(parameters[0], type);
-        EXPECT_VX_OBJECT(parameters[1], type);
+        EXPECT_VX_OBJECT(parameters[0], (enum vx_type_e)type);
+        EXPECT_VX_OBJECT(parameters[1], (enum vx_type_e)type);
     }
     query_local_size_status_deinit = vxQueryNode(node, VX_NODE_LOCAL_DATA_SIZE, &size, sizeof(size));
     query_local_ptr_status_deinit = vxQueryNode(node, VX_NODE_LOCAL_DATA_PTR, &ptr, sizeof(ptr));
@@ -455,8 +455,8 @@ TEST_WITH_ARG(tivxRawImage, testUserKernel, type_arg, USERKERNEL_PARAMETERS)
 
     case TIVX_TYPE_RAW_IMAGE:
         {
-            ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), type);
-            ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), type);
+            ASSERT_VX_OBJECT(src = (vx_reference)tivxCreateRawImage(context, &params), (enum vx_type_e)type);
+            ASSERT_VX_OBJECT(dst = (vx_reference)tivxCreateRawImage(context, &params), (enum vx_type_e)type);
         }
         break;
 
@@ -603,7 +603,7 @@ TEST_WITH_ARG(tivxRawImage, testUserKernelObjectArray, type_arg,
     switch (objarray_itemtype)
     {
     case TIVX_TYPE_RAW_IMAGE:
-        ASSERT_VX_OBJECT(exemplar = (vx_reference)tivxCreateRawImage(context, &params), objarray_itemtype);
+        ASSERT_VX_OBJECT(exemplar = (vx_reference)tivxCreateRawImage(context, &params), (enum vx_type_e)objarray_itemtype);
         break;
     default:
         break;
@@ -714,7 +714,7 @@ TEST(tivxRawImage, test_tivxCreateRawImage)
     params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
 
     /* 1. check if raw image can be created */
-    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
     /* 2. check if raw image can be queried */
     VX_CALL(tivxQueryRawImage(raw_image, TIVX_RAW_IMAGE_LINE_INTERLEAVED, &actual_line_interleaved, sizeof(vx_uint32)));
@@ -808,7 +808,7 @@ TEST(tivxRawImage, test_tivxCopyRawImageWrite)
         img[i] = i%256;
     }
 
-    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
     /* Write, COPY gains */
     VX_CALL(tivxCopyRawImagePatch(raw_image, &rect, 1, &addr, (void *)&img,
@@ -869,7 +869,7 @@ TEST(tivxRawImage, test_tivxCopyRawImageRead)
     params.meta_height = 5;
     params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
     
-    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), TIVX_TYPE_RAW_IMAGE);
+    ASSERT_VX_OBJECT(raw_image = tivxCreateRawImage(context, &params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
 
     /* Initialize data using WRITE ONLY MAP */
     VX_CALL(tivxMapRawImagePatch(raw_image, NULL, 0, &map_id, &addrMap, (void **)&ptr,
