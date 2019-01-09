@@ -166,7 +166,7 @@ static void exportDataRef(FILE *fp, vx_reference ref)
     {
         char is_virtual[64]="";
         char is_virtual_label[64]="";
-        char is_replicated_label[64]="";
+        char is_replicated_label[80]="";
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
         if(ref->is_virtual)
@@ -181,7 +181,7 @@ static void exportDataRef(FILE *fp, vx_reference ref)
                 ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
                )
             {
-                snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
+                snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
             }
         }
         TIVX_EXPORT_WRITELN(fp, "%s [shape=record %s, label=\"{%s %s %s}\"]",
@@ -230,7 +230,7 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
     {
         char is_virtual[64]="";
         char is_virtual_label[64]="";
-        char is_replicated_label[64]="";
+        char is_replicated_label[80]="";
         char line[TIVX_EXPORT_MAX_LINE_SIZE];
 
         if(ref->is_virtual)
@@ -243,7 +243,7 @@ static void exportDataRefObjDesc(FILE *fp, vx_reference ref)
             ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
         )
         {
-            snprintf(is_replicated_label, 64, "| [in] %s", ref->scope->name);
+            snprintf(is_replicated_label, 80, "| [in] %s", ref->scope->name);
         }
         if(ref->obj_desc)
         {

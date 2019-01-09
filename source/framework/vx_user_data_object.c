@@ -337,7 +337,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if ((offset < 0) || (size < 1) || ((offset + size) > obj_desc->mem_size))
+        if ((size < 1) || ((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -420,7 +420,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
     {
         obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
-        if ((offset < 0) || (size < 0) || ((offset + size) > obj_desc->mem_size))
+        if (((offset + size) > obj_desc->mem_size))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Invalid offset or size parameter\n");
             status = VX_ERROR_INVALID_PARAMETERS;
