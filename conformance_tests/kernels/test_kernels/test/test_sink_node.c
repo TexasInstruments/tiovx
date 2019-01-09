@@ -341,7 +341,8 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    /* Note: to cause TIOVX-520 bug, change to DSP2 */
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
@@ -437,7 +438,8 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    /* Note: to cause TIOVX-520 bug, change to DSP2 */
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
