@@ -21,6 +21,18 @@
  */
 #define TIVX_MEM_BUFFER_ALLOC_ALIGN     (16U)
 
+/*! \brief Addresses and sizes of OCMC memories in the SOC
+ * \ingroup group_tivx_mem
+ */
+#define OCMC_1_BASE_ADDRESS         (0x40300000U)
+#define OCMC_1_SIZE                 (512 * 1024)
+
+#define OCMC_2_BASE_ADDRESS         (0x40400000U)
+#define OCMC_2_SIZE                 (1024 * 1024)
+
+#define OCMC_3_BASE_ADDRESS         (0x40500000U)
+#define OCMC_3_SIZE                 (1024 * 1024)
+
 
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
@@ -87,6 +99,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
+    tivx_cpu_id_e cpuId;
     void *ptr = NULL;
 
     switch (mem_heap_region)
@@ -95,8 +108,39 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
             heap_id = UTILS_HEAPID_DDR_CACHED_SR;
             break;
         case TIVX_MEM_INTERNAL_L3:
+          /* In case of EVE, L3 memory correspond to one of the OCMC memory.
+           * We use hardcoded addresses because on EVE, only TI-DL use case needs allocation
+           * in OCMC and the TI_DL implementation assumes that the entire OCMC memory is available for its consumption.
+           * The only issue that can arise from using hard-coded address is in case On-the-fly capture from VIP is enabled
+           * because it also uses OCMC_1. However there is no use-case up-to-date that combines both TI-DL and OTF capture.
+           */
+          cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+
+          if (cpuId== TIVX_CPU_ID_EVE1)
+          {
+            ptr = (void *)OCMC_1_BASE_ADDRESS;
+            goto exit; /* Jump to exit-point because we don't want to call Utils_memAlloc */
+          }
+          else if (cpuId== TIVX_CPU_ID_EVE2)
+          {
+            ptr = (void *)OCMC_2_BASE_ADDRESS;
+            goto exit;
+          }
+          else if (cpuId== TIVX_CPU_ID_EVE3)
+          {
+            ptr = (void *)OCMC_3_BASE_ADDRESS;
+            goto exit;
+          }
+          else if (cpuId== TIVX_CPU_ID_EVE4)
+          {
+            ptr = (void *)(OCMC_3_BASE_ADDRESS + (OCMC_3_SIZE/2));
+            goto exit;
+          }
+          else
+          {
             /* Since there is no L3 memory, so using OCMC memory */
             heap_id = UTILS_HEAPID_OCMC_SR;
+          }
             break;
         case TIVX_MEM_INTERNAL_L1:
         case TIVX_MEM_INTERNAL_L2:
@@ -113,6 +157,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
         ptr = Utils_memAlloc(heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
     }
 
+exit:
     return (ptr);
 }
 
@@ -120,6 +165,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
     vx_status status = VX_SUCCESS;
     Utils_HeapId heap_id;
+    tivx_cpu_id_e cpuId;
 
     if ((NULL != ptr) && (0U != size))
     {
@@ -129,6 +175,14 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
+              /* In case of EVE, L3 memory correspond to one of the OCMC memory.
+                * We had used hardcoded addresses for the allocation and thus no call to Utils_memFree() must be made
+                * */
+                cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+                if ((cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4))
+                {
+                  goto exit;
+                }
                 /* Since there is no L3 memory, so using OCMC memory */
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
@@ -147,6 +201,8 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
             Utils_memFree(heap_id, ptr, size);
         }
     }
+exit:
+    return;
 }
 
 vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
