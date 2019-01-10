@@ -65,6 +65,7 @@
 #include <TI/tivx.h>
 #include <TI/tda4x.h>
 #include "tivx_kernels_host_utils.h"
+#include "itidl_ti.h"
 
 static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -94,38 +95,40 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        vx_array config = NULL;
-        vx_enum config_item_type;
-        vx_size config_capacity, config_item_size;
+        vx_user_data_object config = NULL;
+        vx_char config_name[VX_MAX_REFERENCE_NAME];
+        vx_size config_size;
 
-        config = (vx_array)parameters[0];
+        config = (vx_user_data_object)parameters[0];
 
-        tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_ITEMTYPE, &config_item_type, sizeof(config_item_type)));
-        tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_CAPACITY, &config_capacity, sizeof(config_capacity)));
-        tivxCheckStatus(&status, vxQueryArray(config, VX_ARRAY_ITEMSIZE, &config_item_size, sizeof(config_item_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_NAME, &config_name, sizeof(config_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_SIZE, &config_size, sizeof(config_size)));
+
+        if ((config_size != sizeof(sTIDL_IOBufDesc_t)) ||
+            (strncmp(config_name, "sTIDL_IOBufDesc_t", sizeof(config_name)) != 0))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'config' should be a user_data_object of type:\n sTIDL_IOBufDesc_t \n");
+        }
     }
 
     if (VX_SUCCESS == status)
     {
-        vx_tensor network = NULL;
-        vx_enum network_data_type;
-        vx_size network_dims;
+        vx_user_data_object network = NULL;
+        vx_char network_name[VX_MAX_REFERENCE_NAME];
+        vx_size network_size;
 
-        network = (vx_tensor)parameters[1];
+        network = (vx_user_data_object)parameters[1];
 
-        tivxCheckStatus(&status, vxQueryTensor(network, VX_TENSOR_DATA_TYPE, &network_data_type, sizeof(network_data_type)));
-        tivxCheckStatus(&status, vxQueryTensor(network, VX_TENSOR_NUMBER_OF_DIMS, &network_dims, sizeof(network_dims)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
 
-        if (network_data_type != VX_TYPE_UINT8)
+        if ((network_size < 1) ||
+            (strncmp(network_name, "TIDL_network", sizeof(network_name)) != 0))
         {
-            status = VX_FAILURE;
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'network' should be a user_data_object of name:\n TIDL_network \n");
         }
-
-        if (network_dims != 1)
-        {
-            status = VX_FAILURE;
-        }
-
     }
 
     return status;
@@ -173,7 +176,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             status = vxAddParameterToKernel(kernel,
                 index,
                 VX_INPUT,
-                VX_TYPE_ARRAY,
+                VX_TYPE_USER_DATA_OBJECT,
                 VX_PARAMETER_STATE_REQUIRED
                 );
             index++;
@@ -183,7 +186,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             status = vxAddParameterToKernel(kernel,
                 index,
                 VX_INPUT,
-                VX_TYPE_TENSOR,
+                VX_TYPE_USER_DATA_OBJECT,
                 VX_PARAMETER_STATE_REQUIRED
                 );
             index++;

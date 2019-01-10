@@ -274,7 +274,11 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
 /*! \brief [Graph] Creates a TIDL Node.
  * \param [in] Reference to vx_graph.
  * \param [in] Reference to vx_kernel.
- * \param [in] Array of vx_reference params.
+ * \param [in] Array of vx_reference params.  There must be at least 4 parameters: 
+ *             0: vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
+ *             1: vx_user_data_object type corresponding to the network (named string: TIDL_network)
+ *             2: vx_tensor type for at least 1 input (can be many)
+ *             3: vx_tensor type for at least 1 output (can be many)
  * \param [in] Lengh of params[] array.
  * \see <tt>TIVX_KERNEL_TIDL_NAME</tt>
  * \ingroup group_vision_function_tidl

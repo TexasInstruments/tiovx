@@ -258,8 +258,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 {
     vx_status status = VX_SUCCESS;
 
-    tivx_obj_desc_array_t *config;
-    tivx_obj_desc_tensor_t *network;
+    tivx_obj_desc_user_data_object_t *config;
+    tivx_obj_desc_user_data_object_t *network;
 
     tivxTIDLParams *prms = NULL;
     void *config_target_ptr;
@@ -279,10 +279,10 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     if (VX_SUCCESS == status)
     {
         /* IMPORTANT! Config data is assumed to be available at index 0 */
-        config    = (tivx_obj_desc_array_t *)obj_desc[0];
+        config    = (tivx_obj_desc_user_data_object_t *)obj_desc[0];
 
         /* IMPORTANT! Network data is assumed to be available at index 1 */
-        network   = (tivx_obj_desc_tensor_t *)obj_desc[1];
+        network   = (tivx_obj_desc_user_data_object_t *)obj_desc[1];
 
         prms = tivxMemAlloc(sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
 

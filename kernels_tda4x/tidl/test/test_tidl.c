@@ -73,16 +73,15 @@ TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
 
-static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
+static vx_user_data_object readConfig(vx_context context, char *config_file, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
 {
   vx_status status = VX_SUCCESS;
 
-  sTIDL_IOBufDesc_t *ioBufDesc;
+  sTIDL_IOBufDesc_t *ioBufDesc = NULL;
 
-  vx_array   config_array = NULL;
-  vx_size    stride = sizeof(vx_uint8);
-  vx_uint32  capacity;
-  vx_enum config_type = VX_TYPE_INVALID;
+  vx_user_data_object   config = NULL;
+  vx_uint32 capacity;
+  vx_map_id map_id;
 
   FILE *fp_config;
 
@@ -98,54 +97,52 @@ static vx_array readConfig(vx_context context, char *config_file, uint32_t *num_
   fseek(fp_config, 0, SEEK_END);
   capacity = ftell(fp_config);
   fseek(fp_config, 0, SEEK_SET);
-
-  ioBufDesc = (sTIDL_IOBufDesc_t *)tivxMemAlloc(capacity, TIVX_MEM_EXTERNAL);
-
-  if(ioBufDesc) {
-    fread(ioBufDesc, capacity, stride, fp_config);
-    fclose(fp_config);
-  } else {
-    printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
+  
+  if( capacity != sizeof(sTIDL_IOBufDesc_t) )
+  {
+    printf("Config file size (%d bytes) does not match size of sTIDL_IOBufDesc_t (%d bytes)\n", capacity, (vx_uint32)sizeof(sTIDL_IOBufDesc_t));
     return NULL;
   }
 
   /* Create a user struct type for handling config data*/
-  config_type = vxRegisterUserStruct(context, sizeof(sTIDL_IOBufDesc_t));
-  if(config_type < VX_TYPE_USER_STRUCT_START || config_type > VX_TYPE_USER_STRUCT_END)
-  {
-    return NULL;
-  }
-  config_array = vxCreateArray(context, config_type, 1);
+  config = vxCreateUserDataObject(context, "sTIDL_IOBufDesc_t", sizeof(sTIDL_IOBufDesc_t), NULL );
 
-  status = vxGetStatus((vx_reference)config_array);
+  status = vxGetStatus((vx_reference)config);
 
   if (VX_SUCCESS == status)
   {
-    vxAddArrayItems(config_array, 1, (void *)ioBufDesc, sizeof(sTIDL_IOBufDesc_t));
+    status = vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id, 
+                        (void **)&ioBufDesc, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+    if (VX_SUCCESS == status)
+    {
+		if(ioBufDesc == NULL)
+		{
+		  printf("Map of config object failed\n");
+		  return NULL;
+		}
+		fread(ioBufDesc, capacity, 1, fp_config);
+		fclose(fp_config);
+
+		*num_input_tensors  = ioBufDesc->numInputBuf;
+		*num_output_tensors = ioBufDesc->numOutputBuf;
+
+		vxUnmapUserDataObject(config, map_id);
+	}
   }
 
-  *num_input_tensors  = ioBufDesc->numInputBuf;
-  *num_output_tensors = ioBufDesc->numOutputBuf;
-
-  tivxMemFree(ioBufDesc, capacity, TIVX_MEM_EXTERNAL);
-
-  return config_array;
+  return config;
 }
 
-static vx_tensor readNetwork(vx_context context, char *network_file)
+static vx_user_data_object readNetwork(vx_context context, char *network_file)
 {
   vx_status status;
 
-  vx_tensor  network_tensor;
+  vx_user_data_object  network;
   vx_map_id  map_id;
   vx_uint32  capacity;
-  vx_size    stride = sizeof(vx_uint8);
   void      *network_buffer = NULL;
-
-  vx_size    start[TEST_TIDL_MAX_TENSOR_DIMS];
-  vx_size    network_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
-  vx_size    network_strides[TEST_TIDL_MAX_TENSOR_DIMS];
-
+ 
   FILE *fp_network;
 
   fp_network = fopen(network_file, "rb");
@@ -161,82 +158,69 @@ static vx_tensor readNetwork(vx_context context, char *network_file)
   capacity = ftell(fp_network);
   fseek(fp_network, 0, SEEK_SET);
 
-  network_sizes[0] = capacity;
-  network_tensor = vxCreateTensor(context, 1, network_sizes, VX_TYPE_UINT8, 0);
+  network = vxCreateUserDataObject(context, "TIDL_network", capacity, NULL );
 
-  status = vxGetStatus((vx_reference)network_tensor);
+  status = vxGetStatus((vx_reference)network);
 
   if (VX_SUCCESS == status)
   {
-    start[0] = 0;
-    network_strides[0] = stride;
-
-    status = tivxMapTensorPatch(network_tensor, 1, start, network_sizes, &map_id, network_strides, &network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+    status = vxMapUserDataObject(network, 0, capacity, &map_id, 
+                        (void **)&network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     if (VX_SUCCESS == status)
     {
       if(network_buffer) {
-        fread(network_buffer, capacity, stride, fp_network);
+        fread(network_buffer, capacity, 1, fp_network);
       } else {
         printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
       }
 
-      tivxUnmapTensorPatch(network_tensor, map_id);
+      vxUnmapUserDataObject(network, map_id);
     }
   }
 
   fclose(fp_network);
 
-  return network_tensor;
+  return network;
 }
 
-static vx_tensor createInputTensor(vx_context context, vx_array config)
+static vx_tensor createInputTensor(vx_context context, vx_user_data_object config)
 {
   vx_size   input_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
-
-  void     *config_buffer = NULL;
   vx_map_id map_id_config;
-
   sTIDL_IOBufDesc_t *ioBufDesc;
-  vx_size stride = sizeof(sTIDL_IOBufDesc_t);
 
-  vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
-
-  ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
+  vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
+                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
   input_sizes[0] = ioBufDesc->inWidth[0]  + ioBufDesc->inPadL[0] + ioBufDesc->inPadR[0];
   input_sizes[1] = ioBufDesc->inHeight[0] + ioBufDesc->inPadT[0] + ioBufDesc->inPadB[0];
   input_sizes[2] = ioBufDesc->inNumChannels[0];
 
-  vxUnmapArrayRange(config, map_id_config);
+  vxUnmapUserDataObject(config, map_id_config);
 
   return vxCreateTensor(context, 3, input_sizes, VX_TYPE_UINT8, 0);
 }
 
-static vx_tensor createOutputTensor(vx_context context, vx_array config)
+static vx_tensor createOutputTensor(vx_context context, vx_user_data_object config)
 {
   vx_size    output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
-
-  void     *config_buffer = NULL;
   vx_map_id map_id_config;
-  vx_size stride = sizeof(sTIDL_IOBufDesc_t);
-
   sTIDL_IOBufDesc_t *ioBufDesc;
 
-  vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
-
-  ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
+  vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
+                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
   output_sizes[0] = ioBufDesc->outWidth[0]  + ioBufDesc->outPadL[0] + ioBufDesc->outPadR[0];
   output_sizes[1] = ioBufDesc->outHeight[0] + ioBufDesc->outPadT[0] + ioBufDesc->outPadB[0];
   output_sizes[2] = ioBufDesc->outNumChannels[0];
 
-  vxUnmapArrayRange(config, map_id_config);
+  vxUnmapUserDataObject(config, map_id_config);
 
   return vxCreateTensor(context, 3, output_sizes, VX_TYPE_FLOAT32, 0);
 }
 
-static vx_status readInput(vx_context context, vx_array config, vx_tensor input_tensor, char *input_file)
+static vx_status readInput(vx_context context, vx_user_data_object config, vx_tensor input_tensor, char *input_file)
 {
   vx_status status;
 
@@ -244,10 +228,8 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
 
   if (VX_SUCCESS == status)
   {
-    vx_size    stride = sizeof(sTIDL_IOBufDesc_t);
     int32_t    capacity;
     void      *input_buffer = NULL;
-    void      *config_buffer = NULL;
 
     vx_map_id map_id_config;
     vx_map_id map_id_input;
@@ -258,9 +240,8 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
 
     sTIDL_IOBufDesc_t *ioBufDesc;
 
-    vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
-
-    ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
+    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
+                        (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     input_sizes[0] = ioBufDesc->inWidth[0]  + ioBufDesc->inPadL[0] + ioBufDesc->inPadR[0];
     input_sizes[1] = ioBufDesc->inHeight[0] + ioBufDesc->inPadT[0] + ioBufDesc->inPadB[0];
@@ -313,33 +294,28 @@ static vx_status readInput(vx_context context, vx_array config, vx_tensor input_
       tivxUnmapTensorPatch(input_tensor, map_id_input);
     }
 
-    vxUnmapArrayRange(config, map_id_config);
+    vxUnmapUserDataObject(config, map_id_config);
 
   }
 
   return status;
 }
 
-static void checkOutput(vx_array config, vx_tensor output_tensor, vx_int32 refid, vx_float32 refscore)
+static void checkOutput(vx_user_data_object config, vx_tensor output_tensor, vx_int32 refid, vx_float32 refscore)
 {
     vx_status status;
     vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
-
-    void     *config_buffer = NULL;
     vx_map_id map_id_config;
-
     sTIDL_IOBufDesc_t *ioBufDesc;
-    vx_size stride = sizeof(sTIDL_IOBufDesc_t);
 
-    vxMapArrayRange(config, 0, 1, &map_id_config, &stride, &config_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
-
-    ioBufDesc = (sTIDL_IOBufDesc_t *)config_buffer;
+    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
+                        (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     output_sizes[0] = ioBufDesc->outWidth[0]  + ioBufDesc->outPadL[0] + ioBufDesc->outPadR[0];
     output_sizes[1] = ioBufDesc->outHeight[0] + ioBufDesc->outPadT[0] + ioBufDesc->outPadB[0];
     output_sizes[2] = ioBufDesc->outNumChannels[0];
 
-    vxUnmapArrayRange(config, map_id_config);
+    vxUnmapUserDataObject(config, map_id_config);
 
     status = vxGetStatus((vx_reference)output_tensor);
 
@@ -413,8 +389,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   vx_perf_t perf_node;
   vx_perf_t perf_graph;
 
-  vx_array  config;
-  vx_tensor network;
+  vx_user_data_object  config;
+  vx_user_data_object  network;
   vx_tensor input_tensor;
   vx_tensor output_tensor;
 
@@ -447,7 +423,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
-    ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), VX_TYPE_USER_DATA_OBJECT);
 
     kernel = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors);
 
@@ -456,7 +432,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/network.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
-    ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     ASSERT_VX_OBJECT(input_tensor = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
@@ -491,8 +467,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT(kernel == 0);
     ASSERT(graph == 0);
 
-    VX_CALL(vxReleaseArray(&config));
-    VX_CALL(vxReleaseTensor(&network));
+    VX_CALL(vxReleaseUserDataObject(&config));
+    VX_CALL(vxReleaseUserDataObject(&network));
     VX_CALL(vxReleaseTensor(&input_tensor));
     VX_CALL(vxReleaseTensor(&output_tensor));
 
