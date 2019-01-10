@@ -312,12 +312,20 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         {
             Dss_dispParamsInit(&displayParams->dispParams);
             displayParams->dispParams.pipeCfg.pipeType = tivxDisplayGetPipeType(drvId);
-            displayParams->dispParams.pipeCfg.outWidth = params->outWidth;
-            displayParams->dispParams.pipeCfg.outHeight = params->outHeight;
+            if(CSL_DSS_VID_PIPE_TYPE_VID == displayParams->dispParams.pipeCfg.pipeType)
+            {
+                displayParams->dispParams.pipeCfg.outWidth = params->outWidth;
+                displayParams->dispParams.pipeCfg.outHeight = params->outHeight;
+            }
             displayParams->dispParams.layerPos.startX = params->posX;
             displayParams->dispParams.layerPos.startY = params->posY;
             status = tivxDisplayExtractFvid2Format(obj_desc_image,
                                                    &displayParams->dispParams.pipeCfg.inFmt);
+            if((displayParams->dispParams.pipeCfg.inFmt.width != displayParams->dispParams.pipeCfg.outWidth) ||
+               (displayParams->dispParams.pipeCfg.inFmt.height != displayParams->dispParams.pipeCfg.outHeight))
+            {
+                displayParams->dispParams.pipeCfg.scEnable = TRUE;
+            }
         }
         if(VX_SUCCESS == status)
         {
