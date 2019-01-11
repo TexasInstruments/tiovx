@@ -98,14 +98,14 @@ vx_pyramid VX_API_CALL vxCreatePyramid(
         if (levels > TIVX_PYRAMID_MAX_LEVEL_OBJECTS)
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Levels greater than max allowable\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
             status = VX_FAILURE;
         }
         if ((scale == VX_SCALE_PYRAMID_ORB) &&
             (levels > TIVX_PYRAMID_MAX_LEVELS_ORB))
         {
             VX_PRINT(VX_ZONE_ERROR,"vxCreatePyramid: Orb levels are greater than max allowable\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxCreatePyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB in tiovx/include/TI/tivx_config.h\n");
             status = VX_FAILURE;
         }
 
@@ -269,7 +269,7 @@ vx_pyramid VX_API_CALL vxCreateVirtualPyramid(
     }
     else
     {
-        VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualPyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB or TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualPyramid: May need to increase the value of TIVX_PYRAMID_MAX_LEVELS_ORB or TIVX_PYRAMID_MAX_LEVEL_OBJECTS in tiovx/include/TI/tivx_config.h\n");
     }
 
     return (prmd);

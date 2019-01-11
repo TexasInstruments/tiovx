@@ -584,7 +584,7 @@ TEST(tivxBoundary2, testDelayMaxPrmBoundary)
     {
         ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
         ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES);
-        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
+        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
     }
 
 }
@@ -1144,7 +1144,7 @@ TEST(tivxBoundary2, testGraphDataRefBoundary)
     }
     else
     {
-        printf("To fully test the TIVX_GRAPH_MAX_DATA_REF value, set it to 64 in include/tivx_config.h and re-run this test case\n");
+        printf("To fully test the TIVX_GRAPH_MAX_DATA_REF value, set it to 64 in tiovx/include/TI/tivx_config.h and re-run this test case\n");
     }
 
 }
@@ -1879,7 +1879,7 @@ TEST(tivxBoundary, testReferenceBoundary)
     }
     else
     {
-        printf("To fully test the TIVX_CONTEXT_MAX_REFERENCES value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_IMAGE_MAX_OBJECTS+TIVX_INTERNAL_REFS);
+        printf("To fully test the TIVX_CONTEXT_MAX_REFERENCES value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_IMAGE_MAX_OBJECTS+TIVX_INTERNAL_REFS);
     }
 
 }
@@ -2238,7 +2238,7 @@ TEST(tivxNegativeBoundary2, negativeTestDelayMaxPrmBoundary)
     {
         ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
         ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES); 
-        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
+        printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
     }
 }
 
@@ -2616,7 +2616,7 @@ TEST(tivxNegativeBoundary2, negativeTestGraphDataRefBoundary)
     }
     else
     {
-        printf("To fully test the TIVX_GRAPH_MAX_DATA_REF value, set it to 64 in include/tivx_config.h and re-run this test case\n");
+        printf("To fully test the TIVX_GRAPH_MAX_DATA_REF value, set it to 64 in tiovx/include/TI/tivx_config.h and re-run this test case\n");
     }
 }
 
@@ -3040,7 +3040,7 @@ TEST(tivxNegativeBoundary, negativeTestReferenceBoundary)
     }
     else
     {
-        printf("To fully test the TIVX_CONTEXT_MAX_REFERENCES value, set it to %d in include/tivx_config.h and re-run only this test case\n", TIVX_IMAGE_MAX_OBJECTS+TIVX_INTERNAL_REFS);
+        printf("To fully test the TIVX_CONTEXT_MAX_REFERENCES value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_IMAGE_MAX_OBJECTS+TIVX_INTERNAL_REFS);
     }
 }
 

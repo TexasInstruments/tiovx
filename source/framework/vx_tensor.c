@@ -603,7 +603,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: No available tensor maps\n");
-                VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: May need to increase the value of TIVX_TENSOR_MAX_MAPS in tiovx/include/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "tivxMapTensorPatch: May need to increase the value of TIVX_TENSOR_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
                 status = VX_ERROR_NO_RESOURCES;
             }
         }

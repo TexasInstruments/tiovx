@@ -1702,7 +1702,7 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestMaxDataRefQ, Arg, PARAMETERS)
     }
     else
     {
-        printf("In order to properly test the value of TIVX_DATA_REF_Q_MAX_OBJECTS, set it to 16 in tivx_config.h\n");
+        printf("In order to properly test the value of TIVX_DATA_REF_Q_MAX_OBJECTS, set it to 16 in tiovx/include/TI/tivx_config.h\n");
     }
 
     tivx_clr_debug_zone(VX_ZONE_INFO);

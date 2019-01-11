@@ -737,7 +737,7 @@ vx_status tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth)
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: pipeline depth greater than max allowed pipeline depth\n");
-                VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "tivxSetGraphPipelineDepth: May need to increase the value of TIVX_GRAPH_MAX_PIPELINE_DEPTH in tiovx/include/TI/tivx_config.h\n");
                 status = VX_ERROR_INVALID_VALUE;
             }
         }

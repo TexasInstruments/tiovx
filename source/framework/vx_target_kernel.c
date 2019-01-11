@@ -144,7 +144,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
 
             if (vx_false_e == resource_added)
             {
-                VX_PRINT(VX_ZONE_WARNING, "tivxAddTargetKernelInternal: May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_WARNING, "tivxAddTargetKernelInternal: May need to increase the value of TIVX_TARGET_KERNEL_MAX in tiovx/include/TI/tivx_config.h\n");
             }
 
             tivxMutexUnlock(g_target_kernel_lock);

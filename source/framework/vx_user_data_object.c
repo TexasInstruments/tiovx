@@ -467,7 +467,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxMapUserDataObject(
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: No available user data object maps\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: May need to increase the value of TIVX_USER_DATA_OBJECT_MAX_MAPS in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxMapUserDataObject: May need to increase the value of TIVX_USER_DATA_OBJECT_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }

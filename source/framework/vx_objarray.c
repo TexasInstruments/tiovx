@@ -102,7 +102,7 @@ vx_object_array VX_API_CALL vxCreateObjectArray(
 
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_WARNING, "vxCreateObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/tivx_config.h\n");
+                    VX_PRINT(VX_ZONE_WARNING, "vxCreateObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, VX_ERROR_NO_RESOURCES);
                 }
@@ -171,7 +171,7 @@ vx_object_array VX_API_CALL vxCreateVirtualObjectArray(
 
                     vxAddLogEntry(&context->base, VX_ERROR_NO_RESOURCES,
                         "Could not allocate objarr object descriptor\n");
-                    VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/tivx_config.h\n");
+                    VX_PRINT(VX_ZONE_WARNING, "vxCreateVirtualObjectArray: May need to increase the value of TIVX_OBJECT_ARRAY_MAX_ITEMS in tiovx/include/TI/tivx_config.h\n");
                     objarr = (vx_object_array)ownGetErrorObject(
                         context, VX_ERROR_NO_RESOURCES);
                 }

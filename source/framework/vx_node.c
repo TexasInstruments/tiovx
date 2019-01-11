@@ -718,7 +718,7 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"ownNodeAddOutNode: number of out nodes greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_OUT_NODES in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_OUT_NODES in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -755,7 +755,7 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
         else
         {
             VX_PRINT(VX_ZONE_ERROR,"ownNodeAddInNode: number of in nodes greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_IN_NODES in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_IN_NODES in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -1485,7 +1485,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
                             if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
                             {
                                 VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is greater than maximum allowed\n");
-                                VX_PRINT(VX_ZONE_ERROR, "vxReplicateNode: May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/tivx_config.h\n");
+                                VX_PRINT(VX_ZONE_ERROR, "vxReplicateNode: May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/TI/tivx_config.h\n");
                                 status = VX_FAILURE;
                             }
                             else

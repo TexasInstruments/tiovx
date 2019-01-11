@@ -207,7 +207,7 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: invalid graph index\n");
-            VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: May need to increase the value of TIVX_GRAPH_MAX_NODES in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "ownGraphAddNode: May need to increase the value of TIVX_GRAPH_MAX_NODES in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
@@ -482,7 +482,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: number of graph parameters greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -502,7 +502,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxAddParameterToGraph(vx_graph graph, vx_para
         else
         {
             VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: number of graph parameters greater than maximum allowed\n");
-            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/tivx_config.h\n");
+            VX_PRINT(VX_ZONE_ERROR, "vxAddParameterToGraph: May need to increase the value of TIVX_GRAPH_MAX_PARAMS in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -602,7 +602,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterAutoAging(vx_graph graph, vx_delay 
                 if (is_full == vx_true_e)
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: no empty slots to register delay\n");
-                    VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: May need to increase the value of TIVX_GRAPH_MAX_DELAYS in tiovx/include/tivx_config.h\n");
+                    VX_PRINT(VX_ZONE_ERROR, "vxRegisterAutoAging: May need to increase the value of TIVX_GRAPH_MAX_DELAYS in tiovx/include/TI/tivx_config.h\n");
                     status = VX_ERROR_NO_RESOURCES;
                 }
             }

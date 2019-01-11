@@ -152,7 +152,7 @@ static void ownLinkParentSubimage(tivx_raw_image parent, tivx_raw_image subimage
 
     if (parent->subimages[p] == NULL)
     {
-        VX_PRINT(VX_ZONE_WARNING, "ownLinkParentSubimage: May need to increase the value of TIVX_RAW_IMAGE_MAX_SUBIMAGES in tiovx/include/tivx_config.h\n");
+        VX_PRINT(VX_ZONE_WARNING, "ownLinkParentSubimage: May need to increase the value of TIVX_RAW_IMAGE_MAX_SUBIMAGES in tiovx/include/TI/tivx_config.h\n");
     }
 
     ownIncrementReference(&parent->base, VX_INTERNAL);
@@ -1160,7 +1160,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: No available image maps\n");
-                VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: May need to increase the value of TIVX_RAW_IMAGE_MAX_MAPS in tiovx/include/tivx_config.h\n");
+                VX_PRINT(VX_ZONE_ERROR, "tivxMapRawImagePatch: May need to increase the value of TIVX_RAW_IMAGE_MAX_MAPS in tiovx/include/TI/tivx_config.h\n");
                 status = VX_ERROR_NO_RESOURCES;
             }
         }
