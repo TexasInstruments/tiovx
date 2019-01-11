@@ -22,6 +22,8 @@ vx_status tivxEventCreate(tivx_event *event)
     {
         /* Default parameter initialization */
         SemaphoreP_Params_init(&semParams);
+        
+        semParams.mode = SemaphoreP_Mode_BINARY;
 
         handle = SemaphoreP_create(0U, &semParams);
 
