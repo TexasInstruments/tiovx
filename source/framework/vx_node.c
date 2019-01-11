@@ -1739,7 +1739,9 @@ void ownNodeLinkObjDescForPipeline(vx_node node)
             obj_desc->out_node_id[linked_node_idx] = ownNodeGetObjDescId(linked_node, pipe_id);
         }
     }
+
 }
+
 vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
 {
     vx_status status = VX_SUCCESS;
@@ -1781,7 +1783,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
                 obj_desc->num_params = obj_desc_0->num_params;
                 obj_desc->num_out_nodes = obj_desc_0->num_out_nodes;
                 obj_desc->num_in_nodes = obj_desc_0->num_in_nodes;
-                obj_desc->border_mode = obj_desc_0->border_mode;
+                tivx_obj_desc_memcpy(&obj_desc->border_mode, &obj_desc_0->border_mode, sizeof(vx_border_t));
                 obj_desc->is_prm_replicated = obj_desc_0->is_prm_replicated;
                 obj_desc->num_of_replicas = obj_desc_0->num_of_replicas;
 
@@ -1834,6 +1836,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
             }
         }
     }
+
 
     return status;
 }

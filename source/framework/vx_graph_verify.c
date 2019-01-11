@@ -1223,7 +1223,7 @@ static vx_status ownGraphUpdateImageRefAfterKernetInit(vx_graph graph, vx_image 
             && img_exemplar_obj_desc->base.type == TIVX_OBJ_DESC_IMAGE
             )
         {
-            img_ref_obj_desc->valid_roi = img_exemplar_obj_desc->valid_roi;
+            tivx_obj_desc_memcpy(&img_ref_obj_desc->valid_roi, &img_exemplar_obj_desc->valid_roi, sizeof(img_exemplar_obj_desc->valid_roi));
         }
         else
         {
@@ -1441,6 +1441,7 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
             }
         }
     }
+
     if(skip_add_data_ref_q==vx_false_e)
     {
         if(graph->num_data_ref_q<TIVX_GRAPH_MAX_DATA_REF_QUEUE)
@@ -1562,6 +1563,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
             ownNodeLinkObjDescForPipeline(graph->nodes[node_id]);
         }
     }
+
     if(status==VX_SUCCESS)
     {
         /* make data references at graph parameter only if graph is in queuing mode */
@@ -1595,6 +1597,7 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
             }
         }
     }
+
     return status;
 }
 
@@ -1790,6 +1793,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                     VX_PRINT(VX_ZONE_ERROR,"Unable to update data ref queue refs for graph\n");
                 }
             }
+
             if(status == VX_SUCCESS)
             {
                 /* alloc object descriptor for graph and enqueue them */
@@ -1837,6 +1841,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 /* deinit kernel to recover resources */
                 ownGraphNodeKernelDeinit(graph);
             }
+
         }
 
         ownReferenceUnlock(&graph->base);
