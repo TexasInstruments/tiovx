@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -50,6 +50,9 @@ typedef struct {
 #define ADD_LOOP_1000(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/loop_count=1000", __VA_ARGS__, 1000))
 
+#define ADD_STREAM_TIME_100(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/stream_time=100", __VA_ARGS__, 100))
+
 #define ADD_STREAM_TIME_1000(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/stream_time=1000", __VA_ARGS__, 1000))
 
@@ -57,7 +60,7 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/stream_time=10000", __VA_ARGS__, 10000))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("sink_node", ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, ADD_STREAM_TIME_10000, ARG), \
+    CT_GENERATE_PARAMETERS("sink_node", ADD_PIPE_3, ADD_BUF_3, ADD_LOOP_10, ADD_STREAM_TIME_100, ARG), \
 
 
 /*
@@ -151,13 +154,13 @@ static void printGraphPipelinePerformance(vx_graph graph,
         );
 }
 
-/* 
+/*
  * User enqueuing data to two ScalarSink2Node's
- * 
+ *
  *   scalar (data)-----> ScalarSink2Node
  *      |
  *      |--------------> ScalarSink2Node
- */ 
+ */
 TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -172,13 +175,13 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
     loop_cnt = arg_->loop_count;
     pipeline_depth = arg_->pipe_depth;
     num_buf = arg_->num_buf;
-    
+
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
     ASSERT(num_buf <= MAX_NUM_BUF);
-    
+
     tivxTestKernelsLoadKernels(context);
-    
+
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     for(i=0; i<num_buf; i++)
@@ -215,14 +218,14 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
 
     VX_CALL(vxVerifyGraph(graph));
-    
+
     export_graph_to_file(graph, "test_sink_node");
     log_graph_rt_trace(graph);
 
     scalar_val = 0;
 
     exe_time = tivxPlatformGetTimeInUsecs();
-    
+
     /* enqueue input references,
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -254,12 +257,12 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
             }
 
             VX_CALL(vxCopyScalar(in_scalar, &in_scalar_val, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
-            
+
             /* compare output */
             expected_val = (int16_t)scalar_val-num_buf+1;
             if(expected_val<0)
                 expected_val += 256;
-            
+
             /* printf("%d %d\n", in_scalar_val, expected_val); */
             ASSERT(in_scalar_val==((uint8_t)expected_val));
 
@@ -295,19 +298,19 @@ TEST_WITH_ARG(tivxTestSinkNode, testSinkNode, Arg, PARAMETERS)
     VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseNode(&n2));
     VX_CALL(vxReleaseGraph(&graph));
-    
+
     tivxTestKernelsUnLoadKernels(context);
-    
+
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-/* 
+/*
  * ScalarSourceNode "streaming" data to two ScalarSink2Node's
- * 
+ *
  *   ScalarSourceNode --> scalar (data) -----> ScalarSink2Node
  *                          |
  *                          |----------------> ScalarSink2Node
- */ 
+ */
 TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -321,13 +324,13 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 
     pipeline_depth = arg_->pipe_depth;
     num_buf = arg_->num_buf;
-    
+
     tivx_clr_debug_zone(VX_ZONE_INFO);
 
     ASSERT(num_buf <= MAX_NUM_BUF);
-    
+
     tivxTestKernelsLoadKernels(context);
-    
+
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
     for(i=0; i<num_buf; i++)
@@ -337,7 +340,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(n0 = tivxScalarSourceNode(graph, scalar[0]), VX_TYPE_NODE);
 
-    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_IPU1_0));
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
@@ -350,13 +353,13 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
 
     /* explicitly set graph pipeline depth */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
-    
+
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 0, num_buf));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, n0));
 
     VX_CALL(vxVerifyGraph(graph));
-    
+
     export_graph_to_file(graph, "test_source_sink_node");
     log_graph_rt_trace(graph);
 
@@ -371,7 +374,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
     VX_CALL(vxQueryGraph(graph, TIVX_GRAPH_STREAM_EXECUTIONS, &num_streams, sizeof(num_streams)));
 
     ASSERT(num_streams != 0);
-    
+
     printf(" Graph executed %d times\n", num_streams);
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
@@ -390,21 +393,21 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode, Arg, PARAMETERS)
     VX_CALL(vxReleaseNode(&n1));
     VX_CALL(vxReleaseNode(&n2));
     VX_CALL(vxReleaseGraph(&graph));
-    
+
     tivxTestKernelsUnLoadKernels(context);
-    
+
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-/* 
+/*
  * ScalarSource2Node "streaming" data to two ScalarSink2Node's
- * 
+ *
  * Here Source2Node has a pipeup requirement
- * 
+ *
  *   ScalarSource2Node --> scalar (data) -----> ScalarSink2Node
  *                          |
  *                          |-----------------> ScalarSink2Node
- */ 
+ */
 TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
 {
     vx_context context = context_->vx_context_;
@@ -439,7 +442,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(n1 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
     /* Note: to cause TIOVX-520 bug, change to DSP2 */
-    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
 
     ASSERT_VX_OBJECT(n2 = tivxScalarSink2Node(graph, scalar[0]), VX_TYPE_NODE);
 
@@ -493,7 +496,7 @@ TEST_WITH_ARG(tivxTestSinkNode, testSourceSinkNode2, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
-TESTCASE_TESTS(tivxTestSinkNode, 
-    testSinkNode, 
+TESTCASE_TESTS(tivxTestSinkNode,
+    testSinkNode,
     testSourceSinkNode,
     testSourceSinkNode2)
