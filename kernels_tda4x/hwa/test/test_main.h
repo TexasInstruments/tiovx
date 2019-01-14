@@ -76,6 +76,7 @@ TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaCapture)
+TESTCASE(tivxHwaCaptureDisplay)
 #endif
 
 #endif
