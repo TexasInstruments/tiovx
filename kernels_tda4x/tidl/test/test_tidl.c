@@ -69,6 +69,7 @@
 #include <math.h>
 #include "itidl_ti.h"
 
+
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
@@ -220,16 +221,13 @@ static vx_tensor createOutputTensor(vx_context context, vx_user_data_object conf
   return vxCreateTensor(context, 3, output_sizes, VX_TYPE_FLOAT32, 0);
 }
 
-static vx_status readInput(vx_context context, vx_user_data_object config, vx_tensor input_tensor, char *input_file)
+static vx_status readInput(vx_context context, vx_user_data_object config, vx_tensor *input_tensors, char *input_file)
 {
-  vx_status status;
+    vx_status status = VX_SUCCESS;
 
-  status = vxGetStatus((vx_reference)input_tensor);
-
-  if (VX_SUCCESS == status)
-  {
-    int32_t    capacity;
     void      *input_buffer = NULL;
+    int32_t    capacity;
+    uint32_t   id;
 
     vx_map_id map_id_config;
     vx_map_id map_id_input;
@@ -241,127 +239,165 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
     sTIDL_IOBufDesc_t *ioBufDesc;
 
     vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                        (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-    input_sizes[0] = ioBufDesc->inWidth[0]  + ioBufDesc->inPadL[0] + ioBufDesc->inPadR[0];
-    input_sizes[1] = ioBufDesc->inHeight[0] + ioBufDesc->inPadT[0] + ioBufDesc->inPadB[0];
-    input_sizes[2] = ioBufDesc->inNumChannels[0];
-
-    capacity = input_sizes[0] * input_sizes[1] * input_sizes[2];
-
-    start[0] = start[1] = start[2] = 0;
-
-    input_strides[0] = 1;
-    input_strides[1] = input_sizes[0];
-    input_strides[2] = input_sizes[1] * input_strides[1];
-
-    status = tivxMapTensorPatch(input_tensor, 3, start, input_sizes, &map_id_input, input_strides, &input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
-
-    if (VX_SUCCESS == status)
+    for(id = 0; id < ioBufDesc->numInputBuf; id++)
     {
-      FILE *fp_input;
-      fp_input = fopen(input_file, "rb");
+        input_sizes[0] = ioBufDesc->inWidth[id]  + ioBufDesc->inPadL[id] + ioBufDesc->inPadR[id];
+        input_sizes[1] = ioBufDesc->inHeight[id] + ioBufDesc->inPadT[id] + ioBufDesc->inPadB[id];
+        input_sizes[2] = ioBufDesc->inNumChannels[id];
 
-      if(fp_input == NULL)
-      {
-        printf("Unable to open file! %s \n", input_file);
-        return VX_FAILURE;
-      }
+        capacity = input_sizes[0] * input_sizes[1] * input_sizes[2];
 
-      if(input_buffer) {
-    	vx_int32 i, j;
+        start[0] = start[1] = start[2] = 0;
 
-    	/* Reset the input buffer, this will take care of padding requirement for TIDL */
-    	memset(input_buffer, 0, capacity);
+        input_strides[0] = 1;
+        input_strides[1] = input_sizes[0];
+        input_strides[2] = input_sizes[1] * input_strides[1];
 
-    	/* Copy the input data at a location of (padH * stride) + padW for each channel */
-    	for(j = 0; j < ioBufDesc->inNumChannels[0]; j++){
+        status = tivxMapTensorPatch(input_tensors[id], 3, start, input_sizes, &map_id_input, input_strides, &input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
 
-    	  vx_int32 start_offset = (j * input_strides[2]) + (ioBufDesc->inPadT[0] * input_strides[1]) + ioBufDesc->inPadL[0];
-      	  vx_uint8 *pIn = (vx_uint8 *)input_buffer + start_offset;
+        if (VX_SUCCESS == status)
+        {
+            vx_df_image df_image;
+            void *data_ptr = NULL;
+            void *bmp_context;
+            vx_uint32 img_stride;
+            vx_int32 start_offset;
+            vx_uint8 *pR;
+            vx_uint8 *pG;
+            vx_uint8 *pB;
+            vx_uint8 *pData;
+            vx_int32 i, j, k;
+            CT_Image image;
+            
+            image = ct_read_image(input_file, -1);
+            ASSERT_(return 0, image);
+                    
+            img_stride = image->stride * 3;
+            data_ptr = image->data.y;
 
-    	  for(i = 0; i < ioBufDesc->inHeight[0]; i++){
-            fread(pIn, ioBufDesc->inWidth[0], 1, fp_input);
-            pIn += input_strides[1];
-    	  }
-    	}
+            /* Reset the input buffer, this will take care of padding requirement for TIDL */
+            memset(input_buffer, 0, capacity);
 
-      } else {
-        printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
-      }
+            start_offset = (0 * input_strides[2]) + (ioBufDesc->inPadT[id] * input_strides[1]) + ioBufDesc->inPadL[id];
+            pB = (vx_uint8 *)input_buffer + start_offset;
 
-      fclose(fp_input);
-      tivxUnmapTensorPatch(input_tensor, map_id_input);
+            start_offset = (1 * input_strides[2]) + (ioBufDesc->inPadT[id] * input_strides[1]) + ioBufDesc->inPadL[id];
+            pG = (vx_uint8 *)input_buffer + start_offset;
+
+            start_offset = (2 * input_strides[2]) + (ioBufDesc->inPadT[id] * input_strides[1]) + ioBufDesc->inPadL[id];
+            pR = (vx_uint8 *)input_buffer + start_offset;
+
+            for(i = 0; i < ioBufDesc->inHeight[id]; i++)
+            {
+                pData = (vx_uint8 *)data_ptr + ((16 + i) * img_stride) + (16 * 3);
+
+                for(j = 0; j < ioBufDesc->inWidth[id]; j++)
+                {
+                    pR[j] = *pData++;
+                    pG[j] = *pData++;
+                    pB[j] = *pData++;
+                }
+                pR += input_strides[1];
+                pG += input_strides[1];
+                pB += input_strides[1];
+            }
+            
+            CT_FreeObject(image);
+
+            tivxUnmapTensorPatch(input_tensors[id], map_id_input);
+        }
     }
 
     vxUnmapUserDataObject(config, map_id_config);
 
-  }
-
-  return status;
+    return status;
 }
 
-static void checkOutput(vx_user_data_object config, vx_tensor output_tensor, vx_int32 refid, vx_float32 refscore)
+static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_tensors, vx_int32 refid, vx_float32 refscore)
 {
-    vx_status status;
+    vx_status status = VX_SUCCESS;
+    float score[5];
+    vx_uint32 classid[5];
+
     vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
+
     vx_map_id map_id_config;
+
+    int32_t id, i, j;
+
     sTIDL_IOBufDesc_t *ioBufDesc;
 
     vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                        (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
-    output_sizes[0] = ioBufDesc->outWidth[0]  + ioBufDesc->outPadL[0] + ioBufDesc->outPadR[0];
-    output_sizes[1] = ioBufDesc->outHeight[0] + ioBufDesc->outPadT[0] + ioBufDesc->outPadB[0];
-    output_sizes[2] = ioBufDesc->outNumChannels[0];
+    for(id = 0; id < ioBufDesc->numOutputBuf; id++)
+    {
+        output_sizes[0] = ioBufDesc->outWidth[id]  + ioBufDesc->outPadL[id] + ioBufDesc->outPadR[id];
+        output_sizes[1] = ioBufDesc->outHeight[id] + ioBufDesc->outPadT[id] + ioBufDesc->outPadB[id];
+        output_sizes[2] = ioBufDesc->outNumChannels[id];
+
+        status = vxGetStatus((vx_reference)output_tensors[id]);
+
+        if (VX_SUCCESS == status)
+        {
+            void *output_buffer;
+
+            vx_map_id map_id_output;
+
+            vx_size output_strides[TEST_TIDL_MAX_TENSOR_DIMS];
+            vx_size start[TEST_TIDL_MAX_TENSOR_DIMS];
+
+            start[0] = start[1] = start[2] = start[3] = 0;
+
+            output_strides[0] = 1;
+            output_strides[1] = output_sizes[0];
+            output_strides[2] = output_sizes[1] * output_strides[1];
+
+            tivxMapTensorPatch(output_tensors[id], 3, start, output_sizes, &map_id_output, output_strides, &output_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+
+            {
+                float *pOut;
+
+                pOut = (float *)output_buffer + (ioBufDesc->outPadT[id] * output_sizes[0]) + ioBufDesc->outPadL[id];
+
+                for(i = 0; i < 5; i++)
+                {
+                  score[i] = FLT_MIN;
+                  classid[i] = (uint32_t)-1;
+
+                  for(j = 0; j < output_sizes[0]; j++)
+                  {
+                    if(pOut[j] > score[i])
+                    {
+                      score[i] = pOut[j];
+                      classid[i] = j;
+                    }
+                  }
+
+                  pOut[classid[i]] = FLT_MIN;
+                }
+
+                printf("Image classification Top-5 results: \n");
+
+                for(i = 0; i < 5; i++)
+                {
+                  printf(" class-id: %d, score: %f \n", classid[i], score[i]);
+                }
+            }
+
+            tivxUnmapTensorPatch(output_tensors[id], map_id_output);
+        }
+    }
 
     vxUnmapUserDataObject(config, map_id_config);
-
-    status = vxGetStatus((vx_reference)output_tensor);
-
-    if (VX_SUCCESS == status)
-    {
-      vx_float32 score = FLT_MIN;
-
-      vx_int32 classid = -1, i;
-      void *output_buffer;
-
-      vx_map_id map_id_output;
-
-      vx_size output_strides[TEST_TIDL_MAX_TENSOR_DIMS];
- 	  vx_size start[TEST_TIDL_MAX_TENSOR_DIMS];
-
- 	  start[0] = start[1] = start[2] = start[3] = 0;
-
- 	  output_strides[0] = 1;
- 	  output_strides[1] = output_sizes[0];
- 	  output_strides[2] = output_sizes[1] * output_strides[1];
-
- 	  tivxMapTensorPatch(output_tensor, 3, start, output_sizes, &map_id_output, output_strides, &output_buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-
-      if (VX_SUCCESS == status)
-      {
-        float *pOut = (float *)output_buffer;
-
-        for(i = 0; i < output_sizes[0]; i++)
-        {
-          if( pOut[i] > score)
-          {
-            score = pOut[i];
-            classid = i;
-          }
-        }
-      }
-
-      tivxUnmapTensorPatch(output_tensor, map_id_output);
-
-      ASSERT(refid == classid);
-      ASSERT(abs(refscore - score) < 0.001);
-    }
-    else
-    {
-      ASSERT(0);
-    }
+    
+    /* only checking classid */
+    if(refid != classid[0])
+        return VX_FAILURE;
+        
+    return VX_SUCCESS;
 }
 
 typedef struct {
@@ -423,7 +459,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
-    ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     kernel = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors);
 
@@ -449,22 +485,20 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/input.rgb", ct_get_test_file_path(), arg_->network);
+    sz = snprintf(filepath, MAXPATHLENGTH, "tidl_models/%s/airshow_256x256.bmp", arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
-    readInput(context, config, input_tensor, &filepath[0]);
+    VX_CALL(readInput(context, config, &input_tensor, &filepath[0]));
 
     VX_CALL(vxVerifyGraph(graph));
     VX_CALL(vxProcessGraph(graph));
 
-    checkOutput(config, output_tensor, refid[network_id], refscore[network_id]);
+    VX_CALL(displayOutput(config, &output_tensor, refid[network_id], refscore[network_id]));
 
     VX_CALL(vxReleaseNode(&node));
-    VX_CALL(vxReleaseKernel(&kernel));
     VX_CALL(vxReleaseGraph(&graph));
 
     ASSERT(node == 0);
-    ASSERT(kernel == 0);
     ASSERT(graph == 0);
 
     VX_CALL(vxReleaseUserDataObject(&config));
@@ -478,6 +512,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT(output_tensor == 0);
 
     tivxTIDLUnLoadKernels(context);
+    
+    vxRemoveKernel(kernel);
 
   }
 }
