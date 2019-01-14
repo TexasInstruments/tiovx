@@ -177,7 +177,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
             capture_params.dataLanesMap[loop_id] = loop_id;
         }
 
-        ASSERT_VX_OBJECT(capture_param_obj = vxCreateUserDataObject(context, "tivx_capture_params_t" , sizeof(tivx_capture_params_t), &capture_params), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(capture_param_obj = vxCreateUserDataObject(context, "tivx_capture_params_t" , sizeof(tivx_capture_params_t), &capture_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(captureNode = tivxCaptureNode(graph, capture_param_obj, frames[0]), VX_TYPE_NODE);
 
@@ -192,7 +192,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         display_params.posX=arg_->posX;
         display_params.posY=arg_->posY;
 
-        ASSERT_VX_OBJECT(display_param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &display_params), VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(display_param_obj = vxCreateUserDataObject(context, "tivx_display_params_t", sizeof(tivx_display_params_t), &display_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         sample_image = (vx_image) vxGetObjectArrayItem(frames[0], 0);
         ASSERT_VX_OBJECT(displayNode = tivxDisplayNode(graph, display_param_obj, sample_image), VX_TYPE_NODE);
