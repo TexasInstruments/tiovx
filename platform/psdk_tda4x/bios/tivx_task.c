@@ -103,10 +103,10 @@ vx_status tivxTaskDelete(tivx_task *task)
 
 void tivxTaskWaitMsecs(uint32_t msec)
 {
-    #if 1
-    TaskP_sleepInMsecs(msec);
-    #else
+    #if defined(C66) || defined(C71)
     TaskP_yield(); /* using this until task sleep works fine in VLAB */
+    #else
+    TaskP_sleepInMsecs(msec);
     #endif
 }
 
