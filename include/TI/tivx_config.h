@@ -142,7 +142,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_KERNEL_MAX_OBJECTS                     (64u)
+#define TIVX_KERNEL_MAX_OBJECTS                     (128u)
 
 /*!
  * \brief Max number array objects supported
@@ -313,7 +313,7 @@ extern "C" {
  *       at the same time
  * \ingroup group_tivx_target_kernel_cfg
  */
-#define TIVX_TARGET_KERNEL_MAX     (128u)
+#define TIVX_TARGET_KERNEL_MAX     (256u)
 
 /*!
  * \brief Max levels supported for the pyramid
