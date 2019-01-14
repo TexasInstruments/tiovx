@@ -152,7 +152,7 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
             format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case VX_DF_IMAGE_RGBX:
-            format->dataFormat = FVID2_DF_RGBA32_8888;
+            format->dataFormat = FVID2_DF_RGBX24_8888;
             format->pitch[FVID2_RGB_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             break;
         case VX_DF_IMAGE_UYVY:
@@ -538,7 +538,18 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
 
     if(VX_SUCCESS == status)
     {
-        obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+        if(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==TIVX_OBJ_DESC_OBJARRAY)
+        {
+            tivx_obj_desc_object_array_t *obj_desc_obj_array;
+
+            obj_desc_obj_array = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+ 
+            tivxGetObjDescList(&obj_desc_obj_array->obj_desc_id[0], (tivx_obj_desc_t**)&obj_desc_image, 1);
+        }
+        else
+        {
+            obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+        }
         image_target_ptr1 = tivxMemShared2TargetPtr(obj_desc_image->mem_ptr[0].shared_ptr,
                                                     obj_desc_image->mem_ptr[0].mem_heap_region);
         if(VX_DF_IMAGE_NV12 == obj_desc_image->format)
@@ -715,7 +726,7 @@ void tivxAddTargetKernelDisplay()
                             tivxDisplayDelete,
                             tivxDisplayControl,
                             NULL);
-                            
+
         strncpy(target_name, TIVX_TARGET_DISPLAY2,
             TIVX_TARGET_MAX_NAME);
 

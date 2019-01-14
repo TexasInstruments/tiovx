@@ -275,7 +275,7 @@ static uint32_t tivxCaptureExtractDataFormat(vx_df_image format)
             dataFormat = FVID2_DF_RGB24_888;
             break;
         case VX_DF_IMAGE_RGBX:
-            dataFormat = FVID2_DF_RGB24_888;
+            dataFormat = FVID2_DF_BGRX32_8888;
             break;
         case VX_DF_IMAGE_UYVY:
             dataFormat = FVID2_DF_YUV422I_UYVY;
