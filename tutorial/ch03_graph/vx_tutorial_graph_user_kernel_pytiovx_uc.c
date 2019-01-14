@@ -340,10 +340,6 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_delete(vx_tutorial_gr
     
     if (status == VX_SUCCESS)
     {
-        status = vxReleaseGraph(&graph);
-    }
-    if (status == VX_SUCCESS)
-    {
         status = vxReleaseNode( &usecase->node_1 );
     }
     if (status == VX_SUCCESS)
@@ -353,6 +349,10 @@ vx_status vx_tutorial_graph_user_kernel_pytiovx_uc_graph_0_delete(vx_tutorial_gr
     if (status == VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_3 );
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = vxReleaseGraph(&graph);
     }
     
     usecase->graph_0 = graph;

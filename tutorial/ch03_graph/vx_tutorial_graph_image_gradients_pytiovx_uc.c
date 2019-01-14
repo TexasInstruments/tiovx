@@ -529,10 +529,6 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_delete(vx_tutoria
 
     if (status == VX_SUCCESS)
     {
-        status = vxReleaseGraph(&graph);
-    }
-    if (status == VX_SUCCESS)
-    {
         status = vxReleaseNode( &usecase->node_1 );
     }
     if (status == VX_SUCCESS)
@@ -554,6 +550,10 @@ vx_status vx_tutorial_graph_image_gradients_pytiovx_uc_graph_0_delete(vx_tutoria
     if (status == VX_SUCCESS)
     {
         status = vxReleaseNode( &usecase->node_9 );
+    }
+    if (status == VX_SUCCESS)
+    {
+        status = vxReleaseGraph(&graph);
     }
 
     usecase->graph_0 = graph;
