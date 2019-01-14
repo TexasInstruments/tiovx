@@ -91,7 +91,7 @@ typedef struct {
 #define ADD_DATA_FORMAT(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_RGBX", __VA_ARGS__, VX_DF_IMAGE_RGBX))
 #define ADD_IN_WIDTH(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/inWidth=360", __VA_ARGS__, 360))
+    CT_EXPAND(nextmacro(testArgName "/inWidth=320", __VA_ARGS__, 320))
 #define ADD_IN_HEIGHT(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/inHeight=240", __VA_ARGS__, 240))
 #define ADD_BPP_4(testArgName, nextmacro, ...) \
@@ -196,6 +196,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
         sample_image = (vx_image) vxGetObjectArrayItem(frames[0], 0);
         ASSERT_VX_OBJECT(displayNode = tivxDisplayNode(graph, display_param_obj, sample_image), VX_TYPE_NODE);
+        VX_CALL(vxReleaseImage(&sample_image));
 
         VX_CALL(vxSetNodeTarget(displayNode, VX_TARGET_STRING, TIVX_TARGET_DISPLAY1));
 
@@ -257,13 +258,13 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         }
 
         ASSERT(displayNode == 0);
+        ASSERT(captureNode == 0);
         ASSERT(graph == 0);
         ASSERT(display_param_obj == 0);
+        ASSERT(capture_param_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }
 }
 
-TESTCASE_TESTS(tivxHwaCaptureDisplay,
-    testCaptureDisplayLoopback1
-    )
+TESTCASE_TESTS(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1)
