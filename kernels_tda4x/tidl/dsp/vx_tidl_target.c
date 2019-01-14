@@ -72,9 +72,9 @@
 #define DMEM0_SIZE (256)
 #define DMEM1_SIZE (4*1024)
 
-#define L1_MEM_SIZE (0) /* (16*1024)  */
-#define L2_MEM_SIZE (0) /* (128*1024) */
-#define L3_MEM_SIZE (0) /* (128*1024) */
+#define L1_MEM_SIZE (16*1024)
+#define L2_MEM_SIZE (448*1024)
+#define L3_MEM_SIZE (5*1024*1024)
 
 #define TIDL_TB_CURR_CORE_ID            (1)
 #define TIDL_TB_CURR_LAYERS_GROUP_ID    (1)
