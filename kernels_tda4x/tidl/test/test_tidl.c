@@ -83,6 +83,7 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
   vx_user_data_object   config = NULL;
   vx_uint32 capacity;
   vx_map_id map_id;
+  vx_size read_count;
 
   FILE *fp_config;
 
@@ -122,7 +123,12 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
 		  printf("Map of config object failed\n");
 		  return NULL;
 		}
-		fread(ioBufDesc, capacity, 1, fp_config);
+
+		read_count = fread(ioBufDesc, capacity, 1, fp_config);
+		if(read_count != 1)
+		{
+		  printf("Unable to read config file!\n");
+		}
 		fclose(fp_config);
 
 		*num_input_tensors  = ioBufDesc->numInputBuf;
@@ -143,7 +149,8 @@ static vx_user_data_object readNetwork(vx_context context, char *network_file)
   vx_map_id  map_id;
   vx_uint32  capacity;
   void      *network_buffer = NULL;
- 
+  vx_size read_count;
+
   FILE *fp_network;
 
   fp_network = fopen(network_file, "rb");
@@ -171,7 +178,11 @@ static vx_user_data_object readNetwork(vx_context context, char *network_file)
     if (VX_SUCCESS == status)
     {
       if(network_buffer) {
-        fread(network_buffer, capacity, 1, fp_network);
+		read_count = fread(network_buffer, capacity, 1, fp_network);
+		if(read_count != 1)
+		{
+		  printf("Unable to read network file!\n");
+		}
       } else {
         printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
       }
