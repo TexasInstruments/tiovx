@@ -79,21 +79,21 @@ typedef struct  {
 /*!
  * \brief Registers the kernels list on the target side
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Unregisters the kernels list on the target side
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxUnRegisterTargetKernels(Tivx_Target_Kernel_List *kernel_list, uint32_t num_kernels);
 
 /*!
  * \brief Computes the patch offset into the image
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 static inline vx_uint32 tivxComputePatchOffset(
     vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr);
@@ -110,7 +110,7 @@ static inline vx_uint32 tivxComputePatchOffset(
  *          mandatory.  If there are any optional parameters, then
  *          custom code should be used to check the parameters.
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 static inline vx_status tivxCheckNullParams(
     tivx_obj_desc_t *obj_desc[], uint16_t num_params,
@@ -136,7 +136,7 @@ static inline vx_status tivxCheckNullParams(
  *
  * \param prms [in] Valid Rectangle Parameters
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxInitBufParams(
     tivx_obj_desc_image_t *obj_desc,
@@ -147,7 +147,7 @@ void tivxInitBufParams(
  *        width and height should be equal. The API sets both buf_params to
  *        the minimum of the valid rectangle
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxInitTwoBufParams(
     tivx_obj_desc_image_t *obj_desc0,
@@ -159,7 +159,7 @@ void tivxInitTwoBufParams(
  * \brief A utility API that sets the pointer to the correct location based on
  *        the minimum of the valid rectangle.
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxSetPointerLocation(
     tivx_obj_desc_image_t *obj_desc,
@@ -170,7 +170,7 @@ void tivxSetPointerLocation(
  * \brief A utility API that sets the pointer to the correct location based on
  *        the minimum of the valid rectangle.
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxSetTwoPointerLocation(
     tivx_obj_desc_image_t *obj_desc0,
@@ -183,13 +183,13 @@ void tivxSetTwoPointerLocation(
 /*!
  * \brief Reserve L2MEM within C66x for usage with BAM framework
  *
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 void tivxReserveC66xL2MEM(void);
 
 
 /*!
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 static inline vx_uint32 tivxComputePatchOffset(
     vx_uint32 x, vx_uint32 y, const vx_imagepatch_addressing_t *addr)
@@ -199,7 +199,7 @@ static inline vx_uint32 tivxComputePatchOffset(
 }
 
 /*!
- * \ingroup group_tivx_ext_target
+ * \ingroup group_tivx_target_utils
  */
 static inline vx_status tivxCheckNullParams(
     tivx_obj_desc_t *obj_desc[], uint16_t num_params,

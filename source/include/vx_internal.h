@@ -229,9 +229,21 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  */
 
 /*!
- * \defgroup group_tivx_obj_desc_priv Object Descriptor APIs
+ * \defgroup group_tivx_obj_desc Object Descriptor APIs
  * \brief APIs for object descriptor manipulation
- * \ingroup group_tivx_ext_common
+ * \ingroup group_tivx_ext_target
+ */
+ 
+/*!
+ * \defgroup group_tivx_target_utils Target Utility APIs
+ * \brief APIs for common target kernel operations
+ * \ingroup group_tivx_ext_target
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc_priv Object Descriptor APIs
+ * \brief Internal APIs for object descriptor operations
+ * \ingroup group_vx_framework
  */
 
 /*!
@@ -332,6 +344,12 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
 
 /*!
  * \defgroup group_tivx_target_kernel Target Kernel APIs
+ * \brief APIs for kernel operations on the target
+ * \ingroup group_tivx_ext_target
+ */
+
+/*!
+ * \defgroup group_tivx_obj_desc Object Descriptor APIs
  * \brief APIs for kernel operations on the target
  * \ingroup group_tivx_ext_target
  */

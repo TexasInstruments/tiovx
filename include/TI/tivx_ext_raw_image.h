@@ -67,6 +67,12 @@
  * \brief The TI Raw Image extension.
  */
 
+/*!
+ * \defgroup group_raw_image Raw Image Data Type APIs
+ * \brief APIs creating and using raw image data type
+ * \ingroup group_tivx_ext_host
+ */
+
 #define TIVX_RAW_IMAGE  "tivx_raw_image"
 
 #include <VX/vx.h>
