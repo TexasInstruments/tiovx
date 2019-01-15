@@ -189,10 +189,6 @@ typedef struct {
     CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
     CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
     CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
-    CT_GENERATE_PARAMETERS("streaming", ARG, 5, 1), \
     
     #if 0
     CT_GENERATE_PARAMETERS("streaming", ARG, 100, 1), \
@@ -237,7 +233,6 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, STREAMING_PARAME
 
     /* Config initialization */
     local_capture_config.enableCsiv2p0Support = (uint32_t)vx_true_e;
-    local_capture_config.isRawCapture = (uint32_t)vx_false_e;
     local_capture_config.numDataLanes = 4U;
     for (loopCnt = 0U ;
          loopCnt < local_capture_config.numDataLanes ;

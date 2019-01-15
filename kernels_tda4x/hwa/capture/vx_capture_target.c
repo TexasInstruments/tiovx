@@ -230,58 +230,21 @@ static vx_status tivxCaptureEnqueueFrameToDriver(
     return status;
 }
 
-/* TODO: Go through csirx.h data format
-     *      FVID2_DF_YUV422I_UYVY<br>
-     *      FVID2_DF_YUV422I_YUYV<br>
-     *      FVID2_DF_YUV422I_YVYU<br>
-     *      FVID2_DF_YUV422I_VYUY<br>
-     *      FVID2_DF_BGRX_4444<br>
-     *      FVID2_DF_BGRX16_5551<br>
-     *      FVID2_DF_BGR16_565<br>
-     *      FVID2_DF_BGRX32_8888<br> */
 static uint32_t tivxCaptureExtractInCsiDataType(vx_df_image format)
 {
     uint32_t inCsiDataType = FVID2_CSI2_DF_RGB888;
 
-    /*switch (format)
-    {
-        case VX_DF_IMAGE_RGB:
-            inCsiDataType = FVID2_CSI2_DF_RGB888;
-            break;
-        case VX_DF_IMAGE_RGBX:
-            inCsiDataType = FVID2_DF_RGBA32_8888;
-            break;
-        case VX_DF_IMAGE_UYVY:
-            inCsiDataType = FVID2_DF_YUV422I_UYVY;
-            break;
-        case VX_DF_IMAGE_NV12:
-            inCsiDataType = FVID2_DF_YUV420SP_UV;
-            break;
-        default:
-            break;
-    }*/
-
     return inCsiDataType;
 }
 
-/* TODO: Complete this case statement */
 static uint32_t tivxCaptureExtractDataFormat(vx_df_image format)
 {
     uint32_t dataFormat = FVID2_DF_BGRX32_8888;
 
     switch (format)
     {
-        case VX_DF_IMAGE_RGB:
-            dataFormat = FVID2_DF_RGB24_888;
-            break;
         case VX_DF_IMAGE_RGBX:
             dataFormat = FVID2_DF_BGRX32_8888;
-            break;
-        case VX_DF_IMAGE_UYVY:
-            dataFormat = FVID2_DF_YUV422I_UYVY;
-            break;
-        case VX_DF_IMAGE_NV12:
-            dataFormat = FVID2_DF_YUV420SP_UV;
             break;
         default:
             break;

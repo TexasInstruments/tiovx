@@ -86,8 +86,12 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
     vx_status status = VX_SUCCESS;
 
     vx_user_data_object input = NULL;
+    vx_object_array output = NULL;
     vx_char input_name[VX_MAX_REFERENCE_NAME];
     vx_size input_size;
+    vx_reference obj_arr_element;
+    vx_df_image img_fmt;
+    vx_enum ref_type;
 
     if ( (num != TIVX_KERNEL_CAPTURE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX])
@@ -101,6 +105,7 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         input = (vx_user_data_object)parameters[TIVX_KERNEL_CAPTURE_INPUT_ARR_IDX];
+        output = (vx_object_array)parameters[TIVX_KERNEL_CAPTURE_OUTPUT_IDX];
     }
 
 
@@ -127,15 +132,46 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
     }
 
 
-    /* CUSTOM PARAMETER CHECKING */
+    if (VX_SUCCESS == status)
+    {
+        obj_arr_element = vxGetObjectArrayItem(output, 0);
 
-    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
-    /*                   covered by the code-generation script.) > */
+        if (NULL != obj_arr_element)
+        {
+            tivxCheckStatus(&status, vxQueryReference(obj_arr_element, VX_REFERENCE_TYPE, &ref_type, sizeof(ref_type)));
 
-    /* < DEVELOPER_TODO: (Optional) If intending to use a virtual data object, set metas using appropriate TI API. */
-    /*                   For a code example, please refer to the validate callback of the follow file: */
-    /*                   tiovx/kernels/openvx-core/host/vx_absdiff_host.c. For further information regarding metas, */
-    /*                   please refer to the OpenVX 1.1 spec p. 260, or search for vx_kernel_validate_f. > */
+            if (VX_SUCCESS == status)
+            {
+                if (VX_TYPE_IMAGE != ref_type)
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR, "output object array must contain VX_TYPE_IMAGE \n");
+                }
+                else
+                {
+                    tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, VX_IMAGE_FORMAT, &img_fmt, sizeof(img_fmt)));
+
+                    /* Only support RGBX format for now */
+                    if (VX_DF_IMAGE_RGBX != img_fmt)
+                    {
+                        status = VX_ERROR_INVALID_PARAMETERS;
+                        VX_PRINT(VX_ZONE_ERROR, "image format is invalid \n");
+                    }
+                }
+            }
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR, "query 'output' object array reference failed \n");
+            }
+
+            vxReleaseReference(&obj_arr_element);
+        }
+        else
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'output' object array elements are NULL \n");
+        }
+    }
 
     return status;
 }

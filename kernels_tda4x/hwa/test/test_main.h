@@ -74,9 +74,13 @@ TESTCASE(tivxHwaVpacMscScale)
 TESTCASE(tivxHwaDmpacDof)
 TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
+
+#if defined(TDA4X)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureDisplay)
+#endif
+
 #endif
 
 #endif

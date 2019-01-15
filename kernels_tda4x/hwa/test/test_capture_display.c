@@ -170,7 +170,6 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
         /* Capture initialization */
         capture_params.enableCsiv2p0Support = (uint32_t)vx_true_e;
-        capture_params.isRawCapture = (uint32_t)vx_false_e;
         capture_params.numDataLanes = 4U;
         for (loop_id=0U; loop_id<capture_params.numDataLanes; loop_id++)
         {
