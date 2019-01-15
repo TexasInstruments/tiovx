@@ -5,7 +5,7 @@
 
 ifeq ($(TARGET_CPU),x86_64)
 
-STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa
+STATIC_LIBS += vx_kernels_hwa_tests vx_kernels_hwa vx_vxu
 
 STATIC_LIBS += vx_target_kernels_dmpac_sde
 STATIC_LIBS += sde_hw
