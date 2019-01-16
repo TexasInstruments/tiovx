@@ -23,9 +23,7 @@ var group__group__tivx__mem =
     [ "tivxMemBufferMap", "group__group__tivx__mem.html#gad0a080f8f697f50ce522f05e1e646cfc", null ],
     [ "tivxMemBufferUnmap", "group__group__tivx__mem.html#ga7eb36b10bc001dc9946b032828bd3e4d", null ],
     [ "tivxMemHost2SharedPtr", "group__group__tivx__mem.html#ga5c87e8a8dc99d5098ed38f25440d5fe8", null ],
-    [ "tivxMemShared2HostPtr", "group__group__tivx__mem.html#ga548e764f3277b2f1def4685d2a2669a8", null ],
     [ "tivxMemShared2TargetPtr", "group__group__tivx__mem.html#ga241093f30386e2f28b9d5fe323399afb", null ],
-    [ "tivxMemTarget2SharedPtr", "group__group__tivx__mem.html#gab0cdc4269825cc616e65962e486fe94b", null ],
     [ "tivxMemAlloc", "group__group__tivx__mem.html#ga99635ddb13baefecfbb1cf262437ca46", null ],
     [ "tivxMemFree", "group__group__tivx__mem.html#ga9c487e78534a06bf56eff7dbda470d3a", null ],
     [ "tivxMemStats", "group__group__tivx__mem.html#gac455e3957a61a111ced55bff62564ed0", null ]

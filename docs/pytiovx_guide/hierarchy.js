@@ -88,6 +88,7 @@ var hierarchy =
     [ "tiovx.pyramid.Pyramid", "classtiovx_1_1pyramid_1_1Pyramid.html", null ],
     [ "tiovx.attribute.PyramidAttribute", "classtiovx_1_1attribute_1_1PyramidAttribute.html", null ],
     [ "tiovx.enums.PyramidScale", "classtiovx_1_1enums_1_1PyramidScale.html", null ],
+    [ "tiovx.attribute.RawImageAttribute", "classtiovx_1_1attribute_1_1RawImageAttribute.html", null ],
     [ "tiovx.remap.Remap", "classtiovx_1_1remap_1_1Remap.html", null ],
     [ "tiovx.attribute.RemapAttribute", "classtiovx_1_1attribute_1_1RemapAttribute.html", null ],
     [ "tiovx.enums.Round", "classtiovx_1_1enums_1_1Round.html", null ],
@@ -99,5 +100,6 @@ var hierarchy =
     [ "tiovx.threshold.Threshold", "classtiovx_1_1threshold_1_1Threshold.html", null ],
     [ "tiovx.attribute.ThresholdAttribute", "classtiovx_1_1attribute_1_1ThresholdAttribute.html", null ],
     [ "tiovx.enums.ThresholdType", "classtiovx_1_1enums_1_1ThresholdType.html", null ],
-    [ "tiovx.enums.Type", "classtiovx_1_1enums_1_1Type.html", null ]
+    [ "tiovx.enums.Type", "classtiovx_1_1enums_1_1Type.html", null ],
+    [ "tiovx.attribute.UserDataObjectAttribute", "classtiovx_1_1attribute_1_1UserDataObjectAttribute.html", null ]
 ];

@@ -197,8 +197,8 @@ $(document).ready(function(){initNavTree('vx__tutorial__graph__pipeline__two__no
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    printf(<span class="stringliteral">&quot; vx_tutorial_graph_pipeline_two_nodes: Tutorial Started !!! \n&quot;</span>);</div>
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    context = vxCreateContext();</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    width = 1000;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    height = 1000;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    width = 64;</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    height = 64;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    num_buf = <a class="code" href="vx__tutorial__graph__pipeline__two__nodes_8c.html#ae786fe777ee233f33eee4d7cb94f2621">MAX_NUM_BUF</a>;</div>
 <div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    pipeline_depth = <a class="code" href="vx__tutorial__graph__pipeline__two__nodes_8c.html#ae786fe777ee233f33eee4d7cb94f2621">MAX_NUM_BUF</a>;</div>
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    loop_cnt = 10 - num_buf; <span class="comment">/* runs the graph 10 times */</span></div>
@@ -244,9 +244,9 @@ $(document).ready(function(){initNavTree('vx__tutorial__graph__pipeline__two__no
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    tivxSetNodeParameterNumBufByIndex(n0, 1, num_buf);</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    vxVerifyGraph(graph);</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    tivxExportGraphToDot(graph, <span class="stringliteral">&quot;.&quot;</span>, <span class="stringliteral">&quot;vx_tutorial_graph_pipeline_two_nodes&quot;</span>);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor">    #if 0</span></div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;<span class="preprocessor"></span>    tivxLogRtTrace(graph);</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;<span class="preprocessor">    #if 0</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="preprocessor"></span>    tivxExportGraphToDot(graph, <span class="stringliteral">&quot;.&quot;</span>, <span class="stringliteral">&quot;vx_tutorial_graph_pipeline_two_nodes&quot;</span>);</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    tivxLogRtTrace(graph);</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="preprocessor">    #endif</span></div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    exe_time = tivxPlatformGetTimeInUsecs();</div>

@@ -27,5 +27,6 @@ var structtivx__meta__format__t =
     [ "thres", "structtivx__meta__format__t.html#a4ffaf22cdaa9dee6fa9abb027c539734", null ],
     [ "objarr", "structtivx__meta__format__t.html#a9791b182518bb9482867125fd80742e9", null ],
     [ "tensor", "structtivx__meta__format__t.html#a7a380e1e3abf47afd61aad5a4f245449", null ],
-    [ "user_data_object", "structtivx__meta__format__t.html#a5b1ab4be8e5f57eed30945001e84beb7", null ]
+    [ "user_data_object", "structtivx__meta__format__t.html#a5b1ab4be8e5f57eed30945001e84beb7", null ],
+    [ "raw_image", "structtivx__meta__format__t.html#abdf2401ae4888bb15776d109b0034883", null ]
 ];

@@ -5,6 +5,7 @@ var group__group__tivx__ext__host =
     [ "Kernel Helper APIs", "group__group__tivx__ext__host__kernel.html", "group__group__tivx__ext__host__kernel" ],
     [ "Mutex APIs", "group__group__tivx__mutex.html", "group__group__tivx__mutex" ],
     [ "Queue APIs", "group__group__tivx__queue.html", "group__group__tivx__queue" ],
+    [ "Raw Image Data Type APIs", "group__group__raw__image.html", "group__group__raw__image" ],
     [ "Task APIs", "group__group__tivx__task.html", "group__group__tivx__task" ],
     [ "tivx_resource_stats_t", "structtivx__resource__stats__t.html", [
       [ "max_value", "structtivx__resource__stats__t.html#a75d0941ebfec728b51041bc47fe706a2", null ],
@@ -26,6 +27,7 @@ var group__group__tivx__ext__host =
     [ "TIVX_TARGET_HOST", "group__group__tivx__ext__host.html#ga428b100613e60406a63693e75b7ba6bf", null ],
     [ "TIVX_RESOURCE_NAME_MAX", "group__group__tivx__ext__host.html#gab2061417ad9e438e813a33341f443275", null ],
     [ "TIVX_CONFIG_PATH_LENGTH", "group__group__tivx__ext__host.html#ga38e7064937506c8ae840dc6eb779dda9", null ],
+    [ "TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP", "group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c", null ],
     [ "dimof", "group__group__tivx__ext__host.html#ga077bde7b4af50f959972477bba9569ef", null ],
     [ "tivx_cpu_id_e", "group__group__tivx__ext__host.html#ga56b14c79b967d7f5f4170aab3befca6f", [
       [ "TIVX_CPU_ID_DSP1", "group__group__tivx__ext__host.html#gga56b14c79b967d7f5f4170aab3befca6fa431c12c168d1c32cb48e82cde09e4fcf", null ],
@@ -79,5 +81,6 @@ var group__group__tivx__ext__host =
     [ "tivxLogRtTrace", "group__group__tivx__ext__host.html#ga188cd5bd63a13725e64ff5dc89bd952e", null ],
     [ "tivxSetNodeParameterNumBufByIndex", "group__group__tivx__ext__host.html#ga6916eb6d3932500e5732d02e85b8b591", null ],
     [ "tivxSetGraphPipelineDepth", "group__group__tivx__ext__host.html#ga24b3d2d4a691c652efa0399803164b23", null ],
-    [ "tivxEnableGraphStreaming", "group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e", null ]
+    [ "tivxEnableGraphStreaming", "group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e", null ],
+    [ "tivxGraphParameterEnqueueReadyRef", "group__group__tivx__ext__host.html#gaf216cbe97f920add114dc8cdbfa1846c", null ]
 ];

@@ -11,5 +11,7 @@ var group__ATTRIBUTES =
     [ "ThresholdAttribute", "classtiovx_1_1attribute_1_1ThresholdAttribute.html", null ],
     [ "RemapAttribute", "classtiovx_1_1attribute_1_1RemapAttribute.html", null ],
     [ "ObjectArrayAttribute", "classtiovx_1_1attribute_1_1ObjectArrayAttribute.html", null ],
+    [ "UserDataObjectAttribute", "classtiovx_1_1attribute_1_1UserDataObjectAttribute.html", null ],
+    [ "RawImageAttribute", "classtiovx_1_1attribute_1_1RawImageAttribute.html", null ],
     [ "Attribute", "classtiovx_1_1attribute_1_1Attribute.html", null ]
 ];

@@ -24,6 +24,7 @@ var tivx_8h =
     [ "TIVX_TARGET_HOST", "tivx_8h.html#ga428b100613e60406a63693e75b7ba6bf", null ],
     [ "TIVX_RESOURCE_NAME_MAX", "tivx_8h.html#gab2061417ad9e438e813a33341f443275", null ],
     [ "TIVX_CONFIG_PATH_LENGTH", "tivx_8h.html#ga38e7064937506c8ae840dc6eb779dda9", null ],
+    [ "TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP", "tivx_8h.html#ga00120b8d056b95a44382e43760d7c27c", null ],
     [ "dimof", "tivx_8h.html#ga077bde7b4af50f959972477bba9569ef", null ],
     [ "tivx_cpu_id_e", "tivx_8h.html#ga56b14c79b967d7f5f4170aab3befca6f", [
       [ "TIVX_CPU_ID_DSP1", "tivx_8h.html#gga56b14c79b967d7f5f4170aab3befca6fa431c12c168d1c32cb48e82cde09e4fcf", null ],
@@ -72,5 +73,6 @@ var tivx_8h =
     [ "tivxLogRtTrace", "tivx_8h.html#ga188cd5bd63a13725e64ff5dc89bd952e", null ],
     [ "tivxSetNodeParameterNumBufByIndex", "tivx_8h.html#ga6916eb6d3932500e5732d02e85b8b591", null ],
     [ "tivxSetGraphPipelineDepth", "tivx_8h.html#ga24b3d2d4a691c652efa0399803164b23", null ],
-    [ "tivxEnableGraphStreaming", "tivx_8h.html#ga0df519455e9ddf8fad8c88983ba3970e", null ]
+    [ "tivxEnableGraphStreaming", "tivx_8h.html#ga0df519455e9ddf8fad8c88983ba3970e", null ],
+    [ "tivxGraphParameterEnqueueReadyRef", "tivx_8h.html#gaf216cbe97f920add114dc8cdbfa1846c", null ]
 ];

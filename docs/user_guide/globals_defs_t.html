@@ -165,6 +165,15 @@ $(document).ready(function(){initNavTree('globals_defs_t.html','');});
 <li>TIVX_DISTRIBUTION_MAX_OBJECTS
 : <a class="el" href="group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74">tivx_config.h</a>
 </li>
+<li>TIVX_ENUM_RAW_IMAGE_BUFFER_ACCESS
+: <a class="el" href="group__group__raw__image.html#ga5de369ebde0a967d1dca8638533f97b6">tivx_ext_raw_image.h</a>
+</li>
+<li>TIVX_ENUM_RAW_IMAGE_META_LOCATION
+: <a class="el" href="tivx__ext__raw__image_8h.html#a2a23508f14c6e27ffb729da95b74c8b2">tivx_ext_raw_image.h</a>
+</li>
+<li>TIVX_ENUM_RAW_IMAGE_PIXEL_CONTAINER
+: <a class="el" href="tivx__ext__raw__image_8h.html#a01d01a0fe1871806dcbfd73cdcaa0228">tivx_ext_raw_image.h</a>
+</li>
 <li>TIVX_ERROR_MAX_OBJECTS
 : <a class="el" href="group__group__tivx__obj__cfg.html#gad21f56b7fadec585969ec23c4c3896be">tivx_config.h</a>
 </li>
@@ -212,6 +221,9 @@ $(document).ready(function(){initNavTree('globals_defs_t.html','');});
 </li>
 <li>TIVX_GRAPH_MAX_PIPELINE_DEPTH
 : <a class="el" href="group__group__tivx__obj__desc__cfg.html#gae5d32d340ee632f0c72e0a757fbdf0d6">tivx_config.h</a>
+</li>
+<li>TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP
+: <a class="el" href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">tivx.h</a>
 </li>
 <li>TIVX_IMAGE_MAX_MAPS
 : <a class="el" href="group__group__vx__image__cfg.html#gaef582205a6921f7a3a4e8cddb5db47cb">tivx_config.h</a>
@@ -790,16 +802,16 @@ $(document).ready(function(){initNavTree('globals_defs_t.html','');});
 : <a class="el" href="group__group__vx__module__cfg.html#ga822e9e70bb9a23fb5da89354d8eb9390">vx_module.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_EXECUTED
-: <a class="el" href="tivx__obj__desc_8h.html#af7ae2fec33c7997a3106f061624d9add">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#gaf7ae2fec33c7997a3106f061624d9add">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_REPLICATED
-: <a class="el" href="tivx__obj__desc_8h.html#a412e9ff53c1a69e16a33ac511366f742">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#ga412e9ff53c1a69e16a33ac511366f742">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_TARGET_KERNEL
-: <a class="el" href="tivx__obj__desc_8h.html#a4a01ab216dbd031e89a5b4367bb33881">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#ga4a01ab216dbd031e89a5b4367bb33881">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_FLAG_IS_USER_CALLBACK
-: <a class="el" href="tivx__obj__desc_8h.html#a2f5e855e1a88921989451ebf30b70778">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#ga2f5e855e1a88921989451ebf30b70778">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_MAX_IN_NODES
 : <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga65703b0b4923bf9ef6393f5e0cead75b">tivx_config.h</a>
@@ -814,10 +826,10 @@ $(document).ready(function(){initNavTree('globals_defs_t.html','');});
 : <a class="el" href="group__group__tivx__obj__desc__cfg.html#ga5851041910fe499bd7839500a534a293">tivx_config.h</a>
 </li>
 <li>TIVX_NODE_OBJ_DESC_STATE_BLOCKED
-: <a class="el" href="tivx__obj__desc_8h.html#a089eba87daffa24b751335adec623d07">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#ga089eba87daffa24b751335adec623d07">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_NODE_OBJ_DESC_STATE_IDLE
-: <a class="el" href="tivx__obj__desc_8h.html#a262f17dda73a487c34a1f4db86dae51d">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#ga262f17dda73a487c34a1f4db86dae51d">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_OBJ_ARRAY_MAX_OBJECTS
 : <a class="el" href="group__group__tivx__obj__cfg.html#ga4571f23aebfffaf044dff626db230c56">tivx_config.h</a>
@@ -870,8 +882,23 @@ $(document).ready(function(){initNavTree('globals_defs_t.html','');});
 <li>TIVX_QUEUE_FLAG_BLOCK_ON_PUT
 : <a class="el" href="group__group__tivx__queue.html#ga4736bb537f0bc9b2b9cc14689da5c0e2">tivx_queue.h</a>
 </li>
+<li>TIVX_RAW_IMAGE
+: <a class="el" href="tivx__ext__raw__image_8h.html#ab524b56dc6e1006f09c87782e426a5ac">tivx_ext_raw_image.h</a>
+</li>
+<li>TIVX_RAW_IMAGE_MAX_EXPOSURES
+: <a class="el" href="group__group__raw__image.html#ga7c3c51c0c835c39297e3adb0464742b0">tivx_ext_raw_image.h</a>
+</li>
+<li>TIVX_RAW_IMAGE_MAX_MAPS
+: <a class="el" href="tivx__config_8h.html#aa8df8308d10dbcb2781ecf87f6498fa8">tivx_config.h</a>
+</li>
+<li>TIVX_RAW_IMAGE_MAX_OBJECTS
+: <a class="el" href="group__group__tivx__obj__cfg.html#ga876af1a9b8a33221d6f3a93bd98e71c3">tivx_config.h</a>
+</li>
+<li>TIVX_RAW_IMAGE_MAX_SUBIMAGES
+: <a class="el" href="tivx__config_8h.html#a18bad267691bec6d847c80a13bd6a8d8">tivx_config.h</a>
+</li>
 <li>TIVX_REF_FLAG_LOG_RT_TRACE
-: <a class="el" href="tivx__obj__desc_8h.html#ad862cb4bc5aa68f2856c1e76b0d4b744">tivx_obj_desc.h</a>
+: <a class="el" href="group__group__tivx__obj__desc.html#gad862cb4bc5aa68f2856c1e76b0d4b744">tivx_obj_desc.h</a>
 </li>
 <li>TIVX_REMAP_MAX_OBJECTS
 : <a class="el" href="group__group__tivx__obj__cfg.html#gada37f62ca1c0f1550e9480863eeefb7e">tivx_config.h</a>
@@ -1016,6 +1043,9 @@ $(document).ready(function(){initNavTree('globals_defs_t.html','');});
 </li>
 <li>TIVX_TYPE_IS_TI_OBJECT
 : <a class="el" href="group__group__vx__utils.html#gab26e165d5dc9c3c9e058dd44f4ac5979">vx_internal.h</a>
+</li>
+<li>TIVX_TYPE_RAW_IMAGE
+: <a class="el" href="group__group__raw__image.html#gafa94b4278c7ac5a6deaf3987a3e4225d">tivx_ext_raw_image.h</a>
 </li>
 <li>TIVX_USER_DATA_OBJECT_MAX_MAPS
 : <a class="el" href="tivx__config_8h.html#af10b51d73ca443f326004cc2ddd84426">tivx_config.h</a>

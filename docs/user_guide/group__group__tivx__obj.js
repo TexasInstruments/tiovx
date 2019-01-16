@@ -15,6 +15,8 @@ var group__group__tivx__obj =
       [ "isArrayUse", "structtivx__object__t.html#a81f7486fe88b0b82e29b9c4617bfd42e", null ],
       [ "user_data_object", "structtivx__object__t.html#ace35144918e2542f8a4e0fe91bf2e142", null ],
       [ "isUserDataObjectUse", "structtivx__object__t.html#aebf72aa0affa5ca2bc26045b3d3a0656", null ],
+      [ "raw_image", "structtivx__object__t.html#ae6f6de8987bc869f1620a4406ccba29d", null ],
+      [ "isRawImageUse", "structtivx__object__t.html#aa09d94302574fbe69a11738b5deef78a", null ],
       [ "convolution", "structtivx__object__t.html#a2e9b45b8816f674a8164de9928a481a3", null ],
       [ "isConvolutionUse", "structtivx__object__t.html#ae2e65b300a4f8ab37e303321281c902d", null ],
       [ "delay", "structtivx__object__t.html#a854b065603348454912c551c45809b2e", null ],

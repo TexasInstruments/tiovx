@@ -7,6 +7,7 @@ var group__group__tivx__obj__cfg =
     [ "TIVX_KERNEL_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#gab6578bf00139abafd71b1efe04bfe904", null ],
     [ "TIVX_ARRAY_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga732e4fea12fd457f6ad3cdee542c2a11", null ],
     [ "TIVX_USER_DATA_OBJECT_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga277d57e677b1635a209d8299b9075fab", null ],
+    [ "TIVX_RAW_IMAGE_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga876af1a9b8a33221d6f3a93bd98e71c3", null ],
     [ "TIVX_CONVOLUTION_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67", null ],
     [ "TIVX_DELAY_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#gaa203c9efa0d3d12a6ebe2876533bde30", null ],
     [ "TIVX_DISTRIBUTION_MAX_OBJECTS", "group__group__tivx__obj__cfg.html#ga02ea4b092003272d24cdc3ac81ab1d74", null ],

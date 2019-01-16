@@ -21,6 +21,7 @@ var files =
     [ "tivx_debug.h", "tivx__debug_8h.html", "tivx__debug_8h" ],
     [ "tivx_event.h", "tivx__event_8h.html", "tivx__event_8h" ],
     [ "tivx_event_queue.h", "tivx__event__queue_8h.html", "tivx__event__queue_8h" ],
+    [ "tivx_ext_raw_image.h", "tivx__ext__raw__image_8h.html", "tivx__ext__raw__image_8h" ],
     [ "tivx_ipc.h", "tivx__ipc_8h.html", "tivx__ipc_8h" ],
     [ "tivx_kernel_absdiff.h", "tivx__kernel__absdiff_8h.html", "tivx__kernel__absdiff_8h" ],
     [ "tivx_kernel_accumulate.h", "tivx__kernel__accumulate_8h.html", "tivx__kernel__accumulate_8h" ],
@@ -71,6 +72,10 @@ var files =
     [ "tivx_openvx_core_kernels.h", "tivx__openvx__core__kernels_8h.html", "tivx__openvx__core__kernels_8h" ],
     [ "tivx_platform.h", "tivx__platform_8h.html", "tivx__platform_8h" ],
     [ "tivx_queue.h", "tivx__queue_8h.html", "tivx__queue_8h" ],
+    [ "tivx_raw_image.h", "tivx__raw__image_8h.html", [
+      [ "tivx_raw_image_map_info_t", "structtivx__raw__image__map__info__t.html", "structtivx__raw__image__map__info__t" ],
+      [ "tivx_raw_image_t", "structtivx__raw__image__t.html", "structtivx__raw__image__t" ]
+    ] ],
     [ "tivx_target.h", "tivx__target_8h.html", "tivx__target_8h" ],
     [ "tivx_target_kernel.h", "tivx__target__kernel_8h.html", "tivx__target__kernel_8h" ],
     [ "tivx_target_kernel_instance.h", "tivx__target__kernel__instance_8h.html", "tivx__target__kernel__instance_8h" ],

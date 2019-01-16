@@ -86,6 +86,7 @@ $(document).ready(function(){initNavTree('tivx_8h.html','');});
 <code>#include &lt;TI/tivx_nodes.h&gt;</code><br/>
 <code>#include &lt;<a class="el" href="tivx__mem_8h_source.html">TI/tivx_mem.h</a>&gt;</code><br/>
 <code>#include &lt;<a class="el" href="tivx__tensor_8h_source.html">TI/tivx_tensor.h</a>&gt;</code><br/>
+<code>#include &lt;<a class="el" href="tivx__ext__raw__image_8h_source.html">TI/tivx_ext_raw_image.h</a>&gt;</code><br/>
 </div>
 <p><a href="tivx_8h_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
@@ -159,6 +160,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga38e7064937506c8ae840dc6eb779dda9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga38e7064937506c8ae840dc6eb779dda9">TIVX_CONFIG_PATH_LENGTH</a>&#160;&#160;&#160;(512u)</td></tr>
 <tr class="memdesc:ga38e7064937506c8ae840dc6eb779dda9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Max size of config file path.  <a href="group__group__tivx__ext__host.html#ga38e7064937506c8ae840dc6eb779dda9">More...</a><br/></td></tr>
 <tr class="separator:ga38e7064937506c8ae840dc6eb779dda9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga00120b8d056b95a44382e43760d7c27c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP</a>&#160;&#160;&#160;(0x00000001u)</td></tr>
+<tr class="memdesc:ga00120b8d056b95a44382e43760d7c27c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag used with tivxGraphParameterEnqueueReadyRef to indicate that this enqueue call if for pipeup phase.  <a href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">More...</a><br/></td></tr>
+<tr class="separator:ga00120b8d056b95a44382e43760d7c27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga077bde7b4af50f959972477bba9569ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga077bde7b4af50f959972477bba9569ef">dimof</a>(x)&#160;&#160;&#160;(sizeof(x)/sizeof(x[0]))</td></tr>
 <tr class="memdesc:ga077bde7b4af50f959972477bba9569ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to find size of array.  <a href="group__group__tivx__ext__host.html#ga077bde7b4af50f959972477bba9569ef">More...</a><br/></td></tr>
 <tr class="separator:ga077bde7b4af50f959972477bba9569ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -273,6 +277,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga0df519455e9ddf8fad8c88983ba3970e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e">tivxEnableGraphStreaming</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a> trigger_node)</td></tr>
 <tr class="memdesc:ga0df519455e9ddf8fad8c88983ba3970e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables streaming and sets the given node as a trigger node of the graph.  <a href="group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e">More...</a><br/></td></tr>
 <tr class="separator:ga0df519455e9ddf8fad8c88983ba3970e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf216cbe97f920add114dc8cdbfa1846c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gaf216cbe97f920add114dc8cdbfa1846c">tivxGraphParameterEnqueueReadyRef</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> graph_parameter_index, <a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> *refs, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> num_refs, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> flags)</td></tr>
+<tr class="memdesc:gaf216cbe97f920add114dc8cdbfa1846c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as vxGraphParameterEnqueueReadyRef except that it take a additional TIOVX specific flag parameter.  <a href="group__group__tivx__ext__host.html#gaf216cbe97f920add114dc8cdbfa1846c">More...</a><br/></td></tr>
+<tr class="separator:gaf216cbe97f920add114dc8cdbfa1846c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface to TI extension APIs. </p>

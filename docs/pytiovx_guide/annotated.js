@@ -16,6 +16,8 @@ var annotated =
         [ "ThresholdAttribute", "classtiovx_1_1attribute_1_1ThresholdAttribute.html", null ],
         [ "RemapAttribute", "classtiovx_1_1attribute_1_1RemapAttribute.html", null ],
         [ "ObjectArrayAttribute", "classtiovx_1_1attribute_1_1ObjectArrayAttribute.html", null ],
+        [ "UserDataObjectAttribute", "classtiovx_1_1attribute_1_1UserDataObjectAttribute.html", null ],
+        [ "RawImageAttribute", "classtiovx_1_1attribute_1_1RawImageAttribute.html", null ],
         [ "Attribute", "classtiovx_1_1attribute_1_1Attribute.html", null ]
       ] ],
       [ "context", null, [
@@ -144,7 +146,7 @@ var annotated =
         [ "Scalar", "classtiovx_1_1scalar_1_1Scalar.html", "classtiovx_1_1scalar_1_1Scalar" ]
       ] ],
       [ "target_extended", null, [
-        [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", "classtiovx_1_1target__extended_1_1TargetExtended" ]
+        [ "TargetExtended", "classtiovx_1_1target__extended_1_1TargetExtended.html", null ]
       ] ],
       [ "threshold", null, [
         [ "Threshold", "classtiovx_1_1threshold_1_1Threshold.html", "classtiovx_1_1threshold_1_1Threshold" ]

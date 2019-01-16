@@ -5,7 +5,7 @@ var NAVTREE =
     [ "TIOVX Build Instructions", "BUILD_INSTRUCTIONS.html", [
       [ "Build instructions for Vision SDK Platform (TDA2x/3x/2Ex)", "BUILD_INSTRUCTIONS.html#BUILD_VSDK", null ],
       [ "Build instructions for x86 Linux Platform (HOST Emulation Mode)", "BUILD_INSTRUCTIONS.html#BUILD_LINUX", null ],
-      [ "Makefile build options", "BUILD_INSTRUCTIONS.html#BUILD_OPTIONS", null ],
+      [ "Makefile build options (found in Makefile and/or build_flags_vsdk.mak)", "BUILD_INSTRUCTIONS.html#BUILD_OPTIONS", null ],
       [ "Deleting all generated files", "BUILD_INSTRUCTIONS.html#BUILD_CLEAN", null ]
     ] ],
     [ "TI Disclaimer", "TI_DISCLAIMER.html", null ],
@@ -48,17 +48,18 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "API_REFERENCE.html",
-"group__group__tivx__int__common__kernel.html#ga501bec638f8c6272c292692f7329d293",
-"group__group__tivx__target__kernel.html#ga08730671086c805df9f4e00d4a4ef383",
-"index.html",
-"structtivx__meta__format__t_1_1distribution.html#aa9da44340b5d9670528b5aa1a993cd23",
-"structtivx__obj__desc__threshold__t.html#acd22578ec147e45919cb255e4f3b8351",
-"tiovx__performance__TDA3x__BIOS_8html.html",
-"tivx__debug_8h.html",
-"tivx__kernel__optical__flow__pyr__lk_8h.html#a75a9c5c1b117bbd1fddbd6580c0d715a",
-"tivx__target_8h.html#ga91042e4d910596a3f8889ba4a26df97a",
-"vx__parameter_8h.html",
-"vx__types_8h.html#a64bbf073b67ff3b5398d271fe49f940ea9cb5401a74993394843bc1b8eb939314"
+"group__group__tivx__int__common__kernel.html#ga1ff695975cc61611d36cb09b6156fb3f",
+"group__group__tivx__platform.html#ga163eb793acabcf9c228318bd9112b8d8",
+"group__group__vx__node.html#gaa40301a5bc1bd16df614c3c7eab93feb",
+"structtivx__image__map__info__t.html#a1d5a67c881bd1291b58fadc3d4c19808",
+"structtivx__obj__desc__pyramid__t.html",
+"structtivx__target__t.html#a1732a7c5991338bb7ab4b038cbfd4150",
+"tivx__bam__kernel__database_8h.html#a8903ed94d7cbc733d4198bb22991655caba22a1b96f0ce6e8fb2d3916c2613233",
+"tivx__kernel__channel__combine_8h.html",
+"tivx__mem_8h.html#ga9c487e78534a06bf56eff7dbda470d3a",
+"uniontivx__obj__desc__shm__entry__t.html#ad9500ced9c5373408f56c18b314a3784",
+"vx__types_8h.html#a249dd49823433ffa16cf2e60ed25b7f1af3e41386840c4ac664fecee5e158923a",
+"vx__types_8h.html#aa2387ff4d3e967f124fb316300503f92a5f12f7cf595d77e0f682b87f5b38adf6"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

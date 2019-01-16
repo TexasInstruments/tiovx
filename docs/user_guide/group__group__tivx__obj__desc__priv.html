@@ -65,11 +65,11 @@ $(document).ready(function(){initNavTree('group__group__tivx__obj__desc__priv.ht
 <a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Object Descriptor APIs<div class="ingroups"><a class="el" href="group__group__tivx__ext__common.html">a: TIOVX Common APIs</a></div></div>  </div>
+<div class="title">Object Descriptor APIs<div class="ingroups"><a class="el" href="group__group__vx__framework.html">a: TIOVX Implementation Modules</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p>APIs for object descriptor manipulation.  
+<p>Internal APIs for object descriptor operations.  
 <a href="#details">More...</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -140,7 +140,7 @@ Functions</h2></td></tr>
 <tr class="memitem:ga43ebdbb9272f3336019357538f5c6e8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc__priv.html#ga43ebdbb9272f3336019357538f5c6e8c">tivxObjDescGet</a> (uint16_t obj_desc_id)</td></tr>
 <tr class="memdesc:ga43ebdbb9272f3336019357538f5c6e8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get obj descriptor corresponding to the object descriptor ID.  <a href="#ga43ebdbb9272f3336019357538f5c6e8c">More...</a><br/></td></tr>
 <tr class="separator:ga43ebdbb9272f3336019357538f5c6e8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7a5db8d3c1c9582edec01558e6d38152"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc__priv.html#ga7a5db8d3c1c9582edec01558e6d38152">tivxObjDescIsValidType</a> (<a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a> *obj_desc, <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc_type_e</a> type)</td></tr>
+<tr class="memitem:ga7a5db8d3c1c9582edec01558e6d38152"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc__priv.html#ga7a5db8d3c1c9582edec01558e6d38152">tivxObjDescIsValidType</a> (<a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a> *obj_desc, <a class="el" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc_type_e</a> type)</td></tr>
 <tr class="memdesc:ga7a5db8d3c1c9582edec01558e6d38152"><td class="mdescLeft">&#160;</td><td class="mdescRight">Checks if object desc pointer is valid and it is of required type.  <a href="#ga7a5db8d3c1c9582edec01558e6d38152">More...</a><br/></td></tr>
 <tr class="separator:ga7a5db8d3c1c9582edec01558e6d38152"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8311436304a2969b378a58395a114b2c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__obj__desc__priv.html#ga8311436304a2969b378a58395a114b2c">tivxObjDescInit</a> (void)</td></tr>
@@ -151,7 +151,7 @@ Functions</h2></td></tr>
 <tr class="separator:gae19ec92d7558538be397f29b891091fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>APIs for object descriptor manipulation. </p>
+<p>Internal APIs for object descriptor operations. </p>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="ga0e5252d445f658c22676ab8f86c32dbe"></a>
 <div class="memitem">
@@ -294,7 +294,7 @@ Functions</h2></td></tr>
 <p>Allocate a Object descriptor. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">type</td><td>[in] Type of object descriptor to allocate, see <a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc_type_e</a> </td></tr>
+    <tr><td class="paramname">type</td><td>[in] Type of object descriptor to allocate, see <a class="el" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc_type_e</a> </td></tr>
     <tr><td class="paramname">ref</td><td>[in] vx_reference that is associated with this object descriptor. If not applicable set to NULL</td></tr>
   </table>
   </dd>
@@ -404,7 +404,7 @@ NULL, if object descriptor could not be allocated </dd></dl>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="tivx__obj__desc_8h.html#a4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc_type_e</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__group__tivx__obj__desc.html#ga4858f5eeb4edfc862b9b8b2039ed8109">tivx_obj_desc_type_e</a>&#160;</td>
           <td class="paramname"><em>type</em>&#160;</td>
         </tr>
         <tr>
