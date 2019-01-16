@@ -293,7 +293,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 /*! \brief [Graph] Creates a DSS Display Node.
  *
  * \param [in] graph         The reference to the graph.
- * \param [in] configuration The input array of a single display params structure of type <tt>\ref tivx_display_params_t</tt>.
+ * \param [in] configuration The input user data object of a single display params structure of type <tt>\ref tivx_display_params_t</tt>.
  * \param [in] image         The input image in one of the below formats:
  *                           <tt>\ref VX_DF_IMAGE_RGB</tt>,
  *                           <tt>\ref VX_DF_IMAGE_RGBX</tt>,
@@ -310,10 +310,12 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDisplayNode(
                                             vx_user_data_object configuration,
                                             vx_image image);
 
-/*! \brief [Graph] Creates a CAPTURE Node.
+/*! \brief [Graph] Creates a capture Node. The capture node takes in a user data object of type <tt>\ref tivx_capture_params_t</tt> to
+                   configure the sensors. The outputs are of type object array which contain vx_image.
  * \param [in] graph The reference to the graph.
- * \param [in] input
- * \param [out] output
+ * \param [in] input The input user data object of a single capture params structure of type <tt>\ref tivx_capture_params_t</tt>.
+ * \param [out] output Object array output which has been created from an exemplar of vx_image's. The input MUST be made from format
+                <tt>\ref VX_DF_IMAGE_RGBX</tt>.
  * \see <tt>TIVX_KERNEL_CAPTURE_NAME</tt>
  * \ingroup group_vision_function_capture
  * \return <tt>\ref vx_node</tt>.
