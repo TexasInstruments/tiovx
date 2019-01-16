@@ -26,6 +26,6 @@ BUILD_CT_TIOVX_HWA=yes
 PROFILE?=all
 
 # Applied to target mode only
-BUILD_LINUX_A72?=yes
+BUILD_LINUX_A72?=no
 # Applied to target mode only
 BUILD_VLAB?=yes
