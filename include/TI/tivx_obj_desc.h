@@ -534,9 +534,9 @@ typedef struct _tivx_obj_desc_lut
     /*! \brief The item type of the lut. */
     vx_enum item_type;
     /*! \brief size of each item */
-    vx_size item_size;
+    vx_uint32 item_size;
     /*! \brief number of items */
-    vx_size num_items;
+    vx_uint32 num_items;
     /*! \brief size of buffer pointed to by mem_ptr */
     uint32_t mem_size;
 
@@ -552,7 +552,7 @@ typedef struct _tivx_obj_desc_pyramid
     /*! \brief base object descriptor */
     tivx_obj_desc_t base;
     /*! \brief number of pyramid levels */
-    vx_size num_levels;
+    vx_uint32 num_levels;
     /*! \brief width of the level0 image */
     vx_uint32 width;
     /*! \brief height of the level0 image */
