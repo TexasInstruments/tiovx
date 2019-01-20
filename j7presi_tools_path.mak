@@ -9,7 +9,6 @@ VXLIB_PATH ?= $(PSDK_PATH)/vxlib_c66x_1_1_3_0
 TDA4X_C_MODELS_PATH ?= $(PSDK_PATH)/tda4x_c_models
 TIDL_PATH ?= $(PSDK_PATH)/tidl_j7_00_05_00_00/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
-OPENCV_LIB_PATH ?= /usr/lib/x86_64-linux-gnu
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
 
 TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_16.9.9.LTS

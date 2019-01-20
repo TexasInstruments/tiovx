@@ -15,8 +15,6 @@ STATIC_LIBS += ldc
 
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 STATIC_LIBS += vx_target_kernels_dmpac_dof
-STATIC_LIBS += libDOF DOFalgo DOFcommon
-SYS_SHARED_LIBS += opencv_imgproc opencv_ml opencv_core
 STATIC_LIBS += vx_kernels_hwa_tests
 endif
 
@@ -45,7 +43,6 @@ STATIC_LIBS += vx_kernels_tidl vx_target_kernels_tidl vx_target_kernels_ivision_
 SYS_SHARED_LIBS += rt dl png
 
 LDIRS+=$(TDA4X_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
-LDIRS+=$(OPENCV_LIB_PATH)
 LDIRS+=$(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)
 
 LDIRS       += $(IMAGING_PATH)/out/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)

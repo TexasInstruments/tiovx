@@ -90,6 +90,8 @@ typedef struct {
 
 #else
 
+#include <dlfcn.h>
+
 typedef struct {
 
     int magic;
@@ -410,15 +412,37 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
 
 #else
+        int (*dofProcess)();
+        void *handle = dlopen("libDOF.so", RTLD_LOCAL|RTLD_LAZY|RTLD_DEEPBIND );
 
-        dofProcess(
-           &prms->dofParams,
-           prms->input_current,
-           prms->input_reference,
-           past_prediction,
-           prms->pyramid_size,
-           prms->current_prediction,
-           prms->confidence_histogram);
+        if(handle == NULL)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to load libDOF.so\n");
+            status = VX_FAILURE;
+        }
+        else
+        {
+            dlerror();
+            dofProcess = dlsym(handle, "dofProcess");
+
+            if (dlerror() != NULL)  {
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Unable to load dofProcess symbol from libDOF.so\n");
+                status = VX_FAILURE;
+            }
+            else
+            {
+                dofProcess(
+                   &prms->dofParams,
+                   prms->input_current,
+                   prms->input_reference,
+                   past_prediction,
+                   prms->pyramid_size,
+                   prms->current_prediction,
+                   prms->confidence_histogram);
+
+                dlclose(handle);
+            }
+        }
 
 #endif
 
