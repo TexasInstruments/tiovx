@@ -1463,7 +1463,7 @@ class KernelExportCode :
             self.target_c_code.write_line("    (sizeof(tivx%sParams) == size))" % self.kernel.name_camel, files=self.prms_write)
             self.target_c_code.write_open_brace(files=self.prms_write)
             for local in self.kernel.local_mem_list :
-                 if prm.type == Type.IMAGE :
+                 if self.is_supported_type(local.prm.type) :
                      self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, TIVX_MEM_EXTERNAL);" %
                          (local.name, local.name) , files=self.prms_write)
 
@@ -1587,6 +1587,7 @@ class KernelExportCode :
             self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
         need_plane_idx_var = False
         need_pyramid_idx_var = False
+        printed_incrementer = False
         for prm in self.kernel.params :
             if prm.do_map or prm.do_unmap or (Type.is_scalar_type(prm.type) is True):
                 if Type.IMAGE == prm.type or Type.PYRAMID == prm.type:
@@ -1600,9 +1601,15 @@ class KernelExportCode :
                 self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) )
                 if prm.type == Type.PYRAMID :
                     self.target_c_code.write_line("%s *img_%s_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];" % (Type.get_obj_desc_name(Type.IMAGE), prm.name_lower) )
+                    if printed_incrementer is False :
+                        self.target_c_code.write_line("vx_uint32 i;")
+                        printed_incrementer = True
                 #TODO: Object Array is hardcoded to image ... modify for proper type
                 if prm.type == Type.OBJECT_ARRAY :
                     self.target_c_code.write_line("%s *img_%s_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];" % (Type.get_obj_desc_name(Type.IMAGE), prm.name_lower) )
+                    if printed_incrementer is False :
+                        self.target_c_code.write_line("vx_uint32 i;")
+                        printed_incrementer = True
         if need_plane_idx_var is True :
             self.target_c_code.write_line("uint16_t plane_idx;")
         if need_pyramid_idx_var is True :

@@ -75,8 +75,8 @@ class Module(Enum):
     STEREO = "stereo"
     ## Module is imaging
     IMAGING = "imaging"
-    ## Module is surroundview
-    SURROUNDVIEW = "surroundview"
+    ## Module is srv
+    SRV = "srv"
     ## Module is front_camera
     FRONT_CAMERA = "front_camera"
     ## Module is cms
