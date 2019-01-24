@@ -517,6 +517,7 @@ typedef struct {
                                     *   be generated.  The configuration files are used for the edge enhancer, the FlexCC (color conversion), FlexCFA,
                                     *   H3A (Auto-Exposure, Auto-white balance, Auto-focus), Nsf4 (noise filter), and Rawfe. Please contact your local
                                     *   TI representative for more information. */
+    uint16_t  sensor_dcc_id;       /*!< Identifier for DCC profile */
     uint16_t  use_case;            /*!< Identifier corresponding to the sub-setting within the sensor configuration of the DCC file (not yet supported) */
 
     /* Expected to not change in between frames */

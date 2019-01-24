@@ -181,6 +181,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    vx_status dcc_status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_raw_image_t *raw_desc;
@@ -392,6 +393,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         {
             prms->rawfe_params.h3a_mux_sel = 3;
         }
+
         /*Apply AWB Gains*/
         {
             tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
@@ -402,7 +404,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
                 prms->rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
             }
-        }    
+            prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+            prms->dcc_input_params->cameraId = params->sensor_dcc_id;
+            prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
+            prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
+            prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
+        }
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
         /* H3A */
