@@ -18,6 +18,8 @@ void tivxRegisterIVisionTargetKernels(void);
 void tivxUnRegisterIVisionTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
+void tivxRegisterTestKernelsTargetC66Kernels(void);
+void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 
 void tivxInit(void)
 {
@@ -69,7 +71,7 @@ void tivxDeInit(void)
     tivxPlatformDeleteTargets();
 
 #ifdef BUILD_CONFORMANCE_TEST
-#if defined (C66) || (M4) || (A15)
+#if defined (C66)
     tivxUnRegisterCaptureTargetArmKernels();
 #endif
 
