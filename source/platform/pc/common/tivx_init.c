@@ -80,6 +80,9 @@ void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 void tivxRegisterTestKernelsTargetC66Kernels(void);
 void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 
+void tivxRegisterTIDLTargetKernels(void);
+void tivxUnRegisterTIDLTargetKernels(void);
+
 void tivxInit(void)
 {
     tivx_set_debug_zone(VX_ZONE_INIT);
@@ -123,6 +126,11 @@ void tivxInit(void)
     tivxRegisterTutorialTargetKernels();
     #endif
 
+    #ifndef _DISABLE_TIDL
+    tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
+    tivxRegisterTIDLTargetKernels();
+    #endif
+
     /* let rest of system think it is running on DSP1 */
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
 
@@ -147,6 +155,10 @@ void tivxDeInit(void)
 
     #ifdef BUILD_TUTORIAL
     tivxUnRegisterTutorialTargetKernels();
+    #endif
+
+    #ifndef _DISABLE_TIDL
+    tivxUnRegisterTIDLTargetKernels();
     #endif
 
     tivxHostDeInit();

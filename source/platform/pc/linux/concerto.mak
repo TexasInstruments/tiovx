@@ -28,6 +28,9 @@ CSOURCES    := \
 
 IDIRS += $(TIOVX_PATH)/source/include $(COMMON_FILES_BASE_PATH)
 
+ifneq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
+DEFS += _DISABLE_TIDL
+endif
 
 include $(FINALE)
 

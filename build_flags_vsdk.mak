@@ -12,14 +12,14 @@ BUILD_TARGET_MODE?=yes
 # Build for x86 PC
 BUILD_EMULATION_MODE?=no
 # valid values: X86 x86_64 all
-BUILD_EMULATION_ARCH?=x86_64
+BUILD_EMULATION_ARCH?=X86
 
 # Flags to enable disable, groups of conformance tests (CT)
 BUILD_CT_KHR=yes
 BUILD_CT_TIOVX=yes
 BUILD_CT_TIOVX_TEST_KERNELS=yes
 BUILD_CT_TIOVX_IVISION=yes
-BUILD_CT_TIOVX_TIDL=no
+BUILD_CT_TIOVX_TIDL=yes
 BUILD_CT_TIOVX_HWA=no
 
 # valid values: release debug all

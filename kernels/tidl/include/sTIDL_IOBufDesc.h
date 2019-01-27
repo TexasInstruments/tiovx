@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) {2015 - 2019} Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -61,59 +61,66 @@
 */
 
 
+/**
+@file      sTIDL_IOBufDesc.h
+@brief     This file defines the structure sTIDL_IOBufDesc_t to maintain cross-compatibility with next version of TI-DL
+@version 0.1 Dec 2018 : Initial Code
+*/
 
-#ifndef TIVX_NODES_H_
-#define TIVX_NODES_H_
+/** @ingroup    TI_DL */
+/*@{*/
+#ifndef STIDL_IOBUFDESC_H
+#define STIDL_IOBUFDESC_H
 
-#include <VX/vx.h>
+#include "itidl_ti.h"
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/*!
- * \file
- * \brief The list of supported nodes in the TIOVX.
- */
-
-/*! \brief [Graph] Creates a Harris Corners Node.
- * \param [in] graph The reference to the graph.
- * \param [in] input The input <tt>\ref VX_DF_IMAGE_U8</tt> image.
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
-                            vx_image  input,
-                            vx_uint32 scaling_factor,
-                            vx_int32  nms_threshold,
-                            vx_uint8  q_shift,
-                            vx_uint8  win_size,
-                            vx_uint8  score_method,
-                            vx_uint8  suppression_method,
-                            vx_array  corners,
-                            vx_scalar num_corners);
-
-/*! \brief [Graph] Creates a TIDL Node.
- * \param [in] Reference to vx_graph.
- * \param [in] Reference to vx_kernel.
- * \param [in] Array of vx_reference params.  There must be at least 4 parameters: 
- *             0: vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
- *             1: vx_user_data_object type corresponding to the network (named string: TIDL_network)
- *             2: vx_tensor type for at least 1 input (can be many)
- *             3: vx_tensor type for at least 1 output (can be many)
- * \param [in] Lengh of params[] array.
- * \see <tt>TIVX_KERNEL_TIDL_NAME</tt>
- * \ingroup group_vision_function_tidl
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
-                                              vx_kernel kernel,
-                                              vx_reference params[],
-                                              vx_uint32 num_params);
-                                              
-#ifdef __cplusplus
-}
-#endif
+/**
+@struct  sTIDL_IOBufDesc_t
+@brief   This structure defines the Input and output buffer descriptors
+         required for a given Layer group
+*/
+typedef struct
+{
+  /** Numbner of Input buffer required by the Layer group  */
+  int32_t numInputBuf;
+  /** Numbner of Output buffer required by the Layer group  */
+  int32_t numOutputBuf;
+  /** Feature width of each input buffer */
+  int32_t inWidth[TIDL_MAX_ALG_IN_BUFS];
+  /** Feature Height of each input buffer */
+  int32_t inHeight[TIDL_MAX_ALG_IN_BUFS];
+  /** Number of channels in each input buffer */
+  int32_t inNumChannels[TIDL_MAX_ALG_IN_BUFS];
+  /** Left zero padding required for each input buffer */
+  int32_t inPadL[TIDL_MAX_ALG_IN_BUFS];
+  /** Top zero padding required for each input buffer */
+  int32_t inPadT[TIDL_MAX_ALG_IN_BUFS];
+  /** Right zero padding required for each input buffer */
+  int32_t inPadR[TIDL_MAX_ALG_IN_BUFS];
+  /** Bottom zero padding required for each input buffer */
+  int32_t inPadB[TIDL_MAX_ALG_IN_BUFS];
+  /** Element type of each input buffer @ref eTIDL_ElementType */
+  int32_t inElementType[TIDL_MAX_ALG_IN_BUFS];
+  /** Data ID as per Net structure for each input buffer */
+  int32_t inDataId[TIDL_MAX_ALG_IN_BUFS];
+  /** Feature width of each output buffer */
+  int32_t outWidth[TIDL_MAX_ALG_OUT_BUFS];
+  /** Feature Height of each output buffer */
+  int32_t outHeight[TIDL_MAX_ALG_OUT_BUFS];
+  /** Number of channels in each output buffer */
+  int32_t outNumChannels[TIDL_MAX_ALG_OUT_BUFS];
+  /** Left zero padding required for each output buffer */
+  int32_t outPadL[TIDL_MAX_ALG_OUT_BUFS];
+  /** top zero padding required for each output buffer */
+  int32_t outPadT[TIDL_MAX_ALG_OUT_BUFS];
+  /** Right zero padding required for each output buffer */
+  int32_t outPadR[TIDL_MAX_ALG_OUT_BUFS];
+  /** Bottom zero padding required for each output buffer */
+  int32_t outPadB[TIDL_MAX_ALG_OUT_BUFS];
+  /** Element type of each output buffer @ref eTIDL_ElementType */
+  int32_t outElementType[TIDL_MAX_ALG_OUT_BUFS];
+  /** Data ID as per Net structure for each output buffer */
+  int32_t outDataId[TIDL_MAX_ALG_OUT_BUFS];
+} sTIDL_IOBufDesc_t;
 
 #endif

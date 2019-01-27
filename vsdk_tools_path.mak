@@ -40,6 +40,7 @@ GCC_LINUX_ROOT ?= /usr/
 endif
 
 VXLIB_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/vxlib_c66x_1_1_3_0
+TIDL_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/dsp_apps/modules/ti_dl
 EVE_SW_PATH ?= $(VSDK_TOOLS_PATH)/algorithms/eve_sw_01_19_00_00
 XDIAS_PATH ?= $(VSDK_TOOLS_PATH)/codecs/xdais_7_24_00_04
 EDMA3_LLD_PATH ?= $(VSDK_TOOLS_PATH)/drivers/edma3_lld_02_12_00_20

@@ -72,6 +72,9 @@ static char menu[] = {
     "\n 1: Image"
     "\n 2: Graph"
     "\n 3: Graph Pipeline"
+#ifndef _DISABLE_TIDL
+    "\n 4: TI-DL"
+#endif
     "\n"
     "\n a: Run All"
     "\n"
@@ -108,6 +111,13 @@ void vx_tutorial_run_interactive()
                 break;
             case '3':
                 vx_tutorial_graph_pipeline_run_interactive();
+                break;
+            case '4':
+#ifdef _DISABLE_TIDL
+                printf("tidl tutorial disabled when compiled in 64-bits host-emulation, please compile in 32-bits\n");
+#else
+                vx_tutorial_tidl();
+#endif
                 break;
             case 'a':
                 vx_tutorial_run_all();

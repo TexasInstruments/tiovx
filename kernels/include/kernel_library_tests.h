@@ -61,6 +61,7 @@
 */
 
 #include "test_kernel_library_tests.h"
+#include "tidl/test/test_main.h"
 
 #ifdef CUSTOM_KERNEL_PATH
 #include "custom_kernel_library_tests.h"

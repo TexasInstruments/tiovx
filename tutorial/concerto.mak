@@ -36,11 +36,32 @@ CH04_SOURCES := \
 	ch04_graph_pipeline/vx_tutorial_graph_pipeline.c \
 	ch04_graph_pipeline/vx_tutorial_graph_pipeline_two_nodes.c \
 
+IDIRS       += $(TIOVX_PATH)/kernels/tidl/include
+IDIRS       += $(TIOVX_PATH)/utils/include
+IDIRS       += $(IVISION_PATH)
+IDIRS       += $(TIDL_PATH)/inc
+IDIRS       += $(XDIAS_PATH)/packages
+IDIRS       += $(EVE_SW_PATH)/common
+
+CH05_SOURCES := \
+	ch05_tidl/vx_tutorial_tidl.c \
+	ch05_tidl/imagenet_class_labels.c \
+
+ifeq ($(TARGET_PLATFORM),PC)
+CFLAGS += -DHOST_EMULATION
+endif
+
 CSOURCES    := \
 	$(CH01_SOURCES) \
 	$(CH02_SOURCES) \
 	$(CH03_SOURCES) \
 	$(CH04_SOURCES) \
+
+ifeq ($(BUILD_SDK), $(filter $(BUILD_SDK), vsdk psdk))
+CSOURCES += $(CH05_SOURCES)
+else
+DEFS += _DISABLE_TIDL
+endif
 
 include $(FINALE)
 

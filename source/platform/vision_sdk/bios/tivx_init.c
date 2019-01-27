@@ -20,6 +20,8 @@ void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
 void tivxRegisterTestKernelsTargetC66Kernels(void);
 void tivxUnRegisterTestKernelsTargetC66Kernels(void);
+void tivxRegisterTIDLTargetKernels(void);
+void tivxUnRegisterTIDLTargetKernels(void);
 
 void tivxInit(void)
 {
@@ -55,6 +57,10 @@ void tivxInit(void)
     #endif
 #endif
 
+#if (defined (C66) || defined (EVE))
+    tivxRegisterTIDLTargetKernels();
+#endif
+
 #if defined (EVE) && defined (BUILD_IVISION_KERNELS)
     tivxRegisterIVisionTargetKernels();
 #endif
@@ -86,6 +92,10 @@ void tivxDeInit(void)
     #ifdef BUILD_TUTORIAL
     tivxUnRegisterTutorialTargetKernels();
     #endif
+#endif
+
+#if (defined (C66) || defined (EVE))
+    tivxUnRegisterTIDLTargetKernels();
 #endif
 
 #if defined (EVE) && defined (BUILD_IVISION_KERNELS)

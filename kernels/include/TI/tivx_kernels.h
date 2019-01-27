@@ -116,6 +116,14 @@ enum tivx_kernel_ivision_e {
     TIVX_KERNEL_IVISION_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };
 
+/*!
+ * \brief Used for the Application to create the tidl kernel from the context.
+ * \ingroup group_vision_function_tidl
+ */
+vx_kernel tivxAddKernelTIDL(vx_context context,
+                            uint32_t num_input_tensors,
+                            uint32_t num_output_tensors);
+
 
 
 #ifdef __cplusplus
