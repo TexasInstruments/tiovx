@@ -516,6 +516,8 @@ class KernelExportCode :
             return True
         elif attribute == ArrayAttribute.ITEMSIZE :
             return True
+        elif attribute == ArrayAttribute.ITEMTYPE :
+            return True
         elif attribute == PyramidAttribute.FORMAT :
             return True
         elif attribute == MatrixAttribute.TYPE :
@@ -523,6 +525,21 @@ class KernelExportCode :
         elif attribute == LutAttribute.TYPE :
             return True
         return False
+
+    # performs conversion from string to array type
+    def convert_string_to_array_type(self, print_type):
+        if print_type.startswith('VX_TYPE_') :
+            string_length = len(print_type)
+            substring = print_type[8:string_length]
+            for t in Type :
+                if t.name == substring :
+                    return t
+        return Type.NULL
+
+    # performs check on array type to see if it is a non-enum type
+    def check_array_type(self, print_type):
+        array_type = self.convert_string_to_array_type(print_type)
+        return Type.is_array_type(array_type)
 
     def generate_host_c_validate_func_code(self):
         self.host_c_code.write_line("static vx_status VX_CALLBACK tivxAddKernel%sValidate(vx_node node," % self.kernel.name_camel)
@@ -645,12 +662,24 @@ class KernelExportCode :
                         self.host_c_code.write_line("if (%s != %s_fmt)" % (self.print_data_type[0], prm.name_lower))
                 elif Type.ARRAY == prm.type :
                     if len(prm.data_types) > 1 :
-                        self.host_c_code.write_line("if( (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, self.print_data_type[0]))
+                        if self.check_array_type(self.print_data_type[0]) :
+                            self.host_c_code.write_line("if( (%s_item_type != %s) &&" % (prm.name_lower, self.print_data_type[0]))
+                        else :
+                            self.host_c_code.write_line("if( (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, self.print_data_type[0]))
                         for dt in self.print_data_type[1:-1] :
-                            self.host_c_code.write_line("    (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, dt))
-                        self.host_c_code.write_line("    (%s_item_size != sizeof(%s)))" % (prm.name_lower, self.print_data_type[-1]))
+                            if self.check_array_type(dt) :
+                                self.host_c_code.write_line("    (%s_item_type != %s) &&" % (prm.name_lower, dt))
+                            else :
+                                self.host_c_code.write_line("    (%s_item_size != sizeof(%s)) &&" % (prm.name_lower, dt))
+                        if self.check_array_type(self.print_data_type[-1]) :
+                            self.host_c_code.write_line("    (%s_item_type != %s))" % (prm.name_lower, self.print_data_type[-1]))
+                        else :
+                            self.host_c_code.write_line("    (%s_item_size != sizeof(%s)))" % (prm.name_lower, self.print_data_type[-1]))
                     else :
-                        self.host_c_code.write_line("if ( %s_item_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]))
+                        if self.check_array_type(self.print_data_type[0]) :
+                            self.host_c_code.write_line("if ( %s_item_type != %s)" % (prm.name_lower, self.print_data_type[0]))
+                        else :
+                            self.host_c_code.write_line("if ( %s_item_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]))
                 elif Type.MATRIX == prm.type or Type.LUT == prm.type:
                     if len(prm.data_types) > 1 :
                         self.host_c_code.write_line("if( (%s != %s_type) &&" % (self.print_data_type[0], prm.name_lower))

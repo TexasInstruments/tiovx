@@ -145,16 +145,20 @@ class Type(Enum):
     META_FORMAT  = 35
     ## OpenVX equivalent = VX_TYPE_OBJECT_ARRAY
     OBJECT_ARRAY = 36
+    ## OpenVX equivalent = VX_TYPE_RECTANGLE
+    RECTANGLE     = 37
     ## OpenVX equivalent = VX_TYPE_KEYPOINT
-    KEYPOINT     = 37
+    KEYPOINT     = 38
     ## OpenVX equivalent = VX_TYPE_COORDINATES2D
-    COORDINATES2D = 38
+    COORDINATES2D = 39
+    ## OpenVX equivalent = VX_TYPE_COORDINATES3D
+    COORDINATES3D = 40
     ## OpenVX equivalent = VX_TYPE_USER_DATA_OBJECT
-    USER_DATA_OBJECT = 39
+    USER_DATA_OBJECT = 41
     ## OpenVX equivalent = TIVX_TYPE_RAW_IMAGE
-    RAW_IMAGE = 40
+    RAW_IMAGE = 42
     ## Used when optional parameters
-    NULL = 41
+    NULL = 43
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:
@@ -189,6 +193,19 @@ class Type(Enum):
         if type > Type.INVALID and type < Type.REFERENCE :
             return True
         if type == Type.SCALAR :
+            return True
+        return False
+
+    def is_array_type(type) :
+        if type > Type.INVALID and type < Type.REFERENCE :
+            return True
+        if type == Type.RECTANGLE :
+            return True
+        if type == Type.KEYPOINT :
+            return True
+        if type == Type.COORDINATES2D :
+            return True
+        if type == Type.COORDINATES3D :
             return True
         return False
 
