@@ -118,6 +118,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
+    vx_status dcc_status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_raw_image_t *raw_desc;
@@ -348,7 +349,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             prms->config.h3a = (uint32_t*)pH3a_buf->data;
         }
 
-        /*Apply AWB Gains*/
+        /*Apply AWB Gains and get DCC parameters for the relevant photospace*/
         {
             tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
             if(1 == aewb_result->awb_valid)
@@ -357,6 +358,38 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->config.rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
                 prms->config.rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
                 prms->config.rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
+            }
+            prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+            prms->dcc_input_params->cameraId = params->sensor_dcc_id;
+            prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
+            prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
+            prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
+        }
+
+        if ((VX_SUCCESS == status) && (NULL != h3a_aew_af_desc))
+        {
+            if(prms->dcc_output_params != NULL)
+            {
+                /* Update H3A params using DCC config */
+                /* TODO: Add an update flag so that the params are updated only when a change is detected */
+
+                prms->config.h3a_params.pcr_AEW_EN       = prms->dcc_output_params->ipipeH3A_AEWBCfg.enable;
+                prms->config.h3a_params.aew_cfg_AEFMT    = prms->dcc_output_params->ipipeH3A_AEWBCfg.mode;
+                prms->config.h3a_params.aewinstart_WINSV = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_start;
+                prms->config.h3a_params.aewinstart_WINSH = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_start;
+                prms->config.h3a_params.aewwin1_WINH     = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_size;
+                prms->config.h3a_params.aewwin1_WINW     = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_size;
+                prms->config.h3a_params.aewwin1_WINVC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_count;
+                prms->config.h3a_params.aewwin1_WINHC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_count;
+                prms->config.h3a_params.aewsubwin_AEWINCV    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_skip;
+                prms->config.h3a_params.aewsubwin_AEWINCH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_skip;
+                prms->config.h3a_params.pcr_AVE2LMT      = prms->dcc_output_params->ipipeH3A_AEWBCfg.saturation_limit;
+                prms->config.h3a_params.aewinblk_WINH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_win_numlines;
+                prms->config.h3a_params.aewinblk_WINSV   = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_row_vpos;
+                prms->config.h3a_params.aew_cfg_SUMSFT   = prms->dcc_output_params->ipipeH3A_AEWBCfg.sum_shift;
+                prms->config.h3a_params.pcr_AEW_ALAW_EN  = prms->dcc_output_params->ipipeH3A_AEWBCfg.ALaw_En;
+                prms->config.h3a_params.pcr_AEW_MED_EN   = prms->dcc_output_params->ipipeH3A_AEWBCfg.MedFilt_En;
             }
         }
 

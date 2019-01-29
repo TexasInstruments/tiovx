@@ -244,7 +244,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         void *histogram_target_ptr = NULL;
         void *h3a_aew_af_target_ptr = NULL;
         uint32_t num_exposures = raw_desc->params.num_exposures;
-        
+
         raw_target_ptr[0] = NULL;
         raw_target_ptr[1] = NULL;
         raw_target_ptr[2] = NULL;
@@ -416,30 +416,29 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* H3A */
         if( h3a_aew_af_desc != NULL)
         {
-           if(prms->dcc_output_params != NULL)
-           {
-                 /* Update H3A params using DCC config */
-                 /* TODO: Add an update flag so that the params are updated only when a change is detected */
+            if(prms->dcc_output_params != NULL)
+            {
+                /* Update H3A params using DCC config */
+                /* TODO: Add an update flag so that the params are updated only when a change is detected */
 
-                 prms->h3a_params.pcr_AEW_EN       = prms->dcc_output_params->ipipeH3A_AEWBCfg.enable;
-                 prms->h3a_params.aew_cfg_AEFMT    = prms->dcc_output_params->ipipeH3A_AEWBCfg.mode;
-                 prms->h3a_params.aewinstart_WINSV = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_start;
-                 prms->h3a_params.aewinstart_WINSH = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_start;
-                 prms->h3a_params.aewwin1_WINH     = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_size;
-                 prms->h3a_params.aewwin1_WINW     = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_size;
-                 prms->h3a_params.aewwin1_WINVC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_count;
-                 prms->h3a_params.aewwin1_WINHC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_count;
-                 prms->h3a_params.aewsubwin_AEWINCV    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_skip;
-                 prms->h3a_params.aewsubwin_AEWINCH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_skip;
-                 prms->h3a_params.pcr_AVE2LMT      = prms->dcc_output_params->ipipeH3A_AEWBCfg.saturation_limit;
-                 prms->h3a_params.aewinblk_WINH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_win_numlines;
-                 prms->h3a_params.aewinblk_WINSV   = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_row_vpos;
-                 prms->h3a_params.aew_cfg_SUMSFT   = prms->dcc_output_params->ipipeH3A_AEWBCfg.sum_shift;
-                 prms->h3a_params.pcr_AEW_ALAW_EN  = prms->dcc_output_params->ipipeH3A_AEWBCfg.ALaw_En;
-                 prms->h3a_params.pcr_AEW_MED_EN   = prms->dcc_output_params->ipipeH3A_AEWBCfg.MedFilt_En;
-
-           }
-           h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
+                prms->h3a_params.pcr_AEW_EN       = prms->dcc_output_params->ipipeH3A_AEWBCfg.enable;
+                prms->h3a_params.aew_cfg_AEFMT    = prms->dcc_output_params->ipipeH3A_AEWBCfg.mode;
+                prms->h3a_params.aewinstart_WINSV = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_start;
+                prms->h3a_params.aewinstart_WINSH = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_start;
+                prms->h3a_params.aewwin1_WINH     = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_size;
+                prms->h3a_params.aewwin1_WINW     = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_size;
+                prms->h3a_params.aewwin1_WINVC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_count;
+                prms->h3a_params.aewwin1_WINHC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_count;
+                prms->h3a_params.aewsubwin_AEWINCV    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_skip;
+                prms->h3a_params.aewsubwin_AEWINCH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_skip;
+                prms->h3a_params.pcr_AVE2LMT      = prms->dcc_output_params->ipipeH3A_AEWBCfg.saturation_limit;
+                prms->h3a_params.aewinblk_WINH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_win_numlines;
+                prms->h3a_params.aewinblk_WINSV   = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_row_vpos;
+                prms->h3a_params.aew_cfg_SUMSFT   = prms->dcc_output_params->ipipeH3A_AEWBCfg.sum_shift;
+                prms->h3a_params.pcr_AEW_ALAW_EN  = prms->dcc_output_params->ipipeH3A_AEWBCfg.ALaw_En;
+                prms->h3a_params.pcr_AEW_MED_EN   = prms->dcc_output_params->ipipeH3A_AEWBCfg.MedFilt_En;
+            }
+            h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
         }
 
         /* NSF4 */
