@@ -394,7 +394,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             prms->rawfe_params.h3a_mux_sel = 3;
         }
 
-        /*Apply AWB Gains*/
+        /*Apply AWB Gains and get DCC parameters for the relevant photospace*/
         {
             tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
             if(1 == aewb_result->awb_valid)
@@ -409,14 +409,37 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
             prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
             prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
-            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
+            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);          
         }
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
         /* H3A */
         if( h3a_aew_af_desc != NULL)
         {
-            h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
+           if(prms->dcc_output_params != NULL)
+           {
+                 /* Update H3A params using DCC config */
+                 /* TODO: Add an update flag so that the params are updated only when a change is detected */
+
+                 prms->h3a_params.pcr_AEW_EN       = prms->dcc_output_params->ipipeH3A_AEWBCfg.enable;
+                 prms->h3a_params.aew_cfg_AEFMT    = prms->dcc_output_params->ipipeH3A_AEWBCfg.mode;
+                 prms->h3a_params.aewinstart_WINSV = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_start;
+                 prms->h3a_params.aewinstart_WINSH = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_start;
+                 prms->h3a_params.aewwin1_WINH     = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_size;
+                 prms->h3a_params.aewwin1_WINW     = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_size;
+                 prms->h3a_params.aewwin1_WINVC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_count;
+                 prms->h3a_params.aewwin1_WINHC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_count;
+                 prms->h3a_params.aewsubwin_AEWINCV    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_skip;
+                 prms->h3a_params.aewsubwin_AEWINCH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_skip;
+                 prms->h3a_params.pcr_AVE2LMT      = prms->dcc_output_params->ipipeH3A_AEWBCfg.saturation_limit;
+                 prms->h3a_params.aewinblk_WINH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_win_numlines;
+                 prms->h3a_params.aewinblk_WINSV   = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_row_vpos;
+                 prms->h3a_params.aew_cfg_SUMSFT   = prms->dcc_output_params->ipipeH3A_AEWBCfg.sum_shift;
+                 prms->h3a_params.pcr_AEW_ALAW_EN  = prms->dcc_output_params->ipipeH3A_AEWBCfg.ALaw_En;
+                 prms->h3a_params.pcr_AEW_MED_EN   = prms->dcc_output_params->ipipeH3A_AEWBCfg.MedFilt_En;
+
+           }
+           h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
         }
 
         /* NSF4 */
@@ -482,6 +505,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivx_h3a_data_t *pH3a_buf = (tivx_h3a_data_t*)h3a_aew_af_target_ptr;
             pH3a_buf->aew_af_mode = params->mux_h3a_out;
             pH3a_buf->h3a_source_data = params->mux_h3a_in;
+
+/*
+TODO : Copying H3A header is not needed if 2A is getting H3A config from DCC
+This code maybe removed
+*/
             if(0 == params->mux_h3a_out)
             {
                 void *pData = (void *)pH3a_buf->data;
