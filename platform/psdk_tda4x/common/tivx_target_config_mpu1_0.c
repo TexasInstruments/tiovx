@@ -18,7 +18,8 @@
  *******************************************************************************
  */
 static uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE]
-    __attribute__ ((aligned(4096)))
+__attribute__ ((section(".bss:taskStackSection")))
+__attribute__ ((aligned(8192)))
     ;
 
 

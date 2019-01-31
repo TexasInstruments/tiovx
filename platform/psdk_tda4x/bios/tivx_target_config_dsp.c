@@ -19,8 +19,15 @@
  * \brief Target Stack
  *******************************************************************************
  */
+/* IMPORTANT NOTE: For C7x, 
+ * - stack size and stack ptr MUST be 8KB aligned 
+ * - AND min stack size MUST be 16KB 
+ * - AND stack assigned for task context is "size - 8KB"
+ *       - 8KB chunk for the stack area is used for interrupt handling in this task context
+ */
 static uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE]
-    __attribute__ ((aligned(4096)))
+__attribute__ ((section(".bss:taskStackSection")))
+__attribute__ ((aligned(8192)))
     ;
 
 
