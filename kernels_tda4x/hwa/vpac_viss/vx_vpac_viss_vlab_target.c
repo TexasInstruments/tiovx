@@ -83,6 +83,7 @@
 typedef struct
 {
     viss_config config;
+    vx_uint32 use_dcc;
     uint8_t * dcc_out_buf;
     vx_uint32 dcc_out_numbytes;
     dcc_parser_input_params_t * dcc_input_params;
@@ -359,17 +360,20 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->config.rawfe_params.wb2.gain[2] = aewb_result->wb_gains[2];
                 prms->config.rawfe_params.wb2.gain[3] = aewb_result->wb_gains[3];
             }
-            prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
-            prms->dcc_input_params->cameraId = params->sensor_dcc_id;
-            prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
-            prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
-            prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
-            dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
+            if(1u == prms->use_dcc)
+            {
+                prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+                prms->dcc_input_params->cameraId = params->sensor_dcc_id;
+                prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
+                prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
+                prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+                dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
+            }
         }
 
         if ((VX_SUCCESS == status) && (NULL != h3a_aew_af_desc))
         {
-            if(prms->dcc_output_params != NULL)
+            if(1u == prms->use_dcc)
             {
                 /* Update H3A params using DCC config */
                 /* TODO: Add an update flag so that the params are updated only when a change is detected */
@@ -537,7 +541,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     {
         status = VX_FAILURE;
     }
-    
+
     if(VX_SUCCESS == status)
     {
         tivxVpacVissParams *prms = NULL;
@@ -581,7 +585,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
             prms->config.buffer_size = (width * height) * 2;
             prms->config.magic = 0xC0DEFACE;
-            
+
             for(i=0; i<num_exposures; i++)
             {
                 if (VX_SUCCESS == status)
@@ -670,7 +674,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 char path_flexcfa[] = "/FlexCFA_tasks/";
                 char path_flexcc[] =  "/FlexCC_tasks/";
                 char temp_path[VISS_MAX_PATH_SIZE];
-  
+
                 FILE *h3a_config;
                 int32_t bits = 12;
                 int32_t w, h;
@@ -678,6 +682,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if(NULL != dcc_desc)
                 {
 /*TBD : read the camera ID from config structures*/
+                    prms->use_dcc = 1u;
                     prms->dcc_input_params->analog_gain = 1000;
                     prms->dcc_input_params->cameraId = 390;
                     prms->dcc_input_params->color_temparature = 5000;
@@ -806,7 +811,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                             if(prms->config.h3a_buffer_size > MAX_H3A_STAT_NUMBYTES)
                             {
-                                VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than MAX_H3A_STAT_NUMBYTES (%d bytes)\n", 
+                                VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
                                                          prms->config.h3a_buffer_size, MAX_H3A_STAT_NUMBYTES);
                                 status = VX_ERROR_NO_MEMORY;
                             }
@@ -819,7 +824,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     }
                 }
 
-                /* NSF4 */ 
+                /* NSF4 */
                 if(0 == params->bypass_nsf4)
                 {
                     if(0 != tivxVpacVissFindFile(params->sensor_name, "/Nsf4v_tasks/", "cfg_nsf4_master", temp_name))
@@ -873,7 +878,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         flexcc_read_parameters(temp_name, &prms->config.flexcc_params, &w, &h, temp_path);
                         prms->config.flexcc_params.inWidth = width;
                         prms->config.flexcc_params.inHeight = height;
-                        if( (NULL != dcc_desc) && (VX_SUCCESS == dcc_status) )
+                        if( (1u == prms->use_dcc) && (VX_SUCCESS == dcc_status) )
                         {
                             if(prms->dcc_output_params->useRgb2Rgb1Cfg)
                             {
