@@ -75,3 +75,5 @@ class Core(Enum):
     A15 = "a15"
     ## Target is an ARM core
     ARM = "arm"
+    ## Target is a GPU
+    GPU = "gpu"

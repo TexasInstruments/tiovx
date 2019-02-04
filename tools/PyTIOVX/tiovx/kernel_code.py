@@ -2075,7 +2075,10 @@ class KernelExportCode :
             else:
                 self.module_target_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
                 self.module_target_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/host")
-            self.module_target_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
+            if self.env_var != "VISION_APPS_PATH" :
+                self.module_target_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
+            else :
+                self.module_target_concerto_code.write_line("IDIRS       += $(TIOVX_PATH)/kernels/include")
             self.module_target_concerto_code.write_line("IDIRS       += $(VXLIB_PATH)/packages")
             self.module_target_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom include paths using 'IDIRS' >")
             self.module_target_concerto_code.write_line("# < DEVELOPER_TODO: Add any custom preprocessor defines or build options needed using")
@@ -2117,7 +2120,10 @@ class KernelExportCode :
                 else:
                     self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
                     self.module_target_bam_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/host")
-                self.module_target_bam_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
+                if self.env_var != "VISION_APPS_PATH" :
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/kernels/include")
+                else :
+                    self.module_target_bam_concerto_code.write_line("IDIRS       += $(TIOVX_PATH)/kernels/include")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/inc")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes")
                 self.module_target_bam_concerto_code.write_line("IDIRS       += $(DMAUTILS_PATH)/inc")
@@ -2163,15 +2169,21 @@ class KernelExportCode :
             self.module_test_concerto_code.write_line("TARGET      := vx_kernels_" + self.module + "_tests")
             self.module_test_concerto_code.write_line("TARGETTYPE  := library")
             self.module_test_concerto_code.write_line("CSOURCES    := $(call all-c-files)")
-            self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/conformance_tests")
-            self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/source/include")
+            if self.env_var != "VISION_APPS_PATH" :
+                self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/conformance_tests")
+                self.module_test_concerto_code.write_line("IDIRS       += $(HOST_ROOT)/source/include")
+            else :
+                self.module_test_concerto_code.write_line("IDIRS       += $(TIOVX_PATH)/include")
+                self.module_test_concerto_code.write_line("IDIRS       += $(TIOVX_PATH)/conformance_tests")
             if self.env_var == 'CUSTOM_KERNEL_PATH' :
                 self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/include")
                 self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/" + self.module + "/include")
             else:
                 self.module_test_concerto_code.write_line("IDIRS       += "+self.idirs_path+"/kernels/" + self.module + "/include")
-            self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_KERNEL_PATH)")
-            self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_APPLICATION_PATH)")
+            if self.env_var == "CUSTOM_KERNEL_PATH" :
+                self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_KERNEL_PATH)")
+            if self.env_var == "CUSTOM_APPLICATION_PATH" :
+                self.module_test_concerto_code.write_line("IDIRS       += $(CUSTOM_APPLICATION_PATH)")
             self.module_test_concerto_code.write_line("CFLAGS      += -DHAVE_VERSION_INC")
             self.module_test_concerto_code.write_newline()
             self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),TIARMCGT)")
