@@ -618,6 +618,8 @@ class KernelExportCode :
                     if self.verify_parameter_relationship_items(self.kernel.relationship_list, prm, member, name) :
                         if prm.type == Type.RAW_IMAGE :
                             self.host_c_code.write_line("tivxCheckStatus(&status, tivxQuery%s(%s, TIVX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
+                        elif prm.type == Type.LUT:
+                            self.host_c_code.write_line("tivxCheckStatus(&status, vxQueryLUT(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
                         else :
                             self.host_c_code.write_line("tivxCheckStatus(&status, vxQuery%s(%s, VX_%s_%s, &%s_%s, sizeof(%s_%s)));" % (toCamelCase(prm.type.name), prm.name_lower, prm.type.name, name, prm.name_lower, member.value[0], prm.name_lower, member.value[0]))
 
@@ -1641,8 +1643,8 @@ class KernelExportCode :
                         printed_incrementer = True
         if need_plane_idx_var is True :
             self.target_c_code.write_line("uint16_t plane_idx;")
-        if need_pyramid_idx_var is True :
-            self.target_c_code.write_line("uint32_t i;")
+        if need_pyramid_idx_var is True and printed_incrementer is False :
+            self.target_c_code.write_line("vx_uint32 i;")
 
         self.target_c_code.write_newline()
 
