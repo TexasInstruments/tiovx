@@ -890,10 +890,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                 if(NULL != dcc_desc)
                 {
-/*TBD : read the camera ID from config structures*/
                     prms->use_dcc = 1u;
                     prms->dcc_input_params->analog_gain = 1000;
-                    prms->dcc_input_params->cameraId = 390;
+                    prms->dcc_input_params->cameraId = params->sensor_dcc_id;
                     prms->dcc_input_params->color_temparature = 5000;
                     prms->dcc_input_params->exposure_time = 33333;
 
