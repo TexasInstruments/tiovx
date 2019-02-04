@@ -448,6 +448,63 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* NSF4 */
         if(0 == prms->bypass_nsf4)
         {
+            if(1u == prms->use_dcc)
+            {
+                prms->nsf4_params.mode = prms->dcc_output_params->vissNSF4Cfg.mode;
+                prms->nsf4_params.shd_en = prms->dcc_output_params->vissNSF4Cfg.shading_gain;
+
+                prms->nsf4_params.knee_u1 = prms->dcc_output_params->vissNSF4Cfg.u1_knee;
+                prms->nsf4_params.thr_scale_tn1 = prms->dcc_output_params->vissNSF4Cfg.tn1;
+                prms->nsf4_params.thr_scale_tn2 = prms->dcc_output_params->vissNSF4Cfg.tn2;
+                prms->nsf4_params.thr_scale_tn3 = prms->dcc_output_params->vissNSF4Cfg.tn3;
+
+                memcpy( 
+                    &prms->nsf4_params.noise_thr_x, 
+                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_x, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.noise_thr_x)
+                );
+                memcpy(
+                    &prms->nsf4_params.noise_thr_y, 
+                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_y, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.noise_thr_y)
+                );
+                memcpy(
+                    &prms->nsf4_params.noise_thr_s, 
+                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_s, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.noise_thr_s)
+                );
+
+                prms->nsf4_params.shd_x = prms->dcc_output_params->vissNSF4Cfg.shd_x;
+                prms->nsf4_params.shd_y = prms->dcc_output_params->vissNSF4Cfg.shd_y;
+                prms->nsf4_params.shd_T = prms->dcc_output_params->vissNSF4Cfg.shd_t;
+                prms->nsf4_params.shd_kh = prms->dcc_output_params->vissNSF4Cfg.shd_kh;
+                prms->nsf4_params.shd_kv = prms->dcc_output_params->vissNSF4Cfg.shd_kv;
+                prms->nsf4_params.shd_gmax = prms->dcc_output_params->vissNSF4Cfg.shd_gmax;
+                prms->nsf4_params.shd_set_sel = prms->dcc_output_params->vissNSF4Cfg.shd_set_sel;
+
+                memcpy( 
+                    &prms->nsf4_params.shd_lut_x, 
+                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_x, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.shd_lut_x)
+                );
+                memcpy( 
+                    &prms->nsf4_params.shd_lut_y, 
+                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_y, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.shd_lut_y)
+                );
+                memcpy( 
+                    &prms->nsf4_params.shd_lut_s, 
+                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_s, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.shd_lut_s)
+                );
+
+                memcpy( 
+                    &prms->nsf4_params.wb_gain, 
+                    &prms->dcc_output_params->vissNSF4Cfg.wb_gains, 
+                    sizeof(prms->dcc_output_params->vissNSF4Cfg.wb_gains)
+                );
+            }
+
             nsf4_main(&prms->nsf4_params, prms->scratch_rawfe_raw_out, prms->scratch_nsf4v_out);
         }
 
