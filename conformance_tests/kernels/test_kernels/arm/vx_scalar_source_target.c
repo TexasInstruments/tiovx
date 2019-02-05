@@ -129,7 +129,7 @@ static vx_status VX_CALLBACK tivxScalarSourceProcess(
 
             if (VX_SUCCESS == status)
             {
-                if (TIVX_TARGET_KERNEL_STATE_STEADY_STATE == state)
+                if (TIVX_TARGET_KERNEL_STATE_STEADY == state)
                 {
                     if (255 == prms->local_val)
                     {

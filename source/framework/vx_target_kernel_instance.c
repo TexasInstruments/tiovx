@@ -76,7 +76,7 @@ vx_status tivxTargetKernelInstanceInit(void)
     {
         g_target_kernel_instance_table[i].kernel_id = TIVX_TARGET_KERNEL_ID_INVALID;
         g_target_kernel_instance_table[i].index = i;
-        g_target_kernel_instance_table[i].state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+        g_target_kernel_instance_table[i].state = TIVX_TARGET_KERNEL_STATE_STEADY;
     }
 
     status = tivxMutexCreate(&g_target_kernel_instance_lock);
@@ -127,7 +127,7 @@ tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, cha
                     }
                     else
                     {
-                        tmp_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+                        tmp_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY;
                     }
 
                     kernel_instance = tmp_kernel_instance;

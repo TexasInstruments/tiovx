@@ -426,6 +426,15 @@ typedef struct _tivx_obj_desc_node
      */
     uint32_t is_prm_array_element;
 
+    /*! \brief Flag indicating whether or not node is in pipeup
+     *         state or steady state
+     */
+    uint32_t source_state;
+
+    /*! \brief number of buffers required for pipeup state
+     */
+    uint32_t num_pipeup_bufs;
+
 } tivx_obj_desc_node_t;
 
 /*!

@@ -885,6 +885,10 @@ enum vx_node_attribute_e {
      * Use a <tt>\ref vx_bool</tt> parameter.
      */
     VX_NODE_VALID_RECT_RESET = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x8,
+    /*! \brief Indicates whether the node is in PIPEUP state or STEADY state. Read-only.
+     * Use a <tt>\ref vx_bool</tt> parameter.
+     */
+    VX_NODE_STATE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x9,
 };
 
 /*! \brief The parameter attributes list

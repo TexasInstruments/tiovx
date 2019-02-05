@@ -130,6 +130,9 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
         tivxFlagBitSet(&obj_desc->flags, TIVX_NODE_FLAG_IS_TARGET_KERNEL);
     }
 
+    obj_desc->num_pipeup_bufs = kernel->num_pipeup_bufs;
+    obj_desc->source_state    = kernel->state;
+
     obj_desc->target_id = (uint32_t)ownKernelGetDefaultTarget(kernel);
     if(obj_desc->target_id == (uint32_t)TIVX_TARGET_ID_INVALID)
     {
@@ -1189,6 +1192,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryNode(vx_node node, vx_enum attribute, 
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query node target string failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case VX_NODE_STATE:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = node->obj_desc[0]->source_state;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"vxQueryNode: Query VX_NODE_STATE failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;

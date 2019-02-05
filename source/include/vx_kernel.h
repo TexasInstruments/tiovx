@@ -100,7 +100,7 @@ typedef struct _vx_kernel
     vx_uint32               num_sink_bufs;
     /*! \brief number of buffers needed for allocation at source node when sink node directly connected */
     vx_uint32               connected_sink_bufs;
-    /*! \brief capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE)*/
+    /*! \brief capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY)*/
     vx_enum                 state;
 
 } tivx_kernel_t;

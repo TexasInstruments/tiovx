@@ -59,12 +59,12 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
-
 #if defined(BUILD_CT_TIOVX_TEST_KERNELS)
 TESTCASE(tivxTestKernelsNotNot)
 TESTCASE(tivxGraphStreaming)
 TESTCASE(tivxSourceNode)
 TESTCASE(tivxTestSinkNode)
+TESTCASE(tivxGraphStreamingKhronos)
 #endif
 
 

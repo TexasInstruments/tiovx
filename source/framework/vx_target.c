@@ -478,7 +478,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
         {
             vx_bool is_node_blocked;
             tivx_target_kernel_instance target_kernel_instance;
-            vx_enum kernel_instance_state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+            vx_enum kernel_instance_state = TIVX_TARGET_KERNEL_STATE_STEADY;
             uint32_t num_bufs = 1;
 
             is_node_blocked = vx_false_e;
@@ -494,11 +494,20 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                 node_obj_desc->target_kernel_index[0], node_obj_desc->kernel_id);
 
             /* Note: in the case of user kernel, target_kernel instance is NULL */
-            if (NULL != target_kernel_instance)
+            if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
             {
-                num_bufs = target_kernel_instance->kernel->num_pipeup_bufs;
+                if (NULL != target_kernel_instance)
+                {
+                    num_bufs = target_kernel_instance->kernel->num_pipeup_bufs;
 
-                kernel_instance_state = target_kernel_instance->state;
+                    kernel_instance_state = target_kernel_instance->state;
+                }
+            }
+            else
+            {
+                kernel_instance_state = node_obj_desc->source_state;
+
+                num_bufs = node_obj_desc->num_pipeup_bufs;
             }
 
             if ( (TIVX_TARGET_KERNEL_STATE_PIPE_UP == kernel_instance_state) &&
@@ -520,7 +529,12 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                     }
                 }
 
-                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+                node_obj_desc->source_state = TIVX_TARGET_KERNEL_STATE_STEADY;
+
+                if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
+                {
+                    target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY;
+                }
             }
 
             tivxTargetNodeDescAcquireAllParameters(node_obj_desc, prm_obj_desc_id, &is_node_blocked);
@@ -647,7 +661,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             }
             else
             {
-                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY_STATE;
+                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY;
             }
 
             /* save index key for fast retrival of handle during run-time */
