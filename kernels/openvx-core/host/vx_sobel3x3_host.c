@@ -181,7 +181,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobelValidate(vx_node node,
     {
         for (i = 0U; i < TIVX_KERNEL_SOBEL_MAX_PARAMS; i ++)
         {
-            if (NULL != metas[i])
+            if (NULL != parameters[i])
             {
                 vx_enum type = 0;
                 vxQueryReference(parameters[i], VX_REFERENCE_TYPE, &type, sizeof(type));
