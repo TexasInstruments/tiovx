@@ -114,7 +114,7 @@ extern "C" {
  *
  * \ingroup group_tivx_obj_cfg
  */
-#define TIVX_META_FORMAT_MAX_OBJECTS        (32u)
+#define TIVX_META_FORMAT_MAX_OBJECTS        (64u)
 
 /*!
  * \brief Max number context objects supported
