@@ -353,7 +353,7 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
     if(VX_SUCCESS == status)
     {
         /* Steady state: receives a buffer and returns a buffer */
-        if (TIVX_TARGET_KERNEL_STATE_STEADY_STATE == state)
+        if (VX_NODE_STATE_STEADY == state)
         {
             /* Providing buffers to capture source */
             status = tivxCaptureEnqueueFrameToDriver(output_desc, prms);

@@ -222,7 +222,9 @@ vx_status tivxAddKernelCapture(vx_context context)
     }
     if (status == VX_SUCCESS)
     {
-        tivxSetKernelPipeupDepth(kernel, TIVX_CAPTURE_MIN_PIPEUP_BUFS);
+        vx_uint32 num_bufs = TIVX_CAPTURE_MIN_PIPEUP_BUFS;
+
+        vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_DEPTH, &num_bufs, sizeof(num_bufs));
 
         status = vxGetStatus((vx_reference)kernel);
     }
