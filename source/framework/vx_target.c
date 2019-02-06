@@ -478,7 +478,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
         {
             vx_bool is_node_blocked;
             tivx_target_kernel_instance target_kernel_instance;
-            vx_enum kernel_instance_state = TIVX_TARGET_KERNEL_STATE_STEADY;
+            vx_enum kernel_instance_state = VX_NODE_STATE_STEADY;
             uint32_t num_bufs = 1;
 
             is_node_blocked = vx_false_e;
@@ -510,7 +510,7 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                 num_bufs = node_obj_desc->num_pipeup_bufs;
             }
 
-            if ( (TIVX_TARGET_KERNEL_STATE_PIPE_UP == kernel_instance_state) &&
+            if ( (VX_NODE_STATE_PIPEUP == kernel_instance_state) &&
                  (num_bufs > 1) )
             {
                 int buf_idx;
@@ -529,11 +529,11 @@ static void tivxTargetNodeDescNodeExecute(tivx_target target, tivx_obj_desc_node
                     }
                 }
 
-                node_obj_desc->source_state = TIVX_TARGET_KERNEL_STATE_STEADY;
+                node_obj_desc->source_state = VX_NODE_STATE_STEADY;
 
                 if( tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_TARGET_KERNEL) )
                 {
-                    target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY;
+                    target_kernel_instance->state = VX_NODE_STATE_STEADY;
                 }
             }
 
@@ -657,11 +657,11 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
 
             if (target_kernel_instance->kernel->num_pipeup_bufs > 1)
             {
-                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
+                target_kernel_instance->state = VX_NODE_STATE_PIPEUP;
             }
             else
             {
-                target_kernel_instance->state = TIVX_TARGET_KERNEL_STATE_STEADY;
+                target_kernel_instance->state = VX_NODE_STATE_STEADY;
             }
 
             /* save index key for fast retrival of handle during run-time */

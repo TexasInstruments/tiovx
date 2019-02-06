@@ -199,7 +199,7 @@ typedef struct {
  *
  * \ingroup group_pipelining
  */
-VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
+VX_API_ENTRY vx_status VX_API_CALL vxSetGraphScheduleConfig(
     vx_graph graph,
     vx_enum graph_schedule_mode,
     uint32_t graph_parameters_list_size,
@@ -374,43 +374,43 @@ enum vx_event_type_e {
  *
  * \ingroup group_event
  */
-struct _vx_event_graph_parameter_consumed {
+typedef struct _vx_event_graph_parameter_consumed {
 
     vx_graph graph;
     /*!< \brief graph which generated this event */
 
     vx_uint32 graph_parameter_index;
     /*!< \brief graph parameter index which generated this event */
-};
+} vx_event_graph_parameter_consumed;
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_GRAPH_COMPLETED
  *
  * \ingroup group_event
  */
-struct _vx_event_graph_completed {
+typedef struct _vx_event_graph_completed {
 
     vx_graph graph;
     /*!< \brief graph which generated this event */
-};
+} vx_event_graph_completed;
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_NODE_COMPLETED
  *
  * \ingroup group_event
  */
-struct _vx_event_node_completed {
+typedef struct _vx_event_node_completed {
 
     vx_graph graph;
     /*!< \brief graph which generated this event */
 
     vx_node node;
     /*!< \brief node which generated this event */
-};
+} vx_event_node_completed;
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_NODE_ERROR
  *
  * \ingroup group_event
  */
-struct _vx_event_node_error {
+typedef struct _vx_event_node_error {
 
     vx_graph graph;
     /*!< \brief graph which generated this event */
@@ -420,13 +420,13 @@ struct _vx_event_node_error {
 
     vx_status status;
     /*!< \brief error condition of node */
-};
+} vx_event_node_error;
 
 /*! \brief Parameter structure returned with event of type VX_EVENT_USER_EVENT
  *
  * \ingroup group_event
  */
-struct _vx_event_user_event {
+typedef struct _vx_event_user_event {
 
     vx_uint32 user_event_id;
     /*!< \brief user event ID associated with this event */
@@ -434,7 +434,7 @@ struct _vx_event_user_event {
     void *user_event_parameter;
     /*!< \brief User defined parameter value. This is used to pass additional user defined parameters with a user event.
      */
-};
+} vx_event_user_event;
 
 /*! \brief Data structure which holds event information
  *
@@ -550,6 +550,77 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_eve
  * STREAMING API
  */
 
+/*! \brief Extra enums.
+ *
+ * \ingroup group_streaming
+ */
+enum vx_node_state_enum_e
+{
+    VX_ENUM_NODE_STATE_TYPE     = 0x23, /*!< \brief Node state type enumeration. */
+};
+
+/*! \brief Node state
+ *
+ * \ingroup group_streaming
+ */
+enum vx_node_state_e {
+
+    /*! \brief Node is in steady state (output expected for each invocation)
+     */
+    VX_NODE_STATE_STEADY  = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NODE_STATE_TYPE) + 0x0,
+
+    /*! \brief Node is in pipeup state (output not expected for each invocation)
+     */
+    VX_NODE_STATE_PIPEUP  = VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_NODE_STATE_TYPE) + 0x1,
+
+};
+
+/*! \brief The node attributes added by this extension.
+ * \ingroup group_streaming
+ */
+enum vx_node_attribute_streaming_e {
+    /*! \brief Queries the state of the node. Read-only. See <tt>\ref vx_graph_state_e</tt> enum. */
+    VX_NODE_STATE = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_NODE) + 0x9,
+};
+
+/*! \brief The kernel attributes added by this extension.
+ * \ingroup group_streaming
+ */
+enum vx_kernel_attribute_streaming_e {
+    /*! \brief The pipeup depth required by the kernel.
+     * This is called by kernels that need to be primed with multiple output buffers before it can
+     * begin to return them.  A typical use case for this is a source node which needs to provide and
+     * retain multiple empty buffers to a camera driver to fill.  The first time the graph is executed
+     * after vxVerifyGraph is called, the framework calls the node associated with this kernel
+     * (pipeup_depth - 1) times before 'expecting' a valid output and calling downstream nodes.
+     * During this PIPEUP state, the framework provides the same set of input parameters for each
+     * call, but provides different set of output parameters for each call.  During the STEADY state,
+     * the kernel may return a different set of output parameters than was given during the execution callback.
+     * Read-write. Can be written only before user-kernel finalization.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * \note If not set, it will default to 1.
+     * \note Setting a value less than 1 shall return VX_ERROR_INVALID_PARAMETERS
+     */
+    VX_KERNEL_PIPEUP_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_KERNEL) + 0x4,
+};
+
+/*! \brief Enable streaming mode of graph execution
+ *
+ * This API enables streaming mode of graph execution on the given graph. The node given on the API is set as the
+ * trigger node. A trigger node is defined as the node whose completion causes a new execution of the graph to be
+ * triggered.
+ *
+ * \param graph [in] Reference to the graph to enable streaming mode of execution.
+ * \param node  [in][optional] Reference to the node to be used for trigger node of the graph.
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors; any other value indicates failure.
+ * \retval VX_ERROR_INVALID_REFERENCE graph is not a valid <tt>\ref vx_graph</tt> reference
+ *
+ * \ingroup group_streaming
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_node);
+
 /*! \brief Start streaming mode of graph execution
  *
  * In streaming mode of graph execution, once a application starts graph execution
@@ -579,7 +650,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_eve
  *
  * \ingroup group_streaming
  */
-VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph);
+VX_API_ENTRY vx_status VX_API_CALL vxStartGraphStreaming(vx_graph graph);
 
 
 /*! \brief Stop streaming mode of graph execution
@@ -596,7 +667,7 @@ VX_API_ENTRY vx_status vxStartGraphStreaming(vx_graph graph);
  *
  * \ingroup group_streaming
  */
-VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph);
+VX_API_ENTRY vx_status VX_API_CALL vxStopGraphStreaming(vx_graph graph);
 
 #ifdef  __cplusplus
 }

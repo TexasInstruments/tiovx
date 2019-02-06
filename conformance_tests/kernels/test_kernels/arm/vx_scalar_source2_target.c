@@ -145,7 +145,7 @@ static vx_status VX_CALLBACK tivxScalarSource2Process(
 
                 out_desc->data.u08 = out_value;
 
-                if (TIVX_TARGET_KERNEL_STATE_STEADY == state)
+                if (VX_NODE_STATE_STEADY == state)
                 {
                     /* typically in a capture driver during pipeup there 
                      * is no delay in processing, hence moving the delay here in steady state */

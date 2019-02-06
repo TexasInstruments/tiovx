@@ -236,7 +236,7 @@ static vx_status VX_CALLBACK own_Kernel(vx_node node, const vx_reference *parame
         vxCopyScalar(local_param, &local_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
         local_value++;
 
-        if (state == TIVX_TARGET_KERNEL_STATE_STEADY)
+        if (state == VX_NODE_STATE_STEADY)
         {
             vxCopyScalar((vx_scalar)old_parameters[0], &copy_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
             vxCopyScalar((vx_scalar)parameters[0], &copy_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
@@ -323,7 +323,7 @@ static void own_register_source_kernel(vx_context context)
 
     vx_uint32 num_bufs = PIPEUP_NUM_BUFS;
 
-    vxSetKernelAttribute(kernel, TIVX_KERNEL_PIPEUP_BUFFERS, &num_bufs, sizeof(num_bufs));
+    vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_DEPTH, &num_bufs, sizeof(num_bufs));
 
     VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
     {

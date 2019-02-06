@@ -88,25 +88,6 @@ typedef struct _tivx_target_kernel *tivx_target_kernel;
  */
 typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 
-/*! \brief Capture state for a given kernel parameter
- *
- *         TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY
- *
- * \ingroup group_tivx_ext_host
- */
-typedef enum _tivx_target_kernel_instance_state_e {
-
-    /*! \brief CPU ID for DSP1 */
-    TIVX_TARGET_KERNEL_STATE_PIPE_UP = 0,
-
-    /*! \brief CPU ID for DSP2 */
-    TIVX_TARGET_KERNEL_STATE_STEADY = 1,
-
-    /*! \brief Invalid CPU ID */
-    TIVX_TARGET_KERNEL_STATE_INVALID_STATE = 0xFF
-
-} tivx_target_kernel_instance_state_e;
-
 /*!
 * \brief The target kernel callback
 *

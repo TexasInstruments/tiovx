@@ -102,7 +102,7 @@ typedef struct _tivx_target_kernel_instance {
     /*! \brief border mode */
     vx_border_t border_mode;
 
-    /*! \brief capture state (TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY)*/
+    /*! \brief capture state (VX_NODE_STATE_PIPEUP or VX_NODE_STATE_STEADY)*/
     vx_enum state;
 
 } tivx_target_kernel_instance_t;
