@@ -180,7 +180,9 @@ vx_status tivxAddKernelScalarSource2(vx_context context)
 
     if (status == VX_SUCCESS)
     {
-        tivxSetKernelPipeupDepth(kernel, TIVX_KERNEL_SCALAR_SOURCE_NUM_BUFS);
+        vx_uint32 num_bufs = TIVX_KERNEL_SCALAR_SOURCE_NUM_BUFS;
+
+        vxSetKernelAttribute(kernel, TIVX_KERNEL_PIPEUP_BUFFERS, &num_bufs, sizeof(num_bufs));
 
         status = vxGetStatus((vx_reference)kernel);
     }

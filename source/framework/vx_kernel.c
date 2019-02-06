@@ -99,6 +99,17 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case TIVX_KERNEL_PIPEUP_BUFFERS:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    *(vx_uint32 *)ptr = kernel->num_pipeup_bufs;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Query kernel local data size failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "vxQueryKernel: Invalid query attribute\n");
                 status = VX_ERROR_NOT_SUPPORTED;
@@ -129,6 +140,21 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 else
                 {
                     VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Set local data size failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case TIVX_KERNEL_PIPEUP_BUFFERS:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
+                {
+                    kernel->num_pipeup_bufs = *(vx_uint32*)ptr;
+                    if (kernel->num_pipeup_bufs > 1)
+                    {
+                        kernel->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
+                    }
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetKernelAttribute: Set pipeup buffers failed\n");
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
@@ -393,27 +419,6 @@ VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *t
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelPipeupDepth(vx_kernel kernel, uint32_t num_pipeup_bufs)
-{
-    vx_status status = VX_SUCCESS;
-
-    if ((NULL != kernel) &&
-        (ownIsValidSpecificReference(&kernel->base, VX_TYPE_KERNEL) == vx_true_e))
-    {
-        kernel->num_pipeup_bufs = num_pipeup_bufs;
-        if (num_pipeup_bufs > 1)
-        {
-            kernel->state = TIVX_TARGET_KERNEL_STATE_PIPE_UP;
-        }
-    }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Invalid kernel reference\n");
-        status = VX_ERROR_INVALID_REFERENCE;
-    }
-    return status;
-}
-
 VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint32_t num_sink_bufs)
 {
     vx_status status = VX_SUCCESS;
@@ -425,7 +430,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelSinkDepth(vx_kernel kernel, uint
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "tivxAddKernelTarget: Invalid kernel reference\n");
+        VX_PRINT(VX_ZONE_ERROR, "tivxSetKernelSinkDepth: Invalid kernel reference\n");
         status = VX_ERROR_INVALID_REFERENCE;
     }
     return status;

@@ -321,7 +321,9 @@ static void own_register_source_kernel(vx_context context)
         own_Initialize,
         own_Deinitialize), VX_TYPE_KERNEL);
 
-    tivxSetKernelPipeupDepth(kernel, PIPEUP_NUM_BUFS);
+    vx_uint32 num_bufs = PIPEUP_NUM_BUFS;
+
+    vxSetKernelAttribute(kernel, TIVX_KERNEL_PIPEUP_BUFFERS, &num_bufs, sizeof(num_bufs));
 
     VX_CALL(vxAddParameterToKernel(kernel, OWN_PARAM_OUTPUT, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
     {

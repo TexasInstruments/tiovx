@@ -279,6 +279,9 @@ typedef enum _tivx_attribute_extensions_e {
     /*! \brief Returns the target string corresponding to the node */
     TIVX_NODE_TARGET_STRING = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x0,
 
+    /*! \brief Attribute to get and set the number of pipeup buffers for a kernel */
+    TIVX_KERNEL_PIPEUP_BUFFERS = VX_ATTRIBUTE_BASE(VX_ID_TI, 0) + 0x1
+
 } tivx_attribute_extensions_e;
 
 
@@ -377,14 +380,6 @@ void tivxHostDeInit(void);
  * \ingroup group_tivx_ext_host
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxAddKernelTarget(vx_kernel kernel, char *target_name);
-
-/*!
- * \brief Set the number of pipeup buffers
- *
- *
- * \ingroup group_tivx_ext_host
- */
-VX_API_ENTRY vx_status VX_API_CALL tivxSetKernelPipeupDepth(vx_kernel kernel, uint32_t num_pipeup_bufs);
 
 /*!
  * \brief Set the number of sink buffers
