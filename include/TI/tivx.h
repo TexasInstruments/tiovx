@@ -541,14 +541,6 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  */
 vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
 
-/*! \brief Enables streaming and sets the given node as a trigger node of the graph
- *
- * \ingroup group_tivx_ext_host
- */
-vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node trigger_node);
-
-
-
 /*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a 
  *         additional TIOVX specific flag parameter
  *

@@ -30,14 +30,6 @@
 
 TESTCASE(GraphStreaming,  CT_VXContext, ct_setup_vx_context, 0)
 
-/*
- * Utility API to set trigger node for a graph
- */
-static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
-{
-    return tivxEnableGraphStreaming(graph, node);
-}
-
 #define VX_KERNEL_CONFORMANCE_TEST_USER_SOURCE1 (VX_KERNEL_BASE(VX_ID_DEFAULT, 0) + 3)
 #define VX_KERNEL_CONFORMANCE_TEST_USER_SOURCE1_NAME "org.khronos.openvx.test.user_source_1"
 
@@ -59,7 +51,6 @@ typedef enum _own_sink_params_e
 } own_sink_params_e;
 
 static enum vx_type_e type = (enum vx_type_e)VX_TYPE_SCALAR;
-static enum vx_type_e objarray_itemtype = VX_TYPE_INVALID;
 
 static vx_bool is_pipeup_entered = vx_false_e;
 static vx_bool is_steady_state_entered = vx_false_e;
@@ -72,7 +63,7 @@ static vx_status VX_CALLBACK own_source1_Kernel(vx_node node, const vx_reference
 {
     uint32_t state;
     ASSERT_VX_OBJECT_(return VX_FAILURE, node, VX_TYPE_NODE);
-    uint8_t tmp_val, i;
+    uint8_t i;
 
     vxQueryNode(node, VX_NODE_STATE, &state, sizeof(state));
     EXPECT(parameters != NULL);
@@ -118,7 +109,6 @@ static vx_status VX_CALLBACK own_source2_Kernel(vx_node node, const vx_reference
 {
     uint32_t state;
     ASSERT_VX_OBJECT_(return VX_FAILURE, node, VX_TYPE_NODE);
-    uint8_t tmp_val, i;
 
     vxQueryNode(node, VX_NODE_STATE, &state, sizeof(state));
     EXPECT(parameters != NULL);
@@ -171,7 +161,6 @@ static vx_status VX_CALLBACK own_sink_Kernel(vx_node node, const vx_reference *p
 
 static vx_status VX_CALLBACK own_Initialize(vx_node node, const vx_reference *parameters, vx_uint32 num)
 {
-    void* ptr = NULL;
     ASSERT_VX_OBJECT_(return VX_FAILURE, node, VX_TYPE_NODE);
     EXPECT(parameters != NULL);
     EXPECT(num == 1);
@@ -184,7 +173,6 @@ static vx_status VX_CALLBACK own_Initialize(vx_node node, const vx_reference *pa
 
 static vx_status VX_CALLBACK own_Deinitialize(vx_node node, const vx_reference *parameters, vx_uint32 num)
 {
-    void* ptr = NULL;
     EXPECT(node != 0);
     EXPECT(parameters != NULL);
     EXPECT(num == 1);
@@ -506,7 +494,7 @@ TEST_WITH_ARG(GraphStreaming, testSourceUserKernelStreaming, Arg, STREAMING_PARA
 
     VX_CALL(vxSetParameterByIndex(node, 0, (vx_reference)scalar));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, node));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
@@ -591,7 +579,7 @@ TEST_WITH_ARG(GraphStreaming, testSourceSinkUserKernelStreaming, Arg, STREAMING_
 
     VX_CALL(vxSetParameterByIndex(node2, 0, (vx_reference)scalar));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_trigger_node(graph, node1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableGraphStreaming(graph, node1));
 
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 

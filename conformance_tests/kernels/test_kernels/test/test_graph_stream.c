@@ -131,7 +131,7 @@ static vx_status set_graph_pipeline_depth(vx_graph graph, vx_uint32 pipeline_dep
  */
 static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
 {
-    return tivxEnableGraphStreaming(graph, node);
+    return vxEnableGraphStreaming(graph, node);
 }
 
 /*

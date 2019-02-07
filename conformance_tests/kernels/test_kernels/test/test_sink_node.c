@@ -124,7 +124,7 @@ static vx_status log_graph_rt_trace(vx_graph graph)
  */
 static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
 {
-    return tivxEnableGraphStreaming(graph, node);
+    return vxEnableGraphStreaming(graph, node);
 }
 
 static void printGraphPipelinePerformance(vx_graph graph,

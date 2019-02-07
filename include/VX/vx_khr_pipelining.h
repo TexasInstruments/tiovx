@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2017 The Khronos Group Inc.
+ * Copyright (c) 2012-2019 The Khronos Group Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and/or associated documentation files (the
@@ -58,7 +58,7 @@ extern "C" {
  */
 enum vx_graph_schedule_mode_enum_e
 {
-    VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE     = 0x1E, /*!< \brief Graph schedule mode type enumeration. */
+    VX_ENUM_GRAPH_SCHEDULE_MODE_TYPE     = 0x21, /*!< \brief Graph schedule mode type enumeration. */
 };
 
 /*! \brief Type of graph scheduling mode
@@ -320,7 +320,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGraphParameterCheckDoneRef(vx_graph graph,
  */
 enum vx_event_enum_e
 {
-    VX_ENUM_EVENT_TYPE     = 0x1D, /*!< \brief Event Type enumeration. */
+    VX_ENUM_EVENT_TYPE     = 0x22, /*!< \brief Event Type enumeration. */
 };
 
 /*! \brief Type of event that can be generated during system execution

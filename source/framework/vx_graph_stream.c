@@ -342,7 +342,7 @@ vx_status VX_API_CALL tivxWaitGraphEvent(
     return status;
 }
 
-vx_status VX_API_CALL tivxEnableGraphStreaming(vx_graph graph, vx_node trigger_node)
+vx_status VX_API_CALL vxEnableGraphStreaming(vx_graph graph, vx_node trigger_node)
 {
     vx_status status = VX_ERROR_INVALID_PARAMETERS;
 
