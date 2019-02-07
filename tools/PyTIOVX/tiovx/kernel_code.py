@@ -1090,7 +1090,7 @@ class KernelExportCode :
             return False
 
     # extracts from string written by user for local mem allocation
-    def extract_attribute(self, local, setting, is_first_prm):
+    def extract_attribute(self, local, is_first_prm):
         invalid_type = False
         if not is_first_prm :
             self.target_c_code.write_line("if (VX_SUCCESS == status)")
@@ -1348,23 +1348,24 @@ class KernelExportCode :
                      append_str = " * "
                      size_str+=append_str
         # setting 0 is for allocating mem; setting 1 is for setting mem to 0
-        if setting == 0 :
-            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify correct amount of memory is allocated >")
-            self.target_c_code.write_line("prms->%s_size = %s;" % (local.name, size_str) )
-            self.target_c_code.write_line("prms->%s_ptr = tivxMemAlloc(prms->%s_size, TIVX_MEM_EXTERNAL);" % (local.name, local.name) )
-            self.target_c_code.write_newline()
-            self.target_c_code.write_line("if (NULL == prms->%s_ptr)" % (local.name) )
-            self.target_c_code.write_open_brace()
-            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
-            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
+        self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify correct amount of memory is allocated >")
+        self.target_c_code.write_line("prms->%s_size = %s;" % (local.name, size_str) )
+        self.target_c_code.write_line("prms->%s_ptr = tivxMemAlloc(prms->%s_size, TIVX_MEM_EXTERNAL);" % (local.name, local.name) )
+        self.target_c_code.write_newline()
+        self.target_c_code.write_line("if (NULL == prms->%s_ptr)" % (local.name) )
+        self.target_c_code.write_open_brace()
+        self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;")
+        self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");")
+        self.target_c_code.write_close_brace()
+        self.target_c_code.write_line("else")
+        self.target_c_code.write_open_brace()
+        self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify memory setting to clear the correct amount of memory >")
+        self.target_c_code.write_line("memset(prms->%s_ptr, 0, %s);" % (local.name, size_str) )
+        self.target_c_code.write_close_brace()
+        if not is_first_prm :
             self.target_c_code.write_close_brace()
-            if not is_first_prm :
-                self.target_c_code.write_close_brace()
-        elif setting == 1 :
-            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Verify memory setting to clear the correct amount of memory >")
-            self.target_c_code.write_line("memset(prms->%s_ptr, 0, %s);" % (local.name, size_str) )
-            if not is_first_prm :
-                self.target_c_code.write_close_brace()
+        else :
+            self.target_c_code.write_newline()
         if local.prm.type != Type.NULL :
              # verifying that the optional parameter is being used
              if ParamState.OPTIONAL == local.state :
@@ -1423,13 +1424,9 @@ class KernelExportCode :
             is_first_prm = True
             for local in self.kernel.local_mem_list :
                  if self.is_supported_type(local.prm.type) :
-                     self.extract_attribute(local, 0, is_first_prm)
+                     self.extract_attribute(local, is_first_prm)
                      is_first_prm = False
             self.target_c_code.write_newline(files=self.prms_write)
-            # verifying that the optional parameter is being used
-            for local in self.kernel.local_mem_list :
-                 if self.is_supported_type(local.prm.type) :
-                     self.extract_attribute(local, 1, is_first_prm)
 
             self.target_c_code.write_close_brace(files=self.prms_write)
             self.target_c_code.write_line("else", files=self.prms_write)
@@ -1495,8 +1492,12 @@ class KernelExportCode :
             self.target_c_code.write_open_brace(files=self.prms_write)
             for local in self.kernel.local_mem_list :
                  if self.is_supported_type(local.prm.type) :
+                     self.target_c_code.write_line("if (NULL != prms->%s_ptr)" % (local.name), files=self.prms_write)
+                     self.target_c_code.write_open_brace(files=self.prms_write)
                      self.target_c_code.write_line("tivxMemFree(prms->%s_ptr, prms->%s_size, TIVX_MEM_EXTERNAL);" %
                          (local.name, local.name) , files=self.prms_write)
+                     self.target_c_code.write_close_brace(files=self.prms_write)
+                     self.target_c_code.write_newline(files=self.prms_write)
 
             self.target_c_code.write_comment_line("< DEVELOPER_TODO: Uncomment once BAM graph has been created >", files=1)
             self.target_c_code.write_comment_line("tivxBamDestroyHandle(prms->graph_handle);", files=1)

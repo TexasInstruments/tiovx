@@ -83,5 +83,5 @@ class Module(Enum):
     CMS = "cms"
     ## Module is dms
     DMS = "dms"
-    ## Module is dms
+    ## Module is test kernels
     TEST_KERNELS = "test_kernels"
