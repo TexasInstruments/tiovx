@@ -64,7 +64,7 @@ TESTCASE(tivxTestKernelsNotNot)
 TESTCASE(tivxGraphStreaming)
 TESTCASE(tivxSourceNode)
 TESTCASE(tivxTestSinkNode)
-TESTCASE(tivxGraphStreamingKhronos)
+TESTCASE(GraphStreaming)
 #endif
 
 
