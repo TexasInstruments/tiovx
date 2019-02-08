@@ -87,18 +87,6 @@ void tivxRegisterTIDLKernels(void);
  */
 void tivxUnRegisterKernels(void);
 
-/*!
- * \brief Function to register TIDL Kernels on the TIDL Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterTIDLTargetKernels(void);
-
-/*!
- * \brief Function to un-register TIDL Kernels on the TIDL Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterTIDLTargetKernels(void);
-
 #ifdef __cplusplus
 }
 #endif

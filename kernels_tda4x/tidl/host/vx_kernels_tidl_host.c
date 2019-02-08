@@ -72,11 +72,15 @@ void tivxTIDLLoadKernels(vx_context context)
     {
         void tivxSetSelfCpuId(vx_enum cpu_id);
 
+        #ifdef x86_64
         /* These three lines only work on PC emulation mode ...
          * this will need to be updated when moving to target */
-        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+        tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
 
         tivxRegisterTIDLTargetKernels();
+        
+        tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+        #endif
 
         gIsTIDLKernelsLoad = 1U;
     }
@@ -86,10 +90,12 @@ void tivxTIDLUnLoadKernels(vx_context context)
 {
     if ((1u == gIsTIDLKernelsLoad) && (NULL != context))
     {
+        #ifdef x86_64
         /* This line only work on PC emulation mode ...
          * this will need to be updated when moving to target */
 
         tivxUnRegisterTIDLTargetKernels();
+        #endif
 
         gIsTIDLKernelsLoad = 0U;
     }

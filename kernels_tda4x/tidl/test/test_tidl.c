@@ -69,6 +69,7 @@
 #include <math.h>
 #include "itidl_ti.h"
 
+#define DEBUG_TEST_TIDL
 
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -86,12 +87,16 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
   vx_size read_count;
 
   FILE *fp_config;
+  
+  #ifdef DEBUG_TEST_TIDL
+  printf("Reading IO config file %s ...\n", config_file);
+  #endif
 
   fp_config = fopen(config_file, "rb");
 
   if(fp_config == NULL)
   {
-     printf("Unable to open file! %s \n", config_file);
+     printf("ERROR: Unable to open IO config file %s \n", config_file);
 
      return NULL;
   }
@@ -102,7 +107,7 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
   
   if( capacity != sizeof(sTIDL_IOBufDesc_t) )
   {
-    printf("Config file size (%d bytes) does not match size of sTIDL_IOBufDesc_t (%d bytes)\n", capacity, (vx_uint32)sizeof(sTIDL_IOBufDesc_t));
+    printf("ERROR: Config file size (%d bytes) does not match size of sTIDL_IOBufDesc_t (%d bytes)\n", capacity, (vx_uint32)sizeof(sTIDL_IOBufDesc_t));
     return NULL;
   }
 
@@ -120,14 +125,14 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
     {
 		if(ioBufDesc == NULL)
 		{
-		  printf("Map of config object failed\n");
+		  printf("ERROR: Map of config object failed\n");
 		  return NULL;
 		}
 
 		read_count = fread(ioBufDesc, capacity, 1, fp_config);
 		if(read_count != 1)
 		{
-		  printf("Unable to read config file!\n");
+		  printf("ERROR: Unable to read config file\n");
 		}
 		fclose(fp_config);
 
@@ -135,6 +140,10 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
 		*num_output_tensors = ioBufDesc->numOutputBuf;
 
 		vxUnmapUserDataObject(config, map_id);
+        
+        #ifdef DEBUG_TEST_TIDL
+        printf("Finished reading IO config file of %d bytes, num_input_tensors = %d, num_output_tensors = %d\n", capacity, *num_input_tensors, *num_output_tensors);        
+        #endif
 	}
   }
 
@@ -152,12 +161,16 @@ static vx_user_data_object readNetwork(vx_context context, char *network_file)
   vx_size read_count;
 
   FILE *fp_network;
+  
+  #ifdef DEBUG_TEST_TIDL
+  printf("Reading network file %s ...\n", network_file);
+  #endif
 
   fp_network = fopen(network_file, "rb");
 
   if(fp_network == NULL)
   {
-     printf("Unable to open file! %s \n", network_file);
+     printf("ERROR: Unable to open network file %s \n", network_file);
 
      return NULL;
   }
@@ -181,13 +194,17 @@ static vx_user_data_object readNetwork(vx_context context, char *network_file)
 		read_count = fread(network_buffer, capacity, 1, fp_network);
 		if(read_count != 1)
 		{
-		  printf("Unable to read network file!\n");
+		  printf("ERROR: Unable to read network file\n");
 		}
       } else {
-        printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
+        printf("ERROR: Unable to allocate memory for reading network file of %d bytes\n", capacity);
       }
 
       vxUnmapUserDataObject(network, map_id);
+      
+      #ifdef DEBUG_TEST_TIDL
+      printf("Finished reading network file of %d bytes\n", capacity);
+      #endif
     }
   }
 
@@ -209,6 +226,12 @@ static vx_tensor createInputTensor(vx_context context, vx_user_data_object confi
   input_sizes[1] = ioBufDesc->inHeight[0] + ioBufDesc->inPadT[0] + ioBufDesc->inPadB[0];
   input_sizes[2] = ioBufDesc->inNumChannels[0];
 
+  #ifdef DEBUG_TEST_TIDL
+  printf(" input_sizes[0] = %d, dim = %d padL = %d padR = %d\n", (uint32_t)input_sizes[0], ioBufDesc->inWidth[0], ioBufDesc->inPadL[0], ioBufDesc->inPadR[0]);
+  printf(" input_sizes[1] = %d, dim = %d padL = %d padR = %d\n", (uint32_t)input_sizes[1], ioBufDesc->inHeight[0], ioBufDesc->inPadT[0], ioBufDesc->inPadB[0]);
+  printf(" input_sizes[2] = %d, dim = %d \n", (uint32_t)input_sizes[2], ioBufDesc->inNumChannels[0]);
+  #endif
+
   vxUnmapUserDataObject(config, map_id_config);
 
   return vxCreateTensor(context, 3, input_sizes, VX_TYPE_UINT8, 0);
@@ -226,6 +249,12 @@ static vx_tensor createOutputTensor(vx_context context, vx_user_data_object conf
   output_sizes[0] = ioBufDesc->outWidth[0]  + ioBufDesc->outPadL[0] + ioBufDesc->outPadR[0];
   output_sizes[1] = ioBufDesc->outHeight[0] + ioBufDesc->outPadT[0] + ioBufDesc->outPadB[0];
   output_sizes[2] = ioBufDesc->outNumChannels[0];
+
+  #ifdef DEBUG_TEST_TIDL
+  printf(" output_sizes[0] = %d, dim = %d padL = %d padR = %d\n", (uint32_t)output_sizes[0], ioBufDesc->outWidth[0], ioBufDesc->outPadL[0], ioBufDesc->outPadR[0]);
+  printf(" output_sizes[1] = %d, dim = %d padL = %d padR = %d\n", (uint32_t)output_sizes[1], ioBufDesc->outHeight[0], ioBufDesc->outPadT[0], ioBufDesc->outPadB[0]);
+  printf(" output_sizes[2] = %d, dim = %d \n", (uint32_t)output_sizes[2], ioBufDesc->outNumChannels[0]);
+  #endif
 
   vxUnmapUserDataObject(config, map_id_config);
 
@@ -326,6 +355,84 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
     return status;
 }
 
+static vx_status readInputRawPadded(vx_context context, vx_user_data_object config, vx_tensor *input_tensors, char *input_file)
+{
+    vx_status status = VX_SUCCESS;
+
+    void      *input_buffer = NULL;
+    int32_t    capacity;
+    uint32_t   id;
+    char       filepath[MAXPATHLENGTH];
+
+    vx_map_id map_id_config;
+    vx_map_id map_id_input;
+
+    vx_size    start[TEST_TIDL_MAX_TENSOR_DIMS];
+    vx_size    input_strides[TEST_TIDL_MAX_TENSOR_DIMS];
+    vx_size    input_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
+
+    sTIDL_IOBufDesc_t *ioBufDesc;
+    FILE *fp;
+    size_t sz;
+    
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(), input_file);
+    if(sz >= MAXPATHLENGTH)
+    {
+        return VX_FAILURE;
+    }
+    
+    fp = fopen(filepath, "rb");
+
+    if(fp == NULL)
+    {
+       printf("ERROR: Unable to open input file %s \n", input_file);
+    
+       return VX_FAILURE;
+    }
+
+    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
+                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+    for(id = 0; id < ioBufDesc->numInputBuf; id++)
+    {
+        input_sizes[0] = ioBufDesc->inWidth[id]  + ioBufDesc->inPadL[id] + ioBufDesc->inPadR[id];
+        input_sizes[1] = ioBufDesc->inHeight[id] + ioBufDesc->inPadT[id] + ioBufDesc->inPadB[id];
+        input_sizes[2] = ioBufDesc->inNumChannels[id];
+
+        capacity = input_sizes[0] * input_sizes[1] * input_sizes[2];
+
+        start[0] = start[1] = start[2] = 0;
+
+        input_strides[0] = 1;
+        input_strides[1] = input_sizes[0];
+        input_strides[2] = input_sizes[1] * input_strides[1];
+
+        status = tivxMapTensorPatch(input_tensors[id], 3, start, input_sizes, &map_id_input, input_strides, &input_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+
+        if (VX_SUCCESS == status)
+        {
+            vx_size read_count;
+            
+            /* Reset the input buffer, this will take care of padding requirement for TIDL */
+            memset(input_buffer, 0, capacity);
+           
+            read_count = fread(input_buffer, capacity, 1, fp);
+            if(read_count != 1)
+            {
+                printf("ERROR: Unable to read input file\n");
+            }            
+
+            tivxUnmapTensorPatch(input_tensors[id], map_id_input);
+        }
+    }
+
+    vxUnmapUserDataObject(config, map_id_config);
+
+    fclose(fp);
+
+    return status;
+}
+
 static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_tensors, vx_int32 refid, vx_float32 refscore)
 {
     vx_status status = VX_SUCCESS;
@@ -404,9 +511,11 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
 
     vxUnmapUserDataObject(config, map_id_config);
     
+    #if 1
     /* only checking classid */
     if(refid != classid[0])
         return VX_FAILURE;
+    #endif
         
     return VX_SUCCESS;
 }
@@ -414,16 +523,18 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
 typedef struct {
     const char* testName;
     const char* network;
+    uint32_t read_raw_padded;
 } Arg;
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2"), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0), \
 
 #if 0
-    CT_GENERATE_PARAMETERS("inception_v1", ARG, "inception_v1"), \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1"), \
-    CT_GENERATE_PARAMETERS("resnet10", ARG, "resnet10"), \
-    CT_GENERATE_PARAMETERS("squeez1", ARG, "squeez1")
+    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2", 0), \
+    CT_GENERATE_PARAMETERS("inception_v1", ARG, "inception_v1", 0), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0), \
+    CT_GENERATE_PARAMETERS("resnet10", ARG, "resnet10", 0), \
+    CT_GENERATE_PARAMETERS("squeez1", ARG, "squeez1", 0)
 #endif
 
 TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
@@ -459,6 +570,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
   char filepath[MAXPATHLENGTH];
   size_t sz;
+  
+  tivx_clr_debug_zone(VX_ZONE_INFO);
 
   if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP1))
   {
@@ -496,13 +609,39 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
-    sz = snprintf(filepath, MAXPATHLENGTH, "tidl_models/%s/airshow_256x256.bmp", arg_->network);
-    ASSERT(sz < MAXPATHLENGTH);
-
-    VX_CALL(readInput(context, config, &input_tensor, &filepath[0]));
-
+    if(arg_->read_raw_padded)
+    {
+        sz = snprintf(filepath, MAXPATHLENGTH, "tidl_models/%s/airshow_256x256.y", arg_->network);
+        ASSERT(sz < MAXPATHLENGTH);
+        
+        #ifdef DEBUG_TEST_TIDL
+        printf("Reading input file %s ...\n", filepath);
+        #endif
+    
+        VX_CALL(readInputRawPadded(context, config, &input_tensor, &filepath[0]));
+    }
+    else
+    {
+        sz = snprintf(filepath, MAXPATHLENGTH, "tidl_models/%s/airshow_256x256.bmp", arg_->network);
+        ASSERT(sz < MAXPATHLENGTH);
+        
+        #ifdef DEBUG_TEST_TIDL
+        printf("Reading input file %s ...\n", filepath);
+        #endif
+    
+        VX_CALL(readInput(context, config, &input_tensor, &filepath[0]));
+    }
+    #ifdef DEBUG_TEST_TIDL
+    printf("Verifying graph ...\n");
+    #endif
     VX_CALL(vxVerifyGraph(graph));
+    #ifdef DEBUG_TEST_TIDL
+    printf("Running graph ...\n");
+    #endif
     VX_CALL(vxProcessGraph(graph));
+    #ifdef DEBUG_TEST_TIDL
+    printf("Showing output ...\n");
+    #endif
 
     VX_CALL(displayOutput(config, &output_tensor, refid[network_id], refscore[network_id]));
 
@@ -525,8 +664,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     tivxTIDLUnLoadKernels(context);
     
     vxRemoveKernel(kernel);
-
   }
+  tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
 TESTCASE_TESTS(tivxTIDL, testTIDL)

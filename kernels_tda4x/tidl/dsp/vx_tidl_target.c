@@ -68,13 +68,14 @@
 #include <tivx_alg_ivision_if.h>
 #include "itidl_ti.h"
 
-/* This is to be removed in future TIDL algo releases. */
-#define DMEM0_SIZE (256)
-#define DMEM1_SIZE (4*1024)
+/* TODO: remove this once TIDL fixes the need for having this */
+uint8_t pBlock[256] 
+__attribute__ ((aligned(256)))
+    ;
 
 #define L1_MEM_SIZE (16*1024)
 #define L2_MEM_SIZE (448*1024)
-#define L3_MEM_SIZE (5*1024*1024)
+#define L3_MEM_SIZE (6*1024*1024)
 
 #define TIDL_TB_CURR_CORE_ID            (1)
 #define TIDL_TB_CURR_LAYERS_GROUP_ID    (1)
@@ -306,7 +307,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
         prms->createParams.TIDLGetPhysicalAddress        = NULL;
         prms->createParams.quantRangeExpansionFactor     = 1.0;
-        prms->createParams.quantRangeUpdateFactor        = 0.1;
+        prms->createParams.quantRangeUpdateFactor        = 0.0;
 
         prms->createParams.l1MemSize = L1_MEM_SIZE;
         prms->createParams.l2MemSize = L2_MEM_SIZE;
@@ -425,16 +426,9 @@ void tivxAddTargetKernelTIDL()
 
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_DSP1) || (self_cpu == TIVX_CPU_ID_DSP2))
+    if ((self_cpu == TIVX_CPU_ID_EVE1))
     {
-        if (self_cpu == TIVX_CPU_ID_DSP1)
-        {
-            strncpy(target_name, TIVX_TARGET_DSP1, TIVX_TARGET_MAX_NAME);
-        }
-        else if (self_cpu == TIVX_CPU_ID_DSP2)
-        {
-            strncpy(target_name, TIVX_TARGET_DSP2, TIVX_TARGET_MAX_NAME);
-        }
+        strncpy(target_name, TIVX_TARGET_EVE1, TIVX_TARGET_MAX_NAME);
 
         vx_tidl_target_kernel = tivxAddTargetKernelByName
                                 (
