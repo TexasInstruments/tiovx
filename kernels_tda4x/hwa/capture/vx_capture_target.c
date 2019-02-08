@@ -71,12 +71,6 @@
 
 #include <TI/tivx_queue.h>
 #include <ti/drv/fvid2/fvid2.h>
-#include <ti/drv/csirx/soc/V0/csirx_soc.h>
-#include <ti/csl/tistdtypes.h>
-#include <ti/csl/csl_types.h>
-#include <ti/csl/soc.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/csirx/csirx.h>
 
 #define CAPTURE_FRAME_DROP_LEN (4096U*4U)

@@ -13,7 +13,7 @@ IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 
-DEFS+=SOC_J7
+DEFS+=SOC_J721E
 
 include $(FINALE)
 endif

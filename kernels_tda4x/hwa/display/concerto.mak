@@ -13,7 +13,7 @@ IDIRS       += $(PDK_PATH)/packages
 IDIRS       += $(XDCTOOLS_PATH)/packages
 IDIRS       += $(BIOS_PATH)/packages
 
-DEFS+=SOC_J7
+DEFS+=SOC_J721E
 
 ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA
