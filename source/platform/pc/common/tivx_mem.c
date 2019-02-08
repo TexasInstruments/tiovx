@@ -70,15 +70,25 @@
  */
 #define TIVX_MEM_BUFFER_ALLOC_ALIGN     (16U)
 
+
+/*! \brief Default buffer alignment in L2RAM
+ * \ingroup group_tivx_mem
+ */
+#define TIVX_MEM_L2RAM_ALIGN (1024)
+
+
 /*! \brief Psuedo L2RAM size for DSP
  * \ingroup group_tivx_mem
  */
-#define TIVX_MEM_L2RAM_SIZE (256*1024)
+#define TIVX_MEM_L2RAM_SIZE (8*1024*1024)
 
 /*! \brief Psuedo L2RAM memory for DSP
  * \ingroup group_tivx_mem
  */
-static vx_uint8 gL2RAM_mem[TIVX_MEM_L2RAM_SIZE];
+static vx_uint8 gL2RAM_mem[TIVX_MEM_L2RAM_SIZE]
+__attribute__ ((aligned(TIVX_MEM_L2RAM_ALIGN)))
+    ;
+
 
 /*! \brief Psuedo L2RAM memory allocation offset for DSP
  * \ingroup group_tivx_mem
@@ -111,12 +121,16 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
     if(mem_heap_region==TIVX_MEM_INTERNAL_L2)
     {
+        uint32_t mem_offset;
+        
+        mem_offset = TIVX_ALIGN(gL2RAM_mem_offset, TIVX_MEM_L2RAM_ALIGN);
+        
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation */
-        if(size+gL2RAM_mem_offset <= TIVX_MEM_L2RAM_SIZE)
+        if(size+mem_offset <= TIVX_MEM_L2RAM_SIZE)
         {
-            ptr = &gL2RAM_mem[gL2RAM_mem_offset];
-
-            gL2RAM_mem_offset += size;
+            ptr = &gL2RAM_mem[mem_offset];
+            
+            gL2RAM_mem_offset = mem_offset + size;
         }
     }
     else

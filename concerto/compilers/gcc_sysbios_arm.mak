@@ -101,6 +101,7 @@ $(_MODULE)_LIBRARIES:= $(foreach lib,$(SYS_STATIC_LIBS),-l$(lib)) \
 					   -Wl,-Bstatic \
 					   $(LINK_START_GROUP) \
 					   $(foreach lib,$(STATIC_LIBS),-l$(lib)) \
+					   $(foreach lib,$(ADDITIONAL_STATIC_LIBS),-l:$(lib)) \
 					   $(LINK_END_GROUP)
 $(_MODULE)_AFLAGS   := $($(_MODULE)_INCLUDES)
 $(_MODULE)_LDFLAGS  += $($(_MODULE)_LOPT)

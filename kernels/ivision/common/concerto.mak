@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 EVE))
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 EVE C71))
 
 include $(PRELUDE)
 TARGET      := vx_target_kernels_ivision_common

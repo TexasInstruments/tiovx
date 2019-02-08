@@ -164,6 +164,7 @@ $(_MODULE)_LIBRARIES:= $(foreach ldir,$($(_MODULE)_LDIRS),-L$(ldir)) \
 					   $(LINK_START_GROUP) \
 					   $(foreach lib,$(STATIC_LIBS),-l$(lib)) \
 					   $(foreach lib,$(SYS_STATIC_LIBS),-l$(lib)) \
+					   $(foreach lib,$(ADDITIONAL_STATIC_LIBS),-l:$(lib)) \
 					   $(LINK_END_GROUP) \
 					   -Wl,-Bdynamic \
 					   $(foreach lib,$(SHARED_LIBS),-l$(lib)) \

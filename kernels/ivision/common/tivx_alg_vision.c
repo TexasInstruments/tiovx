@@ -64,6 +64,7 @@
 
 #include <tivx_alg_ivision_if.h>
 #include <TI/tivx_mem.h>
+#include <TI/tivx_debug.h>
 
 typedef struct IM_Fxns
 {
@@ -93,6 +94,7 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
 
     for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
+        VX_PRINT(VX_ZONE_INFO, "Allocating memory record %d @ space = %d, size = %d, align = %d ... \n", memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
         switch(memRec[memRecId].space)
         {
             default:
@@ -123,9 +125,12 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
                 }
                 break;
         }
+        
+        VX_PRINT(VX_ZONE_INFO, "Allocated memory record %d @ space = %d and size = %d, addr = %p ... \n", memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].base);
 
         if (NULL == memRec[memRecId].base)
         {
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate memory record %d @ space = %d and size = %d !!! \n", memRecId, memRec[memRecId].space, memRec[memRecId].size);
             status = VX_FAILURE;
             break;
         }
@@ -231,17 +236,23 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
     IALG_MemRec *memRec;
     IM_Fxns *algHandle = NULL;
     vx_status status = VX_SUCCESS;
+    
+    VX_PRINT(VX_ZONE_INFO, "Calling ialg.algNumAlloc ...\n");
 
     numMemRec = fxns->ialg.algNumAlloc();
+    
+    VX_PRINT(VX_ZONE_INFO, "Allocating %d memory records ...\n", numMemRec);
 
     /*
      * Allocate memory for the records. These are NOT the actual memory of
      * tha algorithm
      */
     memRec = tivxMemAlloc(numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
-
+    
     if(NULL != memRec)
     {
+        VX_PRINT(VX_ZONE_INFO, "Calling ialg.algAlloc ...\n");
+        
         status = fxns->ialg.algAlloc(pAlgPrms, NULL, memRec);
 
         if(status==IALG_EOK)
@@ -249,6 +260,8 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
             status = tivxAlgiVisionAllocMem(numMemRec, memRec);
             if(status==IALG_EOK)
             {
+                VX_PRINT(VX_ZONE_INFO, "Calling ialg.algInit ...\n");
+                
                 algHandle = (IM_Fxns *)memRec[0].base;
                 status = fxns->ialg.algInit(
                     (IALG_Handle)(algHandle),
@@ -258,15 +271,29 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
 
                 if(status != IALG_EOK)
                 {
+                    VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algInit failed with status = %d\n", status);
                     tivxAlgiVisionDeleteAlg(algHandle);
                     algHandle = NULL;
                 }
             }
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algAlloc failed with status = %d\n", status);
+        }
 
         tivxMemFree(memRec, numMemRec * sizeof(IALG_MemRec), TIVX_MEM_EXTERNAL);
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "Unable to allocate %d memory records !!!\n", numMemRec);
+    }
 
+    if(algHandle != NULL)
+    {
+        VX_PRINT(VX_ZONE_INFO, "Created AlgiVision handle.\n");
+    }
+    
     return algHandle;
 }
 
