@@ -573,7 +573,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   
   tivx_clr_debug_zone(VX_ZONE_INFO);
 
-  if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DSP1))
+  if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
   {
     uint32_t num_input_tensors  = 0;
     uint32_t num_output_tensors = 0;
@@ -606,8 +606,6 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     };
 
     ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, dimof(params)), VX_TYPE_NODE);
-
-    VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
     if(arg_->read_raw_padded)
     {
