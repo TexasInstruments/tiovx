@@ -16,7 +16,7 @@
 /*! \brief Default buffer allocation alignment
  * \ingroup group_tivx_mem
  */
-#define TIVX_MEM_BUFFER_ALLOC_ALIGN     (16U)
+#define TIVX_MEM_BUFFER_ALLOC_ALIGN     (1024U)
 
 vx_status tivxMemBufferAlloc(
     tivx_shared_mem_ptr_t *mem_ptr, uint32_t size, vx_enum mem_heap_region)
@@ -28,11 +28,11 @@ vx_status tivxMemBufferAlloc(
     {
         if (NULL == mem_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
         if (0 == size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
         status = VX_FAILURE;
     }
@@ -44,13 +44,16 @@ vx_status tivxMemBufferAlloc(
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
-                heap_id = APP_MEM_HEAP_L3_MSMC;
+                heap_id = APP_MEM_HEAP_L3;
                 break;
             case TIVX_MEM_INTERNAL_L2:
-                heap_id = APP_MEM_HEAP_L2_LOCAL;
+                heap_id = APP_MEM_HEAP_L2;
+                break;
+            case TIVX_MEM_INTERNAL_L1:
+                heap_id = APP_MEM_HEAP_L1;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = VX_FAILURE;
                 break;
         }
@@ -68,7 +71,7 @@ vx_status tivxMemBufferAlloc(
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Shared mem ptr allocation failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Shared mem ptr allocation failed\n");
                 status = VX_ERROR_NO_MEMORY;
             }
         }
@@ -89,13 +92,16 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
             heap_id = APP_MEM_HEAP_DDR;
             break;
         case TIVX_MEM_INTERNAL_L3:
-            heap_id = APP_MEM_HEAP_L3_MSMC;
+            heap_id = APP_MEM_HEAP_L3;
             break;
         case TIVX_MEM_INTERNAL_L2:
-            heap_id = APP_MEM_HEAP_L2_LOCAL;
+            heap_id = APP_MEM_HEAP_L2;
+            break;
+        case TIVX_MEM_INTERNAL_L1:
+            heap_id = APP_MEM_HEAP_L1;
             break;
         default:
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = VX_FAILURE;
             break;
     }
@@ -121,13 +127,16 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
-                heap_id = APP_MEM_HEAP_L3_MSMC;
+                heap_id = APP_MEM_HEAP_L3;
                 break;
             case TIVX_MEM_INTERNAL_L2:
-                heap_id = APP_MEM_HEAP_L2_LOCAL;
+                heap_id = APP_MEM_HEAP_L2;
+                break;
+            case TIVX_MEM_INTERNAL_L1:
+                heap_id = APP_MEM_HEAP_L1;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = VX_FAILURE;
                 break;
         }
@@ -149,11 +158,11 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     {
         if (NULL == mem_ptr)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
+            VX_PRINT(VX_ZONE_ERROR, "Mem pointer is NULL\n");
         }
         if (0 == size)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: size is 0\n");
+            VX_PRINT(VX_ZONE_ERROR, "size is 0\n");
         }
         status = VX_FAILURE;
     }
@@ -165,13 +174,16 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
-                heap_id = APP_MEM_HEAP_L3_MSMC;
+                heap_id = APP_MEM_HEAP_L3;
                 break;
             case TIVX_MEM_INTERNAL_L2:
-                heap_id = APP_MEM_HEAP_L2_LOCAL;
+                heap_id = APP_MEM_HEAP_L2;
+                break;
+            case TIVX_MEM_INTERNAL_L1:
+                heap_id = APP_MEM_HEAP_L1;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = VX_FAILURE;
                 break;
         }
@@ -188,7 +200,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
             }
             else
             {
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferFree: Shared ptr mem free failed\n");
+                VX_PRINT(VX_ZONE_ERROR, "Shared ptr mem free failed\n");
                 status = VX_FAILURE;
             }
         }
@@ -219,13 +231,16 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
                 heap_id = APP_MEM_HEAP_DDR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
-                heap_id = APP_MEM_HEAP_L3_MSMC;
+                heap_id = APP_MEM_HEAP_L3;
                 break;
             case TIVX_MEM_INTERNAL_L2:
-                heap_id = APP_MEM_HEAP_L2_LOCAL;
+                heap_id = APP_MEM_HEAP_L2;
+                break;
+            case TIVX_MEM_INTERNAL_L1:
+                heap_id = APP_MEM_HEAP_L1;
                 break;
             default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemStats: Invalid memtype\n");
+                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = VX_FAILURE;
                 break;
         }
@@ -283,13 +298,16 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
             heap_id = APP_MEM_HEAP_DDR;
             break;
         case TIVX_MEM_INTERNAL_L3:
-            heap_id = APP_MEM_HEAP_L3_MSMC;
+            heap_id = APP_MEM_HEAP_L3;
             break;
         case TIVX_MEM_INTERNAL_L2:
-            heap_id = APP_MEM_HEAP_L2_LOCAL;
+            heap_id = APP_MEM_HEAP_L2;
+            break;
+        case TIVX_MEM_INTERNAL_L1:
+            heap_id = APP_MEM_HEAP_L1;
             break;
         default:
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemStats: Invalid memtype\n");
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = VX_FAILURE;
             break;
     }

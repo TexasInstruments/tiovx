@@ -60,8 +60,8 @@
 *
 */
 
+#if defined(TDA4X) || defined(PC)
 #if defined(BUILD_CT_TIOVX_TIDL)
-#ifdef TARGET_X86_64
 TESTCASE(tivxTIDL)
 #endif
 #endif

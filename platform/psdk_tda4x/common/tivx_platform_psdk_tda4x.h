@@ -33,11 +33,6 @@ extern "C" {
  */
 #define TIVX_PLATFORM_MAX_OBJ_DESC_SHM_INST  (1024u)
 
-/*! \brief Default buffer allocation alignment
- * \ingroup group_tivx_platform
- */
-#define TIVX_MEM_BUFFER_ALLOC_ALIGN             (16U)
-
 /*! \brief Macro to check the alignment of the size of
  *         the shared memory entry
  * \ingroup group_tivx_platform
