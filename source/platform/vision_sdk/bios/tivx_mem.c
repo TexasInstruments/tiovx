@@ -51,6 +51,7 @@ vx_status tivxMemBufferAlloc(
                 /* Since there is no L3 memory, so using OCMC memory */
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
+            case TIVX_MEM_INTERNAL_L1:
             case TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
@@ -97,6 +98,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
             /* Since there is no L3 memory, so using OCMC memory */
             heap_id = UTILS_HEAPID_OCMC_SR;
             break;
+        case TIVX_MEM_INTERNAL_L1:
         case TIVX_MEM_INTERNAL_L2:
             heap_id = UTILS_HEAPID_L2_LOCAL;
             break;
@@ -130,6 +132,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
                 /* Since there is no L3 memory, so using OCMC memory */
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
+            case TIVX_MEM_INTERNAL_L1:
             case TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
@@ -174,6 +177,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
             case TIVX_MEM_INTERNAL_L3:
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
+            case TIVX_MEM_INTERNAL_L1:
             case TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;
@@ -228,6 +232,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
             case TIVX_MEM_INTERNAL_L3:
                 heap_id = UTILS_HEAPID_OCMC_SR;
                 break;
+            case TIVX_MEM_INTERNAL_L1:
             case TIVX_MEM_INTERNAL_L2:
                 heap_id = UTILS_HEAPID_L2_LOCAL;
                 break;

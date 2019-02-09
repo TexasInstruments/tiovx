@@ -117,7 +117,27 @@ typedef enum _tivx_mem_heap_region_e
      *
      *  NOT to be used by applications.
      */
-    TIVX_MEM_INTERNAL_L2
+    TIVX_MEM_INTERNAL_L2,
+
+    /*! \brief Internal memory at L1 level.
+     *
+     *  Typically local to CPU, very limited in size.
+     *  Typically used by kernels.
+     *
+     *  This is used as scratch memory by kernels, i.e
+     *  memory contents are not preserved across kernel function calls
+     *
+     *  tivxMemAlloc() API will linearly allocate from this memory
+     *  segement. After each allocatation an internal
+     *  offset will be incremented.
+     *
+     *  tivxMemFree() resets this offset to zero.
+     *  i.e tivxMemAlloc() and tivxMemFree() are not heap like memory
+     *  alloc and free functions.
+     *
+     *  NOT to be used by applications.
+     */
+    TIVX_MEM_INTERNAL_L1
 
 } tivx_mem_heap_region_e;
 

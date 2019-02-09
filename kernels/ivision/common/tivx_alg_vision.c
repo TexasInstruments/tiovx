@@ -76,6 +76,54 @@ vx_int32 tivxAlgiVisionDeleteAlg(void *algHandle);
 vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec);
 vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 
+
+static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t *heap_id)
+{
+    int32_t status = VX_SUCCESS;
+    
+    *heap_id = TIVX_MEM_EXTERNAL;
+    switch(space)
+    {
+        default:
+            status = VX_FAILURE;
+            break;
+        case IALG_EPROG:
+        case IALG_IPROG:
+        case IALG_ESDATA:
+        case IALG_EXTERNAL:
+            *heap_id = TIVX_MEM_EXTERNAL;
+            break;
+        case IALG_DARAM0:
+        case IALG_DARAM1:
+        case IALG_SARAM0:
+        case IALG_SARAM1:
+        case IALG_DARAM2:
+        case IALG_SARAM2:
+            if(attrs==IALG_SCRATCH)
+            {
+                if(space==IALG_DARAM0)
+                {
+                    *heap_id = TIVX_MEM_INTERNAL_L1;
+                }
+                else
+                if(space==IALG_DARAM1)
+                {
+                    *heap_id = TIVX_MEM_INTERNAL_L2;
+                }
+                else
+                {
+                    *heap_id = TIVX_MEM_INTERNAL_L3;
+                }
+            }
+            else
+            {
+                *heap_id = TIVX_MEM_EXTERNAL;
+            }
+            break;
+    }
+    return status;
+}
+
 /**
  *******************************************************************************
  * \brief This function allocates memory for IVISION algorothm
@@ -89,48 +137,28 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
  */
 vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
 {
-    vx_uint32 memRecId;
+    vx_uint32 memRecId, heap_id;
     vx_status status = VX_SUCCESS;
 
     for (memRecId = 0u; memRecId < numMemRec; memRecId++)
     {
-        VX_PRINT(VX_ZONE_INFO, "Allocating memory record %d @ space = %d, size = %d, align = %d ... \n", memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
-        switch(memRec[memRecId].space)
+        VX_PRINT(VX_ZONE_INFO, "Allocating memory record %d @ space = %d, size = %d, align = %d ... \n", 
+            memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].alignment);
+            
+        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        if(status==VX_SUCCESS)
         {
-            default:
-                status = VX_FAILURE;
-                break;
-            case IALG_EPROG:
-            case IALG_IPROG:
-            case IALG_ESDATA:
-            case IALG_EXTERNAL:
-                memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size,
-                    TIVX_MEM_EXTERNAL);
-                break;
-            case IALG_DARAM0:
-            case IALG_DARAM1:
-            case IALG_SARAM:
-            case IALG_SARAM1:
-            case IALG_DARAM2:
-            case IALG_SARAM2:
-                if(memRec[memRecId].attrs==IALG_SCRATCH)
-                {
-                    memRec[memRecId].base = tivxMemAlloc(
-                        memRec[memRecId].size, TIVX_MEM_INTERNAL_L2);
-                }
-                else
-                {
-                    memRec[memRecId].base = tivxMemAlloc(
-                        memRec[memRecId].size, TIVX_MEM_EXTERNAL);
-                }
-                break;
+            memRec[memRecId].base = tivxMemAlloc(memRec[memRecId].size,
+                heap_id);
         }
         
-        VX_PRINT(VX_ZONE_INFO, "Allocated memory record %d @ space = %d and size = %d, addr = %p ... \n", memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].base);
+        VX_PRINT(VX_ZONE_INFO, "Allocated memory record %d @ space = %d and size = %d, addr = %p ... \n", 
+            memRecId, memRec[memRecId].space, memRec[memRecId].size, memRec[memRecId].base);
 
         if (NULL == memRec[memRecId].base)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate memory record %d @ space = %d and size = %d !!! \n", memRecId, memRec[memRecId].space, memRec[memRecId].size);
+            VX_PRINT(VX_ZONE_ERROR, "Failed to Allocate memory record %d @ space = %d and size = %d !!! \n", 
+                memRecId, memRec[memRecId].space, memRec[memRecId].size);
             status = VX_FAILURE;
             break;
         }
@@ -154,46 +182,15 @@ vx_int32 tivxAlgiVisionAllocMem(vx_uint32 numMemRec, IALG_MemRec  *memRec)
  */
 vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec)
 {
-    vx_uint32 memRecId;
+    vx_uint32 memRecId, heap_id;
     vx_status status = VX_SUCCESS;
 
     for (memRecId = 0; memRecId < numMemRec; memRecId++)
     {
-        switch(memRec[memRecId].space)
+        status = tivxAlgiVisionGetHeapId(memRec[memRecId].space, memRec[memRecId].attrs, &heap_id);
+        if(status==VX_SUCCESS)
         {
-            case IALG_EPROG:
-            case IALG_IPROG:
-            case IALG_ESDATA:
-            case IALG_EXTERNAL:
-                if (NULL != memRec[memRecId].base)
-                {
-                    tivxMemFree(memRec[memRecId].base, memRec[memRecId].size,
-                        TIVX_MEM_EXTERNAL);
-                }
-                break;
-            case IALG_DARAM0:
-            case IALG_DARAM1:
-            case IALG_SARAM:
-            case IALG_SARAM1:
-            case IALG_DARAM2:
-            case IALG_SARAM2:
-                if (NULL != memRec[memRecId].base)
-                {
-                    if(memRec[memRecId].attrs==IALG_SCRATCH)
-                    {
-                        tivxMemFree(memRec[memRecId].base,
-                            memRec[memRecId].size, TIVX_MEM_INTERNAL_L2);
-                    }
-                    else
-                    {
-                        tivxMemFree(memRec[memRecId].base,
-                            memRec[memRecId].size, TIVX_MEM_EXTERNAL);
-                    }
-                }
-                break;
-            default:
-                status = VX_FAILURE;
-                break;
+            tivxMemFree(memRec[memRecId].base, memRec[memRecId].size, heap_id);
         }
     }
 

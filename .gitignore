@@ -43,3 +43,8 @@ ncscope.*
 *.egg-info
 __pycache__
 
+# netbeans project
+nbproject/
+
+# CT tmp files
+conformance_tests/test_data/tidl_models/
