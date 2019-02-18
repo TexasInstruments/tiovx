@@ -371,6 +371,17 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
         }
 
+        if(1u == prms->use_dcc)
+        {
+            vx_uint8 count;
+            for(count=0;count<4U;count++)
+            {
+                prms->config.rawfe_params.pwl_lut_long.offset[count] = prms->dcc_output_params->vissBLC.l_dcoffset[count];
+                prms->config.rawfe_params.pwl_lut_short.offset[count] = prms->dcc_output_params->vissBLC.s_dcoffset[count];
+                prms->config.rawfe_params.pwl_lut_vshort.offset[count] = prms->dcc_output_params->vissBLC.vs_dcoffset[count];
+            }
+        }
+
         if ((VX_SUCCESS == status) && (NULL != h3a_aew_af_desc))
         {
             if(1u == prms->use_dcc)
