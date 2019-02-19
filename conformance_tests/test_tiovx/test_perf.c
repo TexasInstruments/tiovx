@@ -66,7 +66,7 @@ TEST(tiovxPerformance, tiovxPerfOpenFile)
 
     if (!perf_file)
     {
-        sz = snprintf(filepath, MAXPATHLENGTH, "%s/%s", ct_get_test_file_path(),
+        sz = snprintf(filepath, MAXPATHLENGTH, "%s/output/%s", ct_get_test_file_path(),
             OUTPUT_FILE);
         ASSERT(sz < MAXPATHLENGTH);
 

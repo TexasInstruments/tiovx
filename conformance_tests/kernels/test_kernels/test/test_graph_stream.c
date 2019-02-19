@@ -139,7 +139,13 @@ static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
  */
 static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
 {
-    return tivxExportGraphToDot(graph, ct_get_test_file_path(), filename_prefix);
+    size_t sz = 0;
+    void* buf = 0;
+    char filepath[MAXPATHLENGTH];
+
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/output", ct_get_test_file_path());
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+    return tivxExportGraphToDot(graph, filepath, filename_prefix);
 }
 
 /*
