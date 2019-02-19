@@ -260,7 +260,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        snprintf(params.sensor_name, 256, "%s/viss_config/example_sensor/0/0", ct_get_test_file_path());
+        snprintf(params.sensor_name, 256, "%s/tivx/viss_config/example_sensor/0/0", ct_get_test_file_path());
 
         params.mux_ee_port = 1;
         params.mux_uv12_c1_out = 0;
@@ -870,7 +870,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        snprintf(params.sensor_name, 256, "%s/viss_config/example_sensor/0/0", ct_get_test_file_path());
+        snprintf(params.sensor_name, 256, "%s/tivx/viss_config/example_sensor/0/0", ct_get_test_file_path());
 
         params.mux_ee_port = 1;
         params.mux_uv12_c1_out = 0;
@@ -903,7 +903,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         VX_CALL(vxVerifyGraph(graph));
 
-        ct_read_raw_image(raw, "bayer_1280x720.raw", 2);
+        ct_read_raw_image(raw, "tivx/bayer_1280x720.raw", 2);
 
         VX_CALL(vxProcessGraph(graph));
 
@@ -920,13 +920,13 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(h3a_aew_af_ref = vxCreateUserDataObject(context, "tivx_h3a_data_t",
                                                             sizeof(tivx_h3a_data_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        ct_read_image2(y12_ref, "out_y12.raw", 2);
-        ct_read_image2(uv12_c1_ref, "out_uv12.raw", 2);
-        ct_read_image2(y8_r8_c2_ref, "out_y8_ee.raw", 2);
-        ct_read_image2(uv8_g8_c3_ref, "out_uv8.raw", 2);
-        ct_read_image2(s8_b8_c4_ref, "out_s8.raw", 2);
-        ct_read_hist(histogram_ref, "out_hist.raw", 4);
-        ct_read_user_data_object(h3a_aew_af_ref, "out_h3a.raw", 4);
+        ct_read_image2(y12_ref, "tivx/out_y12.raw", 2);
+        ct_read_image2(uv12_c1_ref, "tivx/out_uv12.raw", 2);
+        ct_read_image2(y8_r8_c2_ref, "tivx/out_y8_ee.raw", 2);
+        ct_read_image2(uv8_g8_c3_ref, "tivx/out_uv8.raw", 2);
+        ct_read_image2(s8_b8_c4_ref, "tivx/out_s8.raw", 2);
+        ct_read_hist(histogram_ref, "tivx/out_hist.raw", 4);
+        ct_read_user_data_object(h3a_aew_af_ref, "tivx/out_h3a.raw", 4);
 
         ASSERT(ct_cmp_image2(y12, y12_ref) == 0);
         ASSERT(ct_cmp_image2(uv12_c1, uv12_c1_ref) == 0);
@@ -976,7 +976,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         VX_CALL(vxReleaseImage(&y12_ref));
 #endif
         /* For visual verification */
-        save_image_from_viss(y8_r8_c2, "out_y8");
+        save_image_from_viss(y8_r8_c2, "output/out_y8");
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));

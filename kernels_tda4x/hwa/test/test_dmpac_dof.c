@@ -177,14 +177,14 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
 
         for(i=0; i<levels; i++)
         {
-            status = load_image_into_pyramid_level(input_current, i, "tivx_test_ofTestCase1_10_pl");
+            status = load_image_into_pyramid_level(input_current, i, "tivx/dof/tivx_test_ofTestCase1_10_pl");
             ASSERT(status==VX_SUCCESS);
-            status = load_image_into_pyramid_level(input_reference, i, "tivx_test_ofTestCase1_11_pl");
+            status = load_image_into_pyramid_level(input_reference, i, "tivx/dof/tivx_test_ofTestCase1_11_pl");
             ASSERT(status==VX_SUCCESS);
         }
         VX_CALL(vxProcessGraph(graph));
 
-        status = save_image_from_dof(flow_vector_out_img, confidence_img, "tivx_test_ofTestCase1");
+        status = save_image_from_dof(flow_vector_out_img, confidence_img, "output/tivx_test_ofTestCase1");
         ASSERT(status==VX_SUCCESS);
 
         VX_CALL(vxReleaseNode(&node_dof));

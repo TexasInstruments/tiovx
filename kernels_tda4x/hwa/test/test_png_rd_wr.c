@@ -87,7 +87,7 @@ TEST(tivxPngRdWr, testPngFileRdWr)
     void *png_context;
     vx_status status;
 
-    make_filename(filename, "tivx_test_ofTestCase1_10_pl0.png");
+    make_filename(filename, "tivx/dof/tivx_test_ofTestCase1_10_pl0.png");
 
     /* when data_ptr = NULL,
      *   png_file_read allocates memory internally,
@@ -106,7 +106,7 @@ TEST(tivxPngRdWr, testPngFileRdWr)
 
     ASSERT(width == 256 && height == 128 && stride == 256 && df_image == VX_DF_IMAGE_U8);
 
-    make_filename(filename, "tivx_test_ofTestCase1_10_pl0_out0.png");
+    make_filename(filename, "output/tivx_test_ofTestCase1_10_pl0_out0.png");
     printf(" Writing file [%s], %d x %d, %d bytes, type=%08x\n",
         filename,
         width, height, stride, df_image);
@@ -128,7 +128,7 @@ TEST(tivxPngRdWr, testPngVxImageRdWr)
     char filename[MAX_ABS_FILENAME];
     vx_status status;
 
-    make_filename(filename, "tivx_test_ofTestCase1_10_pl0.png");
+    make_filename(filename, "tivx/dof/tivx_test_ofTestCase1_10_pl0.png");
     image = tivx_utils_create_vximage_from_pngfile(context, filename, vx_false_e);
 
     ASSERT_VX_OBJECT(image, VX_TYPE_IMAGE);
@@ -142,7 +142,7 @@ TEST(tivxPngRdWr, testPngVxImageRdWr)
 
     ASSERT(width == 256 && height == 128 && df_image == VX_DF_IMAGE_U8);
 
-    make_filename(filename, "tivx_test_ofTestCase1_10_pl0_out1.png");
+    make_filename(filename, "output/tivx_test_ofTestCase1_10_pl0_out1.png");
 
     printf(" Saving vx_image to file [%s], %d x %d, type=%08x\n",
         filename,
@@ -151,7 +151,7 @@ TEST(tivxPngRdWr, testPngVxImageRdWr)
     ASSERT(status==VX_SUCCESS);
 
 
-    make_filename(filename, "tivx_test_ofTestCase1_10_pl0.png");
+    make_filename(filename, "tivx/dof/tivx_test_ofTestCase1_10_pl0.png");
     status = tivx_utils_load_vximage_from_pngfile(image, filename, vx_false_e);
 
     ASSERT(status==VX_SUCCESS);

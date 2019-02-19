@@ -580,7 +580,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     tivxTIDLLoadKernels(context);
 
-    sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s/config.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
     ASSERT_VX_OBJECT(config = readConfig(context, &filepath[0], &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -589,7 +589,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    sz = snprintf(filepath, MAXPATHLENGTH, "%s/tidl_models/%s/network.bin", ct_get_test_file_path(), arg_->network);
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl_models/%s/network.bin", ct_get_test_file_path(), arg_->network);
     ASSERT(sz < MAXPATHLENGTH);
 
     ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -609,7 +609,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     if(arg_->read_raw_padded)
     {
-        sz = snprintf(filepath, MAXPATHLENGTH, "tidl_models/%s/airshow_256x256.y", arg_->network);
+        sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/%s/airshow_256x256.y", arg_->network);
         ASSERT(sz < MAXPATHLENGTH);
         
         #ifdef DEBUG_TEST_TIDL
@@ -620,7 +620,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     }
     else
     {
-        sz = snprintf(filepath, MAXPATHLENGTH, "tidl_models/%s/airshow_256x256.bmp", arg_->network);
+        sz = snprintf(filepath, MAXPATHLENGTH, "tivx/tidl_models/%s/airshow_256x256.bmp", arg_->network);
         ASSERT(sz < MAXPATHLENGTH);
         
         #ifdef DEBUG_TEST_TIDL

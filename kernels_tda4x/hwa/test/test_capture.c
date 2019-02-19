@@ -78,12 +78,6 @@
 
 static const vx_char user_data_object_name[] = "tivx_capture_params_t";
 
-static void make_filename(char *abs_filename, char *filename)
-{
-    snprintf(abs_filename, MAX_ABS_FILENAME, "%s/%s",
-        ct_get_test_file_path(), filename);
-}
-
 /*
  * Utility API to set number of buffers at a node parameter
  * The parameter MUST be a output or bidirectonal parameter for the setting
@@ -126,7 +120,13 @@ static vx_status set_graph_trigger_node(vx_graph graph, vx_node node)
  */
 static vx_status export_graph_to_file(vx_graph graph, char *filename_prefix)
 {
-    return tivxExportGraphToDot(graph, ct_get_test_file_path(), filename_prefix);
+    size_t sz = 0;
+    void* buf = 0;
+    char filepath[MAXPATHLENGTH];
+
+    sz = snprintf(filepath, MAXPATHLENGTH, "%s/output", ct_get_test_file_path());
+    ASSERT_(return 0, (sz < MAXPATHLENGTH));
+    return tivxExportGraphToDot(graph, filepath, filename_prefix);
 }
 
 static void printGraphPipelinePerformance(vx_graph graph,
