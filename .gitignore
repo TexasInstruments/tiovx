@@ -1,5 +1,6 @@
 bin/
 tiovx_dev/
+conformance_tests/test_data
 *.pyc
 *.o
 *.dll
