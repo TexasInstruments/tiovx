@@ -1,3 +1,0 @@
-# H3A MUX
-2      # sel      port selection      (0: long, 1: short, 2: very short, 3: LSC)
-2      # shift    shift down
