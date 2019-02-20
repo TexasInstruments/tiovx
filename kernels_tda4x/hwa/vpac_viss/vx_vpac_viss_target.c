@@ -175,6 +175,26 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms);
 static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, uint16_t shift_policy);
 static uint32_t tivxVpacVissFindFile(char *root_name, char *dir_name, char *substring, char *full_path);
 static uint32_t tivxVpacVissGetFileConfig(char *root_name, char *file_name, char *full_path);
+static void copy_uint16_array(int32_t * dst, uint16_t * src, int cnt);
+static void copy_int16_array(int32_t * dst, int16_t * src, int cnt);
+
+static void copy_uint16_array(int32_t * dst, uint16_t * src, int cnt)
+{
+	int k;
+    for (k = 0; k < cnt; k++)
+    {
+        dst[k] = src[k];
+    }
+}
+
+static void copy_int16_array(int32_t * dst, int16_t * src, int cnt)
+{
+	int k;
+    for (k = 0; k < cnt; k++)
+    {
+        dst[k] = src[k];
+    }
+}
 
 static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_target_kernel_instance kernel,
@@ -398,7 +418,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /*Apply AWB Gains and get DCC parameters for the relevant photospace*/
         {
             tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
-            if(1 == aewb_result->awb_valid)
+
+            /* apply AWB gains in RAWFE when NSF4 is bypassed */
+            if ((1u == params->bypass_nsf4) && (1u == aewb_result->awb_valid))
             {
                 prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
                 prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
@@ -460,6 +482,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* NSF4 */
         if(0 == prms->bypass_nsf4)
         {
+            tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
+
             if(1u == prms->use_dcc)
             {
                 prms->nsf4_params.mode = prms->dcc_output_params->vissNSF4Cfg.mode;
@@ -470,20 +494,20 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->nsf4_params.thr_scale_tn2 = prms->dcc_output_params->vissNSF4Cfg.tn2;
                 prms->nsf4_params.thr_scale_tn3 = prms->dcc_output_params->vissNSF4Cfg.tn3;
 
-                memcpy( 
-                    &prms->nsf4_params.noise_thr_x, 
-                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_x, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.noise_thr_x)
+                copy_uint16_array(
+                    &prms->nsf4_params.noise_thr_x[0][0],
+                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_x[0][0],
+                    4 * 12
                 );
-                memcpy(
-                    &prms->nsf4_params.noise_thr_y, 
-                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_y, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.noise_thr_y)
+                copy_uint16_array(
+                    &prms->nsf4_params.noise_thr_y[0][0],
+                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_y[0][0],
+                    4 * 12
                 );
-                memcpy(
-                    &prms->nsf4_params.noise_thr_s, 
-                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_s, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.noise_thr_s)
+                copy_int16_array(
+                    &prms->nsf4_params.noise_thr_s[0][0],
+                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_s[0][0],
+                    4 * 12
                 );
 
                 prms->nsf4_params.shd_x = prms->dcc_output_params->vissNSF4Cfg.shd_x;
@@ -494,27 +518,37 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->nsf4_params.shd_gmax = prms->dcc_output_params->vissNSF4Cfg.shd_gmax;
                 prms->nsf4_params.shd_set_sel = prms->dcc_output_params->vissNSF4Cfg.shd_set_sel;
 
-                memcpy( 
-                    &prms->nsf4_params.shd_lut_x, 
-                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_x, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.shd_lut_x)
+                copy_uint16_array(
+                    &prms->nsf4_params.shd_lut_x[0][0],
+                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_x[0][0],
+                    2 * 16
                 );
-                memcpy( 
-                    &prms->nsf4_params.shd_lut_y, 
-                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_y, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.shd_lut_y)
+                copy_uint16_array(
+                    &prms->nsf4_params.shd_lut_y[0][0],
+                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_y[0][0],
+                    2 * 16
                 );
-                memcpy( 
-                    &prms->nsf4_params.shd_lut_s, 
-                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_s, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.shd_lut_s)
+                copy_int16_array(
+                    &prms->nsf4_params.shd_lut_s[0][0],
+                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_s[0][0],
+                    2 * 16
                 );
 
-                memcpy( 
-                    &prms->nsf4_params.wb_gain, 
-                    &prms->dcc_output_params->vissNSF4Cfg.wb_gains, 
-                    sizeof(prms->dcc_output_params->vissNSF4Cfg.wb_gains)
-                );
+                if (0 == aewb_result->awb_valid)
+                {
+                    prms->nsf4_params.wb_gain[0] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[0];
+                    prms->nsf4_params.wb_gain[1] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[1];
+                    prms->nsf4_params.wb_gain[2] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[2];
+                    prms->nsf4_params.wb_gain[3] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[3];
+                }
+            }
+
+            if (1 == aewb_result->awb_valid)
+            {
+                prms->nsf4_params.wb_gain[0] = aewb_result->wb_gains[0];
+                prms->nsf4_params.wb_gain[1] = aewb_result->wb_gains[1];
+                prms->nsf4_params.wb_gain[2] = aewb_result->wb_gains[2];
+                prms->nsf4_params.wb_gain[3] = aewb_result->wb_gains[3];
             }
 
             nsf4_main(&prms->nsf4_params, prms->scratch_rawfe_raw_out, prms->scratch_nsf4v_out);
