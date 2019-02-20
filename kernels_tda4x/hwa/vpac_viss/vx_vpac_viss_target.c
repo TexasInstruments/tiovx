@@ -535,6 +535,26 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* FLEXCC */
         if(0 == prms->bypass_cc)
         {
+            if(1u == prms->use_dcc)
+            {
+                if(prms->dcc_output_params->useRgb2Rgb1Cfg)
+                {
+                    prms->flexcc_params.CCM1.W11 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][0];
+                    prms->flexcc_params.CCM1.W12 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][1];
+                    prms->flexcc_params.CCM1.W13 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][2];
+                    prms->flexcc_params.CCM1.W21 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][0];
+                    prms->flexcc_params.CCM1.W22 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][1];
+                    prms->flexcc_params.CCM1.W23 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][2];
+                    prms->flexcc_params.CCM1.W31 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][0];
+                    prms->flexcc_params.CCM1.W32 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][1];
+                    prms->flexcc_params.CCM1.W33 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][2];
+
+                    prms->flexcc_params.CCM1.Offset_1 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[0];
+                    prms->flexcc_params.CCM1.Offset_2 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[1];
+                    prms->flexcc_params.CCM1.Offset_3 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[2];
+                }
+            }
+
             flexcc_top_processing(prms->scratch_cfa_out, prms->scratch_cc_out, prms->scratch_hist, &prms->flexcc_params);
         }
 
@@ -1124,25 +1144,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         flexcc_read_parameters(temp_name, &prms->flexcc_params, &w, &h, temp_path);
                         prms->flexcc_params.inWidth = width;
                         prms->flexcc_params.inHeight = height;
-                        if( (1u == prms->use_dcc) && (VX_SUCCESS == dcc_status) )
-                        {
-                            if(prms->dcc_output_params->useRgb2Rgb1Cfg)
-                            {
-                                prms->flexcc_params.CCM1.W11 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][0];
-                                prms->flexcc_params.CCM1.W12 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][1];
-                                prms->flexcc_params.CCM1.W13 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][2];
-                                prms->flexcc_params.CCM1.W21 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][0];
-                                prms->flexcc_params.CCM1.W22 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][1];
-                                prms->flexcc_params.CCM1.W23 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][2];
-                                prms->flexcc_params.CCM1.W31 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][0];
-                                prms->flexcc_params.CCM1.W32 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][1];
-                                prms->flexcc_params.CCM1.W33 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][2];
-
-                                prms->flexcc_params.CCM1.Offset_1 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[0];
-                                prms->flexcc_params.CCM1.Offset_2 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[1];
-                                prms->flexcc_params.CCM1.Offset_3 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[2];
-                            }
-                        }
                     }
                     else
                     {

@@ -469,6 +469,30 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
         }
 
+        /* FLEXCC */
+        if(0 == prms->config.bypass_cc)
+        {
+            if(1u == prms->use_dcc)
+            {
+                if(prms->dcc_output_params->useRgb2Rgb1Cfg)
+                {
+                    prms->config.flexcc_params.CCM1.W11 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][0];
+                    prms->config.flexcc_params.CCM1.W12 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][1];
+                    prms->config.flexcc_params.CCM1.W13 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][2];
+                    prms->config.flexcc_params.CCM1.W21 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][0];
+                    prms->config.flexcc_params.CCM1.W22 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][1];
+                    prms->config.flexcc_params.CCM1.W23 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][2];
+                    prms->config.flexcc_params.CCM1.W31 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][0];
+                    prms->config.flexcc_params.CCM1.W32 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][1];
+                    prms->config.flexcc_params.CCM1.W33 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][2];
+
+                    prms->config.flexcc_params.CCM1.Offset_1 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[0];
+                    prms->config.flexcc_params.CCM1.Offset_2 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[1];
+                    prms->config.flexcc_params.CCM1.Offset_3 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[2];
+                }
+            }
+        }
+
         status = vlab_hwa_process(VPAC_VISS_BASE_ADDRESS, "VPAC_VISS", sizeof(viss_config), &prms->config);
 
         /* Fill non-NULL output buffers (up to 7) */
@@ -949,25 +973,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                         flexcc_read_parameters(temp_name, &prms->config.flexcc_params, &w, &h, temp_path);
                         prms->config.flexcc_params.inWidth = width;
                         prms->config.flexcc_params.inHeight = height;
-                        if( (1u == prms->use_dcc) && (VX_SUCCESS == dcc_status) )
-                        {
-                            if(prms->dcc_output_params->useRgb2Rgb1Cfg)
-                            {
-                                prms->config.flexcc_params.CCM1.W11 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][0];
-                                prms->config.flexcc_params.CCM1.W12 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][1];
-                                prms->config.flexcc_params.CCM1.W13 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][2];
-                                prms->config.flexcc_params.CCM1.W21 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][0];
-                                prms->config.flexcc_params.CCM1.W22 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][1];
-                                prms->config.flexcc_params.CCM1.W23 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][2];
-                                prms->config.flexcc_params.CCM1.W31 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][0];
-                                prms->config.flexcc_params.CCM1.W32 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][1];
-                                prms->config.flexcc_params.CCM1.W33 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][2];
-
-                                prms->config.flexcc_params.CCM1.Offset_1 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[0];
-                                prms->config.flexcc_params.CCM1.Offset_2 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[1];
-                                prms->config.flexcc_params.CCM1.Offset_3 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[2];
-                            }
-                        }
                     }
                     else
                     {
