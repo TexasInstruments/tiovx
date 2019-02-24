@@ -61,5 +61,4 @@
  */
 
 #include "hwa/test/test_main.h"
-#include "tidl/test/test_main.h"
 

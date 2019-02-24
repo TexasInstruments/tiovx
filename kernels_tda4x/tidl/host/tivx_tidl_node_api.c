@@ -63,7 +63,6 @@
 
 
 #include <TI/tivx.h>
-#include <TI/tda4x.h>
 
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
