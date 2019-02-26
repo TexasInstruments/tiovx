@@ -447,13 +447,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
   return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelTIDLControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-  return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelTIDL()
 {
   char target_name[TIVX_TARGET_MAX_NAME];
@@ -495,7 +488,7 @@ void tivxAddTargetKernelTIDL()
             tivxKernelTIDLProcess,
             tivxKernelTIDLCreate,
             tivxKernelTIDLDelete,
-            tivxKernelTIDLControl,
+            NULL,
             NULL
         );
   }

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2018 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -60,41 +60,100 @@
 *
 */
 
-#include <TI/tivx.h>
-#include "tivx_kernels_host_utils.h"
 
-static vx_status VX_CALLBACK publishKernels(vx_context context);
-static vx_status VX_CALLBACK unPublishKernels(vx_context context);
 
-vx_status tivxAddIVisionKernelHarrisCorners(vx_context context);
 
-vx_status tivxRemoveIVisionKernelHarrisCorners(vx_context context);
+#ifndef TIVX_KERNEL_RGB_IR_
+#define TIVX_KERNEL_RGB_IR_
 
-vx_status tivxAddIVisionKernelRgbIr(vx_context context);
 
-vx_status tivxRemoveIVisionKernelRgbIr(vx_context context);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
-    {tivxAddIVisionKernelHarrisCorners, tivxRemoveIVisionKernelHarrisCorners},
-    {tivxAddIVisionKernelRgbIr, tivxRemoveIVisionKernelRgbIr}
-};
+/*!
+ * \file
+ * \brief Interface file for fast corners kernel
+ */
 
-static vx_status VX_CALLBACK publishKernels(vx_context context)
-{
-    return tivxPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
+
+/*!
+ * \brief Index of the input RGB-IR image
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_IN_IMG_IDX                  (0U)
+
+/*!
+ * \brief Index of the sensor phase
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_SENSOR_PHASE_IDX            (1U)
+
+/*!
+ * \brief Index of the decision threshold between horizontal and vertical gradient.
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_THR_IDX              (2U)
+
+/*!
+ * \brief Index of the Mixing coefficient applied to the IR component to obtain the final
+ *        R= R - alphaR*IR . Q15 format.
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_ALPHA_R_IDX              (3U)
+
+/*!
+ * \brief Mixing coefficient applied to the IR component to obtain the final
+ *        G=G - alphaG*IR. Q15 format.
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_ALPHA_G_IDX              (4U)
+
+/*!
+ * \brief Mixing coefficient applied to the IR component to obtain the final
+ *        B=B - alphaB*IR. Q15 format.
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_ALPHA_B_IDX              (5U)
+
+/*!
+ * \brief Index of the borderMode.
+ *        Method of intializing the border within the output frame.
+ *        Use enum RGB_IR_TI_BorderMode as initializer.
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_BORDER_MODE_IDX          (6U)
+
+/*!
+ * \brief Index of the output bayer frame
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_OUT_BAYER_IDX            (7U)
+
+/*!
+ * \brief Index of the output IR frame
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_OUT_IR_IDX               (8U)
+
+/*!
+ * \brief Max Params supported by fast corners kernel
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+#define TIVX_KERNEL_RGB_IR_MAX_PARAMS                  (9U)
+
+#ifdef __cplusplus
 }
+#endif
 
-static vx_status VX_CALLBACK unPublishKernels(vx_context context)
-{
-    return tivxUnPublishKernels(context, gTivx_host_kernel_list, dimof(gTivx_host_kernel_list));
-}
-
-void tivxRegisterIVisionCoreKernels(void)
-{
-    tivxRegisterModule(TIVX_MODULE_NAME_IVISION, publishKernels, unPublishKernels);
-}
-
-void tivxUnRegisterIVisionCoreKernels(void)
-{
-    tivxUnRegisterModule(TIVX_MODULE_NAME_IVISION);
-}
+#endif

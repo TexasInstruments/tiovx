@@ -111,3 +111,51 @@ VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
     vxReleaseScalar(&sc_suppr);
     return node;
 }
+
+VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
+                            vx_image  input,
+                            vx_uint8   sensorPhase,
+                            vx_uint16  threshold,
+                            vx_float32  alphaR,
+                            vx_float32  alphaG,
+                            vx_float32  alphaB,
+                            vx_uint8  borderMode,
+                            vx_image  outputBayer,
+                            vx_image  outputIR)
+{
+    vx_scalar sc_sensorPhase = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT8, &sensorPhase);
+    vx_scalar sc_thr = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT16, &threshold);
+    vx_scalar sc_alphaR = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_FLOAT32, &alphaR);
+    vx_scalar sc_alphaG = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_FLOAT32, &alphaG);
+    vx_scalar sc_alphaB = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_FLOAT32, &alphaB);
+    vx_scalar sc_borderMode = vxCreateScalar(vxGetContext((vx_reference)graph),
+        VX_TYPE_UINT8, &borderMode);
+
+    vx_reference params[] = {
+            (vx_reference)input,
+            (vx_reference)sc_sensorPhase,
+            (vx_reference)sc_thr,
+            (vx_reference)sc_alphaR,
+            (vx_reference)sc_alphaG,
+            (vx_reference)sc_alphaB,
+            (vx_reference)sc_borderMode,
+            (vx_reference)outputBayer,
+            (vx_reference)outputIR,
+    };
+    vx_node node = tivxCreateNodeByKernelEnum(graph,
+                                           TIVX_KERNEL_IVISION_RGB_IR,
+                                           params,
+                                           dimof(params));
+    vxReleaseScalar(&sc_sensorPhase);
+    vxReleaseScalar(&sc_thr);
+    vxReleaseScalar(&sc_alphaR);
+    vxReleaseScalar(&sc_alphaG);
+    vxReleaseScalar(&sc_alphaB);
+    vxReleaseScalar(&sc_borderMode);
+    return node;
+}

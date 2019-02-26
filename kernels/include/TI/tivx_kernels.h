@@ -111,7 +111,7 @@ enum tivx_kernel_ivision_e {
      * \see group_vision_function_harris
      */
     TIVX_KERNEL_IVISION_HARRIS_CORNERS = VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x0,
-
+    TIVX_KERNEL_IVISION_RGB_IR= VX_KERNEL_BASE(VX_ID_TI, TIVX_LIBRARY_IVISION_BASE) + 0x1,
     /* insert new kernels here */
     TIVX_KERNEL_IVISION_MAX_1_0, /*!< \internal Used for bounds checking in the conformance test. */
 };

@@ -93,6 +93,36 @@ VX_API_ENTRY vx_node VX_API_CALL tivxHarrisCornersNode(vx_graph graph,
                             vx_array  corners,
                             vx_scalar num_corners);
 
+/*! \brief [Graph] Creates a RGB-IR Node.
+ * \param [in] graph The reference to the graph.
+ * \param [in] input The input <tt>\ref VX_DF_IMAGE_U16</tt> image.
+ * \param [in] sensorPhase The sensor phase of the image. Currently only 0 is supported.
+ * \param [in] threshold Decision threshold between horizontal and vertical gradient.
+ * \param [in] alphaR Mixing coefficient applied to the IR component to obtain the final R= R - alphaR*IR . Must be in the [0,1] range.
+ * \param [in] alphaG Mixing coefficient applied to the IR component to obtain the final G= G - alphaG*IR . Must be in the [0,1] range.
+ * \param [in] alphaB Mixing coefficient applied to the IR component to obtain the final B= B - alphaB*IR . Must be in the [0,1] range.
+ * \param [in] borderMode Method of initializing the 2-pixels border within the output frame.
+ *             0: Uninitialized border. The border pixels are left uninitialized. The pixels have the values that were there initially
+ *                before the processing.
+ *             1: Mirror border. The border pixels are mirrored from adjacent output pixels calculated by the algorithm. Recommended setting.
+ *             2: Interpolated border. The border pixels are interpolated. This produces the highest quality at the expense of significant
+ *                performance slowdown (5x slower for VGA resolution) since the interpolation of the border would be handled by the scalar core, not the vector core.
+ * \param [out] outputBayer The output <tt>\ref VX_DF_IMAGE_U16</tt> bayer image. Must have the same dimensions as the input image.
+ * \param [out] outputIR The output <tt>\ref VX_DF_IMAGE_U16</tt> infrared image. Must have half horizontal and vertical dimensions as the input image.
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
+                            vx_image  input,
+                            vx_uint8   sensorPhase,
+                            vx_uint16  threshold,
+                            vx_float32  alphaR,
+                            vx_float32  alphaG,
+                            vx_float32  alphaB,
+                            vx_uint8  borderMode,
+                            vx_image  outputBayer,
+                            vx_image  outputIR);
+
 /*! \brief [Graph] Creates a TIDL Node.
  * \param [in] Reference to vx_graph.
  * \param [in] Reference to vx_kernel.

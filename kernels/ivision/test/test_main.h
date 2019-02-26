@@ -64,6 +64,7 @@
 #if defined(BUILD_CT_TIOVX_IVISION)
 #ifdef TDAX
 TESTCASE(tivxIVisionHarrisCorners)
+TESTCASE(tivxIVisionRgbIr)
 #endif
 #endif
 

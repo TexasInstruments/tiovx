@@ -66,9 +66,12 @@
 
 void tivxAddTargetKernelHarrisCorners();
 void tivxRemoveTargetKernelHarrisCorners();
+void tivxAddTargetKernelRgbIr();
+void tivxRemoveTargetKernelRgbIr();
 
 static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
-    {tivxAddTargetKernelHarrisCorners, tivxRemoveTargetKernelHarrisCorners}
+    {tivxAddTargetKernelHarrisCorners, tivxRemoveTargetKernelHarrisCorners},
+    {tivxAddTargetKernelRgbIr, tivxRemoveTargetKernelRgbIr}
 };
 
 void tivxRegisterIVisionTargetKernels()
