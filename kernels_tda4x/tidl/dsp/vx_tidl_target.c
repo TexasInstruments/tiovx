@@ -268,8 +268,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     uint32_t i;
     
-    tivx_set_debug_zone(VX_ZONE_INFO);
-
     for (i = 0U; i < num_params; i ++)
     {
         if (NULL == obj_desc[i])
@@ -411,8 +409,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
         }
     }
     
-    tivx_clr_debug_zone(VX_ZONE_INFO);
-
     return (status);
 }
 
