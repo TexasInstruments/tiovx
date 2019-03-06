@@ -101,7 +101,7 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_object_array_t *out_object_array_desc;
     tivx_obj_desc_scalar_t *out_scalar_desc;
-    tivx_obj_desc_image_t *img_out_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
+    tivx_obj_desc_scalar_t *scalar_out_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivxScalarSourceObjArrayParams *prms = NULL;
     uint32_t size;
     vx_enum state;
@@ -122,9 +122,9 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
 
     if(VX_SUCCESS == status)
     {
-        tivxGetObjDescList(out_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)img_out_object_array_desc, out_object_array_desc->num_items);
+        tivxGetObjDescList(out_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_out_object_array_desc, out_object_array_desc->num_items);
 
-        out_scalar_desc = img_out_object_array_desc[0];
+        out_scalar_desc = scalar_out_object_array_desc[0];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);

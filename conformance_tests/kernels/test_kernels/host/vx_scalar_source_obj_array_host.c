@@ -85,8 +85,6 @@ static vx_status VX_CALLBACK tivxAddKernelScalarSourceObjArrayValidate(vx_node n
 {
     vx_status status = VX_SUCCESS;
 
-    vx_object_array out_object_array = NULL;
-
     if ( (num != TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX])
     )
@@ -94,35 +92,6 @@ static vx_status VX_CALLBACK tivxAddKernelScalarSourceObjArrayValidate(vx_node n
         status = VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
-
-    if (VX_SUCCESS == status)
-    {
-        out_object_array = (const vx_object_array)parameters[TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX];
-    }
-
-
-    /* PARAMETER ATTRIBUTE FETCH */
-
-    if (VX_SUCCESS == status)
-    {
-    }
-
-    /* PARAMETER CHECKING */
-
-    if (VX_SUCCESS == status)
-    {
-    }
-
-
-    /* CUSTOM PARAMETER CHECKING */
-
-    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
-    /*                   covered by the code-generation script.) > */
-
-    /* < DEVELOPER_TODO: (Optional) If intending to use a virtual data object, set metas using appropriate TI API. */
-    /*                   For a code example, please refer to the validate callback of the follow file: */
-    /*                   tiovx/kernels/openvx-core/host/vx_absdiff_host.c. For further information regarding metas, */
-    /*                   please refer to the OpenVX 1.1 spec p. 260, or search for vx_kernel_validate_f. > */
 
     return status;
 }

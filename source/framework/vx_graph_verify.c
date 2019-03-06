@@ -617,9 +617,26 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                         {
                             if( (prm_next_dir == VX_INPUT) || (prm_next_dir == VX_BIDIRECTIONAL) )
                             {
+                                vx_reference parent_ref_node_cur, parent_ref_node_next;
+
+                                parent_ref_node_cur = NULL;
+                                parent_ref_node_next = NULL;
+
+                                if(0 != node_cur->replicated_flags[prm_cur_idx])
+                                {
+                                    parent_ref_node_cur = ref1->scope;
+                                }
+
+                                if(0 != node_next->replicated_flags[prm_next_idx])
+                                {
+                                    parent_ref_node_next = ref2->scope;
+                                }
+
                                 /* check if input data reference of next node is equal to
                                    output data reference of current */
-                                if(ownGraphIsRefMatch(graph, ref1, ref2))
+                                if( ownGraphIsRefMatch(graph, ref1, ref2) ||
+                                    ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
+                                    ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
                                 {
                                     /* add node_next as output node for current node if not already added */
                                     status = ownNodeAddOutNode(node_cur, node_next);
@@ -642,10 +659,27 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                             else
                             if( prm_next_dir == VX_OUTPUT )
                             {
+                                vx_reference parent_ref_node_cur, parent_ref_node_next;
+
+                                parent_ref_node_cur = NULL;
+                                parent_ref_node_next = NULL;
+
+                                if(0 != node_cur->replicated_flags[prm_cur_idx])
+                                {
+                                    parent_ref_node_cur = ref1->scope;
+                                }
+
+                                if(0 != node_next->replicated_flags[prm_next_idx])
+                                {
+                                    parent_ref_node_next = ref2->scope;
+                                }
+
                                 /* check if any output of next node matches current node
                                  * This would mean two nodes output to same data object which is not allowed
                                  */
-                                if(ownGraphIsRefMatch(graph, ref1, ref2))
+                                if( ownGraphIsRefMatch(graph, ref1, ref2) ||
+                                    ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
+                                    ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
                                 {
                                     status = VX_FAILURE;
                                     VX_PRINT(VX_ZONE_ERROR,"Output of next node matches current node at index %d failed\n", node_cur_idx);
