@@ -4,6 +4,24 @@ BUILD_SDK?=tiovx_dev/j7presi
 include $(BUILD_SDK)_tools_path.mak
 include $(TIOVX_PATH)/build_flags.mak
 
+# Project specific build defs (don't change across different combos):
+BUILD_DEFS :=
+ifeq ($(BUILD_IVISION_KERNELS),yes)
+BUILD_DEFS += BUILD_IVISION_KERNELS
+endif
+ifneq ($(CUSTOM_KERNEL_PATH),)
+BUILD_DEFS += CUSTOM_KERNEL_PATH
+endif
+ifneq ($(CUSTOM_APPLICATION_PATH),)
+BUILD_DEFS += CUSTOM_APPLICATION_PATH
+endif
+ifeq ($(BUILD_TUTORIAL),yes)
+BUILD_DEFS += BUILD_TUTORIAL
+endif
+ifeq ($(BUILD_CONFORMANCE_TEST),yes)
+BUILD_DEFS += BUILD_CONFORMANCE_TEST
+endif
+
 DIRECTORIES :=
 DIRECTORIES += source/platform
 DIRECTORIES += source/framework
@@ -61,7 +79,27 @@ endif
 
 CONCERTO_ROOT ?= concerto
 BUILD_MULTI_PROJECT := 1
-BUILD_TARGET := concerto/target.mak
+BUILD_TARGET := target.mak
 BUILD_PLATFORM :=
 
 include $(CONCERTO_ROOT)/rules.mak
+
+# Project specific rules
+
+.PHONY: all
+all:
+
+doxy_docs:
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide/user_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide/doxy_warnings.txt
+
+doxy_docs_j7:
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7presi_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_user_guide_j7_presi/doxy_warnings.txt
+
+doxy_docs_pytiovx:
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_pytiovx/pytiovx_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_pytiovx/doxy_warnings.txt
+
+doxy_docs_tutorial:
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/tutorial_guide_linux.cfg 2> tiovx_dev/internal_docs/doxy_cfg_tutorial_guide/doxy_warnings.txt
+
+doxy_docs_design:
+	$(DOXYGEN) tiovx_dev/internal_docs/doxy_cfg_design/design_guide.cfg 2> tiovx_dev/internal_docs/doxy_cfg_design/doxy_warnings.txt
