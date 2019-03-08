@@ -6,7 +6,7 @@ CUSTOM_KERNEL_PATH = $(TIOVX_PATH)/tiovx_dev/kernels_tda4x
 CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/tiovx_dev/platform
 
 VXLIB_PATH ?= $(PSDK_PATH)/vxlib_c66x_1_1_3_0
-TDA4X_C_MODELS_PATH ?= $(PSDK_PATH)/tda4x_c_models
+J7_C_MODELS_PATH ?= $(PSDK_PATH)/tda4x_c_models
 TIDL_PATH ?= $(PSDK_PATH)/tidl_j7/ti_dl
 IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging

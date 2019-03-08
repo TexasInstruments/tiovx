@@ -1,5 +1,5 @@
 
-ifeq ($(TARGET_PLATFORM),TDA4X)
+ifeq ($(TARGET_PLATFORM),J7)
 ifeq ($(TARGET_CPU),$(filter $(TARGET_CPU), A72))
 ifeq ($(TARGET_OS),LINUX)
 

@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef TDA4X_H_
-#define TDA4X_H_
+#ifndef J7_H_
+#define J7_H_
 
 #include <TI/tivx.h>
 #include <TI/tda4x_kernels.h>

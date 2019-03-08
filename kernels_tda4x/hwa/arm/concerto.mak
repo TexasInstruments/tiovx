@@ -8,7 +8,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(CUSTOM_KERNEL_PATH)/hwa/include
 IDIRS       += $(HOST_ROOT)/kernels/include
 IDIRS       += $(VXLIB_PATH)/packages
-IDIRS       += $(TDA4X_C_MODELS_PATH)/include
+IDIRS       += $(J7_C_MODELS_PATH)/include
 
 ifeq ($(BUILD_HWA_DMPAC_DOF),yes)
 DEFS += BUILD_HWA_DMPAC_DOF

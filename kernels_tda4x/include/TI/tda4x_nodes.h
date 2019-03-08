@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef TDA4X_NODES_H_
-#define TDA4X_NODES_H_
+#ifndef J7_NODES_H_
+#define J7_NODES_H_
 
 #include <VX/vx.h>
 
@@ -310,4 +310,4 @@ VX_API_ENTRY vx_node VX_API_CALL tivxCaptureNode(vx_graph graph,
 }
 #endif
 
-#endif /* TDA4X_NODES_H_ */
+#endif /* J7_NODES_H_ */

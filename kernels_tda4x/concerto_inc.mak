@@ -29,7 +29,7 @@ STATIC_LIBS += rawfe nsf4 flexcfa flexcc h3a ee utils
 
 STATIC_LIBS += vx_target_kernels_tda4x_arm
 
-ifeq ($(TARGET_PLATFORM),TDA4X)
+ifeq ($(TARGET_PLATFORM),J7)
 STATIC_LIBS += vx_target_kernels_display
 STATIC_LIBS += vx_target_kernels_capture
 endif
@@ -47,7 +47,7 @@ ADDITIONAL_STATIC_LIBS += dmautils.lib udma.lib sciclient.lib ti.csl.lib ti.osal
 
 SYS_SHARED_LIBS += rt dl png z
 
-LDIRS+=$(TDA4X_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
+LDIRS+=$(J7_C_MODELS_PATH)/lib/PC/x86_64/LINUX/release
 LDIRS+=$(CGT7X_ROOT)/host_emulation
 LDIRS+=$(MMALIB_PATH)/lib
 LDIRS+=$(TIDL_PATH)/lib/PC/dsp/$(TARGET_BUILD)

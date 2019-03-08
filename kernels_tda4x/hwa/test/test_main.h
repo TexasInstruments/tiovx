@@ -60,7 +60,7 @@
  *
  */
 
-#if defined(TDA4X) || defined(PC)
+#if defined(J7) || defined(PC)
 #if defined(BUILD_CT_TIOVX_HWA)
 #ifdef TARGET_X86_64
 TESTCASE(tivxPngRdWr)
@@ -75,7 +75,7 @@ TESTCASE(tivxHwaDmpacDof)
 TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
 
-#if defined(TDA4X)
+#if defined(J7)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureDisplay)

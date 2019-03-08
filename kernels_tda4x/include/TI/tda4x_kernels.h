@@ -60,8 +60,8 @@
  *
  */
 
-#ifndef TDA4X_KERNELS_H_
-#define TDA4X_KERNELS_H_
+#ifndef J7_KERNELS_H_
+#define J7_KERNELS_H_
 
 #include <VX/vx.h>
 #include <VX/vx_kernels.h>
@@ -767,6 +767,6 @@ void tivxUnRegisterTIDLTargetKernels(void);
 }
 #endif
 
-#endif /* TDA4X_KERNELS_H_ */
+#endif /* J7_KERNELS_H_ */
 
 
