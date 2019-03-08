@@ -4,7 +4,6 @@ TIOVX_PATH = $(abspath .)
 PLSDK_PATH := /home/x0157990/ti-processor-sdk-linux-am57xx-evm-04.00.00.04
 PRSDK_PATH := /home/x0157990/ti-processor-sdk-rtos-am57xx-evm-04-00-00-04
 
-CROSS_COMPILE_LINARO := arm-linux-gnueabihf-
 CROSS_COMPILE := arm-none-eabi-
 
 BUILD_OS ?= Linux
@@ -28,7 +27,7 @@ XDC_PATH := $(PRSDK_PATH)/xdctools_3_32_01_22_core/
 TIARMCGT_ROOT := $(PRSDK_PATH)/ti-cgt-arm_16.9.2.LTS
 
 GCC_ROOT := $(PRSDK_PATH)/gcc-arm-none-eabi-4_9-2015q3
-GCC_ROOT_LINARO := /home/x0157990/linaro/gcc-linaro-6.2.1-2016.11-x86_64_arm-linux-gnueabihf
+GCC_LINUX_ARM_ROOT := /home/x0157990/linaro/gcc-linaro-6.2.1-2016.11-x86_64_arm-linux-gnueabihf
 CGT6X_ROOT := $(PRSDK_PATH)/ti-cgt-c6000_8.1.3/
 GCC_LINUX_ROOT ?= /usr/
 

@@ -5,7 +5,6 @@ VSDK_INSTALL_PATH ?= $(abspath ../../../)
 VSDK_TOOLS_PATH ?= $(VSDK_INSTALL_PATH)/ti_components
 #VSDK_TOOLS_PATH ?= /datalocal/ti_components
 
-CROSS_COMPILE_LINARO := arm-linux-gnueabihf-
 CROSS_COMPILE := arm-none-eabi-
 
 BUILD_OS ?= Linux
@@ -33,7 +32,7 @@ ifeq ($(BUILD_OS),Linux)
 XDC_PATH ?= $(VSDK_TOOLS_PATH)/os_tools/linux/xdctools_3_32_01_22_core
 TIARMCGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-arm_16.9.2.LTS
 GCC_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/gcc-arm-none-eabi-4_9-2015q3
-GCC_ROOT_LINARO ?= $(VSDK_TOOLS_PATH)/os_tools/linux/linaro/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf
+GCC_LINUX_ARM_ROOT ?= $(VSDK_TOOLS_PATH)/os_tools/linux/linaro/gcc-linaro-5.3-2016.02-x86_64_arm-linux-gnueabihf
 CGT6X_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/ti-cgt-c6000_8.2.4
 ARP32CGT_ROOT ?= $(VSDK_TOOLS_PATH)/cg_tools/linux/arp32_1.0.7
 GCC_LINUX_ROOT ?= /usr/

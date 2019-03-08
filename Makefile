@@ -56,7 +56,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
 	TARGET_COMBOS += TDAX:SYSBIOS:A15:1:debug:GCC
 	ifneq ($(OS),Windows_NT)
 		ifeq ($(BUILD_LINUX_A15),yes)
-		TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC_LINARO
+		TARGET_COMBOS += TDAX:LINUX:A15:1:debug:GCC_LINUX_ARM
 		endif
 	endif
   endif
@@ -70,7 +70,7 @@ ifeq ($(BUILD_TARGET_MODE),yes)
 	TARGET_COMBOS += TDAX:SYSBIOS:A15:1:release:GCC
 	ifneq ($(OS),Windows_NT)
 		ifeq ($(BUILD_LINUX_A15),yes)
-		TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC_LINARO
+		TARGET_COMBOS += TDAX:LINUX:A15:1:release:GCC_LINUX_ARM
 		endif
     endif
   endif

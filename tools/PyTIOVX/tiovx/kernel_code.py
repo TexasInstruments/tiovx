@@ -2194,7 +2194,7 @@ class KernelExportCode :
             self.module_test_concerto_code.write_line("CFLAGS += --diag_suppress=552")
             self.module_test_concerto_code.write_line("endif")
             self.module_test_concerto_code.write_newline()
-            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_LINARO GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM))")
+            self.module_test_concerto_code.write_line("ifeq ($(HOST_COMPILER),$(filter $(HOST_COMPILER),GCC GCC_WINDOWS GCC_LINUX GCC_SYSBIOS_ARM GCC_LINUX_ARM))")
             self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-function")
             self.module_test_concerto_code.write_line("CFLAGS += -Wno-unused-variable")
             self.module_test_concerto_code.write_line("CFLAGS += -Wno-format-security")
