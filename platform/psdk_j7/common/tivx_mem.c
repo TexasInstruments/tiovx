@@ -7,7 +7,6 @@
  *******************************************************************************
  */
 
-
 #include <vx_internal.h>
 
 #include <utils/mem/include/app_mem.h>
@@ -68,6 +67,8 @@ vx_status tivxMemBufferAlloc(
                 mem_ptr->mem_heap_region = mem_heap_region;
                 mem_ptr->shared_ptr = (uint64_t)tivxMemHost2SharedPtr(
                     mem_ptr->host_ptr, mem_heap_region);
+                mem_ptr->dma_buf_fd = (int32_t)appMemGetDmaBufFd(
+                    (void*)(uintptr_t)(mem_ptr->host_ptr));
             }
             else
             {
@@ -195,6 +196,8 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 
             if (0 == ret_val)
             {
+                appMemCloseDmaBufFd(mem_ptr->dma_buf_fd);
+                mem_ptr->dma_buf_fd = (int32_t)-1;
                 mem_ptr->host_ptr = (uintptr_t)NULL;
                 mem_ptr->shared_ptr = (uintptr_t)NULL;
             }
