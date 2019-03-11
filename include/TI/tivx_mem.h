@@ -159,8 +159,10 @@ typedef struct _tivx_shared_mem_ptr_t {
     /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e */
     uint32_t mem_heap_region;
     
-    /*! \brief reserved field to make this structure a multiple of 64b */    
-    uint32_t rsv1[1];
+    /*! \brief Value of dmaBufFd correspods to the host_ptr,
+     *         This will be used by host/Linux CPU
+     */
+    int32_t dma_buf_fd;
 
     /*! \brief Value of pointer as seen in shared memory
      *         All CPUs will have method to convert from shared memory pointer

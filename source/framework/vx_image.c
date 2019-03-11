@@ -231,6 +231,7 @@ static vx_status ownDestructImage(vx_reference ref)
     tivx_obj_desc_image_t *obj_desc = NULL;
     uint16_t plane_idx;
     vx_image image = (vx_image)ref;
+    uint32_t size = 0;
 
     if(ref->type == VX_TYPE_IMAGE)
     {
@@ -244,10 +245,11 @@ static vx_status ownDestructImage(vx_reference ref)
             {
                 for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
                 {
-                    if(obj_desc->mem_ptr[plane_idx].host_ptr!=(uint64_t)NULL)
-                    {
-                        tivxMemBufferFree(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx]);
-                    }
+                    size += obj_desc->mem_size[plane_idx];
+                }
+                if(obj_desc->mem_ptr[0].host_ptr!=(uint64_t)NULL)
+                {
+                    tivxMemBufferFree(&obj_desc->mem_ptr[0], size);
                 }
             }
             tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
@@ -265,6 +267,7 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
     tivx_obj_desc_image_t *obj_desc = NULL;
     vx_status status = VX_SUCCESS;
     uint16_t plane_idx;
+    uint32_t size = 0;
 
     if(ref->type == VX_TYPE_IMAGE)
     {
@@ -278,25 +281,37 @@ static vx_status ownAllocImageBuffer(vx_reference ref)
             {
                 for(plane_idx=0; plane_idx<obj_desc->planes; plane_idx++)
                 {
+                    size += obj_desc->mem_size[plane_idx];
+                }
                     /* memory is not allocated, so allocate it */
-                    if(obj_desc->mem_ptr[plane_idx].host_ptr==(uint64_t)NULL)
-                    {
-                        tivxMemBufferAlloc(&obj_desc->mem_ptr[plane_idx], obj_desc->mem_size[plane_idx], TIVX_MEM_EXTERNAL);
+                if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)NULL)
+                {
+                    tivxMemBufferAlloc(&obj_desc->mem_ptr[0], size, TIVX_MEM_EXTERNAL);
 
-                        if(obj_desc->mem_ptr[plane_idx].host_ptr==(uint64_t)NULL)
+                    if(obj_desc->mem_ptr[0].host_ptr==(uint64_t)NULL)
+                    {
+                        /* could not allocate memory */
+                        VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: could not allocate memory\n");
+                        status = VX_ERROR_NO_MEMORY;
+                    }
+                    else
+                    {
+                        obj_desc->mem_ptr[0].shared_ptr =
+                            tivxMemHost2SharedPtr(
+                                obj_desc->mem_ptr[0].host_ptr,
+                                TIVX_MEM_EXTERNAL);
+                        for(plane_idx=1; plane_idx<obj_desc->planes; plane_idx++)
                         {
-                            /* could not allocate memory */
-                            VX_PRINT(VX_ZONE_ERROR, "ownAllocImageBuffer: could not allocate memory\n");
-                            status = VX_ERROR_NO_MEMORY;
-                            break;
-                        }
-                        else
-                        {
+                            obj_desc->mem_ptr[plane_idx].mem_heap_region =
+                                obj_desc->mem_ptr[plane_idx-1].mem_heap_region;
+                            obj_desc->mem_ptr[plane_idx].host_ptr =
+                                obj_desc->mem_ptr[plane_idx-1].host_ptr +
+                                obj_desc->mem_size[plane_idx-1];
                             obj_desc->mem_ptr[plane_idx].shared_ptr =
                                 tivxMemHost2SharedPtr(
-                                    obj_desc->mem_ptr[plane_idx].
-                                    host_ptr,
+                                    obj_desc->mem_ptr[plane_idx].host_ptr,
                                     TIVX_MEM_EXTERNAL);
+                            obj_desc->mem_ptr[plane_idx].dma_buf_fd = -1;
                         }
                     }
                 }
