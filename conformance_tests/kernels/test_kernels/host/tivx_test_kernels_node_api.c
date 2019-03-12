@@ -158,3 +158,16 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceErrorNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceObjArrayNode(vx_graph graph,
+                                      vx_object_array      out_object_array)
+{
+    vx_reference prms[] = {
+            (vx_reference)out_object_array
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

@@ -211,6 +211,8 @@ vx_reference VX_API_CALL vxGetObjectArrayItem(
     {
         ref = objarr->ref[index];
         ownIncrementReference(ref, VX_EXTERNAL);
+        /* set is_array_element flag */
+        ref->is_array_element = vx_true_e;
     }
 
     return (ref);

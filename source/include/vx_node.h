@@ -297,6 +297,11 @@ void ownNodeLinkObjDescForPipeline(vx_node node);
  */
 void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue data_ref_q);
 
+/*! \brief Link array element to node at parameter index 'prm_id'
+ *
+ * \ingroup group_vx_node
+ */
+void ownNodeLinkArrayElement(vx_node node, uint32_t prm_id);
 
 /*! \brief Return number of buffers to alocate at a node,index
  *

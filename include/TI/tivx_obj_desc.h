@@ -123,7 +123,6 @@ extern "C" {
  */
 #define TIVX_NODE_FLAG_IS_TARGET_KERNEL  (0x00000008u)
 
-
 /*! \brief State of a node object descriptor to indicate it is IDLE
  *
  * \ingroup group_tivx_obj_desc
@@ -421,6 +420,11 @@ typedef struct _tivx_obj_desc_node
      *         bitN = 1 means param at index N is data ref q
      */
     uint32_t is_prm_data_ref_q;
+
+    /*! \brief bitmask which indicates if prm is array element
+     *         bitN = 1 means param at index N is array element
+     */
+    uint32_t is_prm_array_element;
 
 } tivx_obj_desc_node_t;
 

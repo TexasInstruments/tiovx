@@ -119,6 +119,7 @@ static vx_status ownInitNodeObjDesc(vx_node node, vx_kernel kernel, uint32_t pip
     obj_desc->is_prm_replicated = 0;
     obj_desc->is_prm_input = 0;
     obj_desc->is_prm_data_ref_q = 0;
+    obj_desc->is_prm_array_element = 0;
     obj_desc->prev_pipe_node_id = TIVX_OBJ_DESC_INVALID;
     obj_desc->blocked_node_id = TIVX_OBJ_DESC_INVALID;
     obj_desc->prev_pipe_node_id = TIVX_OBJ_DESC_INVALID;
@@ -1811,6 +1812,7 @@ vx_status ownNodeAllocObjDescForPipeline(vx_node node, uint32_t pipeline_depth)
                 obj_desc->prev_pipe_node_id = TIVX_OBJ_DESC_INVALID; /* updated later */
                 obj_desc->is_prm_input = obj_desc_0->is_prm_input;
                 obj_desc->is_prm_data_ref_q = 0; /* this field is updated later */
+                obj_desc->is_prm_array_element = 0; /* this field is updated later */
             }
             else
             {
@@ -1850,6 +1852,11 @@ void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue 
         tivxFlagBitSet(&node->obj_desc[pipe_id]->is_prm_data_ref_q, (1<<prm_id));
         node->obj_desc[pipe_id]->data_ref_q_id[prm_id] = tivxDataRefQueueGetObjDescId(data_ref_q, pipe_id);
     }
+}
+
+void ownNodeLinkArrayElement(vx_node node, uint32_t prm_id)
+{
+    tivxFlagBitSet(&node->obj_desc[0]->is_prm_array_element, (1<<prm_id));
 }
 
 uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)

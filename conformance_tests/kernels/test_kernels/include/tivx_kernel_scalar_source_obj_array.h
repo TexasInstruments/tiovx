@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,50 +60,23 @@
  *
  */
 
-#ifndef VX_TEST_KERNELS_KERNELS_H_
-#define VX_TEST_KERNELS_KERNELS_H_
-
-#include "tivx_kernels_host_utils.h"
+#ifndef _TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_
+#define _TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!
- * \file
- * \brief Interface file for the TEST_KERNELS kernels
- */
 
+#define TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_OUT_OBJECT_ARRAY_IDX (0U)
 
-/*!
- * \brief Function to register TEST_KERNELS Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxRegisterTestKernelsKernels(void);
-
-/*!
- * \brief Function to un-register TEST_KERNELS Kernels on the Host
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterTestKernelsKernels(void);
-
-/*!
- * \brief Function to register TEST_KERNELS Kernels on the c66 Target
- * \ingroup group_tivx_ext
- */
-void tivxRegisterTestKernelsTargetC66Kernels(void);
-
-/*!
- * \brief Function to un-register TEST_KERNELS Kernels on the c66 Target
- * \ingroup group_tivx_ext
- */
-void tivxUnRegisterTestKernelsTargetC66Kernels(void);
-
+#define TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_MAX_PARAMS (1U)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* VX_TEST_KERNELS_KERNELS_H_ */
+
+#endif /* _TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_ */
 
 

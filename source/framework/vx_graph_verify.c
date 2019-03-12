@@ -820,6 +820,35 @@ static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph)
     return status;
 }
 
+static void ownGraphLinkArrayElements(vx_graph graph)
+{
+    vx_node node;
+    uint32_t node_id, prm_id;
+
+    /* find the (nodes,index) in the graph where node_prm_ref is used as input/output
+     * and insert data ref q handle at those (nodes,index)
+     * Also enable data ref queue at those (nodes,index)
+     */
+    for(node_id=0; node_id<graph->num_nodes; node_id++)
+    {
+        node = graph->nodes[node_id];
+
+        for(prm_id=0; prm_id<ownNodeGetNumParameters(node); prm_id++)
+        {
+            vx_reference ref;
+
+            ref = ownNodeGetParameterRef(node, prm_id);
+            if(ref!=NULL)
+            {
+                if(vx_true_e == ref->is_array_element)
+                {
+                    ownNodeLinkArrayElement(node, prm_id);
+                }
+            }
+        }
+    }
+}
+
 static void ownGraphLinkDataReferenceQueuesToNodeIndex(vx_graph graph,
                     tivx_data_ref_queue data_ref_q,
                     vx_node node, uint32_t index)
@@ -1757,6 +1786,12 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Create node callback commands failed\n");
                 }
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                /* link array elements to node parameters */
+                ownGraphLinkArrayElements(graph);
             }
 
             if(status == VX_SUCCESS)

@@ -93,6 +93,17 @@ VX_API_ENTRY vx_node VX_API_CALL tivxNotNotNode(vx_graph graph,
 VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceErrorNode(vx_graph graph,
                                       vx_scalar            out);
 
+/*! \brief [Graph] Creates a SCALAR_SOURCE_OBJ_ARRAY Node.
+ * \param [in] graph The reference to the graph.
+ * \param [out] out_object_array
+ * \see <tt>TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_NAME</tt>
+ * \ingroup group_vision_function_scalar_source_obj_array
+ * \return <tt>\ref vx_node</tt>.
+ * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
+ */
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceObjArrayNode(vx_graph graph,
+                                      vx_object_array      out_object_array);
+
 #ifdef __cplusplus
 }
 #endif

@@ -135,6 +135,10 @@ typedef struct _vx_reference {
      */
     vx_bool is_accessible;
 
+    /*! \brief Indicates that the object is an element of a pyramid or object array
+     */
+    vx_bool is_array_element;
+
     /*! \brief object descriptor */
     tivx_obj_desc_t *obj_desc;
 } tivx_reference_t;

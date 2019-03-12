@@ -271,6 +271,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
     tivx_obj_desc_t *params[TIVX_KERNEL_MAX_PARAMS];
     uint32_t i, cnt, loop_max = 1;
     uint32_t is_prm_replicated = node_obj_desc->is_prm_replicated;
+    uint32_t is_prm_array_element = node_obj_desc->is_prm_array_element;
     uint32_t is_prm_data_ref_q_flag = node_obj_desc->is_prm_data_ref_q;
     tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
     tivx_obj_desc_t *prm_obj_desc;
@@ -309,7 +310,6 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             }
         }
 
-
         for(i=0; i<node_obj_desc->num_params ; i++)
         {
             params[i] = NULL;
@@ -335,6 +335,10 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                         params[i] = NULL;
                     }
                 }
+            }
+            else if(is_prm_array_element & (1U<<i))
+            {
+                params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
             }
             else
             {
@@ -382,6 +386,18 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             if(params[i]==NULL)
             {
                 prm_obj_desc_id[i] = TIVX_OBJ_DESC_INVALID;
+            }
+            else if(tivxFlagIsBitSet(is_prm_array_element, (1<<i)) == vx_true_e)
+            {
+                prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
+
+                if (prm_obj_desc)
+                {
+                    parent_obj_desc[i] = tivxObjDescGet(
+                        prm_obj_desc->scope_obj_desc_id);
+
+                    prm_obj_desc_id[i] = parent_obj_desc[i]->obj_desc_id;
+                }
             }
             else
             {
@@ -652,7 +668,6 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
                     }
                 }
             }
-
 
             for(i=0; i<node_obj_desc->num_params ; i++)
             {

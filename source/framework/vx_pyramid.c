@@ -187,6 +187,9 @@ vx_image VX_API_CALL vxGetPyramidLevel(vx_pyramid prmd, vx_uint32 index)
         /* Should increment the reference count,
            To release this image, app should explicitely call ReleaseImage */
         ownIncrementReference(&img->base, VX_EXTERNAL);
+
+        /* setting is_array_element flag */
+        img->base.is_array_element = vx_true_e;
     }
     else
     {
