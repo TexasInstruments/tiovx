@@ -611,16 +611,6 @@ static vx_status VX_CALLBACK tivxOpticalFlowPyrLkDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxOpticalFlowPyrLkControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelOpticalFlowPyrLk(void)
 {
     vx_status status = VX_FAILURE;
@@ -653,7 +643,7 @@ void tivxAddTargetKernelOpticalFlowPyrLk(void)
                             tivxOpticalFlowPyrLk,
                             tivxOpticalFlowPyrLkCreate,
                             tivxOpticalFlowPyrLkDelete,
-                            tivxOpticalFlowPyrLkControl,
+                            NULL,
                             NULL);
     }
 }

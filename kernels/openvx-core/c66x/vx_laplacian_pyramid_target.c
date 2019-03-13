@@ -453,13 +453,6 @@ static vx_status VX_CALLBACK tivxKernelLplPmdDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelLplPmdControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelLaplacianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -486,7 +479,7 @@ void tivxAddTargetKernelLaplacianPyramid(void)
             tivxKernelLplPmdProcess,
             tivxKernelLplPmdCreate,
             tivxKernelLplPmdDelete,
-            tivxKernelLplPmdControl,
+            NULL,
             NULL);
     }
 }

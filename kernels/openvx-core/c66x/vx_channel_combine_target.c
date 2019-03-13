@@ -394,16 +394,6 @@ vx_status VX_CALLBACK tivxChannelCombineDelete(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelCombineControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelChannelCombine(void)
 {
     vx_status status = VX_FAILURE;
@@ -436,7 +426,7 @@ void tivxAddTargetKernelChannelCombine(void)
                             tivxChannelCombine,
                             tivxChannelCombineCreate,
                             tivxChannelCombineDelete,
-                            tivxChannelCombineControl,
+                            NULL,
                             NULL);
     }
 }

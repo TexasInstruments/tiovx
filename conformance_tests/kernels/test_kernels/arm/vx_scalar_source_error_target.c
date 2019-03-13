@@ -82,10 +82,6 @@ static vx_status VX_CALLBACK tivxScalarSourceErrorDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxScalarSourceErrorControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarSourceErrorProcess(
        tivx_target_kernel_instance kernel,
@@ -134,18 +130,6 @@ static vx_status VX_CALLBACK tivxScalarSourceErrorDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxScalarSourceErrorControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
-
-    return status;
-}
 
 void tivxAddTargetKernelScalarSourceError(void)
 {
@@ -206,7 +190,7 @@ void tivxAddTargetKernelScalarSourceError(void)
                             tivxScalarSourceErrorProcess,
                             tivxScalarSourceErrorCreate,
                             tivxScalarSourceErrorDelete,
-                            tivxScalarSourceErrorControl,
+                            NULL,
                             NULL);
     }
 }

@@ -128,10 +128,6 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelHarrisCornersControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static void tivxHarrisCornersFreeMem(tivxHarrisCornersParams *prms);
 
 static vx_status VX_CALLBACK tivxKernelHarrisCornersProcess(
@@ -600,13 +596,6 @@ static vx_status VX_CALLBACK tivxKernelHarrisCornersDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelHarrisCornersControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 static void tivxHarrisCornersFreeMem(tivxHarrisCornersParams *prms)
 {
     if (NULL != prms)
@@ -686,7 +675,7 @@ void tivxAddTargetKernelBamHarrisCorners(void)
             tivxKernelHarrisCornersProcess,
             tivxKernelHarrisCornersCreate,
             tivxKernelHarrisCornersDelete,
-            tivxKernelHarrisCornersControl,
+            NULL,
             NULL);
     }
 }

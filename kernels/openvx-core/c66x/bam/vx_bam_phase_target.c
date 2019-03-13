@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxBamKernelPhaseDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelPhaseControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxBamKernelPhaseProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -259,13 +255,6 @@ static vx_status VX_CALLBACK tivxBamKernelPhaseDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxBamKernelPhaseControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamPhase(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -292,7 +281,7 @@ void tivxAddTargetKernelBamPhase(void)
             tivxBamKernelPhaseProcess,
             tivxBamKernelPhaseCreate,
             tivxBamKernelPhaseDelete,
-            tivxBamKernelPhaseControl,
+            NULL,
             NULL);
     }
 }

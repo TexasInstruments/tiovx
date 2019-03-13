@@ -171,13 +171,6 @@ vx_status VX_CALLBACK tivxAbsDiffDelete(tivx_target_kernel_instance kernel, tivx
     return status;
 }
 
-vx_status VX_CALLBACK tivxAbsDiffControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 
 void tivxAddTargetKernelAbsDiff(void)
 {
@@ -205,7 +198,7 @@ void tivxAddTargetKernelAbsDiff(void)
                     tivxAbsDiff,
                     tivxAbsDiffCreate,
                     tivxAbsDiffDelete,
-                    tivxAbsDiffControl,
+                    NULL,
                     NULL);
     }
 }

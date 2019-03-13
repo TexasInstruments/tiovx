@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelAbsDiffControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelAbsDiffProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -304,13 +300,6 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelAbsDiffControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamAbsDiff(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -337,7 +326,7 @@ void tivxAddTargetKernelBamAbsDiff(void)
             tivxKernelAbsDiffProcess,
             tivxKernelAbsDiffCreate,
             tivxKernelAbsDiffDelete,
-            tivxKernelAbsDiffControl,
+            NULL,
             NULL);
     }
 }

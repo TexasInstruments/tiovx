@@ -255,7 +255,8 @@ vx_status VX_CALLBACK vxTutotrialPhaseRgbDelete(tivx_target_kernel_instance kern
  * \param num_params [in] Number of parameter object descriptors
  * \param priv_arg [in] kernel instance priv argument
  */
-vx_status VX_CALLBACK vxTutotrialPhaseRgbControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
+vx_status VX_CALLBACK vxTutotrialPhaseRgbControl(tivx_target_kernel_instance kernel,
+    uint32_t replicated_node_idx, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
 

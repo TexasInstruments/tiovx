@@ -69,6 +69,11 @@
 extern "C" {
 #endif
 
+#define TIVX_SCALAR_SRC_NODE_INC_SCALAR (0x01000000u)
+
+#define TIVX_SCALAR_SRC_NODE_DEC_SCALAR (0x01000001u)
+
+
 /*! \brief [Graph] Creates a FILE_READ_CAPTURE Node.
  * \param [in] graph The reference to the graph.
  * \param [in] configuration

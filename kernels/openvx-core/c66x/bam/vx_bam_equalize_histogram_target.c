@@ -98,10 +98,6 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelEqHistControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxBamKernelEqHistProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -326,13 +322,6 @@ static vx_status VX_CALLBACK tivxBamKernelEqHistDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxBamKernelEqHistControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamEqHist(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -359,7 +348,7 @@ void tivxAddTargetKernelBamEqHist(void)
             tivxBamKernelEqHistProcess,
             tivxBamKernelEqHistCreate,
             tivxBamKernelEqHistDelete,
-            tivxBamKernelEqHistControl,
+            NULL,
             NULL);
     }
 }

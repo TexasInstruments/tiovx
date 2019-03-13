@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxKernelDilateDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelDilateControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelDilateProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -253,13 +249,6 @@ static vx_status VX_CALLBACK tivxKernelDilateDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelDilateControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamDilate3x3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -286,7 +275,7 @@ void tivxAddTargetKernelBamDilate3x3(void)
             tivxKernelDilateProcess,
             tivxKernelDilateCreate,
             tivxKernelDilateDelete,
-            tivxKernelDilateControl,
+            NULL,
             NULL);
     }
 }

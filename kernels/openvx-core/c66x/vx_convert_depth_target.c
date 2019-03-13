@@ -185,13 +185,6 @@ static vx_status VX_CALLBACK tivxKernelConvertDepthDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelConvertDepthControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 static vx_status VX_CALLBACK tivxKernelConvertDepthProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -230,7 +223,7 @@ void tivxAddTargetKernelConvertDepth(void)
             tivxKernelConvertDepthProcess,
             tivxKernelConvertDepthCreate,
             tivxKernelConvertDepthDelete,
-            tivxKernelConvertDepthControl,
+            NULL,
             NULL);
     }
 }

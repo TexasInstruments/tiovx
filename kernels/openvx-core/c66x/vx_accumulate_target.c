@@ -160,13 +160,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelAccumulateControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 static vx_status VX_CALLBACK tivxKernelAccumulateProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -205,7 +198,7 @@ void tivxAddTargetKernelAccumulate(void)
             tivxKernelAccumulateProcess,
             tivxKernelAccumulateCreate,
             tivxKernelAccumulateDelete,
-            tivxKernelAccumulateControl,
+            NULL,
             NULL);
     }
 }

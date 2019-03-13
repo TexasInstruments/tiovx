@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBamChannelExtractControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status tivxBamChannelExtractIyuvYuv4Input(
     tivxBamChannelExtractParams *prms, tivx_obj_desc_image_t *src,
     tivx_obj_desc_image_t *dst, tivx_obj_desc_scalar_t *ch)
@@ -624,13 +620,6 @@ static vx_status VX_CALLBACK tivxKernelBamChannelExtractDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelBamChannelExtractControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamChannelExtract(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -657,7 +646,7 @@ void tivxAddTargetKernelBamChannelExtract(void)
             tivxKernelBamChannelExtractProcess,
             tivxKernelBamChannelExtractCreate,
             tivxKernelBamChannelExtractDelete,
-            tivxKernelBamChannelExtractControl,
+            NULL,
             NULL);
     }
 }

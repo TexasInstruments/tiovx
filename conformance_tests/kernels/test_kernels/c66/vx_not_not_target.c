@@ -83,10 +83,6 @@ static vx_status VX_CALLBACK tivxNotNotDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxNotNotControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxNotNotProcess(
        tivx_target_kernel_instance kernel,
@@ -144,8 +140,8 @@ static vx_status VX_CALLBACK tivxNotNotProcess(
             tivxInitBufParams(output_desc, &vxlib_output);
             tivxSetPointerLocation(output_desc, &output_target_ptr, &output_addr);
 
-			status = VXLIB_not_i8u_o8u(input_target_ptr, &vxlib_input, output_target_ptr, &vxlib_output);
-			status = VXLIB_not_i8u_o8u(output_target_ptr, &vxlib_output, output_target_ptr, &vxlib_output);
+            status = VXLIB_not_i8u_o8u(input_target_ptr, &vxlib_input, output_target_ptr, &vxlib_output);
+            status = VXLIB_not_i8u_o8u(output_target_ptr, &vxlib_output, output_target_ptr, &vxlib_output);
 
         }
         tivxMemBufferUnmap(input_target_ptr,
@@ -188,18 +184,6 @@ static vx_status VX_CALLBACK tivxNotNotDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxNotNotControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
-
-    return status;
-}
 
 void tivxAddTargetKernelNotNot(void)
 {
@@ -233,7 +217,7 @@ void tivxAddTargetKernelNotNot(void)
                             tivxNotNotProcess,
                             tivxNotNotCreate,
                             tivxNotNotDelete,
-                            tivxNotNotControl,
+                            NULL,
                             NULL);
     }
 }

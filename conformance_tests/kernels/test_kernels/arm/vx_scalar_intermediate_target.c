@@ -82,10 +82,6 @@ static vx_status VX_CALLBACK tivxScalarIntermediateDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxScalarIntermediateControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarIntermediateProcess(
        tivx_target_kernel_instance kernel,
@@ -152,19 +148,6 @@ static vx_status VX_CALLBACK tivxScalarIntermediateDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxScalarIntermediateControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
-
-    return status;
-}
-
 void tivxAddTargetKernelScalarIntermediate(void)
 {
     vx_status status = VX_FAILURE;
@@ -224,7 +207,7 @@ void tivxAddTargetKernelScalarIntermediate(void)
                             tivxScalarIntermediateProcess,
                             tivxScalarIntermediateCreate,
                             tivxScalarIntermediateDelete,
-                            tivxScalarIntermediateControl,
+                            NULL,
                             NULL);
     }
 }

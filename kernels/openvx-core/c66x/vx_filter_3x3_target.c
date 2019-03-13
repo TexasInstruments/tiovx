@@ -232,15 +232,6 @@ vx_status VX_CALLBACK tivxFilter3x3Delete(
     return status;
 }
 
-vx_status VX_CALLBACK tivxFilter3x3Control(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelErode3x3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -271,7 +262,7 @@ void tivxAddTargetKernelErode3x3(void)
                         tivxProcess3x3Filter,
                         tivxFilter3x3Create,
                         tivxFilter3x3Delete,
-                        tivxFilter3x3Control,
+                        NULL,
                         (void *)&gTivxFilt3x3KernelInfo[i]);
             if (NULL == gTivxFilt3x3KernelInfo[i].target_kernel)
             {

@@ -173,13 +173,6 @@ static vx_status VX_CALLBACK tivxKernelConvolveDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelConvolveControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelConvolve(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -206,7 +199,7 @@ void tivxAddTargetKernelConvolve(void)
             tivxKernelConvolveProcess,
             tivxKernelConvolveCreate,
             tivxKernelConvolveDelete,
-            tivxKernelConvolveControl,
+            NULL,
             NULL);
     }
 }

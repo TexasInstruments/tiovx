@@ -371,12 +371,12 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             node_obj_desc->num_params);
     }
 
-    /* params[] contain pointer to obj_desc for each parameter, 
+    /* params[] contain pointer to obj_desc for each parameter,
      * A node could change the obj_desc value of params[i] as part of its execution
      * below logic changes prm_obj_desc_id, based on updated params[i] value.
      * This logic will not take effect for replicated parameters and for non data ref queue parameters
      * i.e it will take effect only for data ref queue parameters and non-replicated parameters
-     */     
+     */
     for(i=0; i<node_obj_desc->num_params ; i++)
     {
         if(    (tivxFlagIsBitSet(is_prm_data_ref_q_flag, (1<<i)) == vx_true_e)
@@ -405,7 +405,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             }
         }
     }
-    
+
 }
 
 static void tivxTargetNodeDescNodeExecuteUserKernel(tivx_obj_desc_node_t *node_obj_desc, uint16_t prm_obj_desc_id[])
@@ -789,40 +789,95 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
     return status;
 }
 
+static vx_status tivxTargetNodeSendCommand(tivx_obj_desc_cmd_t *cmd_obj_desc,
+    uint32_t node_id, const tivx_obj_desc_node_t *node_obj_desc)
+{
+    vx_status status = VX_SUCCESS;
+    int16_t i;
+    tivx_target_kernel_instance target_kernel_instance;
+    tivx_obj_desc_t *params[TIVX_CMD_MAX_OBJ_DESCS];
+
+    target_kernel_instance = tivxTargetKernelInstanceGet(
+        node_obj_desc->target_kernel_index[node_id], node_obj_desc->kernel_id);
+
+    if(target_kernel_instance == NULL)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxTargetNodeSendCommand: target_kernel_instance is NULL\n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+    else
+    {
+        for(i=0; i<cmd_obj_desc->num_cmd_params; i++)
+        {
+            params[i] = tivxObjDescGet(cmd_obj_desc->cmd_params_desc_id[i]);
+        }
+
+        status = tivxTargetKernelControl(target_kernel_instance,
+            cmd_obj_desc->node_cmd_id, params,
+            cmd_obj_desc->num_cmd_params);
+    }
+
+    return (status);
+}
+
 static vx_status tivxTargetNodeDescNodeControl(
     tivx_obj_desc_cmd_t *cmd_obj_desc,
     const tivx_obj_desc_node_t *node_obj_desc)
 {
-    tivx_target_kernel_instance target_kernel_instance;
     vx_status status = VX_SUCCESS;
-    uint16_t i, cnt, loop_max = 1;
-    tivx_obj_desc_t *params[TIVX_CMD_MAX_OBJ_DESCS];
+    uint16_t cnt, loop_max = 1;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
         vx_true_e)
     {
         loop_max = node_obj_desc->num_of_replicas;
-    }
 
-    for (cnt = 0; cnt < loop_max; cnt ++)
-    {
-        target_kernel_instance = tivxTargetKernelInstanceGet(
-            node_obj_desc->target_kernel_index[cnt], node_obj_desc->kernel_id);
-
-        if(target_kernel_instance == NULL)
+        if (TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES ==
+            cmd_obj_desc->replicated_node_idx)
         {
-            VX_PRINT(VX_ZONE_ERROR, "tivxTargetNodeDescNodeControl: target_kernel_instance is NULL\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
+            for (cnt = 0; cnt < loop_max; cnt ++)
+            {
+                status = tivxTargetNodeSendCommand(cmd_obj_desc, cnt,
+                    node_obj_desc);
+                if (VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                    "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
+                    break;
+                }
+            }
         }
         else
         {
-            for(i=0; i<cmd_obj_desc->num_obj_desc; i++)
+            /* Replicated node idx must be less than total replicated nodes. */
+            if (cmd_obj_desc->replicated_node_idx < loop_max)
             {
-                params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
+                status = tivxTargetNodeSendCommand(cmd_obj_desc,
+                    cmd_obj_desc->replicated_node_idx,
+                    node_obj_desc);
+                if (VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                    "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
+                }
             }
-
-            status = tivxTargetKernelControl(target_kernel_instance, params,
-                cmd_obj_desc->num_obj_desc);
+            else
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxTargetNodeDescNodeControl: Incorrect node id\n");
+                status = VX_FAILURE;
+            }
+        }
+    }
+    else
+    {
+        /* For non-replicated node, ignore node-id field */
+        status = tivxTargetNodeSendCommand(cmd_obj_desc, 0U, node_obj_desc);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+            "tivxTargetNodeDescNodeControl: SendCommand Failed\n");
         }
     }
 
@@ -1077,24 +1132,23 @@ vx_status tivxTargetCreate(vx_enum target_id, tivx_target_create_params_t *param
         target->targetExitRequest = vx_false_e;
         target->targetExitDone = vx_false_e;
 
-
         /* create job queue */
         status = tivxQueueCreate(&target->job_queue_handle,
                         TIVX_TARGET_MAX_JOB_QUEUE_DEPTH,
                         target->job_queue_memory,
-                        TIVX_QUEUE_FLAG_BLOCK_ON_GET
-                );
+                        TIVX_QUEUE_FLAG_BLOCK_ON_GET);
+
         if(status == VX_SUCCESS)
         {
             /* create and start target task */
             status = tivxTaskCreate(&target->task_handle, &target->task_params);
             if(status != VX_SUCCESS)
             {
-                /* delete job queue due to task create error */
                 tivxQueueDelete(&target->job_queue_handle);
             }
         }
-        if(status!=VX_SUCCESS)
+
+        if (status != VX_SUCCESS)
         {
             tivxTargetFreeHandle(&target);
         }
@@ -1191,3 +1245,5 @@ void tivxTargetDeInit(void)
     tivxTargetKernelDeInit();
 
 }
+
+

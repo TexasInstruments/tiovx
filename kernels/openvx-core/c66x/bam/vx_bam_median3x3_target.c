@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxKernelMedianDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelMedianControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelMedianProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -253,13 +249,6 @@ static vx_status VX_CALLBACK tivxKernelMedianDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelMedianControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamMedian3x3(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -286,7 +275,7 @@ void tivxAddTargetKernelBamMedian3x3(void)
             tivxKernelMedianProcess,
             tivxKernelMedianCreate,
             tivxKernelMedianDelete,
-            tivxKernelMedianControl,
+            NULL,
             NULL);
     }
 }

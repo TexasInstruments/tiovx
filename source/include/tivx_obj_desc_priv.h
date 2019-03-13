@@ -159,6 +159,18 @@ typedef struct _tivx_obj_desc_cmd
     /*! \brief command to execute */
     uint32_t cmd_id;
 
+    /*! \brief parameter object descriptors */
+    uint16_t cmd_params_desc_id[TIVX_KERNEL_MAX_PARAMS];
+    /*! \brief valid values in cmd_params_data_id*/
+    uint32_t num_cmd_params;
+    /*! \brief Node command to execute */
+    uint32_t node_cmd_id;
+    /*! \brief Id of the node, to which node_cmd_id to be sent,
+     *      If set to TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES,
+     *      cmd is send to all replicated node
+     *      Otherwise to specific node */
+    int32_t replicated_node_idx;
+
     /*! \brief flags associated with this command, see
      *         TIVX_CMD_FLAG_xxx
      */
@@ -375,7 +387,7 @@ typedef union {
     tivx_obj_desc_queue_t obj_desc_queue;
     tivx_obj_desc_data_ref_q_t obj_desc_data_ref_q;
     tivx_obj_desc_graph_t obj_desc_graph;
-    
+
     uint8_t rsv[TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE];
 
 } tivx_obj_desc_shm_entry_t;

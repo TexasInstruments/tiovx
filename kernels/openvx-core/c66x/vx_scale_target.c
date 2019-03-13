@@ -192,13 +192,6 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelScaleControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelScale(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -225,7 +218,7 @@ void tivxAddTargetKernelScale(void)
             tivxKernelScaleProcess,
             tivxKernelScaleCreate,
             tivxKernelScaleDelete,
-            tivxKernelScaleControl,
+            NULL,
             NULL);
     }
 }

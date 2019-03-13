@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelMeanStdDevControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -280,13 +276,6 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelMeanStdDevControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamMeanStdDev(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -313,7 +302,7 @@ void tivxAddTargetKernelBamMeanStdDev(void)
             tivxKernelMeanStdDevProcess,
             tivxKernelMeanStdDevCreate,
             tivxKernelMeanStdDevDelete,
-            tivxKernelMeanStdDevControl,
+            NULL,
             NULL);
     }
 }

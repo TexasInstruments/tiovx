@@ -511,6 +511,51 @@ TEST(tivxGraphStreaming, negativeTestStreamingError)
     tivxTestKernelsUnLoadKernels(context);
 }
 
+TEST(tivxGraphStreaming, testScalarCtrlCmd)
+{
+    vx_status status;
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 33;
+    vx_scalar scalar[1];
+    vx_node n1;
+    int i;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar[0] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarSourceNode(graph, scalar[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    for (i = 1; i <= 5; i ++)
+    {
+        status = tivxNodeSendCommand(n1, 0u, TIVX_SCALAR_SRC_NODE_INC_SCALAR,
+            (vx_reference *)scalar, 1u);
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
+
+        ASSERT_EQ_VX_STATUS(ct_scalar_as_int(scalar[0]), scalar_val + i);
+    }
+
+    scalar_val = scalar_val + 5;
+    for (i = 1; i <= 5; i ++)
+    {
+        status = tivxNodeSendCommand(n1, 0u, TIVX_SCALAR_SRC_NODE_DEC_SCALAR,
+            (vx_reference *)scalar, 1u);
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, status);
+
+        ASSERT_EQ_VX_STATUS(ct_scalar_as_int(scalar[0]), scalar_val - i);
+    }
+
+    VX_CALL(vxReleaseScalar(&scalar[0]));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 /*
  *       n1         scalar             n2             scalar_out
  * SCALAR_SOURCE -- SCALAR -- SCALAR_INTERMEDIATE -- SCALAR
@@ -1972,6 +2017,7 @@ TESTCASE_TESTS(tivxGraphStreaming,
                testPipeliningStreaming4,
                testPipeliningStreaming5,
                testScalar,
+               testScalarCtrlCmd,
                negativeTestStreamingState,
                negativeTestScalar,
                negativeTestStreamingPipelining1,

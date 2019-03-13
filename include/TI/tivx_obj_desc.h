@@ -290,7 +290,7 @@ typedef struct _tivx_obj_desc_t {
 
     /*! \brief reference flags */
     uint32_t flags;
-    
+
     /*! \brief reserved field to make this structure a multiple of 64b */
     uint32_t rsv2[1];
 
@@ -733,7 +733,7 @@ typedef struct _tivx_obj_desc_object_array
     uint32_t num_items;
     /*! \brief array of descriptor ids of the objects */
     uint16_t obj_desc_id[TIVX_OBJECT_ARRAY_MAX_ITEMS];
-    
+
 } tivx_obj_desc_object_array_t;
 
 /*!
@@ -749,7 +749,7 @@ typedef struct _tivx_obj_desc_scalar
     uint32_t  data_type;
     /*! \brief Reserved field to make below union on 64b aligned boundary */
     uint32_t rsv;
-    
+
     union {
         /*! \brief A character */
         vx_char   chr;
@@ -814,9 +814,9 @@ typedef struct _tivx_obj_desc_tensor
      * stride[1] is offset in bytes from one line to next
      * stride[2] is offset in bytes from one frame/channel to next
      * stride[3] is offset in bytes from one batch to next
-     * 
+     *
      * How to calculate:
-     * 
+     *
      * stride[0] = sizeof(data_type)
      * for (i > 0)
      *    stride[i] = stride[i-1] * dimensions[i-1]
@@ -852,7 +852,7 @@ void tivxGetObjDescList(uint16_t obj_desc_id[],
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignmen should be avoided and below function used instead
- * 
+ *
  * \ingroup group_tivx_obj_desc
  */
 void tivx_obj_desc_strncpy(void *dst, void *src, uint32_t size);
@@ -869,7 +869,7 @@ void tivx_obj_desc_strncpy(void *dst, void *src, uint32_t size);
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignmen should be avoided and below function used instead
- * 
+ *
  * \ingroup group_tivx_obj_desc
  */
 void tivx_obj_desc_memcpy(void *dst, void *src, uint32_t size);
@@ -886,7 +886,7 @@ void tivx_obj_desc_memcpy(void *dst, void *src, uint32_t size);
  *   should be used in place of standard strncpy, memcpy, meset functions.
  *   Note, when a operation like *a_struct = *b_struct is done it results in a memcpy so
  *   this kind of structure assignmen should be avoided and below function used instead
- * 
+ *
  * \ingroup group_tivx_obj_desc
  */
 void tivx_obj_desc_memset(void *dst, uint8_t val, uint32_t size);

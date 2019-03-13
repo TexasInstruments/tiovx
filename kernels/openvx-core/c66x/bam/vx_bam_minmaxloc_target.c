@@ -98,10 +98,6 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelMinMaxLocControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -427,13 +423,6 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelMinMaxLocControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamMinMaxLoc(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -460,7 +449,7 @@ void tivxAddTargetKernelBamMinMaxLoc(void)
             tivxKernelMinMaxLocProcess,
             tivxKernelMinMaxLocCreate,
             tivxKernelMinMaxLocDelete,
-            tivxKernelMinMaxLocControl,
+            NULL,
             NULL);
     }
 }

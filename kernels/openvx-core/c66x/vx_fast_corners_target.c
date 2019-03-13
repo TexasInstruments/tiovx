@@ -383,13 +383,6 @@ static vx_status VX_CALLBACK tivxKernelFastCDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelFastCControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelFastCorners(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -416,7 +409,7 @@ void tivxAddTargetKernelFastCorners(void)
             tivxKernelFastCProcess,
             tivxKernelFastCCreate,
             tivxKernelFastCDelete,
-            tivxKernelFastCControl,
+            NULL,
             NULL);
     }
 }

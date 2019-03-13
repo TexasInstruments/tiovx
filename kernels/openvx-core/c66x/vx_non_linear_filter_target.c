@@ -287,16 +287,6 @@ vx_status VX_CALLBACK tivxNonLinearFilterDelete(
     return (status);
 }
 
-vx_status VX_CALLBACK tivxNonLinearFilterControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelNonLinearFilter(void)
 {
     vx_status status = VX_FAILURE;
@@ -329,7 +319,7 @@ void tivxAddTargetKernelNonLinearFilter(void)
                             tivxNonLinearFilter,
                             tivxNonLinearFilterCreate,
                             tivxNonLinearFilterDelete,
-                            tivxNonLinearFilterControl,
+                            NULL,
                             NULL);
     }
 }

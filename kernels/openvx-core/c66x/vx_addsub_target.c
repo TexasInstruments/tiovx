@@ -288,13 +288,6 @@ static vx_status VX_CALLBACK tivxKernelAddDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelAddControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 static vx_status VX_CALLBACK tivxKernelAddProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -333,7 +326,7 @@ void tivxAddTargetKernelAdd()
             tivxKernelAddProcess,
             tivxKernelAddCreate,
             tivxKernelAddDelete,
-            tivxKernelAddControl,
+            NULL,
             NULL);
     }
 }
@@ -352,13 +345,6 @@ static vx_status VX_CALLBACK tivxKernelSubCreate(
 }
 
 static vx_status VX_CALLBACK tivxKernelSubDelete(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
-static vx_status VX_CALLBACK tivxKernelSubControl(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
@@ -403,7 +389,7 @@ void tivxAddTargetKernelSub(void)
             tivxKernelSubProcess,
             tivxKernelSubCreate,
             tivxKernelSubDelete,
-            tivxKernelSubControl,
+            NULL,
             NULL);
     }
 }

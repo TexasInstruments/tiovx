@@ -203,13 +203,6 @@ static vx_status VX_CALLBACK tivxKernelMultiplyDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelMultiplyControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelMultiply(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -236,7 +229,7 @@ void tivxAddTargetKernelMultiply(void)
             tivxKernelMultiplyProcess,
             tivxKernelMultiplyCreate,
             tivxKernelMultiplyDelete,
-            tivxKernelMultiplyControl,
+            NULL,
             NULL);
     }
 }

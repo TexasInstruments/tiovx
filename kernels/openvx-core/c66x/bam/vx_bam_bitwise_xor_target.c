@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelBitwiseXorDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBitwiseXorControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelBitwiseXorProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -257,13 +253,6 @@ static vx_status VX_CALLBACK tivxKernelBitwiseXorDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelBitwiseXorControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamBitwiseXor(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -290,7 +279,7 @@ void tivxAddTargetKernelBamBitwiseXor(void)
             tivxKernelBitwiseXorProcess,
             tivxKernelBitwiseXorCreate,
             tivxKernelBitwiseXorDelete,
-            tivxKernelBitwiseXorControl,
+            NULL,
             NULL);
     }
 }

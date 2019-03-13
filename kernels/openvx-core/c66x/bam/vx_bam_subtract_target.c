@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelSubtractDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelSubtractControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelSubtractProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -363,13 +359,6 @@ static vx_status VX_CALLBACK tivxKernelSubtractDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelSubtractControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamSubtract(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -396,7 +385,7 @@ void tivxAddTargetKernelBamSubtract(void)
             tivxKernelSubtractProcess,
             tivxKernelSubtractCreate,
             tivxKernelSubtractDelete,
-            tivxKernelSubtractControl,
+            NULL,
             NULL);
     }
 }

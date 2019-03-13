@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelHistogramControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -254,13 +250,6 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelHistogramControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamHistogram(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -287,7 +276,7 @@ void tivxAddTargetKernelBamHistogram(void)
             tivxKernelHistogramProcess,
             tivxKernelHistogramCreate,
             tivxKernelHistogramDelete,
-            tivxKernelHistogramControl,
+            NULL,
             NULL);
     }
 }

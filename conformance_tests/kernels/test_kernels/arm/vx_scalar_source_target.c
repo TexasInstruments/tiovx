@@ -87,10 +87,6 @@ static vx_status VX_CALLBACK tivxScalarSourceDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxScalarSourceControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarSourceProcess(
        tivx_target_kernel_instance kernel,
@@ -172,6 +168,33 @@ static vx_status VX_CALLBACK tivxScalarSourceCreate(
     return status;
 }
 
+static vx_status VX_CALLBACK tivxScalarSourceControl(
+       tivx_target_kernel_instance kernel, uint32_t node_cmd_id,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_scalar_t *out_desc;
+
+    if(VX_SUCCESS == status)
+    {
+        out_desc = (tivx_obj_desc_scalar_t *)obj_desc[0U];
+    }
+
+    switch(node_cmd_id)
+    {
+        case TIVX_SCALAR_SRC_NODE_INC_SCALAR:
+            out_desc->data.u08 ++;
+            break;
+        case TIVX_SCALAR_SRC_NODE_DEC_SCALAR:
+            out_desc->data.u08 --;
+            break;
+    }
+
+    return status;
+}
+
+
 static vx_status VX_CALLBACK tivxScalarSourceDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -189,16 +212,6 @@ static vx_status VX_CALLBACK tivxScalarSourceDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxScalarSourceControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelScalarSource(void)
 {
     vx_status status = VX_FAILURE;
@@ -206,7 +219,7 @@ void tivxAddTargetKernelScalarSource(void)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ( (self_cpu == TIVX_CPU_ID_IPU1_0) ||
           (self_cpu == TIVX_CPU_ID_A15_0) ||
           (self_cpu == TIVX_CPU_ID_IPU2_0) ||

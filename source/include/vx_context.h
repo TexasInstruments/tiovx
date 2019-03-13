@@ -207,6 +207,22 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
 vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id);
 
 /*!
+ * \brief Send a control command to specified target with object descriptor ID's as parameters
+ *
+ *        This API waits until ACK for the command is received
+ *
+ * \param context      [in] context to use when sending the command
+ * \param target_id    [in] ID of Target to whom the command is being sent
+ * \param num_obj_desc [in] number of object descriptors to send
+ * \param obj_desc_id  [in] List of object descriptor to send
+ *
+ * \ingroup group_vx_context
+ */
+vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
+    uint32_t target_id, uint32_t replicated_node_idx, uint32_t node_cmd_id,
+    const uint16_t obj_desc_id[], uint32_t num_obj_desc);
+
+/*!
  * \brief Get value of kernel remove lock flag
  *
  * \param context      [in] context

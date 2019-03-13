@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelIntgImgControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelIntgImgProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -246,13 +242,6 @@ static vx_status VX_CALLBACK tivxKernelIntgImgDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelIntgImgControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamIntegralImage(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -279,7 +268,7 @@ void tivxAddTargetKernelBamIntegralImage(void)
             tivxKernelIntgImgProcess,
             tivxKernelIntgImgCreate,
             tivxKernelIntgImgDelete,
-            tivxKernelIntgImgControl,
+            NULL,
             NULL);
     }
 }

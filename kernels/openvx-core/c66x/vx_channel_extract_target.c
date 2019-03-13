@@ -550,16 +550,6 @@ vx_status VX_CALLBACK tivxChannelExtractDelete(
     return status;
 }
 
-vx_status VX_CALLBACK tivxChannelExtractControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelChannelExtract(void)
 {
     vx_status status = VX_FAILURE;
@@ -592,7 +582,7 @@ void tivxAddTargetKernelChannelExtract(void)
                             tivxChannelExtract,
                             tivxChannelExtractCreate,
                             tivxChannelExtractDelete,
-                            tivxChannelExtractControl,
+                            NULL,
                             NULL);
     }
 }

@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxScalarSource2Delete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxScalarSource2Control(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarSource2Process(
        tivx_target_kernel_instance kernel,
@@ -147,10 +143,10 @@ static vx_status VX_CALLBACK tivxScalarSource2Process(
 
                 if (VX_NODE_STATE_STEADY == state)
                 {
-                    /* typically in a capture driver during pipeup there 
+                    /* typically in a capture driver during pipeup there
                      * is no delay in processing, hence moving the delay here in steady state */
                     tivxTaskWaitMsecs(1);
-                    
+
                     obj_desc[TIVX_KERNEL_SCALAR_SOURCE_OUT_IDX] = prms->old_obj_desc[0];
 
                     for (i = 0; i < prms->pipeup_frame-1; i++)
@@ -222,16 +218,6 @@ static vx_status VX_CALLBACK tivxScalarSource2Delete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxScalarSource2Control(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelScalarSource2(void)
 {
     vx_status status = VX_FAILURE;
@@ -239,7 +225,7 @@ void tivxAddTargetKernelScalarSource2(void)
     vx_enum self_cpu;
 
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ( (self_cpu == TIVX_CPU_ID_IPU1_0) ||
           (self_cpu == TIVX_CPU_ID_A15_0) ||
           (self_cpu == TIVX_CPU_ID_IPU2_0) ||
@@ -291,7 +277,7 @@ void tivxAddTargetKernelScalarSource2(void)
                             tivxScalarSource2Process,
                             tivxScalarSource2Create,
                             tivxScalarSource2Delete,
-                            tivxScalarSource2Control,
+                            NULL,
                             NULL);
     }
 }

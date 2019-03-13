@@ -165,14 +165,6 @@ vx_status VX_CALLBACK tivxMagnitudeDelete(tivx_target_kernel_instance kernel, ti
     return status;
 }
 
-vx_status VX_CALLBACK tivxMagnitudeControl(tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
-
 void tivxAddTargetKernelMagnitude(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -199,7 +191,7 @@ void tivxAddTargetKernelMagnitude(void)
                     tivxMagnitude,
                     tivxMagnitudeCreate,
                     tivxMagnitudeDelete,
-                    tivxMagnitudeControl,
+                    NULL,
                     NULL);
     }
 }

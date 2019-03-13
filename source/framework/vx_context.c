@@ -415,6 +415,86 @@ vx_status ownIsKernelInContext(vx_context context, vx_enum enumeration, const vx
     return status;
 }
 
+
+vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
+    uint32_t target_id, uint32_t replicated_node_idx, uint32_t node_cmd_id,
+    const uint16_t obj_desc_id[], uint32_t num_obj_desc)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t i;
+    tivx_obj_desc_cmd_t *obj_desc_cmd;
+
+    if((ownIsValidContext(context) == vx_true_e) &&
+       (num_obj_desc < TIVX_CMD_MAX_OBJ_DESCS))
+    {
+        uint64_t timestamp = tivxPlatformGetTimeInUsecs()*1000;
+
+        ownContextLock(context);
+
+        tivx_uint64_to_uint32(
+            timestamp,
+            &context->obj_desc_cmd->timestamp_h,
+            &context->obj_desc_cmd->timestamp_l
+        );
+
+        /* alloc obj desc for kernel name */
+        obj_desc_cmd = context->obj_desc_cmd;
+
+        obj_desc_cmd->cmd_id = TIVX_CMD_NODE_CONTROL;
+        obj_desc_cmd->dst_target_id = target_id;
+        obj_desc_cmd->src_target_id =
+            tivxPlatformGetTargetId(TIVX_TARGET_HOST);
+        obj_desc_cmd->num_obj_desc = 1u;
+        obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
+        obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
+        obj_desc_cmd->ack_event_handle = (uint64_t)context->cmd_ack_event;
+
+        obj_desc_cmd->replicated_node_idx = replicated_node_idx;
+        obj_desc_cmd->node_cmd_id = node_cmd_id;
+        obj_desc_cmd->num_cmd_params = num_obj_desc;
+        for (i = 0; i < num_obj_desc; i ++)
+        {
+            obj_desc_cmd->cmd_params_desc_id[i] = obj_desc_id[i];
+        }
+
+        status = tivxObjDescSend(target_id, obj_desc_cmd->base.obj_desc_id);
+
+        if(status == VX_SUCCESS)
+        {
+            status = tivxEventWait(context->cmd_ack_event,
+                TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+        }
+
+        if(status == VX_SUCCESS)
+        {
+            if (VX_SUCCESS != obj_desc_cmd->cmd_status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "ownContextSendControlCmd: Failed to send object desc\n");
+                status = VX_FAILURE;
+            }
+        }
+
+        ownContextUnlock(context);
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+        if (num_obj_desc >= TIVX_CMD_MAX_OBJ_DESCS)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "ownContextSendControlCmd: Invalid Number of object desc\n");
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "ownContextSendControlCmd: Invalid Context\n");
+        }
+    }
+
+    return status;
+}
+
 vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id)
 {
     vx_status status = VX_SUCCESS;

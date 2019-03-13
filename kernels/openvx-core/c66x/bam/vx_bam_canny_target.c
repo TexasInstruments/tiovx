@@ -104,10 +104,6 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelCannyControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static void tivxCannyFreeMem(tivxCannyParams *prms);
 
 
@@ -426,13 +422,6 @@ static vx_status VX_CALLBACK tivxKernelCannyDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelCannyControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 static void tivxCannyFreeMem(tivxCannyParams *prms)
 {
     if (NULL != prms)
@@ -474,7 +463,7 @@ void tivxAddTargetKernelBamCannyEd(void)
             tivxKernelCannyProcess,
             tivxKernelCannyCreate,
             tivxKernelCannyDelete,
-            tivxKernelCannyControl,
+            NULL,
             NULL);
     }
 }

@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelAccumulateSquareControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelAccumulateSquareProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -254,13 +250,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateSquareDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelAccumulateSquareControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamAccumulateSquare(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -287,7 +276,7 @@ void tivxAddTargetKernelBamAccumulateSquare(void)
             tivxKernelAccumulateSquareProcess,
             tivxKernelAccumulateSquareCreate,
             tivxKernelAccumulateSquareDelete,
-            tivxKernelAccumulateSquareControl,
+            NULL,
             NULL);
     }
 }

@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelAddDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelAddControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelAddProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -359,13 +355,6 @@ static vx_status VX_CALLBACK tivxKernelAddDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelAddControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamAdd(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -392,7 +381,7 @@ void tivxAddTargetKernelBamAdd(void)
             tivxKernelAddProcess,
             tivxKernelAddCreate,
             tivxKernelAddDelete,
-            tivxKernelAddControl,
+            NULL,
             NULL);
     }
 }

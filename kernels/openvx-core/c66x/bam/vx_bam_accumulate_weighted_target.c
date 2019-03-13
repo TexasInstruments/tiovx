@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelAccumulateWeightedControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelAccumulateWeightedProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -255,13 +251,6 @@ static vx_status VX_CALLBACK tivxKernelAccumulateWeightedDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelAccumulateWeightedControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamAccumulateWeighted(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -288,7 +277,7 @@ void tivxAddTargetKernelBamAccumulateWeighted(void)
             tivxKernelAccumulateWeightedProcess,
             tivxKernelAccumulateWeightedCreate,
             tivxKernelAccumulateWeightedDelete,
-            tivxKernelAccumulateWeightedControl,
+            NULL,
             NULL);
     }
 }

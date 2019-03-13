@@ -190,13 +190,6 @@ static vx_status VX_CALLBACK tivxKernelRemapDelete(
     return (VX_SUCCESS);
 }
 
-static vx_status VX_CALLBACK tivxKernelRemapControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelRemap(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -223,7 +216,7 @@ void tivxAddTargetKernelRemap(void)
             tivxKernelRemapProcess,
             tivxKernelRemapCreate,
             tivxKernelRemapDelete,
-            tivxKernelRemapControl,
+            NULL,
             NULL);
     }
 }

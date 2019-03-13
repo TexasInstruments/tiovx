@@ -106,6 +106,28 @@ typedef struct _tivx_target_kernel_instance *tivx_target_kernel_instance;
 */
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_f)(tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
 
+
+/*!
+* \brief The target kernel callback for control command
+*
+*        For create_func, delete_func and process_func callbacks
+*        'obj_desc' points to array of data object descriptor parameters
+*
+*        For control_func,
+*        'obj_desc' points to array of objects descriptors
+*        for control parameter. It could be any vx_(object)
+*
+* \param [in] kernel The kernel for which the callback is called
+* \param [in] Command ID to be processed in the given node
+* \param [in] obj_desc Object descriptor passed as input to this callback
+* \param [in] num_params valid entries in object descriptor (obj_desc) array
+*
+* \ingroup group_tivx_target_kernel
+*/
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_control_f)(
+    tivx_target_kernel_instance kernel, uint32_t node_cmd_id,
+    tivx_obj_desc_t *obj_desc[], uint16_t num_params, void *priv_arg);
+
 /*! \brief Allows users to add native kernels implementation to specific targets
  *
  *         This is different from vxAddUserKernel() in that this is called
@@ -127,7 +149,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func,
+                             tivx_target_kernel_control_f control_func,
                              void *priv_arg);
 
 /*! \brief Allows users to add native kernels implementation to specific targets
@@ -144,7 +166,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func,
+                             tivx_target_kernel_control_f control_func,
                              void *priv_arg);
 
 

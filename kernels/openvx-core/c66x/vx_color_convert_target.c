@@ -452,13 +452,6 @@ static vx_status VX_CALLBACK tivxKernelColorConvertDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelColorConvertControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 static vx_status VX_CALLBACK tivxKernelColorConvertProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -497,7 +490,7 @@ void tivxAddTargetKernelColorConvert(void)
             tivxKernelColorConvertProcess,
             tivxKernelColorConvertCreate,
             tivxKernelColorConvertDelete,
-            tivxKernelColorConvertControl,
+            NULL,
             NULL);
     }
 }

@@ -243,13 +243,6 @@ static vx_status VX_CALLBACK tivxKernelEqualizeHistogramDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelEqualizeHistogramControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelEqualizeHistogram(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -276,7 +269,7 @@ void tivxAddTargetKernelEqualizeHistogram(void)
             tivxKernelEqualizeHistogramProcess,
             tivxKernelEqualizeHistogramCreate,
             tivxKernelEqualizeHistogramDelete,
-            tivxKernelEqualizeHistogramControl,
+            NULL,
             NULL);
     }
 }

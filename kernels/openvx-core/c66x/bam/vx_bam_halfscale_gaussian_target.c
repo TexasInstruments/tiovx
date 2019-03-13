@@ -105,10 +105,6 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -466,13 +462,6 @@ static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxBamKernelHalfScaleGaussianControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamHalfscaleGaussian(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -499,7 +488,7 @@ void tivxAddTargetKernelBamHalfscaleGaussian(void)
             tivxBamKernelHalfScaleGaussianProcess,
             tivxBamKernelHalfScaleGaussianCreate,
             tivxBamKernelHalfScaleGaussianDelete,
-            tivxBamKernelHalfScaleGaussianControl,
+            NULL,
             NULL);
     }
 }

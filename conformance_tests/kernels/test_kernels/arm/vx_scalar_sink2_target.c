@@ -91,10 +91,6 @@ static vx_status VX_CALLBACK tivxScalarSink2Delete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxScalarSink2Control(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarSink2Process(
        tivx_target_kernel_instance kernel,
@@ -142,7 +138,7 @@ static vx_status VX_CALLBACK tivxScalarSink2Process(
         /* hold onto current obj_desc and release old obj desc */
         obj_desc[TIVX_KERNEL_SCALAR_SINK_IN_IDX] = prms->old_obj_desc[0];
         prms->old_obj_desc[0] = (tivx_obj_desc_t*)in_desc;
-        
+
         if (prms->local_val != in_value && prms->do_error_print)
         {
             if(prms->do_error_print>0)
@@ -171,7 +167,7 @@ static vx_status VX_CALLBACK tivxScalarSink2Create(
 
     prms->local_val = 0;
     prms->do_error_print = 10; /* max number of times to do error print */
-    
+
     for(i=0; i<MAX_OLD_OBJ_DESC; i++)
     {
         prms->old_obj_desc[i] = NULL;
@@ -193,19 +189,6 @@ static vx_status VX_CALLBACK tivxScalarSink2Delete(
         (void **)&prms, &size);
 
     tivxMemFree(prms, sizeof(tivxScalarSink2Params), TIVX_MEM_EXTERNAL);
-
-    return status;
-}
-
-static vx_status VX_CALLBACK tivxScalarSink2Control(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
 
     return status;
 }
@@ -269,7 +252,7 @@ void tivxAddTargetKernelScalarSink2(void)
                             tivxScalarSink2Process,
                             tivxScalarSink2Create,
                             tivxScalarSink2Delete,
-                            tivxScalarSink2Control,
+                            NULL,
                             NULL);
     }
 }

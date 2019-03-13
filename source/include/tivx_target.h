@@ -201,7 +201,6 @@ typedef struct _tivx_target {
      *   its main function
      */
     vx_bool targetExitDone;
-
 } tivx_target_t;
 
 /*!

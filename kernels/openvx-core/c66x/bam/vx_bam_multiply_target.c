@@ -90,10 +90,6 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
 
-static vx_status VX_CALLBACK tivxKernelBamMultiplyControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
-
 static vx_status VX_CALLBACK tivxKernelBamMultiplyProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
@@ -373,13 +369,6 @@ static vx_status VX_CALLBACK tivxKernelBamMultiplyDelete(
     return (status);
 }
 
-static vx_status VX_CALLBACK tivxKernelBamMultiplyControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    return (VX_SUCCESS);
-}
-
 void tivxAddTargetKernelBamMultiply(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -406,7 +395,7 @@ void tivxAddTargetKernelBamMultiply(void)
             tivxKernelBamMultiplyProcess,
             tivxKernelBamMultiplyCreate,
             tivxKernelBamMultiplyDelete,
-            tivxKernelBamMultiplyControl,
+            NULL,
             NULL);
     }
 }

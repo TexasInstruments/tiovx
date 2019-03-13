@@ -208,6 +208,59 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[])
     return status;
 }
 
+vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
+    uint32_t node_cmd_id, vx_reference ref[], uint32_t num_refs)
+{
+    vx_status status = VX_SUCCESS;
+    uint32_t cnt;
+    uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
+
+    if ((NULL != node) &&
+        (ownIsValidSpecificReference(&node->base, VX_TYPE_NODE)))
+    {
+        if((NULL != node->kernel) && (node->is_kernel_created == vx_true_e))
+        {
+            for (cnt = 0u; cnt < num_refs; cnt ++)
+            {
+                if (ownIsValidReference(ref[cnt]) == vx_true_e)
+                {
+                    obj_desc_id[cnt] = ref[cnt]->obj_desc->obj_desc_id;
+                }
+                else
+                {
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxNodeSendCommand: Reference Not Valid\n");
+                    break;
+                }
+            }
+
+            if (VX_SUCCESS == status)
+            {
+                status = ownContextSendControlCmd(node->base.context,
+                    node->obj_desc[0]->base.obj_desc_id,
+                    node->obj_desc[0]->target_id,
+                    replicated_node_idx, node_cmd_id,
+                    obj_desc_id, num_refs);
+            }
+        }
+        else
+        {
+            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxNodeSendCommand: Node Kernel Not Valid\n");
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_NODE;
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxNodeSendCommand: Node Not Valid\n");
+    }
+
+    return (status);
+}
+
 vx_status ownNodeKernelInit(vx_node node)
 {
     vx_status status = VX_SUCCESS;

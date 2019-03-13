@@ -94,10 +94,6 @@ static vx_status VX_CALLBACK tivxNotNotDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxNotNotControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxNotNotProcess(
        tivx_target_kernel_instance kernel,
@@ -238,17 +234,17 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
                 {BAM_END_NODE_MARKER,   0,                          NULL},\
             };
 
-			BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT1_NODE].kernel_info);
-			BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT2_NODE].kernel_info);
+            BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT1_NODE].kernel_info);
+            BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT2_NODE].kernel_info);
 
             BAM_EdgeParams edge_list[]= {\
                 {{SOURCE_NODE, 0},
                     {NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
 
-				{{NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
-					{NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
+                {{NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
+                    {NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
 
-				{{NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
+                {{NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
                     {SINK_NODE, 0}},\
 
                 {{BAM_END_NODE_MARKER, 0},
@@ -332,19 +328,6 @@ static vx_status VX_CALLBACK tivxNotNotDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxNotNotControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
-
-    return status;
-}
-
 void tivxAddTargetKernelBamNotNot(void)
 {
     vx_status status = VX_FAILURE;
@@ -377,7 +360,7 @@ void tivxAddTargetKernelBamNotNot(void)
                             tivxNotNotProcess,
                             tivxNotNotCreate,
                             tivxNotNotDelete,
-                            tivxNotNotControl,
+                            NULL,
                             NULL);
     }
 }

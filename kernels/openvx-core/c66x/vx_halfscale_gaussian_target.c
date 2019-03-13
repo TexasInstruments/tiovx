@@ -296,16 +296,6 @@ vx_status VX_CALLBACK tivxHalfscaleGaussianDelete(
     return (status);
 }
 
-vx_status VX_CALLBACK tivxHalfscaleGaussianControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelHalfscaleGaussian(void)
 {
     vx_status status = VX_FAILURE;
@@ -338,7 +328,7 @@ void tivxAddTargetKernelHalfscaleGaussian(void)
                             tivxHalfscaleGaussian,
                             tivxHalfscaleGaussianCreate,
                             tivxHalfscaleGaussianDelete,
-                            tivxHalfscaleGaussianControl,
+                            NULL,
                             NULL);
     }
 }

@@ -106,7 +106,7 @@ typedef struct _tivx_target_kernel {
     tivx_target_kernel_f process_func;
     tivx_target_kernel_f create_func;
     tivx_target_kernel_f delete_func;
-    tivx_target_kernel_f control_func;
+    tivx_target_kernel_control_f control_func;
 
     void *caller_priv_arg;
 
@@ -150,7 +150,9 @@ vx_status tivxTargetKernelDelete(tivx_target_kernel_instance target_kernel_insta
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-vx_status tivxTargetKernelControl(tivx_target_kernel_instance target_kernel_instance, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
+vx_status tivxTargetKernelControl(
+    tivx_target_kernel_instance target_kernel_instance,
+    uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[], uint16_t num_params);
 
 /*!
  * \brief Returns target kernel registered against this kernel ID and target ID

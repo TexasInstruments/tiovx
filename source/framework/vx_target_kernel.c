@@ -97,7 +97,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func,
+                             tivx_target_kernel_control_f control_func,
                              void *priv_arg)
 {
     uint32_t i;
@@ -106,8 +106,7 @@ static tivx_target_kernel VX_API_CALL tivxAddTargetKernelInternal(
     vx_bool resource_added = vx_false_e;
 
     if ((NULL != target_name) &&
-        (process_func != NULL) && (create_func != NULL) &&
-        (control_func != NULL))
+        (process_func != NULL) && (create_func != NULL))
     {
         status = tivxMutexLock(g_target_kernel_lock);
 
@@ -164,7 +163,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernelByName(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func,
+                             tivx_target_kernel_control_f control_func,
                              void *priv_arg)
 {
     return tivxAddTargetKernelInternal(
@@ -178,7 +177,7 @@ VX_API_ENTRY tivx_target_kernel VX_API_CALL tivxAddTargetKernel(
                              tivx_target_kernel_f process_func,
                              tivx_target_kernel_f create_func,
                              tivx_target_kernel_f delete_func,
-                             tivx_target_kernel_f control_func,
+                             tivx_target_kernel_control_f control_func,
                              void *priv_arg)
 {
     return tivxAddTargetKernelInternal(
@@ -365,7 +364,7 @@ vx_status tivxTargetKernelExecute(
 
 vx_status tivxTargetKernelControl(
     tivx_target_kernel_instance target_kernel_instance,
-    tivx_obj_desc_t *obj_desc[], uint16_t num_params)
+    uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[], uint16_t num_params)
 {
     vx_status status = VX_FAILURE;
     tivx_target_kernel knl = NULL;
@@ -378,7 +377,7 @@ vx_status tivxTargetKernelControl(
         if ((NULL != knl) && (NULL != knl->control_func))
         {
             status = knl->control_func(
-                target_kernel_instance, obj_desc, num_params,
+                target_kernel_instance, node_cmd_id, obj_desc, num_params,
                 knl->caller_priv_arg);
         }
         else

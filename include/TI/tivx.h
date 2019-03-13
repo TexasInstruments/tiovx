@@ -180,15 +180,26 @@ extern "C" {
 
 
 /*!
- * \brief Flag used with tivxGraphParameterEnqueueReadyRef to 
+ * \brief Flag used with tivxGraphParameterEnqueueReadyRef to
  *        indicate that this enqueue call if for pipeup phase
- *        
+ *
  * Typically used only with source nodes which have a pipeup
  * requirement
  *
  * \ingroup group_tivx_ext_host
  */
 #define TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP (0x00000001u)
+
+/*!
+ * \brief When sending a control command to a replicated node,
+ *        this can be used to send control command to all replicated node.
+ *
+ * Currently used as parameter in tivxNodeSendCommand API
+ *
+ * \ingroup group_tivx_ext_host
+ */
+#define TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES ((uint32_t)-1)
+
 
 /*! \brief CPU ID for supported CPUs
  *
@@ -289,7 +300,7 @@ typedef enum _tivx_attribute_extensions_e {
 typedef enum _tivx_df_image_e {
 
     /*! \brief A single plane of packed 12-bit data.
-     * 
+     *
      * The stride_x for this data format must be set to 0 */
     TIVX_DF_IMAGE_P12 = VX_DF_IMAGE('P','0','1','2'),
 
@@ -544,16 +555,54 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
 /*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a 
  *         additional TIOVX specific flag parameter
  *
- *  For valid values of flag see 
+ *  For valid values of flag see
  *  - \ref TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP
- * 
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
                 vx_uint32 graph_parameter_index,
                 vx_reference *refs,
-                vx_uint32 num_refs, 
+                vx_uint32 num_refs,
                 vx_uint32 flags);
+
+/*!
+ * \brief Send node specific Control command
+ * \details This API is used to send specific control command to the node.
+ *          Refer to Node documentation for specific control command.
+ *          Note that this API is blocking and does not return untill
+ *          command is executed by the node.
+ *          This API is thread safe, ie multi commands can be sent to
+ *          same or different nodes from different threads
+ *
+ * \param [in] node: Reference of the node to which this command is to be sent.
+ * \param [in] replicate_nodex_idx: In case of a non-replicated node this
+ *             should be 0, For a replicated node this is the index
+ *             of the replicated node to which the command is targeted.
+ *             To send same command to all replicated nodes use
+               TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES
+ * \param [in] node_cmd_id: Node specific control command id, refer to node
+ *             specific interface file
+ * \param [in/out] ref[]: Node parameter,
+ *             This is an array of references, required as parameters for
+ *             this control command.
+ *             They can be any OpenVX object, created using create API.
+ *             It is bidirectional parameters, can be used for INPUT,
+ *             OUTPUT or both.
+ *             These parameters are list of references,
+ *             which are required for the control command on the given node.
+ *             Refer to node documentation to get details about the parameters
+ *             required for given control command.
+ *             Caller of this API should explicitely release these refs after
+ *             their usage is completed.
+ * \param [in] num_refs: Number of valid entries/references in ref[] array
+ *
+ *
+ * \ingroup group_tivx_ext_host
+ */
+vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
+    uint32_t replicate_nodex_idx, uint32_t node_cmd_id,
+    vx_reference ref[], uint32_t num_refs);
 
 #ifdef __cplusplus
 }
