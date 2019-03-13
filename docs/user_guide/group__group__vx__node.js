@@ -53,5 +53,6 @@ var group__group__vx__node =
     [ "ownNodeSetObjDescParamDirection", "group__group__vx__node.html#gaa07e6eeb3da5bfadc80a370ee57deb61", null ],
     [ "ownNodeLinkObjDescForPipeline", "group__group__vx__node.html#ga7cd7696b18559246d7477c36f7285341", null ],
     [ "ownNodeLinkDataRefQueue", "group__group__vx__node.html#ga857e5d476c6318a389b381ed7f847e5b", null ],
+    [ "ownNodeLinkArrayElement", "group__group__vx__node.html#ga4608c807d3cece102fd733b61b5ce718", null ],
     [ "ownNodeGetParameterNumBuf", "group__group__vx__node.html#gad35a8f23855393d8288c5488a694d172", null ]
 ];

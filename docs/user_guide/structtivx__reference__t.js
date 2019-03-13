@@ -15,5 +15,6 @@ var structtivx__reference__t =
     [ "delay_slot_index", "structtivx__reference__t.html#a1caf1c5feb88111ebb5e38a4da188bd9", null ],
     [ "is_virtual", "structtivx__reference__t.html#ae599ad74e0f2733829ae0e99c666a1fc", null ],
     [ "is_accessible", "structtivx__reference__t.html#afcce2c06f3667f29ef1688dbd8542f05", null ],
+    [ "is_array_element", "structtivx__reference__t.html#a96bb5d3a38a69259deb3c694e32a0855", null ],
     [ "obj_desc", "structtivx__reference__t.html#a1f5d87219e4c59beee89ad61376ef464", null ]
 ];

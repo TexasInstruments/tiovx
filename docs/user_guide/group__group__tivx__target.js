@@ -27,7 +27,7 @@ var group__group__tivx__target =
     [ "TIVX_GET_TARGET_INST", "group__group__tivx__target.html#ga40dc0ddb4196d504ef538f958fef26cd", null ],
     [ "TIVX_TARGET_ID_INVALID", "group__group__tivx__target.html#gaf943ee340be601ee19cd92e378211b53", null ],
     [ "TIVX_CPU_ID_INVALID", "group__group__tivx__target.html#gab4723d77faf1c4eb39193f47dc5b81f4", null ],
-    [ "tivx_task_main_f", "group__group__tivx__target.html#ga764deb8ef94df7eab04d438ad221276a", null ],
+    [ "tivx_task_main_f", "group__group__tivx__target.html#ga7dc0427a1bc40f8791dafb14e58e69d2", null ],
     [ "tivx_target_cmd_e", "group__group__tivx__target.html#gaab9a2b437b24da392a6784bc35334e72", [
       [ "TIVX_CMD_NODE_CREATE", "group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a27f3929cca255379921df4d7f10e62ca", null ],
       [ "TIVX_CMD_NODE_DELETE", "group__group__tivx__target.html#ggaab9a2b437b24da392a6784bc35334e72a5c6648535cde2654e3220e790101067f", null ],

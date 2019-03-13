@@ -27,5 +27,6 @@ var structtivx__obj__desc__node__t =
     [ "pipeline_id", "structtivx__obj__desc__node__t.html#a4b940036136f968c930984f679adbd89", null ],
     [ "prev_pipe_node_id", "structtivx__obj__desc__node__t.html#abbb8ea81cf294204bbdc9b9c506afdd7", null ],
     [ "is_prm_input", "structtivx__obj__desc__node__t.html#a0070155680853a32959eea6eb27b54e6", null ],
-    [ "is_prm_data_ref_q", "structtivx__obj__desc__node__t.html#a046e5be26fb6a3ec707a5837a5cf21e6", null ]
+    [ "is_prm_data_ref_q", "structtivx__obj__desc__node__t.html#a046e5be26fb6a3ec707a5837a5cf21e6", null ],
+    [ "is_prm_array_element", "structtivx__obj__desc__node__t.html#a220232a0a89bbd4b27b14c42ce7c2b9c", null ]
 ];

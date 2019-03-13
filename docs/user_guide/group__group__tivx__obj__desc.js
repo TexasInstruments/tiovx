@@ -41,7 +41,8 @@ var group__group__tivx__obj__desc =
       [ "pipeline_id", "structtivx__obj__desc__node__t.html#a4b940036136f968c930984f679adbd89", null ],
       [ "prev_pipe_node_id", "structtivx__obj__desc__node__t.html#abbb8ea81cf294204bbdc9b9c506afdd7", null ],
       [ "is_prm_input", "structtivx__obj__desc__node__t.html#a0070155680853a32959eea6eb27b54e6", null ],
-      [ "is_prm_data_ref_q", "structtivx__obj__desc__node__t.html#a046e5be26fb6a3ec707a5837a5cf21e6", null ]
+      [ "is_prm_data_ref_q", "structtivx__obj__desc__node__t.html#a046e5be26fb6a3ec707a5837a5cf21e6", null ],
+      [ "is_prm_array_element", "structtivx__obj__desc__node__t.html#a220232a0a89bbd4b27b14c42ce7c2b9c", null ]
     ] ],
     [ "tivx_obj_desc_image_t", "structtivx__obj__desc__image__t.html", [
       [ "base", "structtivx__obj__desc__image__t.html#a5007c18b86466d554a9957a8b7cd0514", null ],
@@ -82,13 +83,13 @@ var group__group__tivx__obj__desc =
       [ "base", "structtivx__obj__desc__lut__t.html#a9910b8c76c7e842695a4b2b20e751bac", null ],
       [ "mem_ptr", "structtivx__obj__desc__lut__t.html#a21a58447f27b6686909dbe7a5b04f686", null ],
       [ "item_type", "structtivx__obj__desc__lut__t.html#a246616705e5f2ad0e6549d8aa0fd9147", null ],
-      [ "item_size", "structtivx__obj__desc__lut__t.html#ac1efdd011919d9937247a489f3328f41", null ],
-      [ "num_items", "structtivx__obj__desc__lut__t.html#a9d88807eccef89057f02ef8da13d126d", null ],
+      [ "item_size", "structtivx__obj__desc__lut__t.html#acb5d6dcb3c99eadbb636ce2f4e9bf5ee", null ],
+      [ "num_items", "structtivx__obj__desc__lut__t.html#a8da7e8ae97625645d1f2d355697aaa16", null ],
       [ "mem_size", "structtivx__obj__desc__lut__t.html#a6a0398d2007846de01f0f3d7f0bc92d9", null ]
     ] ],
     [ "tivx_obj_desc_pyramid_t", "structtivx__obj__desc__pyramid__t.html", [
       [ "base", "structtivx__obj__desc__pyramid__t.html#a7f5af0f5660e6bc1e5821182c85a0fbd", null ],
-      [ "num_levels", "structtivx__obj__desc__pyramid__t.html#a5ab669c0fe79ece3948dd70967fbec9d", null ],
+      [ "num_levels", "structtivx__obj__desc__pyramid__t.html#aba8c50bb8181179df9b4ae9f33453dc3", null ],
       [ "width", "structtivx__obj__desc__pyramid__t.html#a2265d3c605588d46886832a9a82f9bce", null ],
       [ "height", "structtivx__obj__desc__pyramid__t.html#a672a6b3e72009992e2b5a1ccea8a60e6", null ],
       [ "scale", "structtivx__obj__desc__pyramid__t.html#a6aa80ede86a631696227b125e2cb32af", null ],

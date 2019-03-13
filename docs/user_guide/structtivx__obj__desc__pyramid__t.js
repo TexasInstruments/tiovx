@@ -1,7 +1,7 @@
 var structtivx__obj__desc__pyramid__t =
 [
     [ "base", "structtivx__obj__desc__pyramid__t.html#a7f5af0f5660e6bc1e5821182c85a0fbd", null ],
-    [ "num_levels", "structtivx__obj__desc__pyramid__t.html#a5ab669c0fe79ece3948dd70967fbec9d", null ],
+    [ "num_levels", "structtivx__obj__desc__pyramid__t.html#aba8c50bb8181179df9b4ae9f33453dc3", null ],
     [ "width", "structtivx__obj__desc__pyramid__t.html#a2265d3c605588d46886832a9a82f9bce", null ],
     [ "height", "structtivx__obj__desc__pyramid__t.html#a672a6b3e72009992e2b5a1ccea8a60e6", null ],
     [ "scale", "structtivx__obj__desc__pyramid__t.html#a6aa80ede86a631696227b125e2cb32af", null ],

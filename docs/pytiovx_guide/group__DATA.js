@@ -1,46 +1,46 @@
 var group__DATA =
 [
     [ "Array", "classtiovx_1_1array_1_1Array.html", [
-      [ "__init__", "classtiovx_1_1array_1_1Array.html#a6c3b31853b87422fd7d266b942353e19", null ]
+      [ "__init__", "classtiovx_1_1array_1_1Array.html#a483dbb5d19cb1c31dbbceb362b314def", null ]
     ] ],
     [ "Convolution", "classtiovx_1_1convolution_1_1Convolution.html", [
-      [ "__init__", "classtiovx_1_1convolution_1_1Convolution.html#a6896827bebeed1a78830eaa7c921305f", null ]
+      [ "__init__", "classtiovx_1_1convolution_1_1Convolution.html#a0917c63044921f14256ccf2925547634", null ]
     ] ],
     [ "Distribution", "classtiovx_1_1distribution_1_1Distribution.html", [
-      [ "__init__", "classtiovx_1_1distribution_1_1Distribution.html#a695025e02585ae61f71fefddd21d890c", null ]
+      [ "__init__", "classtiovx_1_1distribution_1_1Distribution.html#aff908626d66d4af58e277f2ef0dd7b91", null ]
     ] ],
     [ "ImagePatchAddress", "classtiovx_1_1image_1_1ImagePatchAddress.html", [
-      [ "__init__", "classtiovx_1_1image_1_1ImagePatchAddress.html#ac1b7b586242f8503a807d93cf146fd13", null ]
+      [ "__init__", "classtiovx_1_1image_1_1ImagePatchAddress.html#a2706ba9bfd03519606ba007fe1115fb8", null ]
     ] ],
     [ "Image", "classtiovx_1_1image_1_1Image.html", [
-      [ "__init__", "classtiovx_1_1image_1_1Image.html#aad260b1c6a5037cf0eaaaa0bf9fe891e", null ]
+      [ "__init__", "classtiovx_1_1image_1_1Image.html#a3050b301aeb325d62900bfb4b72f6e92", null ]
     ] ],
     [ "ImageFromChannel", "classtiovx_1_1image_1_1ImageFromChannel.html", [
-      [ "__init__", "classtiovx_1_1image_1_1ImageFromChannel.html#a4ce37d006f0f32338c51ad4e633c93ba", null ]
+      [ "__init__", "classtiovx_1_1image_1_1ImageFromChannel.html#a89070ab518e13f10f79b969d39615e31", null ]
     ] ],
     [ "ImageFromHandle", "classtiovx_1_1image_1_1ImageFromHandle.html", [
-      [ "__init__", "classtiovx_1_1image_1_1ImageFromHandle.html#a4b9502358756171566bf5494fcfe8942", null ]
+      [ "__init__", "classtiovx_1_1image_1_1ImageFromHandle.html#a3b7fc35ed985889a2521cd52b7155610", null ]
     ] ],
     [ "Lut", "classtiovx_1_1lut_1_1Lut.html", [
-      [ "__init__", "classtiovx_1_1lut_1_1Lut.html#a71183932b1df64ad5567d722591ed4dd", null ]
+      [ "__init__", "classtiovx_1_1lut_1_1Lut.html#a90f726826baf79d2f4a9db07b8a76b95", null ]
     ] ],
     [ "Matrix", "classtiovx_1_1matrix_1_1Matrix.html", [
-      [ "__init__", "classtiovx_1_1matrix_1_1Matrix.html#ac344d5e4f7ffe7c740ac94f8ce6aab04", null ]
+      [ "__init__", "classtiovx_1_1matrix_1_1Matrix.html#a0af91d3d39dbbf2aa1d5d6da4af8dcdf", null ]
     ] ],
     [ "Null", "classtiovx_1_1null_1_1Null.html", [
-      [ "__init__", "classtiovx_1_1null_1_1Null.html#a7aa71ee3813d25b09a10782fd67ce31e", null ]
+      [ "__init__", "classtiovx_1_1null_1_1Null.html#aa28473fe07556e9807f307d982c29e3d", null ]
     ] ],
     [ "ObjectArray", "classtiovx_1_1objectarray_1_1ObjectArray.html", null ],
     [ "Pyramid", "classtiovx_1_1pyramid_1_1Pyramid.html", [
-      [ "__init__", "classtiovx_1_1pyramid_1_1Pyramid.html#ad607a91c58e90e1c9373671fcddc2901", null ]
+      [ "__init__", "classtiovx_1_1pyramid_1_1Pyramid.html#a28432e0d373f709d4a417920ffea39ca", null ]
     ] ],
     [ "Remap", "classtiovx_1_1remap_1_1Remap.html", [
-      [ "__init__", "classtiovx_1_1remap_1_1Remap.html#a62cc0e908a41dfb56ca1afbd1ab2a916", null ]
+      [ "__init__", "classtiovx_1_1remap_1_1Remap.html#afeed64eb9533c4fedbac388a12fb42ed", null ]
     ] ],
     [ "Scalar", "classtiovx_1_1scalar_1_1Scalar.html", [
-      [ "__init__", "classtiovx_1_1scalar_1_1Scalar.html#af98d8bcdc83e2e89eb8dfc8a4be56003", null ]
+      [ "__init__", "classtiovx_1_1scalar_1_1Scalar.html#a95c80c8787ab2c6c9acd1f9e58e6882f", null ]
     ] ],
     [ "Threshold", "classtiovx_1_1threshold_1_1Threshold.html", [
-      [ "__init__", "classtiovx_1_1threshold_1_1Threshold.html#a8279ef1548c47e4e8e85d0acebb25522", null ]
+      [ "__init__", "classtiovx_1_1threshold_1_1Threshold.html#a7d535a4cf14a6f138131d88bbc157099", null ]
     ] ]
 ];

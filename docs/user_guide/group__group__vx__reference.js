@@ -16,10 +16,11 @@ var group__group__vx__reference =
       [ "delay_slot_index", "structtivx__reference__t.html#a1caf1c5feb88111ebb5e38a4da188bd9", null ],
       [ "is_virtual", "structtivx__reference__t.html#ae599ad74e0f2733829ae0e99c666a1fc", null ],
       [ "is_accessible", "structtivx__reference__t.html#afcce2c06f3667f29ef1688dbd8542f05", null ],
+      [ "is_array_element", "structtivx__reference__t.html#a96bb5d3a38a69259deb3c694e32a0855", null ],
       [ "obj_desc", "structtivx__reference__t.html#a1f5d87219e4c59beee89ad61376ef464", null ]
     ] ],
-    [ "tivx_reference_callback_f", "group__group__vx__reference.html#ga8e985f6c4f883699f2b91dae32f95c8b", null ],
-    [ "VX_API_CALL", "group__group__vx__reference.html#gad1343c102ae5c3085acc4fcd86d1ebb7", null ],
+    [ "tivx_reference_callback_f", "group__group__vx__reference.html#gaee84a785de293a976b4b3ba10c9891ee", null ],
+    [ "VX_API_CALL", "group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508", null ],
     [ "tivx_reftype_e", "group__group__vx__reference.html#gacd45d0c17bdc4c34ffc0c1c00c000617", [
       [ "VX_INTERNAL", "group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a2dcb643ac40c572517e64e34a936f2bb", null ],
       [ "VX_EXTERNAL", "group__group__vx__reference.html#ggacd45d0c17bdc4c34ffc0c1c00c000617a8625931f75a452b1522c56c4efa859ab", null ],

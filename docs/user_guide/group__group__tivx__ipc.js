@@ -1,6 +1,6 @@
 var group__group__tivx__ipc =
 [
-    [ "tivx_ipc_handler_f", "group__group__tivx__ipc.html#gacc3aafc4391374132cd010e43c48fa14", null ],
+    [ "tivx_ipc_handler_f", "group__group__tivx__ipc.html#gaedb69959741eda7b672e02df6f149b75", null ],
     [ "tivxIpcSendMsg", "group__group__tivx__ipc.html#gaa16af65b5fb1e1a39a41f2d75285d185", null ],
     [ "tivxIpcRegisterHandler", "group__group__tivx__ipc.html#ga55c17f2993549c51e9f23f276963fccf", null ],
     [ "tivxIpcInit", "group__group__tivx__ipc.html#ga5cc0504664e4120dda402c88dcb380a5", null ],

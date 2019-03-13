@@ -2,7 +2,7 @@ var group__group__tivx__mem =
 [
     [ "tivx_shared_mem_ptr_t", "structtivx__shared__mem__ptr__t.html", [
       [ "mem_heap_region", "structtivx__shared__mem__ptr__t.html#a7d2d60b4280e477c4989fe9c726b1ca2", null ],
-      [ "rsv1", "structtivx__shared__mem__ptr__t.html#a8ad89a515c89d6f323c642b23bbbb6e2", null ],
+      [ "dma_buf_fd", "structtivx__shared__mem__ptr__t.html#ad5b650f4792209ba19a8ff276faa9a5d", null ],
       [ "shared_ptr", "structtivx__shared__mem__ptr__t.html#a659a39f01eff82573352faae7707fc71", null ],
       [ "host_ptr", "structtivx__shared__mem__ptr__t.html#aa731e7934332b3ad65bed503e43316eb", null ]
     ] ],
@@ -13,7 +13,8 @@ var group__group__tivx__mem =
     [ "tivx_mem_heap_region_e", "group__group__tivx__mem.html#ga453747d90eef05b464e633ea644ac0ed", [
       [ "TIVX_MEM_EXTERNAL", "group__group__tivx__mem.html#gga453747d90eef05b464e633ea644ac0eda9efbb1abf57ed3bd769d6c7d8ee3a48d", null ],
       [ "TIVX_MEM_INTERNAL_L3", "group__group__tivx__mem.html#gga453747d90eef05b464e633ea644ac0eda1f35a4596d35d81bdb534a657cecc557", null ],
-      [ "TIVX_MEM_INTERNAL_L2", "group__group__tivx__mem.html#gga453747d90eef05b464e633ea644ac0eda3ef35e2f23a736dba62cca6f01daa1d1", null ]
+      [ "TIVX_MEM_INTERNAL_L2", "group__group__tivx__mem.html#gga453747d90eef05b464e633ea644ac0eda3ef35e2f23a736dba62cca6f01daa1d1", null ],
+      [ "TIVX_MEM_INTERNAL_L1", "group__group__tivx__mem.html#gga453747d90eef05b464e633ea644ac0edaf48f20fa85f748f39c29c9bab131c7d6", null ]
     ] ],
     [ "tivx_memory_type_e", "group__group__tivx__mem.html#ga86562b57906ef009f0b1861a38c294b0", [
       [ "TIVX_MEMORY_TYPE_DMA", "group__group__tivx__mem.html#gga86562b57906ef009f0b1861a38c294b0a4c71d9f2634b90b8d9f8a7b6f193cff0", null ]
