@@ -244,6 +244,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
             out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
             tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
+        /*copy outArgs in last tensor*/
+        outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
+        out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
+        tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        memcpy(out_tensor_target_ptr, &prms->outArgs, sizeof(TIDL_outArgs));
+        tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
     }
 
     return (status);
@@ -312,6 +318,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         prms->createParams.l1MemSize = L1_MEM_SIZE;
         prms->createParams.l2MemSize = L2_MEM_SIZE;
         prms->createParams.l3MemSize = L3_MEM_SIZE;
+        prms->createParams.TIDLVprintf = NULL;
+        prms->createParams.TIDLWriteBinToFile = NULL;
 
         network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
         tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
