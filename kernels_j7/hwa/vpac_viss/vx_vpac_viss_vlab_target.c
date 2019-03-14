@@ -88,6 +88,8 @@ typedef struct
     vx_uint32 dcc_out_numbytes;
     dcc_parser_input_params_t * dcc_input_params;
     dcc_parser_output_params_t * dcc_output_params;
+
+    uint32_t viss_frame_count;
 } tivxVpacVissParams;
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
@@ -398,6 +400,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->config.rawfe_params.pwl_lut_short.offset[count] = prms->dcc_output_params->vissBLC.s_dcoffset[count];
                 prms->config.rawfe_params.pwl_lut_vshort.offset[count] = prms->dcc_output_params->vissBLC.vs_dcoffset[count];
             }
+            if (1 == prms->dcc_output_params->issH3aMuxLuts.enable)
+            {
+                int k;
+                int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
+                for (k = 0; k < PWL_LUT_SIZE; k++)
+                {
+                    prms->config.rawfe_params.lut_h3a.lut[k] = prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut[cnt][k];
+                }
+            }
         }
 
         if ((VX_SUCCESS == status) && (NULL != h3a_aew_af_desc))
@@ -562,6 +573,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
             lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, prms->config.buffer[7*2], out_s8_b8_c4_bit_align);
         }
+
+        prms->viss_frame_count++;
 
         /* kernel processing function complete */
 

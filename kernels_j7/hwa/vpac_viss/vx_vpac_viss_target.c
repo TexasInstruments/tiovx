@@ -150,6 +150,8 @@ typedef struct
     vx_uint32 dcc_out_numbytes;
     dcc_parser_input_params_t * dcc_input_params;
     dcc_parser_output_params_t * dcc_output_params;
+
+    uint32_t viss_frame_count;
 } tivxVpacVissParams;
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
@@ -443,6 +445,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->rawfe_params.pwl_lut_short.offset[count] = prms->dcc_output_params->vissBLC.s_dcoffset[count];
                 prms->rawfe_params.pwl_lut_vshort.offset[count] = prms->dcc_output_params->vissBLC.vs_dcoffset[count];
             }
+            if (1 == prms->dcc_output_params->issH3aMuxLuts.enable)
+            {
+                int k;
+                int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
+                for (k = 0; k < PWL_LUT_SIZE; k++)
+                {
+                    prms->rawfe_params.lut_h3a.lut[k] = prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut[cnt][k];
+                }
+            }
         }
 
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
@@ -646,6 +657,8 @@ This code maybe removed
                 memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);
             }
         }
+
+        prms->viss_frame_count++;
 
         /* kernel processing function complete */
 
