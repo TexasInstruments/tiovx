@@ -69,7 +69,7 @@
 #include "itidl_ti.h"
 
 /* TODO: remove this once TIDL fixes the need for having this */
-uint8_t pBlock[256] 
+uint8_t pBlock[256]
 __attribute__ ((aligned(256)))
     ;
 
@@ -273,7 +273,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     void *network_target_ptr;
 
     uint32_t i;
-    
+
     for (i = 0U; i < num_params; i ++)
     {
         if (NULL == obj_desc[i])
@@ -416,12 +416,13 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
             tivxTIDLFreeMem(prms);
         }
     }
-    
+
     return (status);
 }
 
 static vx_status VX_CALLBACK tivxKernelTIDLControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    tivx_target_kernel_instance kernel, uint32_t node_cmd_id,
+    tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg)
 {
     return (VX_SUCCESS);

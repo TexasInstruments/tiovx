@@ -167,10 +167,6 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxVpacVissControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms);
 static void tivxVpacVissCopyShift(uint16_t src[], uint16_t dst[], int32_t size, uint16_t shift_policy);
 static uint32_t tivxVpacVissFindFile(char *root_name, char *dir_name, char *substring, char *full_path);
@@ -180,7 +176,7 @@ static void copy_int16_array(int32_t * dst, int16_t * src, int cnt);
 
 static void copy_uint16_array(int32_t * dst, uint16_t * src, int cnt)
 {
-	int k;
+    int k;
     for (k = 0; k < cnt; k++)
     {
         dst[k] = src[k];
@@ -189,7 +185,7 @@ static void copy_uint16_array(int32_t * dst, uint16_t * src, int cnt)
 
 static void copy_int16_array(int32_t * dst, int16_t * src, int cnt)
 {
-	int k;
+    int k;
     for (k = 0; k < cnt; k++)
     {
         dst[k] = src[k];
@@ -1378,16 +1374,6 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxVpacVissControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelVpacViss(void)
 {
     vx_status status = VX_FAILURE;
@@ -1414,7 +1400,7 @@ void tivxAddTargetKernelVpacViss(void)
                             tivxVpacVissProcess,
                             tivxVpacVissCreate,
                             tivxVpacVissDelete,
-                            tivxVpacVissControl,
+                            NULL,
                             NULL);
     }
 }

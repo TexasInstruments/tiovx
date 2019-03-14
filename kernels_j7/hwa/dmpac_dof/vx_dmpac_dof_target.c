@@ -120,10 +120,6 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxDmpacDofControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms);
 static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms);
 
@@ -374,13 +370,13 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         /* call kernel processing function */
 #ifdef VLAB_HWA
         {
-                /* VLAB HWA are 64b models in backend, but int* pointers are 32b on R5F core 
+                /* VLAB HWA are 64b models in backend, but int* pointers are 32b on R5F core
                  * Hence need to trick VLAB to think we are passing 64b pointer
-                 */ 
+                 */
                 int *input_current_org[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
                 int *input_reference_org[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
-                                
-                /* save orignal 32b pointers */                                            
+
+                /* save orignal 32b pointers */
                 for(i=0; i<TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS; i++)
                 {
                     input_current_org[i] = prms->input_current[i];
@@ -394,7 +390,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                     prms->input_reference[2*i] = input_reference_org[i];
                     prms->input_reference[2*i+1] = NULL;
                 }
-                
+
                 status = vlab_hwa_process(DMPAC_DOF_BASE_ADDRESS, "DMPAC_DOF", sizeof(tivxDmpacDofParams), prms);
                 prms->past_prediction = past_prediction;
 
@@ -611,16 +607,6 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxDmpacDofControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelDmpacDof(void)
 {
     vx_status status = VX_FAILURE;
@@ -647,7 +633,7 @@ void tivxAddTargetKernelDmpacDof(void)
                             tivxDmpacDofProcess,
                             tivxDmpacDofCreate,
                             tivxDmpacDofDelete,
-                            tivxDmpacDofControl,
+                            NULL,
                             NULL);
     }
 }

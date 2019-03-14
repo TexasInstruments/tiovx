@@ -94,10 +94,6 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxKernelGsnPmdControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static void tivxKernelGsnPmdFreeMem(tivxGassPyrmdParams *prms);
 
 
@@ -432,15 +428,6 @@ static vx_status VX_CALLBACK tivxKernelGsnPmdDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelGsnPmdControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelVpacMscGaussianPyramid(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -459,7 +446,7 @@ void tivxAddTargetKernelVpacMscGaussianPyramid(void)
             tivxKernelGsnPmdProcess,
             tivxKernelGsnPmdCreate,
             tivxKernelGsnPmdDelete,
-            tivxKernelGsnPmdControl,
+            NULL,
             NULL);
     }
 }

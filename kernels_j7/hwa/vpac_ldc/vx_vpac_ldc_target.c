@@ -87,7 +87,7 @@ typedef struct
     uint32_t outY2_buffer_size;
     uint32_t outC3_buffer_size;
     uint32_t mesh_buffer_size;
-    
+
     ldc_config config;
 
 } tivxVpacLdcParams;
@@ -103,10 +103,6 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static vx_status VX_CALLBACK tivxVpacLdcDelete(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxVpacLdcControl(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
@@ -147,7 +143,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         uint32_t size;
         tivxVpacLdcParams *prms = NULL;
         vx_uint32 error_status_value;
-        
+
         void *in_luma_or_422_target_ptr = NULL;
         void *in_chroma_target_ptr = NULL;
         void *out_0_luma_or_422_target_ptr = NULL;
@@ -297,7 +293,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
             error_status_desc->data.u32 = error_status_value;
         }
     }
-    
+
     return status;
 }
 
@@ -435,7 +431,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                 uint32_t data_mode;
                 void *configuration_target_ptr;
                 void *region_params_target_ptr;
-   
+
                 configuration_target_ptr = tivxMemShared2TargetPtr(
                     configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
 
@@ -470,7 +466,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
                     {
                         data_mode = DATA_MODE_Y;
                     }
-        
+
                     prms->config.settings.iw = in_luma_or_422_desc->imagepatch_addr[0].dim_x; // source (distorted) image width, in pixels
                     prms->config.settings.ih = in_luma_or_422_desc->imagepatch_addr[0].dim_y; // source (distorted) image height, in pixels
                 }
@@ -808,23 +804,13 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxVpacLdcControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelVpacLdc()
 {
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    
+
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_VPAC_LDC1,
@@ -836,7 +822,7 @@ void tivxAddTargetKernelVpacLdc()
                             tivxVpacLdcProcess,
                             tivxVpacLdcCreate,
                             tivxVpacLdcDelete,
-                            tivxVpacLdcControl,
+                            NULL,
                             NULL);
 
 /* For now, this is one LDC instance, if we add a second, we ened to do something
@@ -852,7 +838,7 @@ void tivxAddTargetKernelVpacLdc()
                             tivxVpacLdcProcess,
                             tivxVpacLdcCreate,
                             tivxVpacLdcDelete,
-                            tivxVpacLdcControl,
+                            NULL,
                             NULL);
 #endif
     }
@@ -861,7 +847,7 @@ void tivxAddTargetKernelVpacLdc()
 void tivxRemoveTargetKernelVpacLdc()
 {
     vx_status status = VX_SUCCESS;
-    
+
     status = tivxRemoveTargetKernel(vx_vpac_ldc_target_kernel);
     if (status == VX_SUCCESS)
     {

@@ -131,10 +131,6 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxCaptureControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static void App_sendFrame(void);
 
@@ -691,16 +687,6 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxCaptureControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelCapture(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -718,7 +704,7 @@ void tivxAddTargetKernelCapture(void)
                             tivxCaptureProcess,
                             tivxCaptureCreate,
                             tivxCaptureDelete,
-                            tivxCaptureControl,
+                            NULL,
                             NULL);
 
         strncpy(target_name, TIVX_TARGET_CAPTURE2,
@@ -730,7 +716,7 @@ void tivxAddTargetKernelCapture(void)
                             tivxCaptureProcess,
                             tivxCaptureCreate,
                             tivxCaptureDelete,
-                            tivxCaptureControl,
+                            NULL,
                             NULL);
     }
 }

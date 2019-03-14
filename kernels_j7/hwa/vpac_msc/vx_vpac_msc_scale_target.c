@@ -95,10 +95,6 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxKernelScaleControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static void tivxKernelScaleFreeMem(tivxScaleParams *prms);
 
 
@@ -357,15 +353,6 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxKernelScaleControl(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelVpacMscScale(void)
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -384,7 +371,7 @@ void tivxAddTargetKernelVpacMscScale(void)
             tivxKernelScaleProcess,
             tivxKernelScaleCreate,
             tivxKernelScaleDelete,
-            tivxKernelScaleControl,
+            NULL,
             NULL);
     }
 }

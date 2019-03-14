@@ -96,10 +96,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxVpacNfGenericControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static void tivxVpacNfGenericFreeMem(tivxVpacNfGenericParams *prms);
 
 #ifndef VLAB_HWA
@@ -241,7 +237,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
                 VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
         }
     }
-    
+
     return status;
 }
 
@@ -380,16 +376,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxVpacNfGenericControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelVpacNfGeneric(void)
 {
     vx_status status = VX_FAILURE;
@@ -416,7 +402,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
                             tivxVpacNfGenericProcess,
                             tivxVpacNfGenericCreate,
                             tivxVpacNfGenericDelete,
-                            tivxVpacNfGenericControl,
+                            NULL,
                             NULL);
     }
 }

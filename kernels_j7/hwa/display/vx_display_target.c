@@ -123,10 +123,6 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxDisplayControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_img,
                                                Fvid2_Format *format);
 static int32_t tivxDisplayCallback(Fvid2_Handle handle, void *appData);
@@ -543,7 +539,7 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
             tivx_obj_desc_object_array_t *obj_desc_obj_array;
 
             obj_desc_obj_array = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
- 
+
             tivxGetObjDescList(&obj_desc_obj_array->obj_desc_id[0], (tivx_obj_desc_t**)&obj_desc_image, 1);
         }
         else
@@ -696,16 +692,6 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxDisplayControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelDisplay()
 {
     char target_name[TIVX_TARGET_MAX_NAME];
@@ -724,7 +710,7 @@ void tivxAddTargetKernelDisplay()
                             tivxDisplayProcess,
                             tivxDisplayCreate,
                             tivxDisplayDelete,
-                            tivxDisplayControl,
+                            NULL,
                             NULL);
 
         strncpy(target_name, TIVX_TARGET_DISPLAY2,
@@ -736,7 +722,7 @@ void tivxAddTargetKernelDisplay()
                             tivxDisplayProcess,
                             tivxDisplayCreate,
                             tivxDisplayDelete,
-                            tivxDisplayControl,
+                            NULL,
                             NULL);
     }
 }

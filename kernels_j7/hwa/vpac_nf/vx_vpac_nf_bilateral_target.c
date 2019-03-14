@@ -100,10 +100,6 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static void tivxVpacNfBilateralFreeMem(tivxVpacNfBilateralParams *prms);
 static void generate_LUT(
     uint8_t subRangeBits,
@@ -190,7 +186,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
               sigmas_desc->mem_ptr.shared_ptr, sigmas_desc->mem_ptr.mem_heap_region);
             output_target_ptr = tivxMemShared2TargetPtr(
               output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
-            
+
             tivxMemBufferMap(configuration_target_ptr,
                configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
@@ -241,7 +237,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
                 VX_WRITE_ONLY);
         }
     }
-    
+
     return status;
 }
 
@@ -290,7 +286,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
             {
                 tivx_vpac_nf_bilateral_params_t *params;
                 tivx_vpac_nf_bilateral_sigmas_t *sigmas;
-   
+
                 tivx_obj_desc_user_data_object_t *params_array;
                 tivx_obj_desc_user_data_object_t *sigmas_array;
 
@@ -395,16 +391,6 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelVpacNfBilateral(void)
 {
     vx_status status = VX_FAILURE;
@@ -431,7 +417,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
                             tivxVpacNfBilateralProcess,
                             tivxVpacNfBilateralCreate,
                             tivxVpacNfBilateralDelete,
-                            tivxVpacNfBilateralControl,
+                            NULL,
                             NULL);
     }
 }
@@ -488,7 +474,7 @@ static void generate_LUT
     {
         double s_sigma = sigma_s[tableNum];
         double r_sigma = sigma_r[tableNum];
-        
+
         /*-----------------------------------------------------------------*/
         /* Generate fixed point LUT values, with index to LUT being        */
         /* pixel differences.                                              */

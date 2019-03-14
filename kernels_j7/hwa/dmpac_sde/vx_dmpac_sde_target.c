@@ -99,10 +99,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxDmpacSdeControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 static void tivxDmpacSdeFreeMem(tivxDmpacSdeParams *prms);
 
 static vx_status VX_CALLBACK tivxDmpacSdeProcess(
@@ -116,7 +112,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     tivx_obj_desc_image_t *right_desc;
     tivx_obj_desc_image_t *output_desc;
     tivx_obj_desc_distribution_t *confidence_histogram_desc;
- 
+
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
@@ -166,7 +162,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
                 confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
                   confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
             }
-            
+
             tivxMemBufferMap(left_target_ptr,
                left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
@@ -234,7 +230,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             }
         }
     }
-    
+
     return status;
 }
 
@@ -244,7 +240,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
        uint16_t num_params, void *priv_arg)
 {
     vx_status status = VX_SUCCESS;
-    
+
     if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
@@ -320,7 +316,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
                 tivx_dmpac_sde_params_t *params;
                 uint32_t disp_max;
                 void *params_array_target_ptr;
-   
+
                 tivx_obj_desc_user_data_object_t *params_array;
 
                 params_array = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
@@ -431,24 +427,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxDmpacSdeControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    return status;
-}
-
 void tivxAddTargetKernelDmpacSde(void)
 {
     vx_status status = VX_FAILURE;
     char target_name[TIVX_TARGET_MAX_NAME];
     vx_enum self_cpu;
-    
+
     self_cpu = tivxGetSelfCpuId();
-    
+
     if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
     {
         strncpy(target_name, TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_MAX_NAME);
@@ -458,7 +444,7 @@ void tivxAddTargetKernelDmpacSde(void)
     {
         status = VX_FAILURE;
     }
-    
+
     if (status == VX_SUCCESS)
     {
         vx_dmpac_sde_target_kernel = tivxAddTargetKernelByName(
@@ -467,7 +453,7 @@ void tivxAddTargetKernelDmpacSde(void)
                             tivxDmpacSdeProcess,
                             tivxDmpacSdeCreate,
                             tivxDmpacSdeDelete,
-                            tivxDmpacSdeControl,
+                            NULL,
                             NULL);
     }
 }
@@ -475,7 +461,7 @@ void tivxAddTargetKernelDmpacSde(void)
 void tivxRemoveTargetKernelDmpacSde(void)
 {
     vx_status status = VX_SUCCESS;
-    
+
     status = tivxRemoveTargetKernel(vx_dmpac_sde_target_kernel);
     if (status == VX_SUCCESS)
     {
