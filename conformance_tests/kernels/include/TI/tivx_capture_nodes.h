@@ -69,8 +69,24 @@
 extern "C" {
 #endif
 
+/*! \brief Control Command to increment scalar value by 1
+ *         This is test for the control command,
+ *         it increments u8 scalar value by 1
+ * \param [in] vx_scalar object.
+ * \ingroup group_vision_function_scalar_source
+ * \retval vx_status, VX_SUCCESS on successfully incrementing variable.
+ *                    VX_FAILURE in case of error
+ */
 #define TIVX_SCALAR_SRC_NODE_INC_SCALAR (0x01000000u)
 
+/*! \brief Control Command to decrement scalar value by 1
+ *         This is test for the control command,
+ *         it decrement u8 scalar value by 1
+ * \param [in] vx_scalar object.
+ * \ingroup group_vision_function_scalar_source
+ * \retval vx_status, VX_SUCCESS on successfully incrementing variable.
+ *                    VX_FAILURE in case of error
+ */
 #define TIVX_SCALAR_SRC_NODE_DEC_SCALAR (0x01000001u)
 
 
