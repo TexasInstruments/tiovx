@@ -88,10 +88,6 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-static vx_status VX_CALLBACK tivxScalarSourceObjArrayControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
        tivx_target_kernel_instance kernel,
@@ -194,19 +190,6 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayDelete(
     return status;
 }
 
-static vx_status VX_CALLBACK tivxScalarSourceObjArrayControl(
-       tivx_target_kernel_instance kernel,
-       tivx_obj_desc_t *obj_desc[],
-       uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel control code here (e.g. commands */
-    /*                   the user can call to modify the processing of the kernel at run-time) > */
-
-    return status;
-}
-
 void tivxAddTargetKernelScalarSourceObjArray(void)
 {
     vx_status status = VX_FAILURE;
@@ -233,7 +216,7 @@ void tivxAddTargetKernelScalarSourceObjArray(void)
                             tivxScalarSourceObjArrayProcess,
                             tivxScalarSourceObjArrayCreate,
                             tivxScalarSourceObjArrayDelete,
-                            tivxScalarSourceObjArrayControl,
+                            NULL,
                             NULL);
     }
 }

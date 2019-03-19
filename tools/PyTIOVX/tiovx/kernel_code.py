@@ -1513,7 +1513,7 @@ class KernelExportCode :
     def generate_target_c_control_func_code(self):
         self.target_c_code.write_line("static vx_status VX_CALLBACK tivx%sControl(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
+        self.target_c_code.write_line("       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
@@ -1963,7 +1963,7 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
         self.target_c_code.write_line("static vx_status VX_CALLBACK tivx%sControl(" % self.kernel.name_camel)
         self.target_c_code.write_line("       tivx_target_kernel_instance kernel,")
-        self.target_c_code.write_line("       tivx_obj_desc_t *obj_desc[],")
+        self.target_c_code.write_line("       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],")
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg);")
 
         self.target_c_code.write_newline()
