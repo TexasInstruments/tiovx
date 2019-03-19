@@ -83,15 +83,18 @@ Typedefs</h2></td></tr>
 <tr class="memitem:gab0b05f4ceb80927b660adf1c216c64a5"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>(<a class="el" href="vx__types_8h.html#af22acf717e04b29aa5b836a1097f7181">VX_CALLBACK</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a>) (<a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a> kernel, <a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a> *obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
 <tr class="memdesc:gab0b05f4ceb80927b660adf1c216c64a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">The target kernel callback.  <a href="#gab0b05f4ceb80927b660adf1c216c64a5">More...</a><br /></td></tr>
 <tr class="separator:gab0b05f4ceb80927b660adf1c216c64a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac18995781ad6956a7bc2244094b21006"><td class="memItemLeft" align="right" valign="top">typedef <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>(<a class="el" href="vx__types_8h.html#af22acf717e04b29aa5b836a1097f7181">VX_CALLBACK</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#gac18995781ad6956a7bc2244094b21006">tivx_target_kernel_control_f</a>) (<a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a> kernel, uint32_t node_cmd_id, <a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a> *obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
+<tr class="memdesc:gac18995781ad6956a7bc2244094b21006"><td class="mdescLeft">&#160;</td><td class="mdescRight">The target kernel callback for control command.  <a href="#gac18995781ad6956a7bc2244094b21006">More...</a><br /></td></tr>
+<tr class="separator:gac18995781ad6956a7bc2244094b21006"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gac53ae87502b370754a0ae41a1941675a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="group__group__tivx__target__kernel.html#ga0db4696f0a19630d7f741ab5650be01a">tivx_target_kernel</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#gac53ae87502b370754a0ae41a1941675a">tivxAddTargetKernel</a> (<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> kernel_id, char *target_name, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> process_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> create_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> delete_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> control_func, void *priv_arg)</td></tr>
-<tr class="memdesc:gac53ae87502b370754a0ae41a1941675a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to add native kernels implementation to specific targets.  <a href="#gac53ae87502b370754a0ae41a1941675a">More...</a><br /></td></tr>
-<tr class="separator:gac53ae87502b370754a0ae41a1941675a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga559dc4703ffb9032b00d6d4b38d01b30"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="group__group__tivx__target__kernel.html#ga0db4696f0a19630d7f741ab5650be01a">tivx_target_kernel</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#ga559dc4703ffb9032b00d6d4b38d01b30">tivxAddTargetKernelByName</a> (char *kernel_name, char *target_name, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> process_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> create_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> delete_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> control_func, void *priv_arg)</td></tr>
-<tr class="memdesc:ga559dc4703ffb9032b00d6d4b38d01b30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to add native kernels implementation to specific targets.  <a href="#ga559dc4703ffb9032b00d6d4b38d01b30">More...</a><br /></td></tr>
-<tr class="separator:ga559dc4703ffb9032b00d6d4b38d01b30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa3249fb477feb7e5e88c26677a92b348"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="group__group__tivx__target__kernel.html#ga0db4696f0a19630d7f741ab5650be01a">tivx_target_kernel</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#gaa3249fb477feb7e5e88c26677a92b348">tivxAddTargetKernel</a> (<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> kernel_id, char *target_name, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> process_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> create_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> delete_func, <a class="el" href="group__group__tivx__target__kernel.html#gac18995781ad6956a7bc2244094b21006">tivx_target_kernel_control_f</a> control_func, void *priv_arg)</td></tr>
+<tr class="memdesc:gaa3249fb477feb7e5e88c26677a92b348"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to add native kernels implementation to specific targets.  <a href="#gaa3249fb477feb7e5e88c26677a92b348">More...</a><br /></td></tr>
+<tr class="separator:gaa3249fb477feb7e5e88c26677a92b348"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga86471a1230a24539d2a632eb59b6392a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="group__group__tivx__target__kernel.html#ga0db4696f0a19630d7f741ab5650be01a">tivx_target_kernel</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#ga86471a1230a24539d2a632eb59b6392a">tivxAddTargetKernelByName</a> (char *kernel_name, char *target_name, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> process_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> create_func, <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a> delete_func, <a class="el" href="group__group__tivx__target__kernel.html#gac18995781ad6956a7bc2244094b21006">tivx_target_kernel_control_f</a> control_func, void *priv_arg)</td></tr>
+<tr class="memdesc:ga86471a1230a24539d2a632eb59b6392a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to add native kernels implementation to specific targets.  <a href="#ga86471a1230a24539d2a632eb59b6392a">More...</a><br /></td></tr>
+<tr class="separator:ga86471a1230a24539d2a632eb59b6392a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga857faf8c07c3ee28fa55d7657176447e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e">tivxRemoveTargetKernel</a> (<a class="el" href="group__group__tivx__target__kernel.html#ga0db4696f0a19630d7f741ab5650be01a">tivx_target_kernel</a> target_kernel)</td></tr>
 <tr class="memdesc:ga857faf8c07c3ee28fa55d7657176447e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allows users to remove native kernels implementation to specific targets.  <a href="#ga857faf8c07c3ee28fa55d7657176447e">More...</a><br /></td></tr>
 <tr class="separator:ga857faf8c07c3ee28fa55d7657176447e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,8 +165,33 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gac18995781ad6956a7bc2244094b21006"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>(<a class="el" href="vx__types_8h.html#af22acf717e04b29aa5b836a1097f7181">VX_CALLBACK</a> * tivx_target_kernel_control_f) (<a class="el" href="group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8">tivx_target_kernel_instance</a> kernel, uint32_t node_cmd_id, <a class="el" href="structtivx__obj__desc__t.html">tivx_obj_desc_t</a> *obj_desc[], uint16_t num_params, void *priv_arg)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>The target kernel callback for control command. </p>
+<p>For create_func, delete_func and process_func callbacks 'obj_desc' points to array of data object descriptor parameters</p>
+<p>For control_func, 'obj_desc' points to array of objects descriptors for control parameter. It could be any vx_(object)</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">kernel</td><td>The kernel for which the callback is called </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">Command</td><td>ID to be processed in the given node </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">obj_desc</td><td>Object descriptor passed as input to this callback </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_params</td><td>valid entries in object descriptor (obj_desc) array </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gac53ae87502b370754a0ae41a1941675a"></a>
+<a class="anchor" id="gaa3249fb477feb7e5e88c26677a92b348"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -200,7 +228,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__group__tivx__target__kernel.html#gac18995781ad6956a7bc2244094b21006">tivx_target_kernel_control_f</a>&#160;</td>
           <td class="paramname"><em>control_func</em>, </td>
         </tr>
         <tr>
@@ -224,7 +252,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga559dc4703ffb9032b00d6d4b38d01b30"></a>
+<a class="anchor" id="ga86471a1230a24539d2a632eb59b6392a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -261,7 +289,7 @@ Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel_f</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group__group__tivx__target__kernel.html#gac18995781ad6956a7bc2244094b21006">tivx_target_kernel_control_f</a>&#160;</td>
           <td class="paramname"><em>control_func</em>, </td>
         </tr>
         <tr>

@@ -152,6 +152,9 @@ Macros</h2></td></tr>
 <tr class="memitem:ga00120b8d056b95a44382e43760d7c27c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP</a>&#160;&#160;&#160;(0x00000001u)</td></tr>
 <tr class="memdesc:ga00120b8d056b95a44382e43760d7c27c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag used with tivxGraphParameterEnqueueReadyRef to indicate that this enqueue call if for pipeup phase.  <a href="#ga00120b8d056b95a44382e43760d7c27c">More...</a><br /></td></tr>
 <tr class="separator:ga00120b8d056b95a44382e43760d7c27c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9f3b3720bff8237e274bd289ed41c2f3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga9f3b3720bff8237e274bd289ed41c2f3">TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES</a>&#160;&#160;&#160;((uint32_t)-1)</td></tr>
+<tr class="memdesc:ga9f3b3720bff8237e274bd289ed41c2f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">When sending a control command to a replicated node, this can be used to send control command to all replicated node.  <a href="#ga9f3b3720bff8237e274bd289ed41c2f3">More...</a><br /></td></tr>
+<tr class="separator:ga9f3b3720bff8237e274bd289ed41c2f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga077bde7b4af50f959972477bba9569ef"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga077bde7b4af50f959972477bba9569ef">dimof</a>(x)&#160;&#160;&#160;(sizeof(x)/sizeof(x[0]))</td></tr>
 <tr class="memdesc:ga077bde7b4af50f959972477bba9569ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Macro to find size of array.  <a href="#ga077bde7b4af50f959972477bba9569ef">More...</a><br /></td></tr>
 <tr class="separator:ga077bde7b4af50f959972477bba9569ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,12 +194,6 @@ Enumerations</h2></td></tr>
  }<tr class="memdesc:gaa56812cd13b0cee25bf1080c5fe39c8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Based on the vx_graph_attribute_e definition.  <a href="group__group__tivx__ext__host.html#gaa56812cd13b0cee25bf1080c5fe39c8c">More...</a><br /></td></tr>
 </td></tr>
 <tr class="separator:gaa56812cd13b0cee25bf1080c5fe39c8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa97b9016596b27246172b6d7b1b03cd5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">tivx_target_kernel_instance_state_e</a> { <a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5ac326f623f8ef93104548ba5e20a3b1cd">TIVX_TARGET_KERNEL_STATE_PIPE_UP</a> = 0, 
-<a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a20520026c5b8ddf53d86fe3eaee08e8a">TIVX_TARGET_KERNEL_STATE_STEADY_STATE</a> = 1, 
-<a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a5f8b19523e1b01e07efa6eae77c45b0d">TIVX_TARGET_KERNEL_STATE_INVALID_STATE</a> = 0xFF
- }<tr class="memdesc:gaa97b9016596b27246172b6d7b1b03cd5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Capture state for a given kernel parameter.  <a href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">More...</a><br /></td></tr>
-</td></tr>
-<tr class="separator:gaa97b9016596b27246172b6d7b1b03cd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -215,9 +212,6 @@ Functions</h2></td></tr>
 <tr class="memitem:gada61688ef8d7e4dbfc343b3152ec7219"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gada61688ef8d7e4dbfc343b3152ec7219">tivxAddKernelTarget</a> (<a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, char *target_name)</td></tr>
 <tr class="memdesc:gada61688ef8d7e4dbfc343b3152ec7219"><td class="mdescLeft">&#160;</td><td class="mdescRight">Associate a target with a kernel.  <a href="#gada61688ef8d7e4dbfc343b3152ec7219">More...</a><br /></td></tr>
 <tr class="separator:gada61688ef8d7e4dbfc343b3152ec7219"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0c676a52741b4b83e516deacaf022847"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga0c676a52741b4b83e516deacaf022847">tivxSetKernelPipeupDepth</a> (<a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, uint32_t num_pipeup_bufs)</td></tr>
-<tr class="memdesc:ga0c676a52741b4b83e516deacaf022847"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of pipeup buffers.  <a href="#ga0c676a52741b4b83e516deacaf022847">More...</a><br /></td></tr>
-<tr class="separator:ga0c676a52741b4b83e516deacaf022847"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga478906745b2118b2a9e8a332adac113c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga478906745b2118b2a9e8a332adac113c">tivxSetKernelSinkDepth</a> (<a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a> kernel, uint32_t num_sink_bufs)</td></tr>
 <tr class="memdesc:ga478906745b2118b2a9e8a332adac113c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the number of sink buffers.  <a href="#ga478906745b2118b2a9e8a332adac113c">More...</a><br /></td></tr>
 <tr class="separator:ga478906745b2118b2a9e8a332adac113c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -269,12 +263,12 @@ Functions</h2></td></tr>
 <tr class="memitem:ga24b3d2d4a691c652efa0399803164b23"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga24b3d2d4a691c652efa0399803164b23">tivxSetGraphPipelineDepth</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> pipeline_depth)</td></tr>
 <tr class="memdesc:ga24b3d2d4a691c652efa0399803164b23"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates to the implementation the depth of the graph pipeline.  <a href="#ga24b3d2d4a691c652efa0399803164b23">More...</a><br /></td></tr>
 <tr class="separator:ga24b3d2d4a691c652efa0399803164b23"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0df519455e9ddf8fad8c88983ba3970e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e">tivxEnableGraphStreaming</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a> trigger_node)</td></tr>
-<tr class="memdesc:ga0df519455e9ddf8fad8c88983ba3970e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Enables streaming and sets the given node as a trigger node of the graph.  <a href="#ga0df519455e9ddf8fad8c88983ba3970e">More...</a><br /></td></tr>
-<tr class="separator:ga0df519455e9ddf8fad8c88983ba3970e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf216cbe97f920add114dc8cdbfa1846c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#gaf216cbe97f920add114dc8cdbfa1846c">tivxGraphParameterEnqueueReadyRef</a> (<a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a> graph, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> graph_parameter_index, <a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> *refs, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> num_refs, <a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> flags)</td></tr>
 <tr class="memdesc:gaf216cbe97f920add114dc8cdbfa1846c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Same as vxGraphParameterEnqueueReadyRef except that it take a additional TIOVX specific flag parameter.  <a href="#gaf216cbe97f920add114dc8cdbfa1846c">More...</a><br /></td></tr>
 <tr class="separator:gaf216cbe97f920add114dc8cdbfa1846c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__ext__host.html#ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8">tivxNodeSendCommand</a> (<a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a> node, uint32_t replicate_nodex_idx, uint32_t node_cmd_id, <a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a> ref[], uint32_t num_refs)</td></tr>
+<tr class="memdesc:ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send node specific Control command.  <a href="#ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8">More...</a><br /></td></tr>
+<tr class="separator:ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>APIs accessible only on host. </p>
@@ -491,6 +485,21 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ga9f3b3720bff8237e274bd289ed41c2f3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES&#160;&#160;&#160;((uint32_t)-1)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>When sending a control command to a replicated node, this can be used to send control command to all replicated node. </p>
+<p>Currently used as parameter in tivxNodeSendCommand API </p>
+
+</div>
+</div>
 <a class="anchor" id="ga077bde7b4af50f959972477bba9569ef"></a>
 <div class="memitem">
 <div class="memproto">
@@ -629,32 +638,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gaa97b9016596b27246172b6d7b1b03cd5"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">tivx_target_kernel_instance_state_e</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Capture state for a given kernel parameter. </p>
-<p>TIVX_TARGET_KERNEL_STATE_PIPE_UP or TIVX_TARGET_KERNEL_STATE_STEADY_STATE </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="ggaa97b9016596b27246172b6d7b1b03cd5ac326f623f8ef93104548ba5e20a3b1cd"></a>TIVX_TARGET_KERNEL_STATE_PIPE_UP&#160;</td><td class="fielddoc">
-<p>CPU ID for DSP1. </p>
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="ggaa97b9016596b27246172b6d7b1b03cd5a20520026c5b8ddf53d86fe3eaee08e8a"></a>TIVX_TARGET_KERNEL_STATE_STEADY_STATE&#160;</td><td class="fielddoc">
-<p>CPU ID for DSP2. </p>
-</td></tr>
-<tr><td class="fieldname"><a class="anchor" id="ggaa97b9016596b27246172b6d7b1b03cd5a5f8b19523e1b01e07efa6eae77c45b0d"></a>TIVX_TARGET_KERNEL_STATE_INVALID_STATE&#160;</td><td class="fielddoc">
-<p>Invalid CPU ID. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a class="anchor" id="gad7aa0fdded06205fb515f77c60e8cac7"></a>
 <div class="memitem">
@@ -765,34 +748,6 @@ Functions</h2></td></tr>
 <p>If given target is not valid on current platform then error VX_ERROR_NOT_SUPPORTED is returned.</p>
 <p>Typically VX_ERROR_NOT_SUPPORTED error should be ignored for this API, since this code is typically kept same across platforms</p>
 <p>During graph verify however if user asks to run the kernel on a target not supported by this platform it results in a error and graph cannot execute. </p>
-
-</div>
-</div>
-<a class="anchor" id="ga0c676a52741b4b83e516deacaf022847"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="vx__types_8h.html#af5d8a94b0bf985ca39ef08239f18c792">VX_API_ENTRY</a> <a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a> tivxSetKernelPipeupDepth </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="vx__types_8h.html#a3a8a8757a8cc42cdd1af41e5b8bf127a">vx_kernel</a>&#160;</td>
-          <td class="paramname"><em>kernel</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>num_pipeup_bufs</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set the number of pipeup buffers. </p>
 
 </div>
 </div>
@@ -1256,34 +1211,6 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga0df519455e9ddf8fad8c88983ba3970e"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a> tivxEnableGraphStreaming </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="vx__types_8h.html#a7e71c08b1777e49abaf4417506ca8451">vx_graph</a>&#160;</td>
-          <td class="paramname"><em>graph</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a>&#160;</td>
-          <td class="paramname"><em>trigger_node</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Enables streaming and sets the given node as a trigger node of the graph. </p>
-
-</div>
-</div>
 <a class="anchor" id="gaf216cbe97f920add114dc8cdbfa1846c"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1330,6 +1257,63 @@ Functions</h2></td></tr>
 <p>For valid values of flag see</p><ul>
 <li><a class="el" href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP</a> </li>
 </ul>
+
+</div>
+</div>
+<a class="anchor" id="ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> <a class="el" href="group__group__vx__reference.html#ga5b91c43f05948d4a5e75e95292cf7508">VX_API_CALL</a> tivxNodeSendCommand </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a>&#160;</td>
+          <td class="paramname"><em>node</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>replicate_nodex_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>node_cmd_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a1a95c3bf180e49d4d1ecd64cb35f45a3">vx_reference</a>&#160;</td>
+          <td class="paramname"><em>ref</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_refs</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Send node specific Control command. </p>
+<p>This API is used to send specific control command to the node. Refer to Node documentation for specific control command. Note that this API is blocking and does not return untill command is executed by the node. This API is thread safe, ie multi commands can be sent to same or different nodes from different threads</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>Reference of the node to which this command is to be sent. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">replicate_nodex_idx</td><td>In case of a non-replicated node this should be 0, For a replicated node this is the index of the replicated node to which the command is targeted. To send same command to all replicated nodes use TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">node_cmd_id</td><td>Node specific control command id, refer to node specific interface file </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">[in/out]</td><td>ref[]: Node parameter, This is an array of references, required as parameters for this control command. They can be any OpenVX object, created using create API. It is bidirectional parameters, can be used for INPUT, OUTPUT or both. These parameters are list of references, which are required for the control command on the given node. Refer to node documentation to get details about the parameters required for given control command. Caller of this API should explicitely release these refs after their usage is completed. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_refs</td><td>Number of valid entries/references in ref[] array </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>

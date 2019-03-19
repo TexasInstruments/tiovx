@@ -28,6 +28,7 @@ var group__group__tivx__ext__host =
     [ "TIVX_RESOURCE_NAME_MAX", "group__group__tivx__ext__host.html#gab2061417ad9e438e813a33341f443275", null ],
     [ "TIVX_CONFIG_PATH_LENGTH", "group__group__tivx__ext__host.html#ga38e7064937506c8ae840dc6eb779dda9", null ],
     [ "TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP", "group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c", null ],
+    [ "TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES", "group__group__tivx__ext__host.html#ga9f3b3720bff8237e274bd289ed41c2f3", null ],
     [ "dimof", "group__group__tivx__ext__host.html#ga077bde7b4af50f959972477bba9569ef", null ],
     [ "tivx_cpu_id_e", "group__group__tivx__ext__host.html#ga56b14c79b967d7f5f4170aab3befca6f", [
       [ "TIVX_CPU_ID_DSP1", "group__group__tivx__ext__host.html#gga56b14c79b967d7f5f4170aab3befca6fa431c12c168d1c32cb48e82cde09e4fcf", null ],
@@ -53,17 +54,11 @@ var group__group__tivx__ext__host =
     [ "tivx_graph_attribute_e", "group__group__tivx__ext__host.html#gaa56812cd13b0cee25bf1080c5fe39c8c", [
       [ "TIVX_GRAPH_STREAM_EXECUTIONS", "group__group__tivx__ext__host.html#ggaa56812cd13b0cee25bf1080c5fe39c8ca3522252575a5fea9da733b03bd094bf7", null ]
     ] ],
-    [ "tivx_target_kernel_instance_state_e", "group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5", [
-      [ "TIVX_TARGET_KERNEL_STATE_PIPE_UP", "group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5ac326f623f8ef93104548ba5e20a3b1cd", null ],
-      [ "TIVX_TARGET_KERNEL_STATE_STEADY_STATE", "group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a20520026c5b8ddf53d86fe3eaee08e8a", null ],
-      [ "TIVX_TARGET_KERNEL_STATE_INVALID_STATE", "group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a5f8b19523e1b01e07efa6eae77c45b0d", null ]
-    ] ],
     [ "tivxInit", "group__group__tivx__ext__host.html#gad7aa0fdded06205fb515f77c60e8cac7", null ],
     [ "tivxDeInit", "group__group__tivx__ext__host.html#gafe743fcbf54158387579a1f36ec1070b", null ],
     [ "tivxHostInit", "group__group__tivx__ext__host.html#ga31ae176c89afc45e20c15ed60b0023d0", null ],
     [ "tivxHostDeInit", "group__group__tivx__ext__host.html#gafa17594a1ffb93ab47b3da495242bfd1", null ],
     [ "tivxAddKernelTarget", "group__group__tivx__ext__host.html#gada61688ef8d7e4dbfc343b3152ec7219", null ],
-    [ "tivxSetKernelPipeupDepth", "group__group__tivx__ext__host.html#ga0c676a52741b4b83e516deacaf022847", null ],
     [ "tivxSetKernelSinkDepth", "group__group__tivx__ext__host.html#ga478906745b2118b2a9e8a332adac113c", null ],
     [ "tivxRegisterModule", "group__group__tivx__ext__host.html#ga7194f59e8a633e8ffb01b2780c4fa2e3", null ],
     [ "tivxUnRegisterModule", "group__group__tivx__ext__host.html#ga120fa188b0eda727d86e907b645f5d61", null ],
@@ -81,6 +76,6 @@ var group__group__tivx__ext__host =
     [ "tivxLogRtTrace", "group__group__tivx__ext__host.html#ga188cd5bd63a13725e64ff5dc89bd952e", null ],
     [ "tivxSetNodeParameterNumBufByIndex", "group__group__tivx__ext__host.html#ga6916eb6d3932500e5732d02e85b8b591", null ],
     [ "tivxSetGraphPipelineDepth", "group__group__tivx__ext__host.html#ga24b3d2d4a691c652efa0399803164b23", null ],
-    [ "tivxEnableGraphStreaming", "group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e", null ],
-    [ "tivxGraphParameterEnqueueReadyRef", "group__group__tivx__ext__host.html#gaf216cbe97f920add114dc8cdbfa1846c", null ]
+    [ "tivxGraphParameterEnqueueReadyRef", "group__group__tivx__ext__host.html#gaf216cbe97f920add114dc8cdbfa1846c", null ],
+    [ "tivxNodeSendCommand", "group__group__tivx__ext__host.html#ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8", null ]
 ];

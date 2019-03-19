@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"structtivx__object__t.html":[16,1,0,1,5,0],
+"structtivx__object__t.html#a149f13c93a0d45fbb2d18234a88f2e22":[16,1,0,1,5,0,22],
 "structtivx__object__t.html#a166decdc785295da0b6fbdddcd75ab9c":[16,1,0,1,5,0,9],
 "structtivx__object__t.html#a19530923d1d3c93bc1dd4e1346de238e":[16,1,0,1,5,0,45],
 "structtivx__object__t.html#a1da9cf4235c48662af380b2e90d9d9c2":[16,1,0,1,5,0,29],
@@ -145,11 +147,11 @@ var NAVTREEINDEX8 =
 "structtivx__target__kernel__t.html#a162d1869fcf965af947ce95ca08884be":[16,1,0,1,9,0,5],
 "structtivx__target__kernel__t.html#a29d852e531e6438320c0f864a5b9fa49":[16,1,0,1,9,0,7],
 "structtivx__target__kernel__t.html#a37060a651ac6882e3ebc802a2b12d902":[16,1,0,1,9,0,0],
+"structtivx__target__kernel__t.html#a60ab975a4238810c0cef7745976b5949":[16,1,0,1,9,0,6],
 "structtivx__target__kernel__t.html#a9bacd40aa71315686beebd55087bf562":[16,1,0,1,9,0,1],
 "structtivx__target__kernel__t.html#aa5a9a77c15d6508725ff92cfc40c429a":[16,1,0,1,9,0,4],
 "structtivx__target__kernel__t.html#ab282c652ebae16e550d4c0342103aebf":[16,1,0,1,9,0,2],
 "structtivx__target__kernel__t.html#ab50b489692e922b2ecca512bc173024e":[16,1,0,1,9,0,3],
-"structtivx__target__kernel__t.html#abc8d5a0d77c2b11ee3e496b990306b88":[16,1,0,1,9,0,6],
 "structtivx__target__kernel__t.html#aea8addb78b4e305a0d033a8a35eb37b4":[16,1,0,1,9,0,8],
 "structtivx__target__t.html":[16,1,0,1,8,0],
 "structtivx__target__t.html#a0c66df840eb31311136334a662fbd905":[16,1,0,1,8,0,1],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "tiovx__performance__TDA3x__BIOS_8html.html":[18,0,12],
 "tivx_8h.html":[18,0,13],
 "tivx_8h.html#a08624f9c06d23a63d53a7b8ecc114797":[18,0,13,18],
-"tivx_8h.html#a1316155194309cd6bb123fb12dd125cc":[18,0,13,17],
-"tivx_8h.html#a4c16a72a951da2bd43ef962acdef2968":[18,0,13,14],
-"tivx_8h.html#a4ed05998ba396aa5b57ea33016d67823":[18,0,13,10]
+"tivx_8h.html#a1316155194309cd6bb123fb12dd125cc":[18,0,13,17]
 };

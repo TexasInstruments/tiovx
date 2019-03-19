@@ -104,6 +104,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga8bfe7f7fb3ebea938ed7f9d675baaa15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__context.html#ga8bfe7f7fb3ebea938ed7f9d675baaa15">ownContextSendCmd</a> (<a class="el" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249">vx_context</a> context, uint32_t target_id, uint32_t cmd, uint32_t num_obj_desc, const uint16_t *obj_desc_id)</td></tr>
 <tr class="memdesc:ga8bfe7f7fb3ebea938ed7f9d675baaa15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a command to specified target with object descriptor ID's as parameters.  <a href="#ga8bfe7f7fb3ebea938ed7f9d675baaa15">More...</a><br /></td></tr>
 <tr class="separator:ga8bfe7f7fb3ebea938ed7f9d675baaa15"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7fd8431dd8aba58bd212a477173b8a6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__context.html#ga7fd8431dd8aba58bd212a477173b8a6c">ownContextSendControlCmd</a> (<a class="el" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249">vx_context</a> context, uint16_t node_obj_desc, uint32_t target_id, uint32_t replicated_node_idx, uint32_t node_cmd_id, const uint16_t obj_desc_id[], uint32_t num_obj_desc)</td></tr>
+<tr class="memdesc:ga7fd8431dd8aba58bd212a477173b8a6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send a control command to specified target with object descriptor ID's as parameters.  <a href="#ga7fd8431dd8aba58bd212a477173b8a6c">More...</a><br /></td></tr>
+<tr class="separator:ga7fd8431dd8aba58bd212a477173b8a6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac71a0ee04223ee7402c5fe4cf11772f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__vx__context.html#gac71a0ee04223ee7402c5fe4cf11772f2">ownContextGetKernelRemoveLock</a> (<a class="el" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249">vx_context</a> context)</td></tr>
 <tr class="memdesc:gac71a0ee04223ee7402c5fe4cf11772f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get value of kernel remove lock flag.  <a href="#gac71a0ee04223ee7402c5fe4cf11772f2">More...</a><br /></td></tr>
 <tr class="separator:gac71a0ee04223ee7402c5fe4cf11772f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -374,6 +377,74 @@ vx_false_e on failure </dd></dl>
     <tr><td class="paramname">context</td><td>[in] context to use when sending the command </td></tr>
     <tr><td class="paramname">target_id</td><td>[in] ID of Target to whom the command is being sent </td></tr>
     <tr><td class="paramname">cmd</td><td>[in] command to send </td></tr>
+    <tr><td class="paramname">num_obj_desc</td><td>[in] number of object descriptors to send </td></tr>
+    <tr><td class="paramname">obj_desc_id</td><td>[in] List of object descriptor to send </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a class="anchor" id="ga7fd8431dd8aba58bd212a477173b8a6c"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="vx__types_8h.html#a64df90a05ff50c048d65ab77bc60e4f0">vx_status</a> ownContextSendControlCmd </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a0f4f894d935fbf50bf38b3529a001249">vx_context</a>&#160;</td>
+          <td class="paramname"><em>context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint16_t&#160;</td>
+          <td class="paramname"><em>node_obj_desc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>target_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>replicated_node_idx</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>node_cmd_id</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint16_t&#160;</td>
+          <td class="paramname"><em>obj_desc_id</em>[], </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>num_obj_desc</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Send a control command to specified target with object descriptor ID's as parameters. </p>
+<p>This API waits until ACK for the command is received</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">context</td><td>[in] context to use when sending the command </td></tr>
+    <tr><td class="paramname">target_id</td><td>[in] ID of Target to whom the command is being sent </td></tr>
     <tr><td class="paramname">num_obj_desc</td><td>[in] number of object descriptors to send </td></tr>
     <tr><td class="paramname">obj_desc_id</td><td>[in] List of object descriptor to send </td></tr>
   </table>

@@ -168,6 +168,12 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a220232a0a89bbd4b27b14c42ce7c2b9c"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a220232a0a89bbd4b27b14c42ce7c2b9c">is_prm_array_element</a></td></tr>
 <tr class="memdesc:a220232a0a89bbd4b27b14c42ce7c2b9c"><td class="mdescLeft">&#160;</td><td class="mdescRight">bitmask which indicates if prm is array element bitN = 1 means param at index N is array element  <a href="#a220232a0a89bbd4b27b14c42ce7c2b9c">More...</a><br /></td></tr>
 <tr class="separator:a220232a0a89bbd4b27b14c42ce7c2b9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae699f3796eec2f58e26170e50ea48408"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#ae699f3796eec2f58e26170e50ea48408">source_state</a></td></tr>
+<tr class="memdesc:ae699f3796eec2f58e26170e50ea48408"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag indicating whether or not node is in pipeup state or steady state.  <a href="#ae699f3796eec2f58e26170e50ea48408">More...</a><br /></td></tr>
+<tr class="separator:ae699f3796eec2f58e26170e50ea48408"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a624b13502ce09a6adc13039bf270bd67"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__node__t.html#a624b13502ce09a6adc13039bf270bd67">num_pipeup_bufs</a></td></tr>
+<tr class="memdesc:a624b13502ce09a6adc13039bf270bd67"><td class="mdescLeft">&#160;</td><td class="mdescRight">number of buffers required for pipeup state  <a href="#a624b13502ce09a6adc13039bf270bd67">More...</a><br /></td></tr>
+<tr class="separator:a624b13502ce09a6adc13039bf270bd67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Node object descriptor. </p>
@@ -582,6 +588,34 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>bitmask which indicates if prm is array element bitN = 1 means param at index N is array element </p>
+
+</div>
+</div>
+<a class="anchor" id="ae699f3796eec2f58e26170e50ea48408"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t tivx_obj_desc_node_t::source_state</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Flag indicating whether or not node is in pipeup state or steady state. </p>
+
+</div>
+</div>
+<a class="anchor" id="a624b13502ce09a6adc13039bf270bd67"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t tivx_obj_desc_node_t::num_pipeup_bufs</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>number of buffers required for pipeup state </p>
 
 </div>
 </div>

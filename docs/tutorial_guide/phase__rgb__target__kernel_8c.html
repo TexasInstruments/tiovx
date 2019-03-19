@@ -105,9 +105,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ad4beb7eefc9e7e11cb3a29b7a0f827bf"><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#ad4beb7eefc9e7e11cb3a29b7a0f827bf">vxTutotrialPhaseRgbDelete</a> (tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
 <tr class="memdesc:ad4beb7eefc9e7e11cb3a29b7a0f827bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target kernel delete function.  <a href="#ad4beb7eefc9e7e11cb3a29b7a0f827bf">More...</a><br /></td></tr>
 <tr class="separator:ad4beb7eefc9e7e11cb3a29b7a0f827bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5920f42e3995c3ef87e71d0f30db904e"><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#a5920f42e3995c3ef87e71d0f30db904e">vxTutotrialPhaseRgbControl</a> (tivx_target_kernel_instance kernel, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
-<tr class="memdesc:a5920f42e3995c3ef87e71d0f30db904e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target kernel control function.  <a href="#a5920f42e3995c3ef87e71d0f30db904e">More...</a><br /></td></tr>
-<tr class="separator:a5920f42e3995c3ef87e71d0f30db904e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ff531d64e28c0cc65f311d9c98ddcad"><td class="memItemLeft" align="right" valign="top">vx_status VX_CALLBACK&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#a7ff531d64e28c0cc65f311d9c98ddcad">vxTutotrialPhaseRgbControl</a> (tivx_target_kernel_instance kernel, uint32_t replicated_node_idx, tivx_obj_desc_t *param_obj_desc[], uint16_t num_params, void *priv_arg)</td></tr>
+<tr class="memdesc:a7ff531d64e28c0cc65f311d9c98ddcad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Target kernel control function.  <a href="#a7ff531d64e28c0cc65f311d9c98ddcad">More...</a><br /></td></tr>
+<tr class="separator:a7ff531d64e28c0cc65f311d9c98ddcad"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa8d4aa689401f9c9c575082455a0c4bb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="phase__rgb__target__kernel_8c.html#aa8d4aa689401f9c9c575082455a0c4bb">vxTutorialAddTargetKernelPhaseRgb</a> (void)</td></tr>
 <tr class="memdesc:aa8d4aa689401f9c9c575082455a0c4bb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add target kernel to TIOVX framework.  <a href="#aa8d4aa689401f9c9c575082455a0c4bb">More...</a><br /></td></tr>
 <tr class="separator:aa8d4aa689401f9c9c575082455a0c4bb"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -132,7 +132,7 @@ Variables</h2></td></tr>
 <li><a class="el" href="phase__rgb__target__kernel_8c.html#aa7f2b3c5cb1853a9e491483616a93fe8" title="Target kernel run function. ">vxTutotrialPhaseRgb()</a> : kernel execute/run function</li>
 <li><a class="el" href="phase__rgb__target__kernel_8c.html#ab934a0610fc7f8ddaac5e4956694965f" title="Target kernel create function. ">vxTutotrialPhaseRgbCreate()</a> : kernel init function</li>
 <li><a class="el" href="phase__rgb__target__kernel_8c.html#ad4beb7eefc9e7e11cb3a29b7a0f827bf" title="Target kernel delete function. ">vxTutotrialPhaseRgbDelete()</a> : kernel deinit function</li>
-<li><a class="el" href="phase__rgb__target__kernel_8c.html#a5920f42e3995c3ef87e71d0f30db904e" title="Target kernel control function. ">vxTutotrialPhaseRgbControl()</a>: kernel control function</li>
+<li><a class="el" href="phase__rgb__target__kernel_8c.html#a7ff531d64e28c0cc65f311d9c98ddcad" title="Target kernel control function. ">vxTutotrialPhaseRgbControl()</a>: kernel control function</li>
 </ul>
 <p>When working with target kernel</p><ul>
 <li><a class="el" href="phase__rgb__target__kernel_8c.html#aa8d4aa689401f9c9c575082455a0c4bb" title="Add target kernel to TIOVX framework. ">vxTutorialAddTargetKernelPhaseRgb()</a> MUST be called during TIOVX target framework system init<ul>
@@ -351,7 +351,7 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a5920f42e3995c3ef87e71d0f30db904e"></a>
+<a class="anchor" id="a7ff531d64e28c0cc65f311d9c98ddcad"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -360,6 +360,12 @@ Variables</h2></td></tr>
           <td>(</td>
           <td class="paramtype">tivx_target_kernel_instance&#160;</td>
           <td class="paramname"><em>kernel</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>replicated_node_idx</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -430,7 +436,7 @@ Variables</h2></td></tr>
 <p>This MUST match the name specified when registering the same kernel on the HOST side.</p>
 <p>The registered target kernel handle is stored in a global variable. This is used during <a class="el" href="phase__rgb__target__kernel_8c.html#a19db36fd62a30ed433d818de092094ee" title="Remove target kernel from TIOVX framework. ">vxTutorialRemoveTargetKernelPhaseRgb()</a></p>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;  /</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;phase_rgb_target_kernel = tivxAddTargetKernelByName(</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;            TIVX_TUTORIAL_KERNEL_PHASE_RGB_NAME,</div><div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;            target_name,</div><div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;            vxTutotrialPhaseRgb,</div><div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;            vxTutotrialPhaseRgbCreate,</div><div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;            vxTutotrialPhaseRgbDelete,</div><div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;            vxTutotrialPhaseRgbControl,</div><div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;            NULL);</div><div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;/** </div></div><!-- fragment --> 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00269">269</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00270">270</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>
@@ -454,7 +460,7 @@ Variables</h2></td></tr>
 </ul>
 <p>The target kernel handle used is the one returned during tivxAddTargetKernel()</p>
 <div class="fragment"><div class="line"><a name="l00001"></a><span class="lineno">    1</span>&#160;  /</div><div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;status = tivxRemoveTargetKernel(phase_rgb_target_kernel);</div><div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;/** </div></div><!-- fragment --> 
-<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00332">332</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
+<p>Definition at line <a class="el" href="phase__rgb__target__kernel_8c_source.html#l00333">333</a> of file <a class="el" href="phase__rgb__target__kernel_8c_source.html">phase_rgb_target_kernel.c</a>.</p>
 
 </div>
 </div>

@@ -10,6 +10,7 @@ var vx__context_8h =
     [ "ownRemoveKernelFromContext", "group__group__vx__context.html#ga71c2cfc5a380259f348117aad598d23b", null ],
     [ "ownIsKernelInContext", "group__group__vx__context.html#gaf2872762bd0e2573a87245ea34636481", null ],
     [ "ownContextSendCmd", "group__group__vx__context.html#ga8bfe7f7fb3ebea938ed7f9d675baaa15", null ],
+    [ "ownContextSendControlCmd", "group__group__vx__context.html#ga7fd8431dd8aba58bd212a477173b8a6c", null ],
     [ "ownContextGetKernelRemoveLock", "group__group__vx__context.html#gac71a0ee04223ee7402c5fe4cf11772f2", null ],
     [ "ownContextSetKernelRemoveLock", "group__group__vx__context.html#ga41b58a1e73a67133d6700ae8d210b382", null ],
     [ "ownContextLock", "group__group__vx__context.html#gaab38acaafb57ded5c2526415bfddc844", null ],

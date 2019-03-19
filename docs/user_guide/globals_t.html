@@ -163,6 +163,9 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 <li>TIVX_CONTEXT_MAX_USER_STRUCTS
 : <a class="el" href="group__group__vx__context__cfg.html#gad60b64f2628a9a829d0b91ff39bbb35c">tivx_config.h</a>
 </li>
+<li>TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES
+: <a class="el" href="group__group__tivx__ext__host.html#ga9f3b3720bff8237e274bd289ed41c2f3">tivx.h</a>
+</li>
 <li>TIVX_CONVOLUTION_MAX_OBJECTS
 : <a class="el" href="group__group__tivx__obj__cfg.html#gae2b7782852a2e83e506b3d995dee7a67">tivx_config.h</a>
 </li>
@@ -1285,6 +1288,9 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 <li>tivx_target_kernel
 : <a class="el" href="group__group__tivx__target__kernel.html#ga0db4696f0a19630d7f741ab5650be01a">tivx_target_kernel.h</a>
 </li>
+<li>tivx_target_kernel_control_f
+: <a class="el" href="group__group__tivx__target__kernel.html#gac18995781ad6956a7bc2244094b21006">tivx_target_kernel.h</a>
+</li>
 <li>tivx_target_kernel_f
 : <a class="el" href="group__group__tivx__target__kernel.html#gab0b05f4ceb80927b660adf1c216c64a5">tivx_target_kernel.h</a>
 </li>
@@ -1300,23 +1306,11 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 <li>TIVX_TARGET_KERNEL_INSTANCE_MAX
 : <a class="el" href="group__group__tivx__target__kernel__instance__cfg.html#gac307474d850020473abe32898aa1759c">tivx_config.h</a>
 </li>
-<li>tivx_target_kernel_instance_state_e
-: <a class="el" href="group__group__tivx__ext__host.html#gaa97b9016596b27246172b6d7b1b03cd5">tivx_target_kernel.h</a>
-</li>
 <li>TIVX_TARGET_KERNEL_MAX
 : <a class="el" href="group__group__tivx__target__kernel__cfg.html#gae392680631db17e50dff61e0f8bdc273">tivx_config.h</a>
 </li>
 <li>TIVX_TARGET_KERNEL_PRIV_H_
 : <a class="el" href="tivx__target__kernel__priv_8h.html#ac065dc5faa22d3716740e58099f9f20e">tivx_target_kernel_priv.h</a>
-</li>
-<li>TIVX_TARGET_KERNEL_STATE_INVALID_STATE
-: <a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a5f8b19523e1b01e07efa6eae77c45b0d">tivx_target_kernel.h</a>
-</li>
-<li>TIVX_TARGET_KERNEL_STATE_PIPE_UP
-: <a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5ac326f623f8ef93104548ba5e20a3b1cd">tivx_target_kernel.h</a>
-</li>
-<li>TIVX_TARGET_KERNEL_STATE_STEADY_STATE
-: <a class="el" href="group__group__tivx__ext__host.html#ggaa97b9016596b27246172b6d7b1b03cd5a20520026c5b8ddf53d86fe3eaee08e8a">tivx_target_kernel.h</a>
 </li>
 <li>TIVX_TARGET_MAX_JOB_QUEUE_DEPTH
 : <a class="el" href="group__group__tivx__target__cfg.html#gacef8bfb75a477a21c677c37e8de8add3">tivx_target.h</a>
@@ -1415,10 +1409,10 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 : <a class="el" href="group__group__tivx__ext__host.html#gada61688ef8d7e4dbfc343b3152ec7219">tivx.h</a>
 </li>
 <li>tivxAddTargetKernel()
-: <a class="el" href="group__group__tivx__target__kernel.html#gac53ae87502b370754a0ae41a1941675a">tivx_target_kernel.h</a>
+: <a class="el" href="group__group__tivx__target__kernel.html#gaa3249fb477feb7e5e88c26677a92b348">tivx_target_kernel.h</a>
 </li>
 <li>tivxAddTargetKernelByName()
-: <a class="el" href="group__group__tivx__target__kernel.html#ga559dc4703ffb9032b00d6d4b38d01b30">tivx_target_kernel.h</a>
+: <a class="el" href="group__group__tivx__target__kernel.html#ga86471a1230a24539d2a632eb59b6392a">tivx_target_kernel.h</a>
 </li>
 <li>tivxBamControlNode()
 : <a class="el" href="tivx__bam__kernel__wrapper_8h.html#a1435c9f136cd0e8d9a76c748187ba8b7">tivx_bam_kernel_wrapper.h</a>
@@ -1497,9 +1491,6 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 </li>
 <li>tivxDeInit()
 : <a class="el" href="group__group__tivx__ext__host.html#gafe743fcbf54158387579a1f36ec1070b">tivx.h</a>
-</li>
-<li>tivxEnableGraphStreaming()
-: <a class="el" href="group__group__tivx__ext__host.html#ga0df519455e9ddf8fad8c88983ba3970e">tivx.h</a>
 </li>
 <li>tivxEventClear()
 : <a class="el" href="group__group__tivx__event.html#ga6a7a33c9f8ae1268f03eede0db2eefe3">tivx_event.h</a>
@@ -1702,6 +1693,9 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 <li>tivxMutexUnlock()
 : <a class="el" href="group__group__tivx__mutex.html#gada5fda7d78c592af5151c18e08cebc0f">tivx_mutex.h</a>
 </li>
+<li>tivxNodeSendCommand()
+: <a class="el" href="group__group__tivx__ext__host.html#ga4cb7e62dba45e9c2fdb49bdb0dc8c3a8">tivx.h</a>
+</li>
 <li>tivxObjDescAlloc()
 : <a class="el" href="group__group__tivx__obj__desc__priv.html#ga8183cfad7692223676101a98c06d0af7">tivx_obj_desc_priv.h</a>
 </li>
@@ -1778,8 +1772,8 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 : <a class="el" href="group__group__tivx__platform.html#gaee443bc84c911575a11dcfbe03531cc4">tivx_platform.h</a>
 </li>
 <li>tivxPlatformGetTimeInUsecs()
-: <a class="el" href="group__group__tivx__ext__host.html#gafe9199791da44e9a0b0a26c81cf49180">tivx.h</a>
-, <a class="el" href="group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180">tivx_platform.h</a>
+: <a class="el" href="group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180">tivx_platform.h</a>
+, <a class="el" href="group__group__tivx__ext__host.html#gafe9199791da44e9a0b0a26c81cf49180">tivx.h</a>
 </li>
 <li>tivxPlatformInit()
 : <a class="el" href="group__group__tivx__platform.html#gadfc3155b433c4d7d5327803d984abfd4">tivx_platform.h</a>
@@ -1859,9 +1853,6 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 <li>tivxSetGraphPipelineDepth()
 : <a class="el" href="group__group__tivx__ext__host.html#ga24b3d2d4a691c652efa0399803164b23">tivx.h</a>
 </li>
-<li>tivxSetKernelPipeupDepth()
-: <a class="el" href="group__group__tivx__ext__host.html#ga0c676a52741b4b83e516deacaf022847">tivx.h</a>
-</li>
 <li>tivxSetKernelSinkDepth()
 : <a class="el" href="group__group__tivx__ext__host.html#ga478906745b2118b2a9e8a332adac113c">tivx.h</a>
 </li>
@@ -1896,7 +1887,7 @@ $(document).ready(function(){initNavTree('globals_t.html','');});
 : <a class="el" href="tivx__kernels__target__utils_8h.html#a24d50e72147ff80d6803f1b3990f9ae3">tivx_kernels_target_utils.h</a>
 </li>
 <li>tivxTargetKernelControl()
-: <a class="el" href="group__group__tivx__target__kernel__priv.html#ga9ec7ccc5134d81ce1224fa440affbabc">tivx_target_kernel_priv.h</a>
+: <a class="el" href="group__group__tivx__target__kernel__priv.html#ga32c6774c229966cb453820f648bc5e97">tivx_target_kernel_priv.h</a>
 </li>
 <li>tivxTargetKernelCreate()
 : <a class="el" href="group__group__tivx__target__kernel__priv.html#ga70bd6bb98783137e648551434fd182f9">tivx_target_kernel_priv.h</a>

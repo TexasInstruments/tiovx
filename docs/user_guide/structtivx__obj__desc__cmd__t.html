@@ -90,6 +90,18 @@ Data Fields</h2></td></tr>
 <tr class="memitem:a686e8441d435077ae4cfa95726386b01"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#a686e8441d435077ae4cfa95726386b01">cmd_id</a></td></tr>
 <tr class="memdesc:a686e8441d435077ae4cfa95726386b01"><td class="mdescLeft">&#160;</td><td class="mdescRight">command to execute  <a href="#a686e8441d435077ae4cfa95726386b01">More...</a><br /></td></tr>
 <tr class="separator:a686e8441d435077ae4cfa95726386b01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6517b318e2436c6e621f5f97a48dc303"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#a6517b318e2436c6e621f5f97a48dc303">cmd_params_desc_id</a> [<a class="el" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">TIVX_KERNEL_MAX_PARAMS</a>]</td></tr>
+<tr class="memdesc:a6517b318e2436c6e621f5f97a48dc303"><td class="mdescLeft">&#160;</td><td class="mdescRight">parameter object descriptors  <a href="#a6517b318e2436c6e621f5f97a48dc303">More...</a><br /></td></tr>
+<tr class="separator:a6517b318e2436c6e621f5f97a48dc303"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afd3f7d6d32bb9f17904c18396cee335b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#afd3f7d6d32bb9f17904c18396cee335b">num_cmd_params</a></td></tr>
+<tr class="memdesc:afd3f7d6d32bb9f17904c18396cee335b"><td class="mdescLeft">&#160;</td><td class="mdescRight">valid values in cmd_params_data_id  <a href="#afd3f7d6d32bb9f17904c18396cee335b">More...</a><br /></td></tr>
+<tr class="separator:afd3f7d6d32bb9f17904c18396cee335b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf9e3eb88389a6e774648c8d105d57de"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#acf9e3eb88389a6e774648c8d105d57de">node_cmd_id</a></td></tr>
+<tr class="memdesc:acf9e3eb88389a6e774648c8d105d57de"><td class="mdescLeft">&#160;</td><td class="mdescRight">Node command to execute.  <a href="#acf9e3eb88389a6e774648c8d105d57de">More...</a><br /></td></tr>
+<tr class="separator:acf9e3eb88389a6e774648c8d105d57de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc3b246b5a53c20a82f9d9e24c2ff53"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#a7cc3b246b5a53c20a82f9d9e24c2ff53">replicated_node_idx</a></td></tr>
+<tr class="memdesc:a7cc3b246b5a53c20a82f9d9e24c2ff53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Id of the node, to which node_cmd_id to be sent, If set to TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES, cmd is send to all replicated node Otherwise to specific node.  <a href="#a7cc3b246b5a53c20a82f9d9e24c2ff53">More...</a><br /></td></tr>
+<tr class="separator:a7cc3b246b5a53c20a82f9d9e24c2ff53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af41ac3ca5543b4cbc165a806c9b2ae0b"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structtivx__obj__desc__cmd__t.html#af41ac3ca5543b4cbc165a806c9b2ae0b">flags</a></td></tr>
 <tr class="memdesc:af41ac3ca5543b4cbc165a806c9b2ae0b"><td class="mdescLeft">&#160;</td><td class="mdescRight">flags associated with this command, see TIVX_CMD_FLAG_xxx  <a href="#af41ac3ca5543b4cbc165a806c9b2ae0b">More...</a><br /></td></tr>
 <tr class="separator:af41ac3ca5543b4cbc165a806c9b2ae0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +167,62 @@ Data Fields</h2></td></tr>
 </div><div class="memdoc">
 
 <p>command to execute </p>
+
+</div>
+</div>
+<a class="anchor" id="a6517b318e2436c6e621f5f97a48dc303"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint16_t tivx_obj_desc_cmd_t::cmd_params_desc_id[<a class="el" href="group__group__tivx__obj__desc__cfg.html#ga4cc5e19e782439d7422fd08f47c17b09">TIVX_KERNEL_MAX_PARAMS</a>]</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>parameter object descriptors </p>
+
+</div>
+</div>
+<a class="anchor" id="afd3f7d6d32bb9f17904c18396cee335b"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t tivx_obj_desc_cmd_t::num_cmd_params</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>valid values in cmd_params_data_id </p>
+
+</div>
+</div>
+<a class="anchor" id="acf9e3eb88389a6e774648c8d105d57de"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint32_t tivx_obj_desc_cmd_t::node_cmd_id</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Node command to execute. </p>
+
+</div>
+</div>
+<a class="anchor" id="a7cc3b246b5a53c20a82f9d9e24c2ff53"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t tivx_obj_desc_cmd_t::replicated_node_idx</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Id of the node, to which node_cmd_id to be sent, If set to TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES, cmd is send to all replicated node Otherwise to specific node. </p>
 
 </div>
 </div>
