@@ -158,7 +158,7 @@ typedef struct _tivx_shared_mem_ptr_t {
 
     /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e */
     uint32_t mem_heap_region;
-    
+
     /*! \brief Value of dmaBufFd correspods to the host_ptr,
      *         This will be used by host/Linux CPU
      */
@@ -271,6 +271,19 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region);
  * \ingroup group_tivx_mem
  */
 void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
+
+/*!
+ * \brief Convert shared pointer to system physical memory location
+ *        This is mainly used for configuring physical address to HW
+ *
+ * \param [in] shared_ptr Host memory pointer
+ * \param [in] mem_heap_region Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e
+ *
+ * \return Converted Physical memory pointer
+ *
+ * \ingroup group_tivx_mem
+ */
+uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
 
 /*!
  * \brief Allocates memory of given size

@@ -156,6 +156,12 @@ void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     return (void*)(shared_ptr);
 }
 
+uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
+{
+    /* Currently it is same as shared pointer for bios */
+    return (shared_ptr);
+}
+
 vx_status tivxMemInit(void)
 {
     vx_status status = VX_SUCCESS;

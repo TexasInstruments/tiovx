@@ -122,14 +122,14 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     if(mem_heap_region!=TIVX_MEM_EXTERNAL)
     {
         uint32_t mem_offset;
-        
+
         mem_offset = TIVX_ALIGN(gL2RAM_mem_offset, TIVX_MEM_L2RAM_ALIGN);
-        
+
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation */
         if(size+mem_offset <= TIVX_MEM_L2RAM_SIZE)
         {
             ptr = &gL2RAM_mem[mem_offset];
-            
+
             gL2RAM_mem_offset = mem_offset + size;
         }
     }
@@ -213,4 +213,8 @@ void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     return (void*)(shared_ptr);
 }
 
+uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
+{
+    return (shared_ptr);
+}
 
