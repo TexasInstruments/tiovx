@@ -463,6 +463,14 @@ vx_status tivxExportAllResourceMaxUsedValueToFile();
 /*!
  * \brief Utility function to create a node given parameter references and kernel enum
  *
+ * \param [in] graph Graph reference
+ * \param [in] kernelenum Enumeration specifying a specific kernel
+ * \param [in] params List of parameter references corresponding to the enumerated kernel
+ * \param [in] num Number of parameter references in params list
+ *
+ * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
@@ -472,6 +480,14 @@ vx_node tivxCreateNodeByKernelEnum(vx_graph graph,
 
 /*!
  * \brief Utility function to create a node given parameter references and kernel reference
+ *
+ * \param [in] graph Graph reference
+ * \param [in] kernel Kernel reference
+ * \param [in] params List of parameter references corresponding to the kernel reference
+ * \param [in] num Number of parameter references in params list
+ *
+ * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
  *
  * \ingroup group_tivx_ext_host
  */
@@ -483,6 +499,14 @@ vx_node tivxCreateNodeByKernelRef(vx_graph graph,
 /*!
  * \brief Utility function to create a node given parameter references and kernel name
  *
+ * \param [in] graph Graph reference
+ * \param [in] kernel_name String corresponding to the kernel name
+ * \param [in] params List of parameter references corresponding to the kernel name
+ * \param [in] num Number of parameter references in params list
+ *
+ * \returns A node reference <tt>\ref vx_node</tt>. Any possible errors preventing a
+ * successful creation should be checked using <tt>\ref vxGetStatus</tt>.
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_node tivxCreateNodeByKernelName(vx_graph graph,
@@ -493,6 +517,12 @@ vx_node tivxCreateNodeByKernelName(vx_graph graph,
 /*!
  * \brief Utility function to check if the given reference is virtual or not
  *
+ * \param [in] ref Reference to query
+ *
+ * \return A <tt>\ref vx_bool</tt> value.
+ * \retval vx_true_e The reference is virtual.
+ * \retval vx_false_e The reference is not virtual.
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_bool tivxIsReferenceVirtual(vx_reference ref);
@@ -500,12 +530,20 @@ vx_bool tivxIsReferenceVirtual(vx_reference ref);
 /*!
  * \brief Utility function to know if target is enabled or not
  *
+ * \param [in] target_name String specifying the target name
+ *
+ * \return A <tt>\ref vx_bool</tt> value.
+ * \retval vx_true_e The target is enabled
+ * \retval vx_false_e The target is not enabled
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_bool tivxIsTargetEnabled(char target_name[]);
 
 /*!
  * \brief Get the time in micro seconds
+ *
+ * \return Time in micro seconds.
  *
  * \ingroup group_tivx_ext_host
  */
@@ -518,6 +556,10 @@ uint64_t tivxPlatformGetTimeInUsecs(void);
  * using 'output_file_prefix' as filename prefix.
  * The output files are stored at path 'output_file_path'
  *
+ * \param [in] graph Graph reference
+ * \param [in] output_file_path String specifying the ouput file path
+ * \param [in] output_file_prefix String specifying the filename prefix of the output file
+ *
  * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, char *output_file_path, char *output_file_prefix);
@@ -525,6 +567,8 @@ vx_status VX_API_CALL tivxExportGraphToDot(vx_graph graph, char *output_file_pat
 
 /*!
  * \brief Enable run-time logging of graph trace to 'stdout'
+ *
+ * \param [in] graph Graph reference
  *
  * \ingroup group_tivx_ext_host
  */
@@ -536,17 +580,24 @@ vx_status VX_API_CALL tivxLogRtTrace(vx_graph graph);
  * - Graph to which the node belongs MUST be scheduled in VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO or
  *   VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL mode.
  * - The node parameter MUST be of type virtual or all references to the parameter reference
- * MUST be released before graph verify.
+ *   MUST be released before graph verify.
  * - The node parameter specified MUST be a output parameter.
  *
  * This API acts as a hint and framework may overide user specified settings
  * in case any of above conditions are not met.
+ *
+ * \param [in] node Node reference
+ * \param [in] index Node parameter index
+ * \param [in] num_buf Number of buffers to allocate
  *
  * \ingroup group_tivx_ext_host
  */
 vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 index, vx_uint32 num_buf);
 
 /*! \brief Indicates to the implementation the depth of the graph pipeline
+ *
+ * \param [in] graph Graph reference
+ * \param [in] pipeline_depth Pipeline depth
  *
  * \ingroup group_tivx_ext_host
  */
@@ -555,8 +606,23 @@ vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeli
 /*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a 
  *         additional TIOVX specific flag parameter
  *
- *  For valid values of flag see
+ *  \details For valid values of flag see
  *  - \ref TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP
+ *
+ *  For more detailed description of vxGraphParameterEnqueueReadyRef see
+ *  \ref vxGraphParameterEnqueueReadyRef
+ *
+ * \param [in] graph Graph reference
+ * \param [in] graph_parameter_index Graph parameter index
+ * \param [in] refs The array of references to enqueue into the graph parameter
+ * \param [in] num_refs Number of references to enqueue
+ * \param [in] flags Flag to control behavior of the operation
+ *
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE graph is not a valid reference OR reference is not a valid reference
+ * \retval VX_ERROR_INVALID_PARAMETERS graph_parameter_index is NOT a valid graph parameter index
+ * \retval VX_FAILURE Reference could not be enqueued.
  *
  * \ingroup group_tivx_ext_host
  */
@@ -575,15 +641,15 @@ vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
  *          This API is thread safe, ie multi commands can be sent to
  *          same or different nodes from different threads
  *
- * \param [in] node: Reference of the node to which this command is to be sent.
+ * \param [in] node Reference of the node to which this command is to be sent.
  * \param [in] replicate_nodex_idx: In case of a non-replicated node this
  *             should be 0, For a replicated node this is the index
  *             of the replicated node to which the command is targeted.
  *             To send same command to all replicated nodes use
                TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES
- * \param [in] node_cmd_id: Node specific control command id, refer to node
+ * \param [in] node_cmd_id Node specific control command id, refer to node
  *             specific interface file
- * \param [in/out] ref[]: Node parameter,
+ * \param [in,out] ref[] Node parameter,
  *             This is an array of references, required as parameters for
  *             this control command.
  *             They can be any OpenVX object, created using create API.
@@ -595,7 +661,7 @@ vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
  *             required for given control command.
  *             Caller of this API should explicitely release these refs after
  *             their usage is completed.
- * \param [in] num_refs: Number of valid entries/references in ref[] array
+ * \param [in] num_refs Number of valid entries/references in ref[] array
  *
  *
  * \ingroup group_tivx_ext_host
