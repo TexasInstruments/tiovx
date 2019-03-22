@@ -228,10 +228,8 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
                 }
                 else
                 {
-                    status = VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxNodeSendCommand: Reference Not Valid\n");
-                    break;
+                    /* Invalid Desc ID */
+                    obj_desc_id[cnt] = (uint16_t)-1;
                 }
             }
 
