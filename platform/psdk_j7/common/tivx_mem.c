@@ -294,7 +294,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
     uint32_t heap_id;
     vx_status status = VX_SUCCESS;
     uint64_t phys = 0;
-    
+
     switch (mem_heap_region)
     {
         case TIVX_MEM_EXTERNAL:
@@ -328,4 +328,9 @@ void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     return (void*)(uintptr_t)(shared_ptr);
 }
 
+uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
+{
+    /* Currently it is same as shared pointer for bios */
+    return (shared_ptr);
+}
 
