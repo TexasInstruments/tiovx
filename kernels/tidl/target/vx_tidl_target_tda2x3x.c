@@ -128,6 +128,60 @@ static int TIDL_createParamsInit(TIDL_CreateParams * params)
   return IALG_EOK;
 }
 
+/* The below function may not be required since in BIOS tivxMemShared2TargetPtr() calls
+ * Utils_memPhysToVirt() which anyway returns the original pointer
+ */
+static int32_t tidl_convertNetParamsPtr(sTIDL_Network_t *net) {
+
+  int32_t i;
+
+  for(i = 0; i < net->numLayers; i++)
+  {
+    if((TIDL_ConvolutionLayer == net->TIDLLayers[i].layerType) ||
+        (TIDL_Deconv2DLayer == net->TIDLLayers[i].layerType))
+    {
+      sTIDL_ConvParams_t *conv2dPrms = \
+          &net->TIDLLayers[i].layerParams.convParams;
+
+      conv2dPrms->weights.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)conv2dPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+      conv2dPrms->bias.ptr = tivxMemShared2TargetPtr((uint64_t)(uintptr_t)conv2dPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+
+    }
+    else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_BiasParams_t *biasPrms = &net->TIDLLayers[i].layerParams.biasParams;
+      biasPrms->bias.ptr = tivxMemShared2TargetPtr((uint64_t)(uintptr_t)biasPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+    }
+    else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_BatchNormParams_t *batchNormPrms = \
+          &net->TIDLLayers[i].layerParams.batchNormParams;
+      batchNormPrms->weights.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)batchNormPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+      batchNormPrms->bias.ptr = tivxMemShared2TargetPtr((uint64_t)(uintptr_t)batchNormPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+
+      if(TIDL_PRelU == batchNormPrms->reluParams.reluType)
+      {
+        batchNormPrms->reluParams.slope.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)batchNormPrms->reluParams.slope.ptr, TIVX_MEM_EXTERNAL);
+      }
+    }
+    else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_InnerProductParams_t *ipPrms = \
+          &net->TIDLLayers[i].layerParams.innerProductParams;
+      ipPrms->bias.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)ipPrms->bias.ptr, TIVX_MEM_EXTERNAL);
+      ipPrms->weights.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)ipPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+    }
+    else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_DetectOutputParams_t *detectPrms = \
+          &net->TIDLLayers[i].layerParams.detectOutParams;
+      detectPrms->priorBox.ptr= tivxMemShared2TargetPtr((uint64_t)(uintptr_t)detectPrms->priorBox.ptr, TIVX_MEM_EXTERNAL);
+    }
+  }
+
+  return 0;
+}
+
 static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig)
 {
   uint16_t numBuffs = 0;
@@ -350,6 +404,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
     prms->createParams.net = *((sTIDL_Network_t *)network_target_ptr);
+
+    /* Convert the pointers to each layer's parameter from shared to target */
+    tidl_convertNetParamsPtr(&prms->createParams.net);
 
     prms->createParams.net.interElementSize = 4;
 

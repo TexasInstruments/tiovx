@@ -69,64 +69,9 @@
 #include "sTIDL_IOBufDesc.h"
 #include "tivx_tidl_utils.h"
 
+#define DEFAULT_ALIGN 4
 
 #define align(val, alignv) ( (( (val) + (alignv) -1)/(alignv))*(alignv) )
-
-static void sparseConv2dCoffesS8(int8_t *ptr, int32_t n, uint8_t thr)
-{
-  int32_t i0;
-
-  for(i0 = 0; i0 < n; i0++)
-  {
-    if(((uint8_t)(rand() & 0xFF)) > thr)
-    {
-      ptr[i0] =  0;
-    }
-  }
-}
-
-static void createRandPatternS16(int16_t *ptr, int16_t n, int16_t width, int16_t height,
-    int16_t pitch, int32_t chOffset)
-{
-  int16_t val;
-  int32_t i0, i1, i2;
-  for(i0 = 0; i0 < n; i0++)
-  {
-    for(i1 = 0; i1 < height; i1++)
-    {
-      for(i2 = 0; i2 < width; i2++)
-      {
-        val = rand() & 0x7FFF;
-        ptr[i0 * chOffset + i1 * pitch + i2] = (rand() & 1) ? val : -val;
-      }
-    }
-  }
-}
-
-static void createRandPatternS8(int8_t *ptr, int16_t roi, int16_t n,
-    int16_t width, int16_t height, int16_t pitch,
-    int32_t chOffset)
-{
-  int16_t val;
-  int32_t   i0, i1, i2, i3;
-
-  for(i3 = 0; i3 < roi; i3++)
-  {
-    for(i0 = 0; i0 < n; i0++)
-    {
-      for(i1 = 0; i1 < height; i1++)
-      {
-        for(i2 = 0; i2 < width; i2++)
-        {
-          val = rand() & 0x7F;
-          ptr[i3 * n * chOffset + i0 * chOffset + i1 * pitch +i2] = \
-              (rand() & 1) ? val : -val;
-        }
-      }
-    }
-  }
-}
-
 
 /**
  *******************************************************************************
@@ -303,6 +248,80 @@ static uint32_t tidlGetNumOutputBuffers(
   return numBuffs;
 }
 
+int32_t vx_tidl_utils_getNetParamsTotalSize(sTIDL_Network_t *net, uint32_t *pTotalSize) {
+
+  int32_t i;
+  uint32_t totalSize;
+
+  totalSize= DEFAULT_ALIGN;
+
+  for(i = 0; i < net->numLayers; i++)
+  {
+    if((TIDL_ConvolutionLayer == net->TIDLLayers[i].layerType) ||
+        (TIDL_Deconv2DLayer == net->TIDLLayers[i].layerType))
+    {
+      sTIDL_ConvParams_t *conv2dPrms = \
+          &net->TIDLLayers[i].layerParams.convParams;
+      conv2dPrms->weights.bufSize = \
+          net->weightsElementSize * (conv2dPrms->kernelW * conv2dPrms->kernelH *
+              conv2dPrms->numInChannels * conv2dPrms->numOutChannels)
+              /conv2dPrms->numGroups;
+      totalSize+= conv2dPrms->weights.bufSize + DEFAULT_ALIGN;
+
+      conv2dPrms->bias.bufSize = net->biasElementSize * conv2dPrms->numOutChannels;
+      totalSize+= conv2dPrms->bias.bufSize + DEFAULT_ALIGN;
+
+    }
+    else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_BiasParams_t *biasPrms = &net->TIDLLayers[i].layerParams.biasParams;
+      biasPrms->bias.bufSize = net->biasElementSize * biasPrms->numChannels;
+      totalSize+= biasPrms->bias.bufSize + DEFAULT_ALIGN;
+    }
+    else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_BatchNormParams_t *batchNormPrms = \
+          &net->TIDLLayers[i].layerParams.batchNormParams;
+      batchNormPrms->weights.bufSize = \
+          net->weightsElementSize * batchNormPrms->numChannels;
+      totalSize+= batchNormPrms->weights.bufSize + DEFAULT_ALIGN;
+
+      batchNormPrms->bias.bufSize = \
+          net->biasElementSize * batchNormPrms->numChannels;
+      totalSize+= batchNormPrms->bias.bufSize;
+
+      batchNormPrms->reluParams.slope.bufSize =
+          net->slopeElementSize * batchNormPrms->numChannels;
+      totalSize+= batchNormPrms->reluParams.slope.bufSize + DEFAULT_ALIGN;
+      if(TIDL_PRelU == batchNormPrms->reluParams.reluType)
+      {
+      }
+    }
+    else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_InnerProductParams_t *ipPrms = \
+          &net->TIDLLayers[i].layerParams.innerProductParams;
+      ipPrms->bias.bufSize =  net->biasElementSize * ipPrms->numOutNodes;
+      totalSize+= ipPrms->bias.bufSize + DEFAULT_ALIGN;
+
+      ipPrms->weights.bufSize = \
+          net->weightsElementSize* ipPrms->numInNodes * ipPrms->numOutNodes;
+      totalSize+= ipPrms->weights.bufSize + DEFAULT_ALIGN;
+    }
+    else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
+    {
+      sTIDL_DetectOutputParams_t *detectPrms = \
+          &net->TIDLLayers[i].layerParams.detectOutParams;
+      detectPrms->priorBox.bufSize =  detectPrms->priorBoxSize * sizeof(float);
+      totalSize+= detectPrms->priorBox.bufSize + DEFAULT_ALIGN;
+    }
+  }
+
+  *pTotalSize= totalSize;
+
+  return 0;
+}
+
 vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_file)
 {
   vx_status status;
@@ -310,7 +329,9 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
   vx_user_data_object  network;
   vx_map_id  map_id;
   vx_uint32  capacity;
+  vx_uint32  paramsSize;
   vx_size read_count;
+  void      *tmpNetBuf= NULL;
   void      *network_buffer = NULL;
 
   FILE *fp_network;
@@ -327,27 +348,44 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
   capacity = ftell(fp_network);
   fseek(fp_network, 0, SEEK_SET);
 
-  network = vxCreateUserDataObject(context, "TIDL_network", capacity, NULL );
+  if (capacity != sizeof(sTIDL_Network_t)) {
+    printf("Network file size is different than sTIDL_Network_t structure size !\n");
+    return NULL;
+  }
+
+  tmpNetBuf= tivxMemAlloc(capacity, TIVX_MEM_EXTERNAL);
+
+  if(tmpNetBuf)
+  {
+    read_count = fread(tmpNetBuf, capacity, 1, fp_network);
+    if(read_count != 1)
+    {
+      printf("Unable to read network file %s !\n", network_file);
+    }
+    vx_tidl_utils_getNetParamsTotalSize((sTIDL_Network_t *)tmpNetBuf, &paramsSize);
+  }
+  else
+  {
+    printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
+  }
+
+  network = vxCreateUserDataObject(context, "TIDL_network", capacity + paramsSize, NULL );
   status = vxGetStatus((vx_reference)network);
 
   if (VX_SUCCESS == status)
   {
-    status = vxMapUserDataObject(network, 0, capacity, &map_id,
+    status = vxMapUserDataObject(network, 0, capacity + paramsSize, &map_id,
         (void **)&network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     if (VX_SUCCESS == status)
     {
       if(network_buffer)
       {
-        read_count = fread(network_buffer, capacity, 1, fp_network);
-        if(read_count != 1)
-        {
-          printf("Unable to read network file %s !\n", network_file);
-        }
+        memcpy(network_buffer, tmpNetBuf, capacity);
       }
       else
       {
-        printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
+        printf("Unable to map user data object to TIDL_network\n");
       }
 
       vxUnmapUserDataObject(network, map_id);
@@ -421,196 +459,6 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
   return config;
 }
 
-int32_t vx_tidl_utils_allocNetParams(vx_user_data_object  network) {
-
-  vx_status status;
-  int32_t i;
-  void      *network_buffer = NULL;
-  vx_map_id  map_id;
-  sTIDL_Network_t *net;
-
-  status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id,
-      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
-
-  if (VX_SUCCESS == status)
-  {
-    if(network_buffer)
-    {
-      net= (sTIDL_Network_t *)network_buffer;
-
-      for(i = 0; i < net->numLayers; i++)
-      {
-        if((TIDL_ConvolutionLayer == net->TIDLLayers[i].layerType) ||
-            (TIDL_Deconv2DLayer == net->TIDLLayers[i].layerType))
-        {
-          sTIDL_ConvParams_t *conv2dPrms = \
-              &net->TIDLLayers[i].layerParams.convParams;
-          conv2dPrms->weights.bufSize = \
-              net->weightsElementSize * (conv2dPrms->kernelW * conv2dPrms->kernelH *
-                  conv2dPrms->numInChannels * conv2dPrms->numOutChannels)
-                  /conv2dPrms->numGroups;
-          conv2dPrms->weights.ptr = \
-              tivxMemAlloc(conv2dPrms->weights.bufSize, TIVX_MEM_EXTERNAL);
-
-          conv2dPrms->bias.bufSize = net->biasElementSize * conv2dPrms->numOutChannels;
-          conv2dPrms->bias.ptr = \
-              tivxMemAlloc(conv2dPrms->bias.bufSize, TIVX_MEM_EXTERNAL);
-        }
-        else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_BiasParams_t *biasPrms = &net->TIDLLayers[i].layerParams.biasParams;
-          biasPrms->bias.bufSize = net->biasElementSize * biasPrms->numChannels;
-          biasPrms->bias.ptr = \
-              tivxMemAlloc(biasPrms->bias.bufSize, TIVX_MEM_EXTERNAL);
-        }
-        else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_BatchNormParams_t *batchNormPrms = \
-              &net->TIDLLayers[i].layerParams.batchNormParams;
-          batchNormPrms->weights.bufSize = \
-              net->weightsElementSize * batchNormPrms->numChannels;
-          batchNormPrms->weights.ptr =
-              tivxMemAlloc(batchNormPrms->weights.bufSize, TIVX_MEM_EXTERNAL);
-
-          batchNormPrms->bias.bufSize = \
-              net->biasElementSize * batchNormPrms->numChannels;
-          batchNormPrms->bias.ptr =
-              tivxMemAlloc(batchNormPrms->bias.bufSize, TIVX_MEM_EXTERNAL);
-
-          batchNormPrms->reluParams.slope.bufSize =
-              net->slopeElementSize * batchNormPrms->numChannels;
-          if(TIDL_PRelU == batchNormPrms->reluParams.reluType)
-          {
-            batchNormPrms->reluParams.slope.ptr = \
-                tivxMemAlloc(
-                    batchNormPrms->reluParams.slope.bufSize, TIVX_MEM_EXTERNAL);
-          }
-        }
-        else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_InnerProductParams_t *ipPrms = \
-              &net->TIDLLayers[i].layerParams.innerProductParams;
-          ipPrms->bias.bufSize =  net->biasElementSize * ipPrms->numOutNodes;
-          ipPrms->bias.ptr = \
-              tivxMemAlloc(
-                  align(ipPrms->bias.bufSize, 128), TIVX_MEM_EXTERNAL);
-
-          ipPrms->weights.bufSize = \
-              net->weightsElementSize* ipPrms->numInNodes * ipPrms->numOutNodes;
-          ipPrms->weights.ptr = \
-              tivxMemAlloc(
-                  align((ipPrms->weights.bufSize + 16 * \
-                      net->TIDLLayers[i].layerParams.innerProductParams.numInNodes),
-                      1024), TIVX_MEM_EXTERNAL);
-        }
-        else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_DetectOutputParams_t *detectPrms = \
-              &net->TIDLLayers[i].layerParams.detectOutParams;
-          detectPrms->priorBox.bufSize =  detectPrms->priorBoxSize * sizeof(float);
-          detectPrms->priorBox.ptr = tivxMemAlloc(
-              align(detectPrms->priorBoxSize *
-                  detectPrms->priorBox.bufSize, 128), TIVX_MEM_EXTERNAL);
-        }
-      }
-      vxUnmapUserDataObject(network, map_id);
-    }
-  }
-  return 0;
-}
-
-int32_t vx_tidl_utils_freeNetParams(vx_user_data_object  network)
-{
-  vx_status status;
-  int32_t i;
-  void      *network_buffer = NULL;
-  vx_map_id  map_id;
-  sTIDL_Network_t *net;
-
-  status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id,
-      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
-
-  if (VX_SUCCESS == status)
-  {
-    if(network_buffer)
-    {
-      net= (sTIDL_Network_t *)network_buffer;
-
-      for(i = 0; i < net->numLayers; i++)
-      {
-        if((TIDL_ConvolutionLayer == net->TIDLLayers[i].layerType) ||
-            (TIDL_Deconv2DLayer == net->TIDLLayers[i].layerType))
-        {
-          sTIDL_ConvParams_t *conv2dPrms = \
-              &net->TIDLLayers[i].layerParams.convParams;
-          conv2dPrms->weights.bufSize = \
-              net->weightsElementSize * (conv2dPrms->kernelW * conv2dPrms->kernelH *
-                  conv2dPrms->numInChannels * conv2dPrms->numOutChannels)
-                  /conv2dPrms->numGroups;
-          tivxMemFree(
-              conv2dPrms->weights.ptr, conv2dPrms->weights.bufSize, TIVX_MEM_EXTERNAL);
-
-          conv2dPrms->bias.bufSize = net->biasElementSize * conv2dPrms->numOutChannels;
-          tivxMemFree(
-              conv2dPrms->bias.ptr, conv2dPrms->bias.bufSize, TIVX_MEM_EXTERNAL);
-        }
-        else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_BiasParams_t *biasPrms = &net->TIDLLayers[i].layerParams.biasParams;
-          biasPrms->bias.bufSize = net->biasElementSize * biasPrms->numChannels;
-          tivxMemFree(
-              biasPrms->bias.ptr, biasPrms->bias.bufSize, TIVX_MEM_EXTERNAL);
-        }
-        else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_BatchNormParams_t *batchNormPrms = \
-              &net->TIDLLayers[i].layerParams.batchNormParams;
-          batchNormPrms->weights.bufSize = \
-              net->weightsElementSize * batchNormPrms->numChannels;
-          tivxMemFree(
-              batchNormPrms->weights.ptr, batchNormPrms->weights.bufSize, TIVX_MEM_EXTERNAL);
-
-          batchNormPrms->bias.bufSize = \
-              net->biasElementSize * batchNormPrms->numChannels;
-          tivxMemFree(
-              batchNormPrms->bias.ptr, batchNormPrms->bias.bufSize, TIVX_MEM_EXTERNAL);
-
-          batchNormPrms->reluParams.slope.bufSize =
-              net->slopeElementSize * batchNormPrms->numChannels;
-          if(TIDL_PRelU == batchNormPrms->reluParams.reluType)
-          {
-            tivxMemFree(
-                batchNormPrms->reluParams.slope.ptr,
-                batchNormPrms->reluParams.slope.bufSize, TIVX_MEM_EXTERNAL);
-          }
-        }
-        else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
-        {
-          sTIDL_InnerProductParams_t *ipPrms = \
-              &net->TIDLLayers[i].layerParams.innerProductParams;
-          ipPrms->bias.bufSize =  net->biasElementSize * ipPrms->numOutNodes;
-          tivxMemFree(
-              ipPrms->bias.ptr, align(ipPrms->bias.bufSize, 128), TIVX_MEM_EXTERNAL);
-
-
-          ipPrms->weights.bufSize = \
-              net->weightsElementSize* ipPrms->numInNodes * ipPrms->numOutNodes;
-          tivxMemFree(
-              ipPrms->weights.ptr,
-              align((ipPrms->weights.bufSize + 16 * \
-                  net->TIDLLayers[i].layerParams.innerProductParams.numInNodes),
-                  1024), TIVX_MEM_EXTERNAL);
-        }
-      }
-      vxUnmapUserDataObject(network, map_id);
-    }
-  }
-  return 0;
-}
-
-
-
-
 vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_file)
 {
   vx_status status = VX_SUCCESS;
@@ -620,8 +468,9 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
   void      *network_buffer = NULL;
   vx_map_id  map_id;
   sTIDL_Network_t *net;
+  uint8_t *pParams;
 
-  status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id,
+  status = vxMapUserDataObject(network, 0, 0, &map_id,
       (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
 
   if (VX_SUCCESS == status)
@@ -639,86 +488,39 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
         return VX_FAILURE;
       }
 
+      pParams= (uint8_t*)net + sizeof(sTIDL_Network_t);
+
       for(i = 0; i < net->numLayers; i++)
       {
         if((TIDL_ConvolutionLayer == net->TIDLLayers[i].layerType) ||
             (TIDL_Deconv2DLayer == net->TIDLLayers[i].layerType))
         {
           sTIDL_ConvParams_t *conv2dPrms = &net->TIDLLayers[i].layerParams.convParams;
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          conv2dPrms->weights.ptr= (void*)pParams;
+          pParams+= conv2dPrms->weights.bufSize;
 
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            createRandPatternS8(
-                (int8_t *)conv2dPrms->weights.ptr, 1,
-                conv2dPrms->numInChannels/conv2dPrms->numGroups,
-                conv2dPrms->numOutChannels,
-                conv2dPrms->kernelW * conv2dPrms->kernelH,
-                conv2dPrms->numOutChannels,
-                conv2dPrms->kernelW * conv2dPrms->kernelW * conv2dPrms->numOutChannels);
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          conv2dPrms->bias.ptr= (void*)pParams;
+          pParams+= conv2dPrms->bias.bufSize;
 
-            if(VX_TIDL_UTILS_NO_ZERO_COEFF_PERCENT < 100)
-            {
-              sparseConv2dCoffesS8((int8_t *)conv2dPrms->weights.ptr,
-                  conv2dPrms->weights.bufSize,
-                  VX_TIDL_UTILS_NO_ZERO_COEFF_PERCENT * 2.55);
-            }
-
-            if(conv2dPrms->enableBias)
-            {
-              dataSize = conv2dPrms->numOutChannels;
-              createRandPatternS16((Int16 *)conv2dPrms->bias.ptr,1,dataSize,1,1,1);
-            }
-            else
-            {
-              memset(
-                  (int8_t *)conv2dPrms->bias.ptr,0,conv2dPrms->numOutChannels * 2);
-            }
-          }
-          else
           {
             dataSize = (conv2dPrms->numInChannels * conv2dPrms->numOutChannels *
                 conv2dPrms->kernelW * conv2dPrms->kernelH)/conv2dPrms->numGroups;
 
             /* Read weights based on its size */
-            if(net->weightsElementSize == 2)
-            {
-              tivxMemBufferMap(conv2dPrms->weights.ptr, dataSize*2,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-              readSize= fread(
-                  (uint8_t*)conv2dPrms->weights.ptr,
-                  1, (dataSize * 2),
-                  fp_params);
-              if (readSize != (dataSize * 2)) {
-                assert(readSize == (dataSize * 2));
-              }
-            }
-            else
-            {
-              tivxMemBufferMap(conv2dPrms->weights.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-
-              readSize= fread(
-                  (uint8_t*)conv2dPrms->weights.ptr,
-                  1, dataSize,
-                  fp_params);
-              assert(readSize == dataSize);
-
-            }
-
-            if(VX_TIDL_UTILS_NO_ZERO_COEFF_PERCENT < 100)
-            {
-              sparseConv2dCoffesS8((int8_t *)conv2dPrms->weights.ptr,
-                  conv2dPrms->weights.bufSize,
-                  VX_TIDL_UTILS_NO_ZERO_COEFF_PERCENT * 2.55);
+            readSize= fread(
+                (uint8_t*)conv2dPrms->weights.ptr,
+                1, (dataSize * net->weightsElementSize),
+                fp_params);
+            if (readSize != (dataSize * net->weightsElementSize)) {
+              assert(readSize == (dataSize * net->weightsElementSize));
             }
 
             if(conv2dPrms->enableBias)
             {
               dataSize = conv2dPrms->numOutChannels;
-
-              tivxMemBufferMap(conv2dPrms->bias.ptr, dataSize*2,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
               readSize= fread(
                   (uint8_t*)conv2dPrms->bias.ptr,
@@ -733,237 +535,116 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
             }
           }
 
-          /* Cache Wb of the buffers */
-          dataSize = (conv2dPrms->numInChannels * conv2dPrms->numOutChannels *
-              conv2dPrms->kernelW * conv2dPrms->kernelH)/conv2dPrms->numGroups;
-          if(net->weightsElementSize == 2)
-          {
-            dataSize *= 2;
-          }
-
-          tivxMemBufferUnmap(conv2dPrms->weights.ptr, dataSize,
-              VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-
-          dataSize = conv2dPrms->numOutChannels;
-
-          tivxMemBufferUnmap(conv2dPrms->bias.ptr, dataSize,
-              VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+          conv2dPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)conv2dPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+          conv2dPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)conv2dPrms->bias.ptr, TIVX_MEM_EXTERNAL);
         }
         else if(TIDL_BiasLayer == net->TIDLLayers[i].layerType)
         {
           sTIDL_BiasParams_t *biasPrms =&net->TIDLLayers[i].layerParams.biasParams;
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          biasPrms->bias.ptr= (void*)pParams;
+          pParams+= biasPrms->bias.bufSize;
           dataSize = biasPrms->numChannels;
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            tivxMemBufferMap(biasPrms->bias.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            createRandPatternS16((Int16 *)biasPrms->bias.ptr,1,dataSize,1,1,1);
-            tivxMemBufferUnmap(biasPrms->bias.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
-          else
-          {
-            tivxMemBufferMap(biasPrms->bias.ptr, dataSize*2,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            readSize= fread(
-                (uint8_t*)biasPrms->bias.ptr,
-                1, (dataSize * 2),
-                fp_params);
-            assert(readSize == (dataSize * 2));
-            tivxMemBufferUnmap(biasPrms->bias.ptr, dataSize*2,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
+
+          readSize= fread(
+              (uint8_t*)biasPrms->bias.ptr,
+              1, (dataSize * 2),
+              fp_params);
+          assert(readSize == (dataSize * 2));
+
+          biasPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)biasPrms->bias.ptr, TIVX_MEM_EXTERNAL);
         }
         else if(TIDL_BatchNormLayer == net->TIDLLayers[i].layerType)
         {
           sTIDL_BatchNormParams_t *bNPrms = \
               &net->TIDLLayers[i].layerParams.batchNormParams;
-          dataSize = bNPrms->numChannels;
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            tivxMemBufferMap(bNPrms->weights.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            createRandPatternS16((Int16 *)bNPrms->weights.ptr,1,dataSize,1,1,1);
-            tivxMemBufferUnmap(bNPrms->weights.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
-          else
-          {
-            if(net->weightsElementSize == 2)
-            {
-              tivxMemBufferMap(bNPrms->weights.ptr, dataSize*2,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              readSize= fread(
-                  (uint8_t*)bNPrms->weights.ptr,
-                  1, (dataSize * 2),
-                  fp_params);
-              assert(readSize == (dataSize * 2));
-              tivxMemBufferUnmap(bNPrms->weights.ptr, dataSize*2,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            }
-            else
-            {
-              tivxMemBufferMap(bNPrms->weights.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              readSize= fread(
-                  (uint8_t*)bNPrms->weights.ptr,
-                  1, dataSize,
-                  fp_params);
-              assert(readSize == dataSize);
-              tivxMemBufferUnmap(bNPrms->weights.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            }
-          }
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          bNPrms->weights.ptr= (void*)pParams;
+          pParams+= bNPrms->weights.bufSize;
+          dataSize= bNPrms->numChannels;
 
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            tivxMemBufferMap(bNPrms->bias.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            createRandPatternS16((Int16 *)bNPrms->bias.ptr, 1,dataSize,1,1, 1);
-            tivxMemBufferUnmap(bNPrms->bias.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
-          else
-          {
-            tivxMemBufferMap(bNPrms->bias.ptr, dataSize*2,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            readSize= fread(
-                (uint8_t*)bNPrms->bias.ptr,
-                1, (dataSize * 2),
-                fp_params);
-            assert(readSize == (dataSize * 2));
-            tivxMemBufferUnmap(bNPrms->bias.ptr, dataSize*2,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
+          readSize= fread(
+              (uint8_t*)bNPrms->weights.ptr,
+              1, (dataSize * net->weightsElementSize),
+              fp_params);
+          assert(readSize == (dataSize * net->weightsElementSize));
+
+          bNPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          bNPrms->bias.ptr= (void*)pParams;
+          pParams+= bNPrms->bias.bufSize;
+
+          readSize= fread(
+              (uint8_t*)bNPrms->bias.ptr,
+              1, (dataSize * 2),
+              fp_params);
+          assert(readSize == (dataSize * 2));
+
+          bNPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->bias.ptr, TIVX_MEM_EXTERNAL);
 
           if(TIDL_PRelU == bNPrms->reluParams.reluType)
           {
-            if(VX_TIDL_UTILS_RANDOM_INPUT)
-            {
-              tivxMemBufferMap(bNPrms->reluParams.slope.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              createRandPatternS16((Int16 *)bNPrms->reluParams.slope.ptr,1,dataSize,1,1,1);
-              tivxMemBufferUnmap(bNPrms->reluParams.slope.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            }
-            else
-            {
-              if(net->slopeElementSize == 2)
-              {
-                tivxMemBufferMap(bNPrms->reluParams.slope.ptr, dataSize*2,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-                readSize= fread(
-                    (uint8_t*)bNPrms->reluParams.slope.ptr,
-                    1, (dataSize * 2),
-                    fp_params);
-                assert(readSize == (dataSize * 2));
-                tivxMemBufferUnmap(bNPrms->reluParams.slope.ptr, dataSize*2,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              }
-              else
-              {
-                tivxMemBufferMap(bNPrms->reluParams.slope.ptr, dataSize,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-                readSize= fread(
-                    (uint8_t*)bNPrms->reluParams.slope.ptr,
-                    1, dataSize,
-                    fp_params);
-                assert(readSize == dataSize);
-                tivxMemBufferUnmap(bNPrms->reluParams.slope.ptr, dataSize,
-                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              }
-            }
+            pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+            bNPrms->reluParams.slope.ptr= (void*)pParams;
+            pParams+= bNPrms->reluParams.slope.bufSize;
+
+            readSize= fread(
+                (uint8_t*)bNPrms->reluParams.slope.ptr,
+                1, (dataSize * net->slopeElementSize),
+                fp_params);
+            assert(readSize == (dataSize * net->slopeElementSize));
+
+            bNPrms->reluParams.slope.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)bNPrms->reluParams.slope.ptr, TIVX_MEM_EXTERNAL);
           }
         }
         else if(TIDL_InnerProductLayer == net->TIDLLayers[i].layerType)
         {
           sTIDL_InnerProductParams_t *ipPrms = \
               &net->TIDLLayers[i].layerParams.innerProductParams;
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          ipPrms->weights.ptr= (void*)pParams;
+          pParams+= ipPrms->weights.bufSize;
           dataSize = ipPrms->numInNodes * ipPrms->numOutNodes;
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            tivxMemBufferMap(ipPrms->weights.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            createRandPatternS16((Int16 *)ipPrms->weights.ptr,1,dataSize,1,1,1);
-            tivxMemBufferUnmap(ipPrms->weights.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
-          else
-          {
-            /* Read weights based on its size */
-            if(net->weightsElementSize == 2)
-            {
-              tivxMemBufferMap(ipPrms->weights.ptr, dataSize*2,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              readSize= fread(
-                  (uint8_t*)ipPrms->weights.ptr,
-                  1, (dataSize * 2),
-                  fp_params);
-              assert(readSize == (dataSize * 2));
-              tivxMemBufferUnmap(ipPrms->weights.ptr, dataSize*2,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            }
-            else
-            {
-              tivxMemBufferMap(ipPrms->weights.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-              readSize= fread(
-                  (uint8_t*)ipPrms->weights.ptr,
-                  1, dataSize,
-                  fp_params);
-              assert(readSize == dataSize);
-              tivxMemBufferUnmap(ipPrms->weights.ptr, dataSize,
-                  VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            }
-          }
 
+          /* Read weights */
+
+          readSize= fread(
+              (uint8_t*)ipPrms->weights.ptr,
+              1, (dataSize * net->weightsElementSize),
+              fp_params);
+          assert(readSize == (dataSize * net->weightsElementSize));
+
+          ipPrms->weights.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)ipPrms->weights.ptr, TIVX_MEM_EXTERNAL);
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          ipPrms->bias.ptr= (void*)pParams;
+          pParams+= ipPrms->bias.bufSize;
           dataSize = ipPrms->numOutNodes;
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            tivxMemBufferMap(ipPrms->bias.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            createRandPatternS16((Int16 *)ipPrms->bias.ptr,1,dataSize,1,1,1);
-            tivxMemBufferUnmap(ipPrms->bias.ptr, dataSize,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
-          else
-          {
-            tivxMemBufferMap(ipPrms->bias.ptr, dataSize*2,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            readSize= fread(
-                (uint8_t*)ipPrms->bias.ptr,
-                1, (dataSize * 2),
-                fp_params);
-            assert(readSize == (dataSize * 2));
-            tivxMemBufferUnmap(ipPrms->bias.ptr, dataSize*2,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
+
+          readSize= fread(
+              (uint8_t*)ipPrms->bias.ptr,
+              1, (dataSize * 2),
+              fp_params);
+          assert(readSize == (dataSize * 2));
+
+          ipPrms->bias.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)ipPrms->bias.ptr, TIVX_MEM_EXTERNAL);
         }
         else if(TIDL_DetectionOutputLayer == net->TIDLLayers[i].layerType)
         {
           sTIDL_DetectOutputParams_t *detectPrms = \
               &net->TIDLLayers[i].layerParams.detectOutParams;
+          pParams= (uint8_t *)align((uintptr_t)pParams, DEFAULT_ALIGN);
+          detectPrms->priorBox.ptr= (void*)pParams;
+          pParams+= detectPrms->priorBox.bufSize;
           dataSize = detectPrms->priorBoxSize;
-          if(VX_TIDL_UTILS_RANDOM_INPUT)
-          {
-            tivxMemBufferMap(detectPrms->priorBox.ptr, dataSize*4,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            createRandPatternS16((Int16 *)detectPrms->priorBox.ptr,1,dataSize*4,1,1,1);
-            tivxMemBufferUnmap(detectPrms->priorBox.ptr, dataSize*4,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
-          else
-          {
-            tivxMemBufferMap(detectPrms->priorBox.ptr, dataSize*4,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            readSize= fread(
-                (uint8_t*)detectPrms->priorBox.ptr,
-                1, (dataSize * 4),
-                fp_params);
-            assert(readSize == (dataSize * 4));
-            tivxMemBufferUnmap(detectPrms->priorBox.ptr, dataSize*4,
-                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-          }
+
+          readSize= fread(
+              (uint8_t*)detectPrms->priorBox.ptr,
+              1, (dataSize * 4),
+              fp_params);
+          assert(readSize == (dataSize * 4));
+
+          detectPrms->priorBox.ptr= (void*)(uintptr_t)tivxMemHost2SharedPtr((uint64_t)(uintptr_t)detectPrms->priorBox.ptr, TIVX_MEM_EXTERNAL);
         }
       }
 

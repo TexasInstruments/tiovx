@@ -92,26 +92,6 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
  */
 vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_object  network, uint32_t *num_input_tensors, uint32_t *num_output_tensors);
 
-/**
- *******************************************************************************
- *
- * \brief Function vx_tidl_utils_allocNetParams() allocates the buffers required to store each layer's parameters: convolution weights, bias values, etc.
- * Buffer pointers are stored in the network
- * \return  0
- *
- *******************************************************************************
- */
-int32_t vx_tidl_utils_allocNetParams(vx_user_data_object  network);
-
-/**
- *******************************************************************************
- *
- * \brief Function vx_tidl_utils_freeNetParams() frees the buffers required to store each layer's parameters: convolution weights, bias values, etc.
- * \return  0
- *
- *******************************************************************************
- */
-int32_t vx_tidl_utils_freeNetParams(vx_user_data_object  network);
 
 /**
  *******************************************************************************

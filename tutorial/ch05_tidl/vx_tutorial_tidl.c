@@ -187,7 +187,6 @@ void vx_tutorial_tidl()
   network = vx_tidl_utils_readNetwork(context, &obj->tidl_network_file_path[0]);
   VX_TUTORIAL_ASSERT_VALID_REF(network)
   config = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors);
-  vx_tidl_utils_allocNetParams(network);
 
   printf(" Reading network params file %s ...\n", obj->tidl_params_file_path);
 
@@ -255,8 +254,6 @@ void vx_tutorial_tidl()
   vxReleaseGraph(&graph);
 
   vxReleaseUserDataObject(&config);
-
-  vx_tidl_utils_freeNetParams(network);
 
   vxReleaseUserDataObject(&network);
   vxReleaseTensor(&input_tensor);

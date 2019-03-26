@@ -153,7 +153,6 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(network = vx_tidl_utils_readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     ASSERT_VX_OBJECT(config = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-    vx_tidl_utils_allocNetParams(network);
 
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl/%s", ct_get_test_file_path(), paramFile[network_id]);
     ASSERT(sz < MAXPATHLENGTH);
@@ -206,7 +205,6 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT(graph == 0);
 
     VX_CALL(vxReleaseUserDataObject(&config));
-    VX_CALL(vx_tidl_utils_freeNetParams(network));
     VX_CALL(vxReleaseUserDataObject(&network));
     VX_CALL(vxReleaseTensor(&input_tensor));
     VX_CALL(vxReleaseTensor(&output_tensor));
