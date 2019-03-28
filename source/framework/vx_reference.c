@@ -114,11 +114,11 @@ vx_bool ownIsValidReference(vx_reference ref)
         }
         else if (ref->magic == TIVX_BAD_MAGIC)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Reference has already been released and garbage collected!\n");
+            VX_PRINT(VX_ZONE_INFO, "Reference has already been released and garbage collected!\n");
         }
         else if (ref->type != VX_TYPE_CONTEXT)
         {
-            VX_PRINT(VX_ZONE_ERROR, "Not a valid reference!\n");
+            VX_PRINT(VX_ZONE_INFO, "Not a valid reference!\n");
         }
         else
         {
@@ -127,7 +127,7 @@ vx_bool ownIsValidReference(vx_reference ref)
     }
     else
     {
-        VX_PRINT(VX_ZONE_ERROR, "Reference was NULL\n");
+        VX_PRINT(VX_ZONE_INFO, "Reference was NULL\n");
     }
     return ret;
 }
@@ -551,6 +551,10 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetReferenceName(vx_reference ref, const vx
     {
         snprintf(ref->name, VX_MAX_REFERENCE_NAME, name);
         status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"vxSetReferenceName: Invalid reference\n");
     }
     return status;
 }
