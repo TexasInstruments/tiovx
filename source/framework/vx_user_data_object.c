@@ -150,7 +150,7 @@ static vx_status ownInitUserDataObjectObject(
     obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
 
     obj_desc->mem_size = size;
-    
+
     /* Initialize string with zeros, which safely fills with null terminators */
     obj_desc->type_name[0] = 0;
 
@@ -227,6 +227,27 @@ VX_API_ENTRY vx_user_data_object VX_API_CALL vxCreateUserDataObject(
                         if (NULL != ptr)
                         {
                             status = vxCopyUserDataObject(user_data_object, 0, size, (void*)ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+                        }
+                        else
+                        {
+                            status = ownAllocUserDataObjectBuffer(&user_data_object->base);
+
+                            if (status == VX_SUCCESS)
+                            {
+                                vx_uint8 *start_ptr;
+                                tivx_obj_desc_user_data_object_t *obj_desc = NULL;
+
+                                obj_desc = (tivx_obj_desc_user_data_object_t *)user_data_object->base.obj_desc;
+                                start_ptr = (vx_uint8 *)(uintptr_t)obj_desc->mem_ptr.host_ptr;
+
+                                tivxMemBufferMap(start_ptr, (uint32_t)size,
+                                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+                                memset(start_ptr, 0, size);
+
+                                tivxMemBufferUnmap(start_ptr, (uint32_t)size,
+                                    VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                            }
                         }
                     }
 
