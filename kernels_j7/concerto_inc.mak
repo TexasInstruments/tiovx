@@ -57,7 +57,7 @@ LDIRS+=$(PDK_PATH)/packages/ti/drv/sciclient/lib/j721e/c7x-hostemu/$(TARGET_BUIL
 LDIRS+=$(PDK_PATH)/packages/ti/csl/lib/j721e/c7x-hostemu/$(TARGET_BUILD)
 LDIRS+=$(PDK_PATH)/packages/ti/osal/lib/nonos/j721e/c7x-hostemu/$(TARGET_BUILD)
 
-LDIRS       += $(IMAGING_PATH)/out/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
+LDIRS       += $(IMAGING_PATH)/lib/PC/$(TARGET_CPU)/$(TARGET_OS)/$(TARGET_BUILD)
 STATIC_LIBS += ti_imaging_dcc
 
 endif
