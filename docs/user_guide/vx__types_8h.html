@@ -144,30 +144,30 @@ Macros</h2></td></tr>
 <tr class="memitem:a00c6b3e2d229dfd754943e9dadbda547"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a00c6b3e2d229dfd754943e9dadbda547">VX_ENUM_MASK</a>&#160;&#160;&#160;(0x00000FFF)</td></tr>
 <tr class="memdesc:a00c6b3e2d229dfd754943e9dadbda547"><td class="mdescLeft">&#160;</td><td class="mdescRight">A generic enumeration list can have values between <img class="formulaInl" alt="$ [0,2^{12}-1] $" src="form_1.png"/> (inclusive).  <a href="#a00c6b3e2d229dfd754943e9dadbda547">More...</a><br /></td></tr>
 <tr class="separator:a00c6b3e2d229dfd754943e9dadbda547"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4a2afec327d9034855d009a3aef4c91"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#ab4a2afec327d9034855d009a3aef4c91">VX_VENDOR</a>(e)&#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#ac1efdee211e181090c26bc63974bb0af">VX_VENDOR_MASK</a>) &gt;&gt; 20)</td></tr>
-<tr class="memdesc:ab4a2afec327d9034855d009a3aef4c91"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the vendor ID from the enumerated value.  <a href="#ab4a2afec327d9034855d009a3aef4c91">More...</a><br /></td></tr>
-<tr class="separator:ab4a2afec327d9034855d009a3aef4c91"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab491951920875b2c1ba70336ee58c50a"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#ab491951920875b2c1ba70336ee58c50a">VX_TYPE</a>(e)&#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#a05e212e35cc9272df3d32d322b3743d1">VX_TYPE_MASK</a>) &gt;&gt; 8)</td></tr>
-<tr class="memdesc:ab491951920875b2c1ba70336ee58c50a"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the type from an enumerated attribute value.  <a href="#ab491951920875b2c1ba70336ee58c50a">More...</a><br /></td></tr>
-<tr class="separator:ab491951920875b2c1ba70336ee58c50a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa432fc9d224b119a4ac0cc8b6108b845"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#aa432fc9d224b119a4ac0cc8b6108b845">VX_ENUM_TYPE</a>(e)&#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#ad619cef87121c7437700a3fabb3fc3e5">VX_ENUM_TYPE_MASK</a>) &gt;&gt; 12)</td></tr>
-<tr class="memdesc:aa432fc9d224b119a4ac0cc8b6108b845"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the enum type from an enumerated value.  <a href="#aa432fc9d224b119a4ac0cc8b6108b845">More...</a><br /></td></tr>
-<tr class="separator:aa432fc9d224b119a4ac0cc8b6108b845"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9776e9c7308df7a0ecd270acf9ed9c13"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a9776e9c7308df7a0ecd270acf9ed9c13">VX_LIBRARY</a>(e)&#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#a950bd6a42f67dc70760257597b1cb937">VX_LIBRARY_MASK</a>) &gt;&gt; 12)</td></tr>
-<tr class="memdesc:a9776e9c7308df7a0ecd270acf9ed9c13"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the kernel library enumeration from a enumerated kernel value.  <a href="#a9776e9c7308df7a0ecd270acf9ed9c13">More...</a><br /></td></tr>
-<tr class="separator:a9776e9c7308df7a0ecd270acf9ed9c13"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba1ab5885e373ec34614ec06ed787801"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#aba1ab5885e373ec34614ec06ed787801">VX_DF_IMAGE</a>(a,  b,  c,  d)&#160;&#160;&#160;((a) | (b &lt;&lt; 8) | (c &lt;&lt; 16) | (d &lt;&lt; 24))</td></tr>
-<tr class="memdesc:aba1ab5885e373ec34614ec06ed787801"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a set of four chars into a <code>uint32_t</code> container of a VX_DF_IMAGE code.  <a href="#aba1ab5885e373ec34614ec06ed787801">More...</a><br /></td></tr>
-<tr class="separator:aba1ab5885e373ec34614ec06ed787801"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3d7c5da21e23c3b0747091591fe1afa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#aa3d7c5da21e23c3b0747091591fe1afa">VX_ATTRIBUTE_BASE</a>(vendor,  object)&#160;&#160;&#160;(((vendor) &lt;&lt; 20) | (object &lt;&lt; 8))</td></tr>
-<tr class="memdesc:aa3d7c5da21e23c3b0747091591fe1afa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Object IDs to get the base value of the enumeration.  <a href="#aa3d7c5da21e23c3b0747091591fe1afa">More...</a><br /></td></tr>
-<tr class="separator:aa3d7c5da21e23c3b0747091591fe1afa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf866bd868ffb9a8c8dc157c2c541f40"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#adf866bd868ffb9a8c8dc157c2c541f40">VX_KERNEL_BASE</a>(vendor,  lib)&#160;&#160;&#160;(((vendor) &lt;&lt; 20) | (lib &lt;&lt; 12))</td></tr>
-<tr class="memdesc:adf866bd868ffb9a8c8dc157c2c541f40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Library IDs to get the base value of the enumeration.  <a href="#adf866bd868ffb9a8c8dc157c2c541f40">More...</a><br /></td></tr>
-<tr class="separator:adf866bd868ffb9a8c8dc157c2c541f40"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a79c86535e7d15b833aa40fb068887a46"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a79c86535e7d15b833aa40fb068887a46">VX_ENUM_BASE</a>(vendor,  id)&#160;&#160;&#160;(((vendor) &lt;&lt; 20) | (id &lt;&lt; 12))</td></tr>
-<tr class="memdesc:a79c86535e7d15b833aa40fb068887a46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Object IDs to get the base value of the enumeration.  <a href="#a79c86535e7d15b833aa40fb068887a46">More...</a><br /></td></tr>
-<tr class="separator:a79c86535e7d15b833aa40fb068887a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a179ec6c187486aafde046026e6ee839c"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a179ec6c187486aafde046026e6ee839c">VX_VENDOR</a>(e)                                            &#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#ac1efdee211e181090c26bc63974bb0af">VX_VENDOR_MASK</a>) &gt;&gt; 20)</td></tr>
+<tr class="memdesc:a179ec6c187486aafde046026e6ee839c"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the vendor ID from the enumerated value.  <a href="#a179ec6c187486aafde046026e6ee839c">More...</a><br /></td></tr>
+<tr class="separator:a179ec6c187486aafde046026e6ee839c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5464da86844ee937d1ab5b8822c23ee"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#ad5464da86844ee937d1ab5b8822c23ee">VX_TYPE</a>(e)                                                &#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#a05e212e35cc9272df3d32d322b3743d1">VX_TYPE_MASK</a>) &gt;&gt; 8)</td></tr>
+<tr class="memdesc:ad5464da86844ee937d1ab5b8822c23ee"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the type from an enumerated attribute value.  <a href="#ad5464da86844ee937d1ab5b8822c23ee">More...</a><br /></td></tr>
+<tr class="separator:ad5464da86844ee937d1ab5b8822c23ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac929f0c30de3b2e35cebf45af9294dcb"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#ac929f0c30de3b2e35cebf45af9294dcb">VX_ENUM_TYPE</a>(e)                                      &#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#ad619cef87121c7437700a3fabb3fc3e5">VX_ENUM_TYPE_MASK</a>) &gt;&gt; 12)</td></tr>
+<tr class="memdesc:ac929f0c30de3b2e35cebf45af9294dcb"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the enum type from an enumerated value.  <a href="#ac929f0c30de3b2e35cebf45af9294dcb">More...</a><br /></td></tr>
+<tr class="separator:ac929f0c30de3b2e35cebf45af9294dcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9813789f6037862692a572c94b3d1c46"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a9813789f6037862692a572c94b3d1c46">VX_LIBRARY</a>(e)                                          &#160;&#160;&#160;(((<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a>)e &amp; <a class="el" href="vx__types_8h.html#a950bd6a42f67dc70760257597b1cb937">VX_LIBRARY_MASK</a>) &gt;&gt; 12)</td></tr>
+<tr class="memdesc:a9813789f6037862692a572c94b3d1c46"><td class="mdescLeft">&#160;</td><td class="mdescRight">A macro to extract the kernel library enumeration from a enumerated kernel value.  <a href="#a9813789f6037862692a572c94b3d1c46">More...</a><br /></td></tr>
+<tr class="separator:a9813789f6037862692a572c94b3d1c46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b08b8b2221d77bf99a11576d5a61221"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a0b08b8b2221d77bf99a11576d5a61221">VX_DF_IMAGE</a>(a,  b,  c,  d)                                &#160;&#160;&#160;((a) | (b &lt;&lt; 8) | (c &lt;&lt; 16) | (d &lt;&lt; 24))</td></tr>
+<tr class="memdesc:a0b08b8b2221d77bf99a11576d5a61221"><td class="mdescLeft">&#160;</td><td class="mdescRight">Converts a set of four chars into a <code>uint32_t</code> container of a VX_DF_IMAGE code.  <a href="#a0b08b8b2221d77bf99a11576d5a61221">More...</a><br /></td></tr>
+<tr class="separator:a0b08b8b2221d77bf99a11576d5a61221"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57e72aff0587b1a44835b1672b8f10fa"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a57e72aff0587b1a44835b1672b8f10fa">VX_ATTRIBUTE_BASE</a>(vendor,  object)  &#160;&#160;&#160;(((vendor) &lt;&lt; 20) | (object &lt;&lt; 8))</td></tr>
+<tr class="memdesc:a57e72aff0587b1a44835b1672b8f10fa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Object IDs to get the base value of the enumeration.  <a href="#a57e72aff0587b1a44835b1672b8f10fa">More...</a><br /></td></tr>
+<tr class="separator:a57e72aff0587b1a44835b1672b8f10fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af230e2526deabc333a5d93e36e2f7c97"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#af230e2526deabc333a5d93e36e2f7c97">VX_KERNEL_BASE</a>(vendor,  lib)              &#160;&#160;&#160;(((vendor) &lt;&lt; 20) | (lib &lt;&lt; 12))</td></tr>
+<tr class="memdesc:af230e2526deabc333a5d93e36e2f7c97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Library IDs to get the base value of the enumeration.  <a href="#af230e2526deabc333a5d93e36e2f7c97">More...</a><br /></td></tr>
+<tr class="separator:af230e2526deabc333a5d93e36e2f7c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a895c779e203f1bdcd4a51cbf5b318ebe"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a895c779e203f1bdcd4a51cbf5b318ebe">VX_ENUM_BASE</a>(vendor,  id)                    &#160;&#160;&#160;(((vendor) &lt;&lt; 20) | (id &lt;&lt; 12))</td></tr>
+<tr class="memdesc:a895c779e203f1bdcd4a51cbf5b318ebe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Defines the manner in which to combine the Vendor and Object IDs to get the base value of the enumeration.  <a href="#a895c779e203f1bdcd4a51cbf5b318ebe">More...</a><br /></td></tr>
+<tr class="separator:a895c779e203f1bdcd4a51cbf5b318ebe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a865aabb216bd28500ebbf4a4deaa69d3"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="vx__types_8h.html#a865aabb216bd28500ebbf4a4deaa69d3">VX_FMT_REF</a>&#160;&#160;&#160;&quot;%p&quot;</td></tr>
 <tr class="memdesc:a865aabb216bd28500ebbf4a4deaa69d3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Use to aid in debugging values in OpenVX.  <a href="#a865aabb216bd28500ebbf4a4deaa69d3">More...</a><br /></td></tr>
 <tr class="separator:a865aabb216bd28500ebbf4a4deaa69d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -967,7 +967,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab4a2afec327d9034855d009a3aef4c91"></a>
+<a class="anchor" id="a179ec6c187486aafde046026e6ee839c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -985,7 +985,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ab491951920875b2c1ba70336ee58c50a"></a>
+<a class="anchor" id="ad5464da86844ee937d1ab5b8822c23ee"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1003,7 +1003,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa432fc9d224b119a4ac0cc8b6108b845"></a>
+<a class="anchor" id="ac929f0c30de3b2e35cebf45af9294dcb"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1021,7 +1021,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a9776e9c7308df7a0ecd270acf9ed9c13"></a>
+<a class="anchor" id="a9813789f6037862692a572c94b3d1c46"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1039,7 +1039,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aba1ab5885e373ec34614ec06ed787801"></a>
+<a class="anchor" id="a0b08b8b2221d77bf99a11576d5a61221"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1080,7 +1080,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="aa3d7c5da21e23c3b0747091591fe1afa"></a>
+<a class="anchor" id="a57e72aff0587b1a44835b1672b8f10fa"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1108,7 +1108,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="adf866bd868ffb9a8c8dc157c2c541f40"></a>
+<a class="anchor" id="af230e2526deabc333a5d93e36e2f7c97"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -1136,7 +1136,7 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a79c86535e7d15b833aa40fb068887a46"></a>
+<a class="anchor" id="a895c779e203f1bdcd4a51cbf5b318ebe"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -2311,7 +2311,7 @@ vxAssignNodeCallback </dd></dl>
 </div><div class="memdoc">
 
 <p>The set of supported enumerations in OpenVX. </p>
-<p>These can be extracted from enumerated values using <code><a class="el" href="vx__types_8h.html#aa432fc9d224b119a4ac0cc8b6108b845">VX_ENUM_TYPE</a></code>. </p>
+<p>These can be extracted from enumerated values using <code><a class="el" href="vx__types_8h.html#ac929f0c30de3b2e35cebf45af9294dcb">VX_ENUM_TYPE</a></code>. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a class="anchor" id="a64bbf073b67ff3b5398d271fe49f940ea1b3c763f780685b063aded48ec52f684"></a>VX_ENUM_DIRECTION&#160;</td><td class="fielddoc">
 <p>Parameter Direction. </p>

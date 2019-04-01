@@ -6,6 +6,7 @@ var NAVTREE =
     [ "Chapter 2: Understanding image data object", "CH02_IMAGE.html", null ],
     [ "Chapter 3: Understanding OpenVX graphs", "CH03_GRAPH.html", null ],
     [ "Chapter 4: Understanding graph pipelining", "CH04_GRAPH_PIPELINE.html", null ],
+    [ "Chapter 5: Understanding TIDL node", "CH05_TIDL.html", null ],
     [ "Packages", null, [
       [ "Packages", "namespaces.html", "namespaces" ],
       [ "Package Functions", "namespacemembers.html", [
@@ -18,7 +19,8 @@ var NAVTREE =
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Data Fields", "functions.html", [
         [ "All", "functions.html", null ],
-        [ "Functions", "functions_func.html", null ]
+        [ "Functions", "functions_func.html", null ],
+        [ "Variables", "functions_vars.html", null ]
       ] ]
     ] ],
     [ "Files", null, [

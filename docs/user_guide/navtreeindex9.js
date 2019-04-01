@@ -1,5 +1,7 @@
 var NAVTREEINDEX9 =
 {
+"tivx_8h.html#a08624f9c06d23a63d53a7b8ecc114797":[18,0,13,18],
+"tivx_8h.html#a1316155194309cd6bb123fb12dd125cc":[18,0,13,17],
 "tivx_8h.html#a4c16a72a951da2bd43ef962acdef2968":[18,0,13,14],
 "tivx_8h.html#a4ed05998ba396aa5b57ea33016d67823":[18,0,13,10],
 "tivx_8h.html#a62bdc6f0f0fa2d8e07339fa5d8818532":[18,0,13,11],
@@ -247,7 +249,5 @@ var NAVTREEINDEX9 =
 "tivx__kernel__optical__flow__pyr__lk_8h.html#a9180d4289aaf75553add6a8265bca645":[18,0,51,3],
 "tivx__kernel__optical__flow__pyr__lk_8h.html#ab60a672f860dab7b8211bb72be28640d":[18,0,51,1],
 "tivx__kernel__optical__flow__pyr__lk_8h.html#ac80e744d243883bbd575a4c362297058":[18,0,51,5],
-"tivx__kernel__optical__flow__pyr__lk_8h.html#ace71d65d7840b98262736a59b450acf1":[18,0,51,0],
-"tivx__kernel__optical__flow__pyr__lk_8h.html#ad63ac11b12edc1477ea57da1757a7c28":[18,0,51,6],
-"tivx__kernel__optical__flow__pyr__lk_8h.html#affb730eb2de019db4effed5165959ad1":[18,0,51,2]
+"tivx__kernel__optical__flow__pyr__lk_8h.html#ace71d65d7840b98262736a59b450acf1":[18,0,51,0]
 };

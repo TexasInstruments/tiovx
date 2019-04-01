@@ -107,12 +107,12 @@ Macros</h2></td></tr>
 <tr class="memitem:ga033ec5e18b5d4cebbed152cd01086ecc"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target.html#ga033ec5e18b5d4cebbed152cd01086ecc">TIVX_MAKE_TARGET_ID</a>(cpu,  target_inst)&#160;&#160;&#160;((<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>)(((((uint32_t)cpu)&amp;<a class="el" href="group__group__tivx__target.html#ga81ac34633650fbdaa95f15156f870e34">TIVX_CPU_ID_MASK</a>) &lt;&lt; <a class="el" href="group__group__tivx__target.html#ga325e1041e0add3a92e0ff1c210320dc7">TIVX_CPU_ID_SHIFT</a>) |((((uint32_t)target_inst)&amp;<a class="el" href="group__group__tivx__target.html#ga8e1f23af23b08043c86aafabfdcafb6d">TIVX_TARGET_INST_MASK</a>) &lt;&lt; <a class="el" href="group__group__tivx__target.html#ga61f79413cd1c84255b912f313d2409ec">TIVX_TARGET_INST_SHIFT</a>)))</td></tr>
 <tr class="memdesc:ga033ec5e18b5d4cebbed152cd01086ecc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Make target based on CPU ID.  <a href="#ga033ec5e18b5d4cebbed152cd01086ecc">More...</a><br /></td></tr>
 <tr class="separator:ga033ec5e18b5d4cebbed152cd01086ecc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae2b5f51dde194470e8cd20fd3137da53"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target.html#gae2b5f51dde194470e8cd20fd3137da53">TIVX_GET_CPU_ID</a>(target)&#160;&#160;&#160;((<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>)(((target)&gt;&gt;<a class="el" href="group__group__tivx__target.html#ga325e1041e0add3a92e0ff1c210320dc7">TIVX_CPU_ID_SHIFT</a>)&amp;<a class="el" href="group__group__tivx__target.html#ga81ac34633650fbdaa95f15156f870e34">TIVX_CPU_ID_MASK</a>))</td></tr>
-<tr class="memdesc:gae2b5f51dde194470e8cd20fd3137da53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get CPU Id from given target.  <a href="#gae2b5f51dde194470e8cd20fd3137da53">More...</a><br /></td></tr>
-<tr class="separator:gae2b5f51dde194470e8cd20fd3137da53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga40dc0ddb4196d504ef538f958fef26cd"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target.html#ga40dc0ddb4196d504ef538f958fef26cd">TIVX_GET_TARGET_INST</a>(target)&#160;&#160;&#160;((uint16_t)(((target)&gt;&gt;<a class="el" href="group__group__tivx__target.html#ga61f79413cd1c84255b912f313d2409ec">TIVX_TARGET_INST_SHIFT</a>)) &amp; <a class="el" href="group__group__tivx__target.html#ga8e1f23af23b08043c86aafabfdcafb6d">TIVX_TARGET_INST_MASK</a>)</td></tr>
-<tr class="memdesc:ga40dc0ddb4196d504ef538f958fef26cd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the target instances from target.  <a href="#ga40dc0ddb4196d504ef538f958fef26cd">More...</a><br /></td></tr>
-<tr class="separator:ga40dc0ddb4196d504ef538f958fef26cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac6a0fdb03ca69642d3dc20710a9b247e"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target.html#gac6a0fdb03ca69642d3dc20710a9b247e">TIVX_GET_CPU_ID</a>(target)                            &#160;&#160;&#160;((<a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>)(((target)&gt;&gt;<a class="el" href="group__group__tivx__target.html#ga325e1041e0add3a92e0ff1c210320dc7">TIVX_CPU_ID_SHIFT</a>)&amp;<a class="el" href="group__group__tivx__target.html#ga81ac34633650fbdaa95f15156f870e34">TIVX_CPU_ID_MASK</a>))</td></tr>
+<tr class="memdesc:gac6a0fdb03ca69642d3dc20710a9b247e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get CPU Id from given target.  <a href="#gac6a0fdb03ca69642d3dc20710a9b247e">More...</a><br /></td></tr>
+<tr class="separator:gac6a0fdb03ca69642d3dc20710a9b247e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae2f8c2efdc2a65a00cb38e96ea4cbe62"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target.html#gae2f8c2efdc2a65a00cb38e96ea4cbe62">TIVX_GET_TARGET_INST</a>(target)                  &#160;&#160;&#160;((uint16_t)(((target)&gt;&gt;<a class="el" href="group__group__tivx__target.html#ga61f79413cd1c84255b912f313d2409ec">TIVX_TARGET_INST_SHIFT</a>)) &amp; <a class="el" href="group__group__tivx__target.html#ga8e1f23af23b08043c86aafabfdcafb6d">TIVX_TARGET_INST_MASK</a>)</td></tr>
+<tr class="memdesc:gae2f8c2efdc2a65a00cb38e96ea4cbe62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the target instances from target.  <a href="#gae2f8c2efdc2a65a00cb38e96ea4cbe62">More...</a><br /></td></tr>
+<tr class="separator:gae2f8c2efdc2a65a00cb38e96ea4cbe62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf943ee340be601ee19cd92e378211b53"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__target.html#gaf943ee340be601ee19cd92e378211b53">TIVX_TARGET_ID_INVALID</a>&#160;&#160;&#160;(0xFFFFFFFFu)</td></tr>
 <tr class="memdesc:gaf943ee340be601ee19cd92e378211b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Const to denote invalid ID's.  <a href="#gaf943ee340be601ee19cd92e378211b53">More...</a><br /></td></tr>
 <tr class="separator:gaf943ee340be601ee19cd92e378211b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -292,7 +292,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="gae2b5f51dde194470e8cd20fd3137da53"></a>
+<a class="anchor" id="gac6a0fdb03ca69642d3dc20710a9b247e"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -311,7 +311,7 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ga40dc0ddb4196d504ef538f958fef26cd"></a>
+<a class="anchor" id="gae2f8c2efdc2a65a00cb38e96ea4cbe62"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">

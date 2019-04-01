@@ -1,7 +1,7 @@
 var vx__internal_8h =
 [
-    [ "TIVX_ALIGN", "group__group__vx__utils.html#ga3ce34986ae4e8bb261f86e769fbbc167", null ],
-    [ "TIVX_FLOOR", "group__group__vx__utils.html#gaa68f32003477b404904062d7786fc3bd", null ],
+    [ "TIVX_ALIGN", "group__group__vx__utils.html#gab3abdeea3479e4d87dd648d3596f6625", null ],
+    [ "TIVX_FLOOR", "group__group__vx__utils.html#ga29707395f184c575ba5e39b84099a854", null ],
     [ "TIVX_DEFAULT_STRIDE_Y_ALIGN", "group__group__vx__utils.html#gafed0fc37f24bfac4e4593ee9d3b87c8e", null ],
     [ "TIVX_TYPE_IS_SCALAR", "group__group__vx__utils.html#gab4ba474b742b4fe12aed4cd4691bb6b9", null ],
     [ "TIVX_TYPE_IS_STRUCT", "group__group__vx__utils.html#ga8046b2f6f99302f66e9e8153a230baf6", null ],

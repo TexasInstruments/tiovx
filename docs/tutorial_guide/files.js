@@ -21,5 +21,7 @@ var files =
     [ "vx_tutorial_image_load_save.c", "vx__tutorial__image__load__save_8c.html", "vx__tutorial__image__load__save_8c" ],
     [ "vx_tutorial_image_query.c", "vx__tutorial__image__query_8c.html", "vx__tutorial__image__query_8c" ],
     [ "vx_tutorial_kernels.h", "vx__tutorial__kernels_8h.html", "vx__tutorial__kernels_8h" ],
-    [ "vx_tutorial_target_kernel.c", "vx__tutorial__target__kernel_8c.html", "vx__tutorial__target__kernel_8c" ]
+    [ "vx_tutorial_target_kernel.c", "vx__tutorial__target__kernel_8c.html", "vx__tutorial__target__kernel_8c" ],
+    [ "vx_tutorial_tidl.c", "vx__tutorial__tidl_8c.html", "vx__tutorial__tidl_8c" ],
+    [ "vx_tutorial_tidl.h", "vx__tutorial__tidl_8h.html", "vx__tutorial__tidl_8h" ]
 ];

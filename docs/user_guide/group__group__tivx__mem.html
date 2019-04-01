@@ -116,6 +116,9 @@ Functions</h2></td></tr>
 <tr class="memitem:ga241093f30386e2f28b9d5fe323399afb"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__mem.html#ga241093f30386e2f28b9d5fe323399afb">tivxMemShared2TargetPtr</a> (uint64_t shared_ptr, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> mem_heap_region)</td></tr>
 <tr class="memdesc:ga241093f30386e2f28b9d5fe323399afb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert shared pointer to target pointer.  <a href="#ga241093f30386e2f28b9d5fe323399afb">More...</a><br /></td></tr>
 <tr class="separator:ga241093f30386e2f28b9d5fe323399afb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1deda3a1ac6a4436d5de5c5e63540364"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__mem.html#ga1deda3a1ac6a4436d5de5c5e63540364">tivxMemShared2PhysPtr</a> (uint64_t shared_ptr, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> mem_heap_region)</td></tr>
+<tr class="memdesc:ga1deda3a1ac6a4436d5de5c5e63540364"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert shared pointer to system physical memory location This is mainly used for configuring physical address to HW.  <a href="#ga1deda3a1ac6a4436d5de5c5e63540364">More...</a><br /></td></tr>
+<tr class="separator:ga1deda3a1ac6a4436d5de5c5e63540364"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga99635ddb13baefecfbb1cf262437ca46"><td class="memItemLeft" align="right" valign="top">void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__group__tivx__mem.html#ga99635ddb13baefecfbb1cf262437ca46">tivxMemAlloc</a> (<a class="el" href="vx__types_8h.html#a1ddb983b9696cafdb4256c0df757171c">vx_uint32</a> size, <a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a> mem_heap_region)</td></tr>
 <tr class="memdesc:ga99635ddb13baefecfbb1cf262437ca46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Allocates memory of given size.  <a href="#ga99635ddb13baefecfbb1cf262437ca46">More...</a><br /></td></tr>
 <tr class="separator:ga99635ddb13baefecfbb1cf262437ca46"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -435,6 +438,42 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Converted shared memory pointer </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga1deda3a1ac6a4436d5de5c5e63540364"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint64_t tivxMemShared2PhysPtr </td>
+          <td>(</td>
+          <td class="paramtype">uint64_t&#160;</td>
+          <td class="paramname"><em>shared_ptr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="vx__types_8h.html#a73d23cb932d31a69f44182054a987c85">vx_enum</a>&#160;</td>
+          <td class="paramname"><em>mem_heap_region</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Convert shared pointer to system physical memory location This is mainly used for configuring physical address to HW. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">shared_ptr</td><td>Host memory pointer </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">mem_heap_region</td><td>Memory region to which this pointer belongs, see <a class="el" href="group__group__tivx__mem.html#ga453747d90eef05b464e633ea644ac0ed">tivx_mem_heap_region_e</a></td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Converted Physical memory pointer </dd></dl>
 
 </div>
 </div>

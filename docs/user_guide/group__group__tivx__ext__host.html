@@ -953,6 +953,16 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utility function to create a node given parameter references and kernel enum. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kernelenum</td><td>Enumeration specifying a specific kernel </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">params</td><td>List of parameter references corresponding to the enumerated kernel </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num</td><td>Number of parameter references in params list</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A node reference <code><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a></code>. Any possible errors preventing a successful creation should be checked using <code>vxGetStatus</code>. </dd></dl>
 
 </div>
 </div>
@@ -993,6 +1003,16 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utility function to create a node given parameter references and kernel reference. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kernel</td><td>Kernel reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">params</td><td>List of parameter references corresponding to the kernel reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num</td><td>Number of parameter references in params list</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A node reference <code><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a></code>. Any possible errors preventing a successful creation should be checked using <code>vxGetStatus</code>. </dd></dl>
 
 </div>
 </div>
@@ -1033,6 +1053,16 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utility function to create a node given parameter references and kernel name. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">kernel_name</td><td>String corresponding to the kernel name </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">params</td><td>List of parameter references corresponding to the kernel name </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num</td><td>Number of parameter references in params list</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A node reference <code><a class="el" href="vx__types_8h.html#a7f1b5d91fac63093ee3a77e87d942f96">vx_node</a></code>. Any possible errors preventing a successful creation should be checked using <code>vxGetStatus</code>. </dd></dl>
 
 </div>
 </div>
@@ -1051,6 +1081,20 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utility function to check if the given reference is virtual or not. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">ref</td><td>Reference to query</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></code> value. </dd></dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">vx_true_e</td><td>The reference is virtual. </td></tr>
+    <tr><td class="paramname">vx_false_e</td><td>The reference is not virtual. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1069,6 +1113,20 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Utility function to know if target is enabled or not. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">target_name</td><td>String specifying the target name</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="vx__types_8h.html#ab1690f4b7e55ce7712e9a4c2ca61e100">vx_bool</a></code> value. </dd></dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">vx_true_e</td><td>The target is enabled </td></tr>
+    <tr><td class="paramname">vx_false_e</td><td>The target is not enabled </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1087,6 +1145,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get the time in micro seconds. </p>
+<dl class="section return"><dt>Returns</dt><dd>Time in micro seconds. </dd></dl>
 
 </div>
 </div>
@@ -1121,7 +1180,15 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Export graph representation as DOT graph file. </p>
-<p>Multiple representation of the graph are exported to different files using 'output_file_prefix' as filename prefix. The output files are stored at path 'output_file_path' </p>
+<p>Multiple representation of the graph are exported to different files using 'output_file_prefix' as filename prefix. The output files are stored at path 'output_file_path'</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_file_path</td><td>String specifying the ouput file path </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">output_file_prefix</td><td>String specifying the filename prefix of the output file </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1140,6 +1207,12 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Enable run-time logging of graph trace to 'stdout'. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1179,7 +1252,15 @@ Functions</h2></td></tr>
 <li>The node parameter MUST be of type virtual or all references to the parameter reference MUST be released before graph verify.</li>
 <li>The node parameter specified MUST be a output parameter.</li>
 </ul>
-<p>This API acts as a hint and framework may overide user specified settings in case any of above conditions are not met. </p>
+<p>This API acts as a hint and framework may overide user specified settings in case any of above conditions are not met.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>Node reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">index</td><td>Node parameter index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_buf</td><td>Number of buffers to allocate </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1208,6 +1289,13 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Indicates to the implementation the depth of the graph pipeline. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">pipeline_depth</td><td>Pipeline depth </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1255,8 +1343,29 @@ Functions</h2></td></tr>
 
 <p>Same as vxGraphParameterEnqueueReadyRef except that it take a additional TIOVX specific flag parameter. </p>
 <p>For valid values of flag see</p><ul>
-<li><a class="el" href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP</a> </li>
+<li><a class="el" href="group__group__tivx__ext__host.html#ga00120b8d056b95a44382e43760d7c27c">TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP</a></li>
 </ul>
+<p>For more detailed description of vxGraphParameterEnqueueReadyRef see vxGraphParameterEnqueueReadyRef</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph</td><td>Graph reference </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">graph_parameter_index</td><td>Graph parameter index </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">refs</td><td>The array of references to enqueue into the graph parameter </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_refs</td><td>Number of references to enqueue </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">flags</td><td>Flag to control behavior of the operation</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>A <code><a class="el" href="vx__types_8h.html#aa2387ff4d3e967f124fb316300503f92">vx_status_e</a></code> enumeration. </dd></dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">VX_SUCCESS</td><td>No errors. </td></tr>
+    <tr><td class="paramname">VX_ERROR_INVALID_REFERENCE</td><td>graph is not a valid reference OR reference is not a valid reference </td></tr>
+    <tr><td class="paramname">VX_ERROR_INVALID_PARAMETERS</td><td>graph_parameter_index is NOT a valid graph parameter index </td></tr>
+    <tr><td class="paramname">VX_FAILURE</td><td>Reference could not be enqueued. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -1309,7 +1418,7 @@ Functions</h2></td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">node</td><td>Reference of the node to which this command is to be sent. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">replicate_nodex_idx</td><td>In case of a non-replicated node this should be 0, For a replicated node this is the index of the replicated node to which the command is targeted. To send same command to all replicated nodes use TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">node_cmd_id</td><td>Node specific control command id, refer to node specific interface file </td></tr>
-    <tr><td class="paramdir"></td><td class="paramname">[in/out]</td><td>ref[]: Node parameter, This is an array of references, required as parameters for this control command. They can be any OpenVX object, created using create API. It is bidirectional parameters, can be used for INPUT, OUTPUT or both. These parameters are list of references, which are required for the control command on the given node. Refer to node documentation to get details about the parameters required for given control command. Caller of this API should explicitely release these refs after their usage is completed. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">ref[]</td><td>Node parameter, This is an array of references, required as parameters for this control command. They can be any OpenVX object, created using create API. It is bidirectional parameters, can be used for INPUT, OUTPUT or both. These parameters are list of references, which are required for the control command on the given node. Refer to node documentation to get details about the parameters required for given control command. Caller of this API should explicitely release these refs after their usage is completed. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">num_refs</td><td>Number of valid entries/references in ref[] array </td></tr>
   </table>
   </dd>

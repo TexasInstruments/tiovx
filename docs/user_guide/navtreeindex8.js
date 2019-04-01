@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"structtivx__objarray__t.html#a50f3dbe80d76b6d766586c1772f58aa6":[16,1,0,0,7,0,1],
+"structtivx__objarray__t.html#af02ff69ad41aefa6d8aa5a342060ecde":[16,1,0,0,7,0,0],
 "structtivx__object__t.html":[16,1,0,1,5,0],
 "structtivx__object__t.html#a149f13c93a0d45fbb2d18234a88f2e22":[16,1,0,1,5,0,22],
 "structtivx__object__t.html#a166decdc785295da0b6fbdddcd75ab9c":[16,1,0,1,5,0,9],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "tiovx__performance__TDA2x__BIOS_8html.html":[18,0,10],
 "tiovx__performance__TDA2x__LINUX_8html.html":[18,0,11],
 "tiovx__performance__TDA3x__BIOS_8html.html":[18,0,12],
-"tivx_8h.html":[18,0,13],
-"tivx_8h.html#a08624f9c06d23a63d53a7b8ecc114797":[18,0,13,18],
-"tivx_8h.html#a1316155194309cd6bb123fb12dd125cc":[18,0,13,17]
+"tivx_8h.html":[18,0,13]
 };
