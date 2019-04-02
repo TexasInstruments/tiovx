@@ -291,8 +291,6 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
         {
             parent_obj_desc[i] = NULL;
 
-            prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
-
             if(is_prm_replicated & (1U<<i))
             {
                 prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
@@ -338,7 +336,45 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             }
             else if(is_prm_array_element & (1U<<i))
             {
-                params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
+                if(is_prm_data_ref_q_flag & (1U<<i))
+                { 
+                    /* this is a case of parameter expected by node being a
+                     * element within a object array or pyramid
+                     * 
+                     * Here we index into the object array and pass the element
+                     * later return parent back to the framework
+                     */  
+
+                    /* if this parameter is pipelined then it is assumed 
+                     * that this points to 0th element of object array or pyramid, always 
+                     */
+                
+                    parent_obj_desc[i] = tivxObjDescGet(prm_obj_desc_id[i]);
+                    if(parent_obj_desc[i])
+                    {
+                        if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_OBJARRAY)
+                        {
+                            params[i] = tivxObjDescGet(
+                                ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
+                                    obj_desc_id[0]);
+                        }
+                        else
+                        if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_PYRAMID)
+                        {
+                            params[i] = tivxObjDescGet(
+                                ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
+                                    obj_desc_id[0]);
+                        }
+                        else
+                        {
+                            params[i] = NULL;
+                        }
+                    }
+                }
+                else
+                {
+                    params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);                    
+                }
             }
             else
             {
@@ -389,14 +425,19 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             }
             else if(tivxFlagIsBitSet(is_prm_array_element, (1<<i)) == vx_true_e)
             {
-                prm_obj_desc = tivxObjDescGet(prm_obj_desc_id[i]);
+                prm_obj_desc_id[i] = TIVX_OBJ_DESC_INVALID;
+                
+                prm_obj_desc = tivxObjDescGet(params[i]->obj_desc_id);
 
                 if (prm_obj_desc)
                 {
                     parent_obj_desc[i] = tivxObjDescGet(
                         prm_obj_desc->scope_obj_desc_id);
-
-                    prm_obj_desc_id[i] = parent_obj_desc[i]->obj_desc_id;
+                        
+                    if(parent_obj_desc[i]!=NULL)
+                    {
+                        prm_obj_desc_id[i] = parent_obj_desc[i]->obj_desc_id;
+                    }
                 }
             }
             else

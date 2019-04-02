@@ -1923,7 +1923,11 @@ void ownNodeLinkDataRefQueue(vx_node node, uint32_t prm_id, tivx_data_ref_queue 
 
 void ownNodeLinkArrayElement(vx_node node, uint32_t prm_id)
 {
-    tivxFlagBitSet(&node->obj_desc[0]->is_prm_array_element, (1<<prm_id));
+    uint16_t pipe_id;
+    for(pipe_id=0; pipe_id<node->pipeline_depth; pipe_id++)
+    {
+        tivxFlagBitSet(&node->obj_desc[pipe_id]->is_prm_array_element, (1<<prm_id));
+    }
 }
 
 uint32_t ownNodeGetParameterNumBuf(vx_node node, vx_uint32 index)
