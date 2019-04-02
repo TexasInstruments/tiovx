@@ -2237,7 +2237,7 @@ TEST(tivxNegativeBoundary2, negativeTestDelayMaxPrmBoundary)
     else
     {
         ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_IN_NODES);
-        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES); 
+        ASSERT(TIVX_DELAY_MAX_PRM_OBJECT >= TIVX_NODE_MAX_OUT_NODES);
         printf("To fully test the TIVX_DELAY_MAX_PRM_OBJECT value, set it to %d in tiovx/include/TI/tivx_config.h and re-run only this test case\n", TIVX_NODE_MAX_IN_NODES);
     }
 }
@@ -2479,7 +2479,7 @@ TEST(tivxNegativeBoundary2, negativeTestDelayMaxObjectBoundary)
 
     ASSERT_VX_OBJECT(image = vxCreateImage(context, 16, 16, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
 
-    EXPECT_VX_ERROR(src_delay = vxCreateDelay(context, (vx_reference)image, TIVX_DELAY_MAX_OBJECT+1), VX_ERROR_INVALID_REFERENCE);
+    EXPECT_VX_ERROR(src_delay = vxCreateDelay(context, (vx_reference)image, TIVX_DELAY_MAX_OBJECT+1), VX_ERROR_NO_RESOURCES);
 
     VX_CALL(vxReleaseImage(&image));
 }
