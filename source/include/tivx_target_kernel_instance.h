@@ -143,12 +143,6 @@ vx_status tivxTargetKernelInstanceFree(tivx_target_kernel_instance *target_kerne
  */
 uint32_t tivxTargetKernelInstanceGetIndex(tivx_target_kernel_instance target_kernel_instance);
 
-/*!
- * \brief Get target kernel for a given target kernel instance
- *
- * \ingroup group_tivx_target_kernel_instance
- */
-tivx_target_kernel tivxTargetKernelInstanceGetKernel(tivx_target_kernel_instance target_kernel_instance);
 
 
 /*!
