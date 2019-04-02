@@ -222,13 +222,16 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         for(buf_id=0; buf_id<num_buf-2; buf_id++)
         {
             tivxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[buf_id], 1, TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP);
+            printf("Q %p \n", frames[buf_id]);
         }
 
         /* After pipe up, now enqueue a buffer to trigger graph scheduling */
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-2], 1);
+        printf("Q %p \n", frames[num_buf-2]);
 
         /* Need to trigger again since display holds on to a buffer */
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-1], 1);
+        printf("Q %p \n", frames[num_buf-1]);
 
         /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
         for(loop_id=0; loop_id<(loop_count+num_buf); loop_id++)
@@ -237,6 +240,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
             /* Get output reference, waits until a frame is available */
             vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&frame, 1, &num_refs);
+            printf("DQ %p \n", frame);
 
             /* Recycles dequeued input and output refs */
             /* input and output can be enqueued in any order */
