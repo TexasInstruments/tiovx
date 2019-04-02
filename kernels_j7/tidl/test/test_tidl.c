@@ -613,7 +613,7 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
                   score[i] = FLT_MIN;
                   classid[i] = (uint32_t)-1;
 
-                  for(j = 0; j < output_sizes[0]; j++)
+                  for(j = 0; j < ioBufDesc->outWidth[id]; j++)
                   {
                     if(pOut[j] > score[i])
                     {
