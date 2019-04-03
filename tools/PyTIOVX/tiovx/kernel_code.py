@@ -206,7 +206,7 @@ class KernelExportCode :
             self.module = module.value
         else :
             print("WARNING: module argument should use the Module class to avoid potential name clashes")
-            self.module = module
+            self.module = module.lower()
         if include_filename :
             self.top_header_name = include_filename
         else :
