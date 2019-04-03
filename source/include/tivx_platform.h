@@ -220,6 +220,14 @@ void tivxPlatformActivate();
  */
 void tivxPlatformDeactivate();
 
+/*!
+ * \brief Utility function to get Platform specific things
+ *        Used to obtain DMA handle
+ *
+ * \ingroup group_tivx_platform
+ */
+void *tivxPlatformGetDmaObj();
+
 #ifdef __cplusplus
 }
 #endif

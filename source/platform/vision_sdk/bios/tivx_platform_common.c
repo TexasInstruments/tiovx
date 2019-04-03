@@ -246,3 +246,8 @@ void tivxPlatformGetTargetName(vx_enum target_id, char *target_name)
         }
     }
 }
+
+void *tivxPlatformGetDmaObj()
+{
+  return NULL;
+}

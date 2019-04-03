@@ -267,3 +267,8 @@ void tivxPlatformActivate()
 void tivxPlatformDeactivate()
 {
 }
+
+void *tivxPlatformGetDmaObj()
+{
+  return NULL;
+}
