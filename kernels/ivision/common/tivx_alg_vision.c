@@ -80,7 +80,6 @@ vx_int32 tivxAlgiVisionFreeMem(vx_uint32 numMemRec, IALG_MemRec *memRec);
 
 static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t *heap_id)
 {
-  tivx_cpu_id_e cpuId;
   int32_t status = VX_SUCCESS;
 
   *heap_id = TIVX_MEM_EXTERNAL;
@@ -110,6 +109,8 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
       else
         if(space==IALG_DARAM1)
         {
+#ifdef TDAX
+          tivx_cpu_id_e cpuId;
           /* EVE does not have any L2 memory so DARAM1 space must be mapped to external memory instead */
           cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
           if ( (cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4) )
@@ -121,6 +122,10 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
           {
             *heap_id = TIVX_MEM_INTERNAL_L2;
           }
+#else
+          *heap_id = TIVX_MEM_INTERNAL_L2;
+#endif
+
         }
         else
         {
