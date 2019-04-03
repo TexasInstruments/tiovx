@@ -126,6 +126,8 @@ var NAVTREEINDEX3 =
 "group__group__tivx__platform.html#ga51af70f92ac58c4872df7d22df0c0781":[16,1,1,1,10],
 "group__group__tivx__platform.html#ga60dd5b4e5393c3efae0b37bfd51122db":[18,0,70,0],
 "group__group__tivx__platform.html#ga60dd5b4e5393c3efae0b37bfd51122db":[16,1,1,1,0],
+"group__group__tivx__platform.html#ga6d706a08de1414d3ba18b31a38e6823c":[18,0,70,15],
+"group__group__tivx__platform.html#ga6d706a08de1414d3ba18b31a38e6823c":[16,1,1,1,15],
 "group__group__tivx__platform.html#ga768f6b4525527196bb1c157932ef150a":[18,0,70,9],
 "group__group__tivx__platform.html#ga768f6b4525527196bb1c157932ef150a":[16,1,1,1,9],
 "group__group__tivx__platform.html#ga845dbad929f94c02f396286a4d420336":[18,0,70,12],
@@ -148,8 +150,8 @@ var NAVTREEINDEX3 =
 "group__group__tivx__platform.html#gae52b4fec9fe9fc881217f834b16e4772":[16,1,1,1,3],
 "group__group__tivx__platform.html#gaee443bc84c911575a11dcfbe03531cc4":[18,0,70,2],
 "group__group__tivx__platform.html#gaee443bc84c911575a11dcfbe03531cc4":[16,1,1,1,2],
-"group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180":[18,0,70,7],
 "group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180":[16,1,1,1,7],
+"group__group__tivx__platform.html#gafe9199791da44e9a0b0a26c81cf49180":[18,0,70,7],
 "group__group__tivx__platform.html#gga60dd5b4e5393c3efae0b37bfd51122dba23fdd08418e39aac36e92a5add8f467b":[18,0,70,0,3],
 "group__group__tivx__platform.html#gga60dd5b4e5393c3efae0b37bfd51122dba23fdd08418e39aac36e92a5add8f467b":[16,1,1,1,0,3],
 "group__group__tivx__platform.html#gga60dd5b4e5393c3efae0b37bfd51122dba8403855db8d16c671c982da48e11f490":[18,0,70,0,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX3 =
 "group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8":[16,0,2,1,1],
 "group__group__tivx__target__kernel.html#ga333da592b786ba63f0a6c9c126eb1cd8":[18,0,74,1],
 "group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9":[16,0,2,1,7],
-"group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9":[18,0,74,7],
-"group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e":[16,0,2,1,6],
-"group__group__tivx__target__kernel.html#ga857faf8c07c3ee28fa55d7657176447e":[18,0,74,6]
+"group__group__tivx__target__kernel.html#ga551f7060ce2a7e3007424a1da2b184a9":[18,0,74,7]
 };

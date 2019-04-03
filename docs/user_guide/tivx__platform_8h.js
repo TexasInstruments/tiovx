@@ -19,5 +19,6 @@ var tivx__platform_8h =
     [ "tivxPlatformCreateTargets", "group__group__tivx__platform.html#gac8b108ea08441007956dc181d70f222d", null ],
     [ "tivxPlatformDeleteTargets", "group__group__tivx__platform.html#ga845dbad929f94c02f396286a4d420336", null ],
     [ "tivxPlatformActivate", "group__group__tivx__platform.html#ga89aa5a7d6c37fd14db9091a4de40a871", null ],
-    [ "tivxPlatformDeactivate", "group__group__tivx__platform.html#gad19b728fb29ec3dfd9a2dbf14f7b6732", null ]
+    [ "tivxPlatformDeactivate", "group__group__tivx__platform.html#gad19b728fb29ec3dfd9a2dbf14f7b6732", null ],
+    [ "tivxPlatformGetDmaObj", "group__group__tivx__platform.html#ga6d706a08de1414d3ba18b31a38e6823c", null ]
 ];

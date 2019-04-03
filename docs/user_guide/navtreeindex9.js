@@ -1,5 +1,7 @@
 var NAVTREEINDEX9 =
 {
+"tiovx__performance__TDA3x__BIOS_8html.html":[18,0,12],
+"tivx_8h.html":[18,0,13],
 "tivx_8h.html#a08624f9c06d23a63d53a7b8ecc114797":[18,0,13,18],
 "tivx_8h.html#a1316155194309cd6bb123fb12dd125cc":[18,0,13,17],
 "tivx_8h.html#a4c16a72a951da2bd43ef962acdef2968":[18,0,13,14],
@@ -247,7 +249,5 @@ var NAVTREEINDEX9 =
 "tivx__kernel__optical__flow__pyr__lk_8h.html#a75a9c5c1b117bbd1fddbd6580c0d715a":[18,0,51,10],
 "tivx__kernel__optical__flow__pyr__lk_8h.html#a7ae91bf2b470398459aa9dfa1c4b316a":[18,0,51,9],
 "tivx__kernel__optical__flow__pyr__lk_8h.html#a9180d4289aaf75553add6a8265bca645":[18,0,51,3],
-"tivx__kernel__optical__flow__pyr__lk_8h.html#ab60a672f860dab7b8211bb72be28640d":[18,0,51,1],
-"tivx__kernel__optical__flow__pyr__lk_8h.html#ac80e744d243883bbd575a4c362297058":[18,0,51,5],
-"tivx__kernel__optical__flow__pyr__lk_8h.html#ace71d65d7840b98262736a59b450acf1":[18,0,51,0]
+"tivx__kernel__optical__flow__pyr__lk_8h.html#ab60a672f860dab7b8211bb72be28640d":[18,0,51,1]
 };

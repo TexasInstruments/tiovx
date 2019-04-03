@@ -1,5 +1,7 @@
 var NAVTREEINDEX8 =
 {
+"structtivx__obj__desc__user__data__object__t.html#ac57b8333c746fceabc5fc328cc858321":[16,0,2,0,12,0],
+"structtivx__objarray__t.html":[16,1,0,0,7,0],
 "structtivx__objarray__t.html#a50f3dbe80d76b6d766586c1772f58aa6":[16,1,0,0,7,0,1],
 "structtivx__objarray__t.html#af02ff69ad41aefa6d8aa5a342060ecde":[16,1,0,0,7,0,0],
 "structtivx__object__t.html":[16,1,0,1,5,0],
@@ -247,7 +249,5 @@ var NAVTREEINDEX8 =
 "tiovx__performance__TDA2Ex__BIOS_8html.html":[18,0,8],
 "tiovx__performance__TDA2Ex__LINUX_8html.html":[18,0,9],
 "tiovx__performance__TDA2x__BIOS_8html.html":[18,0,10],
-"tiovx__performance__TDA2x__LINUX_8html.html":[18,0,11],
-"tiovx__performance__TDA3x__BIOS_8html.html":[18,0,12],
-"tivx_8h.html":[18,0,13]
+"tiovx__performance__TDA2x__LINUX_8html.html":[18,0,11]
 };

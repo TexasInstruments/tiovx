@@ -1,5 +1,7 @@
 var NAVTREEINDEX7 =
 {
+"structtivx__module__t.html#a79621073aef19966ad17dd585afbc6ad":[16,1,0,1,3,0,0],
+"structtivx__module__t.html#a9ac4a369ac86c7073d195c176189eae5":[16,1,0,1,3,0,2],
 "structtivx__module__t.html#ad78af11bb66af2342e4c3e05fc112891":[16,1,0,1,3,0,3],
 "structtivx__node__t.html":[16,1,0,1,4,0],
 "structtivx__node__t.html#a1d55916a3f0ec241420bd3aa62bc7ca1":[16,1,0,1,4,0,10],
@@ -247,7 +249,5 @@ var NAVTREEINDEX7 =
 "structtivx__obj__desc__user__data__object__t.html":[16,0,2,0,12],
 "structtivx__obj__desc__user__data__object__t.html#a864dc3621d31df26f7ea4d0000e79e4a":[16,0,2,0,12,3],
 "structtivx__obj__desc__user__data__object__t.html#a98c77cb62a1d52805b5265a9851e8dfb":[16,0,2,0,12,2],
-"structtivx__obj__desc__user__data__object__t.html#aaf39486d84dbfcf96ac1182d2245e6a0":[16,0,2,0,12,1],
-"structtivx__obj__desc__user__data__object__t.html#ac57b8333c746fceabc5fc328cc858321":[16,0,2,0,12,0],
-"structtivx__objarray__t.html":[16,1,0,0,7,0]
+"structtivx__obj__desc__user__data__object__t.html#aaf39486d84dbfcf96ac1182d2245e6a0":[16,0,2,0,12,1]
 };
