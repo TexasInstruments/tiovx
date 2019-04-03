@@ -67,6 +67,12 @@
 #include <TI/tivx_target_kernel.h>
 #include <tivx_alg_ivision_if.h>
 #include "itidl_ti.h"
+#include "tivx_platform.h"
+
+/* To do - remove these macros and use the tivxMemStats to get the sizes */
+#define L1_MEM_SIZE (16*1024)
+#define L2_MEM_SIZE (448*1024)
+#define L3_MEM_SIZE (6*1024*1024)
 
 typedef struct
 {
@@ -319,6 +325,12 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
 
         prms->createParams = create_params_target_ptr;
+
+        prms->createParams->l1MemSize = L1_MEM_SIZE;
+        prms->createParams->l2MemSize = L2_MEM_SIZE;
+        prms->createParams->l3MemSize = L3_MEM_SIZE;
+
+        prms->createParams->udmaDrvObj = tivxPlatformGetDmaObj();
 
         network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
         tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);

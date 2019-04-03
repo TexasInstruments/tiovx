@@ -75,10 +75,6 @@ TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
 
-#define L1_MEM_SIZE (16*1024)
-#define L2_MEM_SIZE (448*1024)
-#define L3_MEM_SIZE (6*1024*1024)
-
 static vx_user_data_object readConfig(vx_context context, char *config_file, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
 {
   vx_status status = VX_SUCCESS;
@@ -217,7 +213,7 @@ static vx_user_data_object readNetwork(vx_context context, char *network_file)
   return network;
 }
 
-static vx_user_data_object setCreateParams(vx_context context)
+static vx_user_data_object setCreateParams(vx_context context, uint32_t read_raw_padded)
 {
     vx_status status;
 
@@ -244,13 +240,14 @@ static vx_user_data_object setCreateParams(vx_context context)
               //write create params here
               TIDL_createParamsInit(prms);
 
-              prms->isInbufsPaded                 = 1;
-              prms->quantRangeExpansionFactor     = 1.0;
-              prms->quantRangeUpdateFactor        = 0.1;
+              if(read_raw_padded)
+                 prms->isInbufsPaded                 = 0;
+              else
+                 prms->isInbufsPaded                 = 1;
 
-              prms->l1MemSize = L1_MEM_SIZE;
-              prms->l2MemSize = L2_MEM_SIZE;
-              prms->l3MemSize = L3_MEM_SIZE;
+              prms->quantRangeExpansionFactor     = 1.0;
+              prms->quantRangeUpdateFactor        = 0.0;
+
             }
             else
             {
@@ -726,7 +723,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(network = readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-    ASSERT_VX_OBJECT(createParams = setCreateParams(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(createParams = setCreateParams(context, arg_->read_raw_padded), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
     ASSERT_VX_OBJECT(inArgs = setInArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
     ASSERT_VX_OBJECT(outArgs = setOutArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
@@ -771,7 +768,9 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     #ifdef DEBUG_TEST_TIDL
     printf("Verifying graph ...\n");
     #endif
+
     VX_CALL(vxVerifyGraph(graph));
+
     #ifdef DEBUG_TEST_TIDL
     printf("Running graph ...\n");
     #endif

@@ -11,13 +11,14 @@ CSOURCES    := 	tivx_event.c \
 				tivx_queue.c \
 				tivx_task.c \
 				tivx_mutex.c \
+				tivx_platform_bios.c \
 				../common/tivx_init.c \
 				../common/tivx_mem.c \
 				../common/tivx_ipc.c \
 				../common/tivx_platform.c \
 				../common/tivx_platform_common.c \
 				../common/tivx_host.c
-               
+
 IDIRS       += $(HOST_ROOT)/source/include
 IDIRS       += $(CUSTOM_PLATFORM_PATH)/psdk_j7/common
 IDIRS       += $(CUSTOM_KERNEL_PATH)/include
