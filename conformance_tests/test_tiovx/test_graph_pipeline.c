@@ -260,7 +260,7 @@ static void reference_mean_stddev(CT_Image src, vx_float32* _mean, vx_float32* _
     *_stddev = (vx_float32)sqrt(CT_MAX(sqsum, 0.));
 }
 
-static void fillSquence(CT_Image dst, uint32_t seq_init)
+static void fillSequence(CT_Image dst, uint32_t seq_init)
 {
     uint32_t i, j;
     uint32_t val = seq_init;
@@ -560,7 +560,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -586,11 +586,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
         rect.end_x = width;
         rect.end_y = height;
 
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(d1, &rect, 0, &map_id, &addr, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
+        VX_CALL(vxMapImagePatch(d1, &rect, 0, &map_id, &addr, &ptr, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X));
 
         ct_memset(ptr, 0x0, addr.stride_y*addr.dim_y);
 
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(d1, map_id));
+        VX_CALL(vxUnmapImagePatch(d1, map_id));
     }
 
     /* create node, input (index 0) and output (index 2) will be made as graph parameter
@@ -618,16 +618,16 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_one_node");
     log_graph_rt_trace(graph);
@@ -647,8 +647,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
 
     buf_id = 0;
@@ -660,10 +660,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -690,13 +690,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testOneNode, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -762,7 +762,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -799,16 +799,16 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_two_nodes_basic");
     log_graph_rt_trace(graph);
@@ -828,8 +828,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
 
     buf_id = 0;
@@ -841,11 +841,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -878,7 +878,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodesBasic, Arg, PARAMETERS)
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -941,7 +941,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -983,16 +983,16 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            3,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                3,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_two_nodes");
     log_graph_rt_trace(graph);
@@ -1012,9 +1012,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d1[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d2[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d1[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d2[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
     }
 
     buf_id = 0;
@@ -1026,15 +1026,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs));
 
-        /* Get consumed intermeidate reference, waits until a reference is available
+        /* Get consumed intermediate reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&intermediate_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&intermediate_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -1061,14 +1061,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testTwoNodes, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&intermediate_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&intermediate_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -1135,7 +1135,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -1184,14 +1184,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            3,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                3,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     if(arg_->measure_perf==1)
     {
@@ -1203,17 +1203,17 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
         tmp_num_buf = 1;
         /* intentionally not having multiple buffers just to test graph stalling in absence of buffers */
     }
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 1, tmp_num_buf));
+    VX_CALL(set_num_buf_by_node_index(n0, 1, tmp_num_buf));
 
     /* n1 and n2 run on different targets hence set output of n1 to have multiple buffers so
      * that n1 and n2 can run in a pipeline
      */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 1, num_buf));
+    VX_CALL(set_num_buf_by_node_index(n1, 1, num_buf));
 
     tmp_num_buf = 1;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n2, 2, tmp_num_buf));
+    VX_CALL(set_num_buf_by_node_index(n2, 2, tmp_num_buf));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_four_nodes");
     log_graph_rt_trace(graph);
@@ -1233,9 +1233,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d4[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d5[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d4[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d5[buf_id], 1));
     }
 
     buf_id = 0;
@@ -1247,15 +1247,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&in2_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&in2_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in1_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in1_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -1282,14 +1282,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testFourNodes, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in1_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&in2_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in1_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&in2_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -1357,7 +1357,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -1403,16 +1403,16 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_four_nodes");
     log_graph_rt_trace(graph);
@@ -1432,8 +1432,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d1[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d1[buf_id], 1));
     }
 
     buf_id = 0;
@@ -1446,11 +1446,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         buf_id = (buf_id+1)%num_buf;
 
@@ -1458,15 +1458,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testMaxDataRef, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
-
-    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+    VX_CALL(vxWaitGraph(graph));
 
     #endif
 
@@ -1522,7 +1520,7 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestGraphMaxDataRef, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -1568,14 +1566,14 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestGraphMaxDataRef, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
@@ -1634,7 +1632,7 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestMaxDataRefQ, Arg, PARAMETERS)
         {
             ASSERT_NO_FAILURE({
                 ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-                fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+                fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
             });
         }
 
@@ -1680,14 +1678,14 @@ TEST_WITH_ARG(tivxGraphPipeline, negativeTestMaxDataRefQ, Arg, PARAMETERS)
         /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
          * Graph gets scheduled automatically as refs are enqueued to it
          */
-        vxSetGraphScheduleConfig(graph,
-                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-                2,
-                graph_parameters_queue_params_list
-                );
+        VX_CALL(vxSetGraphScheduleConfig(graph,
+                    VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                    2,
+                    graph_parameters_queue_params_list
+                    ));
 
         /* explicitly set graph pipeline depth */
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+        VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
         EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
@@ -1756,7 +1754,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -1802,19 +1800,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* This graph parameter @ index 2 is not enqueue-able */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetGraphParameterByIndex(graph, 2, (vx_reference)d1));
+    VX_CALL(vxSetGraphParameterByIndex(graph, 2, (vx_reference)d1));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_uniform_img");
     log_graph_rt_trace(graph);
@@ -1834,8 +1832,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
 
     buf_id = 0;
@@ -1847,11 +1845,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -1878,13 +1876,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testUniformImage, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -1997,7 +1995,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
 
             ASSERT_NO_FAILURE({
                 ref_src[idx] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-                fillSquence(ref_src[idx], (uint32_t)(seq_init+(idx)));
+                fillSequence(ref_src[idx], (uint32_t)(seq_init+(idx)));
             });
         }
     }
@@ -2047,19 +2045,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* set number of buffer at intermediate output */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 1, num_buf));
+    VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
 
     /* set pipeline depth explicitly */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_replicate_node");
     log_graph_rt_trace(graph);
@@ -2077,7 +2075,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
 
             ASSERT_NO_FAILURE(ct_image_copyto_vx_image(image, ref_src[idx]));
 
-            vxReleaseImage(&image);
+            VX_CALL(vxReleaseImage(&image));
         }
     }
 
@@ -2092,11 +2090,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
         vx_image image;
 
         image = (vx_image)vxGetObjectArrayItem(d0[buf_id], 0);
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&image, 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&image, 1));
         vxReleaseImage(&image);
 
         image = (vx_image)vxGetObjectArrayItem(d2[buf_id], 0);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image, 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image, 1));
         vxReleaseImage(&image);
     }
 
@@ -2110,11 +2108,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -2139,7 +2137,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
                     vxdst[objarr_idx] = ct_image_from_vx_image(image);
                 });
 
-                vxReleaseImage(&image);
+                VX_CALL(vxReleaseImage(&image));
             }
 
             for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
@@ -2158,13 +2156,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -2314,8 +2312,8 @@ static void check_replicas_2(vx_pyramid ref, vx_pyramid tst, vx_border_t border)
             ASSERT_VX_OBJECT(src1 = vxGetPyramidLevel((vx_pyramid)ref, i), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(src2 = vxGetPyramidLevel((vx_pyramid)tst, i), VX_TYPE_IMAGE);
 
-            vxQueryImage(src1, VX_IMAGE_WIDTH, &ref_width1, sizeof(ref_width1));
-            vxQueryImage(src2, VX_IMAGE_WIDTH, &ref_width2, sizeof(ref_width2));
+            VX_CALL(vxQueryImage(src1, VX_IMAGE_WIDTH, &ref_width1, sizeof(ref_width1)));
+            VX_CALL(vxQueryImage(src2, VX_IMAGE_WIDTH, &ref_width2, sizeof(ref_width2)));
 
             ASSERT_NO_FAILURE(img1 = ct_image_from_vx_image(src1));
             ASSERT_NO_FAILURE(img2 = ct_image_from_vx_image(src2));
@@ -2463,22 +2461,22 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
         /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
          * Graph gets scheduled automatically as refs are enqueued to it
          */
-        vxSetGraphScheduleConfig(graph,
-                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-                3,
-                graph_parameters_queue_params_list
-                );
+        VX_CALL(vxSetGraphScheduleConfig(graph,
+                    VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                    3,
+                    graph_parameters_queue_params_list
+                    ));
 
         /* set number of buffer at intermediate output */
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(node1, 1, num_buf));
+        VX_CALL(set_num_buf_by_node_index(node1, 1, num_buf));
 
         /* set number of buffer at intermediate output */
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(node2, 1, num_buf));
+        VX_CALL(set_num_buf_by_node_index(node2, 1, num_buf));
 
         /* set pipeline depth explicitly */
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+        VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        VX_CALL(vxVerifyGraph(graph));
 
         export_graph_to_file(graph, "test_graph_pipeline_replicate_node2");
         log_graph_rt_trace(graph);
@@ -2494,13 +2492,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
         for(buf_id=0; buf_id<num_buf; buf_id++)
         {
             vx_image image;
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&input1_0[buf_id], 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&input1_0[buf_id], 1));
 
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&input2_0[buf_id], 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&input2_0[buf_id], 1));
 
             image = (vx_image)vxGetPyramidLevel(tst[buf_id], 0);
-            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&image, 1);
-            vxReleaseImage(&image);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&image, 1));
+            VX_CALL(vxReleaseImage(&image));
         }
 
         buf_id = 0;
@@ -2513,12 +2511,12 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
             uint32_t num_refs;
 
             /* Get output reference, waits until a reference is available */
-            vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs);
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_img, 1, &num_refs));
 
             /* Get consumed input reference, waits until a reference is available
              */
-            vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&in_img2, 1, &num_refs);
-            vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img1, 1, &num_refs);
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&in_img2, 1, &num_refs));
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img1, 1, &num_refs));
 
             /* A graph execution completed, since we dequeued both input and output refs */
             if(arg_->measure_perf==0)
@@ -2553,14 +2551,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage2, Arg, PARAMETERS)
             if(loop_id<loop_cnt)
             {
                 /* input and output can be enqueued in any order */
-                vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img1, 1);
-                vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&in_img2, 1);
-                vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1);
+                VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img1, 1));
+                VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&in_img2, 1));
+                VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_img, 1));
             }
         }
 
         /* ensure all graph processing is complete */
-        vxWaitGraph(graph);
+        VX_CALL(vxWaitGraph(graph));
 
         /* Pipelining stuff above */
 
@@ -2687,15 +2685,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            3,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                3,
+                graph_parameters_queue_params_list
+                ));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_scalar_output");
     log_graph_rt_trace(graph);
@@ -2714,9 +2712,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&mean_s[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&stddev_s[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&mean_s[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&stddev_s[buf_id], 1));
     }
 
     buf_id = 0;
@@ -2729,14 +2727,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_stddev, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&out_stddev, 1, &num_refs));
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_mean, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_mean, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -2749,8 +2747,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
                 ct_update_progress(loop_id, loop_cnt+num_buf);
             }
 
-            vxCopyScalar(out_mean, &mean_out, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-            vxCopyScalar(out_stddev, &stddev_out, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_mean, &mean_out, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyScalar(out_stddev, &stddev_out, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
             /* compare output with reference */
             mean_diff = fabs(mean_ref[buf_id] - mean_out);
             stddev_diff = fabs(stddev_ref[buf_id] - stddev_out);
@@ -2779,14 +2777,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testScalarOutput, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_mean, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_stddev, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_mean, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&out_stddev, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
     if(arg_->measure_perf==1)
@@ -2850,9 +2848,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
+
+    VX_CALL(vxEnableEvents(context));
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
     for(buf_id=0; buf_id<num_buf; buf_id++)
@@ -2885,23 +2885,23 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* set number of buffer at intermediate output */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 1, num_buf));
+    VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_COMPLETED, 0));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_COMPLETED, 0));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0));
+    VX_CALL(vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0));
+    VX_CALL(vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_COMPLETED, 0));
+    VX_CALL(vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_COMPLETED, 0));
+    VX_CALL(vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_event_handling");
     log_graph_rt_trace(graph);
@@ -2923,8 +2923,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
 
     buf_id = 0;
@@ -2934,7 +2934,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     in_q_cnt = 0;
     while(!done)
     {
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &event, vx_false_e));
+        VX_CALL(vxWaitEvent(context, &event, vx_false_e));
 
         if(event.type==VX_EVENT_GRAPH_PARAMETER_CONSUMED
             && event.event_info.graph_parameter_consumed.graph == graph
@@ -2946,10 +2946,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
 
             /* input should be free at this point */
             /* recycle input buffer, input data is not changed in this test */
-            vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs);
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
             if(in_q_cnt<loop_cnt)
             {
-                vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1);
+                VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
             }
             in_q_cnt++;
         }
@@ -2962,7 +2962,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
             uint32_t num_refs;
 
             /* Get output reference, waits until a reference is available */
-            vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs);
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
 
             /* A graph execution completed, since we dequeued both input and output refs */
             if(arg_->measure_perf==0)
@@ -2989,12 +2989,12 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
             if(loop_id<loop_cnt)
             {
                 /* input and output can be enqueued in any order */
-                vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1);
+                VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1));
             }
             else
             {
                 /* send user event to exit, id is 0xDEADBEAF, and parameter is some known pattern 0x12345678 */
-                ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSendUserEvent(context, 0xDEADBEAFu, (void*)0x12345678u));
+                VX_CALL(vxSendUserEvent(context, 0xDEADBEAFu, (void*)0x12345678u));
             }
 
             loop_id++;
@@ -3009,7 +3009,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
         }
     }
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+    VX_CALL(vxWaitGraph(graph));
 
     /* handle last few buffers */
     done = vx_false_e;
@@ -3019,10 +3019,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
         vx_uint32 in_num_refs, out_num_refs;
 
         /* recycle and access output data */
-        vxGraphParameterCheckDoneRef(graph, 1, &out_num_refs);
+        VX_CALL(vxGraphParameterCheckDoneRef(graph, 1, &out_num_refs));
         if(out_num_refs>0)
         {
-            vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &out_num_refs);
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &out_num_refs));
             if(arg_->measure_perf==0)
             {
                 ASSERT_NO_FAILURE({
@@ -3034,10 +3034,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
             }
         }
         /* recycle and access input data */
-        vxGraphParameterCheckDoneRef(graph, 0, &in_num_refs);
+        VX_CALL(vxGraphParameterCheckDoneRef(graph, 0, &in_num_refs));
         if(in_num_refs>0)
         {
-            vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &in_num_refs);
+            VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &in_num_refs));
         }
         buf_id = (buf_id+1)%num_buf;
 
@@ -3085,24 +3085,24 @@ TEST(tivxGraphPipeline, testEventHandlingDisableEvents)
     /* NOTE: events are enabled by default */
 
     /* send one user event, this should be received */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSendUserEvent(context, 0x1u, NULL));
+    VX_CALL(vxSendUserEvent(context, 0x1u, NULL));
 
     /* disable events and send another event */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxDisableEvents(context));
+    VX_CALL(vxDisableEvents(context));
     /* this event should get dropped and send event API should return failure */
     ASSERT(vxSendUserEvent(context, 0x2u, NULL)!=VX_SUCCESS);
 
     /* re-enable events and send another event */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxEnableEvents(context));
+    VX_CALL(vxEnableEvents(context));
     /* this event should get received */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSendUserEvent(context, 0x3u, NULL));
+    VX_CALL(vxSendUserEvent(context, 0x3u, NULL));
 
     /* wait for one event, this should be the first one */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &event, vx_true_e));
+    VX_CALL(vxWaitEvent(context, &event, vx_true_e));
     ASSERT(event.type==VX_EVENT_USER && event.event_info.user_event.user_event_id==0x1u);
 
     /* wait for one more event, this should be the third one */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &event, vx_true_e));
+    VX_CALL(vxWaitEvent(context, &event, vx_true_e));
     ASSERT(event.type==VX_EVENT_USER && event.event_info.user_event.user_event_id==0x3u);
 
     /* wait for one more event, there should be no more events */
@@ -3182,18 +3182,18 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 2, num_buf));
+    VX_CALL(set_num_buf_by_node_index(n0, 2, num_buf));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_user_kernel");
     log_graph_rt_trace(graph);
@@ -3217,8 +3217,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
     }
 
     buf_id = 0;
@@ -3229,11 +3229,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -3247,14 +3247,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
             }
         }
 
-        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* compare output */
         ASSERT_EQ_INT(tmp_value, ref_out_value[buf_id]);
 
         /* clear value in output */
         tmp_value = 0;
-        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         buf_id = (buf_id+1)%num_buf;
 
@@ -3262,13 +3262,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testUserKernel, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -3333,7 +3333,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -3369,16 +3369,16 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
 
     /* Schedule mode manual is used, here we need to call vxScheduleGraph
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_MANUAL,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_manual_schedule_mode");
     log_graph_rt_trace(graph);
@@ -3406,19 +3406,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testManualSchedule, Arg, PARAMETERS)
          */
         for(buf_id=0; buf_id<num_buf; buf_id++)
         {
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
         }
 
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
-        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+        VX_CALL(vxScheduleGraph(graph));
+        VX_CALL(vxWaitGraph(graph));
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)out_img, num_buf, &num_refs_in);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)out_img, num_buf, &num_refs_in));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)in_img, num_buf, &num_refs_out);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)in_img, num_buf, &num_refs_out));
 
         ASSERT_EQ_INT(num_refs_in, num_buf);
         ASSERT_EQ_INT(num_refs_out, num_buf);
@@ -3563,19 +3563,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* always auto age delay in pipelined graph */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+    VX_CALL(vxRegisterAutoAging(graph, delay));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_delay1");
     log_graph_rt_trace(graph);
@@ -3599,12 +3599,12 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
     /* last buf is already set at the delay slot -1 so dont enqueue that ref */
     for(buf_id=0; buf_id<num_buf-1; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
     }
 
     buf_id = 0;
@@ -3615,11 +3615,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -3633,7 +3633,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
             }
         }
 
-        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* compare output */
         //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value[buf_id]);
@@ -3641,7 +3641,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
 
         /* clear value in output */
         tmp_value = 0;
-        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         buf_id = (buf_id+1)%num_buf;
 
@@ -3649,8 +3649,8 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay1, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
         }
     }
 
@@ -3763,7 +3763,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
     }
     d0[num_buf-2] = (vx_scalar)vxGetReferenceFromDelay(delay, -1);
     d0[num_buf-1] = (vx_scalar)vxGetReferenceFromDelay(delay, -2);
-    vxReleaseScalar(&exemplar);
+    VX_CALL(vxReleaseScalar(&exemplar));
 
     ASSERT_VX_OBJECT(n0    = test_user_kernel_node(graph, d0[0], d0[num_buf-2], d2[0], NULL), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(n1    = test_user_kernel_node(graph, d0[num_buf-1], d0[num_buf-2], NULL, NULL), VX_TYPE_NODE);
@@ -3785,19 +3785,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* always auto age delay in pipelined graph */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+    VX_CALL(vxRegisterAutoAging(graph, delay));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_delay2");
     log_graph_rt_trace(graph);
@@ -3821,12 +3821,12 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
     /* last buf is already set at the delay slot -1 so dont enqueue that ref */
     for(buf_id=0; buf_id<num_buf-2; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
     }
 
     buf_id = 0;
@@ -3837,11 +3837,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -3855,7 +3855,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
             }
         }
 
-        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* compare output */
         //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value[buf_id]);
@@ -3863,7 +3863,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
 
         /* clear value in output */
         tmp_value = 0;
-        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         buf_id = (buf_id+1)%num_buf;
 
@@ -3871,13 +3871,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -3919,7 +3919,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay2, Arg, PARAMETERS)
  * This test case test the below
  * - Delay objects with 3 delay slots
  * - Delay slot connected to two inputs
- * - Delay intermeidiate to a graph, no graph parameter at any delay slot
+ * - Delay intermediate to a graph, no graph parameter at any delay slot
  * - node output to delay slot -1 (instead of typical slot 0)
  * - multiple buffers at output of n0 i.e delay slot -1
  *
@@ -4028,21 +4028,21 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n0, 2, 2));
+    VX_CALL(set_num_buf_by_node_index(n0, 2, 2));
 
     /* always auto age delay in pipelined graph */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+    VX_CALL(vxRegisterAutoAging(graph, delay));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_delay3");
     log_graph_rt_trace(graph);
@@ -4083,11 +4083,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
     }
 
     buf_id = 0;
@@ -4098,11 +4098,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -4116,7 +4116,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
             }
         }
 
-        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         /* compare output */
         //printf(" %d: out = %d ref = %d\n", loop_id, tmp_value, ref_out_value[buf_id]);
@@ -4124,7 +4124,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
 
         /* clear value in output */
         tmp_value = 0;
-        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         buf_id = (buf_id+1)%num_buf;
 
@@ -4132,13 +4132,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -4178,7 +4178,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay3, Arg, PARAMETERS)
  *
  * This test case test the below
  * - Delay objects with 4 delay slots
- * - Delay intermeidiate to a graph, no graph parameter at any delay slot
+ * - Delay intermediate to a graph, no graph parameter at any delay slot
  * - Delay with slot's not connected to any input - tests auto age at these slots
  *
  */
@@ -4269,19 +4269,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            2,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* always auto age delay in pipelined graph */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+    VX_CALL(vxRegisterAutoAging(graph, delay));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_delay4");
     log_graph_rt_trace(graph);
@@ -4330,11 +4330,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
     }
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
     }
 
     buf_id = 0;
@@ -4345,11 +4345,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
         uint32_t num_refs;
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_scalar, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_scalar, 1, &num_refs));
 
         /* A graph execution completed, since we dequeued both input and output refs */
         if(arg_->measure_perf==0)
@@ -4363,7 +4363,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
             }
         }
 
-        vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         ref_out_value = in_value[buf_id] + ref_delay_value[ 3 ];
 
@@ -4377,7 +4377,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
 
         /* clear value in output */
         tmp_value = 0;
-        vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
+        VX_CALL(vxCopyScalar(out_scalar, &tmp_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         buf_id = (buf_id+1)%num_buf;
 
@@ -4385,13 +4385,13 @@ TEST_WITH_ARG(tivxGraphPipeline, testDelay4, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_scalar, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_scalar, 1));
         }
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
@@ -4486,11 +4486,11 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     {
         ASSERT_NO_FAILURE({
             ref_src[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
         ASSERT_NO_FAILURE({
             ref_src1[buf_id] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
-            fillSquence(ref_src1[buf_id], (uint32_t)(seq_init+buf_id*10));
+            fillSequence(ref_src1[buf_id], (uint32_t)(seq_init+buf_id*10));
         });
     }
 
@@ -4511,22 +4511,22 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
 
     /* Filling reference data */
     pdata = NULL;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_0_nopipeline, &rect, 0, &map_id, &addr, (void **)&pdata,
+    VX_CALL(vxMapImagePatch(delay_image_0_nopipeline, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for (i = 0; i < width*height; i++)
     {
         *(pdata+i) = 1;
     }
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_0_nopipeline, map_id));
+    VX_CALL(vxUnmapImagePatch(delay_image_0_nopipeline, map_id));
 
     pdata = NULL;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_1_nopipeline, &rect, 0, &map_id, &addr, (void **)&pdata,
+    VX_CALL(vxMapImagePatch(delay_image_1_nopipeline, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for (i = 0; i < width*height; i++)
     {
         *(pdata+i) = 1;
     }
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_1_nopipeline, map_id));
+    VX_CALL(vxUnmapImagePatch(delay_image_1_nopipeline, map_id));
 
     ASSERT_VX_OBJECT(nodes[0] = vxAddNode(graph_1, images[0], (vx_image)vxGetReferenceFromDelay(delay_1, -1), VX_CONVERT_POLICY_WRAP, images[1]), VX_TYPE_NODE);
     ASSERT_VX_OBJECT(nodes[1] = vxNotNode(graph_1, images[1], (vx_image)vxGetReferenceFromDelay(delay_1, 0)), VX_TYPE_NODE);
@@ -4557,22 +4557,22 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
 
     /* Filling reference data */
     pdata = NULL;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_0, &rect, 0, &map_id, &addr, (void **)&pdata,
+    VX_CALL(vxMapImagePatch(delay_image_0, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for (i = 0; i < width*height; i++)
     {
         *(pdata+i) = 1;
     }
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_0, map_id));
+    VX_CALL(vxUnmapImagePatch(delay_image_0, map_id));
 
     pdata = NULL;
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxMapImagePatch(delay_image_1, &rect, 0, &map_id, &addr, (void **)&pdata,
+    VX_CALL(vxMapImagePatch(delay_image_1, &rect, 0, &map_id, &addr, (void **)&pdata,
                                                     VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0));
     for (i = 0; i < width*height; i++)
     {
         *(pdata+i) = 1;
     }
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxUnmapImagePatch(delay_image_1, map_id));
+    VX_CALL(vxUnmapImagePatch(delay_image_1, map_id));
 
 
     ASSERT_VX_OBJECT(n0    = vxAddNode(graph, d0[0], (vx_image)vxGetReferenceFromDelay(delay, -1), VX_CONVERT_POLICY_WRAP, d2[0]), VX_TYPE_NODE);
@@ -4605,19 +4605,19 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
     /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
      * Graph gets scheduled automatically as refs are enqueued to it
      */
-    vxSetGraphScheduleConfig(graph,
-            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
-            3,
-            graph_parameters_queue_params_list
-            );
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                3,
+                graph_parameters_queue_params_list
+                ));
 
     /* explicitly set graph pipeline depth */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_graph_pipeline_depth(graph, pipeline_depth));
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
 
     /* always auto age delay in pipelined graph */
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterAutoAging(graph, delay));
+    VX_CALL(vxRegisterAutoAging(graph, delay));
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+    VX_CALL(vxVerifyGraph(graph));
 
     export_graph_to_file(graph, "test_graph_pipeline_two_nodes");
     log_graph_rt_trace(graph);
@@ -4637,9 +4637,9 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
      */
     for(buf_id=0; buf_id<num_buf; buf_id++)
     {
-        vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1);
-        vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d4[buf_id], 1);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&d2[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&d0[buf_id], 1));
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&d4[buf_id], 1));
     }
 
     buf_id = 0;
@@ -4653,14 +4653,14 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
         VX_CALL(vxProcessGraph(graph_1));
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&not_out1_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 2, (vx_reference*)&not_out1_img, 1, &num_refs));
 
         /* Get output reference, waits until a reference is available */
-        vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&add_out_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&add_out_img, 1, &num_refs));
 
         /* Get consumed input reference, waits until a reference is available
          */
-        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&add_in0_img, 1, &num_refs);
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&add_in0_img, 1, &num_refs));
 
         /* when measuring performance dont check output since it affects graph performance numbers
          */
@@ -4690,15 +4690,15 @@ TEST_WITH_ARG(tivxGraphPipeline, testLoopCarriedDependency, Arg, PARAMETERS)
         if(loop_id<loop_cnt)
         {
             /* input and output can be enqueued in any order */
-            vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&add_out_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&add_in0_img, 1);
-            vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&not_out1_img, 1);
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&add_out_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&add_in0_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 2, (vx_reference*)&not_out1_img, 1));
         }
 
     }
 
     /* ensure all graph processing is complete */
-    vxWaitGraph(graph);
+    VX_CALL(vxWaitGraph(graph));
 
     exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
 
