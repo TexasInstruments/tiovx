@@ -333,7 +333,7 @@ static void tivxTargetNodeDescReleaseParameter(
     vx_bool do_release_ref;
     vx_bool do_release_ref_to_queue;
     tivx_obj_desc_t *obj_desc;
-        
+
     *is_prm_released = vx_false_e;
     blocked_nodes.num_nodes = 0;
     do_release_ref = vx_false_e;
@@ -354,9 +354,13 @@ static void tivxTargetNodeDescReleaseParameter(
         if(obj_desc!=NULL)
         {
             obj_desc->in_node_done_cnt++;
+
             if(obj_desc->in_node_done_cnt==data_ref_q_obj_desc->num_in_nodes)
             {
                 do_release_ref_to_queue = vx_true_e;
+                /* Note: This is needed because the delay obj_desc does not get re-acquired for each slot.
+                 *       Therefore, each in_node_done_cnt must be reset for each delay slot. */
+                obj_desc->in_node_done_cnt = 0;
             }
         }
     }
