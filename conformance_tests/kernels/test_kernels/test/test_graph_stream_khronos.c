@@ -200,7 +200,7 @@ static void own_register_source1_kernel(vx_context context)
         own_Initialize,
         own_Deinitialize), VX_TYPE_KERNEL);
 
-    vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_DEPTH, &num_bufs, sizeof(num_bufs));
+    vxSetKernelAttribute(kernel, VX_KERNEL_PIPEUP_OUTPUT_DEPTH, &num_bufs, sizeof(num_bufs));
 
     VX_CALL(vxAddParameterToKernel(kernel, OWN_SOURCE_PARAM_OUTPUT, VX_OUTPUT, type, VX_PARAMETER_STATE_REQUIRED));
     {

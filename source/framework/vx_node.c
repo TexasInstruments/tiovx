@@ -954,14 +954,14 @@ void ownNodeCheckAndSendCompletionEvent(tivx_obj_desc_node_t *node_obj_desc, uin
             if (vx_true_e == node->is_context_event)
             {
                 tivxEventQueueAddEvent(&node->base.context->event_queue,
-                            VX_EVENT_NODE_COMPLETED, timestamp,
+                            VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0);
             }
 
             if (vx_true_e == node->is_graph_event)
             {
                 tivxEventQueueAddEvent(&node->graph->event_queue,
-                            VX_EVENT_NODE_COMPLETED, timestamp,
+                            VX_EVENT_NODE_COMPLETED, timestamp, node->node_completed_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)0);
             }
         }
@@ -979,14 +979,14 @@ void ownNodeCheckAndSendErrorEvent(tivx_obj_desc_node_t *node_obj_desc, uint64_t
             if (vx_true_e == node->is_context_event)
             {
                 tivxEventQueueAddEvent(&node->base.context->event_queue,
-                            VX_EVENT_NODE_ERROR, timestamp,
+                            VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status);
             }
 
             if (vx_true_e == node->is_graph_event)
             {
                 tivxEventQueueAddEvent(&node->graph->event_queue,
-                            VX_EVENT_NODE_ERROR, timestamp,
+                            VX_EVENT_NODE_ERROR, timestamp, node->node_error_app_value,
                             (uintptr_t)node->graph, (uintptr_t)node, (uintptr_t)status);
             }
         }
@@ -1040,6 +1040,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->pipeline_depth = 1;
                     node->is_context_event = vx_false_e;
                     node->is_graph_event = vx_false_e;
+                    node->node_completed_app_value = 0;
+                    node->node_error_app_value = 0;
                     node->is_enable_send_complete_event = vx_false_e;
 
                     /* assign refernce type specific callback's */
@@ -1721,7 +1723,7 @@ vx_node ownNodeGetNextNode(vx_node node, vx_uint32 index)
     return next_node;
 }
 
-vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type)
+vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_value)
 {
     vx_status status = VX_SUCCESS;
 
@@ -1741,6 +1743,15 @@ vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type)
                 tivxFlagBitSet(&node->obj_desc[i]->flags, TIVX_NODE_FLAG_IS_USER_CALLBACK);
             }
             node->is_enable_send_complete_event = vx_true_e;
+
+            if (VX_EVENT_NODE_COMPLETED == event_type)
+            {
+                node->node_completed_app_value = app_value;
+            }
+            else if (VX_EVENT_NODE_ERROR == event_type)
+            {
+                node->node_error_app_value = app_value;
+            }
 
             VX_PRINT(VX_ZONE_INFO, "Enabling event at node [%s]\n", node->base.name);
         }

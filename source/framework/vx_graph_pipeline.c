@@ -70,7 +70,7 @@ static void ownGraphEnqueueFreeObjDesc(vx_graph graph,
 VX_API_ENTRY vx_status vxSetGraphScheduleConfig(
     vx_graph graph,
     vx_enum graph_schedule_mode,
-    uint32_t graph_parameters_list_size,
+    vx_uint32 graph_parameters_list_size,
     const vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[]
     )
 {

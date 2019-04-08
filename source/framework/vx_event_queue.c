@@ -119,7 +119,7 @@ void tivxEventQueueEnableEvents(tivx_event_queue_t *event_q, vx_bool enable)
 }
 
 vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
-        vx_enum event_id, uint64_t timestamp, uintptr_t param1, uintptr_t param2, uintptr_t param3)
+        vx_enum event_id, uint64_t timestamp, uint32_t app_value, uintptr_t param1, uintptr_t param2, uintptr_t param3)
 {
     vx_status status = VX_FAILURE;
 
@@ -136,6 +136,7 @@ vx_status tivxEventQueueAddEvent(tivx_event_queue_t *event_q,
 
             elem->event_id = event_id;
             elem->timestamp = timestamp;
+            elem->app_value = app_value;
             elem->param1 = param1;
             elem->param2 = param2;
             elem->param3 = param3;
@@ -200,7 +201,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
         status = tivxEventQueueAddEvent(
                 &context->event_queue,
                 VX_EVENT_USER,
-                timestamp,
+                timestamp, id,
                 (uintptr_t)id, (uintptr_t)parameter, (uintptr_t)0);
     }
     return status;
@@ -255,6 +256,7 @@ vx_status vxWaitEventQueue(
         {
             event->type = elem->event_id;
             event->timestamp = elem->timestamp;
+            event->app_value = elem->app_value;
 
             if(elem->event_id==VX_EVENT_GRAPH_PARAMETER_CONSUMED)
             {
@@ -296,18 +298,18 @@ vx_status vxWaitEventQueue(
 }
 
 VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref,
-                enum vx_event_type_e type, vx_uint32 param)
+                enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value)
 {
     vx_status status = VX_ERROR_NOT_SUPPORTED;
 
-    status = tivxRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param);
+    status = tivxRegisterEvent(ref, TIVX_EVENT_CONTEXT_QUEUE, type, param, app_value);
 
     return status;
 }
 
 VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
                 enum tivx_queue_type_e queue_type, enum vx_event_type_e type,
-                vx_uint32 param)
+                vx_uint32 param, vx_uint32 app_value)
 {
     vx_status status = VX_ERROR_NOT_SUPPORTED;
 
@@ -336,7 +338,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
 
             if (VX_SUCCESS == status)
             {
-                status = ownNodeRegisterEvent((vx_node)ref, type);
+                status = ownNodeRegisterEvent((vx_node)ref, type, app_value);
             }
         }
     }
@@ -345,12 +347,12 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRegisterEvent(vx_reference ref,
     {
         if(type==VX_EVENT_GRAPH_COMPLETED)
         {
-            status = ownGraphRegisterCompletionEvent((vx_graph)ref);
+            status = ownGraphRegisterCompletionEvent((vx_graph)ref, app_value);
         }
         else
         if(type==VX_EVENT_GRAPH_PARAMETER_CONSUMED)
         {
-            status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param);
+            status = ownGraphRegisterParameterConsumedEvent((vx_graph)ref, param, app_value);
         }
     }
 

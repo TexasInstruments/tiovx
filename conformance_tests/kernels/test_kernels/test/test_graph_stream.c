@@ -37,6 +37,8 @@
 #define MAX_IMAGE_PLANES          (3u)
 #define MAX_NUM_OBJ_ARR_ELEMENTS  (4u)
 
+#define NODE1_EVENT     (1u)
+#define NODE2_EVENT     (2u)
 
 TESTCASE(tivxGraphStreaming,  CT_VXContext, ct_setup_vx_context, 0)
 
@@ -475,8 +477,8 @@ TEST(tivxGraphStreaming, negativeTestStreamingError)
 
     ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out), VX_TYPE_NODE);
 
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_ERROR, 0));
-    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n2, VX_EVENT_NODE_ERROR, 0));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_ERROR, 0, NODE1_EVENT));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxRegisterEvent((vx_reference)n2, VX_EVENT_NODE_ERROR, 0, NODE2_EVENT));
 
     VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
     VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
@@ -493,9 +495,7 @@ TEST(tivxGraphStreaming, negativeTestStreamingError)
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitEvent(context, &event, vx_false_e));
 
-        if( (event.type==VX_EVENT_NODE_ERROR) &&
-            (event.event_info.node_error.node == n1) &&
-            (event.event_info.node_error.status == VX_FAILURE) )
+        if(event.app_value==NODE1_EVENT)
         {
             done = vx_true_e;
         }

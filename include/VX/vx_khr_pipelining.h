@@ -202,7 +202,7 @@ typedef struct {
 VX_API_ENTRY vx_status VX_API_CALL vxSetGraphScheduleConfig(
     vx_graph graph,
     vx_enum graph_schedule_mode,
-    uint32_t graph_parameters_list_size,
+    vx_uint32 graph_parameters_list_size,
     const vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[]
     );
 
@@ -436,6 +436,30 @@ typedef struct _vx_event_user_event {
      */
 } vx_event_user_event;
 
+/*! \brief Parameter structure associated with an event. Depends on type of the event.
+ *
+ * \ingroup group_event
+ */
+typedef union _vx_event_info_t {
+
+    vx_event_graph_parameter_consumed graph_parameter_consumed;
+    /*!< event information for type: \ref VX_EVENT_GRAPH_PARAMETER_CONSUMED */
+
+    vx_event_graph_completed graph_completed;
+    /*!< event information for type: \ref VX_EVENT_GRAPH_COMPLETED */
+
+    vx_event_node_completed node_completed;
+    /*!< event information for type: \ref VX_EVENT_NODE_COMPLETED */
+
+    vx_event_node_error node_error;
+    /*!< event information for type: \ref VX_EVENT_NODE_ERROR */
+
+    vx_event_user_event user_event;
+    /*!< event information for type: \ref VX_EVENT_USER */
+
+} vx_event_info_t;
+
+
 /*! \brief Data structure which holds event information
  *
  * \ingroup group_event
@@ -448,13 +472,10 @@ typedef struct _vx_event {
     vx_uint64 timestamp;
     /*!< time at which this event was generated, in units of nano-secs */
 
-    union {
-        struct _vx_event_graph_parameter_consumed graph_parameter_consumed; /*!< event information for type: \ref VX_EVENT_GRAPH_PARAMETER_CONSUMED */
-        struct _vx_event_graph_completed graph_completed; /*!< event information for type: \ref VX_EVENT_GRAPH_COMPLETED */
-        struct _vx_event_node_completed node_completed; /*!< event information for type: \ref VX_EVENT_NODE_COMPLETED */
-        struct _vx_event_node_error node_error; /*!< event information for type: \ref VX_EVENT_NODE_ERROR */
-        struct _vx_event_user_event user_event; /*!< event information for type: \ref VX_EVENT_USER */
-    } event_info;
+    vx_uint32 app_value;
+    /*!< value associated with event by application during event registration: \ref vxRegisterEvent */
+
+    vx_event_info_t event_info;
     /*!< parameter structure associated with a event. Depends on type of the event */
 
 } vx_event_t;
@@ -513,9 +534,9 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context);
 /*! \brief Generate user defined event
  *
  * \param context [in] OpenVX context
- * \param user_event_id [in] User defined event ID
- * \param user_event_parameter [in] User defined event parameter. NOT used by implementation.
- *                                   Returned to user as part \ref vx_event_t.user_event_parameter field
+ * \param id [in] User defined event ID
+ * \param parameter [in] User defined event parameter. NOT used by implementation.
+ *                       Returned to user as part \ref vx_event_t.event_info.user_event.user_event_parameter field
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
@@ -536,6 +557,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
  * \param ref [in] Reference which will generate the event
  * \param type [in] Type or condition on which the event is generated
  * \param param [in] Specifies the graph parameter index when type is VX_EVENT_GRAPH_PARAMETER_CONSUMED
+ * \param app_value [in] Application-specified value that will be returned to user as part of \ref vx_event_t.app_value.
+ *                       NOT used by implementation.
  *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors; any other value indicates failure.
@@ -544,7 +567,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
  *
  * \ingroup group_event
  */
-VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_event_type_e type, vx_uint32 param);
+VX_API_ENTRY vx_status VX_API_CALL vxRegisterEvent(vx_reference ref, enum vx_event_type_e type, vx_uint32 param, vx_uint32 app_value);
 
 /*
  * STREAMING API
@@ -587,12 +610,12 @@ enum vx_node_attribute_streaming_e {
  * \ingroup group_streaming
  */
 enum vx_kernel_attribute_streaming_e {
-    /*! \brief The pipeup depth required by the kernel.
+    /*! \brief The pipeup output depth required by the kernel.
      * This is called by kernels that need to be primed with multiple output buffers before it can
      * begin to return them.  A typical use case for this is a source node which needs to provide and
      * retain multiple empty buffers to a camera driver to fill.  The first time the graph is executed
      * after vxVerifyGraph is called, the framework calls the node associated with this kernel
-     * (pipeup_depth - 1) times before 'expecting' a valid output and calling downstream nodes.
+     * (pipeup_output_depth - 1) times before 'expecting' a valid output and calling downstream nodes.
      * During this PIPEUP state, the framework provides the same set of input parameters for each
      * call, but provides different set of output parameters for each call.  During the STEADY state,
      * the kernel may return a different set of output parameters than was given during the execution callback.
@@ -601,7 +624,23 @@ enum vx_kernel_attribute_streaming_e {
      * \note If not set, it will default to 1.
      * \note Setting a value less than 1 shall return VX_ERROR_INVALID_PARAMETERS
      */
-    VX_KERNEL_PIPEUP_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_KERNEL) + 0x4,
+    VX_KERNEL_PIPEUP_OUTPUT_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_KERNEL) + 0x4,
+
+    /*! \brief The pipeup input depth required by the kernel.
+     * This is called by kernels that need to retain one or more input buffers before it can
+     * begin to return them.  A typical use case for this is a sink node which needs to provide and
+     * retain one or more filled buffers to a display driver to display.  The first (pipeup_input_depth - 1)
+     * times the graph is executed after vxVerifyGraph is called, the framework calls the node associated with this kernel
+     * without 'expecting' an input to have been consumed and returned by the node.
+     * During this PIPEUP state, the framework does not reuse any of the input bufers it had given to this node.
+     * During the STEADY state, the kernel may return a different set of input parameters than was given during
+     * the execution callback.
+     * Read-write. Can be written only before user-kernel finalization.
+     * Use a <tt>\ref vx_uint32</tt> parameter.
+     * \note If not set, it will default to 1.
+     * \note Setting a value less than 1 shall return VX_ERROR_INVALID_PARAMETERS
+     */
+    VX_KERNEL_PIPEUP_INPUT_DEPTH = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_KERNEL) + 0x5,
 };
 
 /*! \brief Enable streaming mode of graph execution

@@ -99,7 +99,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryKernel(vx_kernel kern, vx_enum attribu
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_KERNEL_PIPEUP_DEPTH:
+            case VX_KERNEL_PIPEUP_OUTPUT_DEPTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     *(vx_uint32 *)ptr = kernel->num_pipeup_bufs;
@@ -143,7 +143,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
-            case VX_KERNEL_PIPEUP_DEPTH:
+            case VX_KERNEL_PIPEUP_OUTPUT_DEPTH:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     kernel->num_pipeup_bufs = *(vx_uint32*)ptr;

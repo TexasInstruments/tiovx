@@ -259,7 +259,7 @@ vx_status tivxDataRefQueueSendRefConsumedEvent(tivx_data_ref_queue ref, uint64_t
         if(ref->is_enable_send_ref_consumed_event)
         {
             tivxEventQueueAddEvent(&ref->base.context->event_queue,
-                        VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp,
+                        VX_EVENT_GRAPH_PARAMETER_CONSUMED, timestamp, ref->graph->parameters[ref->graph_parameter_index].graph_consumed_app_value,
                         (uintptr_t)ref->graph, (uintptr_t)ref->graph_parameter_index, (uintptr_t)0);
         }
     }

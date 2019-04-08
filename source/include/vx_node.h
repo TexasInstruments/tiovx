@@ -101,6 +101,13 @@ typedef struct _vx_node {
      *    Default is 1
      */
     uint32_t parameter_index_num_buf[TIVX_KERNEL_MAX_PARAMS];
+
+    /*! \brief Value returned with node completion event */
+    uint32_t node_completed_app_value;
+
+    /*! \brief Value returned with node error event */
+    uint32_t node_error_app_value;
+
 } tivx_node_t;
 
 /**
@@ -256,7 +263,7 @@ vx_bool ownCheckNodeCompleted(vx_node node, uint32_t pipeline_id);
  *
  * \ingroup group_vx_node
  */
-vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type);
+vx_status ownNodeRegisterEvent(vx_node node, vx_enum event_type, vx_uint32 app_value);
 
 
 /*! \brief Send node completion event if enabled

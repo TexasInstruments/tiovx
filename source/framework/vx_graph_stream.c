@@ -43,6 +43,8 @@
 #define DELETE (0x00010010U)
 #define RUN    (0x00010011U)
 
+#define STREAMING_EVENT (0x00000001U)
+
 static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
 {
     vx_graph graph = (vx_graph)app_var;
@@ -215,9 +217,7 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
                 }
 
-                if( (VX_EVENT_NODE_COMPLETED==event.type)
-                    && (event.event_info.node_completed.node == graph->nodes[graph->trigger_node_index])
-                    )
+                if(STREAMING_EVENT==event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: NODE COMPLETE\n");
                     graph->streaming_executions++;
@@ -315,7 +315,7 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 id, void 
     status = tivxEventQueueAddEvent(
                 &graph->event_queue,
                 VX_EVENT_USER,
-                timestamp,
+                timestamp, id,
                 (uintptr_t)id, (uintptr_t)parameter, (uintptr_t)0);
 
     return status;
@@ -414,7 +414,7 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
                     if ( (VX_GRAPH_SCHEDULE_MODE_NORMAL == graph->schedule_mode) &&
                          (vx_true_e == graph->trigger_node_set) )
                     {
-                        status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0);
+                        status = tivxRegisterEvent((vx_reference)graph->nodes[graph->trigger_node_index], TIVX_EVENT_GRAPH_QUEUE, VX_EVENT_NODE_COMPLETED, 0, STREAMING_EVENT);
                     }
                     else
                     {

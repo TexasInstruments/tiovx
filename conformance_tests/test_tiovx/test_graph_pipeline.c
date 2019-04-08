@@ -32,6 +32,11 @@ TESTCASE(tivxGraphPipeline,  CT_VXContext, ct_setup_vx_context, 0)
 #define MAX_NUM_OBJ_ARR_ELEMENTS  (4u)
 #define MAX_NUM_PYR_ELEMENTS  (4u)
 
+#define GRAPH_CONSUMED_EVENT      (1u)
+#define NODE0_COMPLETED_EVENT     (2u)
+#define NODE1_COMPLETED_EVENT     (3u)
+#define GRAPH_COMPLETED_EVENT     (4u)
+
 typedef struct {
     const char* testName;
     int width, height;
@@ -2896,10 +2901,10 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     /* set number of buffer at intermediate output */
     VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
 
-    VX_CALL(vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0));
-    VX_CALL(vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_COMPLETED, 0));
-    VX_CALL(vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_COMPLETED, 0));
-    VX_CALL(vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0));
+    VX_CALL(vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_PARAMETER_CONSUMED, 0, GRAPH_CONSUMED_EVENT));
+    VX_CALL(vxRegisterEvent((vx_reference)n0, VX_EVENT_NODE_COMPLETED, 0, NODE0_COMPLETED_EVENT));
+    VX_CALL(vxRegisterEvent((vx_reference)n1, VX_EVENT_NODE_COMPLETED, 0, NODE1_COMPLETED_EVENT));
+    VX_CALL(vxRegisterEvent((vx_reference)graph, VX_EVENT_GRAPH_COMPLETED, 0, GRAPH_COMPLETED_EVENT));
 
     VX_CALL(vxVerifyGraph(graph));
 
@@ -2936,10 +2941,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
     {
         VX_CALL(vxWaitEvent(context, &event, vx_false_e));
 
-        if(event.type==VX_EVENT_GRAPH_PARAMETER_CONSUMED
-            && event.event_info.graph_parameter_consumed.graph == graph
-            && event.event_info.graph_parameter_consumed.graph_parameter_index == 0u
-            )
+        if(event.app_value==GRAPH_CONSUMED_EVENT)
         {
             vx_image in_img;
             uint32_t num_refs;
@@ -2954,9 +2956,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
             in_q_cnt++;
         }
         else
-        if(event.type==VX_EVENT_NODE_COMPLETED
-            && event.event_info.node_completed.node == n1
-            )
+        if(event.app_value==NODE1_COMPLETED_EVENT)
         {
             vx_image out_img;
             uint32_t num_refs;
