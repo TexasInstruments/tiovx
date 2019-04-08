@@ -528,6 +528,7 @@ TEST(tivxGraphStreaming, testScalarCtrlCmd)
     ASSERT_VX_OBJECT(scalar[0] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
 
     ASSERT_VX_OBJECT(n1 = tivxScalarSourceNode(graph, scalar[0]), VX_TYPE_NODE);
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
 
     VX_CALL(vxVerifyGraph(graph));
 

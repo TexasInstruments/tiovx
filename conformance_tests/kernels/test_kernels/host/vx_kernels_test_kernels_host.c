@@ -126,7 +126,8 @@ void tivxTestKernelsLoadKernels(vx_context context)
     {
         tivxRegisterTestKernelsKernels();
         vxLoadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
-        #ifdef x86_64 
+
+        #ifdef x86_64
         tivxRegisterCaptureTargetArmKernels();
         #endif
 
@@ -140,7 +141,8 @@ void tivxTestKernelsUnLoadKernels(vx_context context)
     {
         vxUnloadKernels(context, TIVX_MODULE_NAME_TEST_KERNELS);
         tivxUnRegisterTestKernelsKernels();
-        #ifdef x86_64 
+
+        #ifdef x86_64
         tivxUnRegisterCaptureTargetArmKernels();
         #endif
 
