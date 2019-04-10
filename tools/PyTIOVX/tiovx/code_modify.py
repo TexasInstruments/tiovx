@@ -121,6 +121,7 @@ class CodeModify :
                 self.include_customer_kernels_code.write_line(self.multiline, new_line=False)
 
             self.include_customer_kernels_code.close(new_line=False)
+            os.remove(in_filename)
             os.rename(in_filename + ".tmp", in_filename)
 
 
