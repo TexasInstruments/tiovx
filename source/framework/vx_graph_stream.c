@@ -59,31 +59,27 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
         switch (state)
         {
             case IDLE:
-                if( (VX_EVENT_USER==event.type) &&
-                    (START == event.event_info.user_event.user_event_id) )
+                if(START == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
                     state = RUNNING;
                     tivxSendUserGraphEvent(graph, RUN, NULL);
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (STOP == event.event_info.user_event.user_event_id) )
+                if(STOP == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
                     tivxEventPost(graph->stop_done);
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (DELETE == event.event_info.user_event.user_event_id) )
+                if(DELETE == event.app_value)
                 {
                     /* Break from loop and exit task */
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
                     done = vx_true_e;
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (RUN == event.event_info.user_event.user_event_id) )
+                if(RUN == event.app_value)
                 {
                     /* Do nothing, graph is stopped */
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
@@ -91,15 +87,13 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
 
                 break;
             case RUNNING:
-                if( (VX_EVENT_USER==event.type) &&
-                    (START == event.event_info.user_event.user_event_id) )
+                if(START == event.app_value)
                 {
                     /* Already running, ignore */
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (STOP == event.event_info.user_event.user_event_id) )
+                if(STOP == event.app_value)
                 {
                     /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
@@ -107,8 +101,7 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
                     tivxEventPost(graph->stop_done);
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (DELETE == event.event_info.user_event.user_event_id) )
+                if(DELETE == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
                     vxWaitGraph(graph);
@@ -116,8 +109,7 @@ static void VX_CALLBACK tivxStreamingNoPipeliningTask(void *app_var)
                     done = vx_true_e;
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (RUN == event.event_info.user_event.user_event_id) )
+                if(RUN == event.app_value)
                 {
                     /* Execute graph then trigger another graph execution */
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
@@ -149,8 +141,7 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
         switch (state)
         {
             case IDLE:
-                if( (VX_EVENT_USER==event.type) &&
-                    (START == event.event_info.user_event.user_event_id) )
+                if(START == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: START\n");
                     state = RUNNING;
@@ -162,23 +153,20 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     }
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (STOP == event.event_info.user_event.user_event_id) )
+                if(STOP == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: STOP\n");
                     tivxEventPost(graph->stop_done);
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (DELETE == event.event_info.user_event.user_event_id) )
+                if(DELETE == event.app_value)
                 {
                     /* Break from loop and exit task */
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: DELETE\n");
                     done = vx_true_e;
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (RUN == event.event_info.user_event.user_event_id) )
+                if(RUN == event.app_value)
                 {
                     /* Do nothing, graph is stopped */
                     VX_PRINT(VX_ZONE_INFO, "state: IDLE; event: RUN\n");
@@ -186,15 +174,13 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
 
                 break;
             case RUNNING:
-                if( (VX_EVENT_USER==event.type) &&
-                    (START == event.event_info.user_event.user_event_id) )
+                if(START == event.app_value)
                 {
                     /* Already running, ignore */
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: START\n");
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (STOP == event.event_info.user_event.user_event_id) )
+                if(STOP == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: STOP\n");
                     /* Change state to IDLE; if any pending RUN events then they get ignored in IDLE state */
@@ -203,16 +189,14 @@ static void VX_CALLBACK tivxStreamingPipeliningTask(void *app_var)
                     tivxEventPost(graph->stop_done);
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (DELETE == event.event_info.user_event.user_event_id) )
+                if(DELETE == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: DELETE\n");
                     state = IDLE;
                     done = vx_true_e;
                 }
 
-                if( (VX_EVENT_USER==event.type) &&
-                    (RUN == event.event_info.user_event.user_event_id) )
+                if(RUN == event.app_value)
                 {
                     VX_PRINT(VX_ZONE_INFO, "state: RUNNING; event: RUN\n");
                 }
@@ -306,7 +290,7 @@ VX_API_ENTRY vx_status vxStopGraphStreaming(vx_graph graph)
     return status;
 }
 
-vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 id, void *parameter)
+vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, void *parameter)
 {
     vx_status status = VX_SUCCESS;
 
@@ -315,8 +299,8 @@ vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 id, void 
     status = tivxEventQueueAddEvent(
                 &graph->event_queue,
                 VX_EVENT_USER,
-                timestamp, id,
-                (uintptr_t)id, (uintptr_t)parameter, (uintptr_t)0);
+                timestamp, app_value,
+                (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
 
     return status;
 }

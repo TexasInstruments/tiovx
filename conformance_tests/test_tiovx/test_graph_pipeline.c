@@ -3001,7 +3001,7 @@ TEST_WITH_ARG(tivxGraphPipeline, testEventHandling, Arg, PARAMETERS)
         }
         else
         if((event.type==VX_EVENT_USER)
-            && (event.event_info.user_event.user_event_id == 0xDEADBEAFu)
+            && (event.app_value == 0xDEADBEAFu)
             && (event.event_info.user_event.user_event_parameter == (void*)0x12345678u)
             )
         {
@@ -3099,11 +3099,11 @@ TEST(tivxGraphPipeline, testEventHandlingDisableEvents)
 
     /* wait for one event, this should be the first one */
     VX_CALL(vxWaitEvent(context, &event, vx_true_e));
-    ASSERT(event.type==VX_EVENT_USER && event.event_info.user_event.user_event_id==0x1u);
+    ASSERT(event.type==VX_EVENT_USER && event.app_value==0x1u);
 
     /* wait for one more event, this should be the third one */
     VX_CALL(vxWaitEvent(context, &event, vx_true_e));
-    ASSERT(event.type==VX_EVENT_USER && event.event_info.user_event.user_event_id==0x3u);
+    ASSERT(event.type==VX_EVENT_USER && event.app_value==0x3u);
 
     /* wait for one more event, there should be no more events */
     ASSERT(vxWaitEvent(context, &event, vx_true_e) != VX_SUCCESS);

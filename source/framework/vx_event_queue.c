@@ -185,7 +185,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxDisableEvents(vx_context context)
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32 id, void *parameter)
+VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32 app_value, void *parameter)
 {
     vx_status status;
 
@@ -201,8 +201,8 @@ VX_API_ENTRY vx_status VX_API_CALL vxSendUserEvent(vx_context context, vx_uint32
         status = tivxEventQueueAddEvent(
                 &context->event_queue,
                 VX_EVENT_USER,
-                timestamp, id,
-                (uintptr_t)id, (uintptr_t)parameter, (uintptr_t)0);
+                timestamp, app_value,
+                (uintptr_t)app_value, (uintptr_t)parameter, (uintptr_t)0);
     }
     return status;
 }
@@ -284,7 +284,7 @@ vx_status vxWaitEventQueue(
             else
             if(elem->event_id==VX_EVENT_USER)
             {
-                event->event_info.user_event.user_event_id = (uint32_t)elem->param1;
+                event->app_value = (uint32_t)elem->param1;
                 event->event_info.user_event.user_event_parameter = (void*)elem->param2;
             }
         }

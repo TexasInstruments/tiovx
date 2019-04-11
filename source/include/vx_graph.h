@@ -430,7 +430,7 @@ uint32_t ownGraphGetNumSchedule(vx_graph graph);
  *
  * \ingroup group_vx_graph
  */
-vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 id, void *parameter);
+vx_status VX_API_CALL tivxSendUserGraphEvent(vx_graph graph, vx_uint32 app_value, void *parameter);
 
 /*! \brief Waits for user event from graph event queue
  *
