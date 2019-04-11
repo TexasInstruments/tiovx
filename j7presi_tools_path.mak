@@ -12,13 +12,13 @@ IVISION_PATH ?= $(PSDK_PATH)/ivision
 IMAGING_PATH ?= $(PSDK_PATH)/imaging
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_00_09_00_00
 
-TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_16.9.9.LTS
+TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_18.12.1.LTS
 CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0
-CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.2.4
+CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.2
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu
-BIOS_PATH ?= $(PSDK_PATH)/bios_6_76_00_01_eng
-XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_51_01_18_core
+BIOS_PATH ?= $(PSDK_PATH)/bios_6_76_00_08
+XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_55_01_14_core_eng
 PDK_PATH ?= $(PSDK_PATH)/pdk
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
 
