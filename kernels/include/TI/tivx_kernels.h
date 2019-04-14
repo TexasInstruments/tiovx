@@ -121,8 +121,8 @@ enum tivx_kernel_ivision_e {
  * \ingroup group_vision_function_tidl
  */
 vx_kernel tivxAddKernelTIDL(vx_context context,
-                            uint32_t num_input_tensors,
-                            uint32_t num_output_tensors);
+                            uint32_t max_num_input_tensors,
+                            uint32_t max_num_output_tensors);
 
 
 

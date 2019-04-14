@@ -163,7 +163,7 @@ static uint32_t tidlGetNumInputBuffers(
 /**
  *******************************************************************************
  *
- * \brief tidlIsInDataBuff() validates whether the particular buffer with 'dataId' is an output buffer from a layer of layersGroupId
+ * \brief tidlIsOutDataBuff() validates whether the particular buffer with 'dataId' is an output buffer from a layer of layersGroupId
  * The search actually look for a buffer with id 'dataId' that is input to a layer different than layersGroupId
  * \return  0: the buffer is not an output buffer from layersGroupId | 1: the buffer is an output buffer from layer layersGroupId
  *
@@ -368,13 +368,15 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
   {
     printf("Unable to allocate memory for reading network! %d bytes\n", capacity);
   }
-
-  network = vxCreateUserDataObject(context, "TIDL_network", capacity + paramsSize, NULL );
+  /* the 1 extra byte will be used as flag to indicate if each pointer to different layer's parameters has already been be converted from shared to target
+   * in order to avoid doing the conversion twice which would be incorrect
+   */
+  network = vxCreateUserDataObject(context, "TIDL_network", capacity + 1 + paramsSize, NULL );
   status = vxGetStatus((vx_reference)network);
 
   if (VX_SUCCESS == status)
   {
-    status = vxMapUserDataObject(network, 0, capacity + paramsSize, &map_id,
+    status = vxMapUserDataObject(network, 0, capacity + 1 + paramsSize, &map_id,
         (void **)&network_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     if (VX_SUCCESS == status)
@@ -389,6 +391,7 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
       }
 
       vxUnmapUserDataObject(network, map_id);
+      tivxMemFree(tmpNetBuf, capacity, TIVX_MEM_EXTERNAL);
     }
   }
 
@@ -397,7 +400,98 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
   return network;
 }
 
-vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_object  network, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
+vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum target_cpu) {
+
+  vx_status status = VX_SUCCESS;
+  void      *network_buffer = NULL;
+  vx_map_id  map_id_network;
+  sTIDL_Network_t *net;
+  int32_t i;
+
+  status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
+      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+
+  if (VX_SUCCESS == status)
+        {
+          if(network_buffer)
+          {
+            net= (sTIDL_Network_t *)network_buffer;
+            uint32_t layersGroupId;
+
+            if ((target_cpu == TIVX_CPU_ID_DSP1) || (target_cpu == TIVX_CPU_ID_DSP2)) {
+              layersGroupId= 2;
+            }
+            else if ((target_cpu == TIVX_CPU_ID_EVE1) || (target_cpu == TIVX_CPU_ID_EVE2) || (target_cpu == TIVX_CPU_ID_EVE3) || (target_cpu == TIVX_CPU_ID_EVE4)) {
+              layersGroupId= 1;
+            }
+            else {
+              layersGroupId= 0;
+            }
+
+            for (i = 0; i < net->numLayers; i++)
+            {
+              if (net->TIDLLayers[i].layerType != TIDL_DataLayer)
+              {
+                net->TIDLLayers[i].layersGroupId = layersGroupId;
+              }
+            }
+
+            vxUnmapUserDataObject(network, map_id_network);
+          }
+        }
+
+  return status;
+}
+
+int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t layersGroupCount[TIVX_CPU_ID_MAX]) {
+
+  vx_status status = VX_SUCCESS;
+  void      *network_buffer = NULL;
+  vx_map_id  map_id_network;
+  sTIDL_Network_t *net;
+  int32_t i;
+  uint32_t numLayersGroup;
+
+  numLayersGroup= 0;
+
+  status = vxMapUserDataObject(network, 0, sizeof(sTIDL_Network_t), &map_id_network,
+      (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
+
+  if (VX_SUCCESS == status)
+        {
+          if(network_buffer)
+          {
+            net= (sTIDL_Network_t *)network_buffer;
+
+            for (i=0; i < TIVX_CPU_ID_MAX; i++) {
+              layersGroupCount[i]= 0;
+            }
+
+            for (i = 0; i < net->numLayers; i++)
+            {
+              if (net->TIDLLayers[i].layerType != TIDL_DataLayer)
+              {
+                if (net->TIDLLayers[i].layersGroupId < TIVX_CPU_ID_MAX) {
+                  layersGroupCount[net->TIDLLayers[i].layersGroupId]++;
+                }
+              }
+            }
+
+            for (i=0; i < TIVX_CPU_ID_MAX; i++) {
+              if (layersGroupCount[i]!= 0) {
+                numLayersGroup++;
+              }
+            }
+
+            vxUnmapUserDataObject(network, map_id_network);
+          }
+
+        }
+
+  return numLayersGroup;
+}
+
+vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_object  network, uint32_t *num_input_tensors, uint32_t *num_output_tensors, vx_enum target_cpu)
 {
   vx_status status = VX_SUCCESS;
   vx_map_id map_id_config;
@@ -428,16 +522,16 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
         if(network_buffer)
         {
           net= (sTIDL_Network_t *)network_buffer;
-          vx_enum target_cpu;
           uint32_t currLayersGroupId;
-
-          target_cpu = VX_TIDL_UTILS_TARGET_CPU;
 
           if ((target_cpu == TIVX_CPU_ID_DSP1) || (target_cpu == TIVX_CPU_ID_DSP2)) {
             currLayersGroupId= 2;
           }
           else if ((target_cpu == TIVX_CPU_ID_EVE1) || (target_cpu == TIVX_CPU_ID_EVE2) || (target_cpu == TIVX_CPU_ID_EVE3) || (target_cpu == TIVX_CPU_ID_EVE4)) {
             currLayersGroupId= 1;
+          }
+          else {
+            currLayersGroupId= 0;
           }
           *num_input_tensors= tidlGetNumInputBuffers(net, ioBufDesc, currLayersGroupId);
           *num_output_tensors= tidlGetNumOutputBuffers(net, ioBufDesc, currLayersGroupId);
@@ -468,7 +562,7 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
   void      *network_buffer = NULL;
   vx_map_id  map_id;
   sTIDL_Network_t *net;
-  uint8_t *pParams;
+  uint8_t *pParams, *pFlagShared2Target;
 
   status = vxMapUserDataObject(network, 0, 0, &map_id,
       (void **)&network_buffer, VX_READ_AND_WRITE, VX_MEMORY_TYPE_HOST, 0);
@@ -488,7 +582,17 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
         return VX_FAILURE;
       }
 
-      pParams= (uint8_t*)net + sizeof(sTIDL_Network_t);
+      /* pFlagShared2Target flag is used to indicate if each pointer to different layer's parameters has already been be converted from shared to target
+       * in order to avoid doing the conversion twice which would be incorrect.
+       * Initially set it to 0.
+       * After call to tidl_convertNetParamsPtr() in vx_tidl_target_tda2x3x.c, the kernel will set this flag to 1
+       * in order to prevent multiple call to tidl_convertNetParamsPtr(), which would be incorrect.
+       * Indeed the same network can be passed to more than one TI-DL node.
+       */
+      pFlagShared2Target= (uint8_t*)net + sizeof(sTIDL_Network_t);
+      *pFlagShared2Target= 0;
+
+      pParams= (uint8_t*)net + sizeof(sTIDL_Network_t) + 1;
 
       for(i = 0; i < net->numLayers; i++)
       {
@@ -657,4 +761,3 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
 
   return status;
 }
-

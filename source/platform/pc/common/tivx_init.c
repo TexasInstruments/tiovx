@@ -129,6 +129,16 @@ void tivxInit(void)
     #ifndef _DISABLE_TIDL
     tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
     tivxRegisterTIDLTargetKernels();
+    tivxSetSelfCpuId(TIVX_CPU_ID_EVE2);
+    tivxRegisterTIDLTargetKernels();
+    tivxSetSelfCpuId(TIVX_CPU_ID_EVE3);
+    tivxRegisterTIDLTargetKernels();
+    tivxSetSelfCpuId(TIVX_CPU_ID_EVE4);
+    tivxRegisterTIDLTargetKernels();
+    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxRegisterTIDLTargetKernels();
+    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
+    tivxRegisterTIDLTargetKernels();
     #endif
 
     /* let rest of system think it is running on DSP1 */

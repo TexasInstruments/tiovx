@@ -64,7 +64,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-#define VX_TIDL_UTILS_TARGET_CPU TIVX_CPU_ID_EVE1
 #define VX_TIDL_UTILS_NO_ZERO_COEFF_PERCENT       (100)
 #define VX_TIDL_UTILS_RANDOM_INPUT                (0)
 
@@ -85,12 +84,37 @@ vx_user_data_object vx_tidl_utils_readNetwork(vx_context context, char *network_
 /**
  *******************************************************************************
  *
+ * \brief Function vx_tidl_utils_countLayersGroup() returns the number of groups of layers in the network
+ *                 and fill the array layersGroupCount with the number of layers in each group.
+ *                 layersGrouCount[0] always contains 0.
+ *                 layersGrouCount[1] contains the number of layers associated to group 1
+ *                 layersGrouCount[2] contains the number of layers associated to group 2
+ *                 Each group of layers is processed by a different core.
+ * \return  number of groups of layers.
+ *
+ *******************************************************************************
+ */
+int32_t vx_tidl_utils_countLayersGroup(vx_user_data_object  network, int32_t layersGroupCount[TIVX_CPU_ID_MAX]);
+
+/**
+ *******************************************************************************
+ *
+ * \brief Function vx_tidl_utils_updateLayersGroup() change each layer's group id so it runs on the cpu specified by target_cpu
+ * \return  status
+ *
+ *******************************************************************************
+ */
+vx_status vx_tidl_utils_updateLayersGroup(vx_user_data_object  network, vx_enum target_cpu);
+
+/**
+ *******************************************************************************
+ *
  * \brief Function vx_tidl_utils_getConfig() extracts the input/output buffer configuration from the network
  * \return  user data object corresponding to the I/O buffer configuration
  *
  *******************************************************************************
  */
-vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_object  network, uint32_t *num_input_tensors, uint32_t *num_output_tensors);
+vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_object  network, uint32_t *num_input_tensors, uint32_t *num_output_tensors, vx_enum target_cpu);
 
 
 /**

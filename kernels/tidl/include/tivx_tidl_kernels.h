@@ -75,6 +75,15 @@
  */
 #define TIVX_KERNEL_TIDL_NAME          "com.ti.tidl"
 
+#define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
+#define TIVX_KERNEL_TIDL_IN_NETWORK_IDX                 (1U)
+#define TIVX_KERNEL_TIDL_IN_DATAQ_IDX                   (2U)
+#define TIVX_KERNEL_TIDL_OUT_DATAQ_IDX                  (3U)
+#define TIVX_KERNEL_TIDL_IN_MAX_NUM_INPUT_TENSORS_IDX   (4U)
+#define TIVX_KERNEL_TIDL_IN_MAX_NUM_OUTPUT_TENSORS_IDX  (5U)
+#define TIVX_KERNEL_TIDL_IN_FIRST_TENSOR                (6U)
+#define TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS            (6U)
+
 #ifdef __cplusplus
 extern "C" {
 #endif

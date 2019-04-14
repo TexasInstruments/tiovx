@@ -110,8 +110,9 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
   vx_user_data_object  config;
   vx_user_data_object  network;
-  vx_tensor input_tensor;
-  vx_tensor output_tensor;
+  vx_tensor input_tensors[1];
+  vx_tensor output_tensors[1];
+  vx_array inDataQ, outDataQ;
 
   vx_int32    network_id = 0;
   vx_int32    refid[] = {896, 895, 0xDEAD, 895, 0xDEAD};
@@ -152,7 +153,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(network = vx_tidl_utils_readNetwork(context, &filepath[0]), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-    ASSERT_VX_OBJECT(config = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(config = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors, TIVX_CPU_ID_EVE1), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl/%s", ct_get_test_file_path(), paramFile[network_id]);
     ASSERT(sz < MAXPATHLENGTH);
@@ -163,18 +164,14 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-    ASSERT_VX_OBJECT(input_tensor = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(input_tensors[0] = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(output_tensor = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+    ASSERT_VX_OBJECT(output_tensors[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    vx_reference params[] = {
-            (vx_reference)config,
-            (vx_reference)network,
-            (vx_reference)input_tensor,
-            (vx_reference)output_tensor,
-    };
+    ASSERT_VX_OBJECT(inDataQ = vxCreateArray(context, VX_TYPE_INT32, num_input_tensors), (enum vx_type_e)VX_TYPE_ARRAY);
+    ASSERT_VX_OBJECT(outDataQ = vxCreateArray(context, VX_TYPE_INT32, num_output_tensors), (enum vx_type_e)VX_TYPE_ARRAY);
 
-    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, dimof(params)), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, num_input_tensors, input_tensors, inDataQ, num_output_tensors, output_tensors, outDataQ), VX_TYPE_NODE);
 
     /* Set target node to EVE1 */
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
@@ -182,7 +179,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     /* Read input from file and populate the input tensors */
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl/%s", ct_get_test_file_path(), inputFile[network_id]);
     ASSERT(sz < MAXPATHLENGTH);
-    VX_CALL(readInput(context, config, &input_tensor, &filepath[0]));
+    VX_CALL(readInput(context, config, &input_tensors[0], &filepath[0]));
 
     #ifdef DEBUG_TEST_TIDL
     printf("Verifying graph ...\n");
@@ -196,7 +193,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     printf("Showing output ...\n");
     #endif
 
-    VX_CALL(displayOutput(config, &output_tensor, refid[network_id], refscore[network_id]));
+    VX_CALL(displayOutput(config, &output_tensors[0], refid[network_id], refscore[network_id]));
 
     VX_CALL(vxReleaseNode(&node));
     VX_CALL(vxReleaseGraph(&graph));
@@ -206,14 +203,19 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     VX_CALL(vxReleaseUserDataObject(&config));
     VX_CALL(vxReleaseUserDataObject(&network));
-    VX_CALL(vxReleaseTensor(&input_tensor));
-    VX_CALL(vxReleaseTensor(&output_tensor));
+    VX_CALL(vxReleaseTensor(&input_tensors[0]));
+    VX_CALL(vxReleaseTensor(&output_tensors[0]));
+    VX_CALL(vxReleaseArray(&inDataQ));
+    VX_CALL(vxReleaseArray(&outDataQ));
 
     ASSERT(config == 0);
     ASSERT(network == 0);
-    ASSERT(input_tensor  == 0);
-    ASSERT(output_tensor == 0);
 
+    ASSERT(input_tensors[0]  == 0);
+    ASSERT(output_tensors[0] == 0);
+    ASSERT(inDataQ == 0);
+    ASSERT(outDataQ == 0 );
+    
     vxRemoveKernel(kernel);
   }
 

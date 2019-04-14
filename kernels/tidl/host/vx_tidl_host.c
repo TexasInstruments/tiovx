@@ -80,14 +80,18 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
     vx_uint32 i;
 
-    if (num_params < 4)
+    if (num_params < (TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2))
     {
-        /* Number of parameters should be a minimum of 4 */
-        /* config, network, mininum 1-input, minimum 1-output */
+        /* Number of parameters should be a minimum of TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2 */
+        /* config, network, input dataQ_array, output dataQ_array, max_num_input_tensors, max_num_output_tensors, mininum 1-input, minimum 1-output */
         status = VX_FAILURE;
     }
 
-    for (i = 0U; i < num_params; i ++)
+      /* Verify that parameters[0[ and parameteres[1] and at least the first two tensors contain objects
+       * There could be more tensors depending on the configuration specified but we are not checking here
+       * as the information of the exact number of input and output tensors is not available here.
+       * */
+    for (i = 0U; i < (TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2); i ++)
     {
         /* Check for NULL */
         if (NULL == parameters[i])
@@ -103,7 +107,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char config_name[VX_MAX_REFERENCE_NAME];
         vx_size config_size;
 
-        config = (vx_user_data_object)parameters[0];
+        config = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_NAME, &config_name, sizeof(config_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_SIZE, &config_size, sizeof(config_size)));
@@ -122,7 +126,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         vx_char network_name[VX_MAX_REFERENCE_NAME];
         vx_size network_size;
 
-        network = (vx_user_data_object)parameters[1];
+        network = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
 
         tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
@@ -139,8 +143,8 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 }
 
 vx_kernel tivxAddKernelTIDL(vx_context context,
-                            uint32_t num_input_tensors,
-                            uint32_t num_output_tensors)
+                            uint32_t max_num_input_tensors,
+                            uint32_t max_num_output_tensors)
 {
     vx_kernel kernel;
     vx_status status;
@@ -156,8 +160,9 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
 
     if (status == VX_SUCCESS)
     {
-        /* Number of parameters are config + network + input tensors + output tensors */
-        uint32_t num_params = 2 + num_input_tensors + num_output_tensors;
+        /* Number of parameters are config + network + input data Q array + output data Q array
+         * + 2 scalars corresponding to max_num_input_tensors & max_num_output_tensors + input tensors + output tensors */
+        uint32_t num_params = TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + max_num_input_tensors + max_num_output_tensors;
 
         kernel = vxAddUserKernel(
                                 context,
@@ -187,16 +192,55 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
         }
         if ( status == VX_SUCCESS)
         {
-            status = vxAddParameterToKernel(kernel,
-                index,
-                VX_INPUT,
-                VX_TYPE_USER_DATA_OBJECT,
-                VX_PARAMETER_STATE_REQUIRED
-                );
-            index++;
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_INPUT,
+              VX_TYPE_USER_DATA_OBJECT,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
         }
-
-        for(i = 0; i < num_input_tensors; i++)
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_INPUT,
+              VX_TYPE_ARRAY,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_OUTPUT,
+              VX_TYPE_ARRAY,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_INPUT,
+              VX_TYPE_UINT32,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_INPUT,
+              VX_TYPE_UINT32,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
+        for(i = 0; i < max_num_input_tensors; i++)
         {
             if ( status == VX_SUCCESS)
             {
@@ -210,7 +254,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
             }
         }
 
-        for(i = 0; i < num_output_tensors; i++)
+        for(i = 0; i < max_num_output_tensors; i++)
         {
             if ( status == VX_SUCCESS)
             {
