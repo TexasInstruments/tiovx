@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017 Texas Instruments Incorporated
+# Copyright (c) 2017-2019 Texas Instruments Incorporated
 #
 # All rights reserved not granted herein.
 #
@@ -291,15 +291,17 @@ class DfImage(Enum) :
     S32  = 14
     ## OpenVX equivalent = TIVX_DF_IMAGE_P12
     P12  = 15
+    ## OpenVX equivalent = TIVX_DF_IMAGE_NV12_P12
+    NV12_P12  = 16
 
     def get_vx_enum_name(df_format) :
-        if df_format == DfImage.P12 :
+        if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 :
             return "TIVX_DF_IMAGE_" + df_format.name
         else :
             return "VX_DF_IMAGE_" + df_format.name
 
     def get_vx_name(df_format) :
-        if df_format == DfImage.P12 :
+        if df_format == DfImage.P12 or df_format == DfImage.NV12_P12 :
             return "tivx_df_image_e"
         else :
             return "vx_df_image_e"
@@ -317,7 +319,7 @@ class DfImage(Enum) :
         return DfImage.INVALID
 
     def get_num_planes(df_format) :
-        if df_format == DfImage.NV12 or df_format == DfImage.NV21 :
+        if df_format == DfImage.NV12 or df_format == DfImage.NV21 or df_format == DfImage.NV12_P12 :
             return 2
         if df_format == DfImage.IYUV or df_format == DfImage.YUV4 :
             return 3

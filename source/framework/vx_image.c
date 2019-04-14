@@ -83,6 +83,7 @@ static vx_bool ownIsSupportedFourcc(vx_df_image code)
         case VX_DF_IMAGE_S32:
         case VX_DF_IMAGE_VIRT:
         case TIVX_DF_IMAGE_P12:
+        case TIVX_DF_IMAGE_NV12_P12:
             is_supported_fourcc = vx_true_e;
             break;
         default:
@@ -187,6 +188,7 @@ static vx_size ownSizeOfChannel(vx_df_image color)
                 size = sizeof(vx_uint32);
                 break;
             case TIVX_DF_IMAGE_P12:
+            case TIVX_DF_IMAGE_NV12_P12:
                 size = 0ul; /* Special case for (bits per pixel % 8) != 0 */
                 break;
             default:
@@ -473,6 +475,11 @@ static void ownInitImage(vx_image image, vx_uint32 width, vx_uint32 height, vx_d
             obj_desc->planes = 1;
             ownInitPlane(image, 0, 0, 1, obj_desc->width, obj_desc->height, 1, 1, 12);
             break;
+        case TIVX_DF_IMAGE_NV12_P12:
+            obj_desc->planes = 2;
+            ownInitPlane(image, 0, 0, 1, obj_desc->width, obj_desc->height, 1, 1, 12);
+            ownInitPlane(image, 1, 0, 2, obj_desc->width, obj_desc->height, 2, 2, 12);
+            break;
         default:
             /*! should not get here unless there's a bug in the
              * ownIsSupportedFourcc call.
@@ -741,7 +748,7 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateImageFromHandle(vx_context context, vx
             for (plane_idx = 0; plane_idx < obj_desc->planes; plane_idx++)
             {
                 /* ensure row-major memory layout */
-                if (color == TIVX_DF_IMAGE_P12)
+                if ((color == TIVX_DF_IMAGE_P12) || (color == TIVX_DF_IMAGE_NV12_P12))
                 {
                     if((addrs[plane_idx].stride_x != 0) || (addrs[plane_idx].stride_y < (vx_int32)(((addrs[plane_idx].dim_x * 12ul)+7ul)/8ul)) )
                     {
@@ -1086,19 +1093,42 @@ VX_API_ENTRY vx_image VX_API_CALL vxCreateUniformImage(vx_context context, vx_ui
                 status = vxMapImagePatch(image, &rect, p, &map_id, &addr, &base, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, VX_NOGAP_X);
                 if(status==VX_SUCCESS)
                 {
-                    if (format == TIVX_DF_IMAGE_P12)
+                    if ((format == TIVX_DF_IMAGE_P12) || (format == TIVX_DF_IMAGE_NV12_P12))
                     {
-                        vx_uint16 value_p12 = value->U16 & 0x0FFF;
-                        vx_uint8 value_b0 = (vx_uint8)(value_p12 & 0xFF);
-                        vx_uint8 value_b1 = (vx_uint8)(value_p12>>8u) | (vx_uint8)((value_p12 & 0x0F)<<4u);
-                        vx_uint8 value_b2 = (vx_uint8)(value_p12>>4u);
+                        vx_uint16 *pixel;
+                        vx_uint16 value_p12_0, value_p12_1;
+                        vx_uint8 value_b0, value_b1, value_b2;
+
+                        if (format == TIVX_DF_IMAGE_P12)
+                        {
+                            pixel = (vx_uint16 *)&value->U16;
+                        }
+                        else
+                        {
+                            pixel = (vx_uint16 *)&value->YUV_12;
+                        }
+
+                        if (p == 0)
+                        {
+                            value_p12_0 = pixel[0] & 0x0FFF;
+                            value_p12_1 = value_p12_0;
+                        }
+                        else
+                        {
+                            value_p12_0 = pixel[1] & 0x0FFF;
+                            value_p12_1 = pixel[2] & 0x0FFF;
+                        }
+
+                        value_b0 = (vx_uint8)(value_p12_0 & 0xFF);
+                        value_b1 = (vx_uint8)(value_p12_0>>8u) | (vx_uint8)((value_p12_1 & 0x0F)<<4u);
+                        value_b2 = (vx_uint8)(value_p12_1>>4u);
 
                         for (y = 0; y < addr.dim_y; y+=addr.step_y)
                         {
                             vx_uint8 *ptr = vxFormatImagePatchAddress2d(base, 0, y, &addr);
 
                             /* Write 2 pixels at a time (3 bytes) */
-                            for (x = 0; x < addr.dim_x; x+=2)
+                            for (x = 0; x < addr.dim_x; x+=addr.step_x*2)
                             {
                                 *ptr = value_b0;
                                 ptr++;
@@ -1433,7 +1463,7 @@ VX_API_ENTRY vx_size VX_API_CALL vxComputeImagePatchSize(vx_image image,
                             ;
 
                 format = obj_desc->format;
-                if (TIVX_DF_IMAGE_P12 == format)
+                if ((TIVX_DF_IMAGE_P12 == format) || (TIVX_DF_IMAGE_NV12_P12 == format))
                 {
                     size = (num_pixels * 3U) / 2U;
                 }
@@ -1747,7 +1777,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                             pImageElem = pImageLine;
                             pUserElem = pUserLine;
 
-                            for (x = start_x; x < end_x; x += 2)
+                            for (x = start_x; x < end_x; x += image_addr->step_x*2)
                             {
                                 vx_uint32 *pImageElem32 = (vx_uint32*)pImageElem;
                                 vx_uint16 *pUserElem16 = (vx_uint16*)pUserElem;
@@ -1800,7 +1830,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyImagePatch(
                             pImageElem = pImageLine;
                             pUserElem = pUserLine;
 
-                            for (x = start_x; x < end_x; x += 2)
+                            for (x = start_x; x < end_x; x += image_addr->step_x*2)
                             {
                                 vx_uint16 *pUserElem16 = (vx_uint16*)pUserElem;
                                 vx_uint32 value;

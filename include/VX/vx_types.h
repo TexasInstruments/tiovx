@@ -1502,6 +1502,8 @@ typedef union _vx_pixel_value_t {
     vx_int16 S16; /*!< \brief <tt>\ref VX_DF_IMAGE_S16</tt> */
     vx_uint32 U32; /*!< \brief <tt>\ref VX_DF_IMAGE_U32</tt> */
     vx_int32 S32; /*!< \brief <tt>\ref VX_DF_IMAGE_S32</tt> */
+    vx_uint16 P12; /*!< \brief <tt>\ref TIVX_DF_IMAGE_P12</tt> */
+    vx_uint16 YUV_12[3]; /*!< \brief <tt>\ref TIVX_DF_IMAGE_NV12_P12</tt> */
     vx_uint8 reserved[16];
 } vx_pixel_value_t;
 

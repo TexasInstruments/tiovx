@@ -304,6 +304,11 @@ typedef enum _tivx_df_image_e {
      * The stride_x for this data format must be set to 0 */
     TIVX_DF_IMAGE_P12 = VX_DF_IMAGE('P','0','1','2'),
 
+    /*! \brief a NV12 frame of packed 12-bit data.
+     *
+     * The stride_x for this data format must be set to 0 */
+    TIVX_DF_IMAGE_NV12_P12 = VX_DF_IMAGE('N','1','2','P'),
+
 } tivx_df_image_e;
 
 /*! \brief Based on the vx_graph_attribute_e definition.
@@ -603,7 +608,7 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  */
 vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
 
-/*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a 
+/*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a
  *         additional TIOVX specific flag parameter
  *
  *  \details For valid values of flag see

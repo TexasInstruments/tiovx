@@ -109,11 +109,12 @@ static uint32_t own_stride_bytes(vx_df_image format, int step)
 }
 
 
-static int own_get_channel_step_x(vx_df_image format, vx_enum channel)
+static int own_get_channel_stride_x(vx_df_image format, vx_enum channel)
 {
     switch (format)
     {
     case TIVX_DF_IMAGE_P12:
+    case TIVX_DF_IMAGE_NV12_P12:
         return 0;
 
     case VX_DF_IMAGE_U8:
@@ -155,39 +156,42 @@ static int own_get_channel_step_x(vx_df_image format, vx_enum channel)
 }
 
 
-static int own_get_channel_step_y(vx_df_image format, vx_enum channel, int step)
+static int own_get_channel_stride_y(vx_df_image format, vx_enum channel, int width)
 {
     switch (format)
     {
     case VX_DF_IMAGE_U8:
-        return step;
+        return width;
 
     case TIVX_DF_IMAGE_P12:
-        return step * 1.5;
+        return width * 1.5;
+
+    case TIVX_DF_IMAGE_NV12_P12:
+        return (channel == VX_CHANNEL_Y) ? width * 1.5 : width / 2 * 1.5;
 
     case VX_DF_IMAGE_U16:
     case VX_DF_IMAGE_S16:
-        return step * 2;
+        return width * 2;
 
     case VX_DF_IMAGE_U32:
     case VX_DF_IMAGE_S32:
     case VX_DF_IMAGE_RGBX:
-        return step * 4;
+        return width * 4;
 
     case VX_DF_IMAGE_RGB:
-        return step * 3;
+        return width * 3;
 
     case VX_DF_IMAGE_YUYV:
     case VX_DF_IMAGE_UYVY:
-        return step * 2;
+        return width * 2;
 
     case VX_DF_IMAGE_IYUV:
-        return (channel == VX_CHANNEL_Y) ? step : step / 2;
+        return (channel == VX_CHANNEL_Y) ? width : width / 2;
 
     case VX_DF_IMAGE_YUV4:
     case VX_DF_IMAGE_NV12:
     case VX_DF_IMAGE_NV21:
-        return step;
+        return width;
 
     default:
         ASSERT_(return 0, 0);
@@ -209,6 +213,7 @@ static int own_get_channel_subsampling_x(vx_df_image format, vx_enum channel)
     case VX_DF_IMAGE_NV21:
     case VX_DF_IMAGE_YUYV:
     case VX_DF_IMAGE_UYVY:
+    case TIVX_DF_IMAGE_NV12_P12:
         return 2;
     }
 
@@ -226,6 +231,7 @@ static int own_get_channel_subsampling_y(vx_df_image format, vx_enum channel)
     case VX_DF_IMAGE_IYUV:
     case VX_DF_IMAGE_NV12:
     case VX_DF_IMAGE_NV21:
+    case TIVX_DF_IMAGE_NV12_P12:
         return 2;
 
     case VX_DF_IMAGE_YUYV:
@@ -236,49 +242,49 @@ static int own_get_channel_subsampling_y(vx_df_image format, vx_enum channel)
     return 1;
 }
 
-
-static unsigned int own_image_bits_per_pixel(vx_df_image format, unsigned int p)
+vx_uint32 own_plane_subsampling_x(vx_df_image format, vx_uint32 plane)
 {
+    int subsampling_x = 0;
+
     switch (format)
     {
-    case VX_DF_IMAGE_U8:
-    case TIVX_DF_IMAGE_P12:
-        return 8 * 1;
-
-    case VX_DF_IMAGE_U16:
-    case VX_DF_IMAGE_S16:
-    case VX_DF_IMAGE_UYVY:
-    case VX_DF_IMAGE_YUYV:
-        return 8 * 2;
-
-    case VX_DF_IMAGE_U32:
-    case VX_DF_IMAGE_S32:
-    case VX_DF_IMAGE_RGBX:
-        return 8 * 4;
-
-    case VX_DF_IMAGE_RGB:
-    case VX_DF_IMAGE_YUV4:
-        return 8 * 3;
-
     case VX_DF_IMAGE_IYUV:
-        return 8 * 3 / 2;
-
     case VX_DF_IMAGE_NV12:
     case VX_DF_IMAGE_NV21:
-        if (p == 0)
-            return 8 * 1;
-        else
-            return 8 * 2;
+    case VX_DF_IMAGE_YUYV:
+    case VX_DF_IMAGE_UYVY:
+    case TIVX_DF_IMAGE_NV12_P12:
+        subsampling_x = (0 == plane) ? 1 : 2;
+        break;
 
     default:
-        CT_RecordFailure();
-        return 0;
-    };
+        subsampling_x = 1;
+        break;
+    }
+
+    return subsampling_x;
 }
 
-static size_t own_plane_size(uint32_t width, uint32_t height, unsigned int p, vx_df_image format)
+static
+vx_uint32 own_plane_subsampling_y(vx_df_image format, vx_uint32 plane)
 {
-    return (size_t)(width * height * own_image_bits_per_pixel(format, p) / 8);
+    int subsampling_y = 0;
+
+    switch (format)
+    {
+    case VX_DF_IMAGE_IYUV:
+    case VX_DF_IMAGE_NV12:
+    case VX_DF_IMAGE_NV21:
+    case TIVX_DF_IMAGE_NV12_P12:
+        subsampling_y = (0 == plane) ? 1 : 2;
+        break;
+
+    default:
+        subsampling_y = 1;
+        break;
+    }
+
+    return subsampling_y;
 }
 
 /*
@@ -318,6 +324,7 @@ static void own_allocate_image_ptrs(
     case VX_DF_IMAGE_NV21:
     case VX_DF_IMAGE_YUV4:
     case VX_DF_IMAGE_IYUV:
+    case TIVX_DF_IMAGE_NV12_P12:
         channel[0] = VX_CHANNEL_Y;
         channel[1] = VX_CHANNEL_U;
         channel[2] = VX_CHANNEL_V;
@@ -327,10 +334,12 @@ static void own_allocate_image_ptrs(
         ASSERT(0);
     }
 
-    if (format != TIVX_DF_IMAGE_P12)
-        ASSERT_NO_FAILURE(*nplanes = ct_get_num_planes(format));
-    else
+    if (format == TIVX_DF_IMAGE_P12)
         *nplanes = 1;
+    else if (format == TIVX_DF_IMAGE_NV12_P12)
+        *nplanes = 2;
+    else
+        ASSERT_NO_FAILURE(*nplanes = ct_get_num_planes(format));
 
     for (p = 0; p < *nplanes; p++)
     {
@@ -341,8 +350,10 @@ static void own_allocate_image_ptrs(
 
         addr[p].dim_x    = width  / subsampling_x;
         addr[p].dim_y    = height / subsampling_y;
-        addr[p].stride_x = own_get_channel_step_x(format, channel[p]);
-        addr[p].stride_y = own_get_channel_step_y(format, channel[p], width);
+        addr[p].stride_x = own_get_channel_stride_x(format, channel[p]);
+        addr[p].stride_y = own_get_channel_stride_y(format, channel[p], width);
+        addr[p].step_x = own_plane_subsampling_x(format, p);
+        addr[p].step_y = own_plane_subsampling_y(format, p);
 
         plane_size = addr[p].stride_y * addr[p].dim_y;
 
@@ -363,7 +374,16 @@ static void mem_free(void**ptr)
     *ptr = 0;
 }
 
-TEST(tivxPackedDataFormat, testCreateImage)
+typedef struct {
+    const char* name;
+    tivx_df_image_e format;
+} format_arg;
+
+#define FORMAT_ARGS                         \
+    ARG_ENUM(TIVX_DF_IMAGE_P12),            \
+    ARG_ENUM(TIVX_DF_IMAGE_NV12_P12)
+
+TEST_WITH_ARG(tivxPackedDataFormat, testCreateImage, format_arg, FORMAT_ARGS)
 {
     vx_context context = context_->vx_context_;
     vx_image   src_image[384];
@@ -372,13 +392,13 @@ TEST(tivxPackedDataFormat, testCreateImage)
 
     for (i = 0; i < 384; i++)
     {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, TIVX_DF_IMAGE_P12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateImage(context, 16, 16, arg_->format), VX_TYPE_IMAGE);
     }
 
     for (i = 0; i < 384; i++)
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(src_image[i], VX_IMAGE_FORMAT,  &format,  sizeof(format)));
-        ASSERT_EQ_INT(TIVX_DF_IMAGE_P12, format);
+        ASSERT_EQ_INT(arg_->format, format);
     }
 
     for (i = 0; i < 384; i++)
@@ -387,7 +407,7 @@ TEST(tivxPackedDataFormat, testCreateImage)
     }
 }
 
-TEST(tivxPackedDataFormat, testCreateVirtualImage)
+TEST_WITH_ARG(tivxPackedDataFormat, testCreateVirtualImage, format_arg, FORMAT_ARGS)
 {
     vx_context context = context_->vx_context_;
     vx_image   src_image[384];
@@ -399,13 +419,13 @@ TEST(tivxPackedDataFormat, testCreateVirtualImage)
 
     for (i = 0; i < 384; i++)
     {
-        ASSERT_VX_OBJECT(src_image[i] = vxCreateVirtualImage(graph, 16, 16, TIVX_DF_IMAGE_P12), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(src_image[i] = vxCreateVirtualImage(graph, 16, 16, arg_->format), VX_TYPE_IMAGE);
     }
 
     for (i = 0; i < 384; i++)
     {
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(src_image[i], VX_IMAGE_FORMAT,  &format,  sizeof(format)));
-        ASSERT_EQ_INT(TIVX_DF_IMAGE_P12, format);
+        ASSERT_EQ_INT(arg_->format, format);
     }
 
     for (i = 0; i < 384; i++)
@@ -416,7 +436,7 @@ TEST(tivxPackedDataFormat, testCreateVirtualImage)
     VX_CALL(vxReleaseGraph(&graph));
 }
 
-TEST(tivxPackedDataFormat, testCreateImageFromHandleAndROI)
+TEST_WITH_ARG(tivxPackedDataFormat, testCreateImageFromHandleAndROI, format_arg, FORMAT_ARGS)
 {
     vx_context context = context_->vx_context_;
     vx_image   src_image[384];
@@ -442,9 +462,9 @@ TEST(tivxPackedDataFormat, testCreateImageFromHandleAndROI)
     val1.reserved[2] = 0x33;
     val1.reserved[3] = 0x44;
 
-    own_allocate_image_ptrs(TIVX_DF_IMAGE_P12, 24, 24, &nplanes1, mem1_ptrs, addr1, &val1);
+    own_allocate_image_ptrs(arg_->format, 24, 24, &nplanes1, mem1_ptrs, addr1, &val1);
 
-    EXPECT_VX_OBJECT(image1 = vxCreateImageFromHandle(context, TIVX_DF_IMAGE_P12, addr1, mem1_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+    EXPECT_VX_OBJECT(image1 = vxCreateImageFromHandle(context, arg_->format, addr1, mem1_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
 
     vx_rectangle_t roi1_rect =
@@ -461,7 +481,7 @@ TEST(tivxPackedDataFormat, testCreateImageFromHandleAndROI)
     VX_CALL(vxReleaseImage(&image1));
 }
 
-TEST(tivxPackedDataFormat, testCreateUniformImage)
+TEST_WITH_ARG(tivxPackedDataFormat, testCreateUniformImage, format_arg, FORMAT_ARGS)
 {
     vx_context context = context_->vx_context_;
     vx_image   image   = 0;
@@ -487,7 +507,7 @@ TEST(tivxPackedDataFormat, testCreateUniformImage)
     vals.reserved[2] = 0x33;
     vals.reserved[3] = 0x44;
 
-    ASSERT_VX_OBJECT(image = vxCreateUniformImage(context, 240, 120, TIVX_DF_IMAGE_P12, &vals), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image = vxCreateUniformImage(context, 240, 120, arg_->format, &vals), VX_TYPE_IMAGE);
 
     memsz = vxComputeImagePatchSize(image, &rect, 0);
 
@@ -503,9 +523,9 @@ TEST(tivxPackedDataFormat, testCreateUniformImage)
     VX_CALL(vxCopyImagePatch(image, &rect, 0, &addr, buffer, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
     ASSERT_EQ_PTR(buffer0, buffer);
 
-    /* Normal P12 test case with stride_x = 0 */
+    /* Normal packed test case with stride_x = 0 */
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxQueryImage(image, VX_IMAGE_FORMAT,  &format,  sizeof(format)));
-    ASSERT_EQ_INT(TIVX_DF_IMAGE_P12, format);
+    ASSERT_EQ_INT(arg_->format, format);
 
     /* Negative test for stride_x = 1 */
     addr.stride_x = 1;
@@ -549,9 +569,23 @@ static void ct_release_image(CT_Image* img)
     *img = 0;
 }
 
+static uint32_t own_total_image_bits_per_pixel(vx_df_image format)
+{
+    switch(format)
+    {
+        case TIVX_DF_IMAGE_P12:
+            return 12;
+        case TIVX_DF_IMAGE_NV12_P12:
+            return 12 * 3 / 2;
+        default:
+            CT_RecordFailure();
+            return 0;
+    }
+}
+
 static size_t ct_image_data_size(uint32_t width, uint32_t height, vx_df_image format)
 {
-    return (size_t)width * height * ct_image_bits_per_pixel(format) / 8;
+    return (size_t)width * height * own_total_image_bits_per_pixel(format) / 8;
 }
 
 static CT_Image ct_allocate_image_hdr_impl(uint32_t width, uint32_t height, uint32_t step, vx_df_image format, int allocate_data)
@@ -622,10 +656,29 @@ static CT_Image own_generate_rand_image(int width, int height, vx_df_image forma
         }
     }
 
+    if (format == TIVX_DF_IMAGE_NV12_P12)
+    {
+        for( y = 0; y < height/2; y++)
+        {
+            for( x = 0; x < width; x+=2 )
+            {
+                int val = CT_RNG_NEXT_INT(rng, 0, 4096);
+                uint8_t value_b0 = (uint8_t)(val & 0xFF);
+                uint8_t value_b1 = (uint8_t)(val>>8u) | (uint8_t)((val & 0x0F)<<4u);
+                uint8_t value_b2 = (uint8_t)(val>>4u);
+                *ptr = value_b0;
+                ptr++;
+                *ptr = value_b1;
+                ptr++;
+                *ptr = value_b2;
+                ptr++;
+            }
+        }
+    }
     return image;
 } /* own_generate_rand_image() */
 
-TEST(tivxPackedDataFormat, testMapImage)
+TEST_WITH_ARG(tivxPackedDataFormat, testMapImage, format_arg, FORMAT_ARGS)
 {
     vx_uint8* p1;
     vx_uint8* p2;
@@ -648,10 +701,10 @@ TEST(tivxPackedDataFormat, testMapImage)
     void* ptrs1 = { 0 };
     void* ptrs2 = { 0 };
 
-    image1 = vxCreateImage(context, 240, 120, TIVX_DF_IMAGE_P12);
+    image1 = vxCreateImage(context, 240, 120, arg_->format);
     ASSERT_VX_OBJECT(image1, VX_TYPE_IMAGE);
 
-    image2 = vxCreateImage(context, 240, 120, TIVX_DF_IMAGE_P12);
+    image2 = vxCreateImage(context, 240, 120, arg_->format);
     ASSERT_VX_OBJECT(image2, VX_TYPE_IMAGE);
 
     rect.start_x = 0;
@@ -680,50 +733,7 @@ TEST(tivxPackedDataFormat, testMapImage)
     ASSERT(image2 == 0);
 }
 
-vx_uint32 own_plane_subsampling_x(vx_df_image format, vx_uint32 plane)
-{
-    int subsampling_x = 0;
-
-    switch (format)
-    {
-    case VX_DF_IMAGE_IYUV:
-    case VX_DF_IMAGE_NV12:
-    case VX_DF_IMAGE_NV21:
-    case VX_DF_IMAGE_YUYV:
-    case VX_DF_IMAGE_UYVY:
-        subsampling_x = (0 == plane) ? 1 : 2;
-        break;
-
-    default:
-        subsampling_x = 1;
-        break;
-    }
-
-    return subsampling_x;
-}
-
-static
-vx_uint32 own_plane_subsampling_y(vx_df_image format, vx_uint32 plane)
-{
-    int subsampling_y = 0;
-
-    switch (format)
-    {
-    case VX_DF_IMAGE_IYUV:
-    case VX_DF_IMAGE_NV12:
-    case VX_DF_IMAGE_NV21:
-        subsampling_y = (0 == plane) ? 1 : 2;
-        break;
-
-    default:
-        subsampling_y = 1;
-        break;
-    }
-
-    return subsampling_y;
-}
-
-TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
+TEST_WITH_ARG(tivxPackedDataFormat, testFormatImagePatchAddress2D, format_arg, FORMAT_ARGS)
 {
     vx_uint32 n;
     vx_context context = context_->vx_context_;
@@ -770,12 +780,12 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
     val3.reserved[2] = 0xcc;
     val3.reserved[3] = 0xdd;
 
-    own_allocate_image_ptrs(TIVX_DF_IMAGE_P12, 240, 120, &nplanes1, mem1_ptrs, addr1, &val1);
-    own_allocate_image_ptrs(TIVX_DF_IMAGE_P12, 240, 120, &nplanes2, mem2_ptrs, addr2, &val2);
+    own_allocate_image_ptrs(arg_->format, 240, 120, &nplanes1, mem1_ptrs, addr1, &val1);
+    own_allocate_image_ptrs(arg_->format, 240, 120, &nplanes2, mem2_ptrs, addr2, &val2);
     EXPECT_EQ_INT(nplanes1, nplanes2);
 
-    EXPECT_VX_OBJECT(image1 = vxCreateImageFromHandle(context, TIVX_DF_IMAGE_P12, addr1, mem1_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
-    EXPECT_VX_OBJECT(image2 = vxCreateImageFromHandle(context, TIVX_DF_IMAGE_P12, addr2, mem2_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+    EXPECT_VX_OBJECT(image1 = vxCreateImageFromHandle(context, arg_->format, addr1, mem1_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+    EXPECT_VX_OBJECT(image2 = vxCreateImageFromHandle(context, arg_->format, addr2, mem2_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
     vx_image roi1 = 0;
     vx_image roi2 = 0;
@@ -832,16 +842,16 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
         for (i = 0; i < addr.dim_y; i += addr.step_y)
         {
             unsigned char* p = vxFormatImagePatchAddress2d(plane_ptr, 0, i, &addr);
-            for (j = 0; j < addr.dim_x; j += 2)
+            for (j = 0; j < addr.dim_x; j += addr.step_x*2)
             {
                 if (p[0] != val1.reserved[n])
-                    CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val1, p[0]);
+                    CT_FAIL("ROI content mismatch at [x=%d, y=%d]: expected %d, actual %d", j, i, val1, p[0]);
                 p++;
-               if (p[0] != val1.reserved[n])
-                    CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val1, p[0]);
+                if (p[0] != val1.reserved[n])
+                    CT_FAIL("ROI content mismatch at [x=%d, y=%d]: expected %d, actual %d", j, i, val1, p[0]);
                 p++;
-               if (p[0] != val1.reserved[n])
-                    CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val1, p[0]);
+                if (p[0] != val1.reserved[n])
+                    CT_FAIL("ROI content mismatch at [x=%d, y=%d]: expected %d, actual %d", j, i, val1, p[0]);
                 p++;
             }
         }
@@ -869,16 +879,16 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
         for (i = 0; i < addr.dim_y; i += addr.step_y)
         {
             unsigned char* p = vxFormatImagePatchAddress2d(plane_ptr, 0, i, &addr);
-            for (j = 0; j < addr.dim_x; j += 2)
+            for (j = 0; j < addr.dim_x; j += addr.step_x*2)
             {
                 if (p[0] != val2.reserved[n])
-                   CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p[0]);
+                   CT_FAIL("ROI content mismatch at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p[0]);
                 p++;
                 if (p[0] != val2.reserved[n])
-                   CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p[0]);
+                   CT_FAIL("ROI content mismatch at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p[0]);
                 p++;
                 if (p[0] != val2.reserved[n])
-                   CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p[0]);
+                   CT_FAIL("ROI content mismatch at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p[0]);
                 p++;
             }
         }
@@ -903,7 +913,7 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
         for (i = 0; i < addr.dim_y; i += addr.step_y)
         {
             unsigned char* p = vxFormatImagePatchAddress2d(plane_ptr, 0, i, &addr);
-            for (j = 0; j < addr.dim_x; j += 2)
+            for (j = 0; j < addr.dim_x; j += addr.step_x*2)
             {
                 *p = val3.reserved[n];
                 p++;
@@ -925,8 +935,8 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
         vx_uint8* plane_ptr = prev_ptrs[n];
         vx_uint32 i;
         vx_uint32 j;
-        vx_uint32 subsampling_x = own_plane_subsampling_x(TIVX_DF_IMAGE_P12, n);
-        vx_uint32 subsampling_y = own_plane_subsampling_y(TIVX_DF_IMAGE_P12, n);
+        vx_uint32 subsampling_x = own_plane_subsampling_x(arg_->format, n);
+        vx_uint32 subsampling_y = own_plane_subsampling_y(arg_->format, n);
         vx_uint32 start_x = (roi1_rect.start_x + roi2_rect.start_x) / subsampling_x;
         vx_uint32 start_y = (roi1_rect.start_y + roi2_rect.start_y) / subsampling_y;
         vx_uint32 end_x   = (vx_uint32)(240  / subsampling_x);
@@ -944,12 +954,12 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
                     j >= start_x && j <= end_x - 1)
                 {
                     if (p != val3.reserved[n])
-                        CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val3, p);
+                        CT_FAIL("ROI content mismatch at [x=%d, y=%d, p=%d]: expected %d, actual %d", j, i, n, val3, p);
                 }
                 else
                 {
                     if (p != val2.reserved[n])
-                        CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p);
+                        CT_FAIL("ROI content mismatch at [x=%d, y=%d, p=%d]: expected %d, actual %d", j, i, n, val2, p);
                 }
                 k++;
                 p = plane_ptr[k];
@@ -958,12 +968,12 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
                     j >= start_x && j <= end_x - 1)
                 {
                     if (p != val3.reserved[n])
-                        CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val3, p);
+                        CT_FAIL("ROI content mismatch at [x=%d, y=%d, p=%d]: expected %d, actual %d", j, i, n, val3, p);
                 }
                 else
                 {
                     if (p != val2.reserved[n])
-                        CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p);
+                        CT_FAIL("ROI content mismatch at [x=%d, y=%d, p=%d]: expected %d, actual %d", j, i, n, val2, p);
                 }
                 k++;
                 p = plane_ptr[k];
@@ -972,12 +982,12 @@ TEST(tivxPackedDataFormat, testFormatImagePatchAddress2D)
                     j >= start_x && j <= end_x - 1)
                 {
                     if (p != val3.reserved[n])
-                        CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val3, p);
+                        CT_FAIL("ROI content mismatch at [x=%d, y=%d, p=%d]: expected %d, actual %d", j, i, n, val3, p);
                 }
                 else
                 {
                     if (p != val2.reserved[n])
-                        CT_FAIL("ROI content mismath at [x=%d, y=%d]: expected %d, actual %d", j, i, val2, p);
+                        CT_FAIL("ROI content mismatch at [x=%d, y=%d, p=%d]: expected %d, actual %d", j, i, n, val2, p);
                 }
                 k++;
             }
@@ -1046,8 +1056,31 @@ static void own_image_patch_from_ct_image(CT_Image ref, vx_imagepatch_addressing
         ref_addr[0].dim_y   = ref->height;
         ref_addr[0].stride_x = 0;
         ref_addr[0].stride_y = ref->stride * 1.5;
+        ref_addr[0].step_x = 1;
+        ref_addr[0].step_y = 1;
 
         ref_ptrs[0] = ref->data.s16;
+    }
+    break;
+    case TIVX_DF_IMAGE_NV12_P12:
+    {
+        ref_addr[0].dim_x   = ref->width;
+        ref_addr[0].dim_y   = ref->height;
+        ref_addr[0].stride_x = 0;
+        ref_addr[0].stride_y = ref->stride * 3 / 2;
+        ref_addr[0].step_x = 1;
+        ref_addr[0].step_y = 1;
+
+        ref_ptrs[0] = ref->data.s16;
+
+        ref_addr[1].dim_x   = ref->width;
+        ref_addr[1].dim_y   = ref->height;
+        ref_addr[1].stride_x = 0;
+        ref_addr[1].stride_y = ref->stride * 3 / 2;
+        ref_addr[1].step_x = 2;
+        ref_addr[1].step_y = 2;
+
+        ref_ptrs[1] = ref->data.y + ref_addr[0].stride_y * ref_addr[0].dim_y;
     }
     break;
 
@@ -1086,13 +1119,17 @@ static void own_check_image_patch_plane_vx_layout(CT_Image ctimg, vx_imagepatch_
 {
     vx_uint32 x;
     vx_uint32 y;
-    double ct_elem_size = 1.5;
-    double ct_stride_size = ct_elem_size*ctimg->stride;
-    void*     p_ct_base = ct_image_get_plane_base(ctimg, plane);
+    vx_uint32 ct_stride_size = ctimg->stride*3/2;
+    void*     p_ct_base;
+
+    if (plane == 0)
+        p_ct_base = ctimg->data.y;
+    else
+        p_ct_base = ctimg->data.y + ct_stride_size * ctimg->height;
 
     for (y = 0; y < vx_addr->dim_y; y += vx_addr->step_y)
     {
-        vx_uint8* ref_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y * (vx_uint32)ct_stride_size);
+        vx_uint8* ref_ptr = (vx_uint8*)((vx_uint8*)p_ct_base + y/vx_addr->step_y * ct_stride_size);
         vx_uint8* tst_ptr = (vx_uint8*)vxFormatImagePatchAddress2d(p_vx_base, 0, y, vx_addr);
         for (x = 0; x < vx_addr->dim_x; x += 2)
         {
@@ -1111,7 +1148,7 @@ static void own_check_image_patch_plane_vx_layout(CT_Image ctimg, vx_imagepatch_
     return;
 } /* own_check_image_patch_plane_vx_layout() */
 
-TEST(tivxPackedDataFormat, testStrideX)
+TEST_WITH_ARG(tivxPackedDataFormat, testStrideX, format_arg, FORMAT_ARGS)
 {
     vx_context context = context_->vx_context_;
 
@@ -1128,16 +1165,16 @@ TEST(tivxPackedDataFormat, testStrideX)
     };
     void* ref_ptrs[VX_PLANE_MAX] = { 0, 0, 0, 0 };
 
-    ASSERT_NO_FAILURE(ref = own_generate_rand_image(240, 120, TIVX_DF_IMAGE_P12));
+    ASSERT_NO_FAILURE(ref = own_generate_rand_image(240, 120, arg_->format));
 
-    own_image_patch_from_ct_image(ref, ref_addr, ref_ptrs, TIVX_DF_IMAGE_P12);
+    own_image_patch_from_ct_image(ref, ref_addr, ref_ptrs, arg_->format);
 
-    ASSERT_VX_OBJECT(image = vxCreateImageFromHandle(context, TIVX_DF_IMAGE_P12, ref_addr, ref_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(image = vxCreateImageFromHandle(context, arg_->format, ref_addr, ref_ptrs, VX_MEMORY_TYPE_HOST), VX_TYPE_IMAGE);
 
     VX_CALL(vxQueryImage(image, VX_IMAGE_PLANES, &num_planes, sizeof(num_planes)));
 
     /* Testing stride_x = 0 */
-    /* Normal P12 test case */
+    /* Normal packed test case */
     for (plane = 0; plane < (vx_uint32)num_planes; plane++)
     {
         vx_rectangle_t             rect     = { 0, 0, 240, 120 };
@@ -1149,7 +1186,7 @@ TEST(tivxPackedDataFormat, testStrideX)
         VX_CALL(vxMapImagePatch(image, &rect, plane, &map_id, &tst_addr, &ptr, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, flags));
 
         /* check if image patch plane equal to reference data */
-        own_check_image_patch_plane_vx_layout(ref, &tst_addr, ptr, plane, TIVX_DF_IMAGE_P12);
+        own_check_image_patch_plane_vx_layout(ref, &tst_addr, ptr, plane, arg_->format);
 
         VX_CALL(vxUnmapImagePatch(image, map_id));
     } /* for num_planes */
