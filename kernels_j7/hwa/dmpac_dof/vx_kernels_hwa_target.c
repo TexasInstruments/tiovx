@@ -69,13 +69,17 @@ void tivxAddTargetKernelDmpacDof(void);
 
 void tivxRemoveTargetKernelDmpacDof(void);
 
+static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
+    {tivxAddTargetKernelDmpacDof, tivxRemoveTargetKernelDmpacDof},
+};
+
 void tivxRegisterHwaTargetDmpacDofKernels(void)
 {
-    tivxAddTargetKernelDmpacDof();
+    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 
 void tivxUnRegisterHwaTargetDmpacDofKernels(void)
 {
-    tivxRemoveTargetKernelDmpacDof();
+    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 }
 

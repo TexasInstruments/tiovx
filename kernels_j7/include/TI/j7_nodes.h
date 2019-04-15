@@ -171,43 +171,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_image             out_3_chroma,
                                       vx_scalar            error_status);
 
-/*! \brief [Graph] Creates a DMPAC_DOF Node.
- *
- * - The dataformat of image within pyramid MUST be <tt>\ref VX_DF_IMAGE_U8</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * - The pyramid MUST use scale of VX_SCALE_PYRAMID_HALF
- * - The max number of pyramid levels can be 5
- * - The width and height of base level MUST be interger multiple of 2^pyramidlevels
- * - The meta properties of input_current, input_ref MUST be identical
- *
- * \param [in] graph                              The reference to the graph.
- * \param [in] configuration                      The input object of a single params structure of
- *                                                type <tt>\ref tivx_dmpac_dof_params_t</tt>.
- * \param [in] input_current                      Current input pyramid.
- * \param [in] input_reference                    Reference input pyramid.
- * \param [in] flow_vector_in          (optional) Flow vector from previous execution of DOF.
- *                                                Size of image is base_width x base_height x 32bpp.
- *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
- * \param [in] sparse_of_map           (optional) Sparse OF bit-mask of size base_width/8 x base_height x 1bpp.
- *                                                Use <tt>\ref VX_DF_IMAGE_U8 </tt> dataformat.
- * \param [out] flow_vector_out                   Flow vector output.
- *                                                Size of image is base_width x base_height x 32bpp.
- *                                                Use <tt>\ref VX_DF_IMAGE_U32 </tt> dataformat.
- * \param [out] confidence_histogram   (optional) Confidence histogram.
- *                                                Distribution meta properties, num_bins = 16, offset = 0, range = 16.
- * \see <tt>TIVX_KERNEL_DMPAC_DOF_NAME</tt>
- * \ingroup group_vision_function_dmpac_dof
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_pyramid           input_current,
-                                      vx_pyramid           input_reference,
-                                      vx_image             flow_vector_in,
-                                      vx_image             sparse_of_map,
-                                      vx_image             flow_vector_out,
-                                      vx_distribution      confidence_histogram);
-
 /*! \brief [Graph] Creates a DOF visualization node Node.
  * \param [in] graph The reference to the graph.
  * \param [in] flow_vector Flow vector output from dmpac_dof node

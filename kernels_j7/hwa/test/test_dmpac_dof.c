@@ -158,6 +158,8 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
 
         ASSERT_VX_OBJECT(node_dof = tivxDmpacDofNode(graph,
                         param_obj,
+                        NULL,
+                        NULL,
                         input_current,
                         input_reference,
                         flow_vector_in,

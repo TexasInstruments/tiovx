@@ -163,6 +163,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
 
 VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
                                       vx_user_data_object  configuration,
+                                      vx_image             input_current_base,
+                                      vx_image             input_reference_base,
                                       vx_pyramid           input_current,
                                       vx_pyramid           input_reference,
                                       vx_image             flow_vector_in,
@@ -172,6 +174,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
 {
     vx_reference prms[] = {
             (vx_reference)configuration,
+            (vx_reference)input_current_base,
+            (vx_reference)input_reference_base,
             (vx_reference)input_current,
             (vx_reference)input_reference,
             (vx_reference)flow_vector_in,

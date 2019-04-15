@@ -65,6 +65,7 @@
 
 #include <TI/tivx.h>
 #include <TI/j7_kernels.h>
+#include <TI/j7_dmpac_dof.h>
 #include <TI/j7_nodes.h>
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2018 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -120,9 +120,15 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxDmpacDofControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
 static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms);
 static void tivxDmpacDofFreeMem(tivxDmpacDofParams *prms);
 
+static vx_status tivxDmpacDofGetErrStatusCmd(
+                        tivx_obj_desc_scalar_t *scalar_obj_desc);
 
 
 static vx_status tivxDmpacDofAllocMem(tivxDmpacDofParams *prms)
@@ -225,19 +231,21 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivx_obj_desc_image_t   *input_current_base_desc = NULL;
+    tivx_obj_desc_image_t   *input_reference_base_desc = NULL;
     tivx_obj_desc_pyramid_t *input_current_desc;
-    tivx_obj_desc_pyramid_t *input_ref_desc;
+    tivx_obj_desc_pyramid_t *input_reference_desc;
     tivx_obj_desc_image_t *flow_vector_in_desc;
     tivx_obj_desc_image_t *sparse_of_map_desc;
     tivx_obj_desc_image_t *flow_vector_out_desc;
     tivx_obj_desc_distribution_t *confidence_histogram_desc;
     tivx_obj_desc_image_t *img_current_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
     tivx_obj_desc_image_t *img_reference_desc[TIVX_PYRAMID_MAX_LEVEL_OBJECTS];
-    uint32_t i;
+    uint32_t i, total_pyramid_lvl;
     tivxDmpacDofParams *prms = NULL;
     int *past_prediction = NULL;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX])
@@ -246,7 +254,8 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
     {
         status = VX_FAILURE;
     }
-    if(status==VX_SUCCESS)
+
+    if(VX_SUCCESS == status)
     {
         uint32_t size;
 
@@ -268,20 +277,42 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         void *confidence_histogram_target_ptr = NULL;
         void *img_current_target_ptr[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
         void *img_reference_target_ptr[TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS];
+        void *img_curr_base_target_ptr = NULL;
+        void *img_ref_base_target_ptr = NULL;
 
         /* point to descriptors with correct type */
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
+        input_current_base_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
+        input_reference_base_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_BASE_IDX];
         input_current_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
-        input_ref_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
+        input_reference_desc = (tivx_obj_desc_pyramid_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
         flow_vector_in_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
         sparse_of_map_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_SPARSE_OF_MAP_IDX];
         flow_vector_out_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_OUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIDENCE_HISTOGRAM_IDX];
 
         tivxGetObjDescList(input_current_desc->obj_desc_id, (tivx_obj_desc_t**)img_current_desc, input_current_desc->num_levels);
-        tivxGetObjDescList(input_ref_desc->obj_desc_id, (tivx_obj_desc_t**)img_reference_desc, input_ref_desc->num_levels);
+        tivxGetObjDescList(input_reference_desc->obj_desc_id, (tivx_obj_desc_t**)img_reference_desc, input_reference_desc->num_levels);
 
-        /* convert shared pointer to target/local pointer */
+
+        if(NULL != input_current_base_desc)
+        {
+            total_pyramid_lvl = input_current_desc->num_levels + 1;
+
+            /* convert shared pointer to target/local pointer for base images */
+            img_curr_base_target_ptr = tivxMemShared2TargetPtr(
+                        input_current_base_desc->mem_ptr[0].shared_ptr,
+                        input_current_base_desc->mem_ptr[0].mem_heap_region);
+            img_ref_base_target_ptr = tivxMemShared2TargetPtr(
+                        input_reference_base_desc->mem_ptr[0].shared_ptr,
+                        input_reference_base_desc->mem_ptr[0].mem_heap_region);
+        }
+        else
+        {
+            total_pyramid_lvl = input_current_desc->num_levels;
+        }
+
+        /* convert shared pointer to target/local pointer for rest of parametes*/
         configuration_target_ptr = tivxMemShared2TargetPtr(
           configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
 
@@ -342,6 +373,17 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                 VX_WRITE_ONLY);
         }
 
+        if(NULL != input_current_base_desc)
+        {
+            tivxMemBufferMap(img_curr_base_target_ptr,
+               input_current_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+
+            tivxMemBufferMap(img_ref_base_target_ptr,
+               input_reference_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+        }
+
         for(i=0; i<input_current_desc->num_levels ; i++)
         {
             tivxMemBufferMap(img_current_target_ptr[i],
@@ -354,10 +396,38 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         }
 
         /* copy input */
-        for(i=0; i<input_current_desc->num_levels ; i++)
+        for(i=0; i<total_pyramid_lvl; i++)
         {
-            lse_reformat_in_dof(img_current_desc[i], img_current_target_ptr[i], prms->input_current[i]);
-            lse_reformat_in_dof(img_reference_desc[i], img_reference_target_ptr[i], prms->input_reference[i]);
+            if(NULL == input_current_base_desc)
+            {
+                lse_reformat_in_dof(img_current_desc[i],
+                                    img_current_target_ptr[i],
+                                    prms->input_current[i]);
+                lse_reformat_in_dof(img_reference_desc[i],
+                                    img_reference_target_ptr[i],
+                                    prms->input_reference[i]);
+            }
+            else
+            {
+                if(0 == i)
+                {
+                    lse_reformat_in_dof(input_current_base_desc,
+                                    img_curr_base_target_ptr,
+                                    prms->input_current[i]);
+                    lse_reformat_in_dof(input_reference_base_desc,
+                                    img_ref_base_target_ptr,
+                                    prms->input_reference[i]);
+                }
+                else
+                {
+                    lse_reformat_in_dof(img_current_desc[i-1],
+                                    img_current_target_ptr[i-1],
+                                    prms->input_current[i]);
+                    lse_reformat_in_dof(img_reference_desc[i-1],
+                                    img_reference_target_ptr[i-1],
+                                    prms->input_reference[i]);
+                }
+            }
         }
         /* when NULL past prediction not used */
         past_prediction = NULL;
@@ -491,6 +561,16 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
                img_reference_desc[i]->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_READ_ONLY);
         }
+        if(NULL != input_current_base_desc)
+        {
+            tivxMemBufferUnmap(img_curr_base_target_ptr,
+               input_current_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+
+            tivxMemBufferUnmap(img_ref_base_target_ptr,
+               input_reference_base_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+        }
     }
 
     return status;
@@ -503,7 +583,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
 {
     vx_status status = VX_SUCCESS;
 
-    if ( num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS
+    if ( (num_params != TIVX_KERNEL_DMPAC_DOF_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX])
@@ -512,6 +592,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     {
         status = VX_FAILURE;
     }
+
     if (VX_SUCCESS == status)
     {
         tivxDmpacDofParams *prms = NULL;
@@ -525,17 +606,41 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
             tivx_dmpac_dof_params_t *params;
             uint32_t i;
             void *params_array_target_ptr;
+            tivx_obj_desc_image_t *input_current_base_desc = (tivx_obj_desc_image_t*)obj_desc[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
 
             memset(prms, 0, sizeof(tivxDmpacDofParams));
 
-            prms->dofParams.numberOfPyramidLevels = pyr1->num_levels;
+            if(NULL != input_current_base_desc)
+            {
+                prms->dofParams.numberOfPyramidLevels = pyr1->num_levels + 1;
+            }
+            else
+            {
+                prms->dofParams.numberOfPyramidLevels = pyr1->num_levels;
+            }
 
             tivxGetObjDescList(pyr1->obj_desc_id, (tivx_obj_desc_t**)img, pyr1->num_levels);
 
             for(i=0; i<prms->dofParams.numberOfPyramidLevels; i++)
             {
-                prms->pyramid_size[i][0] = img[i]->height;
-                prms->pyramid_size[i][1] = img[i]->width;
+                if(NULL == input_current_base_desc)
+                {
+                    prms->pyramid_size[i][0] = img[i]->height;
+                    prms->pyramid_size[i][1] = img[i]->width;
+                }
+                else
+                {
+                    if(0 == i)
+                    {
+                        prms->pyramid_size[i][0] = input_current_base_desc->height;
+                        prms->pyramid_size[i][1] = input_current_base_desc->width;
+                    }
+                    else
+                    {
+                        prms->pyramid_size[i][0] = img[i-1]->height;
+                        prms->pyramid_size[i][1] = img[i-1]->width;
+                    }
+                }
             }
 
             params_array_target_ptr = tivxMemShared2TargetPtr(
@@ -607,6 +712,46 @@ static vx_status VX_CALLBACK tivxDmpacDofDelete(
     return status;
 }
 
+static vx_status VX_CALLBACK tivxDmpacDofControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status                         status = VX_SUCCESS;
+
+    if (VX_SUCCESS == status)
+    {
+        switch (node_cmd_id)
+        {
+            case TIVX_NODE_DMPAC_DOF_CS_PARAMS:
+            {
+                /* Does not apply for cmodel version ... yet */
+                break;
+            }
+            case TIVX_NODE_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS:
+            {
+                /* Does not apply for cmodel version */
+                break;
+            }
+            case TIVX_NODE_DMPAC_DOF_GET_ERR_STATUS:
+            {
+                status = tivxDmpacDofGetErrStatusCmd(
+                    (tivx_obj_desc_scalar_t *)obj_desc[0U]);
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                        "tivxDmpacDofControl: Invalid Input\n");
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+
+    return (status);
+}
+
 void tivxAddTargetKernelDmpacDof(void)
 {
     vx_status status = VX_FAILURE;
@@ -633,7 +778,7 @@ void tivxAddTargetKernelDmpacDof(void)
                             tivxDmpacDofProcess,
                             tivxDmpacDofCreate,
                             tivxDmpacDofDelete,
-                            NULL,
+                            tivxDmpacDofControl,
                             NULL);
     }
 }
@@ -647,6 +792,30 @@ void tivxRemoveTargetKernelDmpacDof(void)
     {
         vx_dmpac_dof_target_kernel = NULL;
     }
+}
+
+/* ========================================================================== */
+/*                    Control Command Implementation                          */
+/* ========================================================================== */
+
+static vx_status tivxDmpacDofGetErrStatusCmd(
+    tivx_obj_desc_scalar_t *scalar_obj_desc)
+{
+    vx_status                           status = VX_SUCCESS;
+
+    if (NULL != scalar_obj_desc)
+    {
+        /* Cmodel doesn't give same error output as HW */
+        scalar_obj_desc->data.u32 = 0;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacDofGetErrStatus: Null argument\n");
+        status = VX_FAILURE;
+    }
+
+    return (status);
 }
 
 

@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2018 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -89,6 +89,16 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
 
+    vx_image input_current_base = NULL;
+    vx_uint32 input_current_base_w;
+    vx_uint32 input_current_base_h;
+    vx_df_image input_current_base_fmt;
+
+    vx_image input_reference_base = NULL;
+    vx_uint32 input_reference_base_w;
+    vx_uint32 input_reference_base_h;
+    vx_df_image input_reference_base_fmt;
+
     vx_pyramid input_current = NULL;
     vx_df_image input_current_fmt;
     vx_size input_current_levels;
@@ -132,6 +142,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     if (VX_SUCCESS == status)
     {
         configuration = (vx_user_data_object)parameters[TIVX_KERNEL_DMPAC_DOF_CONFIGURATION_IDX];
+        input_current_base = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_BASE_IDX];
+        input_reference_base = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_BASE_IDX];
         input_current = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_CURRENT_IDX];
         input_reference = (vx_pyramid)parameters[TIVX_KERNEL_DMPAC_DOF_INPUT_REFERENCE_IDX];
         flow_vector_in = (vx_image)parameters[TIVX_KERNEL_DMPAC_DOF_FLOW_VECTOR_IN_IDX];
@@ -147,6 +159,20 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+
+        if (NULL != input_current_base)
+        {
+            tivxCheckStatus(&status, vxQueryImage(input_current_base, VX_IMAGE_WIDTH, &input_current_base_w, sizeof(input_current_base_w)));
+            tivxCheckStatus(&status, vxQueryImage(input_current_base, VX_IMAGE_HEIGHT, &input_current_base_h, sizeof(input_current_base_h)));
+            tivxCheckStatus(&status, vxQueryImage(input_current_base, VX_IMAGE_FORMAT, &input_current_base_fmt, sizeof(input_current_base_fmt)));
+        }
+
+        if (NULL != input_reference_base)
+        {
+            tivxCheckStatus(&status, vxQueryImage(input_reference_base, VX_IMAGE_WIDTH, &input_reference_base_w, sizeof(input_reference_base_w)));
+            tivxCheckStatus(&status, vxQueryImage(input_reference_base, VX_IMAGE_HEIGHT, &input_reference_base_h, sizeof(input_reference_base_h)));
+            tivxCheckStatus(&status, vxQueryImage(input_reference_base, VX_IMAGE_FORMAT, &input_reference_base_fmt, sizeof(input_reference_base_fmt)));
+        }
 
         tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_FORMAT, &input_current_fmt, sizeof(input_current_fmt)));
         tivxCheckStatus(&status, vxQueryPyramid(input_current, VX_PYRAMID_LEVELS, &input_current_levels, sizeof(input_current_levels)));
@@ -195,6 +221,28 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
         {
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_dmpac_dof_params_t \n");
+        }
+
+        if (NULL != input_current_base)
+        {
+            if( (VX_DF_IMAGE_U8 != input_current_base_fmt) &&
+                (VX_DF_IMAGE_U16 != input_current_base_fmt) &&
+                (TIVX_DF_IMAGE_P12 != input_current_base_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'input_current_base' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+            }
+        }
+
+        if (NULL != input_reference_base)
+        {
+            if( (VX_DF_IMAGE_U8 != input_reference_base_fmt) &&
+                (VX_DF_IMAGE_U16 != input_reference_base_fmt) &&
+                (TIVX_DF_IMAGE_P12 != input_reference_base_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'input_reference_base' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+            }
         }
 
         if( (VX_DF_IMAGE_U8 != input_current_fmt) &&
@@ -308,12 +356,38 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                 VX_PRINT(VX_ZONE_ERROR, "Parameters 'sparse_of_map' and 'input_current' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
+
+        if ((NULL != input_current_base) && (NULL != input_reference_base))
+        {
+            if (input_current_base_w != input_reference_base_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (input_current_base_h != input_reference_base_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
+            if (input_current_base_fmt != input_reference_base_fmt)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should have the same value for VX_IMAGE_FORMAT\n");
+            }
+        }
     }
 
     /* CUSTOM PARAMETER CHECKING */
 
     if (VX_SUCCESS == status)
     {
+        if (((NULL != input_current_base) && (NULL == input_reference_base)) ||
+            ((NULL == input_current_base) && (NULL != input_reference_base)))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameters 'input_current_base' and 'input_reference_base' should both be NULL or not NULL !!!\n");
+        }
+
         if(input_current_levels > TIVX_KERNEL_DMPAC_DOF_MAX_LEVELS)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -337,6 +411,22 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH exceeds max supported limit !!!\n"
                 );
+        }
+
+        if (NULL != input_current_base)
+        {
+            if((input_current_base_w > 2048U) || (input_current_base_h > 1024U))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Pyramid base image WxH exceeds max supported limit !!!\n");
+            }
+
+            if((input_current_base_w != (input_current_w * 2U)) ||
+               (input_current_base_h != (input_current_h * 2U)))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "DMPAC_DOF: Base image WxH is not twice WxH of pyramid base size !!!\n");
+            }
         }
 
         if( ((input_current_w % (1U<<(uint32_t)input_current_levels)) != 0) &&
@@ -421,6 +511,26 @@ vx_status tivxAddKernelDmpacDof(vx_context context)
                         VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_REQUIRED
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
@@ -519,4 +629,40 @@ vx_status tivxRemoveKernelDmpacDof(vx_context context)
     return status;
 }
 
+void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        /* Set Search range */
+        prms->vertical_search_range[0] = 48;
+        prms->vertical_search_range[1] = 48;
+        prms->horizontal_search_range = 191;
+
+        prms->median_filter_enable = 1;
+        prms->motion_smoothness_factor = 24;
+        prms->motion_direction = 1; /* Forward Motion */
+
+        /* Predictors */
+        prms->base_predictor[0] = TIVX_NODE_DMPAC_DOF_PREDICTOR_TEMPORAL;
+        prms->base_predictor[1] = TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_LEFT;
+        prms->inter_predictor[0] = TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_COLOCATED;
+        prms->inter_predictor[1] = TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_LEFT;
+
+        prms->iir_filter_alpha = 0x66;
+        prms->enable_lk = 1;
+
+        /* Not used if SOF is disabled */
+        prms->sof_max_pix_in_row = 0;
+        prms->sof_fv_height = 0;
+    }
+}
+
+void tivx_dmpac_dof_hts_bw_limit_params_init(
+                                    tivx_dmpac_dof_hts_bw_limit_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_dmpac_dof_hts_bw_limit_params_t));
+    }
+}
 
