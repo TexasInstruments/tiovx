@@ -90,12 +90,12 @@ typedef struct {
 } Arg;
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2", 0), \
+    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2"), \
 
 #if 0
-    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2", 0), \
-    CT_GENERATE_PARAMETERS("inception_v1", ARG, "inception_v1", 0), \
-    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1", 0),
+    CT_GENERATE_PARAMETERS("jacintonet11v2", ARG, "jacintonet11v2"), \
+    CT_GENERATE_PARAMETERS("inception_v1", ARG, "inception_v1"), \
+    CT_GENERATE_PARAMETERS("mobilenetv1", ARG, "mobilenetv1"),
 #endif
 
 TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
@@ -139,7 +139,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   vx_size output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
   char filepath[MAXPATHLENGTH];
   size_t sz;
-  
+
   tivx_clr_debug_zone(VX_ZONE_INFO);
 
   if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_EVE1))
@@ -213,7 +213,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT(network == 0);
     ASSERT(input_tensor  == 0);
     ASSERT(output_tensor == 0);
-    
+
     vxRemoveKernel(kernel);
   }
 

@@ -380,7 +380,7 @@ vx_status VX_API_CALL vxTruncateArray(vx_array arr, vx_size new_num_items)
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
     {
         VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -425,7 +425,7 @@ vx_status VX_API_CALL vxCopyArrayRange(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
     {
         VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -543,7 +543,7 @@ vx_status VX_API_CALL vxMapArrayRange(
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
     {
         VX_PRINT(VX_ZONE_ERROR,"Array object descriptor or host pointer is NULL\n");
         status = VX_ERROR_INVALID_REFERENCE;
@@ -633,7 +633,7 @@ vx_status VX_API_CALL vxUnmapArrayRange(vx_array arr, vx_map_id map_id)
         obj_desc = (tivx_obj_desc_array_t *)arr->base.obj_desc;
     }
 
-    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL) )
+    if ( (obj_desc == NULL) || (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL) )
     {
         status = VX_ERROR_INVALID_REFERENCE;
     }
@@ -683,13 +683,13 @@ static vx_status ownAllocArrayBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR,"Could not allocate array memory\n");
@@ -726,7 +726,7 @@ static vx_status ownDestructArray(vx_reference ref)
         obj_desc = (tivx_obj_desc_array_t *)ref->obj_desc;
         if(obj_desc != NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
@@ -755,8 +755,8 @@ static void ownInitArrayObject(
 
     obj_desc->mem_size =
         obj_desc->item_size * capacity;
-    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
 
     arr->base.is_virtual = is_virtual;

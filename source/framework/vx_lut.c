@@ -107,8 +107,8 @@ vx_lut VX_API_CALL vxCreateLUT(
                     obj_desc->item_size = dim;
                     obj_desc->num_items = count;
                     obj_desc->mem_size = dim * count;
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     lut->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -239,7 +239,7 @@ vx_status VX_API_CALL vxCopyLUT(
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            ((uint64_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyLUT: Memory is not allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -354,13 +354,13 @@ static vx_status ownAllocLutBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR, "ownAllocLutBuffer: could not allocate memory\n");
@@ -399,7 +399,7 @@ static vx_status ownDestructLut(vx_reference ref)
         obj_desc = (tivx_obj_desc_lut_t *)ref->obj_desc;
         if(obj_desc!=NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);

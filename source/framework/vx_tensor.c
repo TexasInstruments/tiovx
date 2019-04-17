@@ -71,13 +71,13 @@ static vx_status ownAllocTensorBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR,"Could not allocate tensor memory\n");
@@ -114,7 +114,7 @@ static vx_status ownDestructTensor(vx_reference ref)
         obj_desc = (tivx_obj_desc_tensor_t *)ref->obj_desc;
         if(obj_desc != NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
@@ -160,8 +160,8 @@ static void ownInitTensorObject(
         obj_desc->stride[i] = 0;
     }
 
-    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
 
     for (i = 0; i < TIVX_TENSOR_MAX_MAPS; i ++)
@@ -380,7 +380,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor, 
+VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         vx_size number_of_dimensions, const vx_size * view_start, const vx_size * view_end,
         const vx_size * user_stride, void * user_ptr, vx_enum usage, vx_enum user_memory_type)
 {
@@ -407,7 +407,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            ((uint64_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: Memory is not allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -419,7 +419,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             status = VX_ERROR_INVALID_PARAMETERS;
         }
     }
-        
+
     if (VX_SUCCESS == status)
     {
         if ((obj_desc->number_of_dimensions < number_of_dimensions) || (number_of_dimensions < 1U))
@@ -428,11 +428,11 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             status = VX_ERROR_INVALID_PARAMETERS;
         }
 
-        if (ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dimensions) != VX_SUCCESS) 
+        if (ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dimensions) != VX_SUCCESS)
         {
             status = VX_ERROR_INVALID_PARAMETERS;
         }
-        
+
         for (i = 1; i < number_of_dimensions; i++)
         {
             if ((user_stride[i] < (view_end[i-1] - view_start[i-1])))
@@ -443,7 +443,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
             }
         }
 
-        if (user_stride[0] != obj_desc->stride[0]) 
+        if (user_stride[0] != obj_desc->stride[0])
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyTensorPatch: user_stride[0] must be equal to sizeof(data_type).\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -467,7 +467,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
         for (i = 0; i < patch_size; i+=elements_per_line) {
             vx_size patch_pos = 0;
             vx_size tensor_pos = 0;
-            
+
             ownComputePositionsFromIndex(i,view_start, view_end, obj_desc->stride, user_stride, number_of_dimensions, &tensor_pos, &patch_pos);
 
             /* Copy from tensor object to user memory */
@@ -542,7 +542,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
     {
         obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
 
-        status =  ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dims); 
+        status =  ownTensorCheckSizes(obj_desc->dimensions, view_start, view_end, number_of_dims);
     }
 
     if (VX_SUCCESS == status)
@@ -564,7 +564,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
             uint32_t offset;
 
             host_addr = map_addr;
-            
+
             offset = ownComputePatchOffset(number_of_dims, view_start, obj_desc->stride);
 
             map_addr = &map_addr[offset];
@@ -585,7 +585,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapTensorPatch(
                 uint32_t i;
                 *map_id = map_idx;
                 *ptr = map_addr;
-                
+
                 for(i=0; i < number_of_dims; i++)
                 {
                     stride[i] = obj_desc->stride[i];

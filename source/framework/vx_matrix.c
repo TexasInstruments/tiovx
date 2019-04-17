@@ -102,8 +102,8 @@ vx_matrix VX_API_CALL vxCreateMatrix(
                     obj_desc->origin_y = rows/2;
                     obj_desc->pattern = VX_PATTERN_OTHER;
                     obj_desc->mem_size = columns*rows*dim;
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -205,8 +205,8 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
                 obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                 matrix->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
 
-                obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-                obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+                obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+                obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
 
                 /* Allocate memory for matrix since matrix need to be
                    filled up with a pattern  */
@@ -242,7 +242,7 @@ vx_matrix VX_API_CALL vxCreateMatrixFromPattern(
         }
     }
 
-    if ((VX_SUCCESS == status) && ((uint64_t)NULL != obj_desc->mem_ptr.host_ptr))
+    if ((VX_SUCCESS == status) && ((uint64_t)(uintptr_t)NULL != obj_desc->mem_ptr.host_ptr))
     {
         tivxMemBufferMap((void*)(uintptr_t)obj_desc->mem_ptr.host_ptr,
             obj_desc->mem_size, VX_MEMORY_TYPE_HOST,
@@ -454,7 +454,7 @@ vx_status VX_API_CALL vxCopyMatrix(
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            ((uint64_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyMatrix: Memory is not allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -513,14 +513,14 @@ static vx_status ownAllocMatrixBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
             {
                 status = tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
                 if ((VX_SUCCESS != status) ||
-                    (obj_desc->mem_ptr.host_ptr == (uint64_t)NULL))
+                    (obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL))
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR, "ownAllocMatrixBuffer: Memory could not be allocated\n");
@@ -552,7 +552,7 @@ static vx_status ownDestructMatrix(vx_reference ref)
         obj_desc = (tivx_obj_desc_matrix_t *)ref->obj_desc;
         if(obj_desc!=NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);

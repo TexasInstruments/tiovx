@@ -197,7 +197,7 @@ static vx_status ownDestructRawImage(vx_reference ref)
             {
                 for(exp_idx=0; exp_idx < obj_desc->params.num_exposures; exp_idx++)
                 {
-                    if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)NULL)
+                    if(obj_desc->mem_ptr[exp_idx].host_ptr != (uint64_t)(uintptr_t)NULL)
                     {
                         tivxMemBufferFree(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx]);
                     }
@@ -251,13 +251,13 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                     uint32_t exposure_offset = 0;
 
                     /* memory is not allocated, so allocate it */
-                    if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)NULL) &&
+                    if( (obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL) &&
                         ((obj_desc->params.line_interleaved == vx_false_e) || (exp_idx == 0))
                       )
                     {
                         tivxMemBufferAlloc(&obj_desc->mem_ptr[exp_idx], obj_desc->mem_size[exp_idx], TIVX_MEM_EXTERNAL);
 
-                        if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)NULL)
+                        if(obj_desc->mem_ptr[exp_idx].host_ptr == (uint64_t)(uintptr_t)NULL)
                         {
                             /* could not allocate memory */
                             VX_PRINT(VX_ZONE_ERROR, "ownAllocRawImageBuffer: could not allocate memory\n");
@@ -284,7 +284,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
                             exposure_offset = exp_idx;
                         }
 
-                        img_byte_offset = ownComputePatchOffset(0, img_line_offset+exposure_offset, 
+                        img_byte_offset = ownComputePatchOffset(0, img_line_offset+exposure_offset,
                                                                 &obj_desc->imagepatch_addr[exp_idx]);
 
                         obj_desc->img_ptr[exp_idx].mem_heap_region = obj_desc->mem_ptr[alloc_idx].mem_heap_region;
@@ -293,7 +293,7 @@ static vx_status ownAllocRawImageBuffer(vx_reference ref)
 
                         if( obj_desc->params.meta_height > 0 )
                         {
-                            meta_byte_offset = ownComputePatchOffset(0, meta_line_offset+exposure_offset, 
+                            meta_byte_offset = ownComputePatchOffset(0, meta_line_offset+exposure_offset,
                                                                     &obj_desc->imagepatch_addr[exp_idx]);
 
                             obj_desc->meta_ptr[exp_idx].mem_heap_region = obj_desc->mem_ptr[alloc_idx].mem_heap_region;
@@ -366,7 +366,7 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
     for( exp_idx = 0; exp_idx < params->num_exposures; exp_idx++)
     {
         uint32_t pixel_container = obj_desc->params.format[exp_idx].pixel_container;
-        
+
         if ( TIVX_RAW_IMAGE_P12_BIT != pixel_container )
         {
             imagepatch_addr.stride_x = (TIVX_RAW_IMAGE_8_BIT == pixel_container) ? 1 : 2;
@@ -387,7 +387,7 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
         mem_size = (imagepatch_addr.stride_y*(imagepatch_addr.dim_y + params->meta_height));
 
         if( (vx_true_e == params->line_interleaved) && (exp_idx > 0u) )
-        { 
+        {
             obj_desc->mem_size[exp_idx] = 0;
         }
         else
@@ -396,8 +396,8 @@ static void ownInitRawImage(tivx_raw_image image, tivx_raw_image_create_params_t
         }
 
         obj_desc->mem_ptr[exp_idx].mem_heap_region = TIVX_MEM_EXTERNAL;
-        obj_desc->mem_ptr[exp_idx].host_ptr = (uint64_t)NULL;
-        obj_desc->mem_ptr[exp_idx].shared_ptr = (uint64_t)NULL;
+        obj_desc->mem_ptr[exp_idx].host_ptr = (uint64_t)(uintptr_t)NULL;
+        obj_desc->mem_ptr[exp_idx].shared_ptr = (uint64_t)(uintptr_t)NULL;
 
         tivx_obj_desc_memcpy(&obj_desc->imagepatch_addr[exp_idx], &imagepatch_addr, sizeof(vx_imagepatch_addressing_t));
         tivx_obj_desc_memcpy(&obj_desc->img_ptr[exp_idx], &obj_desc->mem_ptr[exp_idx], sizeof(tivx_shared_mem_ptr_t));
@@ -419,7 +419,7 @@ static tivx_raw_image ownCreateRawImageInt(vx_context context,
         if (ownIsValidCreateParams(params) == vx_true_e)
         {
             raw_image = (tivx_raw_image)ownCreateReference(context, TIVX_TYPE_RAW_IMAGE, VX_EXTERNAL, &context->base);
- 
+
             if ( (vxGetStatus((vx_reference)raw_image) == VX_SUCCESS) && (raw_image->base.type == TIVX_TYPE_RAW_IMAGE) )
             {
                 /* assign refernce type specific callback's */
@@ -1083,7 +1083,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(
         obj_desc = (tivx_obj_desc_raw_image_t *)raw_image->base.obj_desc;
 
         image_addr = &obj_desc->imagepatch_addr[exposure_index];
-        
+
         switch(buffer_select)
         {
             case TIVX_RAW_IMAGE_ALLOC_BUFFER:

@@ -44,7 +44,7 @@ static vx_status ownDestructRemap(vx_reference ref)
 
         if(obj_desc!=NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferFree(&obj_desc->mem_ptr, obj_desc->mem_size);
             }
@@ -75,12 +75,12 @@ static vx_status ownAllocRemapBuffer(vx_reference ref)
         if(obj_desc!=NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferAlloc(&obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR, "ownAllocRemapBuffer: Could not allocate memory\n");
@@ -146,8 +146,8 @@ VX_API_ENTRY vx_remap VX_API_CALL vxCreateRemap(vx_context context,
                     obj_desc->dst_width = dst_width;
                     obj_desc->dst_height = dst_height;
                     obj_desc->mem_size = dst_width*dst_height*sizeof(tivx_remap_point_t);
-                    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-                    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+                    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+                    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
                     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
                     remap->base.obj_desc = (tivx_obj_desc_t *)obj_desc;
                 }
@@ -254,7 +254,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetRemapPoint(vx_remap remap, vx_uint32 dst
 
         obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
 
-        if(obj_desc->mem_ptr.host_ptr != (uint64_t)NULL)
+        if(obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
         {
             if ((dst_x < obj_desc->dst_width) &&
                 (dst_y < obj_desc->dst_height))
@@ -314,7 +314,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxGetRemapPoint(vx_remap remap, vx_uint32 dst
     {
         obj_desc = (tivx_obj_desc_remap_t *)remap->base.obj_desc;
 
-        if(obj_desc->mem_ptr.host_ptr != (uint64_t)NULL)
+        if(obj_desc->mem_ptr.host_ptr != (uint64_t)(uintptr_t)NULL)
         {
             if ((dst_x < obj_desc->dst_width) &&
                 (dst_y < obj_desc->dst_height))

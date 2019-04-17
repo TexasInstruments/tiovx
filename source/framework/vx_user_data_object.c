@@ -84,13 +84,13 @@ static vx_status ownAllocUserDataObjectBuffer(vx_reference ref)
         if(obj_desc != NULL)
         {
             /* memory is not allocated, so allocate it */
-            if(obj_desc->mem_ptr.host_ptr == (uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr == (uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferAlloc(
                     &obj_desc->mem_ptr, obj_desc->mem_size,
                     TIVX_MEM_EXTERNAL);
 
-                if(obj_desc->mem_ptr.host_ptr==(uint64_t)NULL)
+                if(obj_desc->mem_ptr.host_ptr==(uint64_t)(uintptr_t)NULL)
                 {
                     /* could not allocate memory */
                     VX_PRINT(VX_ZONE_ERROR,"Could not allocate user data object memory\n");
@@ -127,7 +127,7 @@ static vx_status ownDestructUserDataObject(vx_reference ref)
         obj_desc = (tivx_obj_desc_user_data_object_t *)ref->obj_desc;
         if(obj_desc != NULL)
         {
-            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)NULL)
+            if(obj_desc->mem_ptr.host_ptr!=(uint64_t)(uintptr_t)NULL)
             {
                 tivxMemBufferFree(
                     &obj_desc->mem_ptr, obj_desc->mem_size);
@@ -159,8 +159,8 @@ static vx_status ownInitUserDataObjectObject(
         tivx_obj_desc_strncpy(obj_desc->type_name, (void*)type_name, VX_MAX_REFERENCE_NAME);
     }
 
-    obj_desc->mem_ptr.host_ptr = (uint64_t)NULL;
-    obj_desc->mem_ptr.shared_ptr = (uint64_t)NULL;
+    obj_desc->mem_ptr.host_ptr = (uint64_t)(uintptr_t)NULL;
+    obj_desc->mem_ptr.shared_ptr = (uint64_t)(uintptr_t)NULL;
     obj_desc->mem_ptr.mem_heap_region = TIVX_MEM_EXTERNAL;
 
     for (i = 0; i < TIVX_USER_DATA_OBJECT_MAX_MAPS; i ++)
@@ -346,7 +346,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyUserDataObject(vx_user_data_object user
 
         /* Memory still not allocated */
         if ((VX_READ_ONLY == usage) &&
-            ((uint64_t)NULL == obj_desc->mem_ptr.host_ptr))
+            ((uint64_t)(uintptr_t)NULL == obj_desc->mem_ptr.host_ptr))
         {
             VX_PRINT(VX_ZONE_ERROR, "vxCopyUserDataObject: Memory is not allocated\n");
             status = VX_ERROR_INVALID_PARAMETERS;

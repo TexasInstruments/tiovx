@@ -127,7 +127,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
     uint32_t i, idx;
 
     tivxPlatformSystemLock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
-    
+
     idx = g_obj_desc_table.last_alloc_index;
 
     for(i=0; i<g_obj_desc_table.num_entries; i++)
@@ -143,7 +143,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
             tmp_obj_desc->in_node_done_cnt = 0;
             tmp_obj_desc->type = type;
-            tmp_obj_desc->host_ref = (uint64_t)ref;
+            tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
 
             g_obj_desc_table.last_alloc_index
                 = (idx+1)%g_obj_desc_table.num_entries;
@@ -154,7 +154,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
 
         idx = (idx+1)%g_obj_desc_table.num_entries;
     }
-    
+
     tivxPlatformSystemUnlock(TIVX_PLATFORM_LOCK_OBJ_DESC_TABLE);
 
     return obj_desc;
@@ -266,7 +266,7 @@ void tivx_obj_desc_strncpy(void *dst, void *src, uint32_t size)
     uint8_t *d=(uint8_t*)dst;
     uint8_t *s=(uint8_t*)src;
     uint32_t i;
-    
+
     for(i=0; i<size-1; i++)
     {
         d[i] = s[i];
@@ -281,7 +281,7 @@ void tivx_obj_desc_memcpy(void *dst, void *src, uint32_t size)
     uint8_t *d=(uint8_t*)dst;
     uint8_t *s=(uint8_t*)src;
     uint32_t i;
-    
+
     for(i=0; i<size; i++)
     {
         d[i] = s[i];
@@ -292,7 +292,7 @@ void tivx_obj_desc_memset(void *dst, uint8_t val, uint32_t size)
 {
     uint8_t *d=(uint8_t*)dst;
     uint32_t i;
-    
+
     for(i=0; i<size; i++)
     {
         d[i] = val;

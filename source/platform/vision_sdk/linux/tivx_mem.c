@@ -18,7 +18,7 @@ vx_status tivxMemBufferAlloc(
 {
     vx_status status = VX_SUCCESS;
 
-    if ((NULL == mem_ptr) || (0 == size))
+    if ((NULL == mem_ptr) || (0U == size))
     {
         if (NULL == mem_ptr)
         {
@@ -32,13 +32,13 @@ vx_status tivxMemBufferAlloc(
     }
     else
     {
-        mem_ptr->host_ptr = tivxMemAlloc(size, mem_heap_region);
-        if (NULL != mem_ptr->host_ptr)
+        mem_ptr->host_ptr = (uintptr_t)tivxMemAlloc(size, mem_heap_region);
+        if ((uintptr_t)NULL != mem_ptr->host_ptr)
         {
             mem_ptr->mem_heap_region = mem_heap_region;
-            mem_ptr->shared_ptr = (void *)tivxMemHost2SharedPtr(mem_ptr->host_ptr, mem_heap_region);
+            mem_ptr->shared_ptr = (uint64_t)tivxMemHost2SharedPtr(mem_ptr->host_ptr, mem_heap_region);
 
-            memset(mem_ptr->host_ptr, 0, size);
+            memset((void *)(uintptr_t)mem_ptr->host_ptr, 0, size);
             System_ovxCacheWb((unsigned int)mem_ptr->host_ptr, size);
         }
         else
@@ -72,13 +72,13 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
     vx_status status = VX_SUCCESS;
 
-    if ((NULL == mem_ptr) || (mem_ptr->host_ptr == NULL) || (0 == size))
+    if ((NULL == mem_ptr) || (mem_ptr->host_ptr == (uintptr_t)NULL) || (0U == size))
     {
         if (NULL == mem_ptr)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem pointer is NULL\n");
         }
-        if (mem_ptr->host_ptr == NULL)
+        if (mem_ptr->host_ptr == (uintptr_t)NULL)
         {
             VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Mem host pointer is NULL\n");
         }
@@ -90,10 +90,10 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
     }
     else
     {
-        tivxMemFree(mem_ptr->host_ptr, size, mem_ptr->mem_heap_region);
+        tivxMemFree((void *)(uintptr_t)mem_ptr->host_ptr, size, mem_ptr->mem_heap_region);
 
-        mem_ptr->host_ptr = NULL;
-        mem_ptr->shared_ptr = NULL;
+        mem_ptr->host_ptr = (uintptr_t)NULL;
+        mem_ptr->shared_ptr = (uintptr_t)NULL;
     }
 
     return (status);
@@ -143,7 +143,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 {
     void *addr = NULL;
 
-    if ((uint64_t)NULL != host_ptr)
+    if ((uint64_t)(uintptr_t)NULL != host_ptr)
     {
         addr = (void *)System_ovxVirt2Phys((uintptr_t)host_ptr);
     }
@@ -153,7 +153,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 
 void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
-    return (void*)(shared_ptr);
+    return (void*)(uintptr_t)(shared_ptr);
 }
 
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)

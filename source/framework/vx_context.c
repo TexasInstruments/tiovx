@@ -447,7 +447,7 @@ vx_status ownContextSendControlCmd(vx_context context, uint16_t node_obj_desc,
         obj_desc_cmd->num_obj_desc = 1u;
         obj_desc_cmd->obj_desc_id[0u] = node_obj_desc;
         obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
-        obj_desc_cmd->ack_event_handle = (uint64_t)context->cmd_ack_event;
+        obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)context->cmd_ack_event;
 
         obj_desc_cmd->replicated_node_idx = replicated_node_idx;
         obj_desc_cmd->node_cmd_id = node_cmd_id;
@@ -517,7 +517,7 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
         context->obj_desc_cmd->src_target_id = tivxPlatformGetTargetId(TIVX_TARGET_HOST);
         context->obj_desc_cmd->num_obj_desc = num_obj_desc;
         context->obj_desc_cmd->flags = TIVX_CMD_FLAG_SEND_ACK;
-        context->obj_desc_cmd->ack_event_handle = (uint64_t)context->cmd_ack_event;
+        context->obj_desc_cmd->ack_event_handle = (uint64_t)(uintptr_t)context->cmd_ack_event;
 
         for(i=0; i<num_obj_desc; i++)
         {

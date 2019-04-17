@@ -102,11 +102,11 @@ vx_status tivxMemBufferAlloc(
 
     mem_ptr->mem_heap_region = mem_heap_region;
 
-    mem_ptr->host_ptr = (uint64_t)tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
+    mem_ptr->host_ptr = (uint64_t)(uintptr_t)tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
 
     mem_ptr->shared_ptr = mem_ptr->host_ptr;
 
-    if(mem_ptr->host_ptr==(uint64_t)NULL)
+    if(mem_ptr->host_ptr==(uint64_t)(uintptr_t)NULL)
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxMemBufferAlloc: Memory was not allocated\n");
         status = VX_ERROR_NO_MEMORY;
@@ -163,9 +163,9 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
 {
     vx_status status = VX_SUCCESS;
 
-    if(mem_ptr->host_ptr!=(uint64_t)NULL)
+    if(mem_ptr->host_ptr!=(uint64_t)(uintptr_t)NULL)
     {
-        tivxMemFree((void*)mem_ptr->host_ptr, size, TIVX_MEM_EXTERNAL);
+        tivxMemFree((void*)(uintptr_t)mem_ptr->host_ptr, size, TIVX_MEM_EXTERNAL);
     }
 
     return (status);
@@ -210,7 +210,7 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
 
 void* tivxMemShared2TargetPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
-    return (void*)(shared_ptr);
+    return (void*)(uintptr_t)(shared_ptr);
 }
 
 uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)

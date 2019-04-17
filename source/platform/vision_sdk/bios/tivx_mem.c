@@ -75,13 +75,13 @@ vx_status tivxMemBufferAlloc(
 
         if (VX_SUCCESS == status)
         {
-            mem_ptr->host_ptr = Utils_memAlloc(
+            mem_ptr->host_ptr = (uintptr_t)Utils_memAlloc(
                 heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
 
-            if (NULL != mem_ptr->host_ptr)
+            if ((uintptr_t)NULL != mem_ptr->host_ptr)
             {
                 mem_ptr->mem_heap_region = mem_heap_region;
-                mem_ptr->shared_ptr = tivxMemHost2SharedPtr(
+                mem_ptr->shared_ptr = (uint64_t)tivxMemHost2SharedPtr(
                     mem_ptr->host_ptr, mem_heap_region);
             }
             else
@@ -246,12 +246,12 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         if (VX_SUCCESS == status)
         {
             ret_val = Utils_memFree(
-                heap_id, mem_ptr->shared_ptr, size);
+                heap_id, (void*)(uintptr_t)mem_ptr->shared_ptr, size);
 
             if (0 == ret_val)
             {
-                mem_ptr->host_ptr = NULL;
-                mem_ptr->shared_ptr = NULL;
+                mem_ptr->host_ptr = (uintptr_t)NULL;
+                mem_ptr->shared_ptr = (uintptr_t)NULL;
             }
             else
             {
