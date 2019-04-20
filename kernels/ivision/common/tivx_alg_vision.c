@@ -274,6 +274,8 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
       status = tivxAlgiVisionAllocMem(numMemRec, memRec);
       if(status==IALG_EOK)
       {
+        tivx_cpu_id_e cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+
         VX_PRINT(VX_ZONE_INFO, "Calling ialg.algInit ...\n");
 
         algHandle = (IM_Fxns *)memRec[0].base;
@@ -288,6 +290,10 @@ void *tivxAlgiVisionCreate(const IVISION_Fxns *fxns, IALG_Params *pAlgPrms)
           VX_PRINT(VX_ZONE_ERROR, "Calling ialg.algInit failed with status = %d\n", status);
           tivxAlgiVisionDeleteAlg(algHandle);
           algHandle = NULL;
+        }
+        else if ( (cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2)) {
+          /* Temporary workaround as this first record needs to be written back from cache before being dma-ed by alg activate implemented by the algorithm */
+          tivxMemBufferUnmap(memRec[0].base, memRec[0].size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
         }
       }
     }
