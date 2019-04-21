@@ -104,52 +104,56 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
     switch (mem_heap_region)
     {
-        case TIVX_MEM_EXTERNAL:
-            heap_id = UTILS_HEAPID_DDR_CACHED_SR;
-            break;
-        case TIVX_MEM_INTERNAL_L3:
-          /* In case of EVE, L3 memory correspond to one of the OCMC memory.
-           * We use hardcoded addresses because on EVE, only TI-DL use case needs allocation
-           * in OCMC and the TI_DL implementation assumes that the entire OCMC memory is available for its consumption.
-           * The only issue that can arise from using hard-coded address is in case On-the-fly capture from VIP is enabled
-           * because it also uses OCMC_1. However there is no use-case up-to-date that combines both TI-DL and OTF capture.
-           */
-          cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+    case TIVX_MEM_EXTERNAL:
+        heap_id = UTILS_HEAPID_DDR_CACHED_SR;
+        break;
+    case TIVX_MEM_INTERNAL_L3:
+        /* In case of EVE, L3 memory correspond to one of the OCMC memory.
+         * We use hardcoded addresses because on EVE, only TI-DL use case needs allocation
+         * in OCMC and the TI_DL implementation assumes that the entire OCMC memory is available for its consumption.
+         * The only issue that can arise from using hard-coded address is in case On-the-fly capture from VIP is enabled
+         * because it also uses OCMC_1. However there is no use-case up-to-date that combines both TI-DL and OTF capture.
+         */
+        cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
 
-          if (cpuId== TIVX_CPU_ID_EVE1)
-          {
+        if (cpuId== TIVX_CPU_ID_EVE1)
+        {
             ptr = (void *)OCMC_1_BASE_ADDRESS;
             goto exit; /* Jump to exit-point because we don't want to call Utils_memAlloc */
-          }
-          else if (cpuId== TIVX_CPU_ID_EVE2)
-          {
+        }
+        else if (cpuId== TIVX_CPU_ID_EVE2)
+        {
             ptr = (void *)OCMC_2_BASE_ADDRESS;
             goto exit;
-          }
-          else if (cpuId== TIVX_CPU_ID_EVE3)
-          {
+        }
+        else if (cpuId== TIVX_CPU_ID_EVE3)
+        {
             ptr = (void *)OCMC_3_BASE_ADDRESS;
             goto exit;
-          }
-          else if (cpuId== TIVX_CPU_ID_EVE4)
-          {
+        }
+        else if (cpuId== TIVX_CPU_ID_EVE4)
+        {
             ptr = (void *)(OCMC_3_BASE_ADDRESS + (OCMC_3_SIZE/2));
             goto exit;
-          }
-          else
-          {
+        }
+        else if ((cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2))
+        {
+            heap_id = UTILS_HEAPID_DDR_CACHED_SR;
+        }
+        else
+        {
             /* Since there is no L3 memory, so using OCMC memory */
             heap_id = UTILS_HEAPID_OCMC_SR;
-          }
-            break;
-        case TIVX_MEM_INTERNAL_L1:
-        case TIVX_MEM_INTERNAL_L2:
-            heap_id = UTILS_HEAPID_L2_LOCAL;
-            break;
-        default:
-            VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
-            status = VX_FAILURE;
-            break;
+        }
+        break;
+    case TIVX_MEM_INTERNAL_L1:
+    case TIVX_MEM_INTERNAL_L2:
+        heap_id = UTILS_HEAPID_L2_LOCAL;
+        break;
+    default:
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
+        status = VX_FAILURE;
+        break;
     }
 
     if (VX_SUCCESS == status)
@@ -157,7 +161,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
         ptr = Utils_memAlloc(heap_id, size, TIVX_MEM_BUFFER_ALLOC_ALIGN);
     }
 
-exit:
+    exit:
     return (ptr);
 }
 
@@ -171,29 +175,35 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
     {
         switch (mem_heap_region)
         {
-            case TIVX_MEM_EXTERNAL:
+        case TIVX_MEM_EXTERNAL:
+            heap_id = UTILS_HEAPID_DDR_CACHED_SR;
+            break;
+        case TIVX_MEM_INTERNAL_L3:
+            /* In case of EVE, L3 memory correspond to one of the OCMC memory.
+             * We had used hardcoded addresses for the allocation and thus no call to Utils_memFree() must be made
+             * */
+            cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
+            if ((cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4))
+            {
+                goto exit;
+            }
+            else if ((cpuId== TIVX_CPU_ID_DSP1) || (cpuId== TIVX_CPU_ID_DSP2))
+            {
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
-                break;
-            case TIVX_MEM_INTERNAL_L3:
-              /* In case of EVE, L3 memory correspond to one of the OCMC memory.
-                * We had used hardcoded addresses for the allocation and thus no call to Utils_memFree() must be made
-                * */
-                cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();
-                if ((cpuId== TIVX_CPU_ID_EVE1) || (cpuId== TIVX_CPU_ID_EVE2) || (cpuId== TIVX_CPU_ID_EVE3) || (cpuId== TIVX_CPU_ID_EVE4))
-                {
-                  goto exit;
-                }
+            }
+            else {
                 /* Since there is no L3 memory, so using OCMC memory */
                 heap_id = UTILS_HEAPID_OCMC_SR;
-                break;
-            case TIVX_MEM_INTERNAL_L1:
-            case TIVX_MEM_INTERNAL_L2:
-                heap_id = UTILS_HEAPID_L2_LOCAL;
-                break;
-            default:
-                VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
-                status = VX_FAILURE;
-                break;
+            }
+            break;
+        case TIVX_MEM_INTERNAL_L1:
+        case TIVX_MEM_INTERNAL_L2:
+            heap_id = UTILS_HEAPID_L2_LOCAL;
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "tivxMemAlloc: Invalid memtype\n");
+            status = VX_FAILURE;
+            break;
         }
 
         if (VX_SUCCESS == status)
@@ -201,7 +211,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
             Utils_memFree(heap_id, ptr, size);
         }
     }
-exit:
+    exit:
     return;
 }
 
