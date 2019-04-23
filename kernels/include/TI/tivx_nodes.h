@@ -125,23 +125,17 @@ VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
                             vx_image  outputIR);
 
 /*! \brief [Graph] Creates a TIDL Node.
- * \param [in] Reference to vx_graph.
- * \param [in] Reference to vx_kernel.
- * \param [in] Array of vx_reference params.  There must be 10 parameters:
- *             0: vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
- *             1: vx_user_data_object type corresponding to the network (named string: TIDL_network)
- *             2: maximum number of input tensors supported by the kernel's instance. Must match the same parameter passed to tivxAddKernelTIDL()
- *             3: Array of input tensors
- *             4: Array inDataQ of scaling factors to be applied to the input tensor to convert from fixed point representation to floating point.
- *                This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
- *                Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
- *             5: maximum number of output tensors supported by the kernel's instance. Must match the same parameter passed to tivxAddKernelTIDL()
- *             6: Array of output tensors
- *             7: Array outDataQ of scaling factors to be applied to the output tensor to convert from fixed point representation to floating point.
+ * \param [in] graph Reference to vx_graph.
+ * \param [in] kernel Reference to vx_kernel.
+ * \param [in] config vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
+ * \param [in] network vx_user_data_object type corresponding to the network (named string: TIDL_network)
+ * \param [in] input_tensors Array of input tensors
+ * \param [in] inDataQ Array of scaling factors to be applied to the input tensor to convert from fixed point representation to floating point.
+ *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
+ *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
+ * \param [out] output_tensors Array of output tensors
+ * \param [out] outDataQ Array of scaling factors to be applied to the output tensor to convert from fixed point representation to floating point.
  *
- * \param [in] Lengh of params[] array.
- * \see <tt>TIVX_KERNEL_TIDL_NAME</tt>
- * \ingroup group_vision_function_tidl
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
  */
@@ -149,10 +143,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
                                               vx_user_data_object config,
                                               vx_user_data_object network,
-                                              vx_uint32 max_num_input_tensors,
                                               vx_tensor input_tensors[],
                                               vx_array inDataQ,
-                                              vx_uint32 max_num_output_tensors,
                                               vx_tensor output_tensors[],
                                               vx_array outDataQ);
                                               

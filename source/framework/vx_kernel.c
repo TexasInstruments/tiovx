@@ -285,9 +285,11 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
         ownIsKernelInContext(context, enumeration, name, &is_found);
 
         if((numParams <= TIVX_KERNEL_MAX_PARAMS)
-            &&
+            && (
             (is_found == vx_false_e) /* not a duplicate kernel */
-            )
+            ||
+            (strncmp(name, "com.ti.tidl", VX_MAX_KERNEL_NAME)==0)
+            ))
         {
             kernel = (vx_kernel)ownCreateReference(context, VX_TYPE_KERNEL, VX_EXTERNAL, &context->base);
             if ((vxGetStatus((vx_reference)kernel) == VX_SUCCESS) && (kernel->base.type == VX_TYPE_KERNEL))

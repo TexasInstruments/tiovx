@@ -71,10 +71,8 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
                                               vx_user_data_object config,
                                               vx_user_data_object network,
-                                              vx_uint32 max_num_input_tensors,
                                               vx_tensor input_tensors[],
                                               vx_array inDataQ,
-                                              vx_uint32 max_num_output_tensors,
                                               vx_tensor output_tensors[],
                                               vx_array outDataQ)
 {
@@ -83,15 +81,15 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
     vx_uint32 num_input_tensors, num_output_tensors;
     vx_map_id map_id_config;
     sTIDL_IOBufDesc_t *ioBufDesc;
-    vx_int32 num_params= TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + max_num_input_tensors + max_num_output_tensors;
-    vx_scalar max_num_input_tensors_scalar= vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_UINT32, &max_num_input_tensors);
-    vx_scalar max_num_output_tensors_scalar= vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_UINT32, &max_num_output_tensors);
+    vx_int32 num_params;
 
     vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
         (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
     num_input_tensors= ioBufDesc->numInputBuf;
     num_output_tensors= ioBufDesc->numOutputBuf;
+
+    num_params= TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + num_input_tensors + num_output_tensors;
 
     vxUnmapUserDataObject(config, map_id_config);
 
@@ -101,27 +99,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
     params[1]=  (vx_reference)network;
     params[2]=  (vx_reference)inDataQ; /* Input dataQ */
     params[3]=  (vx_reference)outDataQ; /* Output dataQ */
-    params[4]=  (vx_reference)max_num_input_tensors_scalar;
-    params[5]=  (vx_reference)max_num_output_tensors_scalar;
 
     for (i= 0; i < num_input_tensors; i++) {
       params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];
     }
 
-    /* Fill the entries of the param table that don't map to any real input tensors to any arbitrary value
-     * but that is not NULL. It is to avoid any error returned by tivxTIDLNode() */
-    for (i= num_input_tensors; i < max_num_input_tensors; i++) {
-      params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR];
-    }
-
     for (i= 0; i < num_output_tensors; i++) {
-      params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + max_num_input_tensors + i]=  (vx_reference)output_tensors[i];
-    }
-
-    /* Fill the entries of the param table that don't map to any real output tensors to any arbitrary value
-     * but that is not NULL. It is to avoid any error returned by tivxTIDLNode() */
-    for (i= num_output_tensors; i < max_num_output_tensors; i++) {
-      params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + max_num_input_tensors + i]=  params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + max_num_input_tensors];
+      params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + num_input_tensors + i]=  (vx_reference)output_tensors[i];
     }
 
     vx_node node = tivxCreateNodeByKernelRef(graph,
@@ -130,8 +114,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                              num_params);
 
     tivxMemFree(params, sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
-    vxReleaseScalar(&max_num_input_tensors_scalar);
-    vxReleaseScalar(&max_num_output_tensors_scalar);
 
     return node;
 }

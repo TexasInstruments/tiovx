@@ -171,7 +171,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     ASSERT_VX_OBJECT(inDataQ = vxCreateArray(context, VX_TYPE_INT32, num_input_tensors), (enum vx_type_e)VX_TYPE_ARRAY);
     ASSERT_VX_OBJECT(outDataQ = vxCreateArray(context, VX_TYPE_INT32, num_output_tensors), (enum vx_type_e)VX_TYPE_ARRAY);
 
-    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, num_input_tensors, input_tensors, inDataQ, num_output_tensors, output_tensors, outDataQ), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, input_tensors, inDataQ, output_tensors, outDataQ), VX_TYPE_NODE);
 
     /* Set target node to EVE1 */
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));

@@ -284,14 +284,10 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     /* Idx 0 - config data, Idx 1 - network data, Idx 2 - input tensor */
     uint32_t in_tensor_idx = TIVX_KERNEL_TIDL_IN_FIRST_TENSOR;
-
-    /* Idx N - output tensors, where N = Idx 2 + number of input tensors */
     uint32_t out_tensor_idx;
     uint32_t id;
 
-    tivx_obj_desc_scalar_t *sc_max_num_input_tensors= (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_TIDL_IN_MAX_NUM_INPUT_TENSORS_IDX];
-
-    out_tensor_idx= in_tensor_idx + sc_max_num_input_tensors->data.u32;
+    out_tensor_idx= in_tensor_idx + prms->inBufs.numBufs;
 
     arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_TIDL_IN_DATAQ_IDX];
     dataQ_ptr= (int32_t*)tivxMemShared2TargetPtr(arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);

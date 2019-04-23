@@ -171,13 +171,12 @@ void vx_tutorial_tidl()
   vx_graph graph = 0;
   vx_node node1 = 0;
   vx_node node2 = 0;
-  vx_kernel kernel = 0;
+  vx_kernel kernel1 = 0;
+  vx_kernel kernel2 = 0;
 
   uint32_t num_input_tensors  = 0;
   uint32_t num_output_tensors1 = 0;
   uint32_t num_output_tensors2 = 0;
-  uint32_t max_num_input_tensors = 0;
-  uint32_t max_num_output_tensors = 0;
 
   printf(" vx_tutorial_tidl: Tutorial Started !!! \n");
 
@@ -305,11 +304,13 @@ void vx_tutorial_tidl()
   status= vx_tidl_utils_readParams(network, &obj->tidl_params_file_path[0]);
   VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
 
-  max_num_input_tensors= MAX(num_input_tensors, num_output_tensors1);
-  max_num_output_tensors= MAX(num_output_tensors1, num_output_tensors2);
+  kernel1 = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors1);
+  VX_TUTORIAL_ASSERT_VALID_REF(kernel1)
 
-  kernel = tivxAddKernelTIDL(context, max_num_input_tensors, max_num_output_tensors);
-  VX_TUTORIAL_ASSERT_VALID_REF(kernel)
+  if (targetCpuId2!= TIVX_INVALID_CPU_ID) {
+    kernel2 = tivxAddKernelTIDL(context, num_output_tensors1, num_output_tensors2);
+    VX_TUTORIAL_ASSERT_VALID_REF(kernel2)
+  }
 
   printf(" Create graph ... \n");
 
@@ -341,9 +342,9 @@ void vx_tutorial_tidl()
 
   printf(" Create node 1... \n");
 
-  node1 = tivxTIDLNode(graph, kernel, config1, network,
-      max_num_input_tensors, input_tensors, inDataQ1,
-      max_num_output_tensors, output_tensors1, intermDataQ
+  node1 = tivxTIDLNode(graph, kernel1, config1, network,
+      input_tensors, inDataQ1,
+      output_tensors1, intermDataQ
       );
   VX_TUTORIAL_ASSERT_VALID_REF(node1)
 
@@ -359,9 +360,9 @@ void vx_tutorial_tidl()
 
     printf(" Create node 2... \n");
 
-    node2 = tivxTIDLNode(graph, kernel, config2, network,
-        max_num_input_tensors, output_tensors1, intermDataQ,
-        max_num_output_tensors, output_tensors2, outDataQ2
+    node2 = tivxTIDLNode(graph, kernel2, config2, network,
+        output_tensors1, intermDataQ,
+        output_tensors2, outDataQ2
         );
     VX_TUTORIAL_ASSERT_VALID_REF(node2)
 
@@ -446,7 +447,10 @@ void vx_tutorial_tidl()
   vxReleaseArray(&inDataQ1);
   vxReleaseArray(&outDataQ2);
 
-  vxRemoveKernel(kernel);
+  vxRemoveKernel(kernel1);
+  if (kernel2!=0){
+    vxRemoveKernel(kernel2);
+  }
 
   exit:
   printf("\n vx_tutorial_tidl: Tutorial Done !!! \n");
