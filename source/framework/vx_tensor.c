@@ -138,6 +138,8 @@ static void ownInitTensorObject(
     obj_desc->data_type = data_type;
     obj_desc->fixed_point_position = fixed_point_position;
     obj_desc->number_of_dimensions = number_of_dimensions;
+    obj_desc->scaling_divisor = 1;
+    obj_desc->scaling_divisor_fixed_point_position= 0;
 
     /* Stride 0 is simply sizeof(data_type) */
     obj_desc->dimensions[0] = dimensions[0];
@@ -370,6 +372,28 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
                     status = VX_ERROR_INVALID_PARAMETERS;
                 }
                 break;
+            case TIVX_TENSOR_SCALING_DIVISOR:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    *(vx_uint8 *)ptr = obj_desc->scaling_divisor;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"query TIVX_TENSOR_SCALING_DIVISOR failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    *(vx_uint8 *)ptr = obj_desc->scaling_divisor_fixed_point_position;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"query TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR,"query tensor option not supported\n");
                 status = VX_ERROR_NOT_SUPPORTED;
@@ -380,7 +404,69 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(
     return status;
 }
 
-VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor,
+VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
+    vx_tensor tensor, vx_enum attribute, const void *ptr, vx_size size)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_tensor_t *obj_desc = NULL;
+
+    if ((ownIsValidSpecificReference(&tensor->base, VX_TYPE_TENSOR) == vx_false_e)
+        ||
+        (tensor->base.obj_desc == NULL)
+        )
+    {
+        VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Invalid reference\n");
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+    else
+    {
+        obj_desc = (tivx_obj_desc_tensor_t *)tensor->base.obj_desc;
+        switch (attribute)
+        {
+            case VX_TENSOR_FIXED_POINT_POSITION:
+                if (VX_CHECK_PARAM(ptr, size, vx_int8, 0x0U))
+                {
+                    obj_desc->fixed_point_position = *(vx_int8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Set fixed point position failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case TIVX_TENSOR_SCALING_DIVISOR:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    obj_desc->scaling_divisor = *(vx_uint8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Set scaling divisor failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            case TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION:
+                if (VX_CHECK_PARAM(ptr, size, vx_uint8, 0x0U))
+                {
+                    obj_desc->scaling_divisor_fixed_point_position = *(vx_uint8 *)ptr;
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Set scaling divisor's fixed point position failed\n");
+                    status = VX_ERROR_INVALID_PARAMETERS;
+                }
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR, "vxSetTensorAttribute: Invalid attribute\n");
+                status = VX_ERROR_NOT_SUPPORTED;
+                break;
+        }
+    }
+
+    return status;
+}
+
+VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor, 
         vx_size number_of_dimensions, const vx_size * view_start, const vx_size * view_end,
         const vx_size * user_stride, void * user_ptr, vx_enum usage, vx_enum user_memory_type)
 {

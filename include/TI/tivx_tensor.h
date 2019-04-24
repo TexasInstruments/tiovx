@@ -108,8 +108,18 @@ enum vx_tensor_attribute_e
     VX_TENSOR_DIMS        = VX_ATTRIBUTE_BASE( VX_ID_KHRONOS, VX_TYPE_TENSOR ) + 0x1,
     /*! \brief tensor Data element data type. <tt>vx_type_e</tt> */
     VX_TENSOR_DATA_TYPE   = VX_ATTRIBUTE_BASE( VX_ID_KHRONOS, VX_TYPE_TENSOR ) + 0x2,
-    /*! \brief fixed point position when the input element type is integer. */
-    VX_TENSOR_FIXED_POINT_POSITION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x3
+    /*! \brief fixed point position when the input element type is integer.
+     * Read-Write.
+     */
+    VX_TENSOR_FIXED_POINT_POSITION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x3,
+    /*! \brief scaling divisor to be applied to each element when the input element type is integer.
+     * Read-Write.
+     */
+    TIVX_TENSOR_SCALING_DIVISOR = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x4,
+    /*! \brief fixed point position of the scaling divisor
+     * Read-Write.
+     */
+    TIVX_TENSOR_SCALING_DIVISOR_FIXED_POINT_POSITION = VX_ATTRIBUTE_BASE(VX_ID_KHRONOS, VX_TYPE_TENSOR) + 0x5
 };
 
 /*! \brief Creates an opaque reference to a tensor data buffer.
@@ -170,6 +180,20 @@ VX_API_ENTRY vx_status VX_API_CALL vxCopyTensorPatch(vx_tensor tensor, vx_size n
  * \ingroup group_object_tensor
  */
 VX_API_ENTRY vx_status VX_API_CALL vxQueryTensor(vx_tensor tensor, vx_enum attribute, void *ptr, vx_size size);
+
+/*! \brief Sets attributes of a tensor object.
+ * \param [in] tensor The tensor object to set.
+ * \param [in] attribute The attribute to modify. Use a <tt>\ref vx_tensor_attribute_e</tt> enumeration.
+ * \param [in] ptr The pointer to the value to which to set the attribute.
+ * \param [in] size The size of the data pointed to by \a ptr.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_REFERENCE If data is not a <tt>\ref vx_tensor</tt>.
+ * \retval VX_ERROR_INVALID_PARAMETERS If any of the other parameters are incorrect.
+ * \ingroup group_object_tensor
+ */
+VX_API_ENTRY vx_status VX_API_CALL vxSetTensorAttribute(
+    vx_tensor tensor, vx_enum attribute, const void *ptr, vx_size size);
 
 /*! \brief Releases a reference to a tensor data object.
  * The object may not be garbage collected until its total reference count is zero.

@@ -806,6 +806,10 @@ typedef struct _tivx_obj_desc_tensor
     uint32_t data_type;
     /*! \brief Fixed point precision of the tensor */
     uint32_t fixed_point_position;
+    /*! \brief each element of the tensor can be divided by this scaling value in order to obtain its real value */
+    uint32_t scaling_divisor;
+    /*! \brief Fixed point precision of the scaling divisor */
+    uint32_t scaling_divisor_fixed_point_position;
     /*! \brief Size of all dimensions */
     uint32_t dimensions[TIVX_CONTEXT_MAX_TENSOR_DIMS];
     /*! \brief Stride of all dimensions
