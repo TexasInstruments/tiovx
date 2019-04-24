@@ -279,8 +279,6 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     void *in_tensor_target_ptr;
     void *out_tensor_target_ptr;
-    tivx_obj_desc_array_t *arr;
-    int32_t *dataQ_ptr;
 
     /* Idx 0 - config data, Idx 1 - network data, Idx 2 - input tensor */
     uint32_t in_tensor_idx = TIVX_KERNEL_TIDL_IN_FIRST_TENSOR;
@@ -289,19 +287,13 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     out_tensor_idx= in_tensor_idx + prms->inBufs.numBufs;
 
-    arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_TIDL_IN_DATAQ_IDX];
-    dataQ_ptr= (int32_t*)tivxMemShared2TargetPtr(arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);
-    tivxMemBufferMap((void*)dataQ_ptr, arr->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
     for(id = 0; id < prms->inBufs.numBufs; id++) {
       inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
       in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
       tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
       prms->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
-      prms->inArgs.dataQ[id]= dataQ_ptr[id];
+      prms->inArgs.dataQ[id]= inTensor->scaling_divisor;
     }
-
-    tivxMemBufferUnmap(dataQ_ptr, arr->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
     for(id = 0; id < prms->outBufs.numBufs; id++) {
       outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
@@ -325,18 +317,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
       tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
     }
 
-    arr = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_TIDL_OUT_DATAQ_IDX];
-    dataQ_ptr= (int32_t*)tivxMemShared2TargetPtr(arr->mem_ptr.shared_ptr, arr->mem_ptr.mem_heap_region);
-    tivxMemBufferMap((void*)dataQ_ptr, arr->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-
     for(id = 0; id < prms->outBufs.numBufs; id++) {
       outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
       out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
       tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-      dataQ_ptr[id]= prms->outArgs.dataQ[id];
+      outTensor->scaling_divisor= prms->outArgs.dataQ[id];
+      outTensor->scaling_divisor_fixed_point_position= 8;
     }
 
-    tivxMemBufferUnmap(dataQ_ptr, arr->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
   }
 
   return (status);

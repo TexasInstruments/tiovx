@@ -72,9 +72,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_user_data_object config,
                                               vx_user_data_object network,
                                               vx_tensor input_tensors[],
-                                              vx_array inDataQ,
-                                              vx_tensor output_tensors[],
-                                              vx_array outDataQ)
+                                              vx_tensor output_tensors[])
 {
     int32_t i;
     vx_reference *params;
@@ -97,8 +95,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
 
     params[0]=  (vx_reference)config;
     params[1]=  (vx_reference)network;
-    params[2]=  (vx_reference)inDataQ; /* Input dataQ */
-    params[3]=  (vx_reference)outDataQ; /* Output dataQ */
 
     for (i= 0; i < num_input_tensors; i++) {
       params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];

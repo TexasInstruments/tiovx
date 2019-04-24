@@ -130,11 +130,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
  * \param [in] config vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
  * \param [in] network vx_user_data_object type corresponding to the network (named string: TIDL_network)
  * \param [in] input_tensors Array of input tensors
- * \param [in] inDataQ Array of scaling factors to be applied to the input tensor to convert from fixed point representation to floating point.
  *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
  *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
  * \param [out] output_tensors Array of output tensors
- * \param [out] outDataQ Array of scaling factors to be applied to the output tensor to convert from fixed point representation to floating point.
  *
  * \return <tt>\ref vx_node</tt>.
  * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
@@ -144,9 +142,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_user_data_object config,
                                               vx_user_data_object network,
                                               vx_tensor input_tensors[],
-                                              vx_array inDataQ,
-                                              vx_tensor output_tensors[],
-                                              vx_array outDataQ);
+                                              vx_tensor output_tensors[]);
                                               
 #ifdef __cplusplus
 }

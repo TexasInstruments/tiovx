@@ -154,7 +154,6 @@ void vx_tutorial_tidl()
   vx_tensor input_tensors[VX_TUTORIAL_MAX_TENSORS];
   vx_tensor output_tensors1[VX_TUTORIAL_MAX_TENSORS];
   vx_tensor output_tensors2[VX_TUTORIAL_MAX_TENSORS];
-  vx_array intermDataQ, inDataQ1, outDataQ2;
   vx_tensor *real_output_tensors;
   vx_perf_t perf_graph, perf_node1, perf_node2;
   int32_t i;
@@ -327,24 +326,11 @@ void vx_tutorial_tidl()
   status= createOutputTensor(context, config1, output_tensors1);
   VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
 
-  /* A intermDataQ must be passed as input and output parameters
-   * Each element of the array represents the scaling factor in Q8 format
-   * by which each 8-bits element of an input or output tensor needs to be divided with in order
-   * to obtain its real value.
-   * As input, intermDataQ is only used if the network that is executed takes its input tensor from a previous network.
-   * As output dataQ array will return the scaling factor to be applied to each output tensor.
-   * If a graph is composed of multiple TI-DL nodes that executes a sequence of networks in which each network's input corresponds to the output of the immediately previous network
-   * then the same intermDataQ should be passed as parameter to each TI_DL node in order to ensure that the intermediate outputs are properly scaled.
-   */
-  intermDataQ = vxCreateArray(context, VX_TYPE_INT32, VX_TUTORIAL_MAX_TENSORS);
-  inDataQ1 = vxCreateArray(context, VX_TYPE_INT32, VX_TUTORIAL_MAX_TENSORS);
-  outDataQ2 = vxCreateArray(context, VX_TYPE_INT32, VX_TUTORIAL_MAX_TENSORS);
-
   printf(" Create node 1... \n");
 
   node1 = tivxTIDLNode(graph, kernel1, config1, network,
-      input_tensors, inDataQ1,
-      output_tensors1, intermDataQ
+      input_tensors,
+      output_tensors1
       );
   VX_TUTORIAL_ASSERT_VALID_REF(node1)
 
@@ -361,8 +347,8 @@ void vx_tutorial_tidl()
     printf(" Create node 2... \n");
 
     node2 = tivxTIDLNode(graph, kernel2, config2, network,
-        output_tensors1, intermDataQ,
-        output_tensors2, outDataQ2
+        output_tensors1,
+        output_tensors2
         );
     VX_TUTORIAL_ASSERT_VALID_REF(node2)
 
@@ -442,10 +428,6 @@ void vx_tutorial_tidl()
   for (i= 0; i < num_output_tensors2; i++) {
     vxReleaseTensor(&output_tensors2[i]);
   }
-
-  vxReleaseArray(&intermDataQ);
-  vxReleaseArray(&inDataQ1);
-  vxReleaseArray(&outDataQ2);
 
   vxRemoveKernel(kernel1);
   if (kernel2!=0){

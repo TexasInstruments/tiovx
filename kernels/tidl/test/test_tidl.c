@@ -112,7 +112,6 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   vx_user_data_object  network;
   vx_tensor input_tensors[1];
   vx_tensor output_tensors[1];
-  vx_array inDataQ, outDataQ;
 
   vx_int32    network_id = 0;
   vx_int32    refid[] = {896, 895, 0xDEAD, 895, 0xDEAD};
@@ -168,10 +167,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(output_tensors[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(inDataQ = vxCreateArray(context, VX_TYPE_INT32, num_input_tensors), (enum vx_type_e)VX_TYPE_ARRAY);
-    ASSERT_VX_OBJECT(outDataQ = vxCreateArray(context, VX_TYPE_INT32, num_output_tensors), (enum vx_type_e)VX_TYPE_ARRAY);
-
-    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, input_tensors, inDataQ, output_tensors, outDataQ), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, input_tensors, output_tensors), VX_TYPE_NODE);
 
     /* Set target node to EVE1 */
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
@@ -205,16 +201,12 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     VX_CALL(vxReleaseUserDataObject(&network));
     VX_CALL(vxReleaseTensor(&input_tensors[0]));
     VX_CALL(vxReleaseTensor(&output_tensors[0]));
-    VX_CALL(vxReleaseArray(&inDataQ));
-    VX_CALL(vxReleaseArray(&outDataQ));
 
     ASSERT(config == 0);
     ASSERT(network == 0);
 
     ASSERT(input_tensors[0]  == 0);
     ASSERT(output_tensors[0] == 0);
-    ASSERT(inDataQ == 0);
-    ASSERT(outDataQ == 0 );
     
     vxRemoveKernel(kernel);
   }
