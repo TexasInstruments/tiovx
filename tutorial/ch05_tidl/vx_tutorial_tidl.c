@@ -127,6 +127,7 @@
 #define MAX(_a,_b) (((_a) > (_b)) ? (_a) : (_b))
 
 #define CFG_FILE_NAME       "tivx/tidl/tidl_infer.cfg"
+#define PERCENT 0.01
 
 typedef struct {
   char tidl_params_file_path[VX_TUTORIAL_MAX_FILE_PATH];
@@ -151,6 +152,8 @@ void vx_tutorial_tidl()
   vx_context context;
   vx_user_data_object  config1, config2, realConfig;
   vx_user_data_object  network;
+  vx_float32 quantRangeExpansionFactor;
+  vx_float32 quantRangeUpdateFactor;
   vx_tensor input_tensors[VX_TUTORIAL_MAX_TENSORS];
   vx_tensor output_tensors1[VX_TUTORIAL_MAX_TENSORS];
   vx_tensor output_tensors2[VX_TUTORIAL_MAX_TENSORS];
@@ -328,7 +331,12 @@ void vx_tutorial_tidl()
 
   printf(" Create node 1... \n");
 
+  quantRangeExpansionFactor= 0.0*PERCENT;
+  quantRangeUpdateFactor= 5.0*PERCENT;
+
   node1 = tivxTIDLNode(graph, kernel1, config1, network,
+      quantRangeExpansionFactor,
+      quantRangeUpdateFactor,
       input_tensors,
       output_tensors1
       );
@@ -347,6 +355,8 @@ void vx_tutorial_tidl()
     printf(" Create node 2... \n");
 
     node2 = tivxTIDLNode(graph, kernel2, config2, network,
+        quantRangeExpansionFactor,
+        quantRangeUpdateFactor,
         output_tensors1,
         output_tensors2
         );

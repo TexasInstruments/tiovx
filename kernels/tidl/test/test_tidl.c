@@ -77,6 +77,7 @@
 
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
+#define PERCENT 0.01
 #define TEST_TIDL_MAX_TENSOR_DIMS   (4u)
 
 static vx_tensor createInputTensor(vx_context context, vx_user_data_object config);
@@ -112,6 +113,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   vx_user_data_object  network;
   vx_tensor input_tensors[1];
   vx_tensor output_tensors[1];
+  vx_float32 quantRangeExpansionFactor;
+  vx_float32 quantRangeUpdateFactor;
 
   vx_int32    network_id = 0;
   vx_int32    refid[] = {896, 895, 0xDEAD, 895, 0xDEAD};
@@ -167,7 +170,10 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(output_tensors[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, input_tensors, output_tensors), VX_TYPE_NODE);
+    quantRangeExpansionFactor= 0.0*PERCENT;
+    quantRangeUpdateFactor= 5.0*PERCENT;
+
+    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, quantRangeExpansionFactor, quantRangeUpdateFactor, input_tensors, output_tensors), VX_TYPE_NODE);
 
     /* Set target node to EVE1 */
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));

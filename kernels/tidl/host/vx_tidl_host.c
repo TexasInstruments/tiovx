@@ -200,6 +200,26 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
           );
           index++;
         }
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_INPUT,
+              VX_TYPE_FLOAT32,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_INPUT,
+              VX_TYPE_FLOAT32,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
         for(i = 0; i < num_input_tensors; i++)
         {
             if ( status == VX_SUCCESS)

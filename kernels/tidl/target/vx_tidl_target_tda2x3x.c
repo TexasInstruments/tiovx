@@ -342,6 +342,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
   tivx_obj_desc_user_data_object_t *config;
   tivx_obj_desc_user_data_object_t *network;
+  tivx_obj_desc_scalar_t *sc_quantRangeExpansionFactor, *sc_quantRangeUpdateFactor;
 
   tivxTIDLParams *prms = NULL;
   void *config_target_ptr;
@@ -366,6 +367,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     /* IMPORTANT! Network data is assumed to be available at index 1 */
     network   = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
+
+    sc_quantRangeExpansionFactor= (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_TIDL_IN_QRANGE_EXP_IDX];
+    sc_quantRangeUpdateFactor= (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_TIDL_IN_QRANGE_UPDATE_IDX];
 
     prms = tivxMemAlloc(sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
 
@@ -413,9 +417,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 #endif
     }
 
-    prms->createParams.quantHistoryParam1     = 20;
-    prms->createParams.quantHistoryParam2     = 5;
-    prms->createParams.quantMargin            = 0;
+    prms->createParams.quantHistoryParam1     = (int32_t)(sc_quantRangeUpdateFactor->data.f32*100.0 +0.5)*4;
+    prms->createParams.quantHistoryParam2     = (int32_t)(sc_quantRangeUpdateFactor->data.f32*100.0 +0.5);
+    prms->createParams.quantMargin            = (int32_t)(sc_quantRangeExpansionFactor->data.f32*100.0 +0.5);
     prms->createParams.optimiseExtMem         = TIDL_optimiseExtMemL1;
 
     network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
