@@ -69,6 +69,7 @@
 #include <TI/j7_vpac_msc.h>
 #include <TI/j7_vpac_viss.h>
 #include <TI/j7_dmpac_dof.h>
+#include <TI/j7_vpac_nf.h>
 #include <TI/j7_nodes.h>
 
 #ifdef __cplusplus

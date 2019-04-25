@@ -69,40 +69,6 @@
 extern "C" {
 #endif
 
-/*! \brief [Graph] Creates a VPAC_NF_GENERIC Node.
- * \param [in] graph The reference to the graph.
- * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_vpac_nf_common_params_t</tt>.
- * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] conv The input convolution matrix. Max columns or rows supported is 5.  Scale value is ignored.  Coefficients are 9-bit signed.
- * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \see <tt>TIVX_KERNEL_VPAC_NF_GENERIC_NAME</tt>
- * \ingroup group_vision_function_vpac_nf
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfGenericNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_image             input,
-                                      vx_convolution       conv,
-                                      vx_image             output);
-
-/*! \brief [Graph] Creates a VPAC_NF_BILATERAL Node.
- * \param [in] graph The reference to the graph.
- * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_params_t</tt>.
- * \param [in] input The input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] sigmas The input object of a single params structure of type <tt>\ref tivx_vpac_nf_bilateral_sigmas_t</tt>.
- * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \see <tt>TIVX_KERNEL_VPAC_NF_BILATERAL_NAME</tt>
- * \ingroup group_vision_function_vpac_nf
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_image             input,
-                                      vx_user_data_object  sigmas,
-                                      vx_image             output);
-
 /*! \brief [Graph] Creates a DMPAC_SDE Node.
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
