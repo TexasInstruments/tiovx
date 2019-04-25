@@ -16,7 +16,7 @@ ifeq ($(TARGET_CPU)$(BUILD_VLAB),R5Fyes)
 DEFS += VLAB_HWA
 CSOURCES    += vx_vpac_viss_vlab_target.c
 else
-CSOURCES    += vx_vpac_viss_target.c
+CSOURCES    += vx_vpac_viss_target_sim.c
 endif
 
 ifeq ($(HOST_COMPILER),GCC_LINUX)
