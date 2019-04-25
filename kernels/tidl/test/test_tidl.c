@@ -75,6 +75,10 @@
 
 #define DEBUG_TEST_TIDL
 
+#ifdef HOST_EMULATION
+tivx_cpu_id_e gTidlNodeCpuId[1];
+#endif
+
 TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 
 #define PERCENT 0.01
@@ -177,6 +181,9 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     /* Set target node to EVE1 */
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
+#ifdef HOST_EMULATION
+    gTidlNodeCpuId[0]= TIVX_CPU_ID_EVE1;
+#endif
 
     /* Read input from file and populate the input tensors */
     sz = snprintf(filepath, MAXPATHLENGTH, "%s/tivx/tidl/%s", ct_get_test_file_path(), inputFile[network_id]);

@@ -70,7 +70,12 @@
 #include "sTIDL_IOBufDesc.h"
 #include "itidl_ti.h"
 
-#ifndef HOST_EMULATION
+#ifdef HOST_EMULATION
+
+extern tivx_cpu_id_e gTidlNodeCpuId[];
+
+#else
+
 #include <./src/rtos/utils_common/include/utils_mem_cfg.h> /* In Vision-sdk directory */
 /* Minimum DSP L1 SIZE */
 #define TIDL_LINK_MIN_DSPL1_SIZE    (8 * 1024)
@@ -78,6 +83,7 @@
 #define TIDL_LINK_MIN_EVEL2_SIZE    (8 * 1024)
 /* Minimum L3 SIZE */
 #define TIDL_LINK_MIN_L3_SIZE       (320 * 1024)
+
 #endif
 
 #define L1_MEM_SIZE (20*1024 + 256)
@@ -392,12 +398,16 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     void tivxSetSelfCpuId(vx_enum cpu_id);
 
     uint32_t index= tivxTargetKernelInstanceGetIndex(kernel);
+
+    tivxSetSelfCpuId(gTidlNodeCpuId[index]);
+    /*
     if (index==0) {
       tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
     }
     else {
       tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
     }
+    */
 #endif
 
     tivx_cpu_id_e cpuId= (tivx_cpu_id_e)tivxGetSelfCpuId();

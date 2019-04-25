@@ -129,6 +129,10 @@
 #define CFG_FILE_NAME       "tivx/tidl/tidl_infer.cfg"
 #define PERCENT 0.01
 
+#define NUM_EVE_CPU (obj->num_eve_cores)
+#define NUM_DSP_CPU 2
+#define MAX_NUM_THREADS 4
+
 typedef struct {
   char tidl_params_file_path[VX_TUTORIAL_MAX_FILE_PATH];
   char tidl_network_file_path[VX_TUTORIAL_MAX_FILE_PATH];
@@ -136,6 +140,7 @@ typedef struct {
   char output_file_path[VX_TUTORIAL_MAX_FILE_PATH];
   uint32_t operation_mode;
   uint32_t processing_core_mode;
+  uint32_t num_eve_cores;
 } VxTutorialTidl_CfgObj;
 
 VxTutorialTidl_CfgObj gCfgObj;
@@ -146,6 +151,10 @@ static vx_status createOutputTensor(vx_context context, vx_user_data_object conf
 static vx_status readInput(vx_context context, vx_user_data_object config, vx_tensor *input_tensors, char *input_file, uint32_t operation_mode);
 static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_ptr, vx_uint32 img_width, vx_uint32 img_height, vx_uint32 img_stride, vx_user_data_object config, vx_tensor *output_tensors, char *output_file, uint32_t operation_mode);
 
+#ifdef HOST_EMULATION
+tivx_cpu_id_e gTidlNodeCpuId[2*MAX_NUM_THREADS];
+#endif
+
 void vx_tutorial_tidl()
 {
 
@@ -154,31 +163,36 @@ void vx_tutorial_tidl()
   vx_user_data_object  network;
   vx_float32 quantRangeExpansionFactor;
   vx_float32 quantRangeUpdateFactor;
-  vx_tensor input_tensors[VX_TUTORIAL_MAX_TENSORS];
-  vx_tensor output_tensors1[VX_TUTORIAL_MAX_TENSORS];
-  vx_tensor output_tensors2[VX_TUTORIAL_MAX_TENSORS];
+  vx_tensor input_tensors[MAX_NUM_THREADS][VX_TUTORIAL_MAX_TENSORS];
+  vx_tensor output_tensors1[MAX_NUM_THREADS][VX_TUTORIAL_MAX_TENSORS];
+  vx_tensor output_tensors2[MAX_NUM_THREADS][VX_TUTORIAL_MAX_TENSORS];
   vx_tensor *real_output_tensors;
   vx_perf_t perf_graph, perf_node1, perf_node2;
-  int32_t i;
+  int32_t i, threadIdx;
+  uint64_t exe_time=0;
 
   size_t sizeFilePath;
   char filePath[MAXPATHLENGTH];
-  const char *targetCore1, *targetCore2;
-  vx_enum targetCpuId1, targetCpuId2;
+  const char *targetCore1[MAX_NUM_THREADS];
+  const char *targetCore2[MAX_NUM_THREADS];
+  vx_enum targetCpuId1[MAX_NUM_THREADS];
+  vx_enum targetCpuId2[MAX_NUM_THREADS];
 
   vx_status status = VX_SUCCESS;
 
   VxTutorialTidl_CfgObj *obj = &gCfgObj;
 
-  vx_graph graph = 0;
-  vx_node node1 = 0;
-  vx_node node2 = 0;
+  vx_graph graph[MAX_NUM_THREADS] = {0};
+  vx_node node1[MAX_NUM_THREADS] = {0};
+  vx_node node2[MAX_NUM_THREADS] = {0};
   vx_kernel kernel1 = 0;
   vx_kernel kernel2 = 0;
 
   uint32_t num_input_tensors  = 0;
   uint32_t num_output_tensors1 = 0;
   uint32_t num_output_tensors2 = 0;
+
+  uint32_t maxNumThreads= 1;
 
   printf(" vx_tutorial_tidl: Tutorial Started !!! \n");
 
@@ -236,25 +250,32 @@ void vx_tutorial_tidl()
 
     if (numLayersGroup== 1) {
       if (layersGroupCount[1]!=0) {
-        targetCore1= TIVX_TARGET_EVE1;
-        targetCpuId1= TIVX_CPU_ID_EVE1;
+        /* If the entire network runs on EVE, spun the processing into as many threads as there are EVEs to demonstrate parallelism between EVEs */
+        maxNumThreads= NUM_EVE_CPU;
+        targetCore1[0]= TIVX_TARGET_EVE1;targetCore1[1]= TIVX_TARGET_EVE2;targetCore1[2]= TIVX_TARGET_EVE3;targetCore1[3]= TIVX_TARGET_EVE4;
+        targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
       }
       else if (layersGroupCount[2]!=0) {
-        targetCore1= TIVX_TARGET_DSP1;
-        targetCpuId1= TIVX_CPU_ID_DSP1;
+        /* If the entire network runs on DSP, spun the processing into as many threads as there are DSPs to demonstrate parallelism between DSPs */
+        maxNumThreads= NUM_DSP_CPU;
+        targetCore1[0]= TIVX_TARGET_DSP1;targetCore1[1]= TIVX_TARGET_DSP2;
+        targetCpuId1[0]= TIVX_CPU_ID_DSP1;targetCpuId1[1]= TIVX_CPU_ID_DSP2;
       }
       else {
         printf(" Invalid layer group ID detected, exiting ...\n");
         goto exit;
       }
-      targetCore2= NULL;
-      targetCpuId2= TIVX_INVALID_CPU_ID;
-    }
+      for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+        targetCore2[threadIdx]= NULL;
+        targetCpuId2[threadIdx]= TIVX_INVALID_CPU_ID;
+      }
+    }/* In case the network has 2 groups, it will run on two cores */
     else if (numLayersGroup== 2) {
-      targetCore1= TIVX_TARGET_EVE1;
-      targetCpuId1= TIVX_CPU_ID_EVE1;
-      targetCore2= TIVX_TARGET_DSP1;
-      targetCpuId2= TIVX_CPU_ID_DSP1;
+      maxNumThreads= NUM_EVE_CPU;
+      targetCore1[0]= TIVX_TARGET_EVE1;targetCore1[1]= TIVX_TARGET_EVE2;targetCore1[2]= TIVX_TARGET_EVE3;targetCore1[3]= TIVX_TARGET_EVE4;
+      targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
+      targetCore2[0]= TIVX_TARGET_DSP1;targetCore2[1]= TIVX_TARGET_DSP1;targetCore2[2]= TIVX_TARGET_DSP1;targetCore2[3]= TIVX_TARGET_DSP1;
+      targetCpuId2[0]= TIVX_CPU_ID_DSP1;targetCpuId2[1]= TIVX_CPU_ID_DSP1;targetCpuId2[2]= TIVX_CPU_ID_DSP1;targetCpuId2[3]= TIVX_CPU_ID_DSP1;
     }
     else {
       printf(" Invalid number of groups of layers, exiting ...\n");
@@ -263,16 +284,22 @@ void vx_tutorial_tidl()
 
   }
   else if (obj->processing_core_mode== 1) {
-    targetCore1= TIVX_TARGET_EVE1;
-    targetCpuId1= TIVX_CPU_ID_EVE1;
-    targetCore2= NULL;
-    targetCpuId2= TIVX_INVALID_CPU_ID;
+    maxNumThreads= NUM_EVE_CPU;
+    targetCore1[0]= TIVX_TARGET_EVE1;targetCore1[1]= TIVX_TARGET_EVE2;targetCore1[2]= TIVX_TARGET_EVE3;targetCore1[3]= TIVX_TARGET_EVE4;
+    targetCpuId1[0]= TIVX_CPU_ID_EVE1;targetCpuId1[1]= TIVX_CPU_ID_EVE2;targetCpuId1[2]= TIVX_CPU_ID_EVE3;targetCpuId1[3]= TIVX_CPU_ID_EVE4;
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+      targetCore2[threadIdx]= NULL;
+      targetCpuId2[threadIdx]= TIVX_INVALID_CPU_ID;
+    }
   }
   else if (obj->processing_core_mode== 2) {
-    targetCore1= TIVX_TARGET_DSP1;
-    targetCpuId1= TIVX_CPU_ID_DSP1;
-    targetCore2= NULL;
-    targetCpuId2= TIVX_INVALID_CPU_ID;
+    maxNumThreads= NUM_DSP_CPU;
+    targetCore1[0]= TIVX_TARGET_DSP1;targetCore1[1]= TIVX_TARGET_DSP2;
+    targetCpuId1[0]= TIVX_CPU_ID_DSP1;targetCpuId1[1]= TIVX_CPU_ID_DSP2;
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+      targetCore2[threadIdx]= NULL;
+      targetCpuId2[threadIdx]= TIVX_INVALID_CPU_ID;
+    }
   }
   else {
     printf("Invalid processing core mode, exiting ...\n");
@@ -281,19 +308,19 @@ void vx_tutorial_tidl()
 
   /* If processing_core_mode is not 0, update each layer's group ID so that the entire network runs either on EVE or DSP*/
   if (obj->processing_core_mode!= 0) {
-    vx_tidl_utils_updateLayersGroup(network, targetCpuId1);
+    vx_tidl_utils_updateLayersGroup(network, targetCpuId1[0]);
   }
 
-  config1 = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors1, targetCpuId1);
+  config1 = vx_tidl_utils_getConfig(context, network, &num_input_tensors, &num_output_tensors1, targetCpuId1[0]);
 
   /* In case the network runs on one CPU, set num_output_tensors2 to 0 */
-  if (targetCpuId2== TIVX_INVALID_CPU_ID) {
+  if (targetCpuId2[0]== TIVX_INVALID_CPU_ID) {
     num_output_tensors2= 0;
   }
   else {
     int32_t num_interm_tensors= num_output_tensors1;
 
-    config2 = vx_tidl_utils_getConfig(context, network, &num_output_tensors1, &num_output_tensors2, targetCpuId2);
+    config2 = vx_tidl_utils_getConfig(context, network, &num_output_tensors1, &num_output_tensors2, targetCpuId2[0]);
 
     if (num_interm_tensors != num_output_tensors1) {
       printf("Number of output tensors from first group of layers not equal to the number of input tensors from second group of layers. Exiting ...\n");
@@ -309,134 +336,197 @@ void vx_tutorial_tidl()
   kernel1 = tivxAddKernelTIDL(context, num_input_tensors, num_output_tensors1);
   VX_TUTORIAL_ASSERT_VALID_REF(kernel1)
 
-  if (targetCpuId2!= TIVX_INVALID_CPU_ID) {
+  if (targetCpuId2[0]!= TIVX_INVALID_CPU_ID) {
     kernel2 = tivxAddKernelTIDL(context, num_output_tensors1, num_output_tensors2);
     VX_TUTORIAL_ASSERT_VALID_REF(kernel2)
   }
 
-  printf(" Create graph ... \n");
 
-  /* Create OpenVx Graph */
-  graph = vxCreateGraph(context);
-  VX_TUTORIAL_ASSERT_VALID_REF(graph)
+  for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
-  printf(" Create input and output tensors for node 1... \n");
-  /* Create array of input tensors for the first node */
-  status= createInputTensors(context, config1, input_tensors);
-  VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    printf("Thread #%d: Create graph ... \n", threadIdx+1);
 
-  /* Create array of output tensors for the first node, which is also the input tensors for the second node */
-  status= createOutputTensor(context, config1, output_tensors1);
-  VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    /* Create OpenVx Graph */
+    graph[threadIdx] = vxCreateGraph(context);
+    VX_TUTORIAL_ASSERT_VALID_REF(graph[threadIdx])
 
-  printf(" Create node 1... \n");
+    printf("Thread #%d: Create input and output tensors for node 1 ... \n", threadIdx+1);
+    /* Create array of input tensors for the first node */
 
-  quantRangeExpansionFactor= 0.0*PERCENT;
-  quantRangeUpdateFactor= 5.0*PERCENT;
-
-  node1 = tivxTIDLNode(graph, kernel1, config1, network,
-      quantRangeExpansionFactor,
-      quantRangeUpdateFactor,
-      input_tensors,
-      output_tensors1
-      );
-  VX_TUTORIAL_ASSERT_VALID_REF(node1)
-
-  /* Set target node to targetCore1 (EVE1 or DSP1)*/
-  vxSetNodeTarget(node1, VX_TARGET_STRING, targetCore1);
-
-  if (targetCpuId2== TIVX_CPU_ID_DSP1) {
-    printf(" Create output tensors for node 2... \n");
-
-    /* Create array of output tensors for the second node */
-    status= createOutputTensor(context, config2, output_tensors2);
+    status= createInputTensors(context, config1, &input_tensors[threadIdx][0]);
     VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
 
-    printf(" Create node 2... \n");
+    /* Create array of output tensors for the first node, which is also the input tensors for the second node */
+    status= createOutputTensor(context, config1, &output_tensors1[threadIdx][0]);
+    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
 
-    node2 = tivxTIDLNode(graph, kernel2, config2, network,
+    printf("Thread #%d: Create node 1 ... \n", threadIdx+1);
+
+    quantRangeExpansionFactor= 0.0*PERCENT;
+    quantRangeUpdateFactor= 5.0*PERCENT;
+
+    node1[threadIdx] = tivxTIDLNode(graph[threadIdx], kernel1, config1, network,
         quantRangeExpansionFactor,
         quantRangeUpdateFactor,
-        output_tensors1,
-        output_tensors2
-        );
-    VX_TUTORIAL_ASSERT_VALID_REF(node2)
+        &input_tensors[threadIdx][0],
+        &output_tensors1[threadIdx][0]
+    );
+    VX_TUTORIAL_ASSERT_VALID_REF(node1[threadIdx])
 
-    /* Set target node to targetCore1 (EVE1 or DSP1)*/
-    vxSetNodeTarget(node2, VX_TARGET_STRING, targetCore2);
+    /* Set target node to targetCore1 (EVEn or DSP1)*/
+    vxSetNodeTarget(node1[threadIdx], VX_TARGET_STRING, targetCore1[threadIdx]);
+#ifdef HOST_EMULATION
+    gTidlNodeCpuId[2*threadIdx]= targetCpuId1[threadIdx];
+#endif
+
+    if ((targetCpuId2[threadIdx]== TIVX_CPU_ID_DSP1) || (targetCpuId2[threadIdx]== TIVX_CPU_ID_DSP2)) {
+      printf("Thread #%d: Create output tensors for node 2 ... \n", threadIdx+1);
+
+      /* Create array of output tensors for the second node */
+      status= createOutputTensor(context, config2, &output_tensors2[threadIdx][0]);
+      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+
+      printf("Thread #%d: Create node 2 ... \n", threadIdx+1);
+
+      node2[threadIdx] = tivxTIDLNode(graph[threadIdx], kernel2, config2, network,
+          quantRangeExpansionFactor,
+          quantRangeUpdateFactor,
+          &output_tensors1[threadIdx][0],
+          &output_tensors2[threadIdx][0]
+      );
+      VX_TUTORIAL_ASSERT_VALID_REF(node2[threadIdx])
+
+      /* Set target node to targetCore2 (EVEn or DSP1)*/
+      vxSetNodeTarget(node2[threadIdx], VX_TARGET_STRING, targetCore2[threadIdx]);
+#ifdef HOST_EMULATION
+      gTidlNodeCpuId[2*threadIdx+1]= targetCpuId2[threadIdx];
+#endif
+
+    }
   }
 
-  printf(" Verify graph ... \n");
-  /* Verify the TIDL Graph
-   * When executed in host emulation on PC, the version of TI-DL library linked displays information about each layer of the network.
-   * In target execution, such display is disabled in the library.
-   * */
-  status = vxVerifyGraph(graph);
-  VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+  for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+    printf("Thread #%d: Verify graph ... \n", threadIdx+1);
+    /* Verify the TIDL Graph
+     * When executed in host emulation on PC, the version of TI-DL library linked displays information about each layer of the network.
+     * In target execution, such display is disabled in the library.
+     * */
+    status = vxVerifyGraph(graph[threadIdx]);
+    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+  }
 
   if(VX_SUCCESS == status) {
 
-    /* Read input from file and populate the input tensor #0, we assume here that only one input tensor is used */
-    status= readInput(context, config1, &input_tensors[0], &obj->input_file_path[0], obj->operation_mode);
-    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
-    if (status!=VX_SUCCESS) {
-      goto exit;
+      /* Read input from file and populate the input tensor #0, we assume here that only one input tensor is used */
+      status= readInput(context, config1, &input_tensors[threadIdx][0], &obj->input_file_path[0], obj->operation_mode);
+      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+
+      if (status!=VX_SUCCESS) {
+        goto exit;
+      }
+
     }
 
-    printf(" Execute graph ... \n");
-    /* Execute the network */
-    status = vxProcessGraph(graph);
-    VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    exe_time= tivxPlatformGetTimeInUsecs();
 
-    /* Display the output_tensors1 if graph runs 1 cores */
-    if (targetCpuId2== TIVX_INVALID_CPU_ID) {
-      real_output_tensors= &output_tensors1[0];
-      realConfig= config1;
+#ifdef SEQUENTIAL_SCHEDULE
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+      printf("\nThread #%d: Execute graph ... \n",threadIdx + 1);
+      /* Execute the network */
+      status = vxProcessGraph(graph[threadIdx]);
+      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
     }
-    else { /* Display the output_tensors2 if graph runs 2 cores */
-      real_output_tensors= &output_tensors2[0];
-      realConfig= config2;
+#else
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+      printf("\nThread #%d: Start graph ... \n",threadIdx + 1);
+      /* Execute the network */
+      status = vxScheduleGraph(graph[threadIdx]);
+      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
     }
 
-    displayOutput(NULL, (vx_df_image)NULL, NULL, 0, 0, 0, realConfig, real_output_tensors, &obj->output_file_path[0], obj->operation_mode);
+    /* You can do other useful things here, while the graphs execute asynchronously using resources available on other cores */
 
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+      printf("\nThread #%d: Wait for graph ... \n",threadIdx + 1);
+      /* Execute the network */
+      status = vxWaitGraph(graph[threadIdx]);
+      VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
+    }
+#endif
+
+    exe_time= tivxPlatformGetTimeInUsecs() - exe_time;
+
+    for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+
+      printf("\nThread #%d: Results\n", threadIdx+1);
+      printf("---------------------\n");
+
+      /* Display the output_tensors1 if graph runs 1 cores */
+      if (targetCpuId2[threadIdx]== TIVX_INVALID_CPU_ID) {
+        real_output_tensors= &output_tensors1[threadIdx][0];
+        realConfig= config1;
+      }
+      else { /* Display the output_tensors2 if graph runs 2 cores */
+        real_output_tensors= &output_tensors2[threadIdx][0];
+        realConfig= config2;
+      }
+
+      displayOutput(NULL, (vx_df_image)NULL, NULL, 0, 0, 0, realConfig, real_output_tensors, &obj->output_file_path[0], obj->operation_mode);
+
+    }
   }
 
-  vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
-  printf("\n---- Node 1 (%s) Execution time: %4.6f ms\n", (targetCpuId1== TIVX_CPU_ID_EVE1) ? "EVE" : "DSP" , perf_node1.min/1000000.0);
+  for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+    vxQueryNode(node1[threadIdx], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
+    printf("\n---- Thread #%d: Node 1 (%s) Execution time: %4.6f ms\n", threadIdx+1, targetCore1[threadIdx], perf_node1.min/1000000.0);
 
-  if(node2 != 0) {
-    vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
-    printf("---- Node 2 (%s) Execution time: %4.6f ms\n", (targetCpuId2== TIVX_CPU_ID_EVE1) ? "EVE" : "DSP" , perf_node2.min/1000000.0);
+    if(node2 != 0) {
+      vxQueryNode(node2[threadIdx], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
+      printf("---- Thread #%d: Node 2 (%s) Execution time: %4.6f ms\n", threadIdx+1, targetCore2[threadIdx], perf_node2.min/1000000.0);
+    }
+
+    vxQueryGraph(graph[threadIdx], VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+     printf("---- Thread #%d: Total Graph Execution time: %4.6f ms\n", threadIdx + 1, perf_graph.min/1000000.0);
   }
 
-  vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
-  printf("\n---- Total Graph Execution time: %4.6f ms\n", perf_graph.min/1000000.0);
+#ifdef SEQUENTIAL_SCHEDULE
+  printf("\nExecution time of all the threads running sequentially: %4.6f ms\n", exe_time/1000.0);
+#else
+  printf("\nExecution time of all the threads running in parallel: %4.6f ms\n", exe_time/1000.0);
+#endif
 
-  vxReleaseNode(&node1);
+   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+       vxReleaseNode(&node1[threadIdx]);
+       if (node2[threadIdx] !=0 ){
+         vxReleaseNode(&node2[threadIdx]);
+       }
+   }
 
-  if (node2 !=0 ){
-    vxReleaseNode(&node2);
+  if (config2 !=0 ){
     vxReleaseUserDataObject(&config2);
   }
-
-  vxReleaseGraph(&graph);
 
   vxReleaseUserDataObject(&config1);
 
   vxReleaseUserDataObject(&network);
 
-  for (i= 0; i < num_input_tensors; i++) {
-    vxReleaseTensor(&input_tensors[i]);
-  }
+  for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
-  for (i= 0; i < num_output_tensors1; i++) {
-    vxReleaseTensor(&output_tensors1[i]);
-  }
+    vxReleaseGraph(&graph[threadIdx]);
 
-  for (i= 0; i < num_output_tensors2; i++) {
-    vxReleaseTensor(&output_tensors2[i]);
+    for (i= 0; i < num_input_tensors; i++) {
+      vxReleaseTensor(&input_tensors[threadIdx][i]);
+    }
+
+    for (i= 0; i < num_output_tensors1; i++) {
+      vxReleaseTensor(&output_tensors1[threadIdx][i]);
+    }
+
+    for (i= 0; i < num_output_tensors2; i++) {
+      vxReleaseTensor(&output_tensors2[threadIdx][i]);
+    }
   }
 
   vxRemoveKernel(kernel1);
@@ -463,6 +553,7 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
 
   /* Set processing_core_mode to 0, which means network can be partitioned accross all cores */
   obj->processing_core_mode= 0;
+  obj->num_eve_cores= 1;
 
   if(fp==NULL)
   {
@@ -549,6 +640,12 @@ static vx_status parse_cfg_file(VxTutorialTidl_CfgObj *obj, char *cfg_file_name)
                 token = strtok(NULL, s);
                 obj->processing_core_mode = atoi(token);
               }
+              else
+                if(strcmp(token, "num_eve_cores")==0)
+                {
+                  token = strtok(NULL, s);
+                  obj->num_eve_cores = atoi(token);
+                }
   }
 
   fclose(fp);
@@ -811,7 +908,7 @@ static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_pt
 
           pObjInfo = (ODLayerObjInfo *)pOut;
 
-          printf("\n\nObjId|label|score| xmin| ymin| xmax| ymax|\n");
+          printf("\nObjId|label|score| xmin| ymin| xmax| ymax|\n");
           printf("------------------------------------------\n");
           for(i = 0; i < numObjs; i++)
           {
