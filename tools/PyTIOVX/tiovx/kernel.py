@@ -88,8 +88,13 @@ class KernelParamRelationship :
         self.type = type
         self.state = state
 
-    def __str__(self):
-        return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + type + " " + state
+    def __str__(self) :
+        rel_str = "Param Relationship:\n"
+        for param in self.prm_list :
+            rel_str += '\t' + str(param) + "\n"
+        for attr in self.attribute_list :
+            rel_str += '\t' + str(attr) + "\n"
+        return rel_str
 
 class KernelLocalMem :
     def __init__(self, prm, attribute_list, name, state):
@@ -99,7 +104,12 @@ class KernelLocalMem :
         self.name = name
 
     def __str__(self):
-        return "Attribute " + self.attribute_list + ": " + self.prm_list + " " + " " + state
+        mem_str = "Local Mem:\n\t" + self.name + "\n"
+        mem_str += '\t' + str(self.prm) + "\n"
+        mem_str += '\t' + str(self.state) + "\n"
+        for attr in self.attribute_list :
+            mem_str += '\t' + str(attr) + "\n"
+        return mem_str
 
 ## Kernel class containing parameter information
 #
@@ -202,7 +212,7 @@ class Kernel  :
     #  using attributes for memory allocation. The attribute list can consist of a) a comma-separated list
     #  of Attributes of the respective data type as defined in enums.py b) a comma-separated list of
     #  integers or c) a string containing a mixture of keywords per data type and string literals to be
-    #  passed to the memory allocation. Each element of this list is multiplied together to The list of 
+    #  passed to the memory allocation. Each element of this list is multiplied together to The list of
     #  keywords per data type can be found below. (Note: in the case of images, the respective attributes
     #  are taken from plane 0.)
     #
@@ -436,3 +446,7 @@ class Kernel  :
                         self.relationship_list_index = self.relationship_list_index + 1
                         prm_list.remove(prm)
                         break
+        else :
+            relationship = KernelParamRelationship(prm_list, attribute_list, type, ParamState.OPTIONAL)
+            self.relationship_list.append(relationship)
+            self.relationship_list_index = self.relationship_list_index + 1
