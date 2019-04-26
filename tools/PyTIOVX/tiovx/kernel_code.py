@@ -1378,12 +1378,16 @@ class KernelExportCode :
         self.target_c_code.write_line("       uint16_t num_params, void *priv_arg)")
         self.target_c_code.write_open_brace()
         self.target_c_code.write_line("vx_status status = VX_SUCCESS;")
+        contains_user_data_object = False
+        for prm in self.kernel.params :
+            if Type.USER_DATA_OBJECT == prm.type :
+                contains_user_data_object = True
         if self.prms_needed:
             self.target_c_code.write_line("tivx%sParams *prms = NULL;" % self.kernel.name_camel, files=self.prms_write)
         self.target_c_code.write_newline()
         self.target_c_code.write_comment_line("< DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating")
         self.target_c_code.write_comment_line("                  local memory buffers, one time initialization, etc) >")
-        if self.prms_needed :
+        if self.prms_needed or contains_user_data_object :
             # checks function parameters
             self.target_c_code.write_line("if ( (num_params != %s%s_MAX_PARAMS)" % (self.kernel.enum_str_prefix, self.kernel.name_upper) , files=self.prms_write)
             for prm in self.kernel.params :
@@ -1404,6 +1408,11 @@ class KernelExportCode :
                      if not (local.prm.name_lower in duplicates) :
                          self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(local.prm.type), local.prm.name_lower) , files=self.prms_write)
                          duplicates.append(local.prm.name_lower)
+            for prm in self.kernel.params :
+                 if Type.USER_DATA_OBJECT == prm.type :
+                     if not (prm.name_lower in duplicates) :
+                         self.target_c_code.write_line("%s *%s_desc;" % (Type.get_obj_desc_name(prm.type), prm.name_lower) , files=self.prms_write)
+                         duplicates.append(prm.name_lower)
             self.target_c_code.write_newline(files=self.prms_write)
 
             # populating object descriptors
@@ -1414,46 +1423,70 @@ class KernelExportCode :
                          self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
                             (local.prm.name_lower, Type.get_obj_desc_name(local.prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, local.prm.name_upper) , files=self.prms_write)
                          duplicates.append(local.prm.name_lower)
+            for prm in self.kernel.params :
+                 if Type.USER_DATA_OBJECT == prm.type :
+                     if not (prm.name_lower in duplicates) :
+                         self.target_c_code.write_line("%s_desc = (%s *)obj_desc[%s%s_%s_IDX];" %
+                            (prm.name_lower, Type.get_obj_desc_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) , files=self.prms_write)
+                         duplicates.append(prm.name_lower)
             self.target_c_code.write_newline(files=self.prms_write)
+
+            if contains_user_data_object :
+                for prm in self.kernel.params :
+                    if Type.USER_DATA_OBJECT == prm.type :
+                        if len(prm.data_types) == 0 :
+                            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Replace <Add type here> with correct data type >", files=self.prms_write)
+                            self.print_data_type = ['<Add type here>']
+                        else :
+                            self.print_data_type = prm.data_types
+                        self.target_c_code.write_line("if (%s_desc->mem_size != sizeof(%s))" % (prm.name_lower, self.print_data_type[0]) , files=self.prms_write)
+                        self.target_c_code.write_open_brace(files=self.prms_write)
+                        self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"User data object size on target does not match the size on host, possibly due to misalignment in data structure\\n\");", files=self.prms_write)
+                        self.target_c_code.write_line("status = VX_FAILURE;", files=self.prms_write)
+                        self.target_c_code.write_close_brace(files=self.prms_write)
 
             # Allocating memory for local structure
-            self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel, files=self.prms_write)
-            self.target_c_code.write_line("if (NULL != prms)", files=self.prms_write)
-            self.target_c_code.write_open_brace(files=self.prms_write)
-            # Allocating local memory data
-            is_first_prm = True
-            for local in self.kernel.local_mem_list :
-                 if self.is_supported_type(local.prm.type) :
-                     self.extract_attribute(local, is_first_prm)
-                     is_first_prm = False
-            self.target_c_code.write_newline(files=self.prms_write)
+            if self.prms_needed:
+                self.target_c_code.write_line("prms = tivxMemAlloc(sizeof(tivx%sParams), TIVX_MEM_EXTERNAL);" % self.kernel.name_camel, files=self.prms_write)
+                self.target_c_code.write_line("if (NULL != prms)", files=self.prms_write)
+                self.target_c_code.write_open_brace(files=self.prms_write)
+                # Allocating local memory data
+                is_first_prm = True
+                for local in self.kernel.local_mem_list :
+                     if self.is_supported_type(local.prm.type) :
+                         self.extract_attribute(local, is_first_prm)
+                         is_first_prm = False
+                self.target_c_code.write_newline(files=self.prms_write)
+
+                self.target_c_code.write_close_brace(files=self.prms_write)
+                self.target_c_code.write_line("else", files=self.prms_write)
+                self.target_c_code.write_open_brace(files=self.prms_write)
+                self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
+                self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
+                self.target_c_code.write_close_brace(files=self.prms_write)
+                self.target_c_code.write_newline(files=self.prms_write)
+
+                # Place to create BAM graph
+                self.target_c_code.write_line("if (NULL != prms)", files=1)
+                self.target_c_code.write_open_brace(files=1)
+                self.target_c_code.write_comment_line("< DEVELOPER_TODO: Create BAM graph using graph_handle >", files=1)
+                self.target_c_code.write_close_brace(files=1)
+                self.target_c_code.write_newline(files=1)
+
+                self.target_c_code.write_line("if (VX_SUCCESS == status)", files=self.prms_write)
+                self.target_c_code.write_open_brace(files=self.prms_write)
+                self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,", files=self.prms_write)
+                self.target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel, files=self.prms_write)
+                self.target_c_code.write_close_brace(files=self.prms_write)
+                self.target_c_code.write_line("else", files=self.prms_write)
+                self.target_c_code.write_open_brace(files=self.prms_write)
+                self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
+                self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
+                self.target_c_code.write_close_brace(files=self.prms_write)
 
             self.target_c_code.write_close_brace(files=self.prms_write)
-            self.target_c_code.write_line("else", files=self.prms_write)
-            self.target_c_code.write_open_brace(files=self.prms_write)
-            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
-            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
-            self.target_c_code.write_close_brace(files=self.prms_write)
-            self.target_c_code.write_newline(files=self.prms_write)
 
-            # Place to create BAM graph
-            self.target_c_code.write_line("if (NULL != prms)", files=1)
-            self.target_c_code.write_open_brace(files=1)
-            self.target_c_code.write_comment_line("< DEVELOPER_TODO: Create BAM graph using graph_handle >", files=1)
-            self.target_c_code.write_close_brace(files=1)
-            self.target_c_code.write_newline(files=1)
 
-            self.target_c_code.write_line("if (VX_SUCCESS == status)", files=self.prms_write)
-            self.target_c_code.write_open_brace(files=self.prms_write)
-            self.target_c_code.write_line("tivxSetTargetKernelInstanceContext(kernel, prms,", files=self.prms_write)
-            self.target_c_code.write_line("    sizeof(tivx%sParams));" % self.kernel.name_camel, files=self.prms_write)
-            self.target_c_code.write_close_brace(files=self.prms_write)
-            self.target_c_code.write_line("else", files=self.prms_write)
-            self.target_c_code.write_open_brace(files=self.prms_write)
-            self.target_c_code.write_line("status = VX_ERROR_NO_MEMORY;", files=self.prms_write)
-            self.target_c_code.write_line("VX_PRINT(VX_ZONE_ERROR, \"Unable to allocate local memory\\n\");", files=self.prms_write)
-            self.target_c_code.write_close_brace(files=self.prms_write)
-            self.target_c_code.write_close_brace(files=self.prms_write)
         self.target_c_code.write_newline()
         self.target_c_code.write_line("return status;")
         self.target_c_code.write_close_brace()
