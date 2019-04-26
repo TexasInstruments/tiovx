@@ -2496,6 +2496,8 @@ class KernelExportCode :
             self.host_kernels_code.write_line("/* These three lines only work on PC emulation mode ...")
             self.host_kernels_code.write_line(" * this will need to be updated when moving to target */")
             self.host_kernels_code.write_line("#ifdef x86_64")
+            self.host_kernels_code.write_line("void tivxSetSelfCpuId(vx_enum cpu_id);")
+            self.host_kernels_code.write_newline()
             for target in self.kernel.targets :
                 if Target.is_j6_target(target) :
                     self.host_kernels_code.write_line("tivxSetSelfCpuId(%s);" % Cpu.get_vx_enum_name(Target.get_cpu(target)))

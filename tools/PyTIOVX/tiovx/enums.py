@@ -158,7 +158,9 @@ class Type(Enum):
     ## OpenVX equivalent = TIVX_TYPE_RAW_IMAGE
     RAW_IMAGE = 42
     ## Used when optional parameters
-    NULL = 43
+    TENSOR = 43
+    ## Used when optional parameters
+    NULL = 44
 
     def __lt__(self, other):
         if self.__class__ is other.__class__:

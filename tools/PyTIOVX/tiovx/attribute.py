@@ -402,6 +402,33 @@ class RawImageAttribute(Enum) :
     def object_type() :
         return Type.RAW_IMAGE
 
+## Object/Data type (OpenVX equivalent = tivx_raw_image_attribute_e)
+#
+# \par Example usage:
+# \code
+# TensorAttribute.NUMBER_OF_DIMS
+# TensorAttribute.DIMS
+# TensorAttribute.DATA_TYPE
+# TensorAttribute.FIXED_POINT_POSITION
+# \endcode
+# \ingroup ATTRIBUTES
+#
+class TensorAttribute(Enum) :
+    ## OpenVX equivalent = VX_TENSOR_WIDTH
+    NUMBER_OF_DIMS         = ('number_of_dims', 'vx_size')
+    ## OpenVX equivalent = VX_TENSOR_HEIGHT
+    DIMS                   = ('dims', 'vx_size')
+    ## OpenVX equivalent = VX_TENSOR_NUM_EXPOSURES
+    DATA_TYPE              = ('data_type', 'vx_enum')
+    ## OpenVX equivalent = VX_TENSOR_LINE_INTERLEAVED
+    FIXED_POINT_POSITION   = ('fixed_point_position', 'vx_int8')
+
+    def vx_enum_name(attr) :
+        return "VX_TENSOR_" + attr.name
+
+    def object_type() :
+        return Type.TENSOR
+
 ## Object/Data type (OpenVX equivalent = none ... type aggregator for all attributes)
 #
 # \par Example usage:
@@ -425,6 +452,7 @@ class Attribute :
     ObjectArray = ObjectArrayAttribute
     UserDataObject = UserDataObjectAttribute
     RawImage = RawImageAttribute
+    Tensor = TensorAttribute
 
     def from_type(type) :
         if type == Type.IMAGE :
@@ -453,4 +481,6 @@ class Attribute :
             return Attribute.UserDataObject
         if type == Type.RAW_IMAGE :
             return Attribute.RawImage
+        if type == Type.TENSOR :
+            return Attribute.Tensor
         return "INVALID"
