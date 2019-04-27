@@ -77,10 +77,11 @@
 
 #define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
 #define TIVX_KERNEL_TIDL_IN_NETWORK_IDX                 (1U)
-#define TIVX_KERNEL_TIDL_IN_QRANGE_EXP_IDX              (2U)
-#define TIVX_KERNEL_TIDL_IN_QRANGE_UPDATE_IDX           (3U)
-#define TIVX_KERNEL_TIDL_IN_FIRST_TENSOR                (4U)
-#define TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS            (4U)
+#define TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX           (2U)
+#define TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX          (3U)
+#define TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX         (4U)
+#define TIVX_KERNEL_TIDL_IN_FIRST_TENSOR                (5U)
+#define TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS            (5U)
 
 #ifdef __cplusplus
 extern "C" {

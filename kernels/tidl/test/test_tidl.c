@@ -76,6 +76,10 @@
 #define DEBUG_TEST_TIDL
 
 #ifdef HOST_EMULATION
+/* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
+ * Even though here, we only use one EVE in the context of this test-bench, this array must be defined.
+ * Plan to remove this workaround in the future ...
+ * */
 tivx_cpu_id_e gTidlNodeCpuId[1];
 #endif
 
@@ -112,13 +116,16 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
   vx_perf_t perf_node;
   vx_perf_t perf_graph;
+  int32_t quantHistoryBoot, quantHistory, quantMargin;
 
   vx_user_data_object  config;
   vx_user_data_object  network;
+  vx_user_data_object createParams;
+  vx_user_data_object inArgs;
+  vx_user_data_object outArgs;
   vx_tensor input_tensors[1];
   vx_tensor output_tensors[1];
-  vx_float32 quantRangeExpansionFactor;
-  vx_float32 quantRangeUpdateFactor;
+  vx_reference params[5];
 
   vx_int32    network_id = 0;
   vx_int32    refid[] = {896, 895, 0xDEAD, 895, 0xDEAD};
@@ -126,11 +133,6 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
   char *networkFile[]= {"tidl_inception_v1_net.bin",   "tidl_net_imagenet_jacintonet11v2.bin",   "", "tidl_net_mobilenet_1_224.bin",  ""};
   char *paramFile[]=   {"tidl_inception_v1_param.bin", "tidl_param_imagenet_jacintonet11v2.bin", "", "tidl_param_mobilenet_1_224.bin",""};
   char *inputFile[]=   {"preproc_2_224x224.y",         "preproc_0_224x224.y",                    "", "preproc_2_224x224.y",           ""};
-
-#ifdef HOST_EMULATION
-  void tivxSetSelfCpuId(vx_enum cpu_id);
-  tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
-#endif
 
   if(strcmp(arg_->network, "inception_v1") == 0)
     network_id = 0;
@@ -174,14 +176,38 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
 
     ASSERT_VX_OBJECT(output_tensors[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-    quantRangeExpansionFactor= 0.0*PERCENT;
-    quantRangeUpdateFactor= 5.0*PERCENT;
+    /*
+     * TIDL maintains range statistics for previously processed frames. It quantizes the current inference activations using range statistics from history for processes (weighted average range).
+     * Below is the parameters controls quantization.
+     * quantMargin is margin added to the average in percentage.
+     * quantHistoryBoot weights used for previously processed inference during application boot time
+     * quantHistory weights used for previously processed inference during application execution (After initial few frames)
+     *
+     * Below settings are adequate for running on videos sequences.
+     * For still images, set all settings to 0.
+     */
+    quantHistoryBoot= 20;
+    quantHistory= 5;
+    quantMargin= 0;
 
-    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, config, network, quantRangeExpansionFactor, quantRangeUpdateFactor, input_tensors, output_tensors), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(createParams=  vx_tidl_utils_setCreateParams(context, quantHistoryBoot, quantHistory, quantMargin), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(inArgs= vx_tidl_utils_setInArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+    ASSERT_VX_OBJECT(outArgs= vx_tidl_utils_setOutArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+    params[0]= (vx_reference)config;
+    params[1]= (vx_reference)network;
+    params[2]= (vx_reference)createParams;
+    params[3]= (vx_reference)inArgs;
+    params[4]= (vx_reference)outArgs;
+
+    ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, input_tensors, output_tensors), VX_TYPE_NODE);
 
     /* Set target node to EVE1 */
     VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1));
 #ifdef HOST_EMULATION
+    /* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
+     * Even though here, we only use one EVE in the context of this test-bench, this array must be initialized.
+     * */
     gTidlNodeCpuId[0]= TIVX_CPU_ID_EVE1;
 #endif
 
@@ -214,6 +240,9 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     VX_CALL(vxReleaseUserDataObject(&network));
     VX_CALL(vxReleaseTensor(&input_tensors[0]));
     VX_CALL(vxReleaseTensor(&output_tensors[0]));
+    VX_CALL(vxReleaseUserDataObject(&createParams));
+    VX_CALL(vxReleaseUserDataObject(&inArgs));
+    VX_CALL(vxReleaseUserDataObject(&outArgs));
 
     ASSERT(config == 0);
     ASSERT(network == 0);

@@ -68,6 +68,7 @@
 #include "../../../common/xdais_types.h" /* In TIDL_PATH directory */
 #include "sTIDL_IOBufDesc.h"
 #include "tivx_tidl_utils.h"
+#include "itidl_ti.h"
 
 #define DEFAULT_ALIGN 4
 
@@ -760,4 +761,124 @@ vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_fi
   }
 
   return status;
+}
+
+vx_user_data_object vx_tidl_utils_setCreateParams(vx_context context, int32_t quantHistoryBoot, int32_t quantHistory, int32_t quantMargin)
+{
+    vx_status status;
+
+    vx_user_data_object  createParams;
+    vx_map_id  map_id;
+    vx_uint32  capacity;
+    void *createParams_buffer = NULL;
+
+    capacity = sizeof(TIDL_CreateParams);
+    createParams = vxCreateUserDataObject(context, "TIDL_CreateParams", capacity, NULL );
+
+    status = vxGetStatus((vx_reference)createParams);
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxMapUserDataObject(createParams, 0, capacity, &map_id,
+                        (void **)&createParams_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+        if (VX_SUCCESS == status)
+        {
+            if(createParams_buffer)
+            {
+              TIDL_CreateParams *prms = createParams_buffer;
+              //write create params here
+
+              prms->quantHistoryParam1     = quantHistoryBoot;
+              prms->quantHistoryParam2     = quantHistory;
+              prms->quantMargin            = quantMargin;
+
+            }
+            else
+            {
+                printf("Unable to allocate memory for create time params! %d bytes\n", capacity);
+            }
+
+            vxUnmapUserDataObject(createParams, map_id);
+        }
+    }
+
+    return createParams;
+}
+
+vx_user_data_object vx_tidl_utils_setInArgs(vx_context context)
+{
+    vx_status status;
+
+    vx_user_data_object  inArgs;
+    vx_map_id  map_id;
+    vx_uint32  capacity;
+    void *inArgs_buffer = NULL;
+
+    capacity = sizeof(TIDL_InArgs);
+    inArgs = vxCreateUserDataObject(context, "TIDL_InArgs", capacity, NULL );
+
+    status = vxGetStatus((vx_reference)inArgs);
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxMapUserDataObject(inArgs, 0, capacity, &map_id,
+                        (void **)&inArgs_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+        if (VX_SUCCESS == status)
+        {
+            if(inArgs_buffer)
+            {
+              TIDL_InArgs *prms = inArgs_buffer;
+              prms->iVisionInArgs.size         = sizeof(TIDL_InArgs);
+              prms->iVisionInArgs.subFrameInfo = 0;
+            }
+            else
+            {
+                printf("Unable to allocate memory for inArgs! %d bytes\n", capacity);
+            }
+
+            vxUnmapUserDataObject(inArgs, map_id);
+        }
+    }
+
+    return inArgs;
+}
+
+vx_user_data_object vx_tidl_utils_setOutArgs(vx_context context)
+{
+    vx_status status;
+
+    vx_user_data_object  outArgs;
+    vx_map_id  map_id;
+    vx_uint32  capacity;
+    void *outArgs_buffer = NULL;
+
+    capacity = sizeof(TIDL_outArgs);
+    outArgs = vxCreateUserDataObject(context, "TIDL_outArgs", capacity, NULL );
+
+    status = vxGetStatus((vx_reference)outArgs);
+
+    if (VX_SUCCESS == status)
+    {
+        status = vxMapUserDataObject(outArgs, 0, capacity, &map_id,
+                        (void **)&outArgs_buffer, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+
+        if (VX_SUCCESS == status)
+        {
+            if(outArgs_buffer)
+            {
+              TIDL_outArgs *prms = outArgs_buffer;
+              prms->iVisionOutArgs.size         = sizeof(TIDL_outArgs);
+            }
+            else
+            {
+                printf("Unable to allocate memory for outArgs! %d bytes\n", capacity);
+            }
+
+            vxUnmapUserDataObject(outArgs, map_id);
+        }
+    }
+
+    return outArgs;
 }

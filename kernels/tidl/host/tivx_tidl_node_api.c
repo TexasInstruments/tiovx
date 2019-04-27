@@ -69,10 +69,7 @@
 
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
-                                              vx_user_data_object config,
-                                              vx_user_data_object network,
-                                              vx_float32 quantRangeExpansionFactor,
-                                              vx_float32 quantRangeUpdateFactor,
+                                              vx_reference appParams[],
                                               vx_tensor input_tensors[],
                                               vx_tensor output_tensors[])
 {
@@ -82,10 +79,9 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
     vx_map_id map_id_config;
     sTIDL_IOBufDesc_t *ioBufDesc;
     vx_int32 num_params;
+    vx_user_data_object config;
 
-    vx_scalar quantRangeExpansionFactor_scalar= vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_FLOAT32, &quantRangeExpansionFactor);
-    vx_scalar quantRangeUpdateFactor_scalar= vxCreateScalar(vxGetContext((vx_reference)graph), VX_TYPE_FLOAT32, &quantRangeUpdateFactor);
-
+    config= (vx_user_data_object)appParams[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
     vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
         (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
@@ -99,9 +95,10 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
     params= tivxMemAlloc(sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
 
     params[0]=  (vx_reference)config;
-    params[1]=  (vx_reference)network;
-    params[2]=  (vx_reference)quantRangeExpansionFactor_scalar;
-    params[3]=  (vx_reference)quantRangeUpdateFactor_scalar;
+    params[1]=  appParams[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
+    params[2]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
+    params[3]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
+    params[4]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
 
     for (i= 0; i < num_input_tensors; i++) {
       params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];
@@ -117,9 +114,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                              num_params);
 
     tivxMemFree(params, sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
-
-    vxReleaseScalar(&quantRangeExpansionFactor_scalar);
-    vxReleaseScalar(&quantRangeUpdateFactor_scalar);
 
     return node;
 }

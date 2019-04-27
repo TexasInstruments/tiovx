@@ -127,16 +127,22 @@ VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
 /*! \brief [Graph] Creates a TIDL Node.
  * \param [in] graph Reference to vx_graph.
  * \param [in] kernel Reference to vx_kernel.
- * \param [in] config vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
- * \param [in] network vx_user_data_object type corresponding to the network (named string: TIDL_network)
- * \param [in] quantRangeExpansionFactor vx_float32 type corresponding to the margin added to the average in percentage.
- *             TIDL maintains range statistics for previously processed frames.
- *             It quantizes the current inference activations using range statistics from the history of past inferences.
- *             The range statistics which are the minimum value and maximum values of each activation layer are computed through weighted running average.
- *             To prevent overflow, in case of sudden wide deviation from the average statistics, a range expansion factor is added to these statistics.
- * \param [in] quantRangeUpdateFactor vx_float32 type corresponding to the weight in percentage used to update the average of the statistics.
- *             If S is the statistic we are averaging then the formula to update the average Average(S) at time t is:
- *             Average(S)=quantRangeUpdateFactor*S(t) + (1-quantRangeUpdateFactor)*Average(S)
+ * \param [in,out] appParams is an array of 5 parameters:
+ *             - config vx_user_data_object type corresponding to the configuration (named string: sTIDL_IOBufDesc_t)
+ *             - network vx_user_data_object type corresponding to the network (named string: TIDL_network)
+ *             - createParams: vx_user_data_object type corresponding to the structure TIDL_CreateParams.
+ *                             This structure contains create-time parameters and are used only one time to initialize
+ *                             the node.
+ *                             Currently members quantHistoryParam1, quantHistoryParam2, quantMargin need to be initialized by
+ *                             the application.
+ *             - inArgs: vx_user_data_object type corresponding to the structure TIDL_InArgs. Used to pass input parameters
+ *                       that goes in effect during the node's process call when graph is executed. These parameters
+ *                       can be updated before each frame execution of a graph. Currently the list of parameters is empty.
+ *                       So inArgs is just a placeholder for future extension.
+ *             - outArgs: vx_user_data_object type corresponding to the structure TIDL_outArgs. Used to collect output parameters
+ *                       that are returned by the node's process call when graph is executed. These parameters
+ *                       are refreshed after each frame execution of a graph. Currently the list of parameters is empty.
+ *                       So outArgs is just a placeholder for future extension.
  * \param [in] input_tensors Array of input tensors
  *             This parameter is ignored when the first layer of the network is a data layer, which is most of the time.
  *             Only networks that are dependent on the output of a previous networks have first layer that are not data layer.
@@ -147,10 +153,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxRgbIrNode(vx_graph graph,
  */
 VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_kernel kernel,
-                                              vx_user_data_object config,
-                                              vx_user_data_object network,
-                                              vx_float32 quantRangeExpansionFactor,
-                                              vx_float32 quantRangeUpdateFactor,
+                                              vx_reference appParams[],
                                               vx_tensor input_tensors[],
                                               vx_tensor output_tensors[]);
                                               

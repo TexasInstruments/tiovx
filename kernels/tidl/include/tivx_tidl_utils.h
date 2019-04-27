@@ -127,3 +127,57 @@ vx_user_data_object vx_tidl_utils_getConfig(vx_context context, vx_user_data_obj
  */
 vx_status vx_tidl_utils_readParams(vx_user_data_object  network, char *params_file);
 
+/**
+ *******************************************************************************
+ *
+ * \brief Function vx_tidl_utils_setCreateParams() creates, intializes, returns a user data object that maps to the
+ *        underlying structure TIDL_CreateParams . This data object will be one of the 5 input parameter to the function
+ *        tivxTIDLNode().
+ *        vx_tidl_utils_setCreateParams() function accepts 3 input parameters quantHistoryBoot,
+ *        quantHistory, quantMargin that are used to initialize the members quantHistoryParam1, quantHistoryParam2, quantMargin of the structure
+ *        TIDL_CreateParams.
+ *        TIDL maintains range statistics for previously processed frames. It quantizes the current inference activations
+ *        using range statistics from history for processes (weighted average range).
+ *        Below is the parameters controls quantization.
+ *        - quantMargin is margin added to the average in percentage.
+ *        - quantHistoryBoot weights used for previously processed inference during application boot time for initial few frames
+ *        - quantHistory weights used for previously processed inference during application execution (After initial few frames)
+ *
+ *        Below settings are adequate for running on videos sequences.
+ *          quantHistoryBoot= 20;
+ *          quantHistory= 5;
+ *          quantMargin= 0;
+ *        For still images, set all settings to 0.
+ *
+ * \return  user data object corresponding to the TIDL_CreateParams object.
+ *
+ *******************************************************************************
+ */
+vx_user_data_object vx_tidl_utils_setCreateParams(vx_context context, int32_t quantHistoryBoot, int32_t quantHistory, int32_t quantMargin);
+
+/**
+ *******************************************************************************
+ *
+ * \brief Function vx_tidl_utils_setInArgs() creates, intializes, returns a user data object that maps to the
+ *        underlying structure TIDL_InArgs . This data object will be one of the 5 input parameter to the function
+ *        tivxTIDLNode().
+ *        The current implementation of vx_tidl_utils_setInArgs() does not initialize any useful members if TIDL_InArgs
+ *        beyond some book-keeping parameters. Future versions might extend to initializing more useful parameters.
+ *
+ *******************************************************************************
+ */
+vx_user_data_object vx_tidl_utils_setInArgs(vx_context context);
+
+/**
+ *******************************************************************************
+ *
+ * \brief Function vx_tidl_utils_setOutArgs() creates, intializes, returns a user data object that maps to the
+ *        underlying structure TIDL_outArgs . This data object will be one of the 5 input parameter to the function
+ *        tivxTIDLNode().
+ *        The current implementation of vx_tidl_utils_setOutArgs() does not initialize any useful members if TIDL_InArgs
+ *        beyond some book-keeping parameters. Future versions might extend to initializing more useful parameters.
+ *
+ *******************************************************************************
+ */
+vx_user_data_object vx_tidl_utils_setOutArgs(vx_context context);
+

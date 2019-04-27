@@ -83,7 +83,7 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
     if (num_params < (TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2))
     {
         /* Number of parameters should be a minimum of TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + 2 */
-        /* config, network, input dataQ_array, output dataQ_array, num_input_tensors, num_output_tensors, mininum 1-input, minimum 1-output */
+        /* config, network, create params, inArgs, outArgs, mininum 1-input, minimum 1-output */
         status = VX_FAILURE;
     }
 
@@ -122,23 +122,79 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        vx_user_data_object network = NULL;
-        vx_char network_name[VX_MAX_REFERENCE_NAME];
-        vx_size network_size;
+      vx_user_data_object network = NULL;
+      vx_char network_name[VX_MAX_REFERENCE_NAME];
+      vx_size network_size;
 
-        network = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
+      network = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
 
-        tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_NAME, &network_name, sizeof(network_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(network, VX_USER_DATA_OBJECT_SIZE, &network_size, sizeof(network_size)));
 
-        if ((network_size < 1) ||
-            (strncmp(network_name, "TIDL_network", sizeof(network_name)) != 0))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'network' should be a user_data_object of name:\n TIDL_network \n");
-        }
+      if ((network_size < 1) ||
+          (strncmp(network_name, "TIDL_network", sizeof(network_name)) != 0))
+      {
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "'network' should be a user_data_object of name:\n TIDL_network \n");
+      }
     }
 
+    if (VX_SUCCESS == status)
+    {
+      vx_user_data_object createParams = NULL;
+      vx_char createParams_name[VX_MAX_REFERENCE_NAME];
+      vx_size createParams_size;
+
+      createParams = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
+
+      tivxCheckStatus(&status, vxQueryUserDataObject(createParams, VX_USER_DATA_OBJECT_NAME, &createParams_name, sizeof(createParams_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(createParams, VX_USER_DATA_OBJECT_SIZE, &createParams_size, sizeof(createParams_size)));
+
+      if ((createParams_size != sizeof(TIDL_CreateParams)) ||
+          (strncmp(createParams_name, "TIDL_CreateParams", sizeof(createParams_name)) != 0))
+      {
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "'createParams' should be a user_data_object of name:\n TIDL_CreateParams \n");
+      }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+      vx_user_data_object inArgs = NULL;
+      vx_char inArgs_name[VX_MAX_REFERENCE_NAME];
+      vx_size inArgs_size;
+
+      inArgs = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
+
+      tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, VX_USER_DATA_OBJECT_NAME, &inArgs_name, sizeof(inArgs_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(inArgs, VX_USER_DATA_OBJECT_SIZE, &inArgs_size, sizeof(inArgs_size)));
+
+      if ((inArgs_size != sizeof(TIDL_InArgs)) ||
+          (strncmp(inArgs_name, "TIDL_InArgs", sizeof(inArgs_name)) != 0))
+      {
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "'inArgs' should be a user_data_object of name:\n TIDL_inArgs \n");
+      }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+      vx_user_data_object outArgs = NULL;
+      vx_char outArgs_name[VX_MAX_REFERENCE_NAME];
+      vx_size outArgs_size;
+
+      outArgs = (vx_user_data_object)parameters[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
+
+      tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, VX_USER_DATA_OBJECT_NAME, &outArgs_name, sizeof(outArgs_name)));
+      tivxCheckStatus(&status, vxQueryUserDataObject(outArgs, VX_USER_DATA_OBJECT_SIZE, &outArgs_size, sizeof(outArgs_size)));
+
+      if ((outArgs_size != sizeof(TIDL_outArgs)) ||
+          (strncmp(outArgs_name, "TIDL_outArgs", sizeof(outArgs_name)) != 0))
+      {
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "'outArgs' should be a user_data_object of name:\n TIDL_outArgs \n");
+      }
+    }
     return status;
 }
 
@@ -205,7 +261,7 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
           status = vxAddParameterToKernel(kernel,
               index,
               VX_INPUT,
-              VX_TYPE_FLOAT32,
+              VX_TYPE_USER_DATA_OBJECT,
               VX_PARAMETER_STATE_REQUIRED
           );
           index++;
@@ -215,7 +271,17 @@ vx_kernel tivxAddKernelTIDL(vx_context context,
           status = vxAddParameterToKernel(kernel,
               index,
               VX_INPUT,
-              VX_TYPE_FLOAT32,
+              VX_TYPE_USER_DATA_OBJECT,
+              VX_PARAMETER_STATE_REQUIRED
+          );
+          index++;
+        }
+        if ( status == VX_SUCCESS)
+        {
+          status = vxAddParameterToKernel(kernel,
+              index,
+              VX_OUTPUT,
+              VX_TYPE_USER_DATA_OBJECT,
               VX_PARAMETER_STATE_REQUIRED
           );
           index++;

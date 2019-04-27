@@ -127,7 +127,6 @@
 #define MAX(_a,_b) (((_a) > (_b)) ? (_a) : (_b))
 
 #define CFG_FILE_NAME       "tivx/tidl/tidl_infer.cfg"
-#define PERCENT 0.01
 
 #define NUM_EVE_CPU (obj->num_eve_cores)
 #define NUM_DSP_CPU 2
@@ -152,6 +151,10 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
 static void displayOutput(void *bmp_context, vx_df_image df_image, void *data_ptr, vx_uint32 img_width, vx_uint32 img_height, vx_uint32 img_stride, vx_user_data_object config, vx_tensor *output_tensors, char *output_file, uint32_t operation_mode);
 
 #ifdef HOST_EMULATION
+/* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
+ * Plan to remove this workaround in the future ...
+ *
+ * */
 tivx_cpu_id_e gTidlNodeCpuId[2*MAX_NUM_THREADS];
 #endif
 
@@ -161,14 +164,20 @@ void vx_tutorial_tidl()
   vx_context context;
   vx_user_data_object  config1, config2, realConfig;
   vx_user_data_object  network;
-  vx_float32 quantRangeExpansionFactor;
-  vx_float32 quantRangeUpdateFactor;
+  vx_user_data_object createParams1[MAX_NUM_THREADS];
+  vx_user_data_object inArgs1[MAX_NUM_THREADS];
+  vx_user_data_object outArgs1[MAX_NUM_THREADS];
+  vx_user_data_object createParams2[MAX_NUM_THREADS];
+  vx_user_data_object inArgs2[MAX_NUM_THREADS];
+  vx_user_data_object outArgs2[MAX_NUM_THREADS];
+  vx_reference params[5];
   vx_tensor input_tensors[MAX_NUM_THREADS][VX_TUTORIAL_MAX_TENSORS];
   vx_tensor output_tensors1[MAX_NUM_THREADS][VX_TUTORIAL_MAX_TENSORS];
   vx_tensor output_tensors2[MAX_NUM_THREADS][VX_TUTORIAL_MAX_TENSORS];
   vx_tensor *real_output_tensors;
   vx_perf_t perf_graph, perf_node1, perf_node2;
   int32_t i, threadIdx;
+  int32_t quantHistoryBoot, quantHistory, quantMargin;
   uint64_t exe_time=0;
 
   size_t sizeFilePath;
@@ -316,6 +325,7 @@ void vx_tutorial_tidl()
   /* In case the network runs on one CPU, set num_output_tensors2 to 0 */
   if (targetCpuId2[0]== TIVX_INVALID_CPU_ID) {
     num_output_tensors2= 0;
+    config2= 0;
   }
   else {
     int32_t num_interm_tensors= num_output_tensors1;
@@ -344,7 +354,7 @@ void vx_tutorial_tidl()
 
   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
-    printf("Thread #%d: Create graph ... \n", threadIdx+1);
+    printf("\nThread #%d: Create graph ... \n", threadIdx+1);
 
     /* Create OpenVx Graph */
     graph[threadIdx] = vxCreateGraph(context);
@@ -360,14 +370,34 @@ void vx_tutorial_tidl()
     status= createOutputTensor(context, config1, &output_tensors1[threadIdx][0]);
     VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
 
+    /*
+     * TIDL maintains range statistics for previously processed frames. It quantizes the current inference activations using range statistics from history for processes (weighted average range).
+     * Below is the parameters controls quantization.
+     * quantMargin is margin added to the average in percentage.
+     * quantHistoryBoot weights used for previously processed inference during application boot time for initial few frames
+     * quantHistory weights used for previously processed inference during application execution (After initial few frames)
+     *
+     * Below settings are adequate for running on videos sequences.
+     * For still images, set all settings to 0.
+     */
+    quantHistoryBoot= 20;
+    quantHistory= 5;
+    quantMargin= 0;
+
     printf("Thread #%d: Create node 1 ... \n", threadIdx+1);
 
-    quantRangeExpansionFactor= 0.0*PERCENT;
-    quantRangeUpdateFactor= 5.0*PERCENT;
+    createParams1[threadIdx]= vx_tidl_utils_setCreateParams(context, quantHistoryBoot, quantHistory, quantMargin);
+    inArgs1[threadIdx]= vx_tidl_utils_setInArgs(context);
+    outArgs1[threadIdx]= vx_tidl_utils_setOutArgs(context);
 
-    node1[threadIdx] = tivxTIDLNode(graph[threadIdx], kernel1, config1, network,
-        quantRangeExpansionFactor,
-        quantRangeUpdateFactor,
+    params[0]= (vx_reference)config1;
+    params[1]= (vx_reference)network;
+    params[2]= (vx_reference)createParams1[threadIdx];
+    params[3]= (vx_reference)inArgs1[threadIdx];
+    params[4]= (vx_reference)outArgs1[threadIdx];
+
+    node1[threadIdx] = tivxTIDLNode(graph[threadIdx], kernel1,
+        params,
         &input_tensors[threadIdx][0],
         &output_tensors1[threadIdx][0]
     );
@@ -376,6 +406,8 @@ void vx_tutorial_tidl()
     /* Set target node to targetCore1 (EVEn or DSP1)*/
     vxSetNodeTarget(node1[threadIdx], VX_TARGET_STRING, targetCore1[threadIdx]);
 #ifdef HOST_EMULATION
+    /* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
+     * */
     gTidlNodeCpuId[2*threadIdx]= targetCpuId1[threadIdx];
 #endif
 
@@ -388,9 +420,18 @@ void vx_tutorial_tidl()
 
       printf("Thread #%d: Create node 2 ... \n", threadIdx+1);
 
-      node2[threadIdx] = tivxTIDLNode(graph[threadIdx], kernel2, config2, network,
-          quantRangeExpansionFactor,
-          quantRangeUpdateFactor,
+      createParams2[threadIdx]= vx_tidl_utils_setCreateParams(context, quantHistoryBoot, quantHistory, quantMargin);
+      inArgs2[threadIdx]= vx_tidl_utils_setInArgs(context);
+      outArgs2[threadIdx]= vx_tidl_utils_setOutArgs(context);
+
+      params[0]= (vx_reference)config2;
+      params[1]= (vx_reference)network;
+      params[2]= (vx_reference)createParams2[threadIdx];
+      params[3]= (vx_reference)inArgs2[threadIdx];
+      params[4]= (vx_reference)outArgs2[threadIdx];
+
+      node2[threadIdx] = tivxTIDLNode(graph[threadIdx], kernel2,
+          params,
           &output_tensors1[threadIdx][0],
           &output_tensors2[threadIdx][0]
       );
@@ -399,11 +440,15 @@ void vx_tutorial_tidl()
       /* Set target node to targetCore2 (EVEn or DSP1)*/
       vxSetNodeTarget(node2[threadIdx], VX_TARGET_STRING, targetCore2[threadIdx]);
 #ifdef HOST_EMULATION
+      /* This is a workaround to support spanning graphs on different EVE and DSP cores in PC host emulation environment
+       * */
       gTidlNodeCpuId[2*threadIdx+1]= targetCpuId2[threadIdx];
 #endif
 
     }
   }
+
+  printf("\n");
 
   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
     printf("Thread #%d: Verify graph ... \n", threadIdx+1);
@@ -431,25 +476,28 @@ void vx_tutorial_tidl()
 
     exe_time= tivxPlatformGetTimeInUsecs();
 
+    printf("\n");
+
 #ifdef SEQUENTIAL_SCHEDULE
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
-      printf("\nThread #%d: Execute graph ... \n",threadIdx + 1);
+      printf("Thread #%d: Execute graph ... \n",threadIdx + 1);
       /* Execute the network */
       status = vxProcessGraph(graph[threadIdx]);
       VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
     }
 #else
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
-      printf("\nThread #%d: Start graph ... \n",threadIdx + 1);
+      printf("Thread #%d: Start graph ... \n",threadIdx + 1);
       /* Execute the network */
       status = vxScheduleGraph(graph[threadIdx]);
       VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
     }
 
     /* You can do other useful things here, while the graphs execute asynchronously using resources available on other cores */
+    printf("\n");
 
     for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
-      printf("\nThread #%d: Wait for graph ... \n",threadIdx + 1);
+      printf("Thread #%d: Wait for graph ... \n",threadIdx + 1);
       /* Execute the network */
       status = vxWaitGraph(graph[threadIdx]);
       VX_TUTORIAL_ASSERT(status==VX_SUCCESS);
@@ -482,7 +530,7 @@ void vx_tutorial_tidl()
     vxQueryNode(node1[threadIdx], VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     printf("\n---- Thread #%d: Node 1 (%s) Execution time: %4.6f ms\n", threadIdx+1, targetCore1[threadIdx], perf_node1.min/1000000.0);
 
-    if(node2 != 0) {
+    if(node2[threadIdx] != 0) {
       vxQueryNode(node2[threadIdx], VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
       printf("---- Thread #%d: Node 2 (%s) Execution time: %4.6f ms\n", threadIdx+1, targetCore2[threadIdx], perf_node2.min/1000000.0);
     }
@@ -497,48 +545,91 @@ void vx_tutorial_tidl()
   printf("\nExecution time of all the threads running in parallel: %4.6f ms\n", exe_time/1000.0);
 #endif
 
-   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
-       vxReleaseNode(&node1[threadIdx]);
-       if (node2[threadIdx] !=0 ){
-         vxReleaseNode(&node2[threadIdx]);
-       }
-   }
-
-  if (config2 !=0 ){
-    vxReleaseUserDataObject(&config2);
+  for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
+    if (vxGetStatus((vx_reference)node1[threadIdx]) == VX_SUCCESS) {
+      vxReleaseNode(&node1[threadIdx]);
+    }
+    if (vxGetStatus((vx_reference)createParams1[threadIdx]) == VX_SUCCESS) {
+      vxReleaseUserDataObject(&createParams1[threadIdx]);
+    }
+    if (vxGetStatus((vx_reference)inArgs1[threadIdx]) == VX_SUCCESS) {
+      vxReleaseUserDataObject(&inArgs1[threadIdx]);
+    }
+    if (vxGetStatus((vx_reference)outArgs1[threadIdx]) == VX_SUCCESS) {
+      vxReleaseUserDataObject(&outArgs1[threadIdx]);
+    }
+    if (node2[threadIdx] !=0 ){
+      if (vxGetStatus((vx_reference)node2[threadIdx]) == VX_SUCCESS) {
+        vxReleaseNode(&node2[threadIdx]);
+      }
+      if (vxGetStatus((vx_reference)createParams2[threadIdx]) == VX_SUCCESS) {
+        vxReleaseUserDataObject(&createParams2[threadIdx]);
+      }
+      if (vxGetStatus((vx_reference)inArgs2[threadIdx]) == VX_SUCCESS) {
+        vxReleaseUserDataObject(&inArgs2[threadIdx]);
+      }
+      if (vxGetStatus((vx_reference)outArgs2[threadIdx]) == VX_SUCCESS) {
+        vxReleaseUserDataObject(&outArgs2[threadIdx]);
+      }
+    }
   }
 
-  vxReleaseUserDataObject(&config1);
+  if (config2 !=0 ){
+    if (vxGetStatus((vx_reference)config2) == VX_SUCCESS) {
+      vxReleaseUserDataObject(&config2);
+    }
+  }
 
-  vxReleaseUserDataObject(&network);
+  if (vxGetStatus((vx_reference)config1) == VX_SUCCESS) {
+    vxReleaseUserDataObject(&config1);
+  }
+
+  if (vxGetStatus((vx_reference)network) == VX_SUCCESS) {
+    vxReleaseUserDataObject(&network);
+  }
 
   for (threadIdx= 0; threadIdx < maxNumThreads; threadIdx++) {
 
-    vxReleaseGraph(&graph[threadIdx]);
+    if (vxGetStatus((vx_reference)graph[threadIdx]) == VX_SUCCESS) {
+      vxReleaseGraph(&graph[threadIdx]);
+    }
 
     for (i= 0; i < num_input_tensors; i++) {
-      vxReleaseTensor(&input_tensors[threadIdx][i]);
+      if (vxGetStatus((vx_reference)input_tensors[threadIdx][i]) == VX_SUCCESS) {
+        vxReleaseTensor(&input_tensors[threadIdx][i]);
+      }
     }
 
     for (i= 0; i < num_output_tensors1; i++) {
-      vxReleaseTensor(&output_tensors1[threadIdx][i]);
+      if (vxGetStatus((vx_reference)output_tensors1[threadIdx][i]) == VX_SUCCESS) {
+        vxReleaseTensor(&output_tensors1[threadIdx][i]);
+      }
     }
 
     for (i= 0; i < num_output_tensors2; i++) {
-      vxReleaseTensor(&output_tensors2[threadIdx][i]);
+      if (vxGetStatus((vx_reference)output_tensors2[threadIdx][i]) == VX_SUCCESS) {
+        vxReleaseTensor(&output_tensors2[threadIdx][i]);
+      }
     }
+
   }
 
-  vxRemoveKernel(kernel1);
+  if (vxGetStatus((vx_reference)kernel1) == VX_SUCCESS) {
+    vxRemoveKernel(kernel1);
+  }
   if (kernel2!=0){
-    vxRemoveKernel(kernel2);
+    if (vxGetStatus((vx_reference)kernel2) == VX_SUCCESS) {
+      vxRemoveKernel(kernel2);
+    }
   }
 
   exit:
   printf("\n vx_tutorial_tidl: Tutorial Done !!! \n");
   printf(" \n");
 
-  vxReleaseContext(&context);
+  if (vxGetStatus((vx_reference)context) == VX_SUCCESS) {
+    vxReleaseContext(&context);
+  }
 
 }
 
