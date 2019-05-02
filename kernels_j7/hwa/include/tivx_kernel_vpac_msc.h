@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,38 +60,39 @@
  *
  */
 
-#include <TI/tivx.h>
-#include <TI/tivx_target_kernel.h>
-#include "tivx_hwa_kernels.h"
-#include "tivx_kernels_target_utils.h"
+#ifndef _TIVX_KERNEL_VPAC_MSC_
+#define _TIVX_KERNEL_VPAC_MSC_
 
-void tivxAddTargetKernelVpacMscGaussianPyramid(void);
-void tivxAddTargetKernelVpacMscPyramid(void);
-void tivxAddTargetKernelVpacMscHalfScaleGaussian(void);
-void tivxAddTargetKernelVpacMscScale(void);
-void tivxAddTargetKernelVpacMscMultiScale(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-void tivxRemoveTargetKernelVpacMscGaussianPyramid(void);
-void tivxRemoveTargetKernelVpacMscPyramid(void);
-void tivxRemoveTargetKernelVpacMscHalfScaleGaussian(void);
-void tivxRemoveTargetKernelVpacMscScale(void);
-void tivxRemoveTargetKernelVpacMscMultiScale(void);
 
-static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
-    {&tivxAddTargetKernelVpacMscPyramid, &tivxRemoveTargetKernelVpacMscPyramid},
-    {&tivxAddTargetKernelVpacMscHalfScaleGaussian, &tivxRemoveTargetKernelVpacMscHalfScaleGaussian},
-    {&tivxAddTargetKernelVpacMscScale, &tivxRemoveTargetKernelVpacMscScale},
-    {&tivxAddTargetKernelVpacMscMultiScale, &tivxRemoveTargetKernelVpacMscMultiScale},
-    {&tivxAddTargetKernelVpacMscGaussianPyramid, &tivxRemoveTargetKernelVpacMscGaussianPyramid},
-};
+#define TIVX_KERNEL_VPAC_MSC_SCALE_IN_IMG_IDX         (0U)
+#define TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX       (1U)
+#define TIVX_KERNEL_VPAC_MSC_SCALE_OUT1_IMG_IDX       (2U)
+#define TIVX_KERNEL_VPAC_MSC_SCALE_OUT2_IMG_IDX       (3U)
+#define TIVX_KERNEL_VPAC_MSC_SCALE_OUT3_IMG_IDX       (4U)
+#define TIVX_KERNEL_VPAC_MSC_SCALE_OUT4_IMG_IDX       (5U)
 
-void tivxRegisterHwaTargetVpacMscKernels(void)
-{
-    tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
+#define TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT         (5U)
+
+#define TIVX_KERNEL_VPAC_MSC_SCALE_MAX_PARAMS         (6U)
+
+#define TIVX_KERNEL_VPAC_MSC_PYRAMID_IN_IMG_IDX       (0U)
+#define TIVX_KERNEL_VPAC_MSC_PYRAMID_OUT_PMD_IDX      (1U)
+
+#define TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS       (2U)
+
+#define TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO     (5U)
+
+#define TIVX_VPAC_MSC_MAX_DS_FACTOR                   (4U)
+
+#ifdef __cplusplus
 }
+#endif
 
-void tivxUnRegisterHwaTargetVpacMscKernels(void)
-{
-    tivxUnRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
-}
+
+#endif /* _TIVX_KERNEL_VPAC_MSC_ */
+
 

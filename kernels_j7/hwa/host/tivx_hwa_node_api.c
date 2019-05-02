@@ -124,38 +124,62 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
 
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_user_data_object  configuration,
-                                      vx_user_data_object  region_params,
-                                      vx_image             mesh_table,
                                       vx_matrix            warp_matrix,
-                                      vx_lut               out_2_luma_lut,
-                                      vx_lut               out_3_chroma_lut,
-                                      vx_user_data_object  bandwidth_params,
-                                      vx_image             in_luma_or_422,
-                                      vx_image             in_chroma,
-                                      vx_image             out_0_luma_or_422,
-                                      vx_image             out_1_chroma,
-                                      vx_image             out_2_luma_or_422,
-                                      vx_image             out_3_chroma,
-                                      vx_scalar            error_status)
+                                      vx_user_data_object  mesh_prms,
+                                      vx_image             mesh_img,
+                                      vx_image             in_img,
+                                      vx_image             out0_img,
+                                      vx_image             out1_img)
 {
     vx_reference prms[] = {
             (vx_reference)configuration,
-            (vx_reference)region_params,
-            (vx_reference)mesh_table,
             (vx_reference)warp_matrix,
-            (vx_reference)out_2_luma_lut,
-            (vx_reference)out_3_chroma_lut,
-            (vx_reference)bandwidth_params,
-            (vx_reference)in_luma_or_422,
-            (vx_reference)in_chroma,
-            (vx_reference)out_0_luma_or_422,
-            (vx_reference)out_1_chroma,
-            (vx_reference)out_2_luma_or_422,
-            (vx_reference)out_3_chroma,
-            (vx_reference)error_status
+            (vx_reference)mesh_prms,
+            (vx_reference)mesh_img,
+            (vx_reference)in_img,
+            (vx_reference)out0_img,
+            (vx_reference)out1_img
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_VPAC_LDC_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscScaleNode(vx_graph graph,
+                                      vx_image             in_img,
+                                      vx_image             out0_img,
+                                      vx_image             out1_img,
+                                      vx_image             out2_img,
+                                      vx_image             out3_img,
+                                      vx_image             out4_img)
+{
+    vx_reference prms[] = {
+            (vx_reference)in_img,
+            (vx_reference)out0_img,
+            (vx_reference)out1_img,
+            (vx_reference)out2_img,
+            (vx_reference)out3_img,
+            (vx_reference)out4_img
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VPAC_MSC_MULTI_SCALE_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacMscPyramidNode(vx_graph graph,
+                                      vx_image             in_img,
+                                      vx_pyramid           out_pyramid)
+{
+    vx_reference prms[] = {
+            (vx_reference)in_img,
+            (vx_reference)out_pyramid
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_VPAC_MSC_PYRAMID_NAME,
                                            prms,
                                            dimof(prms));
     return node;

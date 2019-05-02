@@ -82,7 +82,6 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
     vx_image input = 0, output = 0;
     vx_matrix matrix = 0;
     vx_user_data_object param_obj;
-    vx_user_data_object region_obj;
     vx_graph graph = 0;
     vx_node node = 0;
     const vx_enum matrix_type = VX_TYPE_INT16;
@@ -125,12 +124,17 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         }
 
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t", sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t", sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph, param_obj, region_obj, NULL, matrix, NULL, NULL, NULL,
-                                                input, NULL, output, NULL, NULL, NULL, NULL), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
+                                param_obj,
+                                matrix,
+                                NULL,
+                                NULL,
+                                input,
+                                output,
+                                NULL), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
 
@@ -140,7 +144,6 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         VX_CALL(vxReleaseImage(&output));
         VX_CALL(vxReleaseImage(&input));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
-        VX_CALL(vxReleaseUserDataObject(&region_obj));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
@@ -148,7 +151,6 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         ASSERT(output == 0);
         ASSERT(input == 0);
         ASSERT(param_obj == 0);
-        ASSERT(region_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }
@@ -502,8 +504,7 @@ typedef struct {
 
 #define ADD_VX_INPUT_MODES(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/LUMA_ONLY", __VA_ARGS__, 0)), \
-    CT_EXPAND(nextmacro(testArgName "/LUMA_CHROMA_420", __VA_ARGS__, 1)), \
-    CT_EXPAND(nextmacro(testArgName "/CHROMA_ONLY", __VA_ARGS__, 2))
+    CT_EXPAND(nextmacro(testArgName "/LUMA_CHROMA_420", __VA_ARGS__, 1))
 
 #define ADD_VX_INPUT_MODES_LENA(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/LUMA_ONLY", __VA_ARGS__, 0))
@@ -528,22 +529,21 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     vx_context context = context_->vx_context_;
     tivx_vpac_ldc_params_t params;
     vx_user_data_object param_obj;
-    tivx_vpac_ldc_region_params_t region;
-    vx_user_data_object region_obj;
+    tivx_vpac_ldc_mesh_params_t   mesh_params;
+    vx_user_data_object mesh_params_obj;
     vx_graph graph = 0;
     vx_node node = 0;
     vx_image input_image = 0, output_image = 0;
-    vx_image input_image_C = 0, output_image_C = 0;;
-    vx_image dual_out_image = 0, dual_out_image_C = 0;
+    vx_image dual_out_image = 0;
     vx_image mesh_image = 0;
     vx_lut luma_lut = 0, chroma_lut = 0;
     vx_matrix matrix = 0;
+    vx_reference ref[2];
     vx_float32 m[6];
-    vx_scalar error_scalar = NULL;
     vx_uint32 error_status;
     vx_uint16 lut_data[513];
 
-    CT_Image input = NULL, output = NULL, input_C = NULL, output_C = NULL, dual_out = NULL, dual_out_C = NULL;
+    CT_Image input = NULL, output = NULL, dual_out = NULL;
 
     vx_border_t border = arg_->border;
 
@@ -555,32 +555,22 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         ASSERT_NO_FAILURE(output = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
         ASSERT_NO_FAILURE(warp_affine_generate_matrix(m, input->width, input->height, arg_->width, arg_->height, arg_->matrix_type));
         ASSERT_VX_OBJECT(matrix = warp_affine_create_matrix(context, m, 0), VX_TYPE_MATRIX);
-        ASSERT_VX_OBJECT(error_scalar = vxCreateScalar(context, VX_TYPE_UINT32, &error_status), VX_TYPE_SCALAR);
         ASSERT_NO_FAILURE(lut_data_fill_identity(lut_data, 513));
 
         if(arg_->input_mode == 0 || arg_->input_mode == 1)
         {
             ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
             ASSERT_VX_OBJECT(output_image = ct_image_to_vx_image(output, context), VX_TYPE_IMAGE);
-
-            if(arg_->output_mode == 1)
-            {
-                ASSERT_NO_FAILURE(dual_out = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
-                ASSERT_VX_OBJECT(dual_out_image = ct_image_to_vx_image(dual_out, context), VX_TYPE_IMAGE);
-                ASSERT_VX_OBJECT(luma_lut = lut_create(context, lut_data, 513), VX_TYPE_LUT);
-            }
         }
-        if(arg_->input_mode == 1 || arg_->input_mode == 2)
-        {
-            ASSERT_NO_FAILURE(input_C = arg_->generator(arg_->fileName, arg_->src_width, arg_->src_height/2));
-            ASSERT_VX_OBJECT(input_image_C = ct_image_to_vx_image(input_C, context), VX_TYPE_IMAGE);
-            ASSERT_NO_FAILURE(output_C = ct_allocate_image(arg_->width, arg_->height/2, VX_DF_IMAGE_U8));
-            ASSERT_VX_OBJECT(output_image_C = ct_image_to_vx_image(output_C, context), VX_TYPE_IMAGE);
 
-            if(arg_->output_mode == 1)
+        if(arg_->output_mode == 1)
+        {
+            ASSERT_NO_FAILURE(dual_out = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+            ASSERT_VX_OBJECT(dual_out_image = ct_image_to_vx_image(dual_out, context), VX_TYPE_IMAGE);
+            ASSERT_VX_OBJECT(luma_lut = lut_create(context, lut_data, 513), VX_TYPE_LUT);
+
+            if (arg_->input_mode == 1)
             {
-                ASSERT_NO_FAILURE(dual_out_C = ct_allocate_image(arg_->width, arg_->height/2, VX_DF_IMAGE_U8));
-                ASSERT_VX_OBJECT(dual_out_image_C = ct_image_to_vx_image(dual_out_C, context), VX_TYPE_IMAGE);
                 ASSERT_VX_OBJECT(chroma_lut = lut_create(context, lut_data, 513), VX_TYPE_LUT);
             }
         }
@@ -588,38 +578,54 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         memset(&params, 0, sizeof(tivx_vpac_ldc_params_t));
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t",
                                                             sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        memset(&region, 0, sizeof(tivx_vpac_ldc_region_params_t));
-        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t",
-                                                             sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
         params.luma_interpolation_type = arg_->interp_type;
-        region.out_block_width = 16;
-        region.out_block_height = 16;
-        region.pixel_pad = 0;
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(mesh_params_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_mesh_params_t",
+                                                            sizeof(tivx_vpac_ldc_mesh_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        memset(&mesh_params, 0, sizeof(tivx_vpac_ldc_mesh_params_t));
+
+        mesh_params.block_params.out_block_width = 16;
+        mesh_params.block_params.out_block_height = 16;
+        mesh_params.block_params.pixel_pad = 0;
 
         if(arg_->mesh_mode > 0)
         {
             mesh_image = mesh_create(context, arg_->width, arg_->height, arg_->mesh_mode-1);
-            params.mesh.frame_width = arg_->width;
-            params.mesh.frame_height = arg_->height;
-            params.mesh.subsample_factor = arg_->mesh_mode-1;
+            mesh_params.mesh_frame_width = arg_->width;
+            mesh_params.mesh_frame_height = arg_->height;
+            mesh_params.subsample_factor = arg_->mesh_mode-1;
+            mesh_params.enable_back_mapping = 0u;
         }
 
-        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-        VX_CALL(vxCopyUserDataObject(region_obj, 0, sizeof(tivx_vpac_ldc_region_params_t), &region, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+        VX_CALL(vxCopyUserDataObject(mesh_params_obj, 0, sizeof(tivx_vpac_ldc_mesh_params_t), &mesh_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph, param_obj, region_obj, mesh_image, matrix, luma_lut, chroma_lut, NULL,
-                                                input_image, input_image_C, output_image, output_image_C,
-                                                dual_out_image, dual_out_image_C, error_scalar), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
+                        param_obj,
+                        matrix,
+                        mesh_params_obj,
+                        mesh_image,
+                        input_image,
+                        output_image,
+                        dual_out_image),
+                        VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_LDC1));
 
         VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
 
         VX_CALL(vxVerifyGraph(graph));
+
+        if(arg_->output_mode == 1)
+        {
+            ref[0] = (vx_reference) luma_lut;
+            ref[1] = (vx_reference) chroma_lut;
+            VX_CALL(tivxNodeSendCommand(node, 0, TIVX_NODE_VPAC_LDC_SET_LUT_PARAMS, ref, 2));
+        }
+
         VX_CALL(vxProcessGraph(graph));
 
         if(arg_->input_mode == 0 || arg_->input_mode == 1)
@@ -631,30 +637,24 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseMatrix(&matrix));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
-        VX_CALL(vxReleaseUserDataObject(&region_obj));
-        VX_CALL(vxReleaseScalar(&error_scalar));
+        VX_CALL(vxReleaseUserDataObject(&mesh_params_obj));
         if(arg_->input_mode == 0 || arg_->input_mode == 1)
         {
             VX_CALL(vxReleaseImage(&output_image));
             VX_CALL(vxReleaseImage(&input_image));
-
-            if(arg_->output_mode == 1)
-            {
-                VX_CALL(vxReleaseImage(&dual_out_image));
-                VX_CALL(vxReleaseLUT(&luma_lut));
-            }
         }
-        if(arg_->input_mode == 1 || arg_->input_mode == 2)
-        {
-            VX_CALL(vxReleaseImage(&input_image_C));
-            VX_CALL(vxReleaseImage(&output_image_C));
 
-            if(arg_->output_mode == 1)
+        if(arg_->output_mode == 1)
+        {
+            VX_CALL(vxReleaseImage(&dual_out_image));
+            VX_CALL(vxReleaseLUT(&luma_lut));
+
+            if(arg_->input_mode == 1)
             {
-                VX_CALL(vxReleaseImage(&dual_out_image_C));
                 VX_CALL(vxReleaseLUT(&chroma_lut));
             }
         }
+
         if(arg_->mesh_mode > 0)
         {
             VX_CALL(vxReleaseImage(&mesh_image));
@@ -666,13 +666,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         ASSERT(output_image == 0);
         ASSERT(input_image == 0);
         ASSERT(param_obj == 0);
-        ASSERT(region_obj == 0);
-        ASSERT(error_scalar == 0);
-        ASSERT(input_image_C == 0);
-        ASSERT(output_image_C == 0);
+        ASSERT(mesh_params_obj == 0);
         ASSERT(dual_out_image == 0);
-        ASSERT(dual_out_image_C == 0);
-        ASSERT(dual_out_image_C == 0);
         ASSERT(luma_lut == 0);
         ASSERT(chroma_lut == 0);
         ASSERT(mesh_image == 0);
