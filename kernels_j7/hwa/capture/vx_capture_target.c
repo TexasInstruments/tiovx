@@ -571,19 +571,22 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             status = VX_ERROR_NO_MEMORY;
         }
 
-        /* Initialize steady_state_started to 0 */
-        prms->steady_state_started = 0;
-        /* Initialize raw capture to 0 */
-        prms->raw_capture = 0;
-        /* set instance to be used for capture */
-        prms->instId = CSIRX_INSTANCE_ID_0;
-        /* Set number of channels to number of items in object array */
-        prms->numCh = output_desc->num_items;
-
-        if (prms->numCh > TIVX_CAPTURE_MAX_CH)
+        if (VX_SUCCESS == status)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "Object descriptor number of channels exceeds max value allowed by capture!!!\r\n");
+            /* Initialize steady_state_started to 0 */
+            prms->steady_state_started = 0;
+            /* Initialize raw capture to 0 */
+            prms->raw_capture = 0;
+            /* set instance to be used for capture */
+            prms->instId = CSIRX_INSTANCE_ID_0;
+            /* Set number of channels to number of items in object array */
+            prms->numCh = output_desc->num_items;
+
+            if (prms->numCh > TIVX_CAPTURE_MAX_CH)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Object descriptor number of channels exceeds max value allowed by capture!!!\r\n");
+            }
         }
 
         /* Setting CSIRX capture parameters */
