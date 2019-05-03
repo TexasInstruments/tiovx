@@ -132,8 +132,6 @@ static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
     tivx_dmpac_dof_params_t *dofAppPrms, tivx_obj_desc_t *obj_desc[]);
-static void tivxDmpacDofSetFmt(Fvid2_Format *fmt,
-    tivx_obj_desc_image_t *img_desc);
 static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
                         tivx_obj_desc_user_data_object_t *usr_data_obj);
 static vx_status tivxDmpacDofUpdateCfgPrms(tivxDmpacDofObj *dof_obj,
