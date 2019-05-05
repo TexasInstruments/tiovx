@@ -157,7 +157,7 @@ class Type(Enum):
     USER_DATA_OBJECT = 41
     ## OpenVX equivalent = TIVX_TYPE_RAW_IMAGE
     RAW_IMAGE = 42
-    ## Used when optional parameters
+    ## OpenVX equivalent = VX_TYPE_TENSOR
     TENSOR = 43
     ## Used when optional parameters
     NULL = 44

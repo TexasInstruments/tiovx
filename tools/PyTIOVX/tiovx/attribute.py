@@ -402,7 +402,7 @@ class RawImageAttribute(Enum) :
     def object_type() :
         return Type.RAW_IMAGE
 
-## Object/Data type (OpenVX equivalent = tivx_raw_image_attribute_e)
+## Object/Data type (OpenVX equivalent = tivx_tensor_attribute_e)
 #
 # \par Example usage:
 # \code
