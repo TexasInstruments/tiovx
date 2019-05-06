@@ -229,7 +229,7 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
         tivxMemBufferMap(dst_target_ptr, dst->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16, 12);
+        lse_reformat_out(&stub, dst, dst_target_ptr, prms->dst16, 12, 0);
 
         tivxMemBufferUnmap(dst_target_ptr, dst->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);

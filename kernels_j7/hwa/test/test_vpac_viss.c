@@ -122,9 +122,9 @@ TEST(tivxHwaVpacViss, testNodeCreation)
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
+        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -260,15 +260,14 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
                                                             sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        snprintf(params.sensor_name, 256, "%s/tivx/viss_config/example_sensor/0/0", ct_get_test_file_path());
-
-        params.mux_ee_port = 1;
-        params.mux_uv12_c1_out = 0;
-        params.mux_y8_r8_c2_out = 0;
-        params.mux_uv8_g8_c3_out = 0;
-        params.mux_s8_b8_c4_out = 0;
-        params.mux_h3a_out = 0;
-        params.chroma_out_mode = 0;
+        params.ee_mode = 2;
+        params.mux_output0 = 0;
+        params.mux_output1 = 0;
+        params.mux_output2 = 0;
+        params.mux_output3 = 0;
+        params.mux_output4 = 3;
+        params.h3a_aewb_af_mode = 1;
+        params.chroma_mode = 0;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
@@ -277,9 +276,9 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessing, Arg,
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
+        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram), VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
 
@@ -870,15 +869,14 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
                                                             sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        snprintf(params.sensor_name, 256, "%s/tivx/viss_config/example_sensor/0/0", ct_get_test_file_path());
-
-        params.mux_ee_port = 1;
-        params.mux_uv12_c1_out = 0;
-        params.mux_y8_r8_c2_out = 0;
-        params.mux_uv8_g8_c3_out = 0;
-        params.mux_s8_b8_c4_out = 0;
-        params.mux_h3a_out = 0;
-        params.chroma_out_mode = 0;
+        params.ee_mode = 2;
+        params.mux_output0 = 0;
+        params.mux_output1 = 0;
+        params.mux_output2 = 0;
+        params.mux_output3 = 0;
+        params.mux_output4 = 3;
+        params.h3a_aewb_af_mode = 1;
+        params.chroma_mode = 0;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
 
@@ -897,9 +895,9 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
-        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result,
+        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
                                                 raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                histogram, h3a_aew_af, NULL), VX_TYPE_NODE);
+                                                h3a_aew_af, histogram), VX_TYPE_NODE);
 
         VX_CALL(vxVerifyGraph(graph));
 

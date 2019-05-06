@@ -79,11 +79,12 @@ extern "C" {
  */
 
 void lse_reformat_in(tivx_obj_desc_image_t *src, void *src_target_ptr, uint16_t src16[]);
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits);
+void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t channel);
 void lse_reformat_in_dof(tivx_obj_desc_image_t *src, void *src_target_ptr, int *src32);
 void lse_reformat_out_dof(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, int32_t *dst32);
 void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, uint16_t src16[], uint32_t exp);
-void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits);
+void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst0_target_ptr, void *dst1_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits);
+void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits);
 
 #ifdef VLAB_HWA
 vx_status vlab_hwa_process(uint32_t base_address, char *kernel_prefix, uint32_t config_size, void *pConfig);

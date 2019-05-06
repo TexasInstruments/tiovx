@@ -203,7 +203,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         }
         if (VX_SUCCESS == status)
         {
-            lse_reformat_out(left_desc, output_desc, output_target_ptr, prms->dst16, 12);
+            lse_reformat_out(left_desc, output_desc, output_target_ptr, prms->dst16, 12, 0);
 
             if( confidence_histogram_desc != NULL)
             {

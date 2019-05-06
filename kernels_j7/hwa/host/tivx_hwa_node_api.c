@@ -209,31 +209,31 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
     return node;
 }
 
-VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_user_data_object  ae_awb_result,
-                                      tivx_raw_image       raw,
-                                      vx_image             y12,
-                                      vx_image             uv12_c1,
-                                      vx_image             y8_r8_c2,
-                                      vx_image             uv8_g8_c3,
-                                      vx_image             s8_b8_c4,
-                                      vx_distribution      histogram,
-                                      vx_user_data_object  h3a_aew_af,
-                                      vx_user_data_object  dcc_param)
+VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph  graph,
+                                      vx_user_data_object   configuration,
+                                      vx_user_data_object   ae_awb_result,
+                                      vx_user_data_object   dcc_buf,
+                                      tivx_raw_image        raw,
+                                      vx_image              output0,
+                                      vx_image              output1,
+                                      vx_image              output2,
+                                      vx_image              output3,
+                                      vx_image              output4,
+                                      vx_user_data_object   h3a_output,
+                                      vx_distribution       histogram)
 {
     vx_reference prms[] = {
             (vx_reference)configuration,
             (vx_reference)ae_awb_result,
+            (vx_reference)dcc_buf,
             (vx_reference)raw,
-            (vx_reference)y12,
-            (vx_reference)uv12_c1,
-            (vx_reference)y8_r8_c2,
-            (vx_reference)uv8_g8_c3,
-            (vx_reference)s8_b8_c4,
-            (vx_reference)histogram,
-            (vx_reference)h3a_aew_af,
-            (vx_reference)dcc_param
+            (vx_reference)output0,
+            (vx_reference)output1,
+            (vx_reference)output2,
+            (vx_reference)output3,
+            (vx_reference)output4,
+            (vx_reference)h3a_output,
+            (vx_reference)histogram
     };
     vx_node node = tivxCreateNodeByKernelName(graph,
                                            TIVX_KERNEL_VPAC_VISS_NAME,

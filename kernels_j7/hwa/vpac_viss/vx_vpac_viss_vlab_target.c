@@ -72,13 +72,14 @@
 #include "viss_top.h"
 #include "idcc.h"
 
+#include "vx_vpac_viss_target_sim_priv.h"
+
 #define NO_SHIFT 0
 #define UP_SHIFT 1
 #define DOWN_SHIFT 2
 
-#define VISS_MAX_PATH_SIZE 256
-#define VISS_FILE_PREFIX_MAX_SIZE 32
-#define H3A_AEW_HEADER_SIZE 12 /* sizeof(tivx_h3a_aew_header) */
+#define H3A_AEW_HEADER_SIZE     (12) /* sizeof(tivx_h3a_aew_header) */
+
 
 typedef struct
 {
@@ -93,7 +94,6 @@ typedef struct
 } tivxVpacVissParams;
 
 static tivx_target_kernel vx_vpac_viss_target_kernel = NULL;
-static char file_prefix[VISS_FILE_PREFIX_MAX_SIZE];
 
 static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_target_kernel_instance kernel,
@@ -108,28 +108,6 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
 static void tivxVpacVissFreeMem(tivxVpacVissParams *prms);
-static uint32_t tivxVpacVissFindFile(char *root_name, char *dir_name, char *substring, char *full_path);
-static uint32_t tivxVpacVissGetFileConfig(char *root_name, char *file_name, char *full_path);
-static void copy_uint16_array(int32_t * dst, uint16_t * src, int cnt);
-static void copy_int16_array(int32_t * dst, int16_t * src, int cnt);
-
-static void copy_uint16_array(int32_t * dst, uint16_t * src, int cnt)
-{
-    int k;
-    for (k = 0; k < cnt; k++)
-    {
-        dst[k] = src[k];
-    }
-}
-
-static void copy_int16_array(int32_t * dst, int16_t * src, int cnt)
-{
-    int k;
-    for (k = 0; k < cnt; k++)
-    {
-        dst[k] = src[k];
-    }
-}
 
 static vx_status VX_CALLBACK tivxVpacVissProcess(
        tivx_target_kernel_instance kernel,
@@ -153,7 +131,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
@@ -167,11 +144,11 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
-        y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
-        uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
-        y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
-        uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
-        s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
+        y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
+        uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
+        y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
+        uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
+        s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
         histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
         h3a_aew_af_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
 
@@ -253,6 +230,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivxMemBufferMap(y12_target_ptr,
                y12_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
+
+            if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            {
+                uv12_c1_target_ptr = tivxMemShared2TargetPtr(
+                  y12_desc->mem_ptr[1].shared_ptr, y12_desc->mem_ptr[1].mem_heap_region);
+                tivxMemBufferMap(uv12_c1_target_ptr,
+                  y12_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
+                   VX_WRITE_ONLY);
+            }
         }
 
         if( uv12_c1_desc != NULL)
@@ -271,6 +257,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivxMemBufferMap(y8_r8_c2_target_ptr,
                y8_r8_c2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
+
+            if (VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
+            {
+                uv8_g8_c3_target_ptr = tivxMemShared2TargetPtr(
+                  y8_r8_c2_desc->mem_ptr[1].shared_ptr, y8_r8_c2_desc->mem_ptr[1].mem_heap_region);
+                tivxMemBufferMap(uv8_g8_c3_target_ptr,
+                  y8_r8_c2_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
+                   VX_WRITE_ONLY);
+            }
         }
 
         if( uv8_g8_c3_desc != NULL)
@@ -333,15 +328,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
          */
 
         /* RAWFE */
-        if(0 == params->mux_h3a_in)
+        if(0 == params->h3a_in)
         {
             prms->config.rawfe_params.h3a_mux_sel = 2;
         }
-        else if(1 == params->mux_h3a_in)
+        else if(1 == params->h3a_in)
         {
             prms->config.rawfe_params.h3a_mux_sel = 1;
         }
-        else if(2 == params->mux_h3a_in)
+        else if(2 == params->h3a_in)
         {
             prms->config.rawfe_params.h3a_mux_sel = 0;
         }
@@ -358,10 +353,10 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         if ((VX_SUCCESS == status) && (NULL != h3a_aew_af_desc))
         {
             tivx_h3a_data_t *pH3a_buf = (tivx_h3a_data_t*)h3a_aew_af_target_ptr;
-            pH3a_buf->aew_af_mode = params->mux_h3a_out;
-            pH3a_buf->h3a_source_data = params->mux_h3a_in;
+            pH3a_buf->aew_af_mode = params->h3a_aewb_af_mode;
+            pH3a_buf->h3a_source_data = params->h3a_in;
             pH3a_buf->size = prms->config.af_buffer_size;
-            if(0 == params->mux_h3a_out)
+            if(1 == params->h3a_aewb_af_mode)
             {
                 pH3a_buf->size = prms->config.aew_buffer_size + H3A_AEW_HEADER_SIZE;
             }
@@ -402,12 +397,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
             if (1 == prms->dcc_output_params->issH3aMuxLuts.enable)
             {
-                int k;
                 int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
-                for (k = 0; k < PWL_LUT_SIZE; k++)
-                {
-                    prms->config.rawfe_params.lut_h3a.lut[k] = prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut[cnt][k];
-                }
+                tivxVpacVissParseH3aLutParams(cnt,
+                    &prms->config.rawfe_params.lut_h3a, prms->dcc_output_params);
             }
         }
 
@@ -418,22 +410,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 /* Update H3A params using DCC config */
                 /* TODO: Add an update flag so that the params are updated only when a change is detected */
 
-                prms->config.h3a_params.pcr_AEW_EN       = prms->dcc_output_params->ipipeH3A_AEWBCfg.enable;
-                prms->config.h3a_params.aew_cfg_AEFMT    = prms->dcc_output_params->ipipeH3A_AEWBCfg.mode;
-                prms->config.h3a_params.aewinstart_WINSV = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_start;
-                prms->config.h3a_params.aewinstart_WINSH = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_start;
-                prms->config.h3a_params.aewwin1_WINH     = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_size;
-                prms->config.h3a_params.aewwin1_WINW     = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_size;
-                prms->config.h3a_params.aewwin1_WINVC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_count;
-                prms->config.h3a_params.aewwin1_WINHC    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_count;
-                prms->config.h3a_params.aewsubwin_AEWINCV    = prms->dcc_output_params->ipipeH3A_AEWBCfg.v_skip;
-                prms->config.h3a_params.aewsubwin_AEWINCH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.h_skip;
-                prms->config.h3a_params.pcr_AVE2LMT      = prms->dcc_output_params->ipipeH3A_AEWBCfg.saturation_limit;
-                prms->config.h3a_params.aewinblk_WINH    = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_win_numlines;
-                prms->config.h3a_params.aewinblk_WINSV   = prms->dcc_output_params->ipipeH3A_AEWBCfg.blk_row_vpos;
-                prms->config.h3a_params.aew_cfg_SUMSFT   = prms->dcc_output_params->ipipeH3A_AEWBCfg.sum_shift;
-                prms->config.h3a_params.pcr_AEW_ALAW_EN  = prms->dcc_output_params->ipipeH3A_AEWBCfg.ALaw_En;
-                prms->config.h3a_params.pcr_AEW_MED_EN   = prms->dcc_output_params->ipipeH3A_AEWBCfg.MedFilt_En;
+                tivxVpacVissParseH3aParams(&prms->config.h3a_params,
+                    prms->dcc_output_params);
             }
         }
 
@@ -444,54 +422,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
             if(1u == prms->use_dcc)
             {
-                prms->config.nsf4_params.mode = prms->dcc_output_params->vissNSF4Cfg.mode;
-                prms->config.nsf4_params.shd_en = prms->dcc_output_params->vissNSF4Cfg.shading_gain;
-
-                prms->config.nsf4_params.knee_u1 = prms->dcc_output_params->vissNSF4Cfg.u1_knee;
-                prms->config.nsf4_params.thr_scale_tn1 = prms->dcc_output_params->vissNSF4Cfg.tn1;
-                prms->config.nsf4_params.thr_scale_tn2 = prms->dcc_output_params->vissNSF4Cfg.tn2;
-                prms->config.nsf4_params.thr_scale_tn3 = prms->dcc_output_params->vissNSF4Cfg.tn3;
-
-                copy_uint16_array(
-                    &prms->config.nsf4_params.noise_thr_x[0][0],
-                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_x[0][0],
-                    4 * 12
-                );
-                copy_uint16_array(
-                    &prms->config.nsf4_params.noise_thr_y[0][0],
-                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_y[0][0],
-                    4 * 12
-                );
-                copy_int16_array(
-                    &prms->config.nsf4_params.noise_thr_s[0][0],
-                    &prms->dcc_output_params->vissNSF4Cfg.noise_thr_s[0][0],
-                    4 * 12
-                );
-
-                prms->config.nsf4_params.shd_x = prms->dcc_output_params->vissNSF4Cfg.shd_x;
-                prms->config.nsf4_params.shd_y = prms->dcc_output_params->vissNSF4Cfg.shd_y;
-                prms->config.nsf4_params.shd_T = prms->dcc_output_params->vissNSF4Cfg.shd_t;
-                prms->config.nsf4_params.shd_kh = prms->dcc_output_params->vissNSF4Cfg.shd_kh;
-                prms->config.nsf4_params.shd_kv = prms->dcc_output_params->vissNSF4Cfg.shd_kv;
-                prms->config.nsf4_params.shd_gmax = prms->dcc_output_params->vissNSF4Cfg.shd_gmax;
-                prms->config.nsf4_params.shd_set_sel = prms->dcc_output_params->vissNSF4Cfg.shd_set_sel;
-
-                copy_uint16_array(
-                    &prms->config.nsf4_params.shd_lut_x[0][0],
-                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_x[0][0],
-                    2 * 16
-                );
-                copy_uint16_array(
-                    &prms->config.nsf4_params.shd_lut_y[0][0],
-                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_y[0][0],
-                    2 * 16
-                );
-                copy_int16_array(
-                    &prms->config.nsf4_params.shd_lut_s[0][0],
-                    &prms->dcc_output_params->vissNSF4Cfg.shd_lut_s[0][0],
-                    2 * 16
-                );
-
+                tivxVpacVissParseNsf4Params(&prms->config.nsf4_params,
+                    prms->dcc_output_params);
                 if (0 == aewb_result->awb_valid)
                 {
                     prms->config.nsf4_params.wb_gain[0] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[0];
@@ -517,19 +449,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 if(prms->dcc_output_params->useRgb2Rgb1Cfg)
                 {
-                    prms->config.flexcc_params.CCM1.W11 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][0];
-                    prms->config.flexcc_params.CCM1.W12 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][1];
-                    prms->config.flexcc_params.CCM1.W13 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[0][2];
-                    prms->config.flexcc_params.CCM1.W21 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][0];
-                    prms->config.flexcc_params.CCM1.W22 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][1];
-                    prms->config.flexcc_params.CCM1.W23 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[1][2];
-                    prms->config.flexcc_params.CCM1.W31 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][0];
-                    prms->config.flexcc_params.CCM1.W32 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][1];
-                    prms->config.flexcc_params.CCM1.W33 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->matrix[2][2];
-
-                    prms->config.flexcc_params.CCM1.Offset_1 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[0];
-                    prms->config.flexcc_params.CCM1.Offset_2 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[1];
-                    prms->config.flexcc_params.CCM1.Offset_3 = prms->dcc_output_params->ipipeRgb2Rgb1Cfg->offset[2];
+                    tivxVpacVissParseCCMParams(&prms->config.flexcc_params.CCM1,
+                        prms->dcc_output_params);
                 }
             }
         }
@@ -540,38 +461,54 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if( y12_desc != NULL)
         {
-            lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, prms->config.buffer[3*2], 12);
+            if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            {
+                lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, uv12_c1_target_ptr, prms->config.buffer[3*2], prms->config.buffer[4*2], 12);
+            }
+            else
+            {
+                lse_reformat_out_viss(raw_desc, y12_desc, y12_target_ptr, NULL, prms->config.buffer[3*2], NULL, 12);
+            }
         }
         if( uv12_c1_desc != NULL)
         {
-            lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, prms->config.buffer[4*2], 12);
+            lse_reformat_out_viss(raw_desc, uv12_c1_desc, uv12_c1_target_ptr, NULL, prms->config.buffer[4*2], NULL, 12);
         }
         if( y8_r8_c2_desc != NULL)
         {
             uint16_t  out_y8_r8_c2_bit_align = 8;
-            if(2 == params->mux_y8_r8_c2_out)
+            if(2 == params->mux_output2)
             {
                 out_y8_r8_c2_bit_align = 12;
             }
-            lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, prms->config.buffer[5*2], out_y8_r8_c2_bit_align);
+            if ((VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format) ||
+                (VX_DF_IMAGE_YUYV == y8_r8_c2_desc->format) ||
+                (VX_DF_IMAGE_UYVY == y8_r8_c2_desc->format))
+            {
+                lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, uv8_g8_c3_target_ptr, prms->config.buffer[5*2], prms->config.buffer[6*2], out_y8_r8_c2_bit_align);
+            }
+            else
+            {
+                lse_reformat_out_viss(raw_desc, y8_r8_c2_desc, y8_r8_c2_target_ptr, NULL, prms->config.buffer[5*2], NULL, out_y8_r8_c2_bit_align);
+            }
         }
         if( uv8_g8_c3_desc != NULL)
         {
             uint16_t  out_uv8_g8_c3_bit_align = 8;
-            if(2 == params->mux_uv8_g8_c3_out)
+            if(2 == params->mux_output3)
             {
                 out_uv8_g8_c3_bit_align = 12;
             }
-            lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, prms->config.buffer[6*2], out_uv8_g8_c3_bit_align);
+            lse_reformat_out_viss(raw_desc, uv8_g8_c3_desc, uv8_g8_c3_target_ptr, NULL, prms->config.buffer[6*2], NULL, out_uv8_g8_c3_bit_align);
         }
         if( s8_b8_c4_desc != NULL)
         {
             uint16_t  out_s8_b8_c4_bit_align = 8;
-            if(2 == params->mux_s8_b8_c4_out)
+            if(2 == params->mux_output4)
             {
                 out_s8_b8_c4_bit_align = 12;
             }
-            lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, prms->config.buffer[7*2], out_s8_b8_c4_bit_align);
+            lse_reformat_out_viss(raw_desc, s8_b8_c4_desc, s8_b8_c4_target_ptr, NULL, prms->config.buffer[7*2], NULL, out_s8_b8_c4_bit_align);
         }
 
         prms->viss_frame_count++;
@@ -605,6 +542,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivxMemBufferUnmap(y12_target_ptr,
                y12_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
+
+            if (TIVX_DF_IMAGE_NV12_P12 == y12_desc->format)
+            {
+                tivxMemBufferUnmap(uv12_c1_target_ptr,
+                   y12_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
+                    VX_WRITE_ONLY);
+            }
         }
 
         if( uv12_c1_desc != NULL)
@@ -619,6 +563,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivxMemBufferUnmap(y8_r8_c2_target_ptr,
                y8_r8_c2_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
+
+            if (VX_DF_IMAGE_NV12 == y8_r8_c2_desc->format)
+            {
+                tivxMemBufferUnmap(uv8_g8_c3_target_ptr,
+                   y8_r8_c2_desc->mem_size[1], VX_MEMORY_TYPE_HOST,
+                    VX_WRITE_ONLY);
+            }
         }
 
         if( uv8_g8_c3_desc != NULL)
@@ -674,7 +625,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
@@ -689,14 +639,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
-        y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
-        uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
-        y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
-        uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
-        s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
+        y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
+        uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
+        y8_r8_c2_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
+        uv8_g8_c3_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
+        s8_b8_c4_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
         histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
         h3a_aew_af_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
-        dcc_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_DCC_PARAM_IDX];
+        dcc_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_DCC_BUF_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxVpacVissParams), TIVX_MEM_EXTERNAL);
         if (NULL != prms)
@@ -704,7 +654,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             uint32_t width = raw_desc->imagepatch_addr[0].dim_x;
             uint32_t height = raw_desc->imagepatch_addr[0].dim_y;
             uint32_t i;
-            char temp_name[VISS_MAX_PATH_SIZE];
             uint32_t num_exposures = raw_desc->params.num_exposures;
 
             memset(prms, 0, sizeof(tivxVpacVissParams));
@@ -798,26 +747,10 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                 params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
-
-                /* Check for top level directory */
-                if(0 == tivxVpacVissGetFileConfig(params->sensor_name, "/config.txt", temp_name))
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "File not found: %s\n", temp_name);
-                    status = VX_FAILURE;
-                }
             }
 
             if (VX_SUCCESS == status)
             {
-                char path_rawfe[] =   "/Rawfe_tasks/";
-                char path_flexcfa[] = "/FlexCFA_tasks/";
-                char path_flexcc[] =  "/FlexCC_tasks/";
-                char temp_path[VISS_MAX_PATH_SIZE];
-
-                FILE *h3a_config;
-                int32_t bits = 12;
-                int32_t w, h;
-
                 if(NULL != dcc_desc)
                 {
                     prms->use_dcc = 1u;
@@ -863,120 +796,94 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                  */
 
                 /* RAWFE */
-                strncpy(temp_path, params->sensor_name, VISS_MAX_PATH_SIZE);
-                strncat(temp_path, path_rawfe, sizeof(path_rawfe));
-                if(0 != tivxVpacVissFindFile(params->sensor_name, path_rawfe, "cfg_rawfe_master", temp_name))
-                {
-                    read_rawfe_cfg(temp_name, temp_path, &prms->config.rawfe_params);
-                    prms->config.rawfe_params.width = width;
-                    prms->config.rawfe_params.height = height;
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "Rawfe config file not found\n");
-                    status = VX_FAILURE;
-                }
+                tivxVpacVissParseRfeParams(&prms->config.rawfe_params, prms->dcc_output_params);
+                prms->config.rawfe_params.width = width;
+                prms->config.rawfe_params.height = height;
+                prms->config.rawfe_params.h3a_mux_sel = params->h3a_in;
 
                 /* H3A */
                 if( h3a_aew_af_desc != NULL)
                 {
                     int32_t num_aew_windows, ae_size, af_pad;
 
-                    if(0 != tivxVpacVissFindFile(params->sensor_name, "/H3a_tasks/", "cfg_h3a_master", temp_name))
+                    tivxVpacVissParseH3aParams(&prms->config.h3a_params,
+                        prms->dcc_output_params);
+                    /* prms->h3a_in.image_width = width;
+                    prms->h3a_in.image_height = height;
+                    prms->h3a_in.image_data = (int16_t*)prms->scratch_rawfe_h3a_out; */
+
+                    /* Compute AEW buffer size */
+                    num_aew_windows = (prms->config.h3a_params.aewwin1_WINVC+1)*(prms->config.h3a_params.aewwin1_WINHC);
+                    ae_size = 0;
+                    for (i = 0; i < num_aew_windows; i++)
                     {
-                        h3a_config = fopen(temp_name, "r");
-                        /* Need to read the width and height from file first to align rest of settings config */
-                        read_paramval(h3a_config);
-                        read_paramval(h3a_config);
-                        read_h3a_configfile(h3a_config, &prms->config.h3a_params);
-                        fclose(h3a_config);
-
-                        /* Compute AEW buffer size */
-                        num_aew_windows = (prms->config.h3a_params.aewwin1_WINVC+1)*(prms->config.h3a_params.aewwin1_WINHC);
-                        ae_size = 0;
-                        for (i = 0; i < num_aew_windows; i++)
+                        if ( (prms->config.h3a_params.aew_cfg_AEFMT == 0) || (prms->config.h3a_params.aew_cfg_AEFMT == 1))
                         {
-                            if ( (prms->config.h3a_params.aew_cfg_AEFMT == 0) || (prms->config.h3a_params.aew_cfg_AEFMT == 1))
-                            {
-                                ae_size += 8;
-                            }
-                            else
-                            {
-                                ae_size += 4;
-                            }
-                            if (i%8 == 7 && i > 0)
-                            {
-                                ae_size += 4;
-                            }
-                            if (i%prms->config.h3a_params.aewwin1_WINHC == (prms->config.h3a_params.aewwin1_WINHC -1) && ae_size%8 == 4 && i != (num_aew_windows-1))
-                            {
-                                ae_size += 4;
-                            }
-                        }
-                        if (num_aew_windows%8 != 0)
-                        {
-                            ae_size += 4;
-                        }
-                        if (ae_size %8 != 0)
-                        {
-                            ae_size+= 4;
-                        }
-                        prms->config.aew_buffer_size = ae_size * sizeof(uint32_t);
-
-                        /* Compute AF buffer size */
-                        if (prms->config.h3a_params.pcr_AF_VF_EN)
-                        {
-                            prms->config.af_buffer_size = (16U * (prms->config.h3a_params.afpax2_PAXHC * prms->config.h3a_params.afpax2_PAXVC)) * sizeof(uint32_t);
+                            ae_size += 8;
                         }
                         else
                         {
-                            af_pad = 0;
-                            if (1U == (prms->config.h3a_params.afpax2_PAXHC%2))
-                            {
-                                af_pad = 4*prms->config.h3a_params.afpax2_PAXVC;
-                            }
-                            prms->config.af_buffer_size = ((12 * (prms->config.h3a_params.afpax2_PAXHC * prms->config.h3a_params.afpax2_PAXVC)) + af_pad) * sizeof(uint32_t);
+                            ae_size += 4;
                         }
-
-                        if (VX_SUCCESS == status)
+                        if (i%8 == 7 && i > 0)
                         {
-                            uint32_t full_aew_size = prms->config.aew_buffer_size + H3A_AEW_HEADER_SIZE;
-                            prms->config.h3a_buffer_size = prms->config.af_buffer_size;
-                            if((full_aew_size) > prms->config.h3a_buffer_size)
-                            {
-                                prms->config.h3a_buffer_size = full_aew_size;
-                            }
-
-                            if(prms->config.h3a_buffer_size > MAX_H3A_STAT_NUMBYTES)
-                            {
-                                VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
-                                                         prms->config.h3a_buffer_size, MAX_H3A_STAT_NUMBYTES);
-                                status = VX_ERROR_NO_MEMORY;
-                            }
+                            ae_size += 4;
                         }
+                        if (i%prms->config.h3a_params.aewwin1_WINHC == (prms->config.h3a_params.aewwin1_WINHC -1) && ae_size%8 == 4 && i != (num_aew_windows-1))
+                        {
+                            ae_size += 4;
+                        }
+                    }
+                    if (num_aew_windows%8 != 0)
+                    {
+                        ae_size += 4;
+                    }
+                    if (ae_size %8 != 0)
+                    {
+                        ae_size+= 4;
+                    }
+                    prms->config.aew_buffer_size = ae_size * sizeof(uint32_t);
+
+                    /* Compute AF buffer size */
+                    if (prms->config.h3a_params.pcr_AF_VF_EN)
+                    {
+                        prms->config.af_buffer_size = (16U * (prms->config.h3a_params.afpax2_PAXHC * prms->config.h3a_params.afpax2_PAXVC)) * sizeof(uint32_t);
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "H3A config file not found\n");
-                        status = VX_FAILURE;
+                        af_pad = 0;
+                        if (1U == (prms->config.h3a_params.afpax2_PAXHC%2))
+                        {
+                            af_pad = 4*prms->config.h3a_params.afpax2_PAXVC;
+                        }
+                        prms->config.af_buffer_size = ((12 * (prms->config.h3a_params.afpax2_PAXHC * prms->config.h3a_params.afpax2_PAXVC)) + af_pad) * sizeof(uint32_t);
+                    }
+
+                    if (VX_SUCCESS == status)
+                    {
+                        uint32_t full_aew_size = prms->config.aew_buffer_size + H3A_AEW_HEADER_SIZE;
+                        prms->config.h3a_buffer_size = prms->config.af_buffer_size;
+                        if((full_aew_size) > prms->config.h3a_buffer_size)
+                        {
+                            prms->config.h3a_buffer_size = full_aew_size;
+                        }
+
+                        if(prms->config.h3a_buffer_size > TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES)
+                        {
+                            VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
+                                                     prms->config.h3a_buffer_size, TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES);
+                            status = VX_ERROR_NO_MEMORY;
+                        }
                     }
                 }
 
                 /* NSF4 */
                 if(0 == params->bypass_nsf4)
                 {
-                    if(0 != tivxVpacVissFindFile(params->sensor_name, "/Nsf4v_tasks/", "cfg_nsf4_master", temp_name))
-                    {
-                        nsf4_read_parameters(temp_name, &prms->config.nsf4_params);
-                        nsf4_check_parameters(&prms->config.nsf4_params);
-                        prms->config.nsf4_params.iw = width;
-                        prms->config.nsf4_params.ih = height;
-                    }
-                    else
-                    {
-                        prms->config.bypass_nsf4 = 1;
-                        VX_PRINT(VX_ZONE_WARNING, "NSF4 config file not found, bypassing NSF4 module\n");
-                    }
+                    tivxVpacVissParseNsf4Params(&prms->config.nsf4_params, prms->dcc_output_params);
+                    nsf4_check_parameters(&prms->config.nsf4_params);
+                    prms->config.nsf4_params.iw = width;
+                    prms->config.nsf4_params.ih = height;
                 }
                 else
                 {
@@ -987,40 +894,58 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 /* Missing for now */
 
                 /* FLEXCFA */
-                strncpy(temp_path, params->sensor_name, VISS_MAX_PATH_SIZE);
-                strncat(temp_path, path_flexcfa, sizeof(path_flexcfa));
-                if(0 != tivxVpacVissFindFile(params->sensor_name, path_flexcfa, "cfg_flexcfa_master", temp_name))
-                {
-                    flxd_read_parameters(temp_name, &prms->config.flexcfa_params, &w, &h, &bits, temp_path);
-                    prms->config.flexcfa_params.imgWidth = width;
-                    prms->config.flexcfa_params.imgHeight = height;
-                }
-                else
-                {
-                    VX_PRINT(VX_ZONE_ERROR, "FlexCFA config file not found\n");
-                    status = VX_FAILURE;
-                }
+                tivxVpacVissParseFlxCfaParams(&prms->config.flexcfa_params, prms->dcc_output_params);
+                prms->config.flexcfa_params.imgWidth = width;
+                prms->config.flexcfa_params.imgHeight = height;
 
                 /* FLEXCC */
                 if( ( NULL != y12_desc ) ||
-                   (( NULL != uv12_c1_desc )   && (2 != params->mux_uv12_c1_out)) ||
-                   (( NULL != y8_r8_c2_desc )  && (2 != params->mux_y8_r8_c2_out)) ||
-                   (( NULL != uv8_g8_c3_desc ) && (2 != params->mux_uv8_g8_c3_out)) ||
-                   (( NULL != s8_b8_c4_desc )  && (2 != params->mux_s8_b8_c4_out)) ||
+                   (( NULL != uv12_c1_desc )   && (2 != params->mux_output1)) ||
+                   (( NULL != y8_r8_c2_desc )  && (2 != params->mux_output2)) ||
+                   (( NULL != uv8_g8_c3_desc ) && (2 != params->mux_output3)) ||
+                   (( NULL != s8_b8_c4_desc )  && (2 != params->mux_output4)) ||
                     ( NULL != histogram_desc))
                 {
-                    strncpy(temp_path, params->sensor_name, VISS_MAX_PATH_SIZE);
-                    strncat(temp_path, path_flexcc, sizeof(path_flexcc));
-                    if(0 != tivxVpacVissFindFile(params->sensor_name, path_flexcc, "cfg_flexcc_master", temp_name))
+                    tivxVpacVissParseFlxCCParams(&prms->config.flexcc_params, prms->dcc_output_params);
+                    prms->config.flexcc_params.inWidth = width;
+                    prms->config.flexcc_params.inHeight = height;
+
+                    if( (( NULL != y12_desc )      && (4 == params->mux_output0)) ||
+                        (( NULL != y8_r8_c2_desc ) && (4 == params->mux_output2)) )
                     {
-                        flexcc_read_parameters(temp_name, &prms->config.flexcc_params, &w, &h, temp_path);
-                        prms->config.flexcc_params.inWidth = width;
-                        prms->config.flexcc_params.inHeight = height;
+                        prms->config.flexcc_params.ChromaMode = 0; /* NV12 format is chosen on at least 1 output port */
+                    }
+                    else if (( NULL != y8_r8_c2_desc ) && (5 == params->mux_output2))
+                    {
+                        prms->config.flexcc_params.ChromaMode = 1; /* YUV422 interleaved is chosen */
                     }
                     else
                     {
-                        VX_PRINT(VX_ZONE_ERROR, "FlexCC config file not found\n");
-                        status = VX_FAILURE;
+                        prms->config.flexcc_params.ChromaMode = params->chroma_mode;
+                    }
+
+                    if( NULL != y12_desc )
+                    {
+                        if (3u == params->mux_output0)  /* Value Format */
+                        {
+                            prms->config.flexcc_params.MuxY12Out = 2; /* HSV value */
+                        }
+                        else
+                        {
+                            prms->config.flexcc_params.MuxY12Out = 1; /* YUV Luma */
+                        }
+                    }
+
+                    if( NULL != y8_r8_c2_desc )
+                    {
+                        if (3u == params->mux_output2)  /* Value Format */
+                        {
+                            prms->config.flexcc_params.MuxY8Out = 2; /* HSV value */
+                        }
+                        else
+                        {
+                            prms->config.flexcc_params.MuxY8Out = 1; /* YUV Luma */
+                        }
                     }
                 }
                 else
@@ -1029,32 +954,16 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 }
 
                 /* EE */
-                if(2 != params->mux_ee_port)
+                if(0 != params->ee_mode)
                 {
-                    if((( NULL != y12_desc )       && (0 == params->mux_ee_port)) ||
-                       (( NULL != y8_r8_c2_desc )  && (0 == params->mux_y8_r8_c2_out) && (1 == params->mux_ee_port)))
+                    if((( NULL != y12_desc )       && (1 == params->ee_mode)) ||
+                       (( NULL != y8_r8_c2_desc )  && (2 == params->ee_mode) &&
+                        ((0u == params->mux_output2) || (4u == params->mux_output2) ||
+                            (5u == params->mux_output2))))
                     {
-                        if(0 != tivxVpacVissFindFile(params->sensor_name, "/edgeEnhancer_tasks/", "cfg_ee_master", temp_name))
-                        {
-                            read_ee_cfg(temp_name, &prms->config.ee_params);
-                            prms->config.ee_params.width = width;
-                            prms->config.ee_params.height = height;
-                        }
-                        else
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "Edge Enhancer config file not found\n");
-                            status = VX_FAILURE;
-                        }
-
-                        if(0 != tivxVpacVissFindFile(params->sensor_name, "/edgeEnhancer_tasks/", "lut_ee", temp_name))
-                        {
-                            read_lutfile(temp_name, prms->config.ee_params.yee_table_s13, 4096);
-                        }
-                        else
-                        {
-                            VX_PRINT(VX_ZONE_ERROR, "Edge Enhancer lut file not found\n");
-                            status = VX_FAILURE;
-                        }
+                        tivxVpacVissParseYeeParams(&prms->config.ee_params, prms->dcc_output_params);
+                        prms->config.ee_params.width = width;
+                        prms->config.ee_params.height = height;
                     }
                     else
                     {
@@ -1098,7 +1007,6 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
 
     if ( num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
-        || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
@@ -1202,53 +1110,3 @@ static void tivxVpacVissFreeMem(tivxVpacVissParams *prms)
     }
 }
 
-static uint32_t tivxVpacVissFindFile(char *root_name, char *dir_name, char *substring, char *full_path)
-{
-    FILE *file;
-    uint32_t found = 0;
-
-    strncpy(full_path, root_name, VISS_MAX_PATH_SIZE);
-    strncat(full_path, dir_name, VISS_MAX_PATH_SIZE-1);
-    strncat(full_path, file_prefix, VISS_MAX_PATH_SIZE-1);
-    strncat(full_path, substring, VISS_MAX_PATH_SIZE-1);
-    strncat(full_path, "_0.txt", VISS_MAX_PATH_SIZE-1);
-
-    if ((file = fopen(full_path, "r")) != NULL)
-    {
-        fclose(file);
-        found = 1;
-    }
-
-    return found;
-}
-
-static uint32_t tivxVpacVissGetFileConfig(char *root_name, char *file_name, char *full_path)
-{
-    FILE *file;
-    uint32_t found = 0;
-
-    strncpy(full_path, root_name, VISS_MAX_PATH_SIZE);
-    strncat(full_path, file_name, VISS_MAX_PATH_SIZE-1);
-
-    if ((file = fopen(full_path, "r")) != NULL)
-    {
-        char *nl;
-        fgets(file_prefix, VISS_FILE_PREFIX_MAX_SIZE, file);
-        fclose(file);
-
-        nl = strrchr(file_prefix, '\r');
-        if (nl)
-        {
-            *nl = '\0';
-        }
-        nl = strrchr(file_prefix, '\n');
-        if (nl)
-        {
-            *nl = '\0';
-        }
-
-        found = 1;
-    }
-
-    return found;
-}

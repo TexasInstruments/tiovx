@@ -135,24 +135,23 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
     }
 }
 
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits)
+void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t channel)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = dst->imagepatch_addr[0].dim_x;
-    uint32_t h = dst->imagepatch_addr[0].dim_y;
-    uint32_t stride = dst->imagepatch_addr[0].stride_y;
+    uint32_t w = dst->imagepatch_addr[channel].dim_x;
+    uint32_t h = dst->imagepatch_addr[channel].dim_y / dst->imagepatch_addr[channel].step_y;
+    uint32_t stride = dst->imagepatch_addr[channel].stride_y;
     uint16_t downshift = input_bits-8;
     uint16_t upshift = 12-input_bits;
-
 
     if (VX_DF_IMAGE_U8 == dst->format)
     {
         uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0U]));
+            &dst->imagepatch_addr[channel]));
 
         for(j = 0; j < h; j++)
         {
@@ -167,7 +166,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
     {
         uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0U]));
+            &dst->imagepatch_addr[channel]));
         stride /= 2;
 
         for(j = 0; j < h; j++)
@@ -183,7 +182,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
     {
         uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[0U]));
+            &dst->imagepatch_addr[channel]));
         stride /= 4;
 
         for(j = 0; j < h; j++)
@@ -205,6 +204,44 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
                                             (((uint32_t)dst16[j*w+i+7] << upshift) << 20);
                 k+=3;
             }
+        }
+    }
+}
+
+void lse_interleave_422(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
+{
+    /* Get the correct offset of the images from the valid roi parameter,
+       Assuming valid Roi is same images */
+    vx_rectangle_t rect = src->valid_roi;
+    int32_t i, j;
+    uint32_t w = dst->imagepatch_addr[0].dim_x;
+    uint32_t h = dst->imagepatch_addr[0].dim_y / dst->imagepatch_addr[0].step_y;
+    uint32_t stride = dst->imagepatch_addr[0].stride_y;
+    uint16_t downshift = input_bits-8;
+    uint32_t y,u;
+
+    uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
+        tivxComputePatchOffset(rect.start_x, rect.start_y,
+        &dst->imagepatch_addr[0]));
+
+    if (VX_DF_IMAGE_YUYV == dst->format)
+    {
+        y=0;
+        u=1;
+    }
+    else
+    {
+        y=1;
+        u=0;
+    }
+
+    for(j = 0; j < h; j++)
+    {
+        for(i=0; i < w; i++)
+        {
+            /* Downshift bits to align msb to bit 7 */
+            dst_addr8[j*stride+i*2+y] = dst16_0[j*w+i] >> downshift;
+            dst_addr8[j*stride+i*2+u] = dst16_1[j*w+i] >> downshift;
         }
     }
 }
@@ -332,7 +369,7 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     uint32_t h = src->imagepatch_addr[exp].dim_y;
     uint32_t stride = src->imagepatch_addr[exp].stride_y;
     uint32_t idx = exp;
-    
+
     if(src->params.line_interleaved)
     {
         idx = 0;
@@ -397,13 +434,41 @@ void lse_reformat_in_viss(tivx_obj_desc_raw_image_t *src, void* src_target_ptr, 
     }
 }
 
-void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits)
+void lse_reformat_out_viss(tivx_obj_desc_raw_image_t *src, tivx_obj_desc_image_t *dst, void *dst0_target_ptr, void *dst1_target_ptr, uint16_t dst16_0[], uint16_t dst16_1[], uint16_t input_bits)
 {
+    uint32_t format;
     tivx_obj_desc_image_t tmp;
-    
+
     memcpy(&tmp.valid_roi, &src->valid_roi, sizeof(src->valid_roi));
-    
-    lse_reformat_out(&tmp, dst, dst_target_ptr, dst16, input_bits);
+
+    if ((TIVX_DF_IMAGE_NV12_P12 == dst->format) ||
+        (VX_DF_IMAGE_NV12 == dst->format))
+    {
+        format = dst->format;
+
+        if (TIVX_DF_IMAGE_NV12_P12 == dst->format)
+        {
+            dst->format = TIVX_DF_IMAGE_P12;
+        }
+        else
+        {
+            dst->format = VX_DF_IMAGE_U8;
+        }
+
+        lse_reformat_out(&tmp, dst, dst0_target_ptr, dst16_0, input_bits, 0);
+        lse_reformat_out(&tmp, dst, dst1_target_ptr, dst16_1, input_bits, 1);
+
+        dst->format = format;
+    }
+    else if ((VX_DF_IMAGE_YUYV == dst->format) ||
+             (VX_DF_IMAGE_UYVY == dst->format))
+    {
+        lse_interleave_422(&tmp, dst, dst0_target_ptr, dst16_0, dst16_1, input_bits);
+    }
+    else
+    {
+        lse_reformat_out(&tmp, dst, dst0_target_ptr, dst16_0, input_bits, 0);
+    }
 }
 
 

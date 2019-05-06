@@ -97,25 +97,25 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_uint32 raw_w;
     vx_uint32 raw_h;
 
-    vx_image y12 = NULL;
-    vx_df_image y12_fmt;
-    vx_uint32 y12_w, y12_h;
+    vx_image output0 = NULL;
+    vx_df_image output0_fmt;
+    vx_uint32 output0_w, output0_h;
 
-    vx_image uv12_c1 = NULL;
-    vx_df_image uv12_c1_fmt;
-    vx_uint32 uv12_c1_w, uv12_c1_h;
+    vx_image output1 = NULL;
+    vx_df_image output1_fmt;
+    vx_uint32 output1_w, output1_h;
 
-    vx_image y8_r8_c2 = NULL;
-    vx_df_image y8_r8_c2_fmt;
-    vx_uint32 y8_r8_c2_w, y8_r8_c2_h;
+    vx_image output2 = NULL;
+    vx_df_image output2_fmt;
+    vx_uint32 output2_w, output2_h;
 
-    vx_image uv8_g8_c3 = NULL;
-    vx_df_image uv8_g8_c3_fmt;
-    vx_uint32 uv8_g8_c3_w, uv8_g8_c3_h;
+    vx_image output3 = NULL;
+    vx_df_image output3_fmt;
+    vx_uint32 output3_w, output3_h;
 
-    vx_image s8_b8_c4 = NULL;
-    vx_df_image s8_b8_c4_fmt;
-    vx_uint32 s8_b8_c4_w, s8_b8_c4_h;
+    vx_image output4 = NULL;
+    vx_df_image output4_fmt;
+    vx_uint32 output4_w, output4_h;
 
     vx_distribution histogram = NULL;
     vx_int32 histogram_offset = 0;
@@ -129,6 +129,8 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     vx_user_data_object dcc_param = NULL;
     vx_char dcc_param_name[VX_MAX_REFERENCE_NAME];
     vx_size dcc_param_size;
+
+    tivx_vpac_viss_params_t params;
 
     if ( (num != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
@@ -145,14 +147,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         configuration = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
         ae_awb_result = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw = (tivx_raw_image)parameters[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
-        y12 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_Y12_IDX];
-        uv12_c1 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV12_C1_IDX];
-        y8_r8_c2 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_Y8_R8_C2_IDX];
-        uv8_g8_c3 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_UV8_G8_C3_IDX];
-        s8_b8_c4 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_S8_B8_C4_IDX];
+        output0 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
+        output1 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
+        output2 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT2_IDX];
+        output3 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT3_IDX];
+        output4 = (vx_image)parameters[TIVX_KERNEL_VPAC_VISS_OUT4_IDX];
         histogram = (vx_distribution)parameters[TIVX_KERNEL_VPAC_VISS_HISTOGRAM_IDX];
         h3a_aew_af = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
-        dcc_param = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_DCC_PARAM_IDX];
+        dcc_param = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_VISS_DCC_BUF_IDX];
     }
 
 
@@ -169,39 +171,39 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         tivxCheckStatus(&status, tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &raw_w, sizeof(raw_w)));
         tivxCheckStatus(&status, tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &raw_h, sizeof(raw_h)));
 
-        if (NULL != y12)
+        if (NULL != output0)
         {
-            tivxCheckStatus(&status, vxQueryImage(y12, VX_IMAGE_FORMAT, &y12_fmt, sizeof(y12_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(y12, VX_IMAGE_WIDTH, &y12_w, sizeof(y12_w)));
-            tivxCheckStatus(&status, vxQueryImage(y12, VX_IMAGE_HEIGHT, &y12_h, sizeof(y12_h)));
+            tivxCheckStatus(&status, vxQueryImage(output0, VX_IMAGE_FORMAT, &output0_fmt, sizeof(output0_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output0, VX_IMAGE_WIDTH, &output0_w, sizeof(output0_w)));
+            tivxCheckStatus(&status, vxQueryImage(output0, VX_IMAGE_HEIGHT, &output0_h, sizeof(output0_h)));
         }
 
-        if (NULL != uv12_c1)
+        if (NULL != output1)
         {
-            tivxCheckStatus(&status, vxQueryImage(uv12_c1, VX_IMAGE_FORMAT, &uv12_c1_fmt, sizeof(uv12_c1_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(uv12_c1, VX_IMAGE_WIDTH, &uv12_c1_w, sizeof(uv12_c1_w)));
-            tivxCheckStatus(&status, vxQueryImage(uv12_c1, VX_IMAGE_HEIGHT, &uv12_c1_h, sizeof(uv12_c1_h)));
+            tivxCheckStatus(&status, vxQueryImage(output1, VX_IMAGE_FORMAT, &output1_fmt, sizeof(output1_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output1, VX_IMAGE_WIDTH, &output1_w, sizeof(output1_w)));
+            tivxCheckStatus(&status, vxQueryImage(output1, VX_IMAGE_HEIGHT, &output1_h, sizeof(output1_h)));
         }
 
-        if (NULL != y8_r8_c2)
+        if (NULL != output2)
         {
-            tivxCheckStatus(&status, vxQueryImage(y8_r8_c2, VX_IMAGE_FORMAT, &y8_r8_c2_fmt, sizeof(y8_r8_c2_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(y8_r8_c2, VX_IMAGE_WIDTH, &y8_r8_c2_w, sizeof(y8_r8_c2_w)));
-            tivxCheckStatus(&status, vxQueryImage(y8_r8_c2, VX_IMAGE_HEIGHT, &y8_r8_c2_h, sizeof(y8_r8_c2_h)));
+            tivxCheckStatus(&status, vxQueryImage(output2, VX_IMAGE_FORMAT, &output2_fmt, sizeof(output2_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output2, VX_IMAGE_WIDTH, &output2_w, sizeof(output2_w)));
+            tivxCheckStatus(&status, vxQueryImage(output2, VX_IMAGE_HEIGHT, &output2_h, sizeof(output2_h)));
         }
 
-        if (NULL != uv8_g8_c3)
+        if (NULL != output3)
         {
-            tivxCheckStatus(&status, vxQueryImage(uv8_g8_c3, VX_IMAGE_FORMAT, &uv8_g8_c3_fmt, sizeof(uv8_g8_c3_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(uv8_g8_c3, VX_IMAGE_WIDTH, &uv8_g8_c3_w, sizeof(uv8_g8_c3_w)));
-            tivxCheckStatus(&status, vxQueryImage(uv8_g8_c3, VX_IMAGE_HEIGHT, &uv8_g8_c3_h, sizeof(uv8_g8_c3_h)));
+            tivxCheckStatus(&status, vxQueryImage(output3, VX_IMAGE_FORMAT, &output3_fmt, sizeof(output3_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output3, VX_IMAGE_WIDTH, &output3_w, sizeof(output3_w)));
+            tivxCheckStatus(&status, vxQueryImage(output3, VX_IMAGE_HEIGHT, &output3_h, sizeof(output3_h)));
         }
 
-        if (NULL != s8_b8_c4)
+        if (NULL != output4)
         {
-            tivxCheckStatus(&status, vxQueryImage(s8_b8_c4, VX_IMAGE_FORMAT, &s8_b8_c4_fmt, sizeof(s8_b8_c4_fmt)));
-            tivxCheckStatus(&status, vxQueryImage(s8_b8_c4, VX_IMAGE_WIDTH, &s8_b8_c4_w, sizeof(s8_b8_c4_w)));
-            tivxCheckStatus(&status, vxQueryImage(s8_b8_c4, VX_IMAGE_HEIGHT, &s8_b8_c4_h, sizeof(s8_b8_c4_h)));
+            tivxCheckStatus(&status, vxQueryImage(output4, VX_IMAGE_FORMAT, &output4_fmt, sizeof(output4_fmt)));
+            tivxCheckStatus(&status, vxQueryImage(output4, VX_IMAGE_WIDTH, &output4_w, sizeof(output4_w)));
+            tivxCheckStatus(&status, vxQueryImage(output4, VX_IMAGE_HEIGHT, &output4_h, sizeof(output4_h)));
         }
 
         if (NULL != histogram)
@@ -234,6 +236,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_viss_params_t \n");
         }
+        else
+        {
+            vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
+        }
 
         if ((ae_awb_result_size != sizeof(tivx_ae_awb_params_t)) ||
             (strncmp(ae_awb_result_name, "tivx_ae_awb_params_t", sizeof(ae_awb_result_name)) != 0))
@@ -243,56 +249,60 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
 
 
-        if (NULL != y12)
+        if (NULL != output0)
         {
-            if( (VX_DF_IMAGE_U16 != y12_fmt) &&
-                (TIVX_DF_IMAGE_P12 != y12_fmt))
+            if( (VX_DF_IMAGE_U16 != output0_fmt) &&
+                (TIVX_DF_IMAGE_P12 != output0_fmt) &&
+                (TIVX_DF_IMAGE_NV12_P12 != output0_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'y12' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'output0' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or TIVX_DF_IMAGE_NV12_P12\n");
             }
         }
 
-        if (NULL != uv12_c1)
+        if (NULL != output1)
         {
-            if( (VX_DF_IMAGE_U16 != uv12_c1_fmt) &&
-                (TIVX_DF_IMAGE_P12 != uv12_c1_fmt))
+            if( (VX_DF_IMAGE_U16 != output1_fmt) &&
+                (TIVX_DF_IMAGE_P12 != output1_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'uv12_c1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'output1' should be an image of type:\n VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
 
-        if (NULL != y8_r8_c2)
+        if (NULL != output2)
         {
-            if( (VX_DF_IMAGE_U8 != y8_r8_c2_fmt) &&
-                (VX_DF_IMAGE_U16 != y8_r8_c2_fmt) &&
-                (TIVX_DF_IMAGE_P12 != y8_r8_c2_fmt))
+            if( (VX_DF_IMAGE_U8 != output2_fmt) &&
+                (VX_DF_IMAGE_U16 != output2_fmt) &&
+                (TIVX_DF_IMAGE_P12 != output2_fmt) &&
+                (VX_DF_IMAGE_NV12 != output2_fmt) &&
+                (VX_DF_IMAGE_YUYV != output2_fmt) &&
+                (VX_DF_IMAGE_UYVY != output2_fmt) )
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'y8_r8_c2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'output2' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 or VX_DF_IMAGE_NV12 or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_UYVY \n");
             }
         }
 
-        if (NULL != uv8_g8_c3)
+        if (NULL != output3)
         {
-            if( (VX_DF_IMAGE_U8 != uv8_g8_c3_fmt) &&
-                (VX_DF_IMAGE_U16 != uv8_g8_c3_fmt) &&
-                (TIVX_DF_IMAGE_P12 != uv8_g8_c3_fmt))
+            if( (VX_DF_IMAGE_U8 != output3_fmt) &&
+                (VX_DF_IMAGE_U16 != output3_fmt) &&
+                (TIVX_DF_IMAGE_P12 != output3_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'uv8_g8_c3' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'output3' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
 
-        if (NULL != s8_b8_c4)
+        if (NULL != output4)
         {
-            if( (VX_DF_IMAGE_U8 != s8_b8_c4_fmt) &&
-                (VX_DF_IMAGE_U16 != s8_b8_c4_fmt) &&
-                (TIVX_DF_IMAGE_P12 != s8_b8_c4_fmt))
+            if( (VX_DF_IMAGE_U8 != output4_fmt) &&
+                (VX_DF_IMAGE_U16 != output4_fmt) &&
+                (TIVX_DF_IMAGE_P12 != output4_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "'s8_b8_c4' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'output4' should be an image of type:\n VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
             }
         }
 
@@ -318,68 +328,151 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         }
     }
 
+    /* MUX VALUE CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if (NULL != output0)
+        {
+            if ((0u != params.mux_output0) && (3u != params.mux_output0) &&
+                (4u != params.mux_output0))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output0\n");
+            }
+        }
+        if (NULL != output1)
+        {
+            if ((0u != params.mux_output1) && (2u != params.mux_output1))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output1\n");
+            }
+        }
+        if (NULL != output3)
+        {
+            if ((0u != params.mux_output3) && (1u != params.mux_output3) &&
+                (2u != params.mux_output3))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output3\n");
+            }
+        }
+        if (NULL != output4)
+        {
+            if ((1u != params.mux_output4) && (2u != params.mux_output4) &&
+                (3u != params.mux_output4))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Invalid mux value for mux_output4\n");
+            }
+        }
+
+        if ((NULL != output0) && (TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+            (4u != params.mux_output0))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Mux_output0 must be set to 4 for NV12 output\n");
+        }
+        if (NULL != output2)
+        {
+            if ((VX_DF_IMAGE_NV12 == output2_fmt) && (4u != params.mux_output2))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Mux_output2 must be set to 4 for NV12 output\n");
+            }
+            if (((VX_DF_IMAGE_YUYV == output2_fmt) || (VX_DF_IMAGE_UYVY == output2_fmt)) &&
+                 (5u != params.mux_output2))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Mux_output2 must be set to 5 for YUYV or UYVY output\n");
+            }
+        }
+        if ((NULL != output0) && (TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+            ((NULL != output2) &&
+                ((VX_DF_IMAGE_UYVY == output2_fmt) || (VX_DF_IMAGE_YUYV == output2_fmt))))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "NV12_P12 on 'output0' and YUV422 on 'output2' are not possible\n");
+        }
+    }
 
     /* PARAMETER RELATIONSHIP CHECKING */
 
     if (VX_SUCCESS == status)
     {
-        if (NULL != y12)
+        if (NULL != output0)
         {
-            if (y12_w != raw_w)
+            if (output0_w != raw_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'y12' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output0' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
             }
-            if (y12_h != raw_h)
+            if (output0_h != raw_h)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'y12' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output0' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
+
+            if ((TIVX_DF_IMAGE_NV12_P12 == output0_fmt) &&
+                (output1 != NULL))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output1' cannot be enabled with NV12 output on 'output0'\n");
+            }
+
+        }
+
+        if (NULL != output2)
+        {
+            if (output2_w != raw_w)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output2' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (output2_h != raw_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output2' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+            }
+
+            if ((VX_DF_IMAGE_NV12 == output2_fmt) &&
+                (output3 != NULL))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output3' cannot be enabled with NV12 output on 'output2'\n");
             }
         }
 
-        if (NULL != y8_r8_c2)
+        if (NULL != output4)
         {
-            if (y8_r8_c2_w != raw_w)
+            if (output4_w != raw_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'y8_r8_c2' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output4' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
             }
-            if (y8_r8_c2_h != raw_h)
+            if (output4_h != raw_h)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'y8_r8_c2' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output4' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
 
-        if (NULL != s8_b8_c4)
+        if (NULL != output1)
         {
-            if (s8_b8_c4_w != raw_w)
+            if (output1_w != raw_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 's8_b8_c4' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
-            }
-            if (s8_b8_c4_h != raw_h)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 's8_b8_c4' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output1' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
             }
         }
 
-        if (NULL != uv12_c1)
+        if (NULL != output3)
         {
-            if (uv12_c1_w != raw_w)
+            if (output3_w != raw_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'uv12_c1' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
-            }
-        }
-
-        if (NULL != uv8_g8_c3)
-        {
-            if (uv8_g8_c3_w != raw_w)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR, "Parameters 'uv8_g8_c3' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'output3' and 'raw' should have the same value for VX_IMAGE_WIDTH\n");
             }
         }
     }
@@ -387,44 +480,41 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
     /* CUSTOM PARAMETER CHECKING */
 
     {
-        tivx_vpac_viss_params_t params;
-        vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
-
-        if (NULL != uv12_c1)
+        if (NULL != output1)
         {
-            if((0 == params.mux_uv12_c1_out) && (0 == params.chroma_out_mode))
+            if((0 == params.mux_output1) && (0 == params.chroma_mode))
             {
-                if ((uv12_c1_h*2) != raw_h)
+                if ((output1_h*2) != raw_h)
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'uv12_c1' should have half the height of 'raw'\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'output1' should have half the height of 'raw'\n");
                 }
             }
             else
             {
-                if ((uv12_c1_h) != raw_h)
+                if ((output1_h) != raw_h)
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'uv12_c1' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output1' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
                 }
             }
         }
-        if (NULL != uv8_g8_c3)
+        if (NULL != output3)
         {
-            if((0 == params.mux_uv8_g8_c3_out) && (0 == params.chroma_out_mode))
+            if((0 == params.mux_output3) && (0 == params.chroma_mode))
             {
-                if ((uv8_g8_c3_h*2) != raw_h)
+                if ((output3_h*2) != raw_h)
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'uv8_g8_c3' should have half the height of 'raw'\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Parameter 'output3' should have half the height of 'raw'\n");
                 }
             }
             else
             {
-                if ((uv8_g8_c3_h) != raw_h)
+                if ((output3_h) != raw_h)
                 {
                     status = VX_ERROR_INVALID_PARAMETERS;
-                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'uv8_g8_c3' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
+                    VX_PRINT(VX_ZONE_ERROR, "Parameters 'output3' and 'raw' should have the same value for VX_IMAGE_HEIGHT\n");
                 }
             }
         }
@@ -439,11 +529,9 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissInitialize(vx_node node,
 {
     vx_status status = VX_SUCCESS;
 
-    if ( (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
-        || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
-        || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
-        || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
-    )
+    if ((num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS) ||
+        (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX]) ||
+        (NULL == parameters[TIVX_KERNEL_VPAC_VISS_RAW_IDX]))
     {
         status = VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
@@ -484,6 +572,7 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         index = 0;
 
         {
+            /* Configuration */
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
@@ -494,16 +583,29 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         }
         if (status == VX_SUCCESS)
         {
+            /* AE/AEWB Result */
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
                         VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_REQUIRED
+                        VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
         if (status == VX_SUCCESS)
         {
+            /* DCC Buffer */
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_USER_DATA_OBJECT,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            /* Input RAW Images */
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
@@ -564,30 +666,22 @@ vx_status tivxAddKernelVpacViss(vx_context context)
         }
         if (status == VX_SUCCESS)
         {
+            /* H3A Output */
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_OUTPUT,
+                        VX_TYPE_USER_DATA_OBJECT,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            /* Histogram Output */
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_OUTPUT,
                         VX_TYPE_DISTRIBUTION,
-                        VX_PARAMETER_STATE_OPTIONAL
-            );
-            index++;
-        }
-        if (status == VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                        index,
-                        VX_OUTPUT,
-                        VX_TYPE_USER_DATA_OBJECT,
-                        VX_PARAMETER_STATE_OPTIONAL
-            );
-            index++;
-        }
-        if (status == VX_SUCCESS)
-        {
-            status = vxAddParameterToKernel(kernel,
-                        index,
-                        VX_INPUT,
-                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
@@ -626,3 +720,42 @@ vx_status tivxRemoveKernelVpacViss(vx_context context)
 
     return status;
 }
+
+void tivx_vpac_viss_params_init(tivx_vpac_viss_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_vpac_viss_params_t));
+
+        prms->mux_output0 = 4U;
+        prms->mux_output2 = 4U;
+        prms->mux_output4 = 3U;
+        prms->ee_mode = 0U;
+        prms->chroma_mode = 0U;
+    }
+}
+
+void tivx_h3a_data_init(tivx_h3a_data_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_h3a_data_t));
+    }
+}
+
+void tivx_ae_awb_params_init(tivx_ae_awb_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_ae_awb_params_t));
+    }
+}
+
+void tivx_h3a_aew_header_init(tivx_h3a_aew_header *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_h3a_aew_header));
+    }
+}
+

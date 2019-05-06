@@ -60,72 +60,31 @@
  *
  */
 
-#ifndef J7_H_
-#define J7_H_
-
-#include <TI/tivx.h>
-#include <TI/j7_kernels.h>
-#include <TI/j7_vpac_viss.h>
-#include <TI/j7_dmpac_dof.h>
-#include <TI/j7_nodes.h>
+#ifndef VX_VPAC_VISS_TARGET_SIM_PRIV_H_
+#define VX_VPAC_VISS_TARGET_SIM_PRIV_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*!
- * \file
- * \brief Interface to TI extension APIs
- */
-
-/*! \brief Target name for VPAC NF
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_VPAC_NF      "RESV00"
-/*! \brief Target name for VPAC LDC1
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_VPAC_LDC1    "RESV01"
-/*! \brief Target name for VPAC LDC2
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_VPAC_LDC2    "RESV02"
-/*! \brief Target name for VPAC MSC1
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_VPAC_MSC1    "RESV03"
-/*! \brief Target name for VPAC MSC2
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_VPAC_MSC2    "RESV04"
-/*! \brief Target name for VPAC SDE
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_DMPAC_SDE    "RESV05"
-/*! \brief Target name for VPAC DOF
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_DMPAC_DOF    "RESV06"
-/*! \brief Target name for VPAC VISS1
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_VPAC_VISS1   "RESV07"
-/*! \brief Target name for Capture
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_CAPTURE1     "RESV08"
-/*! \brief Target name for Capture
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_CAPTURE2     "RESV09"
-/*! \brief Target name for Display
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_DISPLAY1     "RESV10"
-/*! \brief Target name for Display
- * \ingroup group_tivx_ext
- */
-#define TIVX_TARGET_DISPLAY2     "RESV11"
+void tivxVpacVissParseRfeParams(cfg_rawfe *rfe_prms,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseGlbceParams(nsf4_settings *nsf4_prms,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseH3aParams(h3a_settings *h3a_settings,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseH3aLutParams(uint32_t idx, cfg_lut *lut,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseFlxCfaParams(FLXD_Config *fcfa_prms,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseFlxCCParams(Flexcc_Config *cc_prms,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseYeeParams(ee_Config *cc_prms,
+    dcc_parser_output_params_t *dcc_out_prms);
+void tivxVpacVissParseCCMParams(Flexcc_ccm1 *ccm,
+    dcc_parser_output_params_t *dcc_out_prms);
 
 #ifdef __cplusplus
 }

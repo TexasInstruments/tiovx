@@ -190,50 +190,6 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDofVisualizeNode(vx_graph graph,
                                       vx_image             flow_vector_rgb,
                                       vx_image             confidence_image);
 
-/*! \brief [Graph] Creates a VPAC_VISS Node.
- *
- * - For single exposure processing, raw0 should be used.
- * - For dual exposure processing, raw0 should be the short exposure, and raw1 should be the long exposure.
- * - For triple exposure processing, raw0 should be the shortest exposure, raw1 should be the medium exposure, and raw2 should be the longest exposure.
- * raw1 can not be set to NULL if both raw0 and raw2 are non-NULL.
- * - The ae_awb_results typically would come from a 2A algorithm node.  Although this is a required input, the contents of this structure are currently
- * ignored (not yet supported).  For now, the configuration files pointed to by the configuration->sensor_name parameter is used and the ae_awb_result
- * is not yet used to modify these settings.
- * - The resolution of all the image ports should have the same width and height.  The only exception to this is if the configuration->chroma_out_mode
- * is set to 0:420 and the uv12 or uv8 multiplexors are selected on enabled ports, then the height is half of the input for these 2 ports.
- * \param [in] graph The reference to the graph.
- * \param [in] configuration             The input object of a single params structure of type <tt>\ref tivx_vpac_viss_params_t</tt>.
- * \param [in] ae_awb_result             The input object of a single params structure of type <tt>\ref tivx_ae_awb_params_t</tt>.
- * \param [in] raw                       The RAW bayer input image (can contain up to 3 exposures plus meta data).
- * \param [out] y12 (optional)           The Y12 output image in <tt>\ref VX_DF_IMAGE_U16</tt> or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] uv12_c1 (optional)       The UV12 or C1 output image in <tt>\ref VX_DF_IMAGE_U16</tt> or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] y8_r8_c2 (optional)      The Y8, R8, or C2 output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
- *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] uv8_g8_c3 (optional)     The UV8, G8, or C3 output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
- *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] s8_b8_c4 (optional)      The S8, B8, or C4 output image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>,
- *                                       or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] histogram (optional)     The output histogram with 256 bins.
- * \param [out] h3a_aew_af (optional)    The output array of a single params structure of type <tt>\ref tivx_h3a_data_t</tt>.
- * \param [in] dcc_param   (optional)    DCC tuning data for the given sensor <tt>\ref vx_user_data_object </tt> .
- * \see <tt>TIVX_KERNEL_VPAC_VISS_NAME</tt>
- * \ingroup group_vision_function_vpac_viss
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxVpacVissNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_user_data_object  ae_awb_result,
-                                      tivx_raw_image       raw,
-                                      vx_image             y12,
-                                      vx_image             uv12_c1,
-                                      vx_image             y8_r8_c2,
-                                      vx_image             uv8_g8_c3,
-                                      vx_image             s8_b8_c4,
-                                      vx_distribution      histogram,
-                                      vx_user_data_object  h3a_aew_af,
-                                      vx_user_data_object  dcc_param);
-
 /*! \brief [Graph] Creates a DSS Display Node.
  *
  * \param [in] graph         The reference to the graph.
