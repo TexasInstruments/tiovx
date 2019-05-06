@@ -11,7 +11,7 @@
 #include <tivx_platform_psdk_j7.h>
 
 
-#define TIVX_TARGET_MCU2_0_MAX          (12)
+#define TIVX_TARGET_MCU2_1_MAX          (12)
 #define TIVX_TARGET_DEFAULT_STACK_SIZE  (16U*1024U)
 
 /**
@@ -19,7 +19,7 @@
  * \brief Target Stack
  *******************************************************************************
  */
-static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_0_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
+static uint8_t gTarget_tskStack[TIVX_TARGET_MCU2_1_MAX][TIVX_TARGET_DEFAULT_STACK_SIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(8192)))
     ;
