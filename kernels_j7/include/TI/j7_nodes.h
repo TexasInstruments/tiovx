@@ -69,25 +69,6 @@
 extern "C" {
 #endif
 
-/*! \brief [Graph] Creates a DMPAC_SDE Node.
- * \param [in] graph The reference to the graph.
- * \param [in] configuration The input object of a single params structure of type <tt>\ref tivx_dmpac_sde_params_t</tt>.
- * \param [in] left The left input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [in] right The right input image in <tt>\ref VX_DF_IMAGE_U8</tt>, <tt>\ref VX_DF_IMAGE_U16</tt>, or <tt>\ref TIVX_DF_IMAGE_P12</tt> format.
- * \param [out] output The output image in <tt>\ref VX_DF_IMAGE_S16</tt> format. Bit packing format: Sign[15], Integer[14:7], Fractional[6:3], Confidence[2:0]
- * \param [out] confidence_histogram (optional) Histogram of the confidence scores.  Must be configured to 128 bins.
- * \see <tt>TIVX_KERNEL_DMPAC_SDE_NAME</tt>
- * \ingroup group_vision_function_dmpac_sde
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
-                                      vx_user_data_object  configuration,
-                                      vx_image             left,
-                                      vx_image             right,
-                                      vx_image             output,
-                                      vx_distribution      confidence_histogram);
-
 /*! \brief [Graph] Creates a DOF visualization node Node.
  * \param [in] graph The reference to the graph.
  * \param [in] flow_vector Flow vector output from dmpac_dof node

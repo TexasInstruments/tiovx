@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -85,11 +85,6 @@ extern "C" {
  */
 #define TIVX_MODULE_NAME_TIDL    "tidl"
 
-/*! \brief dmpac_sde kernel name
- *  \ingroup group_vision_function_dmpac_sde
- */
-#define TIVX_KERNEL_DMPAC_SDE_NAME     "com.ti.hwa.dmpac_sde"
-
 /*! \brief dof_visualize kernel name
  *  \ingroup group_vision_function_dmpac_dof
  */
@@ -129,37 +124,7 @@ extern "C" {
 
 /*! End of group_vision_function_hwa */
 
-/*********************************
- *      DMPAC_SDE STRUCTURES
- *********************************/
 
-/*!
- * \brief The configuration data structure used by the TIVX_KERNEL_DMPAC_SDE kernel.
- *
- * \ingroup group_vision_function_dmpac_sde
- */
-typedef struct {
-    uint16_t  median_filter_enable;         /*!< 0: Disabled; 1: Enable post-processing 5x5 median filter */
-    uint16_t  reduced_range_search_enable;  /*!< 0: Disabled; 1: Enable reduced range search on pixels near right margin */
-    uint16_t  disparity_min;                /*!< 0: minimum disparity == 0; 1: minimum disparity == -3 */
-    uint16_t  disparity_max;                /*!< 0: disparity_min + 63; 1: disparity_min + 127; 2: disparity_min + 191 */
-    uint16_t  threshold_left_right;         /*!< Left-right consistency check threshold in pixels [Range (0 - 255)] */
-    uint16_t  texture_filter_enable;        /*!< 0: Disabled; 1: Enable texture based filtering */
-    /*! If texture_filter_enable == 1, Scaled texture threshold [Range (0 - 255)]
-     *  Any pixel whose texture metric is lower than threshold_texture is considered to be low texture.  It is specified as
-     *  normalized texture threshold times 1024.  For instance, if threshold_texture == 204, the normalized texture threshold
-     *  is 204/1024 = 0.1992.
-     */
-    uint16_t  threshold_texture;
-    uint16_t  aggregation_penalty_p1;       /*!< SDE aggragation penalty P1. Optimization penalty constant for small disparity change. P1<=127 */
-    uint16_t  aggregation_penalty_p2;       /*!< SDE aggragation penalty P2. Optimization penalty constant for large disparity change. P2<=255 */
-    /*! Defines custom ranges for mapping internal confidence score to one of 8 levels. [Range (0 - 4095)]
-     *    The confidence score will map to level N if it is less than confidence_score_map[N] but greater than or equal to confidence_score_map[N-1]
-     *    For example, to map internal confidence scores from 0 to 50 to level 0, and confidence scores from 51 to 108 to level 1,
-     *    then set confidence_score_map[0] = 51 and confidence_score_map[1] = 109
-     *    NOTE: Each mapping value must be greater than the values from lower indices of the array */
-    uint16_t  confidence_score_map[8];
-} tivx_dmpac_sde_params_t;
 
 /*********************************
  *      DISPLAY STRUCTURES
@@ -220,18 +185,6 @@ void tivxTIDLLoadKernels(vx_context context);
  * \ingroup group_vision_function_tidl
  */
 void tivxTIDLUnLoadKernels(vx_context context);
-
-/*!
- * \brief Function to register HWA Kernels on the dmpac_sde Target
- * \ingroup group_vision_function_hwa
- */
-void tivxRegisterHwaTargetDmpacSdeKernels(void);
-
-/*!
- * \brief Function to un-register HWA Kernels on the dmpac_sde Target
- * \ingroup group_vision_function_hwa
- */
-void tivxUnRegisterHwaTargetDmpacSdeKernels(void);
 
 /*!
  * \brief Function to register HWA Kernels on the arm Target

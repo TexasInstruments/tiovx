@@ -1,0 +1,767 @@
+/*
+ *
+ * Copyright (c) 2019 Texas Instruments Incorporated
+ *
+ * All rights reserved not granted herein.
+ *
+ * Limited License.
+ *
+ * Texas Instruments Incorporated grants a world-wide, royalty-free, non-exclusive
+ * license under copyrights and patents it now or hereafter owns or controls to make,
+ * have made, use, import, offer to sell and sell ("Utilize") this software subject to the
+ * terms herein.  With respect to the foregoing patent license, such license is granted
+ * solely to the extent that any such patent is necessary to Utilize the software alone.
+ * The patent license shall not apply to any combinations which include this software,
+ * other than combinations with devices manufactured by or for TI ("TI Devices").
+ * No hardware patent is licensed hereunder.
+ *
+ * Redistributions must preserve existing copyright notices and reproduce this license
+ * (including the above copyright notice and the disclaimer and (if applicable) source
+ * code license limitations below) in the documentation and/or other materials provided
+ * with the distribution
+ *
+ * Redistribution and use in binary form, without modification, are permitted provided
+ * that the following conditions are met:
+ *
+ * *       No reverse engineering, decompilation, or disassembly of this software is
+ * permitted with respect to any software provided in binary form.
+ *
+ * *       any redistribution and use are licensed by TI for use only with TI Devices.
+ *
+ * *       Nothing shall obligate TI to provide you with source code for the software
+ * licensed and provided to you in object code.
+ *
+ * If software source code is provided to you, modification and redistribution of the
+ * source code are permitted provided that the following conditions are met:
+ *
+ * *       any redistribution and use of the source code, including any resulting derivative
+ * works, are licensed by TI for use only with TI Devices.
+ *
+ * *       any redistribution and use of any object code compiled from the source code
+ * and any resulting derivative works, are licensed by TI for use only with TI Devices.
+ *
+ * Neither the name of Texas Instruments Incorporated nor the names of its suppliers
+ *
+ * may be used to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * DISCLAIMER.
+ *
+ * THIS SOFTWARE IS PROVIDED BY TI AND TI'S LICENSORS "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
+ * IN NO EVENT SHALL TI AND TI'S LICENSORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
+ * BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY
+ * OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+ * OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED
+ * OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/* ========================================================================== */
+/*                             Include Files                                  */
+/* ========================================================================== */
+
+#include "TI/tivx.h"
+#include "TI/j7.h"
+#include "VX/vx.h"
+#include "tivx_hwa_kernels.h"
+#include "tivx_kernel_dmpac_sde.h"
+#include "TI/tivx_target_kernel.h"
+#include "tivx_kernels_target_utils.h"
+#include "TI/tivx_mutex.h"
+#include <math.h>
+
+#include "ti/drv/vhwa/include/vhwa_m2mSde.h"
+
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
+
+
+/* ========================================================================== */
+/*                         Structure Declarations                             */
+/* ========================================================================== */
+
+typedef struct
+{
+    uint32_t                            isAlloc;
+    tivx_dmpac_sde_params_t             sdeParams;
+    Vhwa_M2mSdeCreateArgs               createPrms;
+    Sde_Config                          sde_cfg;
+    Fvid2_Handle                        handle;
+    tivx_mutex                          waitForProcessCmpl;
+    Sde_ErrEventParams                  errEvtPrms;
+
+    Fvid2_Frame                         inFrm[VHWA_M2M_SDE_MAX_IN_BUFFER];
+    Fvid2_Frame                         outFrm;
+    Fvid2_CbParams                      cbPrms;
+    Fvid2_FrameList                     inFrmList;
+    Fvid2_FrameList                     outFrmList;
+    uint32_t                            csHistogram[128U];
+
+    uint32_t                            err_stat;
+} tivxDmpacSdeObj;
+
+typedef struct
+{
+    tivx_mutex lock;
+    tivxDmpacSdeObj sdeObj[VHWA_M2M_SDE_MAX_HANDLES];
+} tivxDmpacSdeInstObj;
+
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+
+static vx_status VX_CALLBACK tivxDmpacSdeProcess(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxDmpacSdeCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxDmpacSdeDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static vx_status VX_CALLBACK tivxDmpacSdeControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg);
+static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
+       tivxDmpacSdeInstObj *instObj);
+static void tivxDmpacSdeFreeObject(
+       tivxDmpacSdeInstObj *instObj,
+	   tivxDmpacSdeObj *sde_obj);
+static vx_status tivxDmpacSdeGetErrStatusCmd(
+       tivxDmpacSdeObj *sde_obj,
+       tivx_obj_desc_scalar_t *scalar_obj_desc);
+
+int32_t tivxDmpacSdeFrameComplCb(Fvid2_Handle handle, void *appData);
+void tivxDmpacSdeErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData);
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
+static tivx_target_kernel vx_dmpac_sde_target_kernel = NULL;
+
+tivxDmpacSdeInstObj gTivxDmpacSdeInstObj;
+
+/* ========================================================================== */
+/*                          Function Definitions                              */
+/* ========================================================================== */
+
+void tivxAddTargetKernelDmpacSde(void)
+{
+    vx_status status = VX_FAILURE;
+    char target_name[TIVX_TARGET_MAX_NAME];
+    vx_enum self_cpu;
+
+    self_cpu = tivxGetSelfCpuId();
+
+    if ((self_cpu == TIVX_CPU_ID_IPU1_0) || (self_cpu == TIVX_CPU_ID_IPU1_1))
+    {
+        strncpy(target_name, TIVX_TARGET_DMPAC_SDE, TIVX_TARGET_MAX_NAME);
+        status = VX_SUCCESS;
+        
+        vx_dmpac_sde_target_kernel = tivxAddTargetKernelByName(
+                    TIVX_KERNEL_DMPAC_SDE_NAME,
+                    target_name,
+                    tivxDmpacSdeProcess,
+                    tivxDmpacSdeCreate,
+                    tivxDmpacSdeDelete,
+                    tivxDmpacSdeControl,
+                    NULL);
+        if (NULL != vx_dmpac_sde_target_kernel)
+        {
+            /* Allocate lock semaphore */
+            status = tivxMutexCreate(&gTivxDmpacSdeInstObj.lock);
+            if (VX_SUCCESS == status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxAddTargetKernelDmpacSde: Failed to create Semaphore\n");
+            }
+            else
+            {
+                memset(&gTivxDmpacSdeInstObj.sdeObj, 0x0U,
+                    sizeof(tivxDmpacSdeObj) * VHWA_M2M_SDE_MAX_HANDLES);
+            }
+        }
+        else
+        {
+            /* TODO: how to handle this condition */
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxAddTargetKernelDmpacSde: Failed to Add SDE TargetKernel\n");
+        }
+    }
+}
+
+void tivxRemoveTargetKernelDmpacSde(void)
+{
+    vx_status status = VX_SUCCESS;
+
+    status = tivxRemoveTargetKernel(vx_dmpac_sde_target_kernel);
+    if (status == VX_SUCCESS)
+    {
+        vx_dmpac_sde_target_kernel = NULL;
+    }
+    if (NULL != gTivxDmpacSdeInstObj.lock)
+    {
+        tivxMutexDelete(&gTivxDmpacSdeInstObj.lock);
+    }
+}
+
+/* ========================================================================== */
+/*                              OPENVX Callbacks                              */
+/* ========================================================================== */
+
+static vx_status VX_CALLBACK tivxDmpacSdeProcess(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status                         status = VX_SUCCESS;
+    uint32_t                          size;
+    void                             *left_target_ptr;
+    void                             *right_target_ptr;
+    void                             *configuration_target_ptr;
+    void                             *confidence_histogram_target_ptr = NULL;
+    void                             *output_target_ptr;
+    tivxDmpacSdeObj                  *sde_obj = NULL;
+    tivx_obj_desc_user_data_object_t *configuration_desc;
+    tivx_obj_desc_image_t            *left_desc;
+    tivx_obj_desc_image_t            *right_desc;
+    tivx_obj_desc_image_t            *output_desc;
+    tivx_obj_desc_distribution_t     *confidence_histogram_desc;
+    Fvid2_FrameList                  *inFrmList;
+    Fvid2_FrameList                  *outFrmList;
+
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS);
+
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Descriptor\n");
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxGetTargetKernelInstanceContext(kernel,
+            (void **)&sde_obj, &size);
+
+        if ((VX_SUCCESS != status) ||
+            (sizeof(tivxDmpacSdeObj) != size))
+        {
+			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Null Desc\n");
+            status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        inFrmList                 = &sde_obj->inFrmList;
+        outFrmList                = &sde_obj->outFrmList;
+
+        configuration_desc        = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
+        left_desc                 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+        right_desc                = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+        output_desc               = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
+        confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
+
+        left_target_ptr = tivxMemShared2TargetPtr(
+            left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
+        right_target_ptr = tivxMemShared2TargetPtr(
+            right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
+        configuration_target_ptr = tivxMemShared2TargetPtr(
+            configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
+        output_target_ptr = tivxMemShared2TargetPtr(
+            output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
+        if( confidence_histogram_desc != NULL)
+        {
+            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
+                confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
+        }
+
+        tivxMemBufferMap(left_target_ptr,
+            left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferMap(right_target_ptr,
+            right_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferMap(configuration_target_ptr,
+            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferMap(output_target_ptr,
+            output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_WRITE_ONLY);
+        if( confidence_histogram_desc != NULL)
+        {
+            tivxMemBufferMap(confidence_histogram_target_ptr,
+                confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
+                VX_WRITE_ONLY);
+        }
+		
+		/* Initialize SDE Input Frame List */
+        inFrmList->frames[SDE_INPUT_REFERENCE_IMG] =
+		    &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
+        inFrmList->frames[SDE_INPUT_BASE_IMG] =
+            &sde_obj->inFrm[SDE_INPUT_BASE_IMG];
+        inFrmList->numFrames = 2U;
+		
+		sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = (uint64_t) left_target_ptr;
+		sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = (uint64_t) right_target_ptr;
+
+        /* Initialize SDE Output Frame List */
+        outFrmList->frames[0U] = &sde_obj->outFrm;
+        outFrmList->numFrames = 1U;
+        
+		sde_obj->outFrm.addr[0] = (uint64_t) output_target_ptr;
+
+        /* Submit SDE Request*/
+        status = Fvid2_processRequest(sde_obj->handle, inFrmList,
+            outFrmList, FVID2_TIMEOUT_FOREVER);
+        if (FVID2_SOK != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeProcess: Failed to Submit Request\n");
+            status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        /* Wait for Frame Completion */
+        SemaphoreP_pend(sde_obj->waitForProcessCmpl, SemaphoreP_WAIT_FOREVER);
+
+        status = Fvid2_getProcessedRequest(sde_obj->handle,
+            inFrmList, outFrmList, 0);
+        if (FVID2_SOK != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeProcess: Failed to Get Processed Request\n");
+            status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivxMemBufferUnmap(left_target_ptr,
+            left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(right_target_ptr,
+            right_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(configuration_target_ptr,
+            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
+            VX_READ_ONLY);
+        tivxMemBufferUnmap(output_target_ptr,
+            output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+            VX_WRITE_ONLY);
+        if( confidence_histogram_desc != NULL)
+        {
+            tivxMemBufferUnmap(confidence_histogram_target_ptr,
+                confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
+                VX_WRITE_ONLY);
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxDmpacSdeCreate(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status                         status = VX_SUCCESS;
+	uint32_t                          i;
+    uint32_t                          aligned_width;
+    uint32_t                          aligned_height;
+    tivxDmpacSdeObj                  *sde_obj = NULL;
+    Sde_Config                       *sde_cfg = NULL;
+    tivx_dmpac_sde_params_t          *params = NULL;
+    tivx_obj_desc_user_data_object_t *params_array = NULL;
+	tivx_obj_desc_image_t            *left_desc;
+    void                             *params_array_target_ptr = NULL;
+
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS);
+
+    if (VX_SUCCESS != status)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacSdeCreate: Required input parameter set to NULL\n");
+        status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        sde_obj = tivxDmpacSdeAllocObject(&gTivxDmpacSdeInstObj);
+        if (NULL != sde_obj)
+        {
+            params_array = (tivx_obj_desc_user_data_object_t *)
+                obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
+			left_desc = (tivx_obj_desc_image_t *)
+			    obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeCreate: Failed to Alloc Nf Bilateral Object\n");
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        Vhwa_M2mSdeCreateArgsInit(&sde_obj->createPrms);
+
+        status = tivxMutexCreate(&sde_obj->waitForProcessCmpl);
+        if (VX_SUCCESS == status)
+        {
+            sde_obj->cbPrms.cbFxn   = tivxDmpacSdeFrameComplCb;
+            sde_obj->cbPrms.appData = sde_obj;
+
+            sde_obj->handle = Fvid2_create(FVID2_VHWA_M2M_SDE_DRV_ID,
+                VHWA_M2M_SDE_DRV_INST_ID, (void *)&sde_obj->createPrms,
+                NULL, &sde_obj->cbPrms);
+
+            if (NULL == sde_obj->handle)
+            {
+				VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeCreate: Failed to Alloc Nf Bilateral Object\n");
+                status = VX_FAILURE;
+            }
+        }
+    }
+
+    /* Register Error Callback */
+    if (VX_SUCCESS == status)
+    {
+        sde_obj->errEvtPrms.errEvents = VHWA_SDE_RD_ERR | VHWA_SDE_WR_ERR |
+		    VHWA_SDE_FOCO0_SL2_WR_ERR | VHWA_SDE_FOCO0_VBUSM_RD_ERR;
+        sde_obj->errEvtPrms.cbFxn     = tivxDmpacSdeErrorCb;
+        sde_obj->errEvtPrms.appData   = sde_obj;
+
+        status = Fvid2_control(sde_obj->handle,
+            VHWA_M2M_IOCTL_SDE_REGISTER_ERR_CB, &sde_obj->errEvtPrms, NULL);
+        if (FVID2_SOK != status)
+        {
+			VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeCreate: Failed to Register Error Callback\n");
+            status = VX_FAILURE;
+        }
+        else
+        {
+            status = VX_SUCCESS;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        sde_cfg = &sde_obj->sde_cfg;
+
+        params_array_target_ptr = tivxMemShared2TargetPtr(
+            params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
+
+        tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+        params = (tivx_dmpac_sde_params_t *)params_array_target_ptr;
+
+        /* Initialize SDE Config with defaults */
+        Sde_ConfigInit(sde_cfg);
+
+        /* Set SDE Config parameters - centralPixelWeight set in tivxDmpacSdeProcess */
+        aligned_width = left_desc->imagepatch_addr[0].dim_x;
+        aligned_height = left_desc->imagepatch_addr[0].dim_y;
+        if (aligned_width < 128) {
+            aligned_width = 128;    /* Minimum width = 128 */
+        }
+        if (aligned_width & 15) {
+            aligned_width += 16;
+            aligned_width &= ~15;   /* Must be multiple of 16 */
+        }
+        if (aligned_height < 64) {
+            aligned_height = 64;    /* Minimum height = 64 */
+        }
+        if (aligned_height & 15) {
+            aligned_height += 16;
+            aligned_height &= ~15;   /* Must be multiple of 16 */
+        }
+		
+		sde_cfg->enableSDE = 1U;
+		sde_cfg->medianFilter = (uint32_t) (params->median_filter_enable);
+		sde_cfg->width = aligned_width;
+		sde_cfg->height = aligned_height;
+		sde_cfg->minDisparity = (uint32_t) (params->disparity_min);
+		sde_cfg->searchRange = (uint32_t) (params->disparity_max);
+		sde_cfg->lrThreshold = (uint32_t)  (params->threshold_left_right);
+		sde_cfg->enableTextureFilter = (uint32_t) (params->texture_filter_enable);
+		sde_cfg->textureFilterThreshold = (uint32_t) (params->threshold_texture);
+		sde_cfg->penaltyP1 = (uint32_t) (params->aggregation_penalty_p1);
+		sde_cfg->penaltyP2 = (uint32_t) (params->aggregation_penalty_p2);
+		for(i = 0U; i < DMPAC_SDE_NUM_SCORE_MAP; i++)
+		{
+			sde_cfg->confScoreMap[i] = (uint32_t) (params->confidence_score_map[i]);
+		}
+
+        /* Save the parameters in the object variable,
+           This is used to compare with config in process request to check if
+           DMPAC SDE parameters needs to be reconfigured */
+
+        memcpy(&sde_obj->sdeParams, params, sizeof(tivx_dmpac_sde_params_t));
+
+        status = Fvid2_control(sde_obj->handle,
+            VHWA_M2M_IOCTL_SDE_SET_PARAMS, &sde_obj->sde_cfg, NULL);
+        if (FVID2_SOK != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeCreate: Set parameters request failed\n");
+            status = VX_FAILURE;
+        }
+        else
+        {
+            status = VX_SUCCESS;
+        }
+
+        tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    }
+        
+    if (VX_SUCCESS == status)
+    {
+        tivxSetTargetKernelInstanceContext(kernel, sde_obj,
+            sizeof(tivxDmpacSdeObj));
+    }
+    else
+    {
+        if (NULL != sde_obj)
+        {
+            if (NULL != sde_obj->handle)
+            {
+                Fvid2_delete(sde_obj->handle, NULL);
+                sde_obj->handle = NULL;
+            }
+
+            if (NULL != sde_obj->waitForProcessCmpl)
+            {
+                SemaphoreP_delete(sde_obj->waitForProcessCmpl);
+            }
+
+            tivxDmpacSdeFreeObject(&gTivxDmpacSdeInstObj, sde_obj);
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxDmpacSdeDelete(
+       tivx_target_kernel_instance kernel,
+       tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status                status = VX_SUCCESS;
+    uint32_t                 size;
+    tivxDmpacSdeObj    *sde_obj = NULL;
+
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxGetTargetKernelInstanceContext(kernel,
+            (void **)&sde_obj, &size);
+
+        if ((VX_SUCCESS == status) && (NULL != sde_obj) &&
+            (sizeof(tivxDmpacSdeObj) == size))
+        {
+            if (NULL != sde_obj->handle)
+            {
+                Fvid2_delete(sde_obj->handle, NULL);
+                sde_obj->handle = NULL;
+            }
+
+            if (NULL != sde_obj->waitForProcessCmpl)
+            {
+                SemaphoreP_delete(sde_obj->waitForProcessCmpl);
+            }
+
+            tivxDmpacSdeFreeObject(&gTivxDmpacSdeInstObj, sde_obj);
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxDmpacSdeControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status                         status = VX_SUCCESS;
+    uint32_t                          size;
+    tivxDmpacSdeObj                  *sde_obj = NULL;
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxGetTargetKernelInstanceContext(kernel,
+            (void **)&sde_obj, &size);
+
+        if ((VX_SUCCESS == status) && (NULL != sde_obj) &&
+            (sizeof(tivxDmpacSdeObj) == size))
+        {
+            status = VX_SUCCESS;
+        }
+        else
+        {
+		    VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
+            status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        switch (node_cmd_id)
+        {
+            case TIVX_NODE_DMPAC_SDE_GET_ERR_STATUS:
+            {
+                status = tivxDmpacSdeGetErrStatusCmd(sde_obj,
+                    (tivx_obj_desc_scalar_t *)obj_desc[0U]);
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxDmpacSdeControl: Invalid Node Command Id\n");
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+
+    return (status);
+}
+
+/* ========================================================================== */
+/*                          Local Functions                                   */
+/* ========================================================================== */
+
+static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
+       tivxDmpacSdeInstObj *instObj)
+{
+    uint32_t        cnt;
+    tivxDmpacSdeObj *sde_obj = NULL;
+
+    /* Lock instance semaphore */
+    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+
+    for (cnt = 0U; cnt < VHWA_M2M_SDE_MAX_HANDLES; cnt ++)
+    {
+        if (0U == instObj->sdeObj[cnt].isAlloc)
+        {
+            sde_obj = &instObj->sdeObj[cnt];
+            memset(sde_obj, 0x0, sizeof(tivxDmpacSdeObj));
+            instObj->sdeObj[cnt].isAlloc = 1U;
+            break;
+        }
+    }
+
+    /* Release instance semaphore */
+    SemaphoreP_post(instObj->lock);
+
+    return (sde_obj);
+}
+
+static void tivxDmpacSdeFreeObject(tivxDmpacSdeInstObj *instObj,
+    tivxDmpacSdeObj *sde_obj)
+{
+    uint32_t cnt;
+
+    /* Lock instance semaphore */
+    SemaphoreP_pend(gTivxDmpacSdeInstObj.lock, SemaphoreP_WAIT_FOREVER);
+
+    for (cnt = 0U; cnt < VHWA_M2M_SDE_MAX_HANDLES; cnt ++)
+    {
+        if (sde_obj == &instObj->sdeObj[cnt])
+        {
+            sde_obj->isAlloc = 0U;
+            break;
+        }
+    }
+
+    /* Release instance semaphore */
+    SemaphoreP_post(instObj->lock);
+}
+
+/* ========================================================================== */
+/*                    Control Command Implementation                          */
+/* ========================================================================== */
+
+static vx_status tivxDmpacSdeGetErrStatusCmd(tivxDmpacSdeObj *sde_obj,
+    tivx_obj_desc_scalar_t *scalar_obj_desc)
+{
+    vx_status                           status = VX_SUCCESS;
+
+    if (NULL != scalar_obj_desc)
+    {
+        scalar_obj_desc->data.u32 = sde_obj->err_stat;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacSdeGetErrStatusCmd: Null argument\n");
+        status = VX_FAILURE;
+    }
+
+    return (status);
+}
+
+/* ========================================================================== */
+/*                              Driver Callbacks                              */
+/* ========================================================================== */
+
+int32_t tivxDmpacSdeFrameComplCb(Fvid2_Handle handle, void *appData)
+{
+    tivxDmpacSdeObj *sde_obj = (tivxDmpacSdeObj *)appData;
+
+    if (NULL != sde_obj)
+    {
+        SemaphoreP_post(sde_obj->waitForProcessCmpl);
+    }
+
+    return FVID2_SOK;
+}
+
+void tivxDmpacSdeErrorCb(Fvid2_Handle handle, uint32_t errEvents, void *appData)
+{
+    tivxDmpacSdeObj *sde_obj = (tivxDmpacSdeObj *)appData;
+
+    if (NULL != sde_obj)
+    {
+        if(errEvents & VHWA_SDE_RD_ERR)
+        {
+            /* SL2 RD Error */
+            errEvents = (errEvents & (~VHWA_SDE_RD_ERR));
+        }
+        else if(errEvents & VHWA_SDE_WR_ERR)
+        {
+            /* SL2 WR Error */
+            errEvents = (errEvents & (~VHWA_SDE_WR_ERR));
+        }
+        else if(errEvents & VHWA_SDE_FOCO0_SL2_WR_ERR)
+        {
+            /* FOCO0 SL2 WR Error */
+            errEvents = (errEvents & (~VHWA_SDE_FOCO0_SL2_WR_ERR));
+        }
+        else if(errEvents & VHWA_SDE_FOCO0_VBUSM_RD_ERR)
+        {
+            /* FOCO0 VBUSM RD Error */
+            errEvents = (errEvents & (~VHWA_SDE_FOCO0_VBUSM_RD_ERR));
+        }
+    }
+}
