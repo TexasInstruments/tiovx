@@ -678,8 +678,8 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
     vx_user_data_object  inArgs;
     vx_user_data_object  outArgs;
 
-    vx_tensor input_tensor;
-    vx_tensor output_tensor;
+    vx_tensor input_tensor[1];
+    vx_tensor output_tensor[1];
 
     vx_int32    network_id = 0;
     vx_int32    refid[] = {896, 895, 895, 895, 895};
@@ -727,21 +727,19 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         ASSERT_VX_OBJECT(inArgs = setInArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         ASSERT_VX_OBJECT(outArgs = setOutArgs(context), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
-        ASSERT_VX_OBJECT(input_tensor = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+        ASSERT_VX_OBJECT(input_tensor[0] = createInputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
-        ASSERT_VX_OBJECT(output_tensor = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
+        ASSERT_VX_OBJECT(output_tensor[0] = createOutputTensor(context, config), (enum vx_type_e)VX_TYPE_TENSOR);
 
         vx_reference params[] = {
                 (vx_reference)config,
                 (vx_reference)network,
                 (vx_reference)createParams,
                 (vx_reference)inArgs,
-                (vx_reference)outArgs,
-                (vx_reference)input_tensor,
-                (vx_reference)output_tensor,
+                (vx_reference)outArgs
         };
 
-        ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, dimof(params)), VX_TYPE_NODE);
+        ASSERT_VX_OBJECT(node = tivxTIDLNode(graph, kernel, params, input_tensor, output_tensor), VX_TYPE_NODE);
 
         if(arg_->read_raw_padded)
         {
@@ -752,7 +750,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
             printf("Reading input file %s ...\n", filepath);
             #endif
 
-            VX_CALL(readInputRawPadded(context, config, &input_tensor, &filepath[0]));
+            VX_CALL(readInputRawPadded(context, config, &input_tensor[0], &filepath[0]));
         }
         else
         {
@@ -763,7 +761,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
             printf("Reading input file %s ...\n", filepath);
             #endif
 
-            VX_CALL(readInput(context, config, &input_tensor, &filepath[0]));
+            VX_CALL(readInput(context, config, &input_tensor[0], &filepath[0]));
         }
         #ifdef DEBUG_TEST_TIDL
         printf("Verifying graph ...\n");
@@ -779,7 +777,7 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         printf("Showing output ...\n");
         #endif
 
-        VX_CALL(displayOutput(config, &output_tensor, refid[network_id], refscore[network_id]));
+        VX_CALL(displayOutput(config, &output_tensor[0], refid[network_id], refscore[network_id]));
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -792,16 +790,16 @@ TEST_WITH_ARG(tivxTIDL, testTIDL, Arg, PARAMETERS)
         VX_CALL(vxReleaseUserDataObject(&createParams));
         VX_CALL(vxReleaseUserDataObject(&inArgs));
         VX_CALL(vxReleaseUserDataObject(&outArgs));
-        VX_CALL(vxReleaseTensor(&input_tensor));
-        VX_CALL(vxReleaseTensor(&output_tensor));
+        VX_CALL(vxReleaseTensor(&input_tensor[0]));
+        VX_CALL(vxReleaseTensor(&output_tensor[0]));
 
         ASSERT(config == 0);
         ASSERT(network == 0);
         ASSERT(createParams == 0);
         ASSERT(inArgs == 0);
         ASSERT(outArgs == 0);
-        ASSERT(input_tensor  == 0);
-        ASSERT(output_tensor == 0);
+        ASSERT(input_tensor[0]  == 0);
+        ASSERT(output_tensor[0] == 0);
 
         tivxTIDLUnLoadKernels(context);
 
