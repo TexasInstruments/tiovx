@@ -195,31 +195,15 @@ typedef struct {
  * \ingroup group_vision_function_vpac_ldc
  */
 typedef struct {
-    /*! Enable/disables back mapping
-     *   0: Disables back mapping
-     *   1: Enables back mapping, in this case, mesh_img must not be null */
-    uint32_t                                enable_back_mapping;
 
     /*! Mesh table full-frame width before subsampling */
     uint32_t                                mesh_frame_width;
     /*! Mesh table full-frame height before subsampling */
     uint32_t                                mesh_frame_height;
 
-    /*! Output Block parameters, used when multi-region mode is disabled.
-     *  when used, enable flag in block_params is ignored. */
-    tivx_vpac_ldc_region_params_t           block_params;
-
-    /*! Optional: Lut down sampling factor,
-     *  Valid value is in the range [0,7].
-     *  Used when enable_back_mapping is set to 1 */
+    /*! Lut down sampling factor,
+     *  Valid value is in the range [0,7]. */
     uint32_t                                subsample_factor;
-    /*! Flag to enable/disable multi-region mode
-     *   0: Disables multi-region mode
-     *   1: Enables multi-region mode */
-    uint32_t                                enable_multi_reg;
-    /*! Optional: Multi-Region Parameters,
-     *  used only when enable_multi_reg is set to 1 */
-    tivx_vpac_ldc_multi_region_params_t     multi_reg_params;
 } tivx_vpac_ldc_mesh_params_t;
 
 /*!
@@ -317,24 +301,26 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  * \param [in] graph The reference to the graph.
  * \param [in] configuration The input object of a single params
  *             structure of type <tt>\ref tivx_vpac_ldc_params_t</tt>.
- *             This struct provides output block size, luma interpolation type.
- * \param [in] (Optional) Input warp_matrix of type
- *             <tt>\vx_matrix</tt> for
+ * \param [in] warp_matrix (optional) Input warp_matrix of type
+ *             <tt>\vx_matrix</tt> for affine or
  *             perspective transform configuration.
- * \param [in] (Optional) Mesh Configuration, the input object of type
- *             <tt>\ref tivx_vpac_ldc_mesh_params_t</tt>. It is used to
- *             enable/disable back mapping and also to provide block size
- *             and multi-region parameters.
- *             If set to null, back mapping is disabled and
- *             default block size (TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH x
+ * \param [in] region_prms (optional) The input object of a single params
+ *             structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt>
+ *             or <tt>\ref tivx_vpac_ldc_multi_region_params_t</tt>.
+ *             If set to null, default block size
+ *             (TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH x
  *             TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT) and pixel padding
  *             (TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD) is used.
- *             If back mapping is enabled, mesh_img parameter cannot be null.
- * \param [in] (Optional) Mesh Image, containing mesh 2D lookup table.
+ * \param [in] mesh_prms (optional) Mesh Configuration, the input object of type
+ *             <tt>\ref tivx_vpac_ldc_mesh_params_t</tt>. It is used to
+ *             provide frame size and downsampling factor of mesh_img.
+ *             If set to null, back mapping is disabled.
+ * \param [in] mesh_img (optional) Mesh image containing mesh 2D lookup table.
  *             The pitch/line offset for the mesh can be calculated using
  *             TIVX_NODE_VPAC_LDC_CALC_MESH_LINE_OFFSET.
  *             The data format supported for this image is
  *             <tt>\ref VX_DF_IMAGE_U32</tt>.
+ *             If set to null, back mapping is disabled.
  * \param [in] in_img The input image in
  *             <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *             <tt>\ref TIVX_DF_IMAGE_NV12_P12</tt>,
@@ -352,7 +338,7 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *              <tt>\ref VX_DF_IMAGE_U16</tt> (12bit in 16bit container Luma only), or
  *              <tt>\ref TIVX_DF_IMAGE_P12</tt> (12bit packed Luma only)
  *              format.
- * \param [out] (optional) out1_img The output image in
+ * \param [out] out1_img (optional) The output image in
  *              <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *              <tt>\ref VX_DF_IMAGE_UYVY</tt>,
  *              <tt>\ref VX_DF_IMAGE_YUYV</tt>,
@@ -372,6 +358,7 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
 VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_user_data_object  configuration,
                                       vx_matrix            warp_matrix,
+                                      vx_user_data_object  region_prms,
                                       vx_user_data_object  mesh_prms,
                                       vx_image             mesh_img,
                                       vx_image             in_img,
@@ -395,7 +382,7 @@ void tivx_vpac_ldc_bandwidth_params_init(
  * \brief Function to initialize LDC parameters with the default values
  * \ingroup group_vision_function_vpac_ldc
  */
-void tivx_vpac_ldc_tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms);
+void tivx_vpac_ldc_params_init(tivx_vpac_ldc_params_t *prms);
 
 #ifdef __cplusplus
 }

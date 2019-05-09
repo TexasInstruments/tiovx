@@ -121,6 +121,9 @@ static void tivxVpacLdcFreeMem(tivxVpacLdcParams *prms);
 static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
     tivx_obj_desc_user_data_object_t *mesh_prms_desc,
     tivx_obj_desc_image_t *mesh_img_desc, uint32_t *mesh);
+static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
+    tivx_obj_desc_user_data_object_t *region_params_desc);
+
 void tivxVpacLdcSetWarpParams(ldc_settings *settings,
     tivx_obj_desc_matrix_t *warp_matrix_desc);
 static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
@@ -324,6 +327,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     vx_status                         status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_matrix_t           *warp_matrix_desc = NULL;
+    tivx_obj_desc_user_data_object_t *region_prms_desc = NULL;
     tivx_obj_desc_user_data_object_t *mesh_prms_desc = NULL;
     tivx_obj_desc_image_t            *mesh_img_desc = NULL;
     tivx_obj_desc_image_t            *in_img_desc = NULL;
@@ -350,9 +354,11 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
             configuration_desc = (tivx_obj_desc_user_data_object_t *)
                 obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
             warp_matrix_desc = (tivx_obj_desc_matrix_t *)
-                obj_desc[TIVX_KERNEL_VPAC_LDC_PERSP_TRANSFORM_PARAMS_IDX];
+                obj_desc[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
+            region_prms_desc = (tivx_obj_desc_user_data_object_t *)
+                obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX];
             mesh_prms_desc = (tivx_obj_desc_user_data_object_t *)
-                obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_PARAMS_IDX];
+                obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX];
             mesh_img_desc = (tivx_obj_desc_image_t *)
                 obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
             in_img_desc = (tivx_obj_desc_image_t *)
@@ -574,6 +580,9 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
             tivxVpacLdcSetMeshParams(&prms->config.settings,
                 mesh_prms_desc, mesh_img_desc, prms->mesh);
 
+            tivxVpacLdcSetRegionParams(&prms->config.settings,
+                region_prms_desc);
+
             /* Configure warp coefficients */
             tivxVpacLdcSetWarpParams(&prms->config.settings,
                 warp_matrix_desc);
@@ -760,7 +769,7 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
     tivx_vpac_ldc_mesh_params_t *mesh_prms = NULL;
     void                        *target_ptr;
 
-    if (NULL != mesh_prms_desc)
+    if ((NULL != mesh_prms_desc) && (NULL != mesh_img_desc))
     {
         target_ptr = tivxMemShared2TargetPtr(
             mesh_prms_desc->mem_ptr.shared_ptr,
@@ -771,88 +780,100 @@ static void tivxVpacLdcSetMeshParams(ldc_settings *settings,
 
         if (sizeof(tivx_vpac_ldc_mesh_params_t) == mesh_prms_desc->mem_size)
         {
+            int32_t j;
+            int32_t *meshPtr;
+            void *mesh_table_target_ptr;
+
             mesh_prms = (tivx_vpac_ldc_mesh_params_t *)target_ptr;
 
-            settings->ldmapen = mesh_prms->enable_back_mapping;     // LD back mapping enable
+            settings->ldmapen = 1;     // LD back mapping enable
 
-            /* Below parameters are required, even if the back
-             * mapping is disabled */
-            settings->ld_obw = mesh_prms->block_params.out_block_width;
-            settings->ld_obh = mesh_prms->block_params.out_block_height;
-            settings->ld_pad = mesh_prms->block_params.pixel_pad;
+            mesh_table_target_ptr = tivxMemShared2TargetPtr(
+                mesh_img_desc->mem_ptr[0].shared_ptr, mesh_img_desc->mem_ptr[0].mem_heap_region);
 
-            if (1u == mesh_prms->enable_back_mapping)
-            {
-                if( NULL != mesh_img_desc )
-                {
-                    int32_t j;
-                    int32_t *meshPtr;
-                    void *mesh_table_target_ptr;
+            tivxMemBufferMap(mesh_table_target_ptr, mesh_img_desc->mem_size[0],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-                    mesh_table_target_ptr = tivxMemShared2TargetPtr(
-                        mesh_img_desc->mem_ptr[0].shared_ptr, mesh_img_desc->mem_ptr[0].mem_heap_region);
+            meshPtr = mesh_table_target_ptr;
 
-                    tivxMemBufferMap(mesh_table_target_ptr, mesh_img_desc->mem_size[0],
-                        VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-                    meshPtr = mesh_table_target_ptr;
-
-                    for(j = 0; j < mesh_img_desc->imagepatch_addr[0].dim_y; j++) {
-                        uint32_t input_index = (mesh_img_desc->imagepatch_addr[0].stride_y>>2)*j;
-                        uint32_t output_index = mesh_img_desc->imagepatch_addr[0].dim_x*j;
-                        memcpy(&mesh[output_index], &meshPtr[input_index],  mesh_img_desc->imagepatch_addr[0].dim_x*4);
-                    }
-
-                    // derived (not in cfg file directly)
-                    settings->mesh_table = (int32_t*)mesh;                          // must fill in correctly before running LDC
-                    settings->table_width = mesh_img_desc->imagepatch_addr[0].dim_x;  // must fill in correctly before running LDC
-                    settings->table_height = mesh_img_desc->imagepatch_addr[0].dim_y; // must fill in correctly before running LDC
-
-                    tivxMemBufferUnmap(mesh_table_target_ptr,
-                        mesh_img_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-                        VX_READ_ONLY);
-                }
-
-                settings->table_m      = mesh_prms->subsample_factor;
-                settings->mesh_frame_w = mesh_prms->mesh_frame_width;
-                settings->mesh_frame_h = mesh_prms->mesh_frame_height;
-
-                if (1u == mesh_prms->enable_multi_reg)
-                {
-                    uint32_t i, j, idx;
-                    tivx_vpac_ldc_multi_region_params_t *multi_reg;
-
-                    multi_reg = &mesh_prms->multi_reg_params;
-
-                    settings->regmode_en = 1;      // Region mode enable.  0: off, 1: on
-
-                    for (i = 0; i < 3; i ++)
-                    {
-                        for (j = 0; j < 3; j ++)
-                        {
-                            idx = (i * 3) + j;
-                            settings->ld_sf_en[idx]  = multi_reg->reg_params[i][j].enable;           // subframe enable
-                            settings->ld_sf_obw[idx] = multi_reg->reg_params[i][j].out_block_width;  // output block width, in pixels, for block processing
-                            settings->ld_sf_obh[idx] = multi_reg->reg_params[i][j].out_block_height; // output block height, in pixels, for block processing
-                            settings->ld_sf_pad[idx] = multi_reg->reg_params[i][j].pixel_pad;        // pixel padding to determine input block for block processing
-                        }
-                        settings->ld_sf_width[i]  = multi_reg->reg_width[i]; // subframe width
-                        settings->ld_sf_height[i]  = multi_reg->reg_height[i]; // subframe width
-                    }
-                }
-                else
-                {
-                    settings->regmode_en = 0u;
-                }
+            for(j = 0; j < mesh_img_desc->imagepatch_addr[0].dim_y; j++) {
+                uint32_t input_index = (mesh_img_desc->imagepatch_addr[0].stride_y>>2)*j;
+                uint32_t output_index = mesh_img_desc->imagepatch_addr[0].dim_x*j;
+                memcpy(&mesh[output_index], &meshPtr[input_index],  mesh_img_desc->imagepatch_addr[0].dim_x*4);
             }
-            else
-            {
-            }
+
+            // derived (not in cfg file directly)
+            settings->mesh_table = (int32_t*)mesh;                          // must fill in correctly before running LDC
+            settings->table_width = mesh_img_desc->imagepatch_addr[0].dim_x;  // must fill in correctly before running LDC
+            settings->table_height = mesh_img_desc->imagepatch_addr[0].dim_y; // must fill in correctly before running LDC
+
+            tivxMemBufferUnmap(mesh_table_target_ptr,
+                mesh_img_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+
+            settings->table_m      = mesh_prms->subsample_factor;
+            settings->mesh_frame_w = mesh_prms->mesh_frame_width;
+            settings->mesh_frame_h = mesh_prms->mesh_frame_height;
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcSetMeshParams: Invalid Argument\n");
+        }
+    }
+    else
+    {
+        settings->ldmapen = 0;     // LD back mapping enable
+    }
+}
+
+static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
+    tivx_obj_desc_user_data_object_t *region_params_desc)
+{
+    void                        *target_ptr;
+
+    if (NULL != region_params_desc)
+    {
+        target_ptr = tivxMemShared2TargetPtr(
+            region_params_desc->mem_ptr.shared_ptr,
+            region_params_desc->mem_ptr.mem_heap_region);
+
+        tivxMemBufferMap(target_ptr, region_params_desc->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+        if (sizeof(tivx_vpac_ldc_region_params_t) == region_params_desc->mem_size)
+        {
+            tivx_vpac_ldc_region_params_t *region_params =
+                (tivx_vpac_ldc_region_params_t*)target_ptr;
+
+            settings->regmode_en = 0;      // Region mode enable.  0: off, 1: on
+
+            settings->ld_obw = region_params->out_block_width;  // output block height, in pixels, for block processing
+            settings->ld_obh = region_params->out_block_height; // output block height, in pixels, for block processing
+            settings->ld_pad = region_params->pixel_pad;        // pixel padding to determine input block for block processing
+        }
+        else
+        {
+            uint32_t i, j, idx;
+
+            tivx_vpac_ldc_multi_region_params_t *region_params =
+                (tivx_vpac_ldc_multi_region_params_t*)target_ptr;
+
+            settings->regmode_en = 1;      // Region mode enable.  0: off, 1: on
+
+            for (i = 0; i < 3; i ++)
+            {
+                for (j = 0; j < 3; j ++)
+                {
+                    idx = (i * 3) + j;
+                    settings->ld_sf_en[idx]  = region_params->reg_params[i][j].enable;           // subframe enable
+                    settings->ld_sf_obw[idx] = region_params->reg_params[i][j].out_block_width;  // output block width, in pixels, for block processing
+                    settings->ld_sf_obh[idx] = region_params->reg_params[i][j].out_block_height; // output block height, in pixels, for block processing
+                    settings->ld_sf_pad[idx] = region_params->reg_params[i][j].pixel_pad;        // pixel padding to determine input block for block processing
+                }
+                settings->ld_sf_width[i]  = region_params->reg_width[i]; // subframe width
+                settings->ld_sf_height[i]  = region_params->reg_height[i]; // subframe width
+            }
         }
     }
     else

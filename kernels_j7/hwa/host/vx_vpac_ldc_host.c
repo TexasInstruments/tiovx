@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2018 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -80,18 +80,22 @@ vx_status tivxRemoveKernelVpacLdc(vx_context context);
 
 static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             const vx_reference parameters[ ],
-            vx_uint32 num_params,
+            vx_uint32 num,
             vx_meta_format metas[])
 {
     vx_status status = VX_SUCCESS;
 
-    vx_user_data_object cfg = NULL;
-    vx_char cfg_name[VX_MAX_REFERENCE_NAME];
-    vx_size cfg_size;
+    vx_user_data_object configuration = NULL;
+    vx_char configuration_name[VX_MAX_REFERENCE_NAME];
+    vx_size configuration_size;
 
     vx_matrix warp_matrix = NULL;
     vx_enum warp_matrix_type;
     vx_size warp_matrix_w, warp_matrix_h;
+
+    vx_user_data_object region_prms = NULL;
+    vx_char region_prms_name[VX_MAX_REFERENCE_NAME];
+    vx_size region_prms_size;
 
     vx_user_data_object mesh_prms = NULL;
     vx_char mesh_prms_name[VX_MAX_REFERENCE_NAME];
@@ -99,20 +103,25 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     vx_image mesh_img = NULL;
     vx_df_image mesh_img_fmt;
-    vx_uint32 mesh_img_w, mesh_img_h;
 
     vx_image in_img = NULL;
     vx_df_image in_img_fmt;
-    vx_uint32 in_img_w, in_img_h;
 
-    vx_image out_img[2U] = {NULL};
-    vx_df_image out_img_fmt[2U];
-    vx_uint32 out_img_w[2U], out_img_h[2U];
+    vx_image out0_img = NULL;
+    vx_uint32 out0_img_w;
+    vx_uint32 out0_img_h;
+    vx_df_image out0_img_fmt;
 
-    if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX]) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX]))
+    vx_image out1_img = NULL;
+    vx_uint32 out1_img_w;
+    vx_uint32 out1_img_h;
+    vx_df_image out1_img_fmt;
+
+    if ( (num != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
         VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
@@ -120,117 +129,71 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        cfg =
-            (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
-        warp_matrix = (vx_matrix)
-            parameters[TIVX_KERNEL_VPAC_LDC_PERSP_TRANSFORM_PARAMS_IDX];
-        mesh_prms = (vx_user_data_object)
-            parameters[TIVX_KERNEL_VPAC_LDC_MESH_PARAMS_IDX];
-        mesh_img = (vx_image)
-            parameters[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
-        in_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX];
-        out_img[0u] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
-        out_img[1u] = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
+        configuration = (const vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
+        warp_matrix = (const vx_matrix)parameters[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
+        region_prms = (const vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX];
+        mesh_prms = (const vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX];
+        mesh_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
+        in_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX];
+        out0_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
+        out1_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
     }
+
 
     /* PARAMETER ATTRIBUTE FETCH */
-    if (VX_SUCCESS == status)
-    {
-        tivxCheckStatus(&status, vxQueryUserDataObject(cfg,
-            VX_USER_DATA_OBJECT_NAME, &cfg_name, sizeof(cfg_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(cfg,
-            VX_USER_DATA_OBJECT_SIZE, &cfg_size, sizeof(cfg_size)));
-    }
-
-    if ((VX_SUCCESS == status) && (NULL != warp_matrix))
-    {
-        tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_TYPE,
-            &warp_matrix_type, sizeof(warp_matrix_type)));
-        tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_COLUMNS,
-            &warp_matrix_w, sizeof(warp_matrix_w)));
-        tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_ROWS,
-            &warp_matrix_h, sizeof(warp_matrix_h)));
-    }
-
-    if ((VX_SUCCESS == status) && (NULL != mesh_prms))
-    {
-        tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms,
-            VX_USER_DATA_OBJECT_NAME, &mesh_prms_name, sizeof(mesh_prms_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms,
-            VX_USER_DATA_OBJECT_SIZE, &mesh_prms_size, sizeof(mesh_prms_size)));
-    }
-
-    if ((VX_SUCCESS == status) && (NULL != mesh_img))
-    {
-        tivxCheckStatus(&status, vxQueryImage(mesh_img, VX_IMAGE_FORMAT,
-             &mesh_img_fmt, sizeof(mesh_img_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(mesh_img, VX_IMAGE_WIDTH,
-            &mesh_img_w, sizeof(mesh_img_w)));
-        tivxCheckStatus(&status, vxQueryImage(mesh_img, VX_IMAGE_HEIGHT,
-            &mesh_img_h, sizeof(mesh_img_h)));
-    }
-    if (VX_SUCCESS == status)
-    {
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_FORMAT,
-            &in_img_fmt, sizeof(in_img_fmt)));
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_WIDTH,
-            &in_img_w, sizeof(in_img_w)));
-        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_HEIGHT,
-            &in_img_h, sizeof(in_img_h)));
-    }
 
     if (VX_SUCCESS == status)
     {
-        tivxCheckStatus(&status, vxQueryImage(out_img[0U], VX_IMAGE_FORMAT,
-            &out_img_fmt[0], sizeof(out_img_fmt[0])));
-        tivxCheckStatus(&status, vxQueryImage(out_img[0U], VX_IMAGE_WIDTH,
-            &out_img_w[0], sizeof(out_img_w[0])));
-        tivxCheckStatus(&status, vxQueryImage(out_img[0U], VX_IMAGE_HEIGHT,
-            &out_img_h[0], sizeof(out_img_h[0])));
-    }
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
-    if (VX_SUCCESS == status)
-    {
-        if (NULL != out_img[1U])
+        if (NULL != warp_matrix)
         {
-            tivxCheckStatus(&status, vxQueryImage(out_img[1U], VX_IMAGE_FORMAT,
-                &out_img_fmt[1u], sizeof(out_img_fmt[0])));
-            tivxCheckStatus(&status, vxQueryImage(out_img[1U], VX_IMAGE_WIDTH,
-                &out_img_w[1u], sizeof(out_img_w[1u])));
-            tivxCheckStatus(&status, vxQueryImage(out_img[1U], VX_IMAGE_HEIGHT,
-                &out_img_h[1u], sizeof(out_img_h[1u])));
-        }
-    }
-
-    /* PARAMETER CHECKING */
-    if (VX_SUCCESS == status)
-    {
-        if ((cfg_size != sizeof(tivx_vpac_ldc_params_t)) ||
-            (strncmp(cfg_name, "tivx_vpac_ldc_params_t",
-                sizeof(cfg_name)) != 0))
-        {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "'cfg' should be a user_data_object of type:\n tivx_vpac_ldc_params_t \n");
+            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_TYPE, &warp_matrix_type, sizeof(warp_matrix_type)));
+            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_COLUMNS, &warp_matrix_w, sizeof(warp_matrix_w)));
+            tivxCheckStatus(&status, vxQueryMatrix(warp_matrix, VX_MATRIX_ROWS, &warp_matrix_h, sizeof(warp_matrix_h)));
         }
 
-        if ((mesh_prms_size != sizeof(tivx_vpac_ldc_mesh_params_t)) ||
-            (strncmp(mesh_prms_name, "tivx_vpac_ldc_mesh_params_t",
-                sizeof(mesh_prms_name)) != 0))
+        if (NULL != region_prms)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR,
-                "'cfg' should be a user_data_object of type:\n mesh_params_name \n");
+            tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, VX_USER_DATA_OBJECT_NAME, &region_prms_name, sizeof(region_prms_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(region_prms, VX_USER_DATA_OBJECT_SIZE, &region_prms_size, sizeof(region_prms_size)));
+        }
+
+        if (NULL != mesh_prms)
+        {
+            tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, VX_USER_DATA_OBJECT_NAME, &mesh_prms_name, sizeof(mesh_prms_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(mesh_prms, VX_USER_DATA_OBJECT_SIZE, &mesh_prms_size, sizeof(mesh_prms_size)));
         }
 
         if (NULL != mesh_img)
         {
-            if (VX_DF_IMAGE_U32 != mesh_img_fmt)
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "'mesh_table' should be an image of type:\n VX_DF_IMAGE_U32 \n");
-            }
+            tivxCheckStatus(&status, vxQueryImage(mesh_img, VX_IMAGE_FORMAT, &mesh_img_fmt, sizeof(mesh_img_fmt)));
+        }
+
+        tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_FORMAT, &in_img_fmt, sizeof(in_img_fmt)));
+
+        tivxCheckStatus(&status, vxQueryImage(out0_img, VX_IMAGE_WIDTH, &out0_img_w, sizeof(out0_img_w)));
+        tivxCheckStatus(&status, vxQueryImage(out0_img, VX_IMAGE_HEIGHT, &out0_img_h, sizeof(out0_img_h)));
+        tivxCheckStatus(&status, vxQueryImage(out0_img, VX_IMAGE_FORMAT, &out0_img_fmt, sizeof(out0_img_fmt)));
+
+        if (NULL != out1_img)
+        {
+            tivxCheckStatus(&status, vxQueryImage(out1_img, VX_IMAGE_WIDTH, &out1_img_w, sizeof(out1_img_w)));
+            tivxCheckStatus(&status, vxQueryImage(out1_img, VX_IMAGE_HEIGHT, &out1_img_h, sizeof(out1_img_h)));
+            tivxCheckStatus(&status, vxQueryImage(out1_img, VX_IMAGE_FORMAT, &out1_img_fmt, sizeof(out1_img_fmt)));
+        }
+    }
+
+    /* PARAMETER CHECKING */
+
+    if (VX_SUCCESS == status)
+    {
+        if ((configuration_size != sizeof(tivx_vpac_ldc_params_t)) ||
+            (strncmp(configuration_name, "tivx_vpac_ldc_params_t", sizeof(configuration_name)) != 0))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'configuration' should be a user_data_object of type:\n tivx_vpac_ldc_params_t \n");
         }
 
         if (NULL != warp_matrix)
@@ -239,8 +202,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                 (VX_TYPE_FLOAT32 != warp_matrix_type))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "'warp_matrix' should be a matrix of type:\n VX_TYPE_INT16 or VX_TYPE_FLOAT32 \n");
+                VX_PRINT(VX_ZONE_ERROR, "'warp_matrix' should be a matrix of type:\n VX_TYPE_INT16 or VX_TYPE_FLOAT32 \n");
             }
             if ((2 != warp_matrix_w) && (3 != warp_matrix_w))
             {
@@ -256,58 +218,82 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             }
         }
 
-        if (NULL != in_img)
+        if (NULL != region_prms)
         {
-            if( (VX_DF_IMAGE_UYVY != in_img_fmt) &&
-                (VX_DF_IMAGE_NV12 != in_img_fmt) &&
-                (TIVX_DF_IMAGE_NV12_P12 != in_img_fmt) &&
-                (VX_DF_IMAGE_U8 != in_img_fmt) &&
-                (VX_DF_IMAGE_U16 != in_img_fmt) &&
-                (TIVX_DF_IMAGE_P12 != in_img_fmt))
+            if( ((region_prms_size != sizeof(tivx_vpac_ldc_region_params_t)) ||
+                 (strncmp(region_prms_name, "tivx_vpac_ldc_region_params_t", sizeof(region_prms_name)) != 0)) &&
+                ((region_prms_size != sizeof(tivx_vpac_ldc_multi_region_params_t)) ||
+                 (strncmp(region_prms_name, "tivx_vpac_ldc_multi_region_params_t", sizeof(region_prms_name)) != 0)))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect in_img fmt \n");
+                VX_PRINT(VX_ZONE_ERROR, "'region_prms' should be a user_data_object of type:\n tivx_vpac_ldc_region_params_t or tivx_vpac_ldc_multi_region_params_t \n");
             }
         }
 
-        if (NULL != out_img[0u])
+        if (NULL != mesh_prms)
         {
-            if( (VX_DF_IMAGE_UYVY != out_img_fmt[0U]) &&
-                (VX_DF_IMAGE_YUYV != out_img_fmt[0U]) &&
-                (VX_DF_IMAGE_NV12 != out_img_fmt[0U]) &&
-                (TIVX_DF_IMAGE_NV12_P12 != out_img_fmt[0U]) &&
-                (VX_DF_IMAGE_U8 != out_img_fmt[0U]) &&
-                (VX_DF_IMAGE_U16 != out_img_fmt[0U]) &&
-                (TIVX_DF_IMAGE_P12 != out_img_fmt[0U]))
+            if ((mesh_prms_size != sizeof(tivx_vpac_ldc_mesh_params_t)) ||
+                (strncmp(mesh_prms_name, "tivx_vpac_ldc_mesh_params_t", sizeof(mesh_prms_name)) != 0))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect out0_img fmt \n");
-            }
-            if (((VX_DF_IMAGE_UYVY == out_img_fmt[0U]) ||
-                 (VX_DF_IMAGE_YUYV == out_img_fmt[0U])) &&
-                (VX_DF_IMAGE_UYVY != in_img_fmt))
-            {
-                status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Output0 is YUV422I Input is not YUV422I \n");
+                VX_PRINT(VX_ZONE_ERROR, "'mesh_prms' should be a user_data_object of type:\n tivx_vpac_ldc_mesh_params_t \n");
             }
         }
 
-        if (NULL != out_img[1u])
+        if (NULL != mesh_img)
         {
-            if( (VX_DF_IMAGE_UYVY != out_img_fmt[1U]) &&
-                (VX_DF_IMAGE_YUYV != out_img_fmt[1U]) &&
-                (VX_DF_IMAGE_NV12 != out_img_fmt[1U]) &&
-                (VX_DF_IMAGE_U8 != out_img_fmt[1U]))
+            if (VX_DF_IMAGE_U32 != mesh_img_fmt)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddKernelVpacLdcValidate: Incorrect out1_img fmt \n");
+                VX_PRINT(VX_ZONE_ERROR, "'mesh_img' should be an image of type:\n VX_DF_IMAGE_U32 \n");
             }
-            if (((VX_DF_IMAGE_UYVY == out_img_fmt[1U]) ||
-                 (VX_DF_IMAGE_YUYV == out_img_fmt[1U])) &&
+        }
+
+        if( (VX_DF_IMAGE_NV12 != in_img_fmt) &&
+            (TIVX_DF_IMAGE_NV12_P12 != in_img_fmt) &&
+            (VX_DF_IMAGE_UYVY != in_img_fmt) &&
+            (VX_DF_IMAGE_U8 != in_img_fmt) &&
+            (VX_DF_IMAGE_U16 != in_img_fmt) &&
+            (TIVX_DF_IMAGE_P12 != in_img_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'in_img' should be an image of type:\n VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if( (VX_DF_IMAGE_NV12 != out0_img_fmt) &&
+            (TIVX_DF_IMAGE_NV12_P12 != out0_img_fmt) &&
+            (VX_DF_IMAGE_UYVY != out0_img_fmt) &&
+            (VX_DF_IMAGE_YUYV != out0_img_fmt) &&
+            (VX_DF_IMAGE_U8 != out0_img_fmt) &&
+            (VX_DF_IMAGE_U16 != out0_img_fmt) &&
+            (TIVX_DF_IMAGE_P12 != out0_img_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "'out0_img' should be an image of type:\n VX_DF_IMAGE_NV12 or TIVX_DF_IMAGE_NV12_P12 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_U8 or VX_DF_IMAGE_U16 or TIVX_DF_IMAGE_P12 \n");
+        }
+
+        if (((VX_DF_IMAGE_UYVY == out0_img_fmt) ||
+             (VX_DF_IMAGE_YUYV == out0_img_fmt)) &&
+             (VX_DF_IMAGE_UYVY != in_img_fmt))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxAddKernelVpacLdcValidate: Output0 is YUV422I Input is not YUV422I \n");
+        }
+
+        if (NULL != out1_img)
+        {
+            if( (VX_DF_IMAGE_NV12 != out1_img_fmt) &&
+                (VX_DF_IMAGE_UYVY != out1_img_fmt) &&
+                (VX_DF_IMAGE_YUYV != out1_img_fmt) &&
+                (VX_DF_IMAGE_U8 != out1_img_fmt))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'out1_img' should be an image of type:\n VX_DF_IMAGE_NV12 or VX_DF_IMAGE_UYVY or VX_DF_IMAGE_YUYV or VX_DF_IMAGE_U8 \n");
+            }
+
+            if (((VX_DF_IMAGE_UYVY == out1_img_fmt) ||
+                 (VX_DF_IMAGE_YUYV == out1_img_fmt)) &&
                 (VX_DF_IMAGE_UYVY != in_img_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
@@ -315,42 +301,45 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
                     "tivxAddKernelVpacLdcValidate: Output1 is YUV422I Input is not YUV422I \n");
             }
 
-            if (((VX_DF_IMAGE_NV12 == out_img_fmt[0u]) ||
-                 (TIVX_DF_IMAGE_NV12_P12 == out_img_fmt[0u]) ||
-                 (VX_DF_IMAGE_UYVY == out_img_fmt[1U]) ||
-                 (VX_DF_IMAGE_YUYV == out_img_fmt[1U])) &&
-                (VX_DF_IMAGE_U8 != out_img_fmt[1U]))
+            if (((VX_DF_IMAGE_NV12 == out0_img_fmt) ||
+                 (TIVX_DF_IMAGE_NV12_P12 == out0_img_fmt) ||
+                 (VX_DF_IMAGE_UYVY == out1_img_fmt) ||
+                 (VX_DF_IMAGE_YUYV == out1_img_fmt)) &&
+                (VX_DF_IMAGE_U8 != out1_img_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacLdcValidate: Output1 cannot be single plane if output0 is multi-plane \n");
             }
 
-            if (((VX_DF_IMAGE_U8 == out_img_fmt[0U]) ||
-                 (VX_DF_IMAGE_U16 == out_img_fmt[0U]) ||
-                 (TIVX_DF_IMAGE_P12 == out_img_fmt[0U])) &&
-                 (VX_DF_IMAGE_NV12 == out_img_fmt[1u]))
+            if (((VX_DF_IMAGE_U8 == out0_img_fmt) ||
+                 (VX_DF_IMAGE_U16 == out0_img_fmt) ||
+                 (TIVX_DF_IMAGE_P12 == out0_img_fmt)) &&
+                 (VX_DF_IMAGE_NV12 == out1_img_fmt))
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddKernelVpacLdcValidate: Output1 cannot be multi-plane if output0 is single-plane \n");
             }
         }
-
-
     }
 
-    /* Check output formats and relative sizes */
+
+    /* PARAMETER RELATIONSHIP CHECKING */
+
     if (VX_SUCCESS == status)
     {
-        if (NULL != out_img[1U])
+        if (NULL != out1_img)
         {
-            if ((out_img_w[1U] != out_img_w[0U]) ||
-                (out_img_h[1U] != out_img_h[0U]))
+            if (out1_img_w != out0_img_w)
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
-                VX_PRINT(VX_ZONE_ERROR,
-                    " Output size must be same for both the outputs \n");
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'out1_img' and 'out0_img' should have the same value for VX_IMAGE_WIDTH\n");
+            }
+            if (out1_img_h != out0_img_h)
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameters 'out1_img' and 'out0_img' should have the same value for VX_IMAGE_HEIGHT\n");
             }
         }
     }
@@ -365,14 +354,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcInitialize(vx_node node,
     vx_status status = VX_SUCCESS;
     tivxKernelValidRectParams prms;
 
-    if ((num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX]) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX]) ||
-        (NULL == parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX]))
+    if ( (num_params != TIVX_KERNEL_VPAC_LDC_MAX_PARAMS)
+        || (NULL == parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX])
+        || (NULL == parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])
+    )
     {
         status = VX_ERROR_INVALID_PARAMETERS;
-        VX_PRINT(VX_ZONE_ERROR,
-            "One or more REQUIRED parameters are set to NULL\n");
+        VX_PRINT(VX_ZONE_ERROR, "One or more REQUIRED parameters are set to NULL\n");
     }
     if (VX_SUCCESS == status)
     {
@@ -464,12 +453,21 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
+                        VX_TYPE_USER_DATA_OBJECT,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
                         VX_TYPE_IMAGE,
                         VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
         }
-
         if (status == VX_SUCCESS)
         {
             status = vxAddParameterToKernel(kernel,
@@ -540,12 +538,7 @@ void tivx_vpac_ldc_mesh_params_init(tivx_vpac_ldc_mesh_params_t *prms)
     if (NULL != prms)
     {
         memset(prms, 0x0, sizeof(tivx_vpac_ldc_mesh_params_t));
-        prms->enable_back_mapping = 0u;
-        prms->block_params.out_block_width = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
-        prms->block_params.out_block_height = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
-        prms->block_params.pixel_pad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
         prms->subsample_factor = 8u;
-        prms->enable_multi_reg = 0u;
     }
 }
 

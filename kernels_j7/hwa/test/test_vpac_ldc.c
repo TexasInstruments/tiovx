@@ -82,6 +82,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
     vx_image input = 0, output = 0;
     vx_matrix matrix = 0;
     vx_user_data_object param_obj;
+    vx_user_data_object region_obj;
     vx_graph graph = 0;
     vx_node node = 0;
     const vx_enum matrix_type = VX_TYPE_INT16;
@@ -124,12 +125,14 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         }
 
         ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_params_t", sizeof(tivx_vpac_ldc_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t", sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
 
         ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
                                 param_obj,
                                 matrix,
+                                region_obj,
                                 NULL,
                                 NULL,
                                 input,
@@ -144,6 +147,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
         VX_CALL(vxReleaseImage(&output));
         VX_CALL(vxReleaseImage(&input));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&region_obj));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
@@ -529,6 +533,8 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
     vx_context context = context_->vx_context_;
     tivx_vpac_ldc_params_t params;
     vx_user_data_object param_obj;
+    tivx_vpac_ldc_region_params_t region;
+    vx_user_data_object region_obj;
     tivx_vpac_ldc_mesh_params_t   mesh_params;
     vx_user_data_object mesh_params_obj;
     vx_graph graph = 0;
@@ -582,13 +588,17 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_vpac_ldc_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
+        memset(&region, 0, sizeof(tivx_vpac_ldc_region_params_t));
+        ASSERT_VX_OBJECT(region_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_region_params_t",
+                                                             sizeof(tivx_vpac_ldc_region_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        region.out_block_width = 16;
+        region.out_block_height = 16;
+        region.pixel_pad = 0;
+
         ASSERT_VX_OBJECT(mesh_params_obj = vxCreateUserDataObject(context, "tivx_vpac_ldc_mesh_params_t",
                                                             sizeof(tivx_vpac_ldc_mesh_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
         memset(&mesh_params, 0, sizeof(tivx_vpac_ldc_mesh_params_t));
-
-        mesh_params.block_params.out_block_width = 16;
-        mesh_params.block_params.out_block_height = 16;
-        mesh_params.block_params.pixel_pad = 0;
 
         if(arg_->mesh_mode > 0)
         {
@@ -596,9 +606,9 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
             mesh_params.mesh_frame_width = arg_->width;
             mesh_params.mesh_frame_height = arg_->height;
             mesh_params.subsample_factor = arg_->mesh_mode-1;
-            mesh_params.enable_back_mapping = 0u;
         }
 
+        VX_CALL(vxCopyUserDataObject(region_obj, 0, sizeof(tivx_vpac_ldc_region_params_t), &region, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
         VX_CALL(vxCopyUserDataObject(mesh_params_obj, 0, sizeof(tivx_vpac_ldc_mesh_params_t), &mesh_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
         ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
@@ -606,6 +616,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         ASSERT_VX_OBJECT(node = tivxVpacLdcNode(graph,
                         param_obj,
                         matrix,
+                        region_obj,
                         mesh_params_obj,
                         mesh_image,
                         input_image,
@@ -637,6 +648,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseMatrix(&matrix));
         VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseUserDataObject(&region_obj));
         VX_CALL(vxReleaseUserDataObject(&mesh_params_obj));
         if(arg_->input_mode == 0 || arg_->input_mode == 1)
         {
@@ -666,6 +678,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         ASSERT(output_image == 0);
         ASSERT(input_image == 0);
         ASSERT(param_obj == 0);
+        ASSERT(region_obj == 0);
         ASSERT(mesh_params_obj == 0);
         ASSERT(dual_out_image == 0);
         ASSERT(luma_lut == 0);

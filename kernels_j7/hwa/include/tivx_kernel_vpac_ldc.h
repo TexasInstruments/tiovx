@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -68,15 +68,16 @@ extern "C" {
 #endif
 
 
-#define TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX  (0U)
-#define TIVX_KERNEL_VPAC_LDC_PERSP_TRANSFORM_PARAMS_IDX  (1U)
-#define TIVX_KERNEL_VPAC_LDC_MESH_PARAMS_IDX    (2U)
-#define TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX       (3U)
-#define TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX         (4U)
-#define TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX       (5U)
-#define TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX       (6U)
+#define TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX (0U)
+#define TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX (1U)
+#define TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX (2U)
+#define TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX (3U)
+#define TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX (4U)
+#define TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX (5U)
+#define TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX (6U)
+#define TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX (7U)
 
-#define TIVX_KERNEL_VPAC_LDC_MAX_PARAMS         (7U)
+#define TIVX_KERNEL_VPAC_LDC_MAX_PARAMS (8U)
 
 #ifdef __cplusplus
 }
