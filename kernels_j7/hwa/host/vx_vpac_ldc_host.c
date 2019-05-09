@@ -129,14 +129,14 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        configuration = (const vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
-        warp_matrix = (const vx_matrix)parameters[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
-        region_prms = (const vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX];
-        mesh_prms = (const vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX];
-        mesh_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
-        in_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX];
-        out0_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
-        out1_img = (const vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
+        configuration = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
+        warp_matrix = (vx_matrix)parameters[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
+        region_prms = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX];
+        mesh_prms = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX];
+        mesh_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
+        in_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX];
+        out0_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
+        out1_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
     }
 
 

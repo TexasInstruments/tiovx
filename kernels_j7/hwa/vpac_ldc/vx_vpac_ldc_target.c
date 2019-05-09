@@ -138,13 +138,11 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj);
 static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
     tivxVpacLdcObj *ldc_obj);
 static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
-    tivx_vpac_ldc_multi_region_params_t *mreg_prms);
+    tivx_obj_desc_user_data_object_t *reg_prms_desc);
 static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
     Fvid2_Format *fmt, tivx_obj_desc_image_t *img_desc);
 static void tivxVpacLdcSetAffineConfig(Ldc_PerspectiveTransformCfg *cfg,
     tivx_obj_desc_matrix_t *warp_matrix_desc);
-static void tivxVpacLdcSetMeshLutParams(Ldc_LutCfg *cfg,
-    tivx_vpac_ldc_mesh_params_t *mesh_prms, tivx_obj_desc_image_t *img_desc);
 static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
     tivx_obj_desc_user_data_object_t *mesh_prms_desc,
     tivx_obj_desc_image_t *mesh_img_desc);
@@ -361,6 +359,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     tivxVpacLdcObj                   *ldc_obj = NULL;
     tivx_obj_desc_user_data_object_t *config_desc = NULL;
     tivx_obj_desc_matrix_t           *warp_matrix_desc = NULL;
+    tivx_obj_desc_user_data_object_t *reg_prms_desc = NULL;
     tivx_obj_desc_user_data_object_t *mesh_prms_desc = NULL;
     tivx_obj_desc_image_t            *mesh_img_desc = NULL;
     tivx_obj_desc_image_t            *in_img_desc = NULL;
@@ -384,9 +383,11 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
             config_desc = (tivx_obj_desc_user_data_object_t *)
                 obj_desc[TIVX_KERNEL_VPAC_LDC_CONFIGURATION_IDX];
             warp_matrix_desc = (tivx_obj_desc_matrix_t *)
-                obj_desc[TIVX_KERNEL_VPAC_LDC_PERSP_TRANSFORM_PARAMS_IDX];
+                obj_desc[TIVX_KERNEL_VPAC_LDC_WARP_MATRIX_IDX];
+            reg_prms_desc = (tivx_obj_desc_user_data_object_t *)
+                obj_desc[TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX];
             mesh_prms_desc = (tivx_obj_desc_user_data_object_t *)
-                obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_PARAMS_IDX];
+                obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX];
             mesh_img_desc = (tivx_obj_desc_image_t *)
                 obj_desc[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
             in_img_desc = (tivx_obj_desc_image_t *)
@@ -505,10 +506,12 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         ldc_cfg->outputFrameWidth = in_img_desc->imagepatch_addr[0U].dim_x;
         ldc_cfg->outputFrameHeight = in_img_desc->imagepatch_addr[0U].dim_y;
 
+        tivxVpacLdcSetMeshParams(ldc_cfg, mesh_prms_desc, mesh_img_desc);
+
+        tivxVpacLdcSetRegionParams(ldc_cfg, reg_prms_desc);
+
         tivxVpacLdcSetAffineConfig(&ldc_cfg->perspTrnsformCfg,
             warp_matrix_desc);
-
-        tivxVpacLdcSetMeshParams(ldc_cfg, mesh_prms_desc, mesh_img_desc);
 
         status = Fvid2_control(ldc_obj->handle,
             IOCTL_VHWA_M2M_LDC_SET_PARAMS, &ldc_obj->ldc_cfg, NULL);
@@ -888,8 +891,9 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
     vx_status                    status = VX_SUCCESS;
     tivx_vpac_ldc_mesh_params_t *mesh_prms = NULL;
     void                        *target_ptr;
+    Ldc_LutCfg                  *lut_cfg = NULL;
 
-    if (NULL != mesh_prms_desc)
+    if ((NULL != mesh_prms_desc) && (NULL != mesh_img_desc))
     {
         target_ptr = tivxMemShared2TargetPtr(
             mesh_prms_desc->mem_ptr.shared_ptr,
@@ -901,30 +905,18 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
         if (sizeof(tivx_vpac_ldc_mesh_params_t) == mesh_prms_desc->mem_size)
         {
             mesh_prms = (tivx_vpac_ldc_mesh_params_t *)target_ptr;
+            lut_cfg   = &ldc_cfg->lutCfg;
 
-            /* Below parameters are required, even if the back
-             * mapping is disabled */
-            ldc_cfg->outputBlockWidth = mesh_prms->block_params.out_block_width;
-            ldc_cfg->outputBlockHeight = mesh_prms->block_params.out_block_height;
-            ldc_cfg->pixelPad = mesh_prms->block_params.pixel_pad;
+            lut_cfg->address    = tivxMemShared2PhysPtr(img_desc->mem_ptr[0].shared_ptr,
+                img_desc->mem_ptr[0].mem_heap_region);
+            lut_cfg->lineOffset = img_desc->imagepatch_addr[0].stride_y;
+            lut_cfg->dsFactor   = mesh_prms->subsample_factor;
+            lut_cfg->width      = mesh_prms->mesh_frame_width;
+            lut_cfg->height     = mesh_prms->mesh_frame_height;
 
-            if (1u == mesh_prms->enable_back_mapping)
-            {
-                ldc_cfg->enableBackMapping = (uint32_t)TRUE;
-                tivxVpacLdcSetMeshLutParams(&ldc_cfg->lutCfg,
-                    mesh_prms, mesh_img_desc);
-
-                ldc_cfg->enableMultiRegions = (uint32_t)FALSE;
-                if (1u == mesh_prms->enable_multi_reg)
-                {
-                    tivxVpacLdcSetRegionParams(ldc_cfg,
-                        &mesh_prms->multi_reg_params);
-                }
-            }
-            else
-            {
-                ldc_cfg->enableBackMapping = (uint32_t)FALSE;
-            }
+            /* Back mapping is enabled, if the mesh params & mesh
+             * image are non-null */
+            ldc_cfg->enableBackMapping = (uint32_t)TRUE;
         }
         else
         {
@@ -937,57 +929,80 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
     }
     else
     {
+        /* Disable back mapping if one of the mesh params or mesh
+         * image is null */
         ldc_cfg->enableBackMapping = (uint32_t)FALSE;
-        ldc_cfg->outputBlockWidth = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
-        ldc_cfg->outputBlockHeight = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
-        ldc_cfg->pixelPad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
     }
 
     return (status);
 }
 
-static void tivxVpacLdcSetMeshLutParams(Ldc_LutCfg *cfg,
-    tivx_vpac_ldc_mesh_params_t *mesh_prms, tivx_obj_desc_image_t *img_desc)
-{
-
-    cfg->address    = tivxMemShared2PhysPtr(img_desc->mem_ptr[0].shared_ptr,
-        img_desc->mem_ptr[0].mem_heap_region);
-    cfg->lineOffset = img_desc->imagepatch_addr[0].stride_y;
-    cfg->dsFactor   = mesh_prms->subsample_factor;
-    cfg->width      = mesh_prms->mesh_frame_width;
-    cfg->height     = mesh_prms->mesh_frame_height;
-}
-
 static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
-    tivx_vpac_ldc_multi_region_params_t *mreg_prms)
+    tivx_obj_desc_user_data_object_t *reg_prms_desc)
 {
-    uint32_t                       cnt1, cnt2;
-    tivx_vpac_ldc_region_params_t *reg_prms = NULL;
+    void                                *target_ptr;
+    uint32_t                             cnt1, cnt2;
+    tivx_vpac_ldc_region_params_t       *reg_prms = NULL;
+    tivx_vpac_ldc_multi_region_params_t *mreg_prms = NULL;
 
-    cfg->enableMultiRegions = (uint32_t)TRUE;
-
-    for (cnt1 = 0u; cnt1 < LDC_MAX_HORZ_REGIONS; cnt1 ++)
+    if (NULL != reg_prms_desc)
     {
-        cfg->regCfg.width[cnt1] = mreg_prms->reg_width[cnt1];
-    }
+        target_ptr = tivxMemShared2TargetPtr(
+            reg_prms_desc->mem_ptr.shared_ptr,
+            reg_prms_desc->mem_ptr.mem_heap_region);
 
-    for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
-    {
-       cfg->regCfg.height[cnt1] = mreg_prms->reg_height[cnt1];
-    }
+        tivxMemBufferMap(target_ptr, reg_prms_desc->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-    for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
-    {
-        for (cnt2 = 0u; cnt2 < LDC_MAX_HORZ_REGIONS; cnt2 ++)
+        if (sizeof(tivx_vpac_ldc_region_params_t) ==
+                reg_prms_desc->mem_size)
         {
-            reg_prms = &mreg_prms->reg_params[cnt1][cnt2];
+            reg_prms = (tivx_vpac_ldc_region_params_t*)target_ptr;
 
-            cfg->regCfg.enable[cnt1][cnt2] = reg_prms->enable;
+            cfg->enableMultiRegions = (uint32_t)FALSE;
 
-            cfg->regCfg.blockWidth[cnt1][cnt2] = reg_prms->out_block_width;
-            cfg->regCfg.blockHeight[cnt1][cnt2] = reg_prms->out_block_height;
-            cfg->regCfg.pixelPad[cnt1][cnt2] = reg_prms->pixel_pad;
+            ldc_cfg->outputBlockWidth  = region_params->out_block_width;
+            ldc_cfg->outputBlockHeight = region_params->out_block_height;
+            ldc_cfg->pixelPad          = region_params->pixel_pad;
         }
+        else
+        {
+            mreg_prms = (tivx_vpac_ldc_multi_region_params_t*)target_ptr;
+
+            cfg->enableMultiRegions = (uint32_t)TRUE;
+
+            for (cnt1 = 0u; cnt1 < LDC_MAX_HORZ_REGIONS; cnt1 ++)
+            {
+                cfg->regCfg.width[cnt1] = mreg_prms->reg_width[cnt1];
+            }
+
+            for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
+            {
+               cfg->regCfg.height[cnt1] = mreg_prms->reg_height[cnt1];
+            }
+
+            for (cnt1 = 0u; cnt1 < LDC_MAX_VERT_REGIONS; cnt1 ++)
+            {
+                for (cnt2 = 0u; cnt2 < LDC_MAX_HORZ_REGIONS; cnt2 ++)
+                {
+                    reg_prms = &mreg_prms->reg_params[cnt1][cnt2];
+
+                    cfg->regCfg.enable[cnt1][cnt2] = reg_prms->enable;
+
+                    cfg->regCfg.blockWidth[cnt1][cnt2]  =
+                        reg_prms->out_block_width;
+                    cfg->regCfg.blockHeight[cnt1][cnt2] =
+                        reg_prms->out_block_height;
+                    cfg->regCfg.pixelPad[cnt1][cnt2]    = reg_prms->pixel_pad;
+                }
+            }
+        }
+    }
+    else
+    {
+        ldc_cfg->outputBlockWidth = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
+        ldc_cfg->outputBlockHeight = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
+        ldc_cfg->pixelPad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
     }
 }
 
