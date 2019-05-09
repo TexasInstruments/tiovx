@@ -473,6 +473,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 tivxVpacVissParseNsf4Params(&prms->nsf4_params,
                     prms->dcc_output_params);
+                prms->nsf4_params.iw = raw_desc->params.width;
+                prms->nsf4_params.ih = raw_desc->params.height;
                 if (0 == aewb_result->awb_valid)
                 {
                     prms->nsf4_params.wb_gain[0] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[0];
