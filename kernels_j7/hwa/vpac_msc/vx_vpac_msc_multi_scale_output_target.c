@@ -163,7 +163,7 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 
 /* Driver Callback */
-int32_t tivxVpacMscScaleFrameComplCb(Fvid2_Handle handle, void *appData);
+int32_t tivxVpacMscMultiScaleFrameComplCb(Fvid2_Handle handle, void *appData);
 
 
 /* ========================================================================== */
@@ -380,7 +380,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             status = tivxMutexCreate(&msc_obj->wait_for_compl);
             if (VX_SUCCESS == status)
             {
-                msc_obj->cbPrms.cbFxn   = tivxVpacMscScaleFrameComplCb;
+                msc_obj->cbPrms.cbFxn   = tivxVpacMscMultiScaleFrameComplCb;
                 msc_obj->cbPrms.appData = msc_obj;
 
                 msc_obj->handle = Fvid2_create(FVID2_VHWA_M2M_MSC_DRV_ID,
@@ -1172,7 +1172,7 @@ static vx_status tivxVpacMscScaleSetInputParamsCmd(tivxVpacMscScaleObj *msc_obj,
 /*                              Driver Callbacks                              */
 /* ========================================================================== */
 
-int32_t tivxVpacMscScaleFrameComplCb(Fvid2_Handle handle, void *appData)
+int32_t tivxVpacMscMultiScaleFrameComplCb(Fvid2_Handle handle, void *appData)
 {
     tivxVpacMscScaleObj *msc_obj = (tivxVpacMscScaleObj *)appData;
 

@@ -907,9 +907,9 @@ static vx_status tivxVpacLdcSetMeshParams(Ldc_Config *ldc_cfg,
             mesh_prms = (tivx_vpac_ldc_mesh_params_t *)target_ptr;
             lut_cfg   = &ldc_cfg->lutCfg;
 
-            lut_cfg->address    = tivxMemShared2PhysPtr(img_desc->mem_ptr[0].shared_ptr,
-                img_desc->mem_ptr[0].mem_heap_region);
-            lut_cfg->lineOffset = img_desc->imagepatch_addr[0].stride_y;
+            lut_cfg->address    = tivxMemShared2PhysPtr(mesh_img_desc->mem_ptr[0].shared_ptr,
+                mesh_img_desc->mem_ptr[0].mem_heap_region);
+            lut_cfg->lineOffset = mesh_img_desc->imagepatch_addr[0].stride_y;
             lut_cfg->dsFactor   = mesh_prms->subsample_factor;
             lut_cfg->width      = mesh_prms->mesh_frame_width;
             lut_cfg->height     = mesh_prms->mesh_frame_height;
@@ -961,9 +961,9 @@ static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
 
             cfg->enableMultiRegions = (uint32_t)FALSE;
 
-            ldc_cfg->outputBlockWidth  = region_params->out_block_width;
-            ldc_cfg->outputBlockHeight = region_params->out_block_height;
-            ldc_cfg->pixelPad          = region_params->pixel_pad;
+            cfg->outputBlockWidth  = reg_prms->out_block_width;
+            cfg->outputBlockHeight = reg_prms->out_block_height;
+            cfg->pixelPad          = reg_prms->pixel_pad;
         }
         else
         {
@@ -1000,9 +1000,9 @@ static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
     }
     else
     {
-        ldc_cfg->outputBlockWidth = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
-        ldc_cfg->outputBlockHeight = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
-        ldc_cfg->pixelPad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
+        cfg->outputBlockWidth = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
+        cfg->outputBlockHeight = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
+        cfg->pixelPad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
     }
 }
 
