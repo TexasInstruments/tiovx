@@ -4,6 +4,7 @@ out/
 lib/TDAX
 libvx_*.a
 vx_*_exe*
+internal_docs/doxy_cfg_user_guide_j7_presi/user_guide_j7_presi
 *.pp
 *.interfaces
 *.executables
