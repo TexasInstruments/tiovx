@@ -93,6 +93,9 @@ static vx_status VX_CALLBACK own_source1_Kernel(vx_node node, const vx_reference
             }
 
             copy_value[pipeup_frame-1] = global_value;
+
+            /* To give some cycles to test application to end test */
+            tivxTaskWaitMsecs(1);
         }
         else
         {
@@ -129,6 +132,9 @@ static vx_status VX_CALLBACK own_source2_Kernel(vx_node node, const vx_reference
         vxCopyScalar((vx_scalar)parameters[0], &global_value, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST);
     }
 
+    /* To give some cycles to test application to end test */
+    tivxTaskWaitMsecs(1);
+
     return VX_SUCCESS;
 }
 
@@ -155,6 +161,9 @@ static vx_status VX_CALLBACK own_sink_Kernel(vx_node node, const vx_reference *p
 
         EXPECT(local_copy_value == golden_sink_value);
     }
+
+    /* To give some cycles to test application to end test */
+    tivxTaskWaitMsecs(1);
 
     return VX_SUCCESS;
 }
