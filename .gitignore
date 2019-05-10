@@ -2,6 +2,9 @@ concerto/
 bin/
 tiovx_dev/
 conformance_tests/test_data
+docs/pytiovx_guide
+docs/tutorial_guide
+docs/user_guide
 *.pyc
 *.o
 *.dll
