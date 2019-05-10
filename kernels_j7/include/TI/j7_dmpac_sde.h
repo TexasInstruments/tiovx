@@ -177,6 +177,15 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacSdeNode(vx_graph graph,
                                       vx_image             output,
                                       vx_distribution      confidence_histogram);
 
+/*!
+ * \brief Function to initialize SDE Parameters
+ *
+ * \param prms  [IN] Pointer to SDE parameters
+ *
+ * \ingroup group_vision_function_dmpac_sde
+ */
+ void tivx_dmpac_sde_params_init(tivx_dmpac_sde_params_t *prms);
+
 
 #ifdef __cplusplus
 }

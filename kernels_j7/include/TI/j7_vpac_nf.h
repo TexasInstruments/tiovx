@@ -247,6 +247,43 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacNfBilateralNode(vx_graph graph,
                                       vx_user_data_object  sigmas,
                                       vx_image             output);
 
+/*!
+ * \brief Function to initialize NF common Parameters
+ *
+ * \param prms  [IN] Pointer to NF common parameters
+ *
+ * \ingroup group_vision_function_vpac_nf
+ */
+void tivx_vpac_nf_common_params_init(tivx_vpac_nf_common_params_t *prms);
+
+/*!
+ * \brief Function to initialize NF HTS bandwidth limit Parameters
+ *
+ * \param prms  [IN] Pointer to NF HTS bandwidth limit parameters
+ *
+ * \ingroup group_vision_function_vpac_nf
+ */
+void tivx_vpac_nf_hts_bw_limit_params_init(tivx_vpac_nf_hts_bw_limit_params_t *prms);
+
+/*!
+ * \brief Function to initialize NF bilateral Parameters
+ *
+ * \param prms  [IN] Pointer to NF bilateral parameters
+ *
+ * \ingroup group_vision_function_vpac_nf
+ */
+void tivx_vpac_nf_bilateral_params_init(tivx_vpac_nf_bilateral_params_t *prms);
+
+/*!
+ * \brief Function to initialize NF bilateral Sigmas
+ *
+ * \param prms  [IN] Pointer to NF bilateral sigmas
+ *
+ * \ingroup group_vision_function_vpac_nf
+ */
+void tivx_vpac_nf_bilateral_sigmas_init(tivx_vpac_nf_bilateral_sigmas_t *sigmas);
+
+
 #ifdef __cplusplus
 }
 #endif

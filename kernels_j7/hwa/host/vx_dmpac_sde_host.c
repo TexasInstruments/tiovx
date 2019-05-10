@@ -382,4 +382,25 @@ vx_status tivxRemoveKernelDmpacSde(vx_context context)
     return status;
 }
 
-
+void tivx_dmpac_sde_params_init(tivx_dmpac_sde_params_t *prms)
+{
+    uint16_t i;
+    
+    if (NULL != prms)
+    {
+        prms->median_filter_enable = 0u;
+        prms->reduced_range_search_enable = 0u;
+        prms->disparity_min = 0u;
+        prms->disparity_max = 0u;
+        prms->threshold_left_right = 0u;
+        prms->texture_filter_enable = 0u;
+        prms->threshold_texture = 0u;
+        prms->aggregation_penalty_p1 = 0u;
+        prms->aggregation_penalty_p2 = 0u;
+        
+        for(i = 0u; i < 8u; i++)
+        {
+            prms->confidence_score_map[i] = i;
+        }
+    }
+}

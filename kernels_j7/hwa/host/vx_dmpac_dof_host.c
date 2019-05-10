@@ -657,6 +657,27 @@ void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
     }
 }
 
+void tivx_dmpac_dof_cs_tree_params_init(tivx_dmpac_dof_cs_tree_params_t *prms)
+{
+    uint32_t i;
+    uint32_t j;
+    
+    if (NULL != prms)
+    {
+        prms->cs_gain = 0u;
+
+        for(i = 0u; i < 16u; i++)
+        {
+            for(j = 0u; j < 3u; j++)
+            {
+                prms->decision_tree_index[i][j] = 0u;
+                prms->decision_tree_threshold[i][j] = 0u;
+            }
+            prms->decision_tree_weight[i][3u] = 0u;
+        }
+    }
+}
+
 void tivx_dmpac_dof_hts_bw_limit_params_init(
                                     tivx_dmpac_dof_hts_bw_limit_params_t *prms)
 {

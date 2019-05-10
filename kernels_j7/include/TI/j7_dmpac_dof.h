@@ -311,6 +311,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxDmpacDofNode(vx_graph graph,
 void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms);
 
 /*!
+ * \brief Function to initialize DOF CS tree parameters with default value
+ * \ingroup group_vision_function_dmpac_dof
+ */
+ void tivx_dmpac_dof_cs_tree_params_init(tivx_dmpac_dof_cs_tree_params_t *prms);
+
+
+/*!
  * \brief Function to initialize DOF HTS bandwidth limit parameters with default value
  * \ingroup group_vision_function_dmpac_dof
  */

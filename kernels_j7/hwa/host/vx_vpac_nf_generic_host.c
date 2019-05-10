@@ -373,4 +373,28 @@ vx_status tivxRemoveKernelVpacNfGeneric(vx_context context)
     return status;
 }
 
+void tivx_vpac_nf_common_params_init(tivx_vpac_nf_common_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        prms->input_interleaved = 0u;
+        prms->output_downshift = 0u;
+        prms->output_offset = 0u;
+        prms->output_pixel_skip = 0u;
+        prms->output_pixel_skip_odd = 0u;
+        prms->kern_ln_offset = 0u;
+        prms->kern_sz_height = 1u;
+        prms->src_ln_inc_2 = 0u;
+    }
+}
 
+void tivx_vpac_nf_hts_bw_limit_params_init(tivx_vpac_nf_hts_bw_limit_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        prms->enable_hts_bw_limit = 0u;
+        prms->cycle_cnt = 1u;
+        prms->token_cnt = 1u;
+
+    }
+}
