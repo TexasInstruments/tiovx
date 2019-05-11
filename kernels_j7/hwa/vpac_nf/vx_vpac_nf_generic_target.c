@@ -182,7 +182,7 @@ void tivxAddTargetKernelVpacNfGeneric(void)
         {
             /* Allocate lock semaphore */
             status = tivxMutexCreate(&gTivxVpacNfGenericInstObj.lock);
-            if (VX_SUCCESS == status)
+            if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacNfGeneric: Failed to create Semaphore\n");

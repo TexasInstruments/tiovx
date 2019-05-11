@@ -195,7 +195,7 @@ void tivxAddTargetKernelVpacLdc()
         {
             /* Allocate lock semaphore */
             status = tivxMutexCreate(&gTivxVpacLdcInstObj.lock);
-            if (VX_SUCCESS == status)
+            if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacLdc: Failed to create Semaphore\n");

@@ -189,7 +189,7 @@ void tivxAddTargetKernelDmpacDof(void)
         {
             /* Allocate lock semaphore */
             status = tivxMutexCreate(&gTivxDmpacDofInstObj.lock);
-            if (VX_SUCCESS == status)
+            if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelDmpacDof: Failed to create Semaphore\n");

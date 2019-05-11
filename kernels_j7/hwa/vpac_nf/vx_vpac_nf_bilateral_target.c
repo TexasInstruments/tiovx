@@ -190,7 +190,7 @@ void tivxAddTargetKernelVpacNfBilateral(void)
         {
             /* Allocate lock semaphore */
             status = tivxMutexCreate(&gTivxVpacNfBilateralInstObj.lock);
-            if (VX_SUCCESS == status)
+            if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacNfBilateral: Failed to create Semaphore\n");
