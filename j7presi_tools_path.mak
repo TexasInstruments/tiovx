@@ -1,6 +1,6 @@
 
-TIOVX_PATH = $(abspath .)
-PSDK_PATH = $(abspath ..)
+TIOVX_PATH ?= $(abspath .)
+PSDK_PATH ?= $(abspath ..)
 
 CUSTOM_KERNEL_PATH = $(TIOVX_PATH)/tiovx_dev/kernels_j7
 CUSTOM_PLATFORM_PATH = $(TIOVX_PATH)/tiovx_dev/platform
