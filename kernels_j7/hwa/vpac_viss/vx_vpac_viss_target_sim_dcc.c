@@ -543,17 +543,17 @@ void tivxVpacVissParseFlxCCParams(Flexcc_Config *cc_prms,
         cc_prms->HistSizeX                  = 500u;
         cc_prms->HistSizeY                  = 500u;
 
-        cc_prms->CCM1.W11                   = 426;
-        cc_prms->CCM1.W12                   = -166;
-        cc_prms->CCM1.W13                   = -4;
+        cc_prms->CCM1.W11                   = 256;
+        cc_prms->CCM1.W12                   = 0;
+        cc_prms->CCM1.W13                   = 0;
         cc_prms->CCM1.W14                   = 0;
-        cc_prms->CCM1.W21                   = -104;
-        cc_prms->CCM1.W22                   = 353;
-        cc_prms->CCM1.W23                   = 7;
+        cc_prms->CCM1.W21                   = 0;
+        cc_prms->CCM1.W22                   = 256;
+        cc_prms->CCM1.W23                   = 0;
         cc_prms->CCM1.W24                   = 0;
-        cc_prms->CCM1.W31                   = 7;
-        cc_prms->CCM1.W32                   = -178;
-        cc_prms->CCM1.W33                   = 427;
+        cc_prms->CCM1.W31                   = 0;
+        cc_prms->CCM1.W32                   = 0;
+        cc_prms->CCM1.W33                   = 256;
         cc_prms->CCM1.W34                   = 0;
 
         cc_prms->CCM1.Offset_1              = 0;
@@ -1006,9 +1006,9 @@ static void tivxVpacVissParseWB2Params(cfg_wb2 *wb,
         wb->offset[2u]              = 0u;
         wb->offset[3u]              = 0u;
 
-        wb->gain[0u]                = 694u;
+        wb->gain[0u]                = 512u;
         wb->gain[1u]                = 512u;
         wb->gain[2u]                = 512u;
-        wb->gain[3u]                = 1028u;
+        wb->gain[3u]                = 512u;
     }
 }
