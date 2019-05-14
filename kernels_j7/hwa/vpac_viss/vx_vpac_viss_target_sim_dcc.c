@@ -394,97 +394,110 @@ void tivxVpacVissParseFlxCfaParams(FLXD_Config *fcfa_prms,
     dcc_parser_output_params_t *dcc_out_prms)
 {
     uint32_t cnt, cnt1, cnt2, cfa_cnt;
+    viss_ipipe_cfa_flxd   * dcc_cfa_cfg = NULL;
+
+    if(NULL != dcc_out_prms)
+    {
+        dcc_cfa_cfg = &(dcc_out_prms->vissCFACfg);
+    }
 
     if (NULL != fcfa_prms)
     {
-        fcfa_prms->imgWidth               = 1280u;
-        fcfa_prms->imgHeight              = 720u;
-        fcfa_prms->bitWidth               = 12u;
-        fcfa_prms->lut_enable             = 0u;
-
-        fcfa_prms->Set0GradHzMask[0u]     = 175u;
-        fcfa_prms->Set0GradHzMask[1u]     = 95u;
-        fcfa_prms->Set0GradHzMask[2u]     = 95u;
-        fcfa_prms->Set0GradHzMask[3u]     = 175u;
-
-        fcfa_prms->Set0GradVtMask[0u]     = 175u;
-        fcfa_prms->Set0GradVtMask[1u]     = 95u;
-        fcfa_prms->Set0GradVtMask[2u]     = 95u;
-        fcfa_prms->Set0GradVtMask[3u]     = 175u;
-
-        fcfa_prms->Set0IntensityMask[0u]  = 0u;
-        fcfa_prms->Set0IntensityMask[1u]  = 1u;
-        fcfa_prms->Set0IntensityMask[2u]  = 2u;
-        fcfa_prms->Set0IntensityMask[3u]  = 3u;
-
-        fcfa_prms->Set0IntensityShift[0u] = 4u;
-        fcfa_prms->Set0IntensityShift[1u] = 5u;
-        fcfa_prms->Set0IntensityShift[2u] = 6u;
-        fcfa_prms->Set0IntensityShift[3u] = 7u;
-
-        fcfa_prms->Set0Thr[0u]            = 500u;
-        fcfa_prms->Set0Thr[1u]            = 600u;
-        fcfa_prms->Set0Thr[2u]            = 700u;
-        fcfa_prms->Set0Thr[3u]            = 800u;
-        fcfa_prms->Set0Thr[4u]            = 900u;
-        fcfa_prms->Set0Thr[5u]            = 1000u;
-        fcfa_prms->Set0Thr[6u]            = 1100u;
-
-        fcfa_prms->Set1GradHzMask[0u]     = 175u;
-        fcfa_prms->Set1GradHzMask[1u]     = 195u;
-        fcfa_prms->Set1GradHzMask[2u]     = 195u;
-        fcfa_prms->Set1GradHzMask[3u]     = 175u;
-
-        fcfa_prms->Set1GradVtMask[0u]     = 276u;
-        fcfa_prms->Set1GradVtMask[1u]     = 196u;
-        fcfa_prms->Set1GradVtMask[2u]     = 196u;
-        fcfa_prms->Set1GradVtMask[3u]     = 276u;
-
-        fcfa_prms->Set1IntensityMask[0u]  = 8u;
-        fcfa_prms->Set1IntensityMask[1u]  = 9u;
-        fcfa_prms->Set1IntensityMask[2u]  = 10u;
-        fcfa_prms->Set1IntensityMask[3u]  = 11u;
-
-        fcfa_prms->Set1IntensityShift[0u] = 12u;
-        fcfa_prms->Set1IntensityShift[1u] = 13u;
-        fcfa_prms->Set1IntensityShift[2u] = 14u;
-        fcfa_prms->Set1IntensityShift[3u] = 15u;
-
-        fcfa_prms->Set1Thr[0u]            = 0u;
-        fcfa_prms->Set1Thr[1u]            = 100u;
-        fcfa_prms->Set1Thr[2u]            = 200u;
-        fcfa_prms->Set1Thr[3u]            = 300u;
-        fcfa_prms->Set1Thr[4u]            = 400u;
-        fcfa_prms->Set1Thr[5u]            = 500u;
-        fcfa_prms->Set1Thr[6u]            = 600u;
-
-        for (cnt = 0u; cnt < 639u; cnt ++)
+        if(NULL != dcc_cfa_cfg)
         {
-            fcfa_prms->ToneLut[cnt] = gcfa_lut_20to16[cnt];
+            memcpy(fcfa_prms, dcc_cfa_cfg, sizeof(viss_ipipe_cfa_flxd));
         }
-
-        cfa_cnt = 0u;
-        for (cnt = 0u; cnt < 12u; cnt ++)
+        else
         {
-            for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
+            fcfa_prms->imgWidth               = 1280u;
+            fcfa_prms->imgHeight              = 720u;
+            fcfa_prms->bitWidth               = 12u;
+            fcfa_prms->lut_enable             = 0u;
+
+            fcfa_prms->Set0GradHzMask[0u]     = 175u;
+            fcfa_prms->Set0GradHzMask[1u]     = 95u;
+            fcfa_prms->Set0GradHzMask[2u]     = 95u;
+            fcfa_prms->Set0GradHzMask[3u]     = 175u;
+
+            fcfa_prms->Set0GradVtMask[0u]     = 175u;
+            fcfa_prms->Set0GradVtMask[1u]     = 95u;
+            fcfa_prms->Set0GradVtMask[2u]     = 95u;
+            fcfa_prms->Set0GradVtMask[3u]     = 175u;
+
+            fcfa_prms->Set0IntensityMask[0u]  = 0u;
+            fcfa_prms->Set0IntensityMask[1u]  = 1u;
+            fcfa_prms->Set0IntensityMask[2u]  = 2u;
+            fcfa_prms->Set0IntensityMask[3u]  = 3u;
+
+            fcfa_prms->Set0IntensityShift[0u] = 4u;
+            fcfa_prms->Set0IntensityShift[1u] = 5u;
+            fcfa_prms->Set0IntensityShift[2u] = 6u;
+            fcfa_prms->Set0IntensityShift[3u] = 7u;
+
+            fcfa_prms->Set0Thr[0u]            = 500u;
+            fcfa_prms->Set0Thr[1u]            = 600u;
+            fcfa_prms->Set0Thr[2u]            = 700u;
+            fcfa_prms->Set0Thr[3u]            = 800u;
+            fcfa_prms->Set0Thr[4u]            = 900u;
+            fcfa_prms->Set0Thr[5u]            = 1000u;
+            fcfa_prms->Set0Thr[6u]            = 1100u;
+
+            fcfa_prms->Set1GradHzMask[0u]     = 175u;
+            fcfa_prms->Set1GradHzMask[1u]     = 195u;
+            fcfa_prms->Set1GradHzMask[2u]     = 195u;
+            fcfa_prms->Set1GradHzMask[3u]     = 175u;
+
+            fcfa_prms->Set1GradVtMask[0u]     = 276u;
+            fcfa_prms->Set1GradVtMask[1u]     = 196u;
+            fcfa_prms->Set1GradVtMask[2u]     = 196u;
+            fcfa_prms->Set1GradVtMask[3u]     = 276u;
+
+            fcfa_prms->Set1IntensityMask[0u]  = 8u;
+            fcfa_prms->Set1IntensityMask[1u]  = 9u;
+            fcfa_prms->Set1IntensityMask[2u]  = 10u;
+            fcfa_prms->Set1IntensityMask[3u]  = 11u;
+
+            fcfa_prms->Set1IntensityShift[0u] = 12u;
+            fcfa_prms->Set1IntensityShift[1u] = 13u;
+            fcfa_prms->Set1IntensityShift[2u] = 14u;
+            fcfa_prms->Set1IntensityShift[3u] = 15u;
+
+            fcfa_prms->Set1Thr[0u]            = 0u;
+            fcfa_prms->Set1Thr[1u]            = 100u;
+            fcfa_prms->Set1Thr[2u]            = 200u;
+            fcfa_prms->Set1Thr[3u]            = 300u;
+            fcfa_prms->Set1Thr[4u]            = 400u;
+            fcfa_prms->Set1Thr[5u]            = 500u;
+            fcfa_prms->Set1Thr[6u]            = 600u;
+
+            for (cnt = 0u; cnt < 639u; cnt ++)
             {
-                for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
+                fcfa_prms->ToneLut[cnt] = gcfa_lut_20to16[cnt];
+            }
+
+            cfa_cnt = 0u;
+            for (cnt = 0u; cnt < 12u; cnt ++)
+            {
+                for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
                 {
-                    fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = gcfa_coeff[cfa_cnt];
-                    cfa_cnt ++;
+                    for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
+                    {
+                        fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = gcfa_coeff[cfa_cnt];
+                        cfa_cnt ++;
+                    }
                 }
             }
+
+            fcfa_prms->blendMode[0u]          = FLXD_BLEND_SELECTHVN;
+            fcfa_prms->blendMode[1u]          = FLXD_BLEND_SELECTHVN;
+            fcfa_prms->blendMode[2u]          = FLXD_BLEND_SELECTHVN;
+            fcfa_prms->blendMode[3u]          = FLXD_BLEND_SELECTHVN;
+
+            fcfa_prms->bitMaskSel[0u]         = 0u;
+            fcfa_prms->bitMaskSel[1u]         = 0u;
+            fcfa_prms->bitMaskSel[2u]         = 0u;
+            fcfa_prms->bitMaskSel[3u]         = 0u;
         }
-
-        fcfa_prms->blendMode[0u]          = FLXD_BLEND_SELECTHVN;
-        fcfa_prms->blendMode[1u]          = FLXD_BLEND_SELECTHVN;
-        fcfa_prms->blendMode[2u]          = FLXD_BLEND_SELECTHVN;
-        fcfa_prms->blendMode[3u]          = FLXD_BLEND_SELECTHVN;
-
-        fcfa_prms->bitMaskSel[0u]         = 0u;
-        fcfa_prms->bitMaskSel[1u]         = 0u;
-        fcfa_prms->bitMaskSel[2u]         = 0u;
-        fcfa_prms->bitMaskSel[3u]         = 0u;
     }
 }
 
