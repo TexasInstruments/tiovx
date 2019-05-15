@@ -405,7 +405,45 @@ void tivxVpacVissParseFlxCfaParams(FLXD_Config *fcfa_prms,
     {
         if(NULL != dcc_cfa_cfg)
         {
-            memcpy(fcfa_prms, dcc_cfa_cfg, sizeof(viss_ipipe_cfa_flxd));
+            fcfa_prms->bitWidth               = dcc_cfa_cfg->bitWidth;
+            fcfa_prms->lut_enable             = dcc_cfa_cfg->lut_enable;
+
+            for (cnt = 0u; cnt < 4u; cnt ++)
+            {
+                fcfa_prms->Set0GradHzMask[cnt]     = dcc_cfa_cfg->Set0GradHzMask[cnt];
+                fcfa_prms->Set0GradVtMask[cnt]     = dcc_cfa_cfg->Set0GradVtMask[cnt];
+                fcfa_prms->Set0IntensityMask[cnt]  = dcc_cfa_cfg->Set0IntensityMask[cnt];
+                fcfa_prms->Set0IntensityShift[cnt]  = dcc_cfa_cfg->Set0IntensityShift[cnt];
+
+                fcfa_prms->Set1GradHzMask[cnt]     = dcc_cfa_cfg->Set1GradHzMask[cnt];
+                fcfa_prms->Set1GradVtMask[cnt]     = dcc_cfa_cfg->Set1GradVtMask[cnt];
+                fcfa_prms->Set1IntensityMask[cnt]  = dcc_cfa_cfg->Set1IntensityMask[cnt];
+                fcfa_prms->Set1IntensityShift[cnt]  = dcc_cfa_cfg->Set1IntensityShift[cnt];
+
+                fcfa_prms->blendMode[cnt]          = dcc_cfa_cfg->blendMode[cnt];
+                fcfa_prms->bitMaskSel[cnt]          = dcc_cfa_cfg->bitMaskSel[cnt];
+            }
+            for (cnt = 0u; cnt < 7u; cnt ++)
+            {
+                fcfa_prms->Set0Thr[cnt]     = dcc_cfa_cfg->Set0Thr[cnt];
+                fcfa_prms->Set1Thr[cnt]     = dcc_cfa_cfg->Set1Thr[cnt];
+            }
+
+            for (cnt = 0u; cnt < 639u; cnt ++)
+            {
+                fcfa_prms->ToneLut[cnt] = dcc_cfa_cfg->ToneLut[cnt];
+            }
+
+            for (cnt = 0u; cnt < 12u; cnt ++)
+            {
+                for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
+                {
+                    for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
+                    {
+                        fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = dcc_cfa_cfg->FirCoefs[cnt].matrix[cnt1][cnt2];
+                    }
+                }
+            }
         }
         else
         {

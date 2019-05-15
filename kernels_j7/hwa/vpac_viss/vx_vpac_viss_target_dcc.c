@@ -744,110 +744,40 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
 {
     uint32_t cnt;
     Fcp_CfaConfig *cfaCfg;
+    viss_ipipe_cfa_flxd   * dcc_cfa_cfg = NULL;
 
-    cfaCfg = &vissObj->vissCfg.cfaCfg;
     if (NULL != vissObj)
     {
-        /* DCC does not support CFA, so using default config from
-         * example_Sensor/0/0/flexCFA_cfg test case */
-        for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
-        {
-            cfaCfg->bypass[cnt] = (uint32_t)FALSE;
+        cfaCfg = &vissObj->vissCfg.cfaCfg;
+        dcc_cfa_cfg = &(vissObj->dcc_out_prms.vissCFACfg);
         }
 
-        for (cnt = 0u; cnt < FCP_MAX_CFA_COEFF; cnt ++)
+    if (NULL != dcc_cfa_cfg)
         {
-            cfaCfg->coeff[cnt] = gcfa_coeff[cnt];
-        }
+        memcpy(cfaCfg->coeff, dcc_cfa_cfg->FirCoefs, FCP_MAX_CFA_COEFF * sizeof(int32_t));
 
         for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
         {
-            cfaCfg->coreSel[cnt] = FCP_CFA_CORE_SEL_CORE0;
-            cfaCfg->coreBlendMode[cnt] = FCP_CFA_CORE_BLEND_MODE_INPUT012;
-        }
+            cfaCfg->bypass[cnt]             = (uint32_t)FALSE;
+            cfaCfg->coreSel[cnt]             = dcc_cfa_cfg->bitMaskSel[cnt];
+            cfaCfg->coreBlendMode[cnt]     = dcc_cfa_cfg->blendMode[cnt];
 
-        for (cnt = 0u; cnt < FCP_CFA_MAX_SET; cnt ++)
-        {
-            if (0u == cnt)
-            {
-                cfaCfg->gradHzPh[cnt][0u] = 175u;
-                cfaCfg->gradHzPh[cnt][1u] = 95u;
-                cfaCfg->gradHzPh[cnt][2u] = 95u;
-                cfaCfg->gradHzPh[cnt][3u] = 175u;
-            }
-            else
-            {
-                cfaCfg->gradHzPh[cnt][0u] = 175u;
-                cfaCfg->gradHzPh[cnt][1u] = 195u;
-                cfaCfg->gradHzPh[cnt][2u] = 195u;
-                cfaCfg->gradHzPh[cnt][3u] = 175u;
-            }
+            cfaCfg->gradHzPh[0u][cnt]     = dcc_cfa_cfg->Set0GradHzMask[cnt];
+            cfaCfg->gradHzPh[1u][cnt]     = dcc_cfa_cfg->Set1GradHzMask[cnt];
 
-            if (0u == cnt)
-            {
-                cfaCfg->gradVtPh[cnt][0u] = 175u;
-                cfaCfg->gradVtPh[cnt][1u] = 95u;
-                cfaCfg->gradVtPh[cnt][2u] = 95u;
-                cfaCfg->gradVtPh[cnt][3u] = 175u;
-            }
-            else
-            {
-                cfaCfg->gradVtPh[cnt][0u] = 276u;
-                cfaCfg->gradVtPh[cnt][1u] = 196u;
-                cfaCfg->gradVtPh[cnt][2u] = 196u;
-                cfaCfg->gradVtPh[cnt][3u] = 276u;
-            }
+            cfaCfg->gradVtPh[0u][cnt]     = dcc_cfa_cfg->Set0GradVtMask[cnt];
+            cfaCfg->gradVtPh[1u][cnt]     = dcc_cfa_cfg->Set1GradVtMask[cnt];
 
-            if (0u == cnt)
-            {
-                cfaCfg->intsBitField[cnt][0U] = 0u;
-                cfaCfg->intsBitField[cnt][1U] = 1u;
-                cfaCfg->intsBitField[cnt][2U] = 2u;
-                cfaCfg->intsBitField[cnt][3U] = 3u;
-            }
-            else
-            {
-                cfaCfg->intsBitField[cnt][0U] = 8u;
-                cfaCfg->intsBitField[cnt][1U] = 9u;
-                cfaCfg->intsBitField[cnt][2U] = 10u;
-                cfaCfg->intsBitField[cnt][3U] = 11u;
-            }
+            cfaCfg->intsBitField[0u][cnt] = dcc_cfa_cfg->Set0IntensityMask[cnt];
+            cfaCfg->intsBitField[1u][cnt] = dcc_cfa_cfg->Set1IntensityMask[cnt];
 
-            if (0u == cnt)
-            {
-                cfaCfg->intsShiftPh[cnt][0u] = 4u;
-                cfaCfg->intsShiftPh[cnt][1u] = 5u;
-                cfaCfg->intsShiftPh[cnt][2u] = 6u;
-                cfaCfg->intsShiftPh[cnt][3u] = 7u;
+            cfaCfg->intsShiftPh[0u][cnt]  = dcc_cfa_cfg->Set0IntensityShift[cnt];
+            cfaCfg->intsShiftPh[1u][cnt]  = dcc_cfa_cfg->Set1IntensityShift[cnt];
             }
-            else
+        for (cnt = 0u; cnt < FCP_CFA_MAX_SET_THR; cnt++)
             {
-                cfaCfg->intsShiftPh[cnt][0u] = 12u;
-                cfaCfg->intsShiftPh[cnt][1u] = 13u;
-                cfaCfg->intsShiftPh[cnt][2u] = 14u;
-                cfaCfg->intsShiftPh[cnt][3u] = 15u;
-            }
-
-            if (0u == cnt)
-            {
-                cfaCfg->thr[cnt][0u] = 500u;
-                cfaCfg->thr[cnt][1u] = 600u;
-                cfaCfg->thr[cnt][2u] = 700u;
-                cfaCfg->thr[cnt][3u] = 800u;
-                cfaCfg->thr[cnt][4u] = 900u;
-                cfaCfg->thr[cnt][5u] = 1000u;
-                cfaCfg->thr[cnt][6u] = 1100u;
-            }
-            else
-            {
-                cfaCfg->thr[cnt][0u] = 0u;
-                cfaCfg->thr[cnt][1u] = 100u;
-                cfaCfg->thr[cnt][2u] = 200u;
-                cfaCfg->thr[cnt][3u] = 300u;
-                cfaCfg->thr[cnt][4u] = 400u;
-                cfaCfg->thr[cnt][5u] = 500u;
-                cfaCfg->thr[cnt][6u] = 600u;
-            }
+            cfaCfg->thr[0u][cnt] = dcc_cfa_cfg->Set0Thr[cnt];
+            cfaCfg->thr[1u][cnt] = dcc_cfa_cfg->Set1Thr[cnt];
         }
 
         vissObj->vissCfgRef.cfaCfg = cfaCfg;
