@@ -72,6 +72,7 @@ void tivxAddTargetKernelScalarSource2(void);
 void tivxAddTargetKernelScalarIntermediate(void);
 void tivxAddTargetKernelScalarSourceError(void);
 void tivxAddTargetKernelScalarSourceObjArray(void);
+void tivxAddTargetKernelScalarSinkObjArray(void);
 
 void tivxRemoveTargetKernelScalarSink(void);
 void tivxRemoveTargetKernelScalarSource(void);
@@ -80,6 +81,7 @@ void tivxRemoveTargetKernelScalarSource2(void);
 void tivxRemoveTargetKernelScalarIntermediate(void);
 void tivxRemoveTargetKernelScalarSourceError(void);
 void tivxRemoveTargetKernelScalarSourceObjArray(void);
+void tivxRemoveTargetKernelScalarSinkObjArray(void);
 
 static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelScalarSink, &tivxRemoveTargetKernelScalarSink},
@@ -88,7 +90,8 @@ static Tivx_Target_Kernel_List  gTivx_target_kernel_list[] = {
     {&tivxAddTargetKernelScalarSource2, &tivxRemoveTargetKernelScalarSource2},
     {&tivxAddTargetKernelScalarIntermediate, &tivxRemoveTargetKernelScalarIntermediate},
     {&tivxAddTargetKernelScalarSourceError, &tivxRemoveTargetKernelScalarSourceError},
-    {&tivxAddTargetKernelScalarSourceObjArray, &tivxRemoveTargetKernelScalarSourceObjArray}
+    {&tivxAddTargetKernelScalarSourceObjArray, &tivxRemoveTargetKernelScalarSourceObjArray},
+    {&tivxAddTargetKernelScalarSinkObjArray, &tivxRemoveTargetKernelScalarSinkObjArray},
 };
 
 void tivxRegisterCaptureTargetArmKernels(void)

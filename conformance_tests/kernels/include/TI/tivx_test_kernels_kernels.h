@@ -110,6 +110,11 @@ extern "C" {
  */
 #define TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_NAME     "com.ti.test_kernels.scalar_source_obj_array"
 
+/*! \brief scalar_sink_obj_array kernel name
+ *  \see group_vision_function_test_kernels
+ */
+#define TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_NAME     "com.ti.test_kernels.scalar_sink_obj_array"
+
 /*! End of group_vision_function_test_kernels */
 
 /*!

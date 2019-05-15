@@ -234,6 +234,48 @@ TEST_WITH_ARG(tivxSourceNode, testSourceObjArray, Arg, STREAMING_PARAMETERS)
     VX_CALL(vxReleaseGraph(&graph));
     tivxTestKernelsUnLoadKernels(context);
 }
+
+TEST_WITH_ARG(tivxSourceNode, testSinkObjArray, Arg, STREAMING_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar;
+    uint32_t num_streams = 0;
+    vx_node n1, n2;
+    vx_object_array obj_array_scalar;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(obj_array_scalar = vxCreateObjectArray(context, (vx_reference)scalar, 4), VX_TYPE_OBJECT_ARRAY);
+
+    VX_CALL(vxReleaseScalar(&scalar));
+
+    scalar = (vx_scalar)vxGetObjectArrayItem(obj_array_scalar, 0);
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarSourceNode(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarSinkObjArrayNode(graph, obj_array_scalar), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(vxReleaseObjectArray(&obj_array_scalar));
+    VX_CALL(vxReleaseScalar(&scalar));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseGraph(&graph));
+    tivxTestKernelsUnLoadKernels(context);
+}
+
 /*
  *       n1         scalar         n2
  * SCALAR_SOURCE2 -- SCALAR -- SCALAR_SINK2
@@ -1166,6 +1208,7 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS
 
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
+               testSinkObjArray,
                testNewSourceSink,
                testNewSourcePipeline,
                testNewSourceSinkPipeline,

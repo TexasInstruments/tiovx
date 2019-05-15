@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -60,65 +60,23 @@
  *
  */
 
-#ifndef TIVX_TEST_KERNELS_NODES_H_
-#define TIVX_TEST_KERNELS_NODES_H_
-
-#include <VX/vx.h>
+#ifndef _TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_
+#define _TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/*! \brief [Graph] Creates a NOT_NOT Node.
- * \param [in] graph The reference to the graph.
- * \param [in] input
- * \param [out] output
- * \see <tt>TIVX_KERNEL_NOT_NOT_NAME</tt>
- * \ingroup group_vision_function_not_not
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxNotNotNode(vx_graph graph,
-                                      vx_image             input,
-                                      vx_image             output);
 
-/*! \brief [Graph] Creates a SCALAR_SOURCE_ERROR Node.
- * \param [in] graph The reference to the graph.
- * \param [out] out
- * \see <tt>TIVX_KERNEL_SCALAR_SOURCE_ERROR_NAME</tt>
- * \ingroup group_vision_function_scalar_source_error
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceErrorNode(vx_graph graph,
-                                      vx_scalar            out);
+#define TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX (0U)
 
-/*! \brief [Graph] Creates a SCALAR_SOURCE_OBJ_ARRAY Node.
- * \param [in] graph The reference to the graph.
- * \param [out] out_object_array
- * \see <tt>TIVX_KERNEL_SCALAR_SOURCE_OBJ_ARRAY_NAME</tt>
- * \ingroup group_vision_function_scalar_source_obj_array
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceObjArrayNode(vx_graph graph,
-                                      vx_object_array      out_object_array);
-
-/*! \brief [Graph] Creates a SCALAR_SINK_OBJ_ARRAY Node.
- * \param [in] graph The reference to the graph.
- * \param [in] in_object_array
- * \see <tt>TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_NAME</tt>
- * \ingroup group_vision_function_scalar_sink_obj_array
- * \return <tt>\ref vx_node</tt>.
- * \retval vx_node A node reference. Any possible errors preventing a successful creation should be checked using <tt>\ref vxGetStatus</tt>
- */
-VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkObjArrayNode(vx_graph graph,
-                                      vx_object_array      in_object_array);
+#define TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_MAX_PARAMS (1U)
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* TIVX_TEST_KERNELS_NODES_H_ */
+
+#endif /* _TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_ */
 
 

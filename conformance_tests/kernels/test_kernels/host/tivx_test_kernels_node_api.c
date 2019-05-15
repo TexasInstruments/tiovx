@@ -171,3 +171,16 @@ VX_API_ENTRY vx_node VX_API_CALL tivxScalarSourceObjArrayNode(vx_graph graph,
     return node;
 }
 
+VX_API_ENTRY vx_node VX_API_CALL tivxScalarSinkObjArrayNode(vx_graph graph,
+                                      vx_object_array      in_object_array)
+{
+    vx_reference prms[] = {
+            (vx_reference)in_object_array
+    };
+    vx_node node = tivxCreateNodeByKernelName(graph,
+                                           TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_NAME,
+                                           prms,
+                                           dimof(prms));
+    return node;
+}
+

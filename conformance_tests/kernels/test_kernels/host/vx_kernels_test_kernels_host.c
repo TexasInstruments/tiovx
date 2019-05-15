@@ -79,6 +79,7 @@ vx_status tivxAddKernelScalarSource2(vx_context context);
 vx_status tivxAddKernelScalarIntermediate(vx_context context);
 vx_status tivxAddKernelScalarSourceError(vx_context context);
 vx_status tivxAddKernelScalarSourceObjArray(vx_context context);
+vx_status tivxAddKernelScalarSinkObjArray(vx_context context);
 
 vx_status tivxRemoveKernelScalarSink(vx_context context);
 vx_status tivxRemoveKernelScalarSource(vx_context context);
@@ -88,6 +89,7 @@ vx_status tivxRemoveKernelScalarIntermediate(vx_context context);
 vx_status tivxRemoveKernelNotNot(vx_context context);
 vx_status tivxRemoveKernelScalarSourceError(vx_context context);
 vx_status tivxRemoveKernelScalarSourceObjArray(vx_context context);
+vx_status tivxRemoveKernelScalarSinkObjArray(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelNotNot, &tivxRemoveKernelNotNot},
@@ -98,6 +100,7 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {&tivxAddKernelScalarIntermediate, &tivxRemoveKernelScalarIntermediate},
     {&tivxAddKernelScalarSourceError, &tivxRemoveKernelScalarSourceError},
     {&tivxAddKernelScalarSourceObjArray, &tivxRemoveKernelScalarSourceObjArray},
+    {&tivxAddKernelScalarSinkObjArray, &tivxRemoveKernelScalarSinkObjArray},
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)
