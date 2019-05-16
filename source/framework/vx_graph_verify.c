@@ -670,20 +670,14 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                                 parent_ref_node_cur = NULL;
                                 parent_ref_node_next = NULL;
 
-                                if (NULL != ref1)
+                                if(0 != node_cur->replicated_flags[prm_cur_idx])
                                 {
-                                    if (vx_true_e == ref1->is_array_element)
-                                    {
-                                        parent_ref_node_cur = ref1->scope;
-                                    }
+                                    parent_ref_node_cur = ref1->scope;
                                 }
 
-                                if (NULL != ref2)
+                                if(0 != node_next->replicated_flags[prm_next_idx])
                                 {
-                                    if (vx_true_e == ref2->is_array_element)
-                                    {
-                                        parent_ref_node_next = ref2->scope;
-                                    }
+                                    parent_ref_node_next = ref2->scope;
                                 }
 
                                 /* check if any output of next node matches current node
