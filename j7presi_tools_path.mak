@@ -13,7 +13,7 @@ IMAGING_PATH ?= $(PSDK_PATH)/imaging
 MMALIB_PATH ?= $(PSDK_PATH)/mmalib_00_09_02_00
 
 TIARMCGT_ROOT ?= $(PSDK_PATH)/ti-cgt-arm_18.12.1.LTS
-CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.0.0
+CGT7X_ROOT ?= $(PSDK_PATH)/ti-cgt-c7000_1.1.0A19129
 CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.2
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-linux-gnu
