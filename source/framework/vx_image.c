@@ -350,14 +350,14 @@ static void ownInitPlane(vx_image image,
         if ( size_of_ch != 0 )
         {
             imagepatch_addr->stride_y = TIVX_ALIGN(
-                        (imagepatch_addr->dim_x*imagepatch_addr->stride_x)/step_x,
+                        (imagepatch_addr->dim_x*imagepatch_addr->stride_x)/step_x, 
                         TIVX_DEFAULT_STRIDE_Y_ALIGN
                         );
         }
-        else
+        else /* Only for P12 and NV12_P12 */
         {
             imagepatch_addr->stride_y = TIVX_ALIGN(
-                        (((imagepatch_addr->dim_x*bits_per_pixel)+7ul)/8ul)/step_x,
+                        (((imagepatch_addr->dim_x*bits_per_pixel)+7ul)/8ul),
                         TIVX_DEFAULT_STRIDE_Y_ALIGN
                         );
         }
