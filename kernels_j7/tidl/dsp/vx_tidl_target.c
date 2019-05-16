@@ -69,11 +69,6 @@
 #include "itidl_ti.h"
 #include "tivx_platform.h"
 
-/* To do - remove these macros and use the tivxMemStats to get the sizes */
-#define L1_MEM_SIZE (16*1024)
-#define L2_MEM_SIZE (448*1024)
-#define L3_MEM_SIZE (8323536) /* TIDL memory optimizations needs larger L3*/
-
 typedef struct
 {
     IVISION_BufDesc     inBufDesc[TIDL_MAX_ALG_IN_BUFS];
@@ -287,8 +282,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     void *config_target_ptr;
     void *network_target_ptr;
     void *create_params_target_ptr;
+    
+    tivx_mem_stats l1_stats;
+    tivx_mem_stats l2_stats;
+    tivx_mem_stats l3_stats;
 
     uint32_t i;
+    
+    tivx_set_debug_zone(VX_ZONE_INFO);
 
     for (i = 0U; i < num_params; i ++)
     {
@@ -325,10 +326,25 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
 
         prms->createParams = create_params_target_ptr;
+        
+        /* reset scratch heap offset to zero by doing a dummy free */
+        tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L1);
+        tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L2);
+        tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L3);
 
-        prms->createParams->l1MemSize = L1_MEM_SIZE;
-        prms->createParams->l2MemSize = L2_MEM_SIZE;
-        prms->createParams->l3MemSize = L3_MEM_SIZE;
+        tivxMemStats(&l1_stats, TIVX_MEM_INTERNAL_L1);
+        tivxMemStats(&l2_stats, TIVX_MEM_INTERNAL_L2);        
+        tivxMemStats(&l3_stats, TIVX_MEM_INTERNAL_L3);
+                
+        prms->createParams->l1MemSize = l1_stats.free_size;
+        prms->createParams->l2MemSize = l2_stats.free_size;
+        prms->createParams->l3MemSize = l3_stats.free_size;
+        
+        VX_PRINT(VX_ZONE_INFO, "L1 = %d KB, L2 = %d KB, L3 = %d KB\n", 
+            l1_stats.free_size/1024,
+            l2_stats.free_size/1024,
+            l3_stats.free_size/1024
+            );
 
         prms->createParams->udmaDrvObj = tivxPlatformGetDmaObj();
 
@@ -425,6 +441,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
             tivxTIDLFreeMem(prms);
         }
     }
+    
+    tivx_set_debug_zone(VX_ZONE_INFO);
 
     return (status);
 }

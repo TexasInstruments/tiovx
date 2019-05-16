@@ -120,32 +120,29 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
     vx_status status = VX_SUCCESS;
     uint32_t heap_id;
 
-    if ((NULL != ptr) && (0U != size))
+    switch (mem_heap_region)
     {
-        switch (mem_heap_region)
-        {
-            case TIVX_MEM_EXTERNAL:
-                heap_id = APP_MEM_HEAP_DDR;
-                break;
-            case TIVX_MEM_INTERNAL_L3:
-                heap_id = APP_MEM_HEAP_L3;
-                break;
-            case TIVX_MEM_INTERNAL_L2:
-                heap_id = APP_MEM_HEAP_L2;
-                break;
-            case TIVX_MEM_INTERNAL_L1:
-                heap_id = APP_MEM_HEAP_L1;
-                break;
-            default:
-                VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
-                status = VX_FAILURE;
-                break;
-        }
+        case TIVX_MEM_EXTERNAL:
+            heap_id = APP_MEM_HEAP_DDR;
+            break;
+        case TIVX_MEM_INTERNAL_L3:
+            heap_id = APP_MEM_HEAP_L3;
+            break;
+        case TIVX_MEM_INTERNAL_L2:
+            heap_id = APP_MEM_HEAP_L2;
+            break;
+        case TIVX_MEM_INTERNAL_L1:
+            heap_id = APP_MEM_HEAP_L1;
+            break;
+        default:
+            VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
+            status = VX_FAILURE;
+            break;
+    }
 
-        if (VX_SUCCESS == status)
-        {
-            appMemFree(heap_id, ptr, size);
-        }
+    if (VX_SUCCESS == status)
+    {
+        appMemFree(heap_id, ptr, size);
     }
 }
 
