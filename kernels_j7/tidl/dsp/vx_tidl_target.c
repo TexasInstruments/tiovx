@@ -72,7 +72,7 @@
 /* To do - remove these macros and use the tivxMemStats to get the sizes */
 #define L1_MEM_SIZE (16*1024)
 #define L2_MEM_SIZE (448*1024)
-#define L3_MEM_SIZE (6*1024*1024)
+#define L3_MEM_SIZE (8323536) /* TIDL memory optimizations needs larger L3*/
 
 typedef struct
 {
