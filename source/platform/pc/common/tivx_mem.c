@@ -80,7 +80,7 @@
 /*! \brief Psuedo L2RAM size for DSP
  * \ingroup group_tivx_mem
  */
-#define TIVX_MEM_L2RAM_SIZE (8*1024*1024)
+#define TIVX_MEM_L2RAM_SIZE (9*1024*1024)
 
 /*! \brief Psuedo L2RAM memory for DSP
  * \ingroup group_tivx_mem
@@ -143,16 +143,16 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
 void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
-    if(ptr)
+    if(mem_heap_region!=TIVX_MEM_EXTERNAL)
     {
-        if(mem_heap_region!=TIVX_MEM_EXTERNAL)
-        {
-            /* L2RAM is used as scratch memory and allocation is linear offset based allocation
-             * Free in this case resets the offset to 0
-             */
-            gL2RAM_mem_offset = 0;
-        }
-        else
+        /* L2RAM is used as scratch memory and allocation is linear offset based allocation
+         * Free in this case resets the offset to 0
+         */
+        gL2RAM_mem_offset = 0;
+    }
+    else
+    {
+        if(ptr)
         {
             free(ptr);
         }
@@ -185,7 +185,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        if(mem_heap_region==TIVX_MEM_INTERNAL_L2)
+        if(mem_heap_region!=TIVX_MEM_EXTERNAL)
         {
             stats->mem_size = TIVX_MEM_L2RAM_SIZE;
             stats->free_size = TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;
