@@ -457,10 +457,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             {
                 /* Update H3A params using DCC config */
                 /* TODO: Add an update flag so that the params are updated only when a change is detected */
-
                 tivxVpacVissParseH3aParams(&prms->h3a_params,
-                    prms->dcc_output_params);
+                        prms->dcc_output_params);
             }
+            else
+            {
+                tivxVpacVissParseH3aParams(&prms->h3a_params,
+                        NULL);
+            }
+
             h3a_top(&prms->h3a_in, &prms->h3a_params, prms->scratch_af_result, prms->scratch_aew_result);
         }
 
@@ -957,8 +962,16 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     int32_t num_aew_windows, ae_size, af_pad;
                     uint32_t max_h3a_out_buffer_size;
 
-                    tivxVpacVissParseH3aParams(&prms->h3a_params,
-                        prms->dcc_output_params);
+                    if(1u == prms->use_dcc)
+                    {
+                        tivxVpacVissParseH3aParams(&prms->h3a_params,
+                            prms->dcc_output_params);
+                    }
+                    else
+                    {
+                        tivxVpacVissParseH3aParams(&prms->h3a_params,
+                            NULL);
+                    }
                     prms->h3a_in.image_width = width;
                     prms->h3a_in.image_height = height;
                     prms->h3a_in.image_data = (int16_t*)prms->scratch_rawfe_h3a_out;

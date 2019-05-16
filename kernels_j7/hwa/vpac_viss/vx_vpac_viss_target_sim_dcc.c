@@ -371,22 +371,44 @@ void tivxVpacVissParseH3aParams(h3a_settings *h3a_prms,
 {
     if (NULL != h3a_prms)
     {
-        h3a_prms->pcr_AEW_EN        = dcc_out_prms->ipipeH3A_AEWBCfg.enable;
-        h3a_prms->aew_cfg_AEFMT     = dcc_out_prms->ipipeH3A_AEWBCfg.mode;
-        h3a_prms->aewinstart_WINSV  = dcc_out_prms->ipipeH3A_AEWBCfg.v_start;
-        h3a_prms->aewinstart_WINSH  = dcc_out_prms->ipipeH3A_AEWBCfg.h_start;
-        h3a_prms->aewwin1_WINH      = dcc_out_prms->ipipeH3A_AEWBCfg.v_size;
-        h3a_prms->aewwin1_WINW      = dcc_out_prms->ipipeH3A_AEWBCfg.h_size;
-        h3a_prms->aewwin1_WINVC     = dcc_out_prms->ipipeH3A_AEWBCfg.v_count;
-        h3a_prms->aewwin1_WINHC     = dcc_out_prms->ipipeH3A_AEWBCfg.h_count;
-        h3a_prms->aewsubwin_AEWINCV = dcc_out_prms->ipipeH3A_AEWBCfg.v_skip;
-        h3a_prms->aewsubwin_AEWINCH = dcc_out_prms->ipipeH3A_AEWBCfg.h_skip;
-        h3a_prms->pcr_AVE2LMT       = dcc_out_prms->ipipeH3A_AEWBCfg.saturation_limit;
-        h3a_prms->aewinblk_WINH     = dcc_out_prms->ipipeH3A_AEWBCfg.blk_win_numlines;
-        h3a_prms->aewinblk_WINSV    = dcc_out_prms->ipipeH3A_AEWBCfg.blk_row_vpos;
-        h3a_prms->aew_cfg_SUMSFT    = dcc_out_prms->ipipeH3A_AEWBCfg.sum_shift;
-        h3a_prms->pcr_AEW_ALAW_EN   = dcc_out_prms->ipipeH3A_AEWBCfg.ALaw_En;
-        h3a_prms->pcr_AEW_MED_EN    = dcc_out_prms->ipipeH3A_AEWBCfg.MedFilt_En;
+        if (NULL != dcc_out_prms)
+        {
+            h3a_prms->pcr_AEW_EN        = dcc_out_prms->ipipeH3A_AEWBCfg.enable;
+            h3a_prms->aew_cfg_AEFMT     = dcc_out_prms->ipipeH3A_AEWBCfg.mode;
+            h3a_prms->aewinstart_WINSV  = dcc_out_prms->ipipeH3A_AEWBCfg.v_start;
+            h3a_prms->aewinstart_WINSH  = dcc_out_prms->ipipeH3A_AEWBCfg.h_start;
+            h3a_prms->aewwin1_WINH      = dcc_out_prms->ipipeH3A_AEWBCfg.v_size;
+            h3a_prms->aewwin1_WINW      = dcc_out_prms->ipipeH3A_AEWBCfg.h_size;
+            h3a_prms->aewwin1_WINVC     = dcc_out_prms->ipipeH3A_AEWBCfg.v_count;
+            h3a_prms->aewwin1_WINHC     = dcc_out_prms->ipipeH3A_AEWBCfg.h_count;
+            h3a_prms->aewsubwin_AEWINCV = dcc_out_prms->ipipeH3A_AEWBCfg.v_skip;
+            h3a_prms->aewsubwin_AEWINCH = dcc_out_prms->ipipeH3A_AEWBCfg.h_skip;
+            h3a_prms->pcr_AVE2LMT       = dcc_out_prms->ipipeH3A_AEWBCfg.saturation_limit;
+            h3a_prms->aewinblk_WINH     = dcc_out_prms->ipipeH3A_AEWBCfg.blk_win_numlines;
+            h3a_prms->aewinblk_WINSV    = dcc_out_prms->ipipeH3A_AEWBCfg.blk_row_vpos;
+            h3a_prms->aew_cfg_SUMSFT    = dcc_out_prms->ipipeH3A_AEWBCfg.sum_shift;
+            h3a_prms->pcr_AEW_ALAW_EN   = dcc_out_prms->ipipeH3A_AEWBCfg.ALaw_En;
+            h3a_prms->pcr_AEW_MED_EN    = dcc_out_prms->ipipeH3A_AEWBCfg.MedFilt_En;
+        }
+        else
+        {
+            h3a_prms->pcr_AEW_EN = 1;
+            h3a_prms->aew_cfg_AEFMT = 2;
+            h3a_prms->aewinstart_WINSV = 2;
+            h3a_prms->aewinstart_WINSH = 32;
+            h3a_prms->aewwin1_WINH = 64;
+            h3a_prms->aewwin1_WINW = 58;
+            h3a_prms->aewwin1_WINVC = 16;
+            h3a_prms->aewwin1_WINHC = 32;
+            h3a_prms->aewsubwin_AEWINCV = 8;
+            h3a_prms->aewsubwin_AEWINCH = 8;
+            h3a_prms->pcr_AVE2LMT = 1000;
+            h3a_prms->aewinblk_WINH = 2;
+            h3a_prms->aewinblk_WINSV = 1078;
+            h3a_prms->aew_cfg_SUMSFT = 2;
+            h3a_prms->pcr_AEW_ALAW_EN = 0;
+            h3a_prms->pcr_AEW_MED_EN = 0;
+        }
     }
 }
 
