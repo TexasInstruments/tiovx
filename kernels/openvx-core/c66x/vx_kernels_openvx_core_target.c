@@ -66,6 +66,9 @@
 #include <tivx_kernels_target_utils.h>
 
 #ifdef BUILD_BAM
+
+#include "tivx_bam_kernel_database.h"
+
 static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamAbsDiff, tivxRemoveTargetKernelBamAbsDiff},
     {tivxAddTargetKernelBamAccumulate, tivxRemoveTargetKernelBamAccumulate},
@@ -159,6 +162,11 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
 
 void tivxRegisterOpenVXCoreTargetKernels()
 {
+
+#ifdef BUILD_BAM
+    tivxRegisterOpenVXCoreBamPlugins();
+#endif
+
     tivxRegisterTargetKernels(gTivx_target_kernel_list, dimof(gTivx_target_kernel_list));
 
     tivxReserveC66xL2MEM();

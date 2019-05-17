@@ -39,17 +39,6 @@ void tivxInit(void)
     /* Initialize Target */
     tivxTargetInit();
 
-#ifdef BUILD_CONFORMANCE_TEST
-#if defined (C66)
-    tivxRegisterCaptureTargetArmKernels();
-#endif
-
-#if defined (C66)
-    tivxRegisterTestKernelsTargetC66Kernels();
-#endif
-#endif
-
-    /* Initialize Host */
 #if defined (C66)
     tivxRegisterOpenVXCoreTargetKernels();
     #ifdef BUILD_TUTORIAL
@@ -63,6 +52,16 @@ void tivxInit(void)
 
 #if defined (EVE) && defined (BUILD_IVISION_KERNELS)
     tivxRegisterIVisionTargetKernels();
+#endif
+
+#ifdef BUILD_CONFORMANCE_TEST
+#if defined (C66)
+    tivxRegisterCaptureTargetArmKernels();
+#endif
+
+#if defined (C66)
+    tivxRegisterTestKernelsTargetC66Kernels();
+#endif
 #endif
 
     tivxObjDescInit();

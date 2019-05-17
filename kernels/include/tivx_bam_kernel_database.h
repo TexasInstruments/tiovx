@@ -173,6 +173,19 @@
 
 extern BAM_KernelDBdef gBAM_TI_kernelDBdef;
 
+/**
+ *  @brief      Combined Helper function and Execute function database entry
+ *
+ */
+typedef struct
+{
+    BAM_KernelInfo *kernelInfo;                 /**< @brief Pointer to the kernel's contextual information structure BAM_KernelInfo */
+    BAM_KernelHelperFuncDef *kernelHelperFunc;  /**< @brief Pointer to the structure BAM_KernelHelperFuncDef that list the helper functions */
+    BAM_KernelExecFuncDef *kernelExecFunc;      /**< @brief Pointer to the structure BAM_KernelExecFuncDef that list the execution functions  */
+    char *name;                                 /**< @brief Unique name of the kernel */
+    BAM_KernelId kernelId;                      /**< @brief Unique ID of the kernel */
+} BAM_KernelCombinedDBdef;
+
 typedef enum _bam_ti_kernelid
 {
     BAM_TI_KERNELID_UNDEFINED = -1,
@@ -267,7 +280,10 @@ typedef enum _bam_ti_kernelid
     BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U = 87,
     BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U = 88,
     BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U = 89,
+    BAM_KERNELID_EXTERNAL_START = 90,
     BAM_KERNELID_MAX = 0X7FFFFFFF
 } BAM_TI_KernelID;
+
+vx_status tivxRegisterOpenVXCoreBamPlugins(void);
 
 #endif

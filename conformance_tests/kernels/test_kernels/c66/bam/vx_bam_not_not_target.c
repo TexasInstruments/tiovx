@@ -82,6 +82,17 @@ typedef struct
 
 static tivx_target_kernel vx_not_not_target_kernel = NULL;
 
+/* The vxlib_not_i8u_o8u is already registered as part of TIOVX, so we
+ * are prefixing this one with "test" to register it as a different
+ * plugin ID to test the API */
+static tivx_bam_plugin_def testNotBamPlugin = {
+    &gBAM_VXLIB_not_i8u_o8u_kernel,
+    &gBAM_VXLIB_not_i8u_o8u_helperFunc,
+    &gBAM_VXLIB_not_i8u_o8u_execFunc,
+    "test_vxlib_not_i8u_o8u"
+};
+static BAM_KernelId testNotKernelId;
+
 static vx_status VX_CALLBACK tivxNotNotProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -188,9 +199,8 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
     tivxNotNotParams *prms = NULL;
     tivx_obj_desc_image_t *input_desc;
     tivx_obj_desc_image_t *output_desc;
+    BAM_KernelId localBamKernelId;
 
-    /* < DEVELOPER_TODO: (Optional) Add any target kernel create code here (e.g. allocating */
-    /*                   local memory buffers, one time initialization, etc) > */
     if ( (num_params != TIVX_KERNEL_NOT_NOT_MAX_PARAMS)
         || (NULL == obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX])
         || (NULL == obj_desc[TIVX_KERNEL_NOT_NOT_OUTPUT_IDX])
@@ -200,94 +210,118 @@ static vx_status VX_CALLBACK tivxNotNotCreate(
     }
     else
     {
-
-        input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX];
-        output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_OUTPUT_IDX];
-
-        prms = tivxMemAlloc(sizeof(tivxNotNotParams), TIVX_MEM_EXTERNAL);
-        if (NULL != prms)
         {
-
-        }
-        else
-        {
-            status = VX_ERROR_NO_MEMORY;
-            VX_PRINT(VX_ZONE_ERROR, "Unable to allocate local memory\n");
-        }
-
-        if (NULL != prms)
-        {
-
-
-
-            tivx_bam_kernel_details_t kernel_details[4];
-            VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
-            VXLIB_bufParams2D_t *buf_params[2];
-
-            memset(prms, 0, sizeof(tivxNotNotParams));
-
-            BAM_NodeParams node_list[] = { \
-                {SOURCE_NODE, BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
-                {NOT1_NODE, BAM_KERNELID_VXLIB_NOT_I8U_O8U, NULL}, \
-                {NOT2_NODE, BAM_KERNELID_VXLIB_NOT_I8U_O8U, NULL}, \
-                {SINK_NODE, BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
-                {BAM_END_NODE_MARKER,   0,                          NULL},\
-            };
-
-            BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT1_NODE].kernel_info);
-            BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT2_NODE].kernel_info);
-
-            BAM_EdgeParams edge_list[]= {\
-                {{SOURCE_NODE, 0},
-                    {NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
-
-                {{NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
-                    {NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
-
-                {{NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
-                    {SINK_NODE, 0}},\
-
-                {{BAM_END_NODE_MARKER, 0},
-                    {BAM_END_NODE_MARKER, 0}},\
-            };
-
-            tivxInitBufParams(input_desc, &vxlib_src);
-            tivxInitBufParams(output_desc, &vxlib_dst);
+            /* The logic in these brackets is not usally all needed, but added here for testing */
+            status = tivxBamGetKernelIdFromName("test_negative_vxlib_not_i8u_o8u", &localBamKernelId);
 
             if (VX_SUCCESS == status)
             {
-                /* Fill in the frame level sizes of buffers here. If the port
-                 * is optionally disabled, put NULL */
-                buf_params[0] = &vxlib_src;
-                buf_params[1] = &vxlib_dst;
-
-                kernel_details[SOURCE_NODE].compute_kernel_params = NULL;
-                kernel_details[NOT1_NODE].compute_kernel_params = NULL;
-                kernel_details[NOT2_NODE].compute_kernel_params = NULL;
-                kernel_details[SINK_NODE].compute_kernel_params = NULL;
-
-                status = tivxBamCreateHandleMultiNode(node_list,
-                    sizeof(node_list)/sizeof(BAM_NodeParams),
-                    edge_list,
-                    sizeof(edge_list)/sizeof(BAM_EdgeParams),
-                    buf_params, kernel_details,
-                    &prms->graph_handle);
+                if ( BAM_TI_KERNELID_UNDEFINED != localBamKernelId )
+                {
+                    status = VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR, "tivxBamGetKernelIdFromName failed negative test\n");
+                }
             }
-        }
-        else
-        {
-            status = VX_ERROR_NO_MEMORY;
+
+            if (VX_SUCCESS == status)
+            {
+                status = tivxBamGetKernelIdFromName("test_vxlib_not_i8u_o8u", &localBamKernelId);
+                if ( testNotKernelId != localBamKernelId )
+                {
+                    status = VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR, "tivxBamGetKernelIdFromName failed to retrieve same id as when it was registered\n");
+                }
+            }
+
+            if (VX_SUCCESS == status)
+            {
+                if ( testNotKernelId < BAM_KERNELID_EXTERNAL_START )
+                {
+                    status = VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR, "tivxBamGetKernelIdFromName failed to retrieve id in expected range\n");
+                }
+            }
         }
 
         if (VX_SUCCESS == status)
         {
-            tivxSetTargetKernelInstanceContext(kernel, prms,
-                sizeof(tivxNotNotParams));
-        }
-        else
-        {
-            status = VX_ERROR_NO_MEMORY;
-            VX_PRINT(VX_ZONE_ERROR, "Unable to allocate local memory\n");
+
+            input_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_INPUT_IDX];
+            output_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_NOT_NOT_OUTPUT_IDX];
+
+            prms = tivxMemAlloc(sizeof(tivxNotNotParams), TIVX_MEM_EXTERNAL);
+            if (NULL == prms)
+            {
+                status = VX_ERROR_NO_MEMORY;
+                VX_PRINT(VX_ZONE_ERROR, "Unable to allocate local memory\n");
+            }
+            else
+            {
+                tivx_bam_kernel_details_t kernel_details[4];
+                VXLIB_bufParams2D_t vxlib_src, vxlib_dst;
+                VXLIB_bufParams2D_t *buf_params[2];
+
+                memset(prms, 0, sizeof(tivxNotNotParams));
+
+                BAM_NodeParams node_list[] = { \
+                    {SOURCE_NODE, BAM_KERNELID_DMAREAD_AUTOINCREMENT, NULL}, \
+                    {NOT1_NODE, localBamKernelId, NULL}, \
+                    {NOT2_NODE, localBamKernelId, NULL}, \
+                    {SINK_NODE, BAM_KERNELID_DMAWRITE_AUTOINCREMENT, NULL}, \
+                    {BAM_END_NODE_MARKER,   0,                          NULL},\
+                };
+
+                BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT1_NODE].kernel_info);
+                BAM_VXLIB_not_i8u_o8u_getKernelInfo( NULL, &kernel_details[NOT2_NODE].kernel_info);
+
+                BAM_EdgeParams edge_list[]= {\
+                    {{SOURCE_NODE, 0},
+                        {NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
+
+                    {{NOT1_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
+                        {NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT}},\
+
+                    {{NOT2_NODE, BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT},\
+                        {SINK_NODE, 0}},\
+
+                    {{BAM_END_NODE_MARKER, 0},
+                        {BAM_END_NODE_MARKER, 0}},\
+                };
+
+                tivxInitBufParams(input_desc, &vxlib_src);
+                tivxInitBufParams(output_desc, &vxlib_dst);
+
+                if (VX_SUCCESS == status)
+                {
+                    /* Fill in the frame level sizes of buffers here. If the port
+                     * is optionally disabled, put NULL */
+                    buf_params[0] = &vxlib_src;
+                    buf_params[1] = &vxlib_dst;
+
+                    kernel_details[SOURCE_NODE].compute_kernel_params = NULL;
+                    kernel_details[NOT1_NODE].compute_kernel_params = NULL;
+                    kernel_details[NOT2_NODE].compute_kernel_params = NULL;
+                    kernel_details[SINK_NODE].compute_kernel_params = NULL;
+
+                    status = tivxBamCreateHandleMultiNode(node_list,
+                        sizeof(node_list)/sizeof(BAM_NodeParams),
+                        edge_list,
+                        sizeof(edge_list)/sizeof(BAM_EdgeParams),
+                        buf_params, kernel_details,
+                        &prms->graph_handle);
+
+                    if (VX_SUCCESS == status)
+                    {
+                        tivxSetTargetKernelInstanceContext(kernel, prms,
+                            sizeof(tivxNotNotParams));
+                    }
+                    else
+                    {
+                        status = VX_ERROR_NO_MEMORY;
+                        VX_PRINT(VX_ZONE_ERROR, "Unable to create BAM handle\n");
+                    }
+                }
+            }
         }
     }
 
@@ -362,6 +396,11 @@ void tivxAddTargetKernelBamNotNot(void)
                             tivxNotNotDelete,
                             NULL,
                             NULL);
+    }
+
+    if (status == VX_SUCCESS)
+    {
+        tivxBamRegisterPlugin(&testNotBamPlugin, &testNotKernelId);
     }
 }
 

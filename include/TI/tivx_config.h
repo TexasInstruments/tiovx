@@ -426,6 +426,11 @@ extern "C" {
  */
 #define TIVX_EVENT_QUEUE_MAX_SIZE       (256u)
 
+/*! \brief Max number of BAM user plugins on DSP (in addition to builtin vxlib plugins)
+ * \ingroup group_tivx_target_cfg
+ */
+#define TIVX_MAX_DSP_BAM_USER_PLUGINS   (8u)
+
 #ifdef __cplusplus
 }
 #endif

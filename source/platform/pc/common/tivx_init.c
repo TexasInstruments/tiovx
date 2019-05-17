@@ -98,19 +98,6 @@ void tivxInit(void)
     /* Initialize Target */
     tivxTargetInit();
 
-    /* Initialize Host */
-
-    #ifdef BUILD_CONFORMANCE_TEST
-
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
-    tivxRegisterCaptureTargetArmKernels();
-    tivxRegisterTestKernelsTargetC66Kernels();
-
-    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
-    tivxRegisterCaptureTargetArmKernels();
-    tivxRegisterTestKernelsTargetC66Kernels();
-    #endif
-
     /* trick target kernel used in DSP emulation mode to think
      * they are being invoked from a DSP
      */
@@ -139,6 +126,16 @@ void tivxInit(void)
     tivxRegisterTIDLTargetKernels();
     tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
     tivxRegisterTIDLTargetKernels();
+    #endif
+
+    #ifdef BUILD_CONFORMANCE_TEST
+    tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
+    tivxRegisterCaptureTargetArmKernels();
+    tivxRegisterTestKernelsTargetC66Kernels();
+
+    tivxSetSelfCpuId(TIVX_CPU_ID_DSP2);
+    tivxRegisterCaptureTargetArmKernels();
+    tivxRegisterTestKernelsTargetC66Kernels();
     #endif
 
     /* let rest of system think it is running on DSP1 */

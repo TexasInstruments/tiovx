@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -124,6 +124,70 @@ typedef struct _tivx_bam_kernel_details
     void *compute_kernel_params;
 
 }tivx_bam_kernel_details_t;
+
+
+/*! \brief BAM plugin definition
+ *
+ *         Used for registering a BAM plugin with OpenVX on the DSPs.
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ */
+typedef struct _tivx_bam_plugin_def
+{
+    const BAM_KernelInfo *kernelInfo;                 /**< Pointer to the kernel's contextual information structure BAM_KernelInfo */
+    const BAM_KernelHelperFuncDef *kernelHelperFunc;  /**< Pointer to the structure BAM_KernelHelperFuncDef that list the helper functions */
+    const BAM_KernelExecFuncDef *kernelExecFunc;      /**< Pointer to the structure BAM_KernelExecFuncDef that list the execution functions  */
+    const char *name;                                 /**< Unique name of the kernel plugin */
+
+}tivx_bam_plugin_def;
+
+/*!
+ * \brief Register BAM plugin with OpenVX framework on DSP
+ *
+ *        This function is used to register a BAM plugin with the DSP
+ *        target framework so that the kernel can be included in BAM
+ *        graphs.
+ *
+ *        The plugin is expected to have a unique "name" string.  If a
+ *        plugin with the same name has already been registered, then
+ *        the kernelId of the previously registered plugin will be returned
+ *        without registering the kernel again.
+ *
+ *        This function should be called before any calls to
+ *        tivxBamCreateHandleSingleNode or tivxBamCreateHandleMultiNode, and
+ *        is recommended to be called during the kernel registration function
+ *        where tivxAddTargetKernel() is called, or as part of a kernel library
+ *        registration function.
+ *
+ * \param [in] plugin    Pointer to a plugin definition
+ * \param [out] kernelId The kernel id given to the passed plugin.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_PARAMETERS If one of the parameters are NULL.
+ * \retval VX_ERROR_NO_MEMORY If there is not enough memory to register new plugins.
+ *         The total number of user plugins can be incremented by changing the
+ *         TIVX_MAX_DSP_BAM_USER_PLUGINS define in the TI/tivx_config.h file.
+ * \ingroup group_tivx_ext_common_kernel
+ */
+vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kernelId);
+
+/*!
+ * \brief Returns the kernelID associated with a plugin name
+ *
+ *        This function is used to return the kernelID of a BAM plugin
+ *        which has already been registered on the DSP target framework.
+ *
+ *        If the name is not found in the BAM kernel database, the
+ *        BAM_TI_KERNELID_UNDEFINED will be returned as the kernelId.
+ *
+ * \param [in] name      Name of the BAM plugin
+ * \param [out] kernelId The kernel id given to the passed plugin.
+ * \return A <tt>\ref vx_status_e</tt> enumeration.
+ * \retval VX_SUCCESS No errors.
+ * \retval VX_ERROR_INVALID_PARAMETERS If one of the parameters are NULL.
+ * \ingroup group_tivx_ext_common_kernel
+ */
+vx_status tivxBamGetKernelIdFromName(const char *name, BAM_KernelId *kernelId);
 
 /*!
  * \brief Initialize memory block for BAM usage
