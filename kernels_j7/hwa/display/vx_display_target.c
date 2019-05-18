@@ -624,12 +624,58 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
         }
         else if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
         {
+            tivxMemBufferMap(
+                displayParams->copyImagePtr[displayParams->currIdx][0], 
+                displayParams->copyImageSize[0], 
+                VX_MEMORY_TYPE_HOST, 
+                VX_WRITE_ONLY);
+            tivxMemBufferMap(
+                image_target_ptr1, 
+                displayParams->copyImageSize[0], 
+                VX_MEMORY_TYPE_HOST, 
+                VX_WRITE_ONLY);
+            
             /* Copy  and assign buffers */
             memcpy(displayParams->copyImagePtr[displayParams->currIdx][0], image_target_ptr1, displayParams->copyImageSize[0]);
+            
+            tivxMemBufferUnmap(
+                displayParams->copyImagePtr[displayParams->currIdx][0], 
+                displayParams->copyImageSize[0], 
+                VX_MEMORY_TYPE_HOST, 
+                VX_WRITE_ONLY);
+            tivxMemBufferUnmap(
+                image_target_ptr1, 
+                displayParams->copyImageSize[0], 
+                VX_MEMORY_TYPE_HOST, 
+                VX_WRITE_ONLY);
+            
             displayParams->copyFrame[displayParams->currIdx].addr[0] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][0];
             if(VX_DF_IMAGE_NV12 == obj_desc_image->format)
             {
+                tivxMemBufferMap(
+                    displayParams->copyImagePtr[displayParams->currIdx][1], 
+                    displayParams->copyImageSize[1], 
+                    VX_MEMORY_TYPE_HOST, 
+                    VX_WRITE_ONLY);
+                tivxMemBufferMap(
+                    image_target_ptr2, 
+                    displayParams->copyImageSize[1], 
+                    VX_MEMORY_TYPE_HOST, 
+                    VX_WRITE_ONLY);
+                
                 memcpy(displayParams->copyImagePtr[displayParams->currIdx][1], image_target_ptr2, displayParams->copyImageSize[1]);
+                
+                tivxMemBufferUnmap(
+                    displayParams->copyImagePtr[displayParams->currIdx][1], 
+                    displayParams->copyImageSize[1], 
+                    VX_MEMORY_TYPE_HOST, 
+                    VX_WRITE_ONLY);
+                tivxMemBufferUnmap(
+                    image_target_ptr2, 
+                    displayParams->copyImageSize[1], 
+                    VX_MEMORY_TYPE_HOST, 
+                    VX_WRITE_ONLY);
+                
                 displayParams->copyFrame[displayParams->currIdx].addr[1] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][1];
             }
             displayParams->copyFrame[displayParams->currIdx].fid = FVID2_FID_FRAME;
