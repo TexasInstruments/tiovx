@@ -112,6 +112,15 @@ static CT_Image tivx_utils_load_ct_image_from_bmpfile(const char* fileName, int 
     return image;
 }
 
+static CT_Image tivx_utils_load_ct_image_from_bmpfile_memory(const char* buf, int bufsize, int dcn)
+{
+    CT_Image image = 0;
+
+    image = ct_read_bmp((unsigned char*)buf, bufsize, dcn);
+
+    return image;
+}
+
 static void tivx_utils_save_ct_image_to_bmpfile(const char* fileName, CT_Image image)
 {
     char* dotpos;
@@ -157,6 +166,60 @@ vx_status tivx_utils_bmp_file_read(
     CT_SetHasRunningTest();
 
     image = tivx_utils_load_ct_image_from_bmpfile(filename, dcn);
+
+    if(image != NULL)
+    {
+        if( image->format == VX_DF_IMAGE_U8 )
+            bpp = 1;
+        else
+        if( image->format == VX_DF_IMAGE_RGB )
+            bpp = 3;
+        else
+            bpp = 4; /* RGBX */
+
+        *width = image->width;
+        *height = image->height;
+        *stride = image->stride * bpp;
+        *df = image->format;
+        *data_ptr = image->data.y;
+
+        *bmp_file_context = image;
+
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        *width = 0;
+        *height = 0;
+        *stride = 0;
+        *data_ptr = NULL;
+
+        *bmp_file_context = NULL;
+        status = VX_FAILURE;
+    }
+    return status;
+}
+
+vx_status tivx_utils_bmp_file_read_from_memory(
+            void *buf,
+            uint32_t buf_size,
+            vx_bool convert_to_gray_scale,
+            uint32_t *width,
+            uint32_t *height,
+            uint32_t *stride,
+            vx_df_image *df,
+            void **data_ptr,
+            void **bmp_file_context)
+{
+    CT_Image image = NULL;
+    int dcn = convert_to_gray_scale ? 1 : -1;
+    uint32_t bpp;
+    vx_status status;
+
+    /* workaround to enable CT context */
+    CT_SetHasRunningTest();
+
+    image = tivx_utils_load_ct_image_from_bmpfile_memory(buf, buf_size, dcn);
 
     if(image != NULL)
     {

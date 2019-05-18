@@ -197,6 +197,22 @@ vx_status tivx_utils_bmp_file_read(
             void **png_file_context);
 
 /**
+ * \brief Read data from BMP file
+ *
+ * Same as tivx_utils_png_file_read() but with .bmp file
+ */
+vx_status tivx_utils_bmp_file_read_from_memory(
+            void *buf,
+            uint32_t buf_size,
+            vx_bool convert_to_gray_scale,
+            uint32_t *width,
+            uint32_t *height,
+            uint32_t *stride,
+            vx_df_image *df,
+            void **data_ptr,
+            void **png_file_context);
+
+/**
  * \brief Free memory allocated during bmp file read
  *
  * Same as tivx_utils_png_file_read_release() but with .bmp file
@@ -237,6 +253,7 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image);
  * Same as tivx_utils_load_vximage_from_pngfile() but with .bmp file
  */
 vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
+
 
 #endif
 
