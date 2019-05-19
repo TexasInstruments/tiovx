@@ -61,7 +61,7 @@
 */
 
 
-
+#include <stdio.h>
 #include <TI/tivx.h>
 #include <TI/j7.h>
 #include <TI/tivx_target_kernel.h>
@@ -264,6 +264,35 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
     return (status);
 }
 
+int32_t tivxKernelTIDLLog(const char * format, va_list va_args_ptr)
+{
+    static char buf[1024];
+    
+    va_start(va_args_ptr, format);
+    vsnprintf(buf, 1024, format, va_args_ptr);
+    va_end(va_args_ptr);
+    
+    printf(buf);
+    
+    return 0;
+}
+
+int32_t tivxKernelTIDLDumpToFile(const char * fileName, void * addr, int32_t size)
+{
+    volatile uint32_t i=0;
+    
+    printf("saveRaw(0, 0x%08x, \"/ti/j7presi/%s\", %d/4, 32, false);\n", 
+        (uint32_t)(uintptr_t)addr,
+        fileName,
+        ((size+3)/4)*4 /* align to 4 bytes for saveRaw */
+        );
+        
+    i=i; /* to put a break point */
+    
+    return 0;
+}
+
+
 static vx_status VX_CALLBACK tivxKernelTIDLCreate
 (
   tivx_target_kernel_instance kernel,
@@ -289,7 +318,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     uint32_t i;
     
+    #ifdef TIVX_TIDL_TARGET_DEBUG
     tivx_set_debug_zone(VX_ZONE_INFO);
+    #endif
 
     for (i = 0U; i < num_params; i ++)
     {
@@ -352,6 +383,14 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         prms->createParams->net = (sTIDL_Network_t *)network_target_ptr;
+        prms->createParams->traceLogLevel = 0;
+        prms->createParams->traceWriteLevel = 0;
+        #ifdef TIVX_TIDL_TARGET_DEBUG
+        prms->createParams->traceLogLevel = 1;
+        prms->createParams->traceWriteLevel = 1;
+        #endif
+        prms->createParams->TIDLVprintf = tivxKernelTIDLLog;
+        prms->createParams->TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
 
         if (VX_SUCCESS == status)
         {
@@ -442,7 +481,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
         }
     }
     
-    tivx_set_debug_zone(VX_ZONE_INFO);
+    #ifdef TIVX_TIDL_TARGET_DEBUG
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+    #endif
 
     return (status);
 }
