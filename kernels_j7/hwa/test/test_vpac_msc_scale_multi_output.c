@@ -67,6 +67,19 @@ static void scale_set_coeff(tivx_vpac_msc_coefficients_t *coeff,
     uint32_t idx;
     uint32_t weight;
 
+    idx = 0;
+    coeff->single_phase[0][idx ++] = 0;
+    coeff->single_phase[0][idx ++] = 0;
+    coeff->single_phase[0][idx ++] = 256;
+    coeff->single_phase[0][idx ++] = 0;
+    coeff->single_phase[0][idx ++] = 0;
+    idx = 0;
+    coeff->single_phase[1][idx ++] = 0;
+    coeff->single_phase[1][idx ++] = 0;
+    coeff->single_phase[1][idx ++] = 256;
+    coeff->single_phase[1][idx ++] = 0;
+    coeff->single_phase[1][idx ++] = 0;
+
     if (VX_INTERPOLATION_BILINEAR == interpolation)
     {
         idx = 0;

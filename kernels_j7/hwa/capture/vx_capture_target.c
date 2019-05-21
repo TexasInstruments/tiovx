@@ -771,6 +771,12 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
             }
         }
 
+        /* Deleting event */
+        if (VX_SUCCESS == status)
+        {
+            tivxEventDelete(&prms->frame_available);
+        }
+
         /* Free-ing kernel instance params */
         if (VX_SUCCESS == status)
         {

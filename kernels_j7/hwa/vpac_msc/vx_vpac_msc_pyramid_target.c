@@ -891,7 +891,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
             }
 
             /* Wait for Frame Completion */
-            tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
+            tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);  // pends here forever on second octave
 
             status = Fvid2_getProcessedRequest(msc_obj->handle,
                 inFrmList, outFrmList, 0);

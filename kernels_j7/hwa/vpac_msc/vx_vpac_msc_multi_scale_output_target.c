@@ -159,7 +159,8 @@ static tivxVpacMscScaleObj *tivxVpacMscScaleAllocObject(
 static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
     tivxVpacMscScaleObj *msc_obj);
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *img_desc);
+    tivx_obj_desc_image_t *in_img_desc,
+    tivx_obj_desc_image_t *out_img_desc);
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 
@@ -431,6 +432,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
         for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
+            /* Overwrite to multi */
+            msc_prms->mscCfg.scCfg[cnt].filtMode = MSC_FILTER_MODE_MULTI_PHASE; //MSC_FILTER_MODE_SINGLE_PHASE;
+
             if (NULL != out_img_desc[cnt])
             {
                 if (1U == inst_obj->alloc_sc_fwd_dir)
@@ -448,7 +452,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
                     msc_obj->sc_map_idx[cnt] = idx;
                 }
 
-                tivxVpacMscScaleSetScParams(sc_cfg, out_img_desc[cnt]);
+                tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
                 tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
             }
             else
@@ -476,7 +480,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
             for (cnt = 0u; cnt < MSC_MAX_OUTPUT; cnt ++)
             {
-                msc_obj->outFrmList.frames[0u] = &msc_obj->outFrm[cnt];
+                msc_obj->outFrmList.frames[cnt] = &msc_obj->outFrm[cnt];
             }
         }
     }
@@ -607,7 +611,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
                 idx = msc_obj->sc_map_idx[cnt];
                 sc_cfg = &msc_obj->msc_prms.mscCfg.scCfg[idx];
 
-                idx = cnt + TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX;
+                idx = cnt; // + TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX;
                 if (((uint32_t)TRUE == sc_cfg->enable) &&
                     (NULL == out_img_desc[idx]))
                 {
@@ -629,14 +633,14 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         inFrmList = &msc_obj->inFrmList;
         outFrmList = &msc_obj->outFrmList;
 
-        outFrmList->numFrames = 1U;
+        inFrmList->numFrames = 1U;
 
         frm = &msc_obj->inFrm;
         for (plane_cnt = 0u; plane_cnt < TIVX_IMAGE_MAX_PLANES; plane_cnt ++)
         {
             frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                 in_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
+                in_img_desc->mem_ptr[plane_cnt].mem_heap_region); // verified that this is receiving correct memory
         }
 
         outFrmList->numFrames = 0u;
@@ -646,7 +650,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
             sc_cfg = &msc_obj->msc_prms.mscCfg.scCfg[idx];
             frm = &msc_obj->outFrm[idx];
 
-            idx = cnt + TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX;
+            idx = cnt;// + TIVX_KERNEL_VPAC_MSC_SCALE_OUT0_IMG_IDX;
             for (plane_cnt = 0u; plane_cnt < TIVX_IMAGE_MAX_PLANES;
                     plane_cnt ++)
             {
@@ -847,17 +851,18 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *img_desc)
+    tivx_obj_desc_image_t *in_img_desc,
+    tivx_obj_desc_image_t *out_img_desc)
 {
-    if (NULL != img_desc)
+    if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
         sc_cfg->enable = TRUE;
-        sc_cfg->outWidth = img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->outHeight = img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->outWidth = out_img_desc->imagepatch_addr[0].dim_x;
+        sc_cfg->outHeight = out_img_desc->imagepatch_addr[0].dim_y;
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropStartX = 0u;
-        sc_cfg->inRoi.cropWidth = img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->inRoi.cropHeight = img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
+        sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
     }
 }
 
