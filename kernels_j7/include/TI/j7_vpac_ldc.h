@@ -304,6 +304,10 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  * \param [in] warp_matrix (optional) Input warp_matrix of type
  *             <tt>\vx_matrix</tt> for affine or
  *             perspective transform configuration.
+ *             Must be 2x3 (affine) or 3x3 (perspective), and of type
+ *             <tt>\ref VX_TYPE_INT16</tt> if using HW register values,
+ *             or <tt>\ref VX_TYPE_FLOAT32</tt> if using matrix values
+ *             defined in OpenVX warp functions.
  * \param [in] region_prms (optional) The input object of a single params
  *             structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt>
  *             or <tt>\ref tivx_vpac_ldc_multi_region_params_t</tt>.
@@ -316,10 +320,12 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *             provide frame size and downsampling factor of mesh_img.
  *             If set to null, back mapping is disabled.
  * \param [in] mesh_img (optional) Mesh image containing mesh 2D lookup table.
- *             The pitch/line offset for the mesh can be calculated using
+ *             This can be a full remap table, but is typically sub-sampled by a power
+ *             of 2 as per tivx_vpac_ldc_mesh_params_t.subsample_factor to save memory
+ *             footprint and bandwidth. The pitch/line offset for the mesh can be calculated using
  *             TIVX_NODE_VPAC_LDC_CALC_MESH_LINE_OFFSET.
- *             The data format supported for this image is
- *             <tt>\ref VX_DF_IMAGE_U32</tt>.
+ *             The coordinates are of type S16Q3, and are stored as X,Y pairs
+ *             of type <tt>\ref VX_DF_IMAGE_U32</tt>.
  *             If set to null, back mapping is disabled.
  * \param [in] in_img The input image in
  *             <tt>\ref VX_DF_IMAGE_NV12</tt>,
