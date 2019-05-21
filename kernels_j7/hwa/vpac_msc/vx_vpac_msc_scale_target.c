@@ -198,8 +198,8 @@ void tivxAddTargetKernelVpacMscHalfScaleGaussian()
     inst_start = TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_START_IDX;
     self_cpu = tivxGetSelfCpuId();
 
-    if ((self_cpu == TIVX_CPU_ID_IPU1_0) ||
-        (self_cpu == TIVX_CPU_ID_IPU1_1))
+    if ((TIVX_CPU_ID_IPU1_0 == self_cpu) ||
+        (TIVX_CPU_ID_IPU1_1 == self_cpu))
     {
         /* Reset all values to 0 */
         memset(&gTivxVpacMscScaleInstObj[inst_start], 0x0,
@@ -300,7 +300,7 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian()
         inst_obj = &gTivxVpacMscScaleInstObj[inst_start + cnt];
 
         status = tivxRemoveTargetKernel(inst_obj->target_kernel);
-        if (status == VX_SUCCESS)
+        if (VX_SUCCESS == status)
         {
             inst_obj->target_kernel = NULL;
         }
@@ -426,7 +426,7 @@ void tivxRemoveTargetKernelVpacMscScale()
         inst_obj = &gTivxVpacMscScaleInstObj[inst_start + cnt];
 
         status = tivxRemoveTargetKernel(inst_obj->target_kernel);
-        if (status == VX_SUCCESS)
+        if (VX_SUCCESS == status)
         {
             inst_obj->target_kernel = NULL;
         }
@@ -476,7 +476,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             inst_obj = NULL;
             for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
             {
-                if (target_kernel = gTivxVpacMscScaleInstObj[cnt].target_kernel)
+                if (target_kernel == gTivxVpacMscScaleInstObj[cnt].target_kernel)
                 {
                     inst_obj = &gTivxVpacMscScaleInstObj[cnt];
                     break;
@@ -528,6 +528,8 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
                 if (NULL == msc_obj->handle)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxVpacMscScaleCreate: Fvid2_create failed\n");
                     status = VX_ERROR_NO_RESOURCES;
                 }
             }
@@ -575,6 +577,8 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             msc_prms, NULL);
         if (FVID2_SOK != status)
         {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacMscScaleCreate: Fvid2_control Failed: Set Params\n");
             status = VX_FAILURE;
         }
         else
@@ -652,6 +656,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
 
             tivxVpacMscScaleFreeObject(inst_obj, msc_obj);
         }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacMscScaleDelete: Invalid Descriptor\n");
     }
 
     return status;
@@ -889,6 +898,12 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
             {
                 fmt->dataFormat = FVID2_DF_LUMA_ONLY;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacMscScaleSetFmt: Invalid Vx Image Format\n");
                 break;
             }
         }
