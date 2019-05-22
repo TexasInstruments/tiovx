@@ -273,7 +273,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     {
         Vhwa_m2mVissCreateArgsInit(&vissObj->createArgs);
 
-        status = tivxMutexCreate(&vissObj->waitForProcessCmpl);
+        status = tivxEventCreate(&vissObj->waitForProcessCmpl);
         if (VX_SUCCESS == status)
         {
             status = tivxMutexCreate(&vissObj->config_lock);
@@ -482,7 +482,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
             if (NULL != vissObj->waitForProcessCmpl)
             {
-                tivxMutexDelete(&vissObj->waitForProcessCmpl);
+                tivxEventDelete(&vissObj->waitForProcessCmpl);
             }
 
             if (NULL != vissObj->config_lock)
@@ -529,7 +529,7 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
 
             if (NULL != vissObj->waitForProcessCmpl)
             {
-                tivxMutexDelete(&vissObj->waitForProcessCmpl);
+                tivxEventDelete(&vissObj->waitForProcessCmpl);
             }
 
             if (NULL != vissObj->config_lock)
@@ -674,8 +674,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     if (VX_SUCCESS == status)
     {
         /* Update Configuration in Driver */
-        SemaphoreP_pend(vissObj->config_lock,
-            SemaphoreP_WAIT_FOREVER);
+        tivxMutexLock(vissObj->config_lock);
 
         /* Check if there is any change in H3A Input Source */
         tivxVpacVissSetH3aSrcParams(vissObj, vissPrms);
@@ -700,7 +699,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                     "tivxVpacVissProcess: Failed to Set Config in Driver !!!\n");
             }
         }
-        SemaphoreP_post(vissObj->config_lock);
+        tivxMutexUnlock(vissObj->config_lock);
     }
 
     if (VX_SUCCESS == status)
@@ -749,8 +748,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         else
         {
             /* Wait for Frame Completion */
-            SemaphoreP_pend(vissObj->waitForProcessCmpl,
-                SemaphoreP_WAIT_FOREVER);
+            tivxEventWait(vissObj->waitForProcessCmpl,
+                TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
             status = Fvid2_getProcessedRequest(vissObj->handle,
                 &vissObj->inFrmList, &vissObj->outFrmList, 0);
@@ -819,10 +818,10 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
             case TIVX_VPAC_VISS_SET_DCC_PARAMS:
             {
                 /* Update Configuration in Driver */
-                SemaphoreP_pend(vissObj->config_lock, SemaphoreP_WAIT_FOREVER);
+                tivxMutexLock(vissObj->config_lock);
                 status = tivxVpacVissSetParamsFromDcc(vissObj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U], NULL);
-                SemaphoreP_post(vissObj->config_lock);
+                tivxMutexUnlock(vissObj->config_lock);
                 break;
             }
             default:
@@ -846,8 +845,8 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
     uint32_t         cnt;
     tivxVpacVissObj *vissObj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_VISS_MAX_HANDLES; cnt ++)
     {
@@ -863,8 +862,8 @@ static tivxVpacVissObj *tivxVpacVissAllocObject(tivxVpacVissInstObj *instObj)
     /* Initialize few members to values, other than 0 */
     vissObj->lastH3aInSrc = RFE_H3A_IN_SEL_MAX;
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (vissObj);
 }
@@ -874,8 +873,8 @@ static void tivxVpacVissFreeObject(tivxVpacVissInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_VISS_MAX_HANDLES; cnt ++)
     {
@@ -886,8 +885,8 @@ static void tivxVpacVissFreeObject(tivxVpacVissInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
@@ -1330,7 +1329,7 @@ int32_t tivxVpacVissFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != vissObj)
     {
-        SemaphoreP_post(vissObj->waitForProcessCmpl);
+        tivxEventPost(vissObj->waitForProcessCmpl);
     }
 
     return FVID2_SOK;

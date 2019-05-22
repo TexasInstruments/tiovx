@@ -70,6 +70,7 @@
 #include "tivx_kernel_vpac_viss.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 #include "idcc.h"
 
@@ -184,7 +185,7 @@ typedef struct
     /*! VISS M2M Driver Handle */
     Fvid2_Handle                        handle;
     /*! Mutex used for waiting for process completion */
-    tivx_mutex                          waitForProcessCmpl;
+    tivx_event                          waitForProcessCmpl;
     /*! Mutex used for waiting for protecting config */
     tivx_mutex                          config_lock;
     /*! VISS M2M Driver Parameters */

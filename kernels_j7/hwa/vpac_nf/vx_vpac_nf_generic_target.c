@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_nf_generic.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mNf.h"
@@ -92,7 +93,7 @@ typedef struct
     Nf_Config                           nf_cfg;
     Nf_WgtTableConfig                   wgtTbl;
     Fvid2_Handle                        handle;
-    tivx_mutex                          waitForProcessCmpl;
+    tivx_event                          waitForProcessCmpl;
     Nf_ErrEventParams                   errEvtPrms;
     
     Fvid2_Frame                         inFrm;
@@ -180,12 +181,12 @@ void tivxAddTargetKernelVpacNfGeneric(void)
                     NULL);
         if (NULL != vx_vpac_nf_generic_target_kernel)
         {
-            /* Allocate lock semaphore */
+            /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxVpacNfGenericInstObj.lock);
             if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacNfGeneric: Failed to create Semaphore\n");
+                    "tivxAddTargetKernelVpacNfGeneric: Failed to create Mutex\n");
             }
             else
             {
@@ -383,7 +384,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
     if (VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
-        SemaphoreP_pend(nf_generic_obj->waitForProcessCmpl, SemaphoreP_WAIT_FOREVER);
+        tivxEventWait(nf_generic_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         status = Fvid2_getProcessedRequest(nf_generic_obj->handle,
             inFrmList, outFrmList, 0);
@@ -456,7 +457,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
     {
         Vhwa_M2mNfCreatePrmsInit(&nf_generic_obj->createPrms);
 
-        status = tivxMutexCreate(&nf_generic_obj->waitForProcessCmpl);
+        status = tivxEventCreate(&nf_generic_obj->waitForProcessCmpl);
         if (VX_SUCCESS == status)
         {
             nf_generic_obj->cbPrms.cbFxn   = tivxVpacNfGenericFrameComplCb;
@@ -616,7 +617,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
 
             if (NULL != nf_generic_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(nf_generic_obj->waitForProcessCmpl);
+                tivxEventDelete(&nf_generic_obj->waitForProcessCmpl);
             }
 
             tivxVpacNfGenericFreeObject(&gTivxVpacNfGenericInstObj, nf_generic_obj);
@@ -654,7 +655,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
 
             if (NULL != nf_generic_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(nf_generic_obj->waitForProcessCmpl);
+                tivxEventDelete(&nf_generic_obj->waitForProcessCmpl);
             }
 
             tivxVpacNfGenericFreeObject(&gTivxVpacNfGenericInstObj, nf_generic_obj);
@@ -736,8 +737,8 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
     uint32_t        cnt;
     tivxVpacNfGenericObj *nf_generic_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_NF_MAX_HANDLES; cnt ++)
     {
@@ -750,8 +751,8 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (nf_generic_obj);
 }
@@ -761,8 +762,8 @@ static void tivxVpacNfGenericFreeObject(tivxVpacNfGenericInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(gTivxVpacNfGenericInstObj.lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_NF_MAX_HANDLES; cnt ++)
     {
@@ -773,8 +774,8 @@ static void tivxVpacNfGenericFreeObject(tivxVpacNfGenericInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 /* ========================================================================== */
@@ -929,7 +930,7 @@ int32_t tivxVpacNfGenericFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != nf_generic_obj)
     {
-        SemaphoreP_post(nf_generic_obj->waitForProcessCmpl);
+        tivxEventPost(nf_generic_obj->waitForProcessCmpl);
     }
 
     return FVID2_SOK;

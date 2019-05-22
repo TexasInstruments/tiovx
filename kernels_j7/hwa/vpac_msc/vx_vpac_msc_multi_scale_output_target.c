@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mMsc.h"
@@ -92,7 +93,7 @@ typedef struct
     Vhwa_M2mMscCreatePrms   createArgs;
     Vhwa_M2mMscParams       msc_prms;
     Fvid2_Handle            handle;
-    tivx_mutex              wait_for_compl;
+    tivx_event              wait_for_compl;
 
     uint32_t                num_output;
 
@@ -218,14 +219,14 @@ void tivxAddTargetKernelVpacMscMultiScale()
                                 NULL);
             if (NULL != inst_obj->target_kernel)
             {
-                /* Allocate lock semaphore */
+                /* Allocate lock mutex */
                 status = tivxMutexCreate(&inst_obj->lock);
                 if (VX_SUCCESS != status)
                 {
                     tivxRemoveTargetKernel(inst_obj->target_kernel);
                     inst_obj->target_kernel = NULL;
                     VX_PRINT(VX_ZONE_ERROR,
-                        "tivxAddTargetKernelVpacMsc: Failed to create Semaphore\n");
+                        "tivxAddTargetKernelVpacMsc: Failed to create Mutex\n");
                     break;
                 }
                 else
@@ -383,7 +384,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         {
             Vhwa_M2mMscCreatePrmsInit(&msc_obj->createArgs);
 
-            status = tivxMutexCreate(&msc_obj->wait_for_compl);
+            status = tivxEventCreate(&msc_obj->wait_for_compl);
             if (VX_SUCCESS == status)
             {
                 msc_obj->cbPrms.cbFxn   = tivxVpacMscMultiScaleFrameComplCb;
@@ -492,7 +493,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
             if (NULL != msc_obj->wait_for_compl)
             {
-                SemaphoreP_delete(msc_obj->wait_for_compl);
+                tivxEventDelete(&msc_obj->wait_for_compl);
             }
 
             tivxVpacMscScaleFreeObject(inst_obj, msc_obj);
@@ -539,7 +540,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
 
             if (NULL != msc_obj->wait_for_compl)
             {
-                SemaphoreP_delete(msc_obj->wait_for_compl);
+                tivxEventDelete(&msc_obj->wait_for_compl);
             }
 
             tivxVpacMscScaleFreeObject(inst_obj, msc_obj);
@@ -666,7 +667,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     if (VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
-        SemaphoreP_pend(msc_obj->wait_for_compl, SemaphoreP_WAIT_FOREVER);
+        tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         status = Fvid2_getProcessedRequest(msc_obj->handle,
             inFrmList, outFrmList, 0);
@@ -752,8 +753,8 @@ static tivxVpacMscScaleObj *tivxVpacMscScaleAllocObject(tivxVpacMscScaleInstObj 
     uint32_t        cnt;
     tivxVpacMscScaleObj *msc_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_MSC_MAX_HANDLES; cnt ++)
     {
@@ -766,8 +767,8 @@ static tivxVpacMscScaleObj *tivxVpacMscScaleAllocObject(tivxVpacMscScaleInstObj 
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (msc_obj);
 }
@@ -777,8 +778,8 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_MSC_MAX_HANDLES; cnt ++)
     {
@@ -789,8 +790,8 @@ static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
@@ -1215,7 +1216,7 @@ int32_t tivxVpacMscMultiScaleFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != msc_obj)
     {
-        SemaphoreP_post(msc_obj->wait_for_compl);
+        tivxEventPost(msc_obj->wait_for_compl);
     }
 
     return FVID2_SOK;

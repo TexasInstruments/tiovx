@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_msc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mMsc.h"
@@ -124,7 +125,7 @@ typedef struct
     /*! Driver Handle */
     Fvid2_Handle             handle;
     /*! Mutext to wait for completion */
-    tivx_mutex               wait_for_compl;
+    tivx_event               wait_for_compl;
 
     /*! Input Fvid2 Frame List */
     Fvid2_FrameList          inFrmList;
@@ -594,7 +595,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
     {
         Vhwa_M2mMscCreatePrmsInit(&msc_obj->createArgs);
 
-        status = tivxMutexCreate(&msc_obj->wait_for_compl);
+        status = tivxEventCreate(&msc_obj->wait_for_compl);
         if (VX_SUCCESS == status)
         {
             msc_obj->cbPrms.cbFxn   = tivxVpacMscPmdFrameComplCb;
@@ -667,7 +668,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
 
             if (NULL != msc_obj->wait_for_compl)
             {
-                SemaphoreP_delete(msc_obj->wait_for_compl);
+                tivxEventDelete(&msc_obj->wait_for_compl);
             }
 
             tivxVpacMscPmdFreeObject(inst_obj, msc_obj);
@@ -712,7 +713,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdDelete(
 
             if (NULL != msc_obj->wait_for_compl)
             {
-                SemaphoreP_delete(msc_obj->wait_for_compl);
+                tivxEventDelete(&msc_obj->wait_for_compl);
             }
 
             tivxVpacMscPmdFreeObject(inst_obj, msc_obj);
@@ -884,7 +885,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
             }
 
             /* Wait for Frame Completion */
-            SemaphoreP_pend(msc_obj->wait_for_compl, SemaphoreP_WAIT_FOREVER);
+            tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
             status = Fvid2_getProcessedRequest(msc_obj->handle,
                 inFrmList, outFrmList, 0);
@@ -973,8 +974,8 @@ static tivxVpacMscPmdObj *tivxVpacMscPmdAllocObject(
     uint32_t        cnt;
     tivxVpacMscPmdObj *msc_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_MSC_MAX_HANDLES; cnt ++)
     {
@@ -987,8 +988,8 @@ static tivxVpacMscPmdObj *tivxVpacMscPmdAllocObject(
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (msc_obj);
 }
@@ -998,8 +999,8 @@ static void tivxVpacMscPmdFreeObject(tivxVpacMscPmdInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_MSC_MAX_HANDLES; cnt ++)
     {
@@ -1010,8 +1011,8 @@ static void tivxVpacMscPmdFreeObject(tivxVpacMscPmdInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
@@ -1615,7 +1616,7 @@ int32_t tivxVpacMscPmdFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != msc_obj)
     {
-        SemaphoreP_post(msc_obj->wait_for_compl);
+        tivxEventPost(msc_obj->wait_for_compl);
     }
 
     return FVID2_SOK;

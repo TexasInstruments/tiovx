@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_nf_bilateral.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 #include <math.h>
 
@@ -93,7 +94,7 @@ typedef struct
     Nf_Config                           nf_cfg;
     Nf_WgtTableConfig                   wgtTbl;
     Fvid2_Handle                        handle;
-    tivx_mutex                          waitForProcessCmpl;
+    tivx_event                          waitForProcessCmpl;
     Nf_ErrEventParams                   errEvtPrms;
     
     Fvid2_Frame                         inFrm;
@@ -188,12 +189,12 @@ void tivxAddTargetKernelVpacNfBilateral(void)
                     NULL);
         if (NULL != vx_vpac_nf_bilateral_target_kernel)
         {
-            /* Allocate lock semaphore */
+            /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxVpacNfBilateralInstObj.lock);
             if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacNfBilateral: Failed to create Semaphore\n");
+                    "tivxAddTargetKernelVpacNfBilateral: Failed to create Mutex\n");
             }
             else
             {
@@ -325,7 +326,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
     if (VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
-        SemaphoreP_pend(nf_bilateral_obj->waitForProcessCmpl, SemaphoreP_WAIT_FOREVER);
+        tivxEventWait(nf_bilateral_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         status = Fvid2_getProcessedRequest(nf_bilateral_obj->handle,
             inFrmList, outFrmList, 0);
@@ -402,7 +403,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
     {
         Vhwa_M2mNfCreatePrmsInit(&nf_bilateral_obj->createPrms);
 
-        status = tivxMutexCreate(&nf_bilateral_obj->waitForProcessCmpl);
+        status = tivxEventCreate(&nf_bilateral_obj->waitForProcessCmpl);
         if (VX_SUCCESS == status)
         {
             nf_bilateral_obj->cbPrms.cbFxn   = tivxVpacNfBilateralFrameComplCb;
@@ -531,7 +532,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
 
             if (NULL != nf_bilateral_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(nf_bilateral_obj->waitForProcessCmpl);
+                tivxEventDelete(&nf_bilateral_obj->waitForProcessCmpl);
             }
 
             tivxVpacNfBilateralFreeObject(&gTivxVpacNfBilateralInstObj, nf_bilateral_obj);
@@ -569,7 +570,7 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
 
             if (NULL != nf_bilateral_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(nf_bilateral_obj->waitForProcessCmpl);
+                tivxEventDelete(&nf_bilateral_obj->waitForProcessCmpl);
             }
 
             tivxVpacNfBilateralFreeObject(&gTivxVpacNfBilateralInstObj, nf_bilateral_obj);
@@ -651,9 +652,9 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
     uint32_t        cnt;
     tivxVpacNfBilateralObj *nf_bilateral_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
-
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
+    
     for (cnt = 0U; cnt < VHWA_M2M_NF_MAX_HANDLES; cnt ++)
     {
         if (0U == instObj->nfBilateralObj[cnt].isAlloc)
@@ -665,8 +666,8 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (nf_bilateral_obj);
 }
@@ -676,8 +677,8 @@ static void tivxVpacNfBilateralFreeObject(tivxVpacNfBilateralInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(gTivxVpacNfBilateralInstObj.lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_NF_MAX_HANDLES; cnt ++)
     {
@@ -688,9 +689,8 @@ static void tivxVpacNfBilateralFreeObject(tivxVpacNfBilateralInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
-}
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);}
 
 static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, double *sigma_s,
     double *sigma_r, uint32_t *i_lut)
@@ -1049,7 +1049,7 @@ int32_t tivxVpacNfBilateralFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != nf_bilateral_obj)
     {
-        SemaphoreP_post(nf_bilateral_obj->waitForProcessCmpl);
+        tivxEventPost(nf_bilateral_obj->waitForProcessCmpl);
     }
 
     return FVID2_SOK;

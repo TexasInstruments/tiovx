@@ -71,6 +71,7 @@
 #include "tivx_kernel_dmpac_sde.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 #include <math.h>
 
@@ -92,7 +93,7 @@ typedef struct
     Vhwa_M2mSdeCreateArgs               createPrms;
     Sde_Config                          sde_cfg;
     Fvid2_Handle                        handle;
-    tivx_mutex                          waitForProcessCmpl;
+    tivx_event                          waitForProcessCmpl;
     Sde_ErrEventParams                  errEvtPrms;
 
     Fvid2_Frame                         inFrm[VHWA_M2M_SDE_MAX_IN_BUFFER];
@@ -177,12 +178,12 @@ void tivxAddTargetKernelDmpacSde(void)
                     NULL);
         if (NULL != vx_dmpac_sde_target_kernel)
         {
-            /* Allocate lock semaphore */
+            /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxDmpacSdeInstObj.lock);
             if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelDmpacSde: Failed to create Semaphore\n");
+                    "tivxAddTargetKernelDmpacSde: Failed to create Mutex\n");
             }
             else
             {
@@ -334,7 +335,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     if (VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
-        SemaphoreP_pend(sde_obj->waitForProcessCmpl, SemaphoreP_WAIT_FOREVER);
+        tivxEventWait(sde_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         status = Fvid2_getProcessedRequest(sde_obj->handle,
             inFrmList, outFrmList, 0);
@@ -419,7 +420,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     {
         Vhwa_M2mSdeCreateArgsInit(&sde_obj->createPrms);
 
-        status = tivxMutexCreate(&sde_obj->waitForProcessCmpl);
+        status = tivxEventCreate(&sde_obj->waitForProcessCmpl);
         if (VX_SUCCESS == status)
         {
             sde_obj->cbPrms.cbFxn   = tivxDmpacSdeFrameComplCb;
@@ -549,7 +550,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
             if (NULL != sde_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(sde_obj->waitForProcessCmpl);
+                tivxEventDelete(&sde_obj->waitForProcessCmpl);
             }
 
             tivxDmpacSdeFreeObject(&gTivxDmpacSdeInstObj, sde_obj);
@@ -587,7 +588,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
 
             if (NULL != sde_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(sde_obj->waitForProcessCmpl);
+                tivxEventDelete(&sde_obj->waitForProcessCmpl);
             }
 
             tivxDmpacSdeFreeObject(&gTivxDmpacSdeInstObj, sde_obj);
@@ -657,8 +658,8 @@ static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
     uint32_t        cnt;
     tivxDmpacSdeObj *sde_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_SDE_MAX_HANDLES; cnt ++)
     {
@@ -671,8 +672,8 @@ static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (sde_obj);
 }
@@ -682,8 +683,8 @@ static void tivxDmpacSdeFreeObject(tivxDmpacSdeInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(gTivxDmpacSdeInstObj.lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_SDE_MAX_HANDLES; cnt ++)
     {
@@ -694,8 +695,8 @@ static void tivxDmpacSdeFreeObject(tivxDmpacSdeInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 /* ========================================================================== */
@@ -731,7 +732,7 @@ int32_t tivxDmpacSdeFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != sde_obj)
     {
-        SemaphoreP_post(sde_obj->waitForProcessCmpl);
+        tivxEventPost(sde_obj->waitForProcessCmpl);
     }
 
     return FVID2_SOK;

@@ -71,6 +71,7 @@
 #include "tivx_hwa_kernels.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mMsc.h"
@@ -106,7 +107,7 @@ typedef struct
     Vhwa_M2mMscCreatePrms   createArgs;
     Vhwa_M2mMscParams       msc_prms;
     Fvid2_Handle            handle;
-    tivx_mutex              wait_for_compl;
+    tivx_event              wait_for_compl;
 
     uint32_t                num_output;
 
@@ -516,7 +517,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         {
             Vhwa_M2mMscCreatePrmsInit(&msc_obj->createArgs);
 
-            status = tivxMutexCreate(&msc_obj->wait_for_compl);
+            status = tivxEventCreate(&msc_obj->wait_for_compl);
             if (VX_SUCCESS == status)
             {
                 msc_obj->cbPrms.cbFxn   = tivxVpacMscScaleFrameComplCb;
@@ -610,7 +611,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
             if (NULL != msc_obj->wait_for_compl)
             {
-                SemaphoreP_delete(msc_obj->wait_for_compl);
+                tivxEventDelete(&msc_obj->wait_for_compl);
             }
 
             tivxVpacMscScaleFreeObject(inst_obj, msc_obj);
@@ -651,7 +652,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleDelete(
 
             if (NULL != msc_obj->wait_for_compl)
             {
-                SemaphoreP_delete(msc_obj->wait_for_compl);
+                tivxEventDelete(&msc_obj->wait_for_compl);
             }
 
             tivxVpacMscScaleFreeObject(inst_obj, msc_obj);
@@ -804,7 +805,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     if (VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
-        SemaphoreP_pend(msc_obj->wait_for_compl, SemaphoreP_WAIT_FOREVER);
+        tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         status = Fvid2_getProcessedRequest(msc_obj->handle,
             &msc_obj->inFrmList, &msc_obj->outFrmList, 0);
@@ -965,7 +966,7 @@ int32_t tivxVpacMscScaleFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != msc_obj)
     {
-        SemaphoreP_post(msc_obj->wait_for_compl);
+        tivxEventPost(msc_obj->wait_for_compl);
     }
 
     return FVID2_SOK;

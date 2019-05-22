@@ -71,6 +71,7 @@
 #include "tivx_kernel_vpac_ldc.h"
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
+#include "TI/tivx_event.h"
 #include "TI/tivx_mutex.h"
 
 #include "ti/drv/vhwa/include/vhwa_m2mLdc.h"
@@ -91,7 +92,7 @@ typedef struct
     Ldc_RdBwLimitConfig                 bwLimitCfg;
     Ldc_Config                          ldc_cfg;
     Fvid2_Handle                        handle;
-    tivx_mutex                          waitForProcessCmpl;
+    tivx_event                          waitForProcessCmpl;
     Ldc_ErrEventParams                  errEvtPrms;
     Ldc_RdBwLimitConfig                 rdBwLimitCfg;
 
@@ -193,12 +194,12 @@ void tivxAddTargetKernelVpacLdc()
                             NULL);
         if (NULL != vx_vpac_ldc_target_kernel)
         {
-            /* Allocate lock semaphore */
+            /* Allocate lock mutex */
             status = tivxMutexCreate(&gTivxVpacLdcInstObj.lock);
             if (VX_SUCCESS != status)
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxAddTargetKernelVpacLdc: Failed to create Semaphore\n");
+                    "tivxAddTargetKernelVpacLdc: Failed to create Mutex\n");
             }
             else
             {
@@ -333,7 +334,7 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
     if (VX_SUCCESS == status)
     {
         /* Wait for Frame Completion */
-        SemaphoreP_pend(ldc_obj->waitForProcessCmpl, SemaphoreP_WAIT_FOREVER);
+        tivxEventWait(ldc_obj->waitForProcessCmpl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
         status = Fvid2_getProcessedRequest(ldc_obj->handle,
             inFrmList, outFrmList, 0);
@@ -407,7 +408,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
     {
         Vhwa_M2mLdcCreateArgsInit(&ldc_obj->createArgs);
 
-        status = tivxMutexCreate(&ldc_obj->waitForProcessCmpl);
+        status = tivxEventCreate(&ldc_obj->waitForProcessCmpl);
         if (VX_SUCCESS == status)
         {
             ldc_obj->cbPrms.cbFxn   = tivxVpacLdcFrameComplCb;
@@ -544,7 +545,7 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
             if (NULL != ldc_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(ldc_obj->waitForProcessCmpl);
+                tivxEventDelete(&ldc_obj->waitForProcessCmpl);
             }
 
             tivxVpacLdcFreeObject(&gTivxVpacLdcInstObj, ldc_obj);
@@ -587,7 +588,7 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
 
             if (NULL != ldc_obj->waitForProcessCmpl)
             {
-                SemaphoreP_delete(ldc_obj->waitForProcessCmpl);
+                tivxEventDelete(&ldc_obj->waitForProcessCmpl);
             }
 
             tivxVpacLdcFreeObject(&gTivxVpacLdcInstObj, ldc_obj);
@@ -665,8 +666,8 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj)
     uint32_t        cnt;
     tivxVpacLdcObj *ldc_obj = NULL;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(instObj->lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_LDC_MAX_HANDLES; cnt ++)
     {
@@ -679,8 +680,8 @@ static tivxVpacLdcObj *tivxVpacLdcAllocObject(tivxVpacLdcInstObj *instObj)
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 
     return (ldc_obj);
 }
@@ -690,8 +691,8 @@ static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
 {
     uint32_t cnt;
 
-    /* Lock instance semaphore */
-    SemaphoreP_pend(gTivxVpacLdcInstObj.lock, SemaphoreP_WAIT_FOREVER);
+    /* Lock instance mutex */
+    tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_LDC_MAX_HANDLES; cnt ++)
     {
@@ -702,8 +703,8 @@ static void tivxVpacLdcFreeObject(tivxVpacLdcInstObj *instObj,
         }
     }
 
-    /* Release instance semaphore */
-    SemaphoreP_post(instObj->lock);
+    /* Release instance mutex */
+    tivxMutexUnlock(instObj->lock);
 }
 
 static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
@@ -1106,7 +1107,7 @@ int32_t tivxVpacLdcFrameComplCb(Fvid2_Handle handle, void *appData)
 
     if (NULL != ldc_obj)
     {
-        SemaphoreP_post(ldc_obj->waitForProcessCmpl);
+        tivxEventPost(ldc_obj->waitForProcessCmpl);
     }
 
     return FVID2_SOK;
