@@ -289,6 +289,11 @@ void tivxRemoveTargetKernelVpacMscMultiScale()
         {
             inst_obj->target_kernel = NULL;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxRemoveTargetKernelVpacMscMultiScale: Failed to Remove Msc TargetKernel\n");
+        }
 
         if (NULL != inst_obj->lock)
         {
@@ -404,7 +409,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscScaleCreate: Failed to allocate Mutex\n");
+                    "tivxVpacMscScaleCreate: Failed to allocate Event\n");
             }
         }
     }
@@ -829,6 +834,7 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacMscScaleSetFmt: Invalid Vx Image Format\n");
+                break;
             }
         }
 

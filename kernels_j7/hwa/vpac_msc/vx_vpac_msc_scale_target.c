@@ -305,6 +305,11 @@ void tivxRemoveTargetKernelVpacMscHalfScaleGaussian()
         {
             inst_obj->target_kernel = NULL;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxRemoveTargetKernelVpacMscHalfScaleGaussian: Failed to Remove Msc TargetKernel\n");
+        }
 
         if (NULL != inst_obj->lock)
         {
@@ -537,7 +542,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
             else
             {
                 VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacMscScaleCreate: Failed to allocate Mutex\n");
+                    "tivxVpacMscScaleCreate: Failed to allocate Event\n");
             }
         }
     }

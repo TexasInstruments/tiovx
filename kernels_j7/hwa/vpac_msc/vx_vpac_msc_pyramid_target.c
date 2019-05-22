@@ -358,6 +358,11 @@ void tivxRemoveTargetKernelVpacMscGaussianPyramid()
         {
             inst_obj->target_kernel = NULL;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxRemoveTargetKernelVpacMscGaussianPyramid: Failed to Remove Msc TargetKernel\n");
+        }
 
         if (NULL != inst_obj->lock)
         {
@@ -615,7 +620,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscPmdCreate: Failed to allocate Mutex\n");
+                "tivxVpacMscPmdCreate: Failed to allocate Event\n");
         }
     }
 
@@ -1050,6 +1055,7 @@ static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacMscPmdSetFmt: Invalid Vx Image Format\n");
+                break;
             }
         }
 
