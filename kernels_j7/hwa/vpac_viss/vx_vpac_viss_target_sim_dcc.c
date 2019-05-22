@@ -193,6 +193,20 @@ void tivxVpacVissParseRfeParams(cfg_rawfe *rfe_prms,
         /* Parse H3A Source Parameters */
         tivxVpacVissParseRfeLutParams(1u, &rfe_prms->lut_h3a, dcc_out_prms);
     }
+
+    if (1 == dcc_out_prms->issRfeDecompand.enable)
+    {
+        rfe_prms->pwl_lut_vshort.lutEn = 1;
+        rfe_prms->pwl_lut_vshort.mask = dcc_out_prms->issRfeDecompand.mask;
+        rfe_prms->pwl_lut_vshort.inShift = dcc_out_prms->issRfeDecompand.shift;
+        rfe_prms->pwl_lut_vshort.lutBitDepth = dcc_out_prms->issRfeDecompand.bit_depth;
+        rfe_prms->pwl_lut_vshort.lutClip = dcc_out_prms->issRfeDecompand.clip;
+
+        for (int k = 0; k < 639; k++)
+        {
+            rfe_prms->pwl_lut_vshort.lut[k] = dcc_out_prms->issRfeDecompand.lut[k];
+        }
+    }
 }
 
 void tivxVpacVissParseH3aLutParams(uint32_t idx, cfg_lut *lut,
@@ -220,7 +234,7 @@ void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
         nsf4_prms->iw                   = 1280u;
         nsf4_prms->ih                   = 720u;
 
-        nsf4_prms->knee_u1              = 2u;
+        nsf4_prms->knee_u1              = 32u;
         nsf4_prms->thr_scale_tn1        = 64u;
         nsf4_prms->thr_scale_tn2        = 32u;
         nsf4_prms->thr_scale_tn3        = 16u;
@@ -240,10 +254,10 @@ void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
             nsf4_prms->noise_thr_x[cnt][10u] = 4096u;
             nsf4_prms->noise_thr_x[cnt][11u] = 4096u;
 
-            nsf4_prms->noise_thr_y[cnt][0u]  = 16u;
-            nsf4_prms->noise_thr_y[cnt][1u]  = 20u;
-            nsf4_prms->noise_thr_y[cnt][2u]  = 38u;
-            nsf4_prms->noise_thr_y[cnt][3u]  = 76u;
+            nsf4_prms->noise_thr_y[cnt][0u]  = 0u;
+            nsf4_prms->noise_thr_y[cnt][1u]  = 0u;
+            nsf4_prms->noise_thr_y[cnt][2u]  = 0u;
+            nsf4_prms->noise_thr_y[cnt][3u]  = 0u;
             nsf4_prms->noise_thr_y[cnt][4u]  = 0u;
             nsf4_prms->noise_thr_y[cnt][5u]  = 0u;
             nsf4_prms->noise_thr_y[cnt][6u]  = 0u;
@@ -253,10 +267,10 @@ void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
             nsf4_prms->noise_thr_y[cnt][10u] = 0u;
             nsf4_prms->noise_thr_y[cnt][11u] = 0u;
 
-            nsf4_prms->noise_thr_s[cnt][0u]  = 128u;
-            nsf4_prms->noise_thr_s[cnt][1u]  = 192u;
-            nsf4_prms->noise_thr_s[cnt][2u]  = 100u;
-            nsf4_prms->noise_thr_s[cnt][3u]  = 52u;
+            nsf4_prms->noise_thr_s[cnt][0u]  = 0u;
+            nsf4_prms->noise_thr_s[cnt][1u]  = 0u;
+            nsf4_prms->noise_thr_s[cnt][2u]  = 0u;
+            nsf4_prms->noise_thr_s[cnt][3u]  = 0u;
             nsf4_prms->noise_thr_s[cnt][4u]  = 0u;
             nsf4_prms->noise_thr_s[cnt][5u]  = 0u;
             nsf4_prms->noise_thr_s[cnt][6u]  = 0u;
@@ -729,7 +743,7 @@ void tivxVpacVissParseYeeParams(ee_Config *ee_prms,
         ee_prms->yee_mul[4][2]      = -5;
         ee_prms->yee_mul[4][3]      = -3;
         ee_prms->yee_mul[4][4]      = -1;
-        ee_prms->yee_thr            = 0u;
+        ee_prms->yee_thr            = 200u;
         ee_prms->yes_sel            = 0u;
         ee_prms->yes_hal            = 1u;
         ee_prms->yes_g_gain         = 0u;

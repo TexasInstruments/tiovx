@@ -441,12 +441,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
             if (1 == prms->dcc_output_params->issH3aMuxLuts.enable)
             {
-                int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
-                tivxVpacVissParseH3aLutParams(cnt,
-                    &prms->rawfe_params.lut_h3a, prms->dcc_output_params);
+                if (prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num > 1)
+                {
+                    int cnt = prms->viss_frame_count % prms->dcc_output_params->issH3aMuxLuts.h3a_mux_lut_num;
+                    tivxVpacVissParseH3aLutParams(cnt,
+                        &prms->rawfe_params.lut_h3a, prms->dcc_output_params);
+                }
             }
         }
-
         rawfe_main(&prms->rawfe_params, prms->raw2_16, prms->raw1_16, prms->raw0_16, prms->scratch_rawfe_raw_out, prms->scratch_rawfe_h3a_out);
 
 
