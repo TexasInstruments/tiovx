@@ -454,6 +454,12 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
 
                 tivxVpacMscScaleSetScParams(sc_cfg, in_img_desc, out_img_desc[cnt]);
                 tivxVpacMscScaleSetFmt(fmt, out_img_desc[cnt]);
+
+                sc_cfg->horzAccInit = 
+                    (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+                sc_cfg->vertAccInit = 
+                    (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+
             }
             else
             {
@@ -640,7 +646,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         {
             frm->addr[plane_cnt] = tivxMemShared2PhysPtr(
                 in_img_desc->mem_ptr[plane_cnt].shared_ptr,
-                in_img_desc->mem_ptr[plane_cnt].mem_heap_region); // verified that this is receiving correct memory
+                in_img_desc->mem_ptr[plane_cnt].mem_heap_region);
         }
 
         outFrmList->numFrames = 0u;
@@ -1115,15 +1121,8 @@ static vx_status tivxVpacMscScaleSetOutputParamsCmd(tivxVpacMscScaleObj *msc_obj
             tivxMemBufferUnmap(target_ptr, usr_data_obj[cnt]->mem_size,
                 VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleSetOutputParamsCmd: Null User Data Object\n");
-            status = VX_ERROR_INVALID_PARAMETERS;
-        }
 
-
-        if (VX_SUCCESS == status)
+        if (VX_SUCCESS != status)
         {
             break;
         }
