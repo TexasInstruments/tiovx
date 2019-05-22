@@ -533,6 +533,14 @@ vx_status tivxRemoveKernelVpacLdc(vx_context context)
     return status;
 }
 
+void tivx_vpac_ldc_multi_region_params_init(tivx_vpac_ldc_multi_region_params_t *prms)
+{
+    if (NULL != prms)
+    {
+        memset(prms, 0x0, sizeof(tivx_vpac_ldc_multi_region_params_t));
+    }
+}
+
 void tivx_vpac_ldc_mesh_params_init(tivx_vpac_ldc_mesh_params_t *prms)
 {
     if (NULL != prms)

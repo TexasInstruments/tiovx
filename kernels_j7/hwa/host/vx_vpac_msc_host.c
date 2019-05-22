@@ -335,6 +335,8 @@ void tivx_vpac_msc_coefficients_params_init(tivx_vpac_msc_coefficients_t *prms)
 
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_msc_coefficients_t));
+
         prms->single_phase[0u][0u] = 16u;
         prms->single_phase[0u][1u] = 48u;
         prms->single_phase[0u][2u] = 128u;
@@ -361,6 +363,8 @@ void tivx_vpac_msc_input_params_init(tivx_vpac_msc_input_params_t *prms)
 {
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_msc_input_params_t));
+
         prms->kern_sz = 5u;
         prms->src_ln_inc_2 = 0u;
         prms->input_align_12bit = 0u;
@@ -371,6 +375,8 @@ void tivx_vpac_msc_output_params_init(tivx_vpac_msc_output_params_t *prms)
 {
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_msc_output_params_t));
+
         prms->signed_data = 0u;
         prms->filter_mode = 1u;
         prms->coef_shift = 8u;

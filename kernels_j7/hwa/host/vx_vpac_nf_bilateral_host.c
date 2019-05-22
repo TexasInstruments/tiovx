@@ -342,6 +342,8 @@ void tivx_vpac_nf_bilateral_params_init(tivx_vpac_nf_bilateral_params_t *prms)
 {
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_nf_bilateral_params_t));
+
         prms->adaptive_mode = 0u;
         prms->sub_table_select = 0u;
     }
@@ -352,6 +354,8 @@ void tivx_vpac_nf_bilateral_sigmas_init(tivx_vpac_nf_bilateral_sigmas_t *sigmas)
     uint32_t i;
     if (NULL != sigmas)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
+
         sigmas->num_sigmas = 1u;
 
         for(i = 0u; i < 8u; i++)

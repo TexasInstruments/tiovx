@@ -633,6 +633,8 @@ void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
 {
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_dmpac_dof_params_t));
+
         /* Set Search range */
         prms->vertical_search_range[0] = 48;
         prms->vertical_search_range[1] = 48;
@@ -664,6 +666,8 @@ void tivx_dmpac_dof_cs_tree_params_init(tivx_dmpac_dof_cs_tree_params_t *prms)
     
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_dmpac_dof_cs_tree_params_t));
+
         prms->cs_gain = 0u;
 
         for(i = 0u; i < 16u; i++)

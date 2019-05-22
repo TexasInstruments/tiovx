@@ -388,6 +388,8 @@ void tivx_dmpac_sde_params_init(tivx_dmpac_sde_params_t *prms)
     
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_dmpac_sde_params_t));
+
         prms->median_filter_enable = 0u;
         prms->reduced_range_search_enable = 0u;
         prms->disparity_min = 0u;

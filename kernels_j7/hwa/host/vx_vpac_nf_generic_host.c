@@ -377,6 +377,8 @@ void tivx_vpac_nf_common_params_init(tivx_vpac_nf_common_params_t *prms)
 {
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_nf_common_params_t));
+
         prms->input_interleaved = 0u;
         prms->output_downshift = 0u;
         prms->output_offset = 0u;
@@ -392,9 +394,10 @@ void tivx_vpac_nf_hts_bw_limit_params_init(tivx_vpac_nf_hts_bw_limit_params_t *p
 {
     if (NULL != prms)
     {
+        memset(prms, 0x0, sizeof(tivx_vpac_nf_hts_bw_limit_params_t));
+
         prms->enable_hts_bw_limit = 0u;
         prms->cycle_cnt = 1u;
         prms->token_cnt = 1u;
-
     }
 }
