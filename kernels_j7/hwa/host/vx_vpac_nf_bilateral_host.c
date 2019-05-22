@@ -354,7 +354,7 @@ void tivx_vpac_nf_bilateral_sigmas_init(tivx_vpac_nf_bilateral_sigmas_t *sigmas)
     uint32_t i;
     if (NULL != sigmas)
     {
-        memset(prms, 0x0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
+        memset(sigmas, 0x0, sizeof(tivx_vpac_nf_bilateral_sigmas_t));
 
         sigmas->num_sigmas = 1u;
 
