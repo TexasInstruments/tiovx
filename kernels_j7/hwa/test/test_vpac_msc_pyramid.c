@@ -250,7 +250,8 @@ static vx_int32 gaussian_pyramid_get_pixel(CT_Image input, int x, int y, vx_bord
 {
     if (border.mode == VX_BORDER_UNDEFINED)
     {
-        if (x >= 2 + level && y >= 2 + level && x < (int)input->width - 2 - level && y < (int)input->height - 2 - level)
+        if ((x >= (2 + level)) && (y >= (2 + level)) && 
+            (x < ((int)input->width - 2 - level)) && (y < ((int)input->height - 2 - level)))
             return gaussian5x5_pyramid_calculate(input, x, y);
         else
             return -1;
@@ -274,22 +275,25 @@ static void gaussian_pyramid_check_pixel(CT_Image input, CT_Image output, int x,
     vx_float64 y_src = (((vx_float64)y + 0.5) * (vx_float64)input->height / (vx_float64)output->height) - 0.5;
     int x_min = (int)floor(x_src), y_min = (int)floor(y_src);
     int sx, sy;
+    vx_int32 candidate = 0;
     for (sy = 0; sy <= 1; sy++)
     {
         for (sx = 0; sx <= 1; sx++)
         {
-            vx_int32 candidate = 0;
+
             ASSERT_NO_FAILURE_(return, candidate = gaussian_pyramid_get_pixel(input, x_min + sx, y_min + sy, border, level));
             if (candidate == -1 || abs(candidate - res) <= VX_GAUSSIAN_PYRAMID_TOLERANCE)
                 return;
         }
     }
+    printf("Check failed for pixel level %d (%d, %d): res = %d, candidate = %d", level, x, y, (int)res, candidate);
     CT_FAIL_(return, "Check failed for pixel (%d, %d): %d", x, y, (int)res);
 }
 
 static void gaussian_pyramid_check_image(CT_Image input, CT_Image output, vx_border_t border, vx_size level)
 {
     ASSERT(input && output);
+
     if (0 == level)
     {
         EXPECT_EQ_CTIMAGE(input, output);
@@ -567,6 +571,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
     vx_graph graph = 0;
     vx_node node = 0;
     vx_uint32 width, height;
+    vx_reference refs[1];
 
     CT_Image input = NULL;
 
@@ -599,6 +604,7 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
         ASSERT_NO_FAILURE(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
 
         VX_CALL(vxVerifyGraph(graph));
+
         VX_CALL(vxProcessGraph(graph));
 
         #ifdef CHECK_OUTPUT

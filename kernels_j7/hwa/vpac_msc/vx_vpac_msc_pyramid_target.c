@@ -212,12 +212,15 @@ static void tivxVpacMscPmdFreeObject(tivxVpacMscPmdInstObj *instObj,
     tivxVpacMscPmdObj *msc_obj);
 static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
     tivx_obj_desc_image_t *in_img_desc,
-    tivx_obj_desc_image_t *out_img_desc);
+    tivx_obj_desc_image_t *out_img_desc,
+    uint32_t level,
+    tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
-    tivxVpacMscPmdSubSetInfo *ss_info, uint32_t num_oct);
+    tivxVpacMscPmdSubSetInfo *ss_info, uint32_t num_oct,
+    tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
     tivx_vpac_msc_output_params_t *out_prms);
 
@@ -625,6 +628,44 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         }
     }
 
+    /* Setting coefficients and calling IOCTL */
+    if (VX_SUCCESS == status)
+    {
+        Msc_Coeff  *coeffCfg;
+        tivx_vpac_msc_coefficients_t *coeffs = NULL;
+
+        coeffCfg = &msc_obj->coeffCfg;
+
+        Msc_coeffInit(coeffCfg);
+
+        cnt = 0;
+        coeffs->single_phase[0][cnt ++] = 0;
+        coeffs->single_phase[0][cnt ++] = 0;
+        coeffs->single_phase[0][cnt ++] = 256;
+        coeffs->single_phase[0][cnt ++] = 0;
+        coeffs->single_phase[0][cnt ++] = 0;
+        cnt = 0;
+        coeffs->single_phase[1][cnt ++] = 16;
+        coeffs->single_phase[1][cnt ++] = 64;
+        coeffs->single_phase[1][cnt ++] = 96;
+        coeffs->single_phase[1][cnt ++] = 64;
+        coeffs->single_phase[1][cnt ++] = 16;
+
+        for (cnt = 0u; cnt < MSC_MAX_SP_COEFF_SET; cnt ++)
+        {
+            coeffCfg->spCoeffSet[cnt] = &coeffs->single_phase[cnt][0u];
+        }
+
+        status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_COEFF,
+            coeffCfg, NULL);
+        if (FVID2_SOK != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacMscPmdSetCoeffsCmd: Failed to create coefficients\n");
+            status = VX_FAILURE;
+        }
+    }
+
     if (VX_SUCCESS == status)
     {
         /* Calling Set_Params for all Octaves, to verify the parameters
@@ -891,7 +932,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdProcess(
             }
 
             /* Wait for Frame Completion */
-            tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);  // pends here forever on second octave
+            tivxEventWait(msc_obj->wait_for_compl, TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
 
             status = Fvid2_getProcessedRequest(msc_obj->handle,
                 inFrmList, outFrmList, 0);
@@ -1070,17 +1111,42 @@ static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
 
 static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
     tivx_obj_desc_image_t *in_img_desc,
-    tivx_obj_desc_image_t *out_img_desc)
+    tivx_obj_desc_image_t *out_img_desc,
+    uint32_t level,
+    tivx_target_kernel_instance kernel)
 {
+    tivx_target_kernel       target_kernel = NULL;
+
+    target_kernel = tivxTargetKernelInstanceGetKernel(kernel);
+
     if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
         sc_cfg->enable = TRUE;
+        sc_cfg->filtMode = MSC_FILTER_MODE_SINGLE_PHASE;
+
+        /* Note: in the case that it is using a Gaussian pyramid, select the first set of coefficients for first level */
+        if ( (0U == level) && 
+               ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
+                (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1].target_kernel == target_kernel)) )
+        {
+            sc_cfg->hsSpCoeffSel = 0;
+            sc_cfg->vsSpCoeffSel = 0;
+        }
+        else
+        {
+            sc_cfg->hsSpCoeffSel = 1;
+            sc_cfg->vsSpCoeffSel = 1;
+        }
         sc_cfg->outWidth = out_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->outHeight = out_img_desc->imagepatch_addr[0].dim_y;
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
         sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->horzAccInit =
+            (((((float)sc_cfg->inRoi.cropWidth/(float)sc_cfg->outWidth) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+        sc_cfg->vertAccInit =
+            (((((float)sc_cfg->inRoi.cropHeight/(float)sc_cfg->outHeight) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
     }
 }
 
@@ -1207,7 +1273,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
         /* Now, set the scalar information for each pyramid subset */
         for (cnt = 0u; cnt < msc_obj->num_pmd_subsets; cnt ++)
         {
-            tivxVpacMscPmdSetMscParams(msc_obj, &msc_obj->ss_info[cnt], cnt);
+            tivxVpacMscPmdSetMscParams(msc_obj, &msc_obj->ss_info[cnt], cnt, kernel);
         }
     }
 
@@ -1215,7 +1281,8 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
 }
 
 static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
-    tivxVpacMscPmdSubSetInfo *ss_info, uint32_t num_oct)
+    tivxVpacMscPmdSubSetInfo *ss_info, uint32_t num_oct,
+    tivx_target_kernel_instance kernel)
 {
     uint32_t                 out_cnt;
     uint32_t                 idx;
@@ -1226,7 +1293,16 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
 
     msc_prms = &msc_obj->msc_prms[num_oct];
     out_start_idx = ss_info->out_start_idx;
-    in_img_desc = msc_obj->in_img_desc;
+
+    if (0U == num_oct)
+    {
+        in_img_desc = msc_obj->in_img_desc;
+    }
+    else
+    {
+        in_img_desc = msc_obj->out_img_desc[ss_info->input_idx];
+    }
+
     img_desc = msc_obj->out_img_desc[out_start_idx];
 
     /* Initialize MSC Parameters with the default configuration */
@@ -1256,7 +1332,8 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
         ss_info->sc_map_idx[out_cnt] = idx;
 
         tivxVpacMscPmdSetScParams(&msc_prms->mscCfg.scCfg[idx],
-            in_img_desc, msc_obj->out_img_desc[out_start_idx]);
+            in_img_desc, msc_obj->out_img_desc[out_start_idx], out_cnt, kernel);
+
         tivxVpacMscPmdSetFmt(&msc_prms->outFmt[idx],
             msc_obj->out_img_desc[out_start_idx]);
 
