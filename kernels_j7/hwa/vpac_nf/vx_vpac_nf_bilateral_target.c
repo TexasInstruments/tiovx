@@ -204,6 +204,8 @@ void tivxAddTargetKernelVpacNfBilateral(void)
         }
         else
         {
+            status = VX_FAILURE;
+
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelVpacNfBilateral: Failed to Add NF Bilateral TargetKernel\n");
@@ -219,6 +221,11 @@ void tivxRemoveTargetKernelVpacNfBilateral(void)
     if (status == VX_SUCCESS)
     {
         vx_vpac_nf_bilateral_target_kernel = NULL;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxRemoveTargetKernelVpacNfBilateral: Failed to Remove Nf TargetKernel\n");
     }
     if (NULL != gTivxVpacNfBilateralInstObj.lock)
     {
@@ -262,10 +269,13 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&nf_bilateral_obj, &size);
 
-        if ((VX_SUCCESS != status) ||
-            (sizeof(tivxVpacNfBilateralObj) != size))
+        if (VX_SUCCESS != status)
         {
 			VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfBilateralProcess: Null Desc\n");
+        }
+        else if (sizeof(tivxVpacNfBilateralObj) != size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfBilateralProcess: Incorrect object size\n");
             status = VX_FAILURE;
         }
     }
@@ -419,6 +429,11 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 "tivxVpacNfBilateralCreate: Failed to Alloc Nf Bilateral Object\n");
                 status = VX_FAILURE;
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacNfBilateralCreate: Failed to allocate Event\n");
         }
     }
 
@@ -575,6 +590,17 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralDelete(
 
             tivxVpacNfBilateralFreeObject(&gTivxVpacNfBilateralInstObj, nf_bilateral_obj);
         }
+        else
+        {
+            status = VX_FAILURE;
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacNfBilateralDelete: Invalid Target Instance Context\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacNfBilateralDelete: Invalid Descriptor\n");
     }
 
     return status;

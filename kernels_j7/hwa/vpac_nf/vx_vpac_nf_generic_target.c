@@ -196,6 +196,8 @@ void tivxAddTargetKernelVpacNfGeneric(void)
         }
         else
         {
+            status = VX_FAILURE;
+
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelVpacNfGeneric: Failed to Add NF Generic TargetKernel\n");
@@ -211,6 +213,11 @@ void tivxRemoveTargetKernelVpacNfGeneric(void)
     if (status == VX_SUCCESS)
     {
         vx_vpac_nf_generic_target_kernel = NULL;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxRemoveTargetKernelVpacNfGeneric: Failed to Remove Nf TargetKernel\n");
     }
     if (NULL != gTivxVpacNfGenericInstObj.lock)
     {
@@ -256,10 +263,13 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&nf_generic_obj, &size);
 
-        if ((VX_SUCCESS != status) ||
-            (sizeof(tivxVpacNfGenericObj) != size))
+        if (VX_SUCCESS != status)
         {
 			VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfGenericProcess: Null Desc\n");
+        }
+        else if (sizeof(tivxVpacNfGenericObj) != size)
+        {
+            VX_PRINT(VX_ZONE_ERROR, "tivxVpacNfGenericProcess: Incorrect object size\n");
             status = VX_FAILURE;
         }
     }
@@ -434,7 +444,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericCreate: Required input parameter set to NULL\n");
-        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -474,6 +483,12 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
                 status = VX_FAILURE;
             }
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacNfGenericCreate: Failed to allocate Event\n");
+        }
+
     }
 
     /* Register Error Callback */
@@ -660,6 +675,16 @@ static vx_status VX_CALLBACK tivxVpacNfGenericDelete(
 
             tivxVpacNfGenericFreeObject(&gTivxVpacNfGenericInstObj, nf_generic_obj);
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacNfGenericDelete: Invalid Target Instance Context\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacNfGenericDelete: Invalid Descriptor\n");
     }
 
     return status;
@@ -688,7 +713,6 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
         {
 		    VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericControl: Wrong Size for Nf Generic Obj\n");
-            status = VX_FAILURE;
         }
     }
 
@@ -842,7 +866,6 @@ static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacNfGenericSetHtsLimitCmd: Null Argument\n");
-        status = VX_FAILURE;
     }
 
     return (status);

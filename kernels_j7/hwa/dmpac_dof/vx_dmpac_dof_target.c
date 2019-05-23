@@ -747,7 +747,6 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofCreate: Buffer Alloc 1 Failed\n");
-            status = VX_FAILURE;
         }
 
         if (VX_SUCCESS == status)
@@ -760,7 +759,6 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacDofCreate: Buffer Alloc 2 Failed\n");
-            status = VX_FAILURE;
         }
     }
 
@@ -848,15 +846,16 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&dofObj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != dofObj) &&
-            (sizeof(tivxDmpacDofObj) == size))
-        {
-            status = VX_SUCCESS;
-        }
-        else
+        if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
-                        "tivxDmpacDofControl: Invalid Input\n");
+                "tivxDmpacDofControl: Failed to Get Target Kernel Instance Context\n");
+        }
+        else if ((NULL == dofObj) ||
+            (sizeof(tivxDmpacDofObj) != size))
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacDofControl: Invalid Input\n");
             status = VX_FAILURE;
         }
     }
@@ -1333,7 +1332,6 @@ static vx_status tivxDmpacDofSetCsPrms(tivxDmpacDofObj *dof_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofSetCsPrms: Null Argument\n");
-        status = VX_FAILURE;
     }
 
     return (status);
@@ -1417,7 +1415,6 @@ static vx_status tivxDmpacDofSetHtsBwLimit(tivxDmpacDofObj *dof_obj,
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacDofSetRdBwLimit: Null Argument\n");
-        status = VX_FAILURE;
     }
 
     return (status);

@@ -436,6 +436,11 @@ void tivxRemoveTargetKernelVpacMscScale()
         {
             inst_obj->target_kernel = NULL;
         }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxRemoveTargetKernelVpacMscScale: Failed to Remove Msc TargetKernel\n");
+        }
 
         if (NULL != inst_obj->lock)
         {
@@ -714,16 +719,17 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&msc_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != msc_obj) &&
-            (sizeof(tivxVpacMscHsgObj) == size))
+        if (VX_SUCCESS != status)
         {
-            status = VX_SUCCESS;
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacMscScaleProcess: Invalid Target Instance Context\n");
         }
-        else
+        else if ((NULL == msc_obj) ||
+            (sizeof(tivxVpacMscHsgObj) != size))
         {
             status = VX_FAILURE;
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleProcess: Invalid Target Instance Context\n");
+                "tivxVpacMscScaleProcess: Incorrect Object Size\n");
         }
     }
 

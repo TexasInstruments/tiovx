@@ -921,15 +921,16 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&msc_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != msc_obj) &&
-            (sizeof(tivxVpacMscPmdObj) == size))
-        {
-            status = VX_SUCCESS;
-        }
-        else
+        if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacMscPmdControl: Failed to Get Target Kernel Instance Context\n");
+        }
+        else if ((NULL == msc_obj) ||
+            (sizeof(tivxVpacMscPmdObj) != size))
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacMscPmdControl: Invalid Object Size\n");
             status = VX_FAILURE;
         }
     }

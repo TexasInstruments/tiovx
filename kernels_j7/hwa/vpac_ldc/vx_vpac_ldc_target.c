@@ -200,6 +200,7 @@ void tivxAddTargetKernelVpacLdc()
             {
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxAddTargetKernelVpacLdc: Failed to create Mutex\n");
+                status = VX_FAILURE;
             }
             else
             {
@@ -212,6 +213,7 @@ void tivxAddTargetKernelVpacLdc()
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelVpacLdc: Failed to Add LDC TargetKernel\n");
+            status = VX_FAILURE;
         }
     }
 }
@@ -224,6 +226,12 @@ void tivxRemoveTargetKernelVpacLdc()
     if (status == VX_SUCCESS)
     {
         vx_vpac_ldc_target_kernel = NULL;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxRemoveTargetKernelVpacLdc: Failed to Remove Ldc TargetKernel\n");
+        status = VX_FAILURE;
     }
 
     if (NULL != gTivxVpacLdcInstObj.lock)
@@ -269,16 +277,24 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&ldc_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != ldc_obj) &&
-            (sizeof(tivxVpacLdcObj) == size))
+        if (VX_SUCCESS != status)
         {
-            if ((1u == ldc_obj->ldc_cfg.enableOutput[1U]) ||
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcProcess: Failed to get Target Kernel\n");
+        }
+        else if ((NULL == ldc_obj) ||
+            (sizeof(tivxVpacLdcObj) != size))
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcProcess: Invalid Ldc Object\n");
+            status = VX_ERROR_INVALID_NODE;
+        }
+        else if ((1u == ldc_obj->ldc_cfg.enableOutput[1U]) ||
                 (NULL != obj_desc[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX]))
-            {
-                VX_PRINT(VX_ZONE_ERROR,
-                    "tivxVpacLdcProcess: Null Desc for output1\n");
-                status = VX_SUCCESS;
-            }
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcProcess: Null Desc for output1\n");
+            status = VX_FAILURE;
         }
     }
 
@@ -373,6 +389,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX] ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])))
     {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacLdcCreate: NULL Params check failed\n");
         status = VX_FAILURE;
     }
 
@@ -400,6 +418,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcCreate: Failed to allocate Handle Object, increase VHWA_M2M_LDC_MAX_HANDLES macro in PDK driver\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -420,8 +440,15 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
 
             if (NULL == ldc_obj->handle)
             {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacLdcCreate: Fvid2_create failed\n");
                 status = VX_FAILURE;
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcCreate: Failed to allocate Event\n");
         }
     }
 
@@ -440,6 +467,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
             IOCTL_VHWA_M2M_LDC_REGISTER_ERR_CB, &ldc_obj->errEvtPrms, NULL);
         if (FVID2_SOK != status)
         {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcCreate: Fvid2_control Failed: Register Error Callback\n");
             status = VX_FAILURE;
         }
         else
@@ -518,6 +547,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
             IOCTL_VHWA_M2M_LDC_SET_PARAMS, &ldc_obj->ldc_cfg, NULL);
         if (FVID2_SOK != status)
         {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcCreate: Fvid2_control Failed: Set Params \n");
             status = VX_FAILURE;
         }
         else
@@ -569,6 +600,8 @@ static vx_status VX_CALLBACK tivxVpacLdcDelete(
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX] ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX])))
     {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacLdcDelete: Invalid Descriptor\n");
         status = VX_FAILURE;
     }
 
@@ -619,6 +652,8 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacLdcControl: Failed to get Target Kernel\n");
             status = VX_FAILURE;
         }
     }
@@ -648,6 +683,8 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
             }
             default:
             {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacLdcControl: Invalid Node Cmd Id\n");
                 status = VX_FAILURE;
                 break;
             }
@@ -769,6 +806,12 @@ static void tivxVpacLdcSetFmt(tivx_vpac_ldc_params_t *ldc_prms,
             {
                 fmt->dataFormat = FVID2_DF_YUV420SP_UV;
                 fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacLdcSetFmt: Invalid Vx Image Format\n");
                 break;
             }
         }

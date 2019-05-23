@@ -196,6 +196,7 @@ void tivxAddTargetKernelDmpacSde(void)
             /* TODO: how to handle this condition */
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelDmpacSde: Failed to Add SDE TargetKernel\n");
+            status = VX_FAILURE;
         }
     }
 }
@@ -208,6 +209,11 @@ void tivxRemoveTargetKernelDmpacSde(void)
     if (status == VX_SUCCESS)
     {
         vx_dmpac_sde_target_kernel = NULL;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxRemoveTargetKernelDmpacSde: Failed to Remove Sde TargetKernel\n");
     }
     if (NULL != gTivxDmpacSdeInstObj.lock)
     {
@@ -253,10 +259,13 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&sde_obj, &size);
 
-        if ((VX_SUCCESS != status) ||
-            (sizeof(tivxDmpacSdeObj) != size))
+        if (VX_SUCCESS != status)
         {
 			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Null Desc\n");
+        }
+        else if (sizeof(tivxDmpacSdeObj) != size)
+        {
+			VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Object Size\n");
             status = VX_FAILURE;
         }
     }
@@ -395,7 +404,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeCreate: Required input parameter set to NULL\n");
-        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -436,6 +444,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
                 "tivxDmpacSdeCreate: Failed to Alloc Nf Bilateral Object\n");
                 status = VX_FAILURE;
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeCreate: Failed to allocate Event\n");
         }
     }
 
@@ -594,6 +607,11 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
             tivxDmpacSdeFreeObject(&gTivxDmpacSdeInstObj, sde_obj);
         }
     }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacSdeDelete: Invalid Descriptor\n");
+    }
 
     return status;
 }
@@ -612,12 +630,13 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&sde_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != sde_obj) &&
-            (sizeof(tivxDmpacSdeObj) == size))
+        if (VX_SUCCESS != status)
         {
-            status = VX_SUCCESS;
+		    VX_PRINT(VX_ZONE_ERROR,
+                "tivxDmpacSdeControl: Failed to Get Target Kernel Instance Context\n");
         }
-        else
+        else if ((NULL == sde_obj) ||
+            (sizeof(tivxDmpacSdeObj) != size))
         {
 		    VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeControl: Wrong Size for Sde Obj\n");
