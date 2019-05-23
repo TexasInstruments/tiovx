@@ -10,7 +10,7 @@
 #include <vx_internal.h>
 #include <tivx_platform_psdk_j7.h>
 
-#define TIVX_TARGET_DEFAULT_STACK_SIZE      (64U * 1024U)
+#define TIVX_TARGET_DEFAULT_STACK_SIZE      (32U * 1024U)
 
 #define TIVX_TARGET_DEFAULT_TASK_PRIORITY   (8u)
 
@@ -26,7 +26,7 @@
  *       - 8KB chunk for the stack area is used for interrupt handling in this task context
  */
 static uint8_t gTarget_tskStack[TIVX_TARGET_DEFAULT_STACK_SIZE]
-__attribute__ ((section(".bss:taskStackSection")))
+__attribute__ ((section(".bss:taskStackSection:tiovx")))
 __attribute__ ((aligned(8192)))
     ;
 
