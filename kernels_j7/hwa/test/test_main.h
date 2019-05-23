@@ -75,6 +75,7 @@ TESTCASE(tivxHwaDmpacDof)
 TESTCASE(tivxHwaDmpacSde)
 TESTCASE(tivxHwaVpacViss)
 TESTCASE(tivxHwaVpacMscScaleMultiOutput)
+TESTCASE(tivxHwaVpacMscPyramid)
 
 #if defined(J7)
 TESTCASE(tivxHwaDisplay)
@@ -85,7 +86,4 @@ TESTCASE(tivxHwaCaptureDisplay)
 #endif
 
 #endif
-
-
-
 

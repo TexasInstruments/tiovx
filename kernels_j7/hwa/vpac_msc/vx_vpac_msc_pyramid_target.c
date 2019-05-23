@@ -211,10 +211,11 @@ static tivxVpacMscPmdObj *tivxVpacMscPmdAllocObject(tivxVpacMscPmdInstObj *instO
 static void tivxVpacMscPmdFreeObject(tivxVpacMscPmdInstObj *instObj,
     tivxVpacMscPmdObj *msc_obj);
 static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *img_desc);
+    tivx_obj_desc_image_t *in_img_desc,
+    tivx_obj_desc_image_t *out_img_desc);
 static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
-static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj);
+static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
     tivxVpacMscPmdSubSetInfo *ss_info, uint32_t num_oct);
 static void tivxVpacMscPmdCopyOutPrmsToScCfg(Msc_ScConfig *sc_cfg,
@@ -585,7 +586,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
             {
                 /* Based on input and number of output images,
                  * create and initialize msc driver parametes */
-                status = tivxVpacMscPmdCalcSubSetInfo(msc_obj);
+                status = tivxVpacMscPmdCalcSubSetInfo(msc_obj, kernel);
             }
         }
         else
@@ -651,7 +652,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
 
             for (cnt = 0u; cnt < MSC_MAX_OUTPUT; cnt ++)
             {
-                msc_obj->outFrmList.frames[0u] = &msc_obj->outFrm[cnt];
+                msc_obj->outFrmList.frames[cnt] = &msc_obj->outFrm[cnt];
             }
         }
     }
@@ -1068,21 +1069,22 @@ static void tivxVpacMscPmdSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *img_desc)
+    tivx_obj_desc_image_t *in_img_desc,
+    tivx_obj_desc_image_t *out_img_desc)
 {
-    if (NULL != img_desc)
+    if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
         sc_cfg->enable = TRUE;
-        sc_cfg->outWidth = img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->outHeight = img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->outWidth = out_img_desc->imagepatch_addr[0].dim_x;
+        sc_cfg->outHeight = out_img_desc->imagepatch_addr[0].dim_y;
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropStartX = 0u;
-        sc_cfg->inRoi.cropWidth = img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->inRoi.cropHeight = img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
+        sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
     }
 }
 
-static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj)
+static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_target_kernel_instance kernel)
 {
     vx_status                   status = VX_SUCCESS;
     uint32_t                    cnt;
@@ -1091,6 +1093,26 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj)
     tivx_obj_desc_image_t      *in_img_desc;
     tivx_obj_desc_image_t      *out_img_desc;
     tivxVpacMscPmdSubSetInfo   *ss_info;
+    uint32_t                    max_ds_factor = TIVX_VPAC_MSC_MAX_DS_FACTOR;
+    tivx_target_kernel          target_kernel;
+
+    target_kernel = tivxTargetKernelInstanceGetKernel(kernel);
+
+    /* For vxGaussianPyramid, the Khronos conformance tests for random input fail unless
+     * max_ds_factor is set to 2
+     */
+    if ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
+        (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1].target_kernel == target_kernel))
+    {
+        max_ds_factor = 2;
+    }
+
+    /* TODO:
+     * This is temporarily hard coding to 2 in order to pass existing test that is based
+     * on Khronos test.  However, when we relax this, it is better to put to 4 for
+     * speed performance improvements.
+     */
+    max_ds_factor = 2;
 
     if (NULL != msc_obj)
     {
@@ -1102,12 +1124,12 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj)
         ss_info = &msc_obj->ss_info[0U];
 
         /* Atleast, for the first level,
-         * the scaling factor cannot be less than 1/4x */
+         * the scaling factor cannot be less than 1/max_ds_factor */
         if (((in_img_desc->imagepatch_addr[0u].dim_x /
-                TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                max_ds_factor) >
                 out_img_desc->imagepatch_addr[0u].dim_x) ||
             ((in_img_desc->imagepatch_addr[0u].dim_y /
-                TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                max_ds_factor) >
                 out_img_desc->imagepatch_addr[0u].dim_y))
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -1128,13 +1150,13 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj)
                 out_img_desc = msc_obj->out_img_desc[cnt];
 
                 /* Need to change pyramid subset,
-                 * if input to output ratio is more than 4
+                 * if input to output ratio is more than max_ds_factor
                  */
                 if (((in_img_desc->imagepatch_addr[0].dim_x /
-                        TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                        max_ds_factor) >
                         out_img_desc->imagepatch_addr[0].dim_x) ||
                     ((in_img_desc->imagepatch_addr[0].dim_y /
-                        TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                        max_ds_factor) >
                         out_img_desc->imagepatch_addr[0].dim_y))
                 {
                     /* Get the next pyramid subset */
@@ -1234,7 +1256,7 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
         ss_info->sc_map_idx[out_cnt] = idx;
 
         tivxVpacMscPmdSetScParams(&msc_prms->mscCfg.scCfg[idx],
-            msc_obj->out_img_desc[out_start_idx]);
+            in_img_desc, msc_obj->out_img_desc[out_start_idx]);
         tivxVpacMscPmdSetFmt(&msc_prms->outFmt[idx],
             msc_obj->out_img_desc[out_start_idx]);
 

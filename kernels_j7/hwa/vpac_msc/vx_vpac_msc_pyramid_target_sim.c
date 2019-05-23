@@ -152,10 +152,10 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdParams *prms,
     tivx_obj_desc_user_data_object_t *usr_data_obj[]);
 
 /* Local Functions */
-static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms);
+static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings);
 static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms);
-static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms);
+static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -295,7 +295,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         {
             /* Based on input and number of output images,
              * create and initialize msc driver parametes */
-            status = tivxVpacMscPmdCalcSubSetInfo(prms);
+            status = tivxVpacMscPmdCalcSubSetInfo(prms, kernel);
         }
 
         if (VX_SUCCESS == status)
@@ -338,7 +338,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         {
             tivxVpacMscPmdInitCoeff(&prms->config.settings);
 
-            tivxVpacMscInitScalarUnitParams(prms);
+            tivxVpacMscInitScalarUnitParams(prms, kernel);
         }
     }
 
@@ -662,7 +662,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdControl(
 /*                          Local Functions                                   */
 /* ========================================================================== */
 
-static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms)
+static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel)
 {
     vx_status                   status = VX_SUCCESS;
     uint32_t                    cnt;
@@ -671,6 +671,23 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms)
     tivx_obj_desc_image_t      *in_img_desc;
     tivx_obj_desc_image_t      *out_img_desc;
     tivxVpacMscPmdSubSetInfo   *ss_info;
+    uint32_t                    max_ds_factor = TIVX_VPAC_MSC_MAX_DS_FACTOR;
+
+
+    /* For vxGaussianPyramid, the Khronos conformance tests for random input fail unless
+     * max_ds_factor is set to 2
+     */
+    if (vx_gaussian_pyramid_target_kernel == tivxTargetKernelInstanceGetKernel(kernel))
+    {
+        max_ds_factor = 2;
+    }
+
+    /* TODO:
+     * This is temporarily hard coding to 2 in order to pass existing test that is based
+     * on Khronos test.  However, when we relax this, it is better to put to 4 for
+     * speed performance improvements.
+     */
+    max_ds_factor = 2;
 
     if (NULL != prms)
     {
@@ -682,12 +699,12 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms)
         ss_info = &prms->ss_info[0U];
 
         /* Atleast, for the first level,
-         * the scaling factor cannot be less than 1/4x */
+         * the scaling factor cannot be less than 1/max_ds_factor */
         if (((in_img_desc->imagepatch_addr[0u].dim_x /
-                TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                max_ds_factor) >
                 out_img_desc->imagepatch_addr[0u].dim_x) ||
             ((in_img_desc->imagepatch_addr[0u].dim_y /
-                TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                max_ds_factor) >
                 out_img_desc->imagepatch_addr[0u].dim_y))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
@@ -706,13 +723,13 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms)
                 out_img_desc = prms->out_img_desc[cnt];
 
                 /* Need to change pyramid subset,
-                 * if input to output ratio is more than 4
+                 * if input to output ratio is more than max_ds_factor
                  */
                 if (((in_img_desc->imagepatch_addr[0].dim_x /
-                        TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                        max_ds_factor) >
                         out_img_desc->imagepatch_addr[0].dim_x) ||
                     ((in_img_desc->imagepatch_addr[0].dim_y /
-                        TIVX_VPAC_MSC_MAX_DS_FACTOR) >
+                        max_ds_factor) >
                         out_img_desc->imagepatch_addr[0].dim_y))
                 {
                     /* Get the next pyramid subset */
@@ -1048,7 +1065,7 @@ static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms)
     }
 }
 
-static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms)
+static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel)
 {
     int i;
 
@@ -1073,6 +1090,20 @@ static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms)
 
         prms->unitParams[i].sp_hs_coef_sel = 1;
         prms->unitParams[i].sp_vs_coef_sel = 1;
+    }
+
+    /* For vxGaussianPyramid, level 0 of the output pyramid is the same
+     * size as this input (always).  Therefore, set the coefficients for
+     * level 0 to be set to unity.
+     *
+     * TODO: for tivxVpacMscPyramid, normal use case is to downsample,
+     * but it could be option in future to have as same size as input.
+     * In this case, a DMA would be more optimal
+     */
+    if (vx_gaussian_pyramid_target_kernel == tivxTargetKernelInstanceGetKernel(kernel))
+    {
+        prms->unitParams[0].sp_hs_coef_sel = 0;
+        prms->unitParams[0].sp_vs_coef_sel = 0;
     }
 }
 

@@ -25,7 +25,7 @@
 #include <math.h>
 
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
-/* #define CHECK_OUTPUT */
+#define CHECK_OUTPUT
 
 TESTCASE(tivxHwaVpacMscPyramid, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -339,7 +339,7 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
     VX_CALL(vxReleaseImage(&output_image));
     ASSERT(output_image == 0);
 
-    gaussian_pyramid_check_image(input, output_prev, border, 0);
+    gaussian_pyramid_check_image(input, output_prev, border, 1);
     if (CT_HasFailure())
     {
         printf("=== Input ===\n");
@@ -374,7 +374,7 @@ static void gaussian_pyramid_check(CT_Image input, vx_pyramid pyr, vx_size level
             }
         }
 
-        gaussian_pyramid_check_image(output_prev, output_cur, border, level);
+        gaussian_pyramid_check_image(output_prev, output_cur, border, level+1);
         if (CT_HasFailure())
         {
             printf("=== Input ===\n");
@@ -543,11 +543,16 @@ typedef struct {
 } Arg;
 
 #define ADD_VX_SCALE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)), \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)) /*, \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))*/
+
+#define ADD_SIZE_SMALL_SET_MODIFIED(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/sz=32x32", __VA_ARGS__, 32, 32)), \
+    CT_EXPAND(nextmacro(testArgName "/sz=256x256", __VA_ARGS__, 256, 256)), \
+    CT_EXPAND(nextmacro(testArgName "/sz=640x480", __VA_ARGS__, 640, 480))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET_MODIFIED, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ADD_VX_SCALE, ARG, gaussian_pyramid_read_image, "lena.bmp")
 
 TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
@@ -614,44 +619,9 @@ TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidGraphProcessing, Arg,
     }
 }
 
-
-TEST_WITH_ARG(tivxHwaVpacMscPyramid, testVpacMscPyramidReference, Arg,
-    PARAMETERS
-)
-{
-    vx_size levels;
-
-    vx_context context = context_->vx_context_;
-    vx_image input_image = 0;
-    vx_pyramid pyr = 0;
-
-    CT_Image input = NULL;
-
-    vx_border_t border;
-
-    ASSERT_NO_FAILURE(input = arg_->generator( arg_->fileName, arg_->width, arg_->height));
-
-    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
-
-    levels = gaussian_pyramid_calc_max_levels_count(input->width, input->height, arg_->scale);
-
-    ASSERT_VX_OBJECT(pyr = vxCreatePyramid(context, levels, arg_->scale, input->width, input->height, VX_DF_IMAGE_U8), VX_TYPE_PYRAMID);
-
-    border.mode = VX_BORDER_REPLICATE;
-    ASSERT_NO_FAILURE(gaussian_pyramid_fill_reference(input, pyr, levels, arg_->scale, border));
-
-    CT_ASSERT_NO_FAILURE_(, gaussian_pyramid_check(input, pyr, levels, arg_->scale, border));
-
-    VX_CALL(vxReleasePyramid(&pyr));
-    VX_CALL(vxReleaseImage(&input_image));
-    ASSERT(pyr == 0);
-    ASSERT(input_image == 0);
-}
-
 TESTCASE_TESTS(tivxHwaVpacMscPyramid,
         testVpacMscPyramidNodeCreation,
-        testVpacMscPyramidGraphProcessing,
-        testVpacMscPyramidReference)
+        testVpacMscPyramidGraphProcessing)
 
 
 

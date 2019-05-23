@@ -25,7 +25,7 @@
 #include <math.h>
 
 #define VX_GAUSSIAN_PYRAMID_TOLERANCE 1
-/* #define CHECK_OUTPUT */
+#define CHECK_OUTPUT
 
 TESTCASE(tivxHwaVpacMscGaussianPyramid, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -543,8 +543,8 @@ typedef struct {
 } Arg;
 
 #define ADD_VX_SCALE(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF)), \
-    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_HALF", __VA_ARGS__, VX_SCALE_PYRAMID_HALF))/*, \
+    CT_EXPAND(nextmacro(testArgName "/VX_SCALE_PYRAMID_ORB", __VA_ARGS__, VX_SCALE_PYRAMID_ORB))*/
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_SMALL_SET, ADD_VX_SCALE, ARG, gaussian_pyramid_generate_random, NULL), \

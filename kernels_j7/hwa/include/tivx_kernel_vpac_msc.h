@@ -84,7 +84,7 @@ extern "C" {
 
 #define TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PARAMS       (2U)
 
-#define TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO     (5U)
+#define TIVX_KERNEL_VPAC_MSC_PYRAMID_MAX_PMD_INFO     (10U)
 
 #define TIVX_VPAC_MSC_MAX_DS_FACTOR                   (4U)
 
