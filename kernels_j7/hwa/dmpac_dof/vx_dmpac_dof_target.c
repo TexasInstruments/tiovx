@@ -339,9 +339,9 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
         outFrmList->numFrames = 1U;
 
         if(total_pyr_lvl != dofObj->total_pyr_lvl)
-
+        {
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacDofProcess: Invalid Pyramid Count\n");            {
+                "tivxDmpacDofProcess: Invalid Pyramid Count\n");
             status = VX_FAILURE;
         }
     }
@@ -353,7 +353,7 @@ static vx_status VX_CALLBACK tivxDmpacDofProcess(
 
     if (VX_SUCCESS == status)
     {
-        for(pyr_cnt = total_pyr_lvl; pyr_cnt > 0; pyr_cnt++)
+        for(pyr_cnt = total_pyr_lvl; pyr_cnt > 0; pyr_cnt--)
         {
             pyr_lvl = pyr_cnt - 1;
             if(0 == isBaseImg)
@@ -733,7 +733,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
     if (VX_SUCCESS == status)
     {
         status = tivxMemBufferAlloc(&tBuffPtr, (dofObj->dofPrms.coreCfg.width *
-                        dofObj->dofPrms.coreCfg.height), TIVX_MEM_EXTERNAL);
+                        dofObj->dofPrms.coreCfg.height / 2), TIVX_MEM_EXTERNAL);
         if (VX_SUCCESS == status)
         {
             dofObj->inter_buff1 =
@@ -741,7 +741,7 @@ static vx_status VX_CALLBACK tivxDmpacDofCreate(
                                                 tBuffPtr.mem_heap_region);
 
             status = tivxMemBufferAlloc(&tBuffPtr, (dofObj->dofPrms.coreCfg.width *
-                        dofObj->dofPrms.coreCfg.height), TIVX_MEM_EXTERNAL);
+                        dofObj->dofPrms.coreCfg.height / 2), TIVX_MEM_EXTERNAL);
         }
         else
         {
@@ -1133,8 +1133,11 @@ static void tivxDmpacDofSetCfgPrms(Vhwa_M2mDofPrms *dofPrms,
             dofPrms->inOutImgFmt[pyr_cnt][DOF_INPUT_PYRAMID_PRED].pitch[0U] =
                         img_current_desc[pyr_cnt]->imagepatch_addr[0].stride_y;
 
-            dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
+            if(pyr_cnt > 0)
+            {
+                dofPrms->inOutImgFmt[pyr_cnt][DOF_OUTPUT].pitch[0U] =
                     img_current_desc[pyr_cnt]->imagepatch_addr[0].stride_y * 2u;
+            }
         }
         else
         {

@@ -336,7 +336,7 @@ static void visualizeFlowAndConfidance2(
         }
     }
 
-    #if 1
+    #if 0
     {
         uint16_t ovly_lut_w, ovly_lut_h;
 
