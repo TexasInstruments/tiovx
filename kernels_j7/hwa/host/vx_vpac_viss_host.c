@@ -395,6 +395,13 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             status = VX_ERROR_INVALID_PARAMETERS;
             VX_PRINT(VX_ZONE_ERROR, "NV12_P12 on 'output0' and YUV422 on 'output2' are not possible\n");
         }
+
+        if ( (0u != params.h3a_aewb_af_mode) && (NULL == h3a_aew_af))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter h3a_aew_af must be non-NULL if h3a_aewb_af_mode is enabled\n");
+        }
+
     }
 
     /* PARAMETER RELATIONSHIP CHECKING */

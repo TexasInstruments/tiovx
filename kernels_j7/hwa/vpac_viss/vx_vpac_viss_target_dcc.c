@@ -87,7 +87,6 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
 static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
-static void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj);
 
 static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *ae_awb_res);
@@ -96,8 +95,6 @@ static void tivxVpacVissDccMapRGB2HSVParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapGammaParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapRGBLutParams(tivxVpacVissObj *vissObj);
 static void tivxVpacVissDccMapHistParams(tivxVpacVissObj *vissObj);
-static void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj);
-
 static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj);
 
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj);
@@ -157,6 +154,15 @@ uint32_t grawfe_pwl_vshort_lut[] =
     #include "rawfe_pwl_lut_vshort_0.txt"
 };
 
+uint32_t gGlbceAsymTbl[] = 
+{
+	#include "glbce_asym_table.txt"
+};
+
+int32_t yee_lut[] =
+{
+    #include "yee_lut.txt"
+};
 
 
 /* ========================================================================== */
@@ -202,6 +208,7 @@ void tivxVpacVissDeInitDcc(tivxVpacVissObj *vissObj)
 
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     tivx_obj_desc_user_data_object_t *dcc_buf_desc,
+    tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res)
 {
     vx_status                   status = VX_SUCCESS;
@@ -257,7 +264,10 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         {
             tivxVpacVissDccMapRfeParams(vissObj);
             tivxVpacVissDccMapNsf4Params(vissObj, ae_awb_res);
-            tivxVpacVissDccMapH3aParams(vissObj, ae_awb_res);
+            if (NULL != h3a_out_desc)
+            {
+                tivxVpacVissDccMapH3aParams(vissObj, ae_awb_res);
+            }
             tivxVpacVissDccMapH3aLutParams(vissObj);
             tivxVpacVissDccMapGlbceParams(vissObj);
             tivxVpacVissDccMapFlexCFAParams(vissObj);
@@ -293,12 +303,12 @@ void tivxVpacVissDccMapH3aLutParams(tivxVpacVissObj *vissObj)
             gH3aLut[cnt] = dccH3aLutCfg->h3a_mux_lut[0U][cnt];
         }
 
-        vissObj->vissCfgRef.h3aLutCfg = h3aLutCfg;
-
         /* Setting config flag to 1,
          * assumes caller protects this flag */
         vissObj->isConfigUpdated = 1U;
     }
+
+    vissObj->vissCfgRef.h3aLutCfg = h3aLutCfg;
 }
 
 void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
@@ -699,6 +709,28 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
          * assumes caller protects this flag */
         vissObj->isConfigUpdated = 1U;
     }
+    else
+    {
+        /* TODO: RGB2RGB matrix seems to be 3x3 whereas CCM is 3x4 */
+        /* Map DCC Output Config to FVID2 Driver Config */
+        for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
+        {
+            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)
+            {
+                ccmCfg->weights[cnt1][cnt2] = 0;
+            }
+            ccmCfg->offsets[cnt1] = 0;
+        }
+        // Note: hardcoding
+        ccmCfg->weights[0][0] = 256;
+        ccmCfg->weights[1][1] = 256;
+        ccmCfg->weights[2][2] = 256;
+        vissObj->vissCfgRef.ccm = ccmCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;    
+    }
 }
 
 static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
@@ -736,8 +768,78 @@ static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     vissObj->isConfigUpdated = 1U;
 }
 
+void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj)
+{
+    Fcp_EeConfig *eeCfg = NULL;
+
+    eeCfg = &vissObj->vissCfg.eeCfg;
+
+    if (NULL != vissObj)
+    {
+        eeCfg->enable = TRUE;
+        eeCfg->alignY12withChroma = FALSE;
+        eeCfg->alignY8withChroma = FALSE;
+        eeCfg->eeForY12OrY8 = 0;
+        eeCfg->bypassY12 = FALSE;
+        eeCfg->bypassC12 = TRUE;
+        eeCfg->bypassY8 = TRUE;
+        eeCfg->bypassC8 = TRUE;
+        eeCfg->leftShift = 0;
+        eeCfg->rightShift = 0;
+        eeCfg->yeeShift = 4;
+        eeCfg->coeff[0] = -1;
+        eeCfg->coeff[1] = -3;
+        eeCfg->coeff[2] = -5;
+        eeCfg->coeff[3] = -3;
+        eeCfg->coeff[4] = -2;
+        eeCfg->coeff[5] =  2;
+        eeCfg->coeff[6] = -5;
+        eeCfg->coeff[7] =  2;
+        eeCfg->coeff[8] = 48;
+        eeCfg->yeeEThr = 0;
+        eeCfg->yeeMergeSel = 0;
+        eeCfg->haloReductionOn = 1;
+        eeCfg->yesGGain = 0;
+        eeCfg->yesEGain = 0;
+        eeCfg->yesEThr1 = 0;
+        eeCfg->yesEThr2 = 0;
+        eeCfg->yesGOfset = 0;
+        eeCfg->lut = yee_lut;
+        
+        vissObj->vissCfgRef.eeCfg = eeCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
 {
+    Glbce_Config *glbceCfg = NULL;
+	
+    glbceCfg = &vissObj->vissCfg.glbceCfg;
+    if (NULL != vissObj)
+    {
+        glbceCfg->irStrength = 255;
+        glbceCfg->blackLevel = 0;
+        glbceCfg->whiteLevel = 65535;
+        glbceCfg->intensityVariance = 0xC;
+        glbceCfg->spaceVariance = 7;
+        glbceCfg->brightAmplLimit = 6;
+        glbceCfg->darkAmplLimit = 6;
+        glbceCfg->dither = GLBCE_NO_DITHER;
+        glbceCfg->maxSlopeLimit = 72;
+        glbceCfg->minSlopeLimit = 62;
+        memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE*4);
+		
+        vissObj->vissCfgRef.glbceCfg = glbceCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+		
+    }
 }
 
 static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
@@ -788,7 +890,125 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
     }
 }
 
-static void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj)
+void tivxVpacVissDccMapFlexCFAParamsDefaults(tivxVpacVissObj *vissObj)
+{
+    uint32_t cnt;
+    Fcp_CfaConfig *cfaCfg;
+
+    cfaCfg = &vissObj->vissCfg.cfaCfg;
+    if (NULL != vissObj)
+    {
+        /* DCC does not support CFA, so using default config from
+         * example_Sensor/0/0/flexCFA_cfg test case */
+        for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
+        {
+            cfaCfg->bypass[cnt] = (uint32_t)FALSE;
+        }
+
+        for (cnt = 0u; cnt < FCP_MAX_CFA_COEFF; cnt ++)
+        {
+            cfaCfg->coeff[cnt] = gcfa_coeff[cnt];
+        }
+
+        for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
+        {
+            cfaCfg->coreSel[cnt] = FCP_CFA_CORE_SEL_CORE0;
+            cfaCfg->coreBlendMode[cnt] = FCP_CFA_CORE_BLEND_MODE_INPUT012;
+        }
+
+        for (cnt = 0u; cnt < FCP_CFA_MAX_SET; cnt ++)
+        {
+            if (0u == cnt)
+            {
+                cfaCfg->gradHzPh[cnt][0u] = 175u;
+                cfaCfg->gradHzPh[cnt][1u] = 95u;
+                cfaCfg->gradHzPh[cnt][2u] = 95u;
+                cfaCfg->gradHzPh[cnt][3u] = 175u;
+            }
+            else
+            {
+                cfaCfg->gradHzPh[cnt][0u] = 175u;
+                cfaCfg->gradHzPh[cnt][1u] = 195u;
+                cfaCfg->gradHzPh[cnt][2u] = 195u;
+                cfaCfg->gradHzPh[cnt][3u] = 175u;
+            }
+
+            if (0u == cnt)
+            {
+                cfaCfg->gradVtPh[cnt][0u] = 175u;
+                cfaCfg->gradVtPh[cnt][1u] = 95u;
+                cfaCfg->gradVtPh[cnt][2u] = 95u;
+                cfaCfg->gradVtPh[cnt][3u] = 175u;
+            }
+            else
+            {
+                cfaCfg->gradVtPh[cnt][0u] = 276u;
+                cfaCfg->gradVtPh[cnt][1u] = 196u;
+                cfaCfg->gradVtPh[cnt][2u] = 196u;
+                cfaCfg->gradVtPh[cnt][3u] = 276u;
+            }
+
+            if (0u == cnt)
+            {
+                cfaCfg->intsBitField[cnt][0U] = 0u;
+                cfaCfg->intsBitField[cnt][1U] = 1u;
+                cfaCfg->intsBitField[cnt][2U] = 2u;
+                cfaCfg->intsBitField[cnt][3U] = 3u;
+            }
+            else
+            {
+                cfaCfg->intsBitField[cnt][0U] = 8u;
+                cfaCfg->intsBitField[cnt][1U] = 9u;
+                cfaCfg->intsBitField[cnt][2U] = 10u;
+                cfaCfg->intsBitField[cnt][3U] = 11u;
+            }
+
+            if (0u == cnt)
+            {
+                cfaCfg->intsShiftPh[cnt][0u] = 4u;
+                cfaCfg->intsShiftPh[cnt][1u] = 5u;
+                cfaCfg->intsShiftPh[cnt][2u] = 6u;
+                cfaCfg->intsShiftPh[cnt][3u] = 7u;
+            }
+            else
+            {
+                cfaCfg->intsShiftPh[cnt][0u] = 12u;
+                cfaCfg->intsShiftPh[cnt][1u] = 13u;
+                cfaCfg->intsShiftPh[cnt][2u] = 14u;
+                cfaCfg->intsShiftPh[cnt][3u] = 15u;
+            }
+
+            if (0u == cnt)
+            {
+                cfaCfg->thr[cnt][0u] = 500u;
+                cfaCfg->thr[cnt][1u] = 600u;
+                cfaCfg->thr[cnt][2u] = 700u;
+                cfaCfg->thr[cnt][3u] = 800u;
+                cfaCfg->thr[cnt][4u] = 900u;
+                cfaCfg->thr[cnt][5u] = 1000u;
+                cfaCfg->thr[cnt][6u] = 1100u;
+            }
+            else
+            {
+                cfaCfg->thr[cnt][0u] = 0u;
+                cfaCfg->thr[cnt][1u] = 100u;
+                cfaCfg->thr[cnt][2u] = 200u;
+                cfaCfg->thr[cnt][3u] = 300u;
+                cfaCfg->thr[cnt][4u] = 400u;
+                cfaCfg->thr[cnt][5u] = 500u;
+                cfaCfg->thr[cnt][6u] = 600u;
+            }
+        }
+
+        vissObj->vissCfgRef.cfaCfg = cfaCfg;
+
+        /* Setting config flag to 1,
+         * assumes caller protects this flag */
+        vissObj->isConfigUpdated = 1U;
+    }
+}
+
+void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj)
 {
     if (NULL != vissObj)
     {
@@ -799,6 +1019,7 @@ static void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj)
         tivxVpacVissDccMapGammaParams(vissObj);
         tivxVpacVissDccMapRGBLutParams(vissObj);
         tivxVpacVissDccMapHistParams(vissObj);
+        tivxVpacVissDccMapEeParams(vissObj);
     }
 }
 
@@ -925,7 +1146,7 @@ static void tivxVpacVissDccMapDpcOtfParams(tivxVpacVissObj *vissObj)
     {
         dpcOtfCfg = &vissObj->vissCfg.dpcOtfCfg;
 
-        dpcOtfCfg->enable           = (uint32_t)TRUE;
+        dpcOtfCfg->enable           = (uint32_t)FALSE;
         dpcOtfCfg->threshold[0u]    = 200u;
         dpcOtfCfg->slope[0u]        = 0u;
         dpcOtfCfg->threshold[1u]    = 200u;
@@ -1058,7 +1279,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             pwlCfg->slopeShift   = 0u;
             pwlCfg->outClip      = 65535;
 
-            lutCfg->enable       = 1u;
+            lutCfg->enable       = 0u;
             lutCfg->inputBits    = 20u;
             lutCfg->clip         = 65535;
             lutCfg->tableAddr    = grawfe_pwl_long_lut;
@@ -1111,10 +1332,10 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 
             pwlCfg->mask        = 4095u;
             pwlCfg->shift       = 0u;     /* 3 bits  */
-            pwlCfg->offset[0u]  = -127;   //S16
-            pwlCfg->offset[1u]  = -127;   //S16
-            pwlCfg->offset[2u]  = -127;   //S16
-            pwlCfg->offset[3u]  = -127;   //S16
+            pwlCfg->offset[0u]  = 0;   //S16
+            pwlCfg->offset[1u]  = 0;   //S16
+            pwlCfg->offset[2u]  = 0;   //S16
+            pwlCfg->offset[3u]  = 0;   //S16
             pwlCfg->gain[0u]    = 512u;     //U13Q9
             pwlCfg->gain[1u]    = 512u;     //U13Q9
             pwlCfg->gain[2u]    = 512u;     //U13Q9
@@ -1149,7 +1370,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
     }
 }
 
-static void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj)
+void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj)
 {
     if (NULL != vissObj)
     {

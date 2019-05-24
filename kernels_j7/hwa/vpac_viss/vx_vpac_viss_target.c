@@ -152,6 +152,8 @@ void tivxAddTargetKernelVpacViss(void)
 
     if (status == VX_SUCCESS)
     {
+        memset(&gTivxVpacVissInstObj, 0x0, sizeof(tivxVpacVissInstObj));
+
         vx_vpac_viss_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_VISS_NAME,
                             target_name,
@@ -199,6 +201,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     tivx_ae_awb_params_t      *ae_awb_result = NULL;
     tivx_obj_desc_user_data_object_t *config_desc = NULL;
     tivx_obj_desc_user_data_object_t *aewb_res_desc = NULL;
+    tivx_obj_desc_user_data_object_t *h3a_out_desc = NULL;
     tivx_obj_desc_user_data_object_t *dcc_buf_desc = NULL;
 
     /* Check for mandatory descriptor */
@@ -210,17 +213,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
     else
     {
-        status = tivxMutexCreate(&vissObj->config_lock);
-
-        if (VX_SUCCESS == status)
-        {
-            status = tivxMutexCreate(&gTivxVpacVissInstObj.lock);
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissCreate: Failed to allocate mutex\n");
-        }
+        /* Note: should this be moved to the register? */
+        status = tivxMutexCreate(&gTivxVpacVissInstObj.lock);
 
         /* Allocate memory for VISS object */
         if (VX_SUCCESS == status)
@@ -244,6 +238,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 obj_desc[TIVX_KERNEL_VPAC_VISS_DCC_BUF_IDX];
             raw_img_desc = (tivx_obj_desc_raw_image_t *)
                 obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
+            h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[
+                TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
 
             /* Get All output image object descriptors */
             out_start = TIVX_KERNEL_VPAC_VISS_OUT0_IDX;
@@ -260,6 +256,8 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             status = VX_ERROR_NO_RESOURCES;
         }
 
+        status = tivxMutexCreate(&vissObj->config_lock);
+
         /* Now Map config Desc and get VISS Parameters */
         if (VX_SUCCESS == status)
         {
@@ -275,6 +273,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to Map VISS Parameters Descriptor\n");
             }
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCreate: Failed to allocate mutex\n");
         }
 
         /* Extract AEWB Result parameters, it might be needed in
@@ -425,7 +428,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             {
                 /* Parse DCC Database and store the output in local variables */
                 status = tivxVpacVissSetParamsFromDcc(
-                    vissObj, dcc_buf_desc, ae_awb_result);
+                    vissObj, dcc_buf_desc, h3a_out_desc, ae_awb_result);
                 if (VX_SUCCESS != status)
                 {
                     VX_PRINT(VX_ZONE_ERROR,
@@ -437,6 +440,14 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 VX_PRINT(VX_ZONE_ERROR,
                     "tivxVpacVissCreate: Failed to Parse and Set DCC Params\n");
             }
+        }
+        else
+        {
+            /* set defaults */
+            tivxVpacVissDccMapRfeParams(vissObj);
+            tivxVpacVissDccMapFlexCFAParamsDefaults(vissObj);
+            tivxVpacVissDccMapFlexCCParams(vissObj);
+            tivxVpacVissDccMapEeParams(vissObj);
         }
     }
 
@@ -527,6 +538,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
 
             tivxVpacVissFreeObject(&gTivxVpacVissInstObj, vissObj);
+
+            if (NULL != gTivxVpacVissInstObj.lock)
+            {
+                tivxMutexDelete(&gTivxVpacVissInstObj.lock);
+            }
         }
     }
 
@@ -585,6 +601,11 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
             }
 
             tivxVpacVissFreeObject(&gTivxVpacVissInstObj, vissObj);
+
+            if (NULL != gTivxVpacVissInstObj.lock)
+            {
+                tivxMutexDelete(&gTivxVpacVissInstObj.lock);
+            }
         }
     }
 
@@ -654,7 +675,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             config_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[
                 TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
             h3a_out_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[
-                TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
+                TIVX_KERNEL_VPAC_VISS_H3A_AEW_AF_IDX];
         }
     }
 
@@ -875,7 +896,7 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
                 /* Update Configuration in Driver */
                 tivxMutexLock(vissObj->config_lock);
                 status = tivxVpacVissSetParamsFromDcc(vissObj,
-                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U], NULL);
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U], NULL, NULL);
                 tivxMutexUnlock(vissObj->config_lock);
                 break;
             }
@@ -998,8 +1019,9 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
                     "tivxVpacVissSetOutputParams: Failed to map format for output%d\n", out_cnt);
             }
 
-            if ((FVID2_DF_YUV420SP_UV == outPrms->fmt.ccsFormat) ||
-                (FVID2_DF_YUV422SP_UV == outPrms->fmt.ccsFormat))
+            /* TODO: See if there are any others here */
+            if ((FVID2_DF_YUV420SP_UV == outPrms->fmt.dataFormat) ||
+                (FVID2_DF_YUV422SP_UV == outPrms->fmt.dataFormat))
             {
                 vissObj->num_out_buf_addr[out_cnt] = 2U;
             }

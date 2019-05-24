@@ -637,6 +637,28 @@ static vx_status tivxVpacVissSetFcpConfig(tivxVpacVissObj *vissObj,
          (VHWA_M2M_VISS_EE_ON_LUMA8 == vissDrvPrms->edgeEnhancerMode)) &&
         (NULL != vissCfgRef->eeCfg))
     {
+        if (VHWA_M2M_VISS_EE_ON_LUMA12 == vissDrvPrms->edgeEnhancerMode)
+        {
+            vissCfgRef->eeCfg->bypassY12 = FALSE;
+            vissCfgRef->eeCfg->eeForY12OrY8 = 0u;
+        }
+        else
+        {
+            vissCfgRef->eeCfg->bypassY12 = TRUE;
+        }
+
+        if (VHWA_M2M_VISS_EE_ON_LUMA8 == vissDrvPrms->edgeEnhancerMode)
+        {
+            vissCfgRef->eeCfg->bypassY8 = FALSE;
+            vissCfgRef->eeCfg->eeForY12OrY8 = 1u;
+            vissCfgRef->eeCfg->leftShift = 2u;
+            vissCfgRef->eeCfg->rightShift = 2u;
+        }
+        else
+        {
+            vissCfgRef->eeCfg->bypassY8 = TRUE;
+        }
+
         fcpCtrl.module              = FCP_MODULE_EE;
         fcpCtrl.eeCfg               = vissCfgRef->eeCfg;
         status = Fvid2_control(vissObj->handle, IOCTL_FCP_SET_CONFIG,

@@ -131,6 +131,10 @@ typedef struct
     Fcp_YuvSatLutConfig                 yuvSatLutCfg;
 
     Fcp_HistConfig                      histCfg;
+    
+    Glbce_Config                        glbceCfg;
+
+    Fcp_EeConfig                        eeCfg;
 } tivxVpacVissConfig;
 
 typedef struct
@@ -285,8 +289,14 @@ typedef struct
  *      Function Prototypes
  *********************************/
 
+void tivxVpacVissDccMapFlexCCParams(tivxVpacVissObj *vissObj);
+void tivxVpacVissDccMapFlexCFAParamsDefaults(tivxVpacVissObj *vissObj);
+void tivxVpacVissDccMapRfeParams(tivxVpacVissObj *vissObj);
+void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj);
+
 vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
     tivx_obj_desc_user_data_object_t *dcc_buf_desc,
+    tivx_obj_desc_user_data_object_t *h3a_out_desc,
     tivx_ae_awb_params_t *ae_awb_res);
 
 /*! Initializes DCC parameters to default values */
