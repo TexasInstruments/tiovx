@@ -210,8 +210,29 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
     else
     {
+        status = tivxMutexCreate(&vissObj->config_lock);
+
+        if (VX_SUCCESS == status)
+        {
+            status = tivxMutexCreate(&gTivxVpacVissInstObj.lock);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCreate: Failed to allocate mutex\n");
+        }
+
         /* Allocate memory for VISS object */
-        vissObj = tivxVpacVissAllocObject(&gTivxVpacVissInstObj);
+        if (VX_SUCCESS == status)
+        {
+            vissObj = tivxVpacVissAllocObject(&gTivxVpacVissInstObj);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCreate: Failed to allocate mutex\n");
+        }
+
         if (NULL != vissObj)
         {
             /* Assign object descriptors */
@@ -281,14 +302,10 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         Vhwa_m2mVissCreateArgsInit(&vissObj->createArgs);
 
         status = tivxEventCreate(&vissObj->waitForProcessCmpl);
-        if (VX_SUCCESS == status)
-        {
-            status = tivxMutexCreate(&vissObj->config_lock);
-        }
-        else
+        if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacMscScaleCreate: Failed to allocate Event\n");
+                "tivxVpacVissCreate: Failed to allocate Event\n");
         }
 
         if (VX_SUCCESS == status)
@@ -960,7 +977,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
             outPrms = &vissDrvPrms->outPrms[out_cnt];
 
             status = tivxVpacVissMapFormat(
-                &outPrms->fmt.ccsFormat, &outPrms->fmt.ccsFormat, out_start,
+                &outPrms->fmt.dataFormat, &outPrms->fmt.ccsFormat, out_start,
                 im_desc->format, mux_val[out_cnt]);
 
             if (VX_SUCCESS == status)
