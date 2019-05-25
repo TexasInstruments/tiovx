@@ -91,7 +91,7 @@ typedef struct
     uint32_t                            isAlloc;
     tivx_dmpac_sde_params_t             sdeParams;
     Vhwa_M2mSdeCreateArgs               createPrms;
-    Sde_Config                          sde_cfg;
+    Vhwa_M2mSdePrms                     sdePrms;
     Fvid2_Handle                        handle;
     tivx_event                          waitForProcessCmpl;
     Sde_ErrEventParams                  errEvtPrms;
@@ -137,6 +137,8 @@ static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
 static void tivxDmpacSdeFreeObject(
        tivxDmpacSdeInstObj *instObj,
 	   tivxDmpacSdeObj *sde_obj);
+static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
+    tivx_obj_desc_image_t *img_desc);
 static vx_status tivxDmpacSdeGetErrStatusCmd(
        tivxDmpacSdeObj *sde_obj,
        tivx_obj_desc_scalar_t *scalar_obj_desc);
@@ -244,12 +246,15 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     Fvid2_FrameList                  *inFrmList;
     Fvid2_FrameList                  *outFrmList;
 
-    status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS);
-
-    if (VX_SUCCESS != status)
+    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
+    )
     {
         VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Descriptor\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -278,18 +283,18 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         output_desc               = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
 
-        left_target_ptr = tivxMemShared2TargetPtr(
+        left_target_ptr = (void*) tivxMemShared2PhysPtr(
             left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
-        right_target_ptr = tivxMemShared2TargetPtr(
+        right_target_ptr = (void*) tivxMemShared2PhysPtr(
             right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
         output_target_ptr = tivxMemShared2TargetPtr(
             output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
         if( confidence_histogram_desc != NULL)
         {
-            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
+            confidence_histogram_target_ptr = (void*) tivxMemShared2PhysPtr(
                 confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
         }
-
+/*
         tivxMemBufferMap(left_target_ptr,
             left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
@@ -347,7 +352,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             status = VX_FAILURE;
         }
     }
-
+/*
     if (VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(left_target_ptr,
@@ -366,6 +371,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
                 VX_WRITE_ONLY);
         }
     }
+*/
 
     return status;
 }
@@ -380,19 +386,24 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     uint32_t                          aligned_width;
     uint32_t                          aligned_height;
     tivxDmpacSdeObj                  *sde_obj = NULL;
-    Sde_Config                       *sde_cfg = NULL;
+    Vhwa_M2mSdePrms                  *sdePrms = NULL;
     tivx_dmpac_sde_params_t          *params = NULL;
     tivx_obj_desc_user_data_object_t *params_array = NULL;
 	tivx_obj_desc_image_t            *left_desc;
+	tivx_obj_desc_image_t            *right_desc;
+	tivx_obj_desc_image_t            *output_desc;
     void                             *params_array_target_ptr = NULL;
 
-    status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS);
-
-    if (VX_SUCCESS != status)
+    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
+    )
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeCreate: Required input parameter set to NULL\n");
+        status = VX_FAILURE;
     }
 
     if (VX_SUCCESS == status)
@@ -404,11 +415,15 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
                 obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
 			left_desc = (tivx_obj_desc_image_t *)
 			    obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
+			right_desc = (tivx_obj_desc_image_t *)
+			    obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
+			output_desc = (tivx_obj_desc_image_t *)
+			    obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         }
         else
         {
             VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacSdeCreate: Failed to Alloc Nf Bilateral Object\n");
+                "tivxDmpacSdeCreate: Failed to Alloc Sde Bilateral Object\n");
             status = VX_ERROR_NO_RESOURCES;
         }
     }
@@ -431,6 +446,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             {
 				VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeCreate: Failed to Alloc Sde Object\n");
+
                 status = VX_FAILURE;
             }
         }
@@ -465,18 +481,18 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 
     if (VX_SUCCESS == status)
     {
-        sde_cfg = &sde_obj->sde_cfg;
+        sdePrms = &sde_obj->sdePrms;
 
-        params_array_target_ptr = tivxMemShared2TargetPtr(
+        params_array_target_ptr = (void*) tivxMemShared2PhysPtr(
             params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
-
+/*
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
+*/
         params = (tivx_dmpac_sde_params_t *)params_array_target_ptr;
 
         /* Initialize SDE Config with defaults */
-        Sde_ConfigInit(sde_cfg);
+        Sde_ConfigInit(&sdePrms->sdeCfg);
 
         /* Set SDE Config parameters */
         aligned_width = left_desc->imagepatch_addr[0].dim_x;
@@ -496,21 +512,38 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             aligned_height &= ~15;   /* Must be multiple of 16 */
         }
 		
-		sde_cfg->enableSDE = 1U;
-		sde_cfg->medianFilter = (uint32_t) (params->median_filter_enable);
-		sde_cfg->width = aligned_width;
-		sde_cfg->height = aligned_height;
-		sde_cfg->minDisparity = (uint32_t) (params->disparity_min);
-		sde_cfg->searchRange = (uint32_t) (params->disparity_max);
-		sde_cfg->lrThreshold = (uint32_t)  (params->threshold_left_right);
-		sde_cfg->enableTextureFilter = (uint32_t) (params->texture_filter_enable);
-		sde_cfg->textureFilterThreshold = (uint32_t) (params->threshold_texture);
-		sde_cfg->penaltyP1 = (uint32_t) (params->aggregation_penalty_p1);
-		sde_cfg->penaltyP2 = (uint32_t) (params->aggregation_penalty_p2);
+		sdePrms->sdeCfg.enableSDE = 1U;
+		sdePrms->sdeCfg.medianFilter = (uint32_t) (params->median_filter_enable);
+		sdePrms->sdeCfg.width = aligned_width;
+		sdePrms->sdeCfg.height = aligned_height;
+		sdePrms->sdeCfg.minDisparity = (uint32_t) (params->disparity_min);
+		sdePrms->sdeCfg.searchRange = (uint32_t) (params->disparity_max);
+		sdePrms->sdeCfg.lrThreshold = (uint32_t)  (params->threshold_left_right);
+		sdePrms->sdeCfg.enableTextureFilter = (uint32_t) (params->texture_filter_enable);
+		sdePrms->sdeCfg.textureFilterThreshold = (uint32_t) (params->threshold_texture);
+		sdePrms->sdeCfg.penaltyP1 = (uint32_t) (params->aggregation_penalty_p1);
+		sdePrms->sdeCfg.penaltyP2 = (uint32_t) (params->aggregation_penalty_p2);
 		for(i = 0U; i < DMPAC_SDE_NUM_SCORE_MAP; i++)
 		{
-			sde_cfg->confScoreMap[i] = (uint32_t) (params->confidence_score_map[i]);
+			sdePrms->sdeCfg.confScoreMap[i] = (uint32_t) (params->confidence_score_map[i]);
 		}
+
+        tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_INPUT_REFERENCE_IMG],
+            left_desc);
+        tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_INPUT_BASE_IMG],
+            right_desc);
+        tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_OUTPUT],
+            output_desc);
+
+        sdePrms->focoPrms.shiftM1 = 0u;
+        sdePrms->focoPrms.dir = 0u;
+        sdePrms->focoPrms.round = 0u;
+
+        if(sdePrms->inOutImgFmt[SDE_INPUT_REFERENCE_IMG].ccsFormat
+            == FVID2_CCSF_BITS8_PACKED)
+        {
+            sdePrms->focoPrms.shiftM1 = 4u;
+        }
 
         /* Save the parameters in the object variable,
            This is used to compare with config in process request to check if
@@ -519,7 +552,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         memcpy(&sde_obj->sdeParams, params, sizeof(tivx_dmpac_sde_params_t));
 
         status = Fvid2_control(sde_obj->handle,
-            VHWA_M2M_IOCTL_SDE_SET_PARAMS, &sde_obj->sde_cfg, NULL);
+            VHWA_M2M_IOCTL_SDE_SET_PARAMS, &sde_obj->sdePrms, NULL);
         if (FVID2_SOK != status)
         {
             VX_PRINT(VX_ZONE_ERROR,
@@ -530,9 +563,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         {
             status = VX_SUCCESS;
         }
-
+/*
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+*/
     }
         
     if (VX_SUCCESS == status)
@@ -670,6 +704,7 @@ static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
     tivxDmpacSdeObj *sde_obj = NULL;
 
     /* Lock instance mutex */
+    tivxMutexCreate(&instObj->lock);
     tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_SDE_MAX_HANDLES; cnt ++)
@@ -708,6 +743,49 @@ static void tivxDmpacSdeFreeObject(tivxDmpacSdeInstObj *instObj,
 
     /* Release instance mutex */
     tivxMutexUnlock(instObj->lock);
+}
+
+static void tivxDmpacSdeSetFmt(Fvid2_Format *fmt,
+    tivx_obj_desc_image_t *img_desc)
+{
+    if (NULL != img_desc)
+    {
+        switch (img_desc->format)
+        {
+            case VX_DF_IMAGE_U8:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
+                break;
+            }
+            case VX_DF_IMAGE_U16:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+                break;
+            }
+            case VX_DF_IMAGE_S16:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+                break;
+            }
+            case TIVX_DF_IMAGE_P12:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                        "tivxDmpacDofSetFmt: Invalid Vx Image Format\n");
+                break;
+            }
+        }
+
+        fmt->pitch[0]   = img_desc->imagepatch_addr[0].stride_y;
+    }
 }
 
 /* ========================================================================== */
