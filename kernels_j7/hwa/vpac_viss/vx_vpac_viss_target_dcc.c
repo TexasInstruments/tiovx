@@ -232,6 +232,14 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
                 dcc_buf_desc->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
             dcc_status = Dcc_Create(dcc_out_prms, vissObj->dcc_out_buf);
+            dcc_out_prms->useAwbCalbCfg = 0U;
+            dcc_out_prms->useH3aCfg = 0U;
+            dcc_out_prms->useNsf4Cfg = 0U;
+            dcc_out_prms->useBlcCfg = 0U;
+            dcc_out_prms->useCfaCfg = 0U;
+            dcc_out_prms->useCcmCfg = 0U;
+            dcc_out_prms->useH3aMuxCfg = 0U;
+            dcc_out_prms->useRfeDcmpCfg = 0U;
             if (0 == dcc_status)
             {
                 dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
@@ -461,64 +469,183 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     Nsf4v_Config       *nsf4Cfg = NULL;
     Nsf4_LsccConfig    *lsccCfg = NULL;
     viss_nsf4          *dccNsf4Cfg = NULL;
+    uint8_t            use_defaults = 1u;
 
     nsf4Cfg = &vissObj->vissCfg.nsf4Cfg;
     lsccCfg = &nsf4Cfg->lsccCfg;
-    dccNsf4Cfg = &vissObj->dcc_out_prms.vissNSF4Cfg;
+
+    dccNsf4Cfg = &(vissObj->dcc_out_prms.vissNSF4Cfg);
+    if(1U == vissObj->dcc_out_prms.useNsf4Cfg)
+    {
+        use_defaults = 0;
+    }
 
     /* Map DCC Output Config to FVID2 Driver Config */
 
     /* TODO: Does shading gain map to lscc enable? */
 
-    nsf4Cfg->mode = dccNsf4Cfg->mode;
-    nsf4Cfg->tKnee = dccNsf4Cfg->u1_knee;
-    nsf4Cfg->tnScale[0U] = dccNsf4Cfg->tn1;
-    nsf4Cfg->tnScale[1U] = dccNsf4Cfg->tn2;
-    nsf4Cfg->tnScale[2U] = dccNsf4Cfg->tn3;
-
-    for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+    if(0u == use_defaults)
     {
-        for (cnt2 = 0U; cnt2 < NSF4_TN_MAX_SEGMENT; cnt2 ++)
+        nsf4Cfg->mode = dccNsf4Cfg->mode;
+        nsf4Cfg->tKnee = dccNsf4Cfg->u1_knee;
+        nsf4Cfg->tnScale[0U] = dccNsf4Cfg->tn1;
+        nsf4Cfg->tnScale[1U] = dccNsf4Cfg->tn2;
+        nsf4Cfg->tnScale[2U] = dccNsf4Cfg->tn3;
+
+        for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
         {
-            nsf4Cfg->tnCurve[cnt1][cnt2].posX  = dccNsf4Cfg->noise_thr_x[cnt1][cnt2];
-            nsf4Cfg->tnCurve[cnt1][cnt2].posY  = dccNsf4Cfg->noise_thr_y[cnt1][cnt2];
-            nsf4Cfg->tnCurve[cnt1][cnt2].slope = dccNsf4Cfg->noise_thr_s[cnt1][cnt2];
+            for (cnt2 = 0U; cnt2 < NSF4_TN_MAX_SEGMENT; cnt2 ++)
+            {
+                nsf4Cfg->tnCurve[cnt1][cnt2].posX  = dccNsf4Cfg->noise_thr_x[cnt1][cnt2];
+                nsf4Cfg->tnCurve[cnt1][cnt2].posY  = dccNsf4Cfg->noise_thr_y[cnt1][cnt2];
+                nsf4Cfg->tnCurve[cnt1][cnt2].slope = dccNsf4Cfg->noise_thr_s[cnt1][cnt2];
+            }
         }
-    }
 
-    lsccCfg->enable         = dccNsf4Cfg->shading_gain;
-    lsccCfg->lensCenterX    = dccNsf4Cfg->shd_x;
-    lsccCfg->lensCenterY    = dccNsf4Cfg->shd_y;
-    lsccCfg->tCfg           = dccNsf4Cfg->shd_t;
-    lsccCfg->khCfg          = dccNsf4Cfg->shd_kh;
-    lsccCfg->kvCfg          = dccNsf4Cfg->shd_kv;
-    lsccCfg->gMaxCfg        = dccNsf4Cfg->shd_gmax;
-    lsccCfg->setSel         = dccNsf4Cfg->shd_set_sel;
+        lsccCfg->enable         = dccNsf4Cfg->shading_gain;
+        lsccCfg->lensCenterX    = dccNsf4Cfg->shd_x;
+        lsccCfg->lensCenterY    = dccNsf4Cfg->shd_y;
+        lsccCfg->tCfg           = dccNsf4Cfg->shd_t;
+        lsccCfg->khCfg          = dccNsf4Cfg->shd_kh;
+        lsccCfg->kvCfg          = dccNsf4Cfg->shd_kv;
+        lsccCfg->gMaxCfg        = dccNsf4Cfg->shd_gmax;
+        lsccCfg->setSel         = dccNsf4Cfg->shd_set_sel;
 
-    for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
-    {
-        for (cnt2 = 0U; cnt2 < NSF4_LSCC_MAX_SEGMENT; cnt2 ++)
-        {
-             lsccCfg->pwlCurve[cnt1][cnt2].posX = dccNsf4Cfg->shd_lut_x[cnt1][cnt2];
-             lsccCfg->pwlCurve[cnt1][cnt2].posY = dccNsf4Cfg->shd_lut_y[cnt1][cnt2];
-             lsccCfg->pwlCurve[cnt1][cnt2].slope = dccNsf4Cfg->shd_lut_s[cnt1][cnt2];
-         }
-    }
-
-    /* Override gains from AWB results */
-    if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
-    {
         for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
         {
-            nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+            for (cnt2 = 0U; cnt2 < NSF4_LSCC_MAX_SEGMENT; cnt2 ++)
+            {
+                 lsccCfg->pwlCurve[cnt1][cnt2].posX = dccNsf4Cfg->shd_lut_x[cnt1][cnt2];
+                 lsccCfg->pwlCurve[cnt1][cnt2].posY = dccNsf4Cfg->shd_lut_y[cnt1][cnt2];
+                 lsccCfg->pwlCurve[cnt1][cnt2].slope = dccNsf4Cfg->shd_lut_s[cnt1][cnt2];
+             }
+        }
+
+        /* Override gains from AWB results */
+        if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
+        {
+            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            {
+                nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+            }
+        }
+        else
+        {
+            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            {
+                nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
+            }
         }
     }
     else
     {
+        nsf4Cfg->mode = 16u;
+        nsf4Cfg->tKnee = 0u;
+        nsf4Cfg->tnScale[0U] = 64u;
+        nsf4Cfg->tnScale[1U] = 32u;
+        nsf4Cfg->tnScale[2U] = 16u;
+
+        for (cnt1 = 0U; cnt1 < FVID2_BAYER_COLOR_COMP_MAX; cnt1 ++)
+        {
+            nsf4Cfg->tnCurve[cnt1][0u].posX  = 0u;
+            nsf4Cfg->tnCurve[cnt1][1u].posX  = 64u;
+            nsf4Cfg->tnCurve[cnt1][2u].posX  = 256u;
+            nsf4Cfg->tnCurve[cnt1][3u].posX  = 1024u;
+            nsf4Cfg->tnCurve[cnt1][4u].posX  = 4096u;
+            nsf4Cfg->tnCurve[cnt1][5u].posX  = 4096u;
+            nsf4Cfg->tnCurve[cnt1][6u].posX  = 4096u;
+            nsf4Cfg->tnCurve[cnt1][7u].posX  = 4096u;
+            nsf4Cfg->tnCurve[cnt1][8u].posX  = 4096u;
+            nsf4Cfg->tnCurve[cnt1][9u].posX  = 4096u;
+            nsf4Cfg->tnCurve[cnt1][10u].posX = 4096u;
+            nsf4Cfg->tnCurve[cnt1][11u].posX = 4096u;
+
+            nsf4Cfg->tnCurve[cnt1][0u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][1u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][2u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][3u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][4u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][5u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][6u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][7u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][8u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][9u].posY  = 0u;
+            nsf4Cfg->tnCurve[cnt1][10u].posY = 0u;
+            nsf4Cfg->tnCurve[cnt1][11u].posY = 0u;
+
+            nsf4Cfg->tnCurve[cnt1][0u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][1u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][2u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][3u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][4u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][5u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][6u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][7u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][8u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][9u].slope  = 0u;
+            nsf4Cfg->tnCurve[cnt1][10u].slope = 0u;
+            nsf4Cfg->tnCurve[cnt1][11u].slope = 0u;
+        }
+
+        lsccCfg->enable         = dccNsf4Cfg->shading_gain;
+        lsccCfg->lensCenterX    = dccNsf4Cfg->shd_x;
+        lsccCfg->lensCenterY    = dccNsf4Cfg->shd_y;
+        lsccCfg->tCfg           = dccNsf4Cfg->shd_t;
+        lsccCfg->khCfg          = dccNsf4Cfg->shd_kh;
+        lsccCfg->kvCfg          = dccNsf4Cfg->shd_kv;
+        lsccCfg->gMaxCfg        = dccNsf4Cfg->shd_gmax;
+        lsccCfg->setSel         = dccNsf4Cfg->shd_set_sel;
+
         for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
         {
-            nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
+            for (cnt2 = 0U; cnt2 < NSF4_LSCC_MAX_SEGMENT; cnt2 ++)
+            {
+                 lsccCfg->pwlCurve[cnt1][cnt2].posX = dccNsf4Cfg->shd_lut_x[cnt1][cnt2];
+                 lsccCfg->pwlCurve[cnt1][cnt2].posY = dccNsf4Cfg->shd_lut_y[cnt1][cnt2];
+                 lsccCfg->pwlCurve[cnt1][cnt2].slope = dccNsf4Cfg->shd_lut_s[cnt1][cnt2];
+             }
         }
+
+        /* Override gains from AWB results */
+        if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
+        {
+            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            {
+                nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+            }
+        }
+        else
+        {
+            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            {
+                nsf4Cfg->gains[cnt1] = dccNsf4Cfg->wb_gains[cnt1];
+            }
+        }
+        lsccCfg->enable         = 0;
+        lsccCfg->lensCenterX    = 0;
+        lsccCfg->lensCenterY    = 0;
+        lsccCfg->tCfg           = 0;
+        lsccCfg->khCfg          = 0;
+        lsccCfg->kvCfg          = 0;
+        lsccCfg->gMaxCfg        = 0;
+        lsccCfg->setSel         = 0;
+
+        /* Override gains from AWB results */
+        if ((NULL != ae_awb_res) && (1 == ae_awb_res->awb_valid))
+        {
+            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            {
+                nsf4Cfg->gains[cnt1] = ae_awb_res->wb_gains[cnt1];
+            }
+        }
+        else
+        {
+            for (cnt1 = 0U; cnt1 < NSF4_LSCC_MAX_SET; cnt1 ++)
+            {
+                nsf4Cfg->gains[cnt1] = 512u;
+            }
+        }
+
     }
 
     vissObj->vissCfgRef.nsf4Cfg = nsf4Cfg;
@@ -526,6 +653,7 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
     /* Setting config flag to 1,
      * assumes caller protects this flag */
     vissObj->isConfigUpdated = 1U;
+
 }
 
 static void tivxVpacVissDccMapLut16to12Params(tivxVpacVissObj *vissObj)

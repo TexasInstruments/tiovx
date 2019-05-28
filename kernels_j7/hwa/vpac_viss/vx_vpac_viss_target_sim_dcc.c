@@ -194,17 +194,20 @@ void tivxVpacVissParseRfeParams(cfg_rawfe *rfe_prms,
         tivxVpacVissParseRfeLutParams(1u, &rfe_prms->lut_h3a, dcc_out_prms);
     }
 
-    if (1 == dcc_out_prms->issRfeDecompand.enable)
+    if(1U == dcc_out_prms->useRfeDcmpCfg)
     {
-        rfe_prms->pwl_lut_vshort.lutEn = 1;
-        rfe_prms->pwl_lut_vshort.mask = dcc_out_prms->issRfeDecompand.mask;
-        rfe_prms->pwl_lut_vshort.inShift = dcc_out_prms->issRfeDecompand.shift;
-        rfe_prms->pwl_lut_vshort.lutBitDepth = dcc_out_prms->issRfeDecompand.bit_depth;
-        rfe_prms->pwl_lut_vshort.lutClip = dcc_out_prms->issRfeDecompand.clip;
-
-        for (int k = 0; k < 639; k++)
+        if (1 == dcc_out_prms->issRfeDecompand.enable)
         {
-            rfe_prms->pwl_lut_vshort.lut[k] = dcc_out_prms->issRfeDecompand.lut[k];
+            rfe_prms->pwl_lut_vshort.lutEn = 1;
+            rfe_prms->pwl_lut_vshort.mask = dcc_out_prms->issRfeDecompand.mask;
+            rfe_prms->pwl_lut_vshort.inShift = dcc_out_prms->issRfeDecompand.shift;
+            rfe_prms->pwl_lut_vshort.lutBitDepth = dcc_out_prms->issRfeDecompand.bit_depth;
+            rfe_prms->pwl_lut_vshort.lutClip = dcc_out_prms->issRfeDecompand.clip;
+
+            for (int k = 0; k < 639; k++)
+            {
+                rfe_prms->pwl_lut_vshort.lut[k] = dcc_out_prms->issRfeDecompand.lut[k];
+            }
         }
     }
 }
@@ -213,10 +216,12 @@ void tivxVpacVissParseH3aLutParams(uint32_t idx, cfg_lut *lut,
     dcc_parser_output_params_t *dcc_out_prms)
 {
     uint32_t cnt;
-
-    for (cnt = 0; cnt < PWL_LUT_SIZE; cnt ++)
+    if(1U == dcc_out_prms->useH3aMuxCfg)
     {
-        lut->lut[cnt] = dcc_out_prms->issH3aMuxLuts.h3a_mux_lut[idx][cnt];
+        for (cnt = 0; cnt < PWL_LUT_SIZE; cnt ++)
+        {
+            lut->lut[cnt] = dcc_out_prms->issH3aMuxLuts.h3a_mux_lut[idx][cnt];
+        }
     }
 }
 
@@ -224,128 +229,169 @@ void tivxVpacVissParseNsf4Params(nsf4_settings *nsf4_prms,
     dcc_parser_output_params_t *dcc_out_prms)
 {
     uint32_t cnt;
+    uint8_t use_defaults = 1;
+    viss_nsf4 * dcc_nsf4;
 
     if (NULL != nsf4_prms)
     {
-        /* DCC does not support NSF4, so using default config from
-         * example_Sensor/0/0/nsf4_cfg test case */
-        nsf4_prms->mode                 = 16u;
-        nsf4_prms->shd_en               = 0U;
-        nsf4_prms->iw                   = 1280u;
-        nsf4_prms->ih                   = 720u;
-
-        nsf4_prms->knee_u1              = 32u;
-        nsf4_prms->thr_scale_tn1        = 64u;
-        nsf4_prms->thr_scale_tn2        = 32u;
-        nsf4_prms->thr_scale_tn3        = 16u;
-
-        for (cnt = 0u; cnt < 4u; cnt ++)
+        if (NULL != dcc_out_prms)
         {
-            nsf4_prms->noise_thr_x[cnt][0u]  = 0u;
-            nsf4_prms->noise_thr_x[cnt][1u]  = 64u;
-            nsf4_prms->noise_thr_x[cnt][2u]  = 256u;
-            nsf4_prms->noise_thr_x[cnt][3u]  = 1024u;
-            nsf4_prms->noise_thr_x[cnt][4u]  = 4096u;
-            nsf4_prms->noise_thr_x[cnt][5u]  = 4096u;
-            nsf4_prms->noise_thr_x[cnt][6u]  = 4096u;
-            nsf4_prms->noise_thr_x[cnt][7u]  = 4096u;
-            nsf4_prms->noise_thr_x[cnt][8u]  = 4096u;
-            nsf4_prms->noise_thr_x[cnt][9u]  = 4096u;
-            nsf4_prms->noise_thr_x[cnt][10u] = 4096u;
-            nsf4_prms->noise_thr_x[cnt][11u] = 4096u;
-
-            nsf4_prms->noise_thr_y[cnt][0u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][1u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][2u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][3u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][4u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][5u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][6u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][7u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][8u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][9u]  = 0u;
-            nsf4_prms->noise_thr_y[cnt][10u] = 0u;
-            nsf4_prms->noise_thr_y[cnt][11u] = 0u;
-
-            nsf4_prms->noise_thr_s[cnt][0u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][1u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][2u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][3u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][4u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][5u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][6u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][7u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][8u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][9u]  = 0u;
-            nsf4_prms->noise_thr_s[cnt][10u] = 0u;
-            nsf4_prms->noise_thr_s[cnt][11u] = 0u;
+            dcc_nsf4 = &(dcc_out_prms->vissNSF4Cfg);
+            if(1U == dcc_out_prms->useNsf4Cfg)
+            {
+                use_defaults = 0;
+            }
         }
 
-        nsf4_prms->shd_x                = 0u;
-        nsf4_prms->shd_y                = 0u;
-        nsf4_prms->shd_T                = 0u;
-        nsf4_prms->shd_kh               = 0u;
-        nsf4_prms->shd_kv               = 0u;
-        nsf4_prms->shd_gmax             = 0u;
-        nsf4_prms->shd_set_sel          = 0u;
-
-        for (cnt = 0u; cnt < 2u; cnt ++)
+        if (0U == use_defaults)
         {
-            nsf4_prms->shd_lut_x[cnt][0u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][1u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][2u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][3u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][4u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][5u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][6u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][7u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][8u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][9u]  = 0U;
-            nsf4_prms->shd_lut_x[cnt][10u] = 0U;
-            nsf4_prms->shd_lut_x[cnt][11u] = 0U;
-            nsf4_prms->shd_lut_x[cnt][12u] = 0U;
-            nsf4_prms->shd_lut_x[cnt][13u] = 0U;
-            nsf4_prms->shd_lut_x[cnt][14u] = 0U;
-            nsf4_prms->shd_lut_x[cnt][15u] = 0U;
+            nsf4_prms->mode             = dcc_nsf4->mode;
+            nsf4_prms->shd_en           = dcc_nsf4->shading_gain;
+            nsf4_prms->iw               = 0;/*Input width must be set by the node*/
+            nsf4_prms->ih               = 0;/*Input height must be set by the node*/
 
-            nsf4_prms->shd_lut_y[cnt][0u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][1u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][2u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][3u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][4u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][5u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][6u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][7u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][8u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][9u]  = 0U;
-            nsf4_prms->shd_lut_y[cnt][10u] = 0U;
-            nsf4_prms->shd_lut_y[cnt][11u] = 0U;
-            nsf4_prms->shd_lut_y[cnt][12u] = 0U;
-            nsf4_prms->shd_lut_y[cnt][13u] = 0U;
-            nsf4_prms->shd_lut_y[cnt][14u] = 0U;
-            nsf4_prms->shd_lut_y[cnt][15u] = 0U;
+            nsf4_prms->knee_u1          = dcc_nsf4->u1_knee;
+            nsf4_prms->thr_scale_tn1    = dcc_nsf4->tn1;
+            nsf4_prms->thr_scale_tn2    = dcc_nsf4->tn2;
+            nsf4_prms->thr_scale_tn3    = dcc_nsf4->tn3;
 
-            nsf4_prms->shd_lut_s[cnt][0u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][1u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][2u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][3u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][4u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][5u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][6u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][7u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][8u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][9u]  = 0U;
-            nsf4_prms->shd_lut_s[cnt][10u] = 0U;
-            nsf4_prms->shd_lut_s[cnt][11u] = 0U;
-            nsf4_prms->shd_lut_s[cnt][12u] = 0U;
-            nsf4_prms->shd_lut_s[cnt][13u] = 0U;
-            nsf4_prms->shd_lut_s[cnt][14u] = 0U;
-            nsf4_prms->shd_lut_s[cnt][15u] = 0U;
+            memcpy(nsf4_prms->noise_thr_x, dcc_nsf4->noise_thr_x, 48*sizeof(int));
+            memcpy(nsf4_prms->noise_thr_y, dcc_nsf4->noise_thr_y, 48*sizeof(int));
+            memcpy(nsf4_prms->noise_thr_s, dcc_nsf4->noise_thr_s, 48*sizeof(int));
+            nsf4_prms->shd_x                = dcc_nsf4->shd_x;
+            nsf4_prms->shd_y                = dcc_nsf4->shd_y;
+            nsf4_prms->shd_T                = dcc_nsf4->shd_t;
+            nsf4_prms->shd_kh               = dcc_nsf4->shd_kh;
+            nsf4_prms->shd_kv               = dcc_nsf4->shd_kv;
+            nsf4_prms->shd_gmax             = dcc_nsf4->shd_gmax;
+            nsf4_prms->shd_set_sel          = dcc_nsf4->shd_set_sel;
+
+            memcpy(nsf4_prms->shd_lut_x, dcc_nsf4->shd_lut_x, 32*sizeof(int));
+            memcpy(nsf4_prms->shd_lut_y, dcc_nsf4->shd_lut_y, 32*sizeof(int));
+            memcpy(nsf4_prms->shd_lut_s, dcc_nsf4->shd_lut_s, 32*sizeof(int));
+            memcpy(nsf4_prms->wb_gain, dcc_nsf4->wb_gains, 4*sizeof(int));
+
         }
-
-        for (cnt = 0u; cnt < 4u; cnt ++)
+        else
         {
-            nsf4_prms->wb_gain[cnt] = 512U;
+            nsf4_prms->mode                 = 16u;
+            nsf4_prms->shd_en               = 0U;
+            nsf4_prms->iw                   = 1280u;
+            nsf4_prms->ih                   = 720u;
+
+            nsf4_prms->knee_u1              = 32u;
+            nsf4_prms->thr_scale_tn1        = 64u;
+            nsf4_prms->thr_scale_tn2        = 32u;
+            nsf4_prms->thr_scale_tn3        = 16u;
+
+            for (cnt = 0u; cnt < 4u; cnt ++)
+            {
+                nsf4_prms->noise_thr_x[cnt][0u]  = 0u;
+                nsf4_prms->noise_thr_x[cnt][1u]  = 64u;
+                nsf4_prms->noise_thr_x[cnt][2u]  = 256u;
+                nsf4_prms->noise_thr_x[cnt][3u]  = 1024u;
+                nsf4_prms->noise_thr_x[cnt][4u]  = 4096u;
+                nsf4_prms->noise_thr_x[cnt][5u]  = 4096u;
+                nsf4_prms->noise_thr_x[cnt][6u]  = 4096u;
+                nsf4_prms->noise_thr_x[cnt][7u]  = 4096u;
+                nsf4_prms->noise_thr_x[cnt][8u]  = 4096u;
+                nsf4_prms->noise_thr_x[cnt][9u]  = 4096u;
+                nsf4_prms->noise_thr_x[cnt][10u] = 4096u;
+                nsf4_prms->noise_thr_x[cnt][11u] = 4096u;
+
+                nsf4_prms->noise_thr_y[cnt][0u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][1u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][2u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][3u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][4u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][5u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][6u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][7u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][8u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][9u]  = 0u;
+                nsf4_prms->noise_thr_y[cnt][10u] = 0u;
+                nsf4_prms->noise_thr_y[cnt][11u] = 0u;
+
+                nsf4_prms->noise_thr_s[cnt][0u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][1u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][2u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][3u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][4u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][5u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][6u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][7u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][8u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][9u]  = 0u;
+                nsf4_prms->noise_thr_s[cnt][10u] = 0u;
+                nsf4_prms->noise_thr_s[cnt][11u] = 0u;
+            }
+
+            nsf4_prms->shd_x                = 0u;
+            nsf4_prms->shd_y                = 0u;
+            nsf4_prms->shd_T                = 0u;
+            nsf4_prms->shd_kh               = 0u;
+            nsf4_prms->shd_kv               = 0u;
+            nsf4_prms->shd_gmax             = 0u;
+            nsf4_prms->shd_set_sel          = 0u;
+
+            for (cnt = 0u; cnt < 2u; cnt ++)
+            {
+                nsf4_prms->shd_lut_x[cnt][0u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][1u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][2u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][3u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][4u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][5u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][6u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][7u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][8u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][9u]  = 0U;
+                nsf4_prms->shd_lut_x[cnt][10u] = 0U;
+                nsf4_prms->shd_lut_x[cnt][11u] = 0U;
+                nsf4_prms->shd_lut_x[cnt][12u] = 0U;
+                nsf4_prms->shd_lut_x[cnt][13u] = 0U;
+                nsf4_prms->shd_lut_x[cnt][14u] = 0U;
+                nsf4_prms->shd_lut_x[cnt][15u] = 0U;
+
+                nsf4_prms->shd_lut_y[cnt][0u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][1u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][2u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][3u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][4u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][5u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][6u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][7u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][8u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][9u]  = 0U;
+                nsf4_prms->shd_lut_y[cnt][10u] = 0U;
+                nsf4_prms->shd_lut_y[cnt][11u] = 0U;
+                nsf4_prms->shd_lut_y[cnt][12u] = 0U;
+                nsf4_prms->shd_lut_y[cnt][13u] = 0U;
+                nsf4_prms->shd_lut_y[cnt][14u] = 0U;
+                nsf4_prms->shd_lut_y[cnt][15u] = 0U;
+
+                nsf4_prms->shd_lut_s[cnt][0u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][1u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][2u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][3u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][4u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][5u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][6u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][7u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][8u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][9u]  = 0U;
+                nsf4_prms->shd_lut_s[cnt][10u] = 0U;
+                nsf4_prms->shd_lut_s[cnt][11u] = 0U;
+                nsf4_prms->shd_lut_s[cnt][12u] = 0U;
+                nsf4_prms->shd_lut_s[cnt][13u] = 0U;
+                nsf4_prms->shd_lut_s[cnt][14u] = 0U;
+                nsf4_prms->shd_lut_s[cnt][15u] = 0U;
+            }
+
+            for (cnt = 0u; cnt < 4u; cnt ++)
+            {
+                nsf4_prms->wb_gain[cnt] = 512U;
+            }
         }
 
         /* Following configuration is not exposed in registers, but the
@@ -383,9 +429,19 @@ void tivxVpacVissParseGlbceParams(nsf4_settings *nsf4_prms,
 void tivxVpacVissParseH3aParams(h3a_settings *h3a_prms,
     dcc_parser_output_params_t *dcc_out_prms)
 {
+    uint8_t use_defaults = 1;
+
     if (NULL != h3a_prms)
     {
         if (NULL != dcc_out_prms)
+        {
+            if(1U == dcc_out_prms->useH3aCfg)
+            {
+                use_defaults = 0;
+            }
+        }
+
+        if (0U == use_defaults)
         {
             h3a_prms->pcr_AEW_EN        = dcc_out_prms->ipipeH3A_AEWBCfg.enable;
             h3a_prms->aew_cfg_AEFMT     = dcc_out_prms->ipipeH3A_AEWBCfg.mode;
@@ -431,168 +487,208 @@ void tivxVpacVissParseFlxCfaParams(FLXD_Config *fcfa_prms,
 {
     uint32_t cnt, cnt1, cnt2, cfa_cnt;
     viss_ipipe_cfa_flxd   * dcc_cfa_cfg = NULL;
+    uint8_t use_defaults = 1;
 
     if(NULL != dcc_out_prms)
     {
-        dcc_cfa_cfg = &(dcc_out_prms->vissCFACfg);
+        if (NULL != dcc_out_prms)
+        {
+            if(1U == dcc_out_prms->useCfaCfg)
+            {
+                use_defaults = 0;
+                dcc_cfa_cfg = &(dcc_out_prms->vissCFACfg);
+            }
+        }
     }
 
-    if (NULL != fcfa_prms)
+    if (0U == use_defaults)
     {
-        if(NULL != dcc_cfa_cfg)
+        fcfa_prms->bitWidth               = dcc_cfa_cfg->bitWidth;
+        fcfa_prms->lut_enable             = dcc_cfa_cfg->lut_enable;
+
+        for (cnt = 0u; cnt < 4u; cnt ++)
         {
-            fcfa_prms->bitWidth               = dcc_cfa_cfg->bitWidth;
-            fcfa_prms->lut_enable             = dcc_cfa_cfg->lut_enable;
+            fcfa_prms->Set0GradHzMask[cnt]     = dcc_cfa_cfg->Set0GradHzMask[cnt];
+            fcfa_prms->Set0GradVtMask[cnt]     = dcc_cfa_cfg->Set0GradVtMask[cnt];
+            fcfa_prms->Set0IntensityMask[cnt]  = dcc_cfa_cfg->Set0IntensityMask[cnt];
+            fcfa_prms->Set0IntensityShift[cnt]  = dcc_cfa_cfg->Set0IntensityShift[cnt];
 
-            for (cnt = 0u; cnt < 4u; cnt ++)
+            fcfa_prms->Set1GradHzMask[cnt]     = dcc_cfa_cfg->Set1GradHzMask[cnt];
+            fcfa_prms->Set1GradVtMask[cnt]     = dcc_cfa_cfg->Set1GradVtMask[cnt];
+            fcfa_prms->Set1IntensityMask[cnt]  = dcc_cfa_cfg->Set1IntensityMask[cnt];
+            fcfa_prms->Set1IntensityShift[cnt]  = dcc_cfa_cfg->Set1IntensityShift[cnt];
+
+            fcfa_prms->blendMode[cnt]          = dcc_cfa_cfg->blendMode[cnt];
+            fcfa_prms->bitMaskSel[cnt]          = dcc_cfa_cfg->bitMaskSel[cnt];
+        }
+        for (cnt = 0u; cnt < 7u; cnt ++)
+        {
+            fcfa_prms->Set0Thr[cnt]     = dcc_cfa_cfg->Set0Thr[cnt];
+            fcfa_prms->Set1Thr[cnt]     = dcc_cfa_cfg->Set1Thr[cnt];
+        }
+
+        for (cnt = 0u; cnt < 639u; cnt ++)
+        {
+            fcfa_prms->ToneLut[cnt] = dcc_cfa_cfg->ToneLut[cnt];
+        }
+
+        for (cnt = 0u; cnt < 12u; cnt ++)
+        {
+            for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
             {
-                fcfa_prms->Set0GradHzMask[cnt]     = dcc_cfa_cfg->Set0GradHzMask[cnt];
-                fcfa_prms->Set0GradVtMask[cnt]     = dcc_cfa_cfg->Set0GradVtMask[cnt];
-                fcfa_prms->Set0IntensityMask[cnt]  = dcc_cfa_cfg->Set0IntensityMask[cnt];
-                fcfa_prms->Set0IntensityShift[cnt]  = dcc_cfa_cfg->Set0IntensityShift[cnt];
-
-                fcfa_prms->Set1GradHzMask[cnt]     = dcc_cfa_cfg->Set1GradHzMask[cnt];
-                fcfa_prms->Set1GradVtMask[cnt]     = dcc_cfa_cfg->Set1GradVtMask[cnt];
-                fcfa_prms->Set1IntensityMask[cnt]  = dcc_cfa_cfg->Set1IntensityMask[cnt];
-                fcfa_prms->Set1IntensityShift[cnt]  = dcc_cfa_cfg->Set1IntensityShift[cnt];
-
-                fcfa_prms->blendMode[cnt]          = dcc_cfa_cfg->blendMode[cnt];
-                fcfa_prms->bitMaskSel[cnt]          = dcc_cfa_cfg->bitMaskSel[cnt];
-            }
-            for (cnt = 0u; cnt < 7u; cnt ++)
-            {
-                fcfa_prms->Set0Thr[cnt]     = dcc_cfa_cfg->Set0Thr[cnt];
-                fcfa_prms->Set1Thr[cnt]     = dcc_cfa_cfg->Set1Thr[cnt];
-            }
-
-            for (cnt = 0u; cnt < 639u; cnt ++)
-            {
-                fcfa_prms->ToneLut[cnt] = dcc_cfa_cfg->ToneLut[cnt];
-            }
-
-            for (cnt = 0u; cnt < 12u; cnt ++)
-            {
-                for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
+                for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
                 {
-                    for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
-                    {
-                        fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = dcc_cfa_cfg->FirCoefs[cnt].matrix[cnt1][cnt2];
-                    }
+                    fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = dcc_cfa_cfg->FirCoefs[cnt].matrix[cnt1][cnt2];
                 }
             }
         }
-        else
+    }
+    else
+    {
+        fcfa_prms->imgWidth               = 1280u;
+        fcfa_prms->imgHeight              = 720u;
+        fcfa_prms->bitWidth               = 12u;
+        fcfa_prms->lut_enable             = 0u;
+
+        fcfa_prms->Set0GradHzMask[0u]     = 175u;
+        fcfa_prms->Set0GradHzMask[1u]     = 95u;
+        fcfa_prms->Set0GradHzMask[2u]     = 95u;
+        fcfa_prms->Set0GradHzMask[3u]     = 175u;
+
+        fcfa_prms->Set0GradVtMask[0u]     = 175u;
+        fcfa_prms->Set0GradVtMask[1u]     = 95u;
+        fcfa_prms->Set0GradVtMask[2u]     = 95u;
+        fcfa_prms->Set0GradVtMask[3u]     = 175u;
+
+        fcfa_prms->Set0IntensityMask[0u]  = 0u;
+        fcfa_prms->Set0IntensityMask[1u]  = 1u;
+        fcfa_prms->Set0IntensityMask[2u]  = 2u;
+        fcfa_prms->Set0IntensityMask[3u]  = 3u;
+
+        fcfa_prms->Set0IntensityShift[0u] = 4u;
+        fcfa_prms->Set0IntensityShift[1u] = 5u;
+        fcfa_prms->Set0IntensityShift[2u] = 6u;
+        fcfa_prms->Set0IntensityShift[3u] = 7u;
+
+        fcfa_prms->Set0Thr[0u]            = 500u;
+        fcfa_prms->Set0Thr[1u]            = 600u;
+        fcfa_prms->Set0Thr[2u]            = 700u;
+        fcfa_prms->Set0Thr[3u]            = 800u;
+        fcfa_prms->Set0Thr[4u]            = 900u;
+        fcfa_prms->Set0Thr[5u]            = 1000u;
+        fcfa_prms->Set0Thr[6u]            = 1100u;
+
+        fcfa_prms->Set1GradHzMask[0u]     = 175u;
+        fcfa_prms->Set1GradHzMask[1u]     = 195u;
+        fcfa_prms->Set1GradHzMask[2u]     = 195u;
+        fcfa_prms->Set1GradHzMask[3u]     = 175u;
+
+        fcfa_prms->Set1GradVtMask[0u]     = 276u;
+        fcfa_prms->Set1GradVtMask[1u]     = 196u;
+        fcfa_prms->Set1GradVtMask[2u]     = 196u;
+        fcfa_prms->Set1GradVtMask[3u]     = 276u;
+
+        fcfa_prms->Set1IntensityMask[0u]  = 8u;
+        fcfa_prms->Set1IntensityMask[1u]  = 9u;
+        fcfa_prms->Set1IntensityMask[2u]  = 10u;
+        fcfa_prms->Set1IntensityMask[3u]  = 11u;
+
+        fcfa_prms->Set1IntensityShift[0u] = 12u;
+        fcfa_prms->Set1IntensityShift[1u] = 13u;
+        fcfa_prms->Set1IntensityShift[2u] = 14u;
+        fcfa_prms->Set1IntensityShift[3u] = 15u;
+
+        fcfa_prms->Set1Thr[0u]            = 0u;
+        fcfa_prms->Set1Thr[1u]            = 100u;
+        fcfa_prms->Set1Thr[2u]            = 200u;
+        fcfa_prms->Set1Thr[3u]            = 300u;
+        fcfa_prms->Set1Thr[4u]            = 400u;
+        fcfa_prms->Set1Thr[5u]            = 500u;
+        fcfa_prms->Set1Thr[6u]            = 600u;
+
+        for (cnt = 0u; cnt < 639u; cnt ++)
         {
-            fcfa_prms->imgWidth               = 1280u;
-            fcfa_prms->imgHeight              = 720u;
-            fcfa_prms->bitWidth               = 12u;
-            fcfa_prms->lut_enable             = 0u;
+            fcfa_prms->ToneLut[cnt] = gcfa_lut_20to16[cnt];
+        }
 
-            fcfa_prms->Set0GradHzMask[0u]     = 175u;
-            fcfa_prms->Set0GradHzMask[1u]     = 95u;
-            fcfa_prms->Set0GradHzMask[2u]     = 95u;
-            fcfa_prms->Set0GradHzMask[3u]     = 175u;
-
-            fcfa_prms->Set0GradVtMask[0u]     = 175u;
-            fcfa_prms->Set0GradVtMask[1u]     = 95u;
-            fcfa_prms->Set0GradVtMask[2u]     = 95u;
-            fcfa_prms->Set0GradVtMask[3u]     = 175u;
-
-            fcfa_prms->Set0IntensityMask[0u]  = 0u;
-            fcfa_prms->Set0IntensityMask[1u]  = 1u;
-            fcfa_prms->Set0IntensityMask[2u]  = 2u;
-            fcfa_prms->Set0IntensityMask[3u]  = 3u;
-
-            fcfa_prms->Set0IntensityShift[0u] = 4u;
-            fcfa_prms->Set0IntensityShift[1u] = 5u;
-            fcfa_prms->Set0IntensityShift[2u] = 6u;
-            fcfa_prms->Set0IntensityShift[3u] = 7u;
-
-            fcfa_prms->Set0Thr[0u]            = 500u;
-            fcfa_prms->Set0Thr[1u]            = 600u;
-            fcfa_prms->Set0Thr[2u]            = 700u;
-            fcfa_prms->Set0Thr[3u]            = 800u;
-            fcfa_prms->Set0Thr[4u]            = 900u;
-            fcfa_prms->Set0Thr[5u]            = 1000u;
-            fcfa_prms->Set0Thr[6u]            = 1100u;
-
-            fcfa_prms->Set1GradHzMask[0u]     = 175u;
-            fcfa_prms->Set1GradHzMask[1u]     = 195u;
-            fcfa_prms->Set1GradHzMask[2u]     = 195u;
-            fcfa_prms->Set1GradHzMask[3u]     = 175u;
-
-            fcfa_prms->Set1GradVtMask[0u]     = 276u;
-            fcfa_prms->Set1GradVtMask[1u]     = 196u;
-            fcfa_prms->Set1GradVtMask[2u]     = 196u;
-            fcfa_prms->Set1GradVtMask[3u]     = 276u;
-
-            fcfa_prms->Set1IntensityMask[0u]  = 8u;
-            fcfa_prms->Set1IntensityMask[1u]  = 9u;
-            fcfa_prms->Set1IntensityMask[2u]  = 10u;
-            fcfa_prms->Set1IntensityMask[3u]  = 11u;
-
-            fcfa_prms->Set1IntensityShift[0u] = 12u;
-            fcfa_prms->Set1IntensityShift[1u] = 13u;
-            fcfa_prms->Set1IntensityShift[2u] = 14u;
-            fcfa_prms->Set1IntensityShift[3u] = 15u;
-
-            fcfa_prms->Set1Thr[0u]            = 0u;
-            fcfa_prms->Set1Thr[1u]            = 100u;
-            fcfa_prms->Set1Thr[2u]            = 200u;
-            fcfa_prms->Set1Thr[3u]            = 300u;
-            fcfa_prms->Set1Thr[4u]            = 400u;
-            fcfa_prms->Set1Thr[5u]            = 500u;
-            fcfa_prms->Set1Thr[6u]            = 600u;
-
-            for (cnt = 0u; cnt < 639u; cnt ++)
+        cfa_cnt = 0u;
+        for (cnt = 0u; cnt < 12u; cnt ++)
+        {
+            for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
             {
-                fcfa_prms->ToneLut[cnt] = gcfa_lut_20to16[cnt];
-            }
-
-            cfa_cnt = 0u;
-            for (cnt = 0u; cnt < 12u; cnt ++)
-            {
-                for (cnt1 = 0u; cnt1 < 4u; cnt1 ++)
+                for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
                 {
-                    for (cnt2 = 0u; cnt2 < 36u; cnt2 ++)
-                    {
-                        fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = gcfa_coeff[cfa_cnt];
-                        cfa_cnt ++;
-                    }
+                    fcfa_prms->FirCoefs[cnt].matrix[cnt1][cnt2] = gcfa_coeff[cfa_cnt];
+                    cfa_cnt ++;
                 }
             }
-
-            fcfa_prms->blendMode[0u]          = FLXD_BLEND_SELECTHVN;
-            fcfa_prms->blendMode[1u]          = FLXD_BLEND_SELECTHVN;
-            fcfa_prms->blendMode[2u]          = FLXD_BLEND_SELECTHVN;
-            fcfa_prms->blendMode[3u]          = FLXD_BLEND_SELECTHVN;
-
-            fcfa_prms->bitMaskSel[0u]         = 0u;
-            fcfa_prms->bitMaskSel[1u]         = 0u;
-            fcfa_prms->bitMaskSel[2u]         = 0u;
-            fcfa_prms->bitMaskSel[3u]         = 0u;
         }
+
+        fcfa_prms->blendMode[0u]          = FLXD_BLEND_SELECTHVN;
+        fcfa_prms->blendMode[1u]          = FLXD_BLEND_SELECTHVN;
+        fcfa_prms->blendMode[2u]          = FLXD_BLEND_SELECTHVN;
+        fcfa_prms->blendMode[3u]          = FLXD_BLEND_SELECTHVN;
+
+        fcfa_prms->bitMaskSel[0u]         = 0u;
+        fcfa_prms->bitMaskSel[1u]         = 0u;
+        fcfa_prms->bitMaskSel[2u]         = 0u;
+        fcfa_prms->bitMaskSel[3u]         = 0u;
     }
 }
 
 void tivxVpacVissParseCCMParams(Flexcc_ccm1 *ccm,
     dcc_parser_output_params_t *dcc_out_prms)
 {
+    uint8_t use_defaults = 1;
+
+    if (NULL != dcc_out_prms)
+    {
+        if(1U == dcc_out_prms->useCcmCfg)
+        {
+            use_defaults = 0;
+        }
+    }
+
     if (NULL != ccm)
     {
-        ccm->W11 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][0];
-        ccm->W12 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][1];
-        ccm->W13 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][2];
-        ccm->W21 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][0];
-        ccm->W22 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][1];
-        ccm->W23 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][2];
-        ccm->W31 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][0];
-        ccm->W32 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][1];
-        ccm->W33 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][2];
+        if (0U == use_defaults)
+        {
+            ccm->W11 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][0];
+            ccm->W12 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][1];
+            ccm->W13 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[0][2];
+            ccm->W14 = 0;
+            ccm->W21 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][0];
+            ccm->W22 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][1];
+            ccm->W23 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[1][2];
+            ccm->W24 = 0;
+            ccm->W31 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][0];
+            ccm->W32 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][1];
+            ccm->W33 = dcc_out_prms->ipipeRgb2Rgb1Cfg->matrix[2][2];
+            ccm->W34 = 0;
 
-        ccm->Offset_1 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[0];
-        ccm->Offset_2 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[1];
-        ccm->Offset_3 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[2];
+            ccm->Offset_1 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[0];
+            ccm->Offset_2 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[1];
+            ccm->Offset_3 = dcc_out_prms->ipipeRgb2Rgb1Cfg->offset[2];
+        }
+        else
+        {
+            ccm->W11 = 256;
+            ccm->W12 = 0;
+            ccm->W13 = 0;
+            ccm->W14 = 0;
+            ccm->W21 = 0;
+            ccm->W22 = 256;
+            ccm->W23 = 0;
+            ccm->W24 = 0;
+            ccm->W31 = 0;
+            ccm->W32 = 0;
+            ccm->W33 = 256;
+            ccm->W34 = 0;
+
+            ccm->Offset_1 = 0;
+            ccm->Offset_2 = 0;
+            ccm->Offset_3 = 0;
+        }
     }
 }
 

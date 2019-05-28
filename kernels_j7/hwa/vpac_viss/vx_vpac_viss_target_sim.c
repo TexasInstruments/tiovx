@@ -426,6 +426,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
                 prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
                 prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+                prms->dcc_output_params->useAwbCalbCfg = 0U;
+                prms->dcc_output_params->useH3aCfg = 0U;
+                prms->dcc_output_params->useNsf4Cfg = 0U;
+                prms->dcc_output_params->useBlcCfg = 0U;
+                prms->dcc_output_params->useCfaCfg = 0U;
+                prms->dcc_output_params->useCcmCfg = 0U;
+                prms->dcc_output_params->useH3aMuxCfg = 0U;
+                prms->dcc_output_params->useRfeDcmpCfg = 0U;
                 dcc_status |= dcc_update(prms->dcc_input_params, prms->dcc_output_params);
             }
         }
@@ -482,6 +490,8 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                     prms->dcc_output_params);
                 prms->nsf4_params.iw = raw_desc->params.width;
                 prms->nsf4_params.ih = raw_desc->params.height;
+                prms->nsf4_params.ow = raw_desc->params.width;
+                prms->nsf4_params.oh = raw_desc->params.height;
                 if (0 == aewb_result->awb_valid)
                 {
                     prms->nsf4_params.wb_gain[0] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[0];
@@ -1067,9 +1077,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                 if(0 == params->bypass_nsf4)
                 {
                     tivxVpacVissParseNsf4Params(&prms->nsf4_params, prms->dcc_output_params);
-                    nsf4_check_parameters(&prms->nsf4_params);
                     prms->nsf4_params.iw = width;
                     prms->nsf4_params.ih = height;
+                    nsf4_check_parameters(&prms->nsf4_params);
                     prms->pScratch_nsf4v_out = prms->scratch_nsf4v_out;
                 }
                 else
