@@ -90,7 +90,7 @@ typedef struct
     uint32_t                            isAlloc;
     tivx_vpac_nf_common_params_t        nfGenericParams;
     Vhwa_M2mNfCreatePrms                createPrms;
-    Nf_Config                           nf_cfg;
+    Vhwa_M2mNfConfig                    nf_cfg;
     Nf_WgtTableConfig                   wgtTbl;
     Fvid2_Handle                        handle;
     tivx_event                          waitForProcessCmpl;
@@ -136,6 +136,8 @@ static tivxVpacNfGenericObj *tivxVpacNfGenericAllocObject(
        tivxVpacNfGenericInstObj *instObj);
 static void tivxVpacNfGenericFreeObject(
        tivxVpacNfGenericInstObj *instObj, tivxVpacNfGenericObj *nf_generic_obj);
+static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
+    tivx_obj_desc_image_t *img_desc);
 static vx_status tivxVpacNfGenericSetHtsLimitCmd(
     tivxVpacNfGenericObj *nf_generic_obj,
     tivx_obj_desc_user_data_object_t *usr_data_obj);
@@ -202,6 +204,11 @@ void tivxAddTargetKernelVpacNfGeneric(void)
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelVpacNfGeneric: Failed to Add NF Generic TargetKernel\n");
         }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxAddTargetKernelVpacNfGeneric: Invalid CPU\n");
     }
 }
 
@@ -331,7 +338,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericProcess(
             nf_generic_obj->wgtTbl.genFilterCoeffs[k - 1] = (int32_t) temp_lut[25 - 1 - k];
         }
 
-        nf_generic_obj->nf_cfg.centralPixelWeight = temp_lut[12];
+        nf_generic_obj->nf_cfg.nfCfg.centralPixelWeight = temp_lut[12];
         nf_generic_obj->wgtTbl.filterMode      = NF_FILTER_MODE_GENERIC_2D_FILTER;
 
         /* Update NF params */
@@ -432,9 +439,11 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
     tivx_obj_desc_convolution_t      *conv;
     void                             *conv_target_ptr;
     tivxVpacNfGenericObj             *nf_generic_obj = NULL;
-    Nf_Config                        *nf_cfg = NULL;
+    Vhwa_M2mNfConfig                 *nf_cfg = NULL;
     tivx_vpac_nf_common_params_t     *params = NULL;
     tivx_obj_desc_user_data_object_t *params_array = NULL;
+    tivx_obj_desc_image_t            *src;
+    tivx_obj_desc_image_t            *dst;
     void                             *params_array_target_ptr = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
@@ -453,6 +462,10 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         {
             params_array = (tivx_obj_desc_user_data_object_t *)
                 obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONFIGURATION_IDX];
+            src = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_INPUT_IDX];
+            dst = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_OUTPUT_IDX];
         }
         else
         {
@@ -525,7 +538,7 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         params = (tivx_vpac_nf_common_params_t *)params_array_target_ptr;
 
         /* Initialize NF Config with defaults */
-        Nf_ConfigInit(nf_cfg);
+        Nf_ConfigInit(&nf_cfg->nfCfg);
 
         conv = (tivx_obj_desc_convolution_t *)obj_desc[TIVX_KERNEL_VPAC_NF_GENERIC_CONV_IDX];
         conv_target_ptr = tivxMemShared2TargetPtr(
@@ -568,16 +581,19 @@ static vx_status VX_CALLBACK tivxVpacNfGenericCreate(
         }
 
         /* Set NF Config parameters - centralPixelWeight set in tivxVpacNfGenericProcess */
-        nf_cfg->filterMode = NF_FILTER_MODE_GENERIC_2D_FILTER;
-        nf_cfg->tableMode = 0u;
-        nf_cfg->skipMode = params->output_pixel_skip;
-        nf_cfg->interleaveMode = params->input_interleaved;
-        nf_cfg->outputShift = params->output_downshift;
-        nf_cfg->outputOffset = params->output_offset;
-        nf_cfg->numSubTables = 0u;
-        nf_cfg->subTableIdx = 0u;
-        nf_cfg->centralPixelWeight = temp_lut[12];
+        nf_cfg->nfCfg.filterMode = NF_FILTER_MODE_GENERIC_2D_FILTER;
+        nf_cfg->nfCfg.tableMode = 0u;
+        nf_cfg->nfCfg.skipMode = params->output_pixel_skip;
+        nf_cfg->nfCfg.interleaveMode = params->input_interleaved;
+        nf_cfg->nfCfg.outputShift = params->output_downshift;
+        nf_cfg->nfCfg.outputOffset = params->output_offset;
+        nf_cfg->nfCfg.numSubTables = 0u;
+        nf_cfg->nfCfg.subTableIdx = 0u;
+        nf_cfg->nfCfg.centralPixelWeight = temp_lut[12];
         nf_generic_obj->wgtTbl.filterMode      = NF_FILTER_MODE_GENERIC_2D_FILTER;
+
+        tivxVpacNfSetFmt(&nf_cfg->inFmt, src);
+        tivxVpacNfSetFmt(&nf_cfg->outFmt, dst);
 
         /* Save the parameters in the object variable,
            This is used to compare with config in process request to check if
@@ -704,15 +720,17 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&nf_generic_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != nf_generic_obj) &&
-            (sizeof(tivxVpacNfGenericObj) == size))
+        if (VX_SUCCESS != status)
         {
-            status = VX_SUCCESS;
+		    VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacNfGenericControl: Failed to get Target Kernel Instance Context\n");
         }
-        else
+        else if ((NULL == nf_generic_obj) ||
+            (sizeof(tivxVpacNfGenericObj) != size))
         {
 		    VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfGenericControl: Wrong Size for Nf Generic Obj\n");
+            status = VX_FAILURE;
         }
     }
 
@@ -800,6 +818,51 @@ static void tivxVpacNfGenericFreeObject(tivxVpacNfGenericInstObj *instObj,
 
     /* Release instance mutex */
     tivxMutexUnlock(instObj->lock);
+}
+
+static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
+    tivx_obj_desc_image_t *img_desc)
+{
+    if (NULL != img_desc)
+    {
+        switch (img_desc->format)
+        {
+            case VX_DF_IMAGE_U8:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
+                break;
+            }
+            case VX_DF_IMAGE_U16:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+                break;
+            }
+            case VX_DF_IMAGE_S16:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+                break;
+            }
+            case TIVX_DF_IMAGE_P12:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                        "tivxVpacNfSetFmt: Invalid Vx Image Format\n");
+                break;
+            }
+        }
+
+        fmt->width     = img_desc->imagepatch_addr[0U].dim_x;
+        fmt->height    = img_desc->imagepatch_addr[0U].dim_y;
+        fmt->pitch[0U] = img_desc->imagepatch_addr[0U].stride_y;
+    }
 }
 
 /* ========================================================================== */

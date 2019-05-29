@@ -91,7 +91,7 @@ typedef struct
     uint32_t                            isAlloc;
     tivx_vpac_nf_bilateral_params_t     nfBilateralParams;
     Vhwa_M2mNfCreatePrms                createPrms;
-    Nf_Config                           nf_cfg;
+    Vhwa_M2mNfConfig                    nf_cfg;
     Nf_WgtTableConfig                   wgtTbl;
     Fvid2_Handle                        handle;
     tivx_event                          waitForProcessCmpl;
@@ -136,6 +136,8 @@ static tivxVpacNfBilateralObj *tivxVpacNfBilateralAllocObject(
        tivxVpacNfBilateralInstObj *instObj);
 static void tivxVpacNfBilateralFreeObject(
        tivxVpacNfBilateralInstObj *instObj, tivxVpacNfBilateralObj *nf_bilateral_obj);
+static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
+    tivx_obj_desc_image_t *img_desc);
 static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, double *sigma_s,
     double *sigma_r, uint32_t *i_lut);
 static uint32_t tivxVpacNfBilateralGenerateLutCoeffs(uint8_t mode,uint8_t inp_bitw,
@@ -210,6 +212,11 @@ void tivxAddTargetKernelVpacNfBilateral(void)
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxAddTargetKernelVpacNfBilateral: Failed to Add NF Bilateral TargetKernel\n");
         }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxAddTargetKernelVpacNfBilateral: Invalid CPU\n");
     }
 }
 
@@ -373,11 +380,13 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
     vx_status                         status = VX_SUCCESS;
 
     tivxVpacNfBilateralObj           *nf_bilateral_obj = NULL;
-    Nf_Config                        *nf_cfg = NULL;
+    Vhwa_M2mNfConfig                 *nf_cfg = NULL;
     tivx_vpac_nf_bilateral_params_t  *params = NULL;
     tivx_vpac_nf_bilateral_sigmas_t  *sigmas = NULL;
     tivx_obj_desc_user_data_object_t *params_array = NULL;
     tivx_obj_desc_user_data_object_t *sigmas_array = NULL;
+    tivx_obj_desc_image_t            *src;
+    tivx_obj_desc_image_t            *dst;
     void                             *params_array_target_ptr = NULL;
     void                             *sigmas_array_target_ptr = NULL;
 
@@ -400,6 +409,10 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
                 obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_CONFIGURATION_IDX];
             sigmas_array = (tivx_obj_desc_user_data_object_t *)
                 obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_SIGMAS_IDX];
+            src = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_INPUT_IDX];
+            dst = (tivx_obj_desc_image_t *)
+                obj_desc[TIVX_KERNEL_VPAC_NF_BILATERAL_OUTPUT_IDX];
         }
         else
         {
@@ -476,22 +489,25 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralCreate(
         sigmas = (tivx_vpac_nf_bilateral_sigmas_t *)sigmas_array_target_ptr;
 
         /* Initialize NF Config with defaults */
-        Nf_ConfigInit(nf_cfg);
+        Nf_ConfigInit(&nf_cfg->nfCfg);
 
         /* Set NF Config parameters - centralPixelWeight set in tivxVpacNfBilateralProcess */
-        nf_cfg->filterMode = NF_FILTER_MODE_BILATERAL;
-        nf_cfg->tableMode = params->adaptive_mode;
-        nf_cfg->skipMode = params->params.output_pixel_skip;
-        nf_cfg->interleaveMode = params->params.input_interleaved;
-        nf_cfg->outputShift = params->params.output_downshift;
-        nf_cfg->outputOffset = params->params.output_offset;
-        nf_cfg->numSubTables = getSubRangeBits(sigmas->num_sigmas);
-        nf_cfg->subTableIdx = params->sub_table_select;
-        nf_cfg->centralPixelWeight = 255u;
+        nf_cfg->nfCfg.filterMode = NF_FILTER_MODE_BILATERAL;
+        nf_cfg->nfCfg.tableMode = params->adaptive_mode;
+        nf_cfg->nfCfg.skipMode = params->params.output_pixel_skip;
+        nf_cfg->nfCfg.interleaveMode = params->params.input_interleaved;
+        nf_cfg->nfCfg.outputShift = params->params.output_downshift;
+        nf_cfg->nfCfg.outputOffset = params->params.output_offset;
+        nf_cfg->nfCfg.numSubTables = getSubRangeBits(sigmas->num_sigmas);
+        nf_cfg->nfCfg.subTableIdx = params->sub_table_select;
+        nf_cfg->nfCfg.centralPixelWeight = 255u;
         nf_bilateral_obj->wgtTbl.filterMode = NF_FILTER_MODE_BILATERAL;
                 
         tivxVpacNfBilateralGenerateLut(getSubRangeBits(sigmas->num_sigmas), sigmas->sigma_space, sigmas->sigma_range,
             nf_bilateral_obj->wgtTbl.blFilterLut);
+    
+        tivxVpacNfSetFmt(&nf_cfg->inFmt, src);
+        tivxVpacNfSetFmt(&nf_cfg->outFmt, dst);
 
         /* Save the parameters in the object variable,
            This is used to compare with config in process request to check if
@@ -620,12 +636,13 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&nf_bilateral_obj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != nf_bilateral_obj) &&
-            (sizeof(tivxVpacNfBilateralObj) == size))
+        if (VX_SUCCESS != status)
         {
-            status = VX_SUCCESS;
+		    VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacNfBilateralControl: Failed to get Target Kernel Instance Context\n");
         }
-        else
+        else if ((NULL == nf_bilateral_obj) ||
+            (sizeof(tivxVpacNfBilateralObj) != size))
         {
 		    VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacNfBilateralControl: Wrong Size for Nf Bilateral Obj\n");
@@ -716,7 +733,53 @@ static void tivxVpacNfBilateralFreeObject(tivxVpacNfBilateralInstObj *instObj,
     }
 
     /* Release instance mutex */
-    tivxMutexUnlock(instObj->lock);}
+    tivxMutexUnlock(instObj->lock);
+}
+
+static void tivxVpacNfSetFmt(Fvid2_Format *fmt,
+    tivx_obj_desc_image_t *img_desc)
+{
+    if (NULL != img_desc)
+    {
+        switch (img_desc->format)
+        {
+            case VX_DF_IMAGE_U8:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS8_PACKED;
+                break;
+            }
+            case VX_DF_IMAGE_U16:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+                break;
+            }
+            case VX_DF_IMAGE_S16:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+                break;
+            }
+            case TIVX_DF_IMAGE_P12:
+            {
+                fmt->dataFormat = FVID2_DF_LUMA_ONLY;
+                fmt->ccsFormat = FVID2_CCSF_BITS12_PACKED;
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                        "tivxVpacNfSetFmt: Invalid Vx Image Format\n");
+                break;
+            }
+        }
+
+        fmt->width     = img_desc->imagepatch_addr[0U].dim_x;
+        fmt->height    = img_desc->imagepatch_addr[0U].dim_y;
+        fmt->pitch[0U] = img_desc->imagepatch_addr[0U].stride_y;
+    }
+}
 
 static void tivxVpacNfBilateralGenerateLut(uint8_t subRangeBits, double *sigma_s,
     double *sigma_r, uint32_t *i_lut)
