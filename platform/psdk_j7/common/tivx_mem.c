@@ -51,6 +51,9 @@ vx_status tivxMemBufferAlloc(
             case TIVX_MEM_INTERNAL_L1:
                 heap_id = APP_MEM_HEAP_L1;
                 break;
+            case TIVX_MEM_EXTERNAL_SCRATCH:
+                heap_id = APP_MEM_HEAP_DDR_SCRATCH;
+                break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
                 status = VX_FAILURE;
@@ -101,6 +104,9 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
         case TIVX_MEM_INTERNAL_L1:
             heap_id = APP_MEM_HEAP_L1;
             break;
+        case TIVX_MEM_EXTERNAL_SCRATCH:
+            heap_id = APP_MEM_HEAP_DDR_SCRATCH;
+            break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
             status = VX_FAILURE;
@@ -133,6 +139,9 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
             break;
         case TIVX_MEM_INTERNAL_L1:
             heap_id = APP_MEM_HEAP_L1;
+            break;
+        case TIVX_MEM_EXTERNAL_SCRATCH:
+            heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
@@ -179,6 +188,9 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
                 break;
             case TIVX_MEM_INTERNAL_L1:
                 heap_id = APP_MEM_HEAP_L1;
+                break;
+            case TIVX_MEM_EXTERNAL_SCRATCH:
+                heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
@@ -238,6 +250,9 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
                 break;
             case TIVX_MEM_INTERNAL_L1:
                 heap_id = APP_MEM_HEAP_L1;
+                break;
+            case TIVX_MEM_EXTERNAL_SCRATCH:
+                heap_id = APP_MEM_HEAP_DDR_SCRATCH;
                 break;
             default:
                 VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
@@ -305,6 +320,9 @@ uint64_t tivxMemHost2SharedPtr(uint64_t host_ptr, vx_enum mem_heap_region)
             break;
         case TIVX_MEM_INTERNAL_L1:
             heap_id = APP_MEM_HEAP_L1;
+            break;
+        case TIVX_MEM_EXTERNAL_SCRATCH:
+            heap_id = APP_MEM_HEAP_DDR_SCRATCH;
             break;
         default:
             VX_PRINT(VX_ZONE_ERROR, "Invalid memtype\n");
