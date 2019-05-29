@@ -412,6 +412,7 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]))
     {
         status = VX_FAILURE;
+        VX_PRINT(VX_ZONE_ERROR, "DISPLAY: ERROR: Invalid parameters!\r\n");
     }
     else
     {

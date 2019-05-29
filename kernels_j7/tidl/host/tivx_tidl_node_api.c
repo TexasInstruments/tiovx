@@ -63,7 +63,9 @@
 
 
 #include <TI/tivx.h>
+#include <TI/tivx_config.h>
 #include "itidl_ti.h"
+#include <stdlib.h>
 
 #define TIVX_KERNEL_TIDL_IN_CONFIG_IDX                  (0U)
 #define TIVX_KERNEL_TIDL_IN_NETWORK_IDX                 (1U)
@@ -80,12 +82,13 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
                                               vx_tensor output_tensors[])
 {
     int32_t i;
-    vx_reference *params;
+    vx_reference params[TIVX_KERNEL_MAX_PARAMS];
     vx_uint32 num_input_tensors, num_output_tensors;
     vx_map_id map_id_config;
     sTIDL_IOBufDesc_t *ioBufDesc;
     vx_int32 num_params;
     vx_user_data_object config;
+    vx_node node = NULL;
 
     config= (vx_user_data_object)appParams[TIVX_KERNEL_TIDL_IN_CONFIG_IDX];
     vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
@@ -97,35 +100,38 @@ VX_API_ENTRY vx_node VX_API_CALL tivxTIDLNode(vx_graph  graph,
     num_params= TIVX_KERNEL_TIDL_NUM_BASE_PARAMETERS + num_input_tensors + num_output_tensors;
 
     vxUnmapUserDataObject(config, map_id_config);
-
-    params= tivxMemAlloc(sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
-
-    params[0]=  (vx_reference)config;
-    params[1]=  appParams[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
-    params[2]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
-    params[3]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
-    params[4]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
-
-    for (i= 0; i < num_input_tensors; i++) {
-      params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];
-    }
-
-    for (i= 0; i < num_output_tensors; i++) {
-      params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + num_input_tensors + i]=  (vx_reference)output_tensors[i];
-    }
-
-    vx_node node = tivxCreateNodeByKernelRef(graph,
-                                             kernel,
-                                             params,
-                                             num_params);
-
-
-    if(vxGetStatus((vx_reference)(node))==VX_SUCCESS)
+    
+    if(num_params > TIVX_KERNEL_MAX_PARAMS)
     {
-        vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1);
+        VX_PRINT(VX_ZONE_ERROR, "Exceeded max parameters for a kernel\n");
     }
-
-    tivxMemFree(params, sizeof(vx_reference)*num_params, TIVX_MEM_EXTERNAL);
+    else
+    {
+        params[0]=  (vx_reference)config;
+        params[1]=  appParams[TIVX_KERNEL_TIDL_IN_NETWORK_IDX];
+        params[2]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_PARAMS_IDX];
+        params[3]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_IN_ARGS_IDX];
+        params[4]=  appParams[TIVX_KERNEL_TIDL_IN_CREATE_OUT_ARGS_IDX];
+    
+        for (i= 0; i < num_input_tensors; i++) {
+          params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + i]=  (vx_reference)input_tensors[i];
+        }
+    
+        for (i= 0; i < num_output_tensors; i++) {
+          params[TIVX_KERNEL_TIDL_IN_FIRST_TENSOR + num_input_tensors + i]=  (vx_reference)output_tensors[i];
+        }
+    
+        node = tivxCreateNodeByKernelRef(graph,
+                                                 kernel,
+                                                 params,
+                                                 num_params);
+    
+    
+        if(vxGetStatus((vx_reference)(node))==VX_SUCCESS)
+        {
+            vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_EVE1);
+        }
+    }
 
     return node;
 }
