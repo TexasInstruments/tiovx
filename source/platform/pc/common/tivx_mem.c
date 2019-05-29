@@ -119,7 +119,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 {
     void *ptr = NULL;
 
-    if(mem_heap_region!=TIVX_MEM_EXTERNAL)
+    if( (mem_heap_region!=TIVX_MEM_EXTERNAL) && (mem_heap_region!=TIVX_MEM_EXTERNAL_SCRATCH) )
     {
         uint32_t mem_offset;
 
@@ -143,7 +143,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
 
 void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
 {
-    if(mem_heap_region!=TIVX_MEM_EXTERNAL)
+    if( (mem_heap_region!=TIVX_MEM_EXTERNAL) && (mem_heap_region!=TIVX_MEM_EXTERNAL_SCRATCH) )
     {
         /* L2RAM is used as scratch memory and allocation is linear offset based allocation
          * Free in this case resets the offset to 0
@@ -185,7 +185,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         stats->mem_size = 0;
         stats->free_size = 0;
 
-        if(mem_heap_region!=TIVX_MEM_EXTERNAL)
+        if( (mem_heap_region!=TIVX_MEM_EXTERNAL) && (mem_heap_region!=TIVX_MEM_EXTERNAL_SCRATCH) )
         {
             stats->mem_size = TIVX_MEM_L2RAM_SIZE;
             stats->free_size = TIVX_MEM_L2RAM_SIZE - gL2RAM_mem_offset;

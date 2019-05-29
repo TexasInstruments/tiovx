@@ -137,7 +137,15 @@ typedef enum _tivx_mem_heap_region_e
      *
      *  NOT to be used by applications.
      */
-    TIVX_MEM_INTERNAL_L1
+    TIVX_MEM_INTERNAL_L1,
+
+    /*! \brief External scratch memory.
+     *
+     *  Typically large in size and can be used by kernels.
+     *  as well as applications.  Must be reset and allocated
+     *  each time it is used.
+     */
+    TIVX_MEM_EXTERNAL_SCRATCH
 
 } tivx_mem_heap_region_e;
 
