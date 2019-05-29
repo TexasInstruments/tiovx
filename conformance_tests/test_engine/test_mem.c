@@ -20,6 +20,8 @@
 #include <VX/vx.h>
 #include <TI/tivx_mem.h>
 
+/* #define USE_MALLOC */
+
 #define CT_MEM_ALLOC_ALIGN      (255U)
 #define CT_MEM_HEADER_SIZE      (32U)
 
@@ -29,6 +31,9 @@ void *ct_alloc_mem(size_t size)
 
     if (0 != size)
     {
+        #ifdef USE_MALLOC
+        ptr = malloc(size);
+        #else
         size = (size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
             ~(CT_MEM_ALLOC_ALIGN);
         ptr = tivxMemAlloc(size, TIVX_MEM_EXTERNAL);
@@ -39,6 +44,7 @@ void *ct_alloc_mem(size_t size)
             *(uint32_t*)ptr = size;
             ptr = (void *)((uintptr_t)ptr + CT_MEM_HEADER_SIZE);
         }
+        #endif
     }
 
     return (ptr);
@@ -46,13 +52,17 @@ void *ct_alloc_mem(size_t size)
 
 void ct_free_mem(void *ptr)
 {
-    uint32_t size;
-
     if (NULL != ptr)
     {
+        #ifdef USE_MALLOC
+        free(ptr);
+        #else
+        uint32_t size;
+        
         ptr = (void *)((uintptr_t)ptr - CT_MEM_HEADER_SIZE);
         size = *(uint32_t*)ptr;
         tivxMemFree(ptr, size, TIVX_MEM_EXTERNAL);
+        #endif
     }
 }
 
@@ -67,10 +77,14 @@ void ct_memset(void *ptr, vx_uint8 c, size_t size)
 void *ct_calloc(size_t nmemb, size_t size)
 {
     void *ptr = NULL;
-    size_t new_size;
 
     if ((0 != size) && (0 != nmemb))
     {
+        #ifdef USE_MALLOC
+        ptr = calloc(nmemb, size);
+        #else
+        size_t new_size;
+        
         new_size = size * nmemb;
         new_size = (new_size + CT_MEM_HEADER_SIZE + CT_MEM_ALLOC_ALIGN) &
             ~(CT_MEM_ALLOC_ALIGN);
@@ -82,6 +96,7 @@ void *ct_calloc(size_t nmemb, size_t size)
             *(uint32_t*)ptr = new_size;
             ptr = (void *)((uintptr_t)ptr + CT_MEM_HEADER_SIZE);
         }
+        #endif
     }
 
     return (ptr);
