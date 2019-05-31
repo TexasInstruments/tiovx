@@ -873,21 +873,21 @@ static void tivxVpacVissDccMapBlc(tivxVpacVissObj *vissObj,
     pwlCfg = &vissObj->vissCfg.pwlCfg1;
     for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt ++)
     {
-        pwlCfg->gain[cnt] = dcc_out_prms->vissBLC.l_dcoffset[cnt];
+        pwlCfg->offset[cnt] = dcc_out_prms->vissBLC.l_dcoffset[cnt];
     }
     vissObj->vissCfgRef.lPwlCfg = pwlCfg;
 
     pwlCfg = &vissObj->vissCfg.pwlCfg2;
     for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt ++)
     {
-        pwlCfg->gain[cnt] = dcc_out_prms->vissBLC.s_dcoffset[cnt];
+        pwlCfg->offset[cnt] = dcc_out_prms->vissBLC.s_dcoffset[cnt];
     }
     vissObj->vissCfgRef.sPwlCfg = pwlCfg;
 
     pwlCfg = &vissObj->vissCfg.pwlCfg3;
     for (cnt = 0U; cnt < RFE_MAX_COLOR_COMP; cnt ++)
     {
-        pwlCfg->gain[cnt] = dcc_out_prms->vissBLC.vs_dcoffset[cnt];
+        pwlCfg->offset[cnt] = dcc_out_prms->vissBLC.vs_dcoffset[cnt];
     }
     vissObj->vissCfgRef.vsPwlCfg = pwlCfg;
 
@@ -1455,7 +1455,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
         }
         else if (2u == inst_id)
         {
-            pwlCfg = &vissObj->vissCfg.pwlCfg2;
+            pwlCfg = &vissObj->vissCfg.pwlCfg3;
             lutCfg = &vissObj->vissCfg.decomp2Cfg;
 
             pwlCfg->mask        = 4095u;
