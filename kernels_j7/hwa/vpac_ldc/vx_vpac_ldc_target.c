@@ -289,8 +289,8 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                 "tivxVpacLdcProcess: Invalid Ldc Object\n");
             status = VX_ERROR_INVALID_NODE;
         }
-        else if ((1u == ldc_obj->ldc_cfg.enableOutput[1U]) ||
-                (NULL != obj_desc[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX]))
+        else if ((1u == ldc_obj->ldc_cfg.enableOutput[1U]) &&
+                (NULL == obj_desc[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX]))
         {
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxVpacLdcProcess: Null Desc for output1\n");
@@ -533,8 +533,8 @@ static vx_status VX_CALLBACK tivxVpacLdcCreate(
         ldc_cfg->outputStartX = ldc_prms->init_x;
         ldc_cfg->outputStartY = ldc_prms->init_y;
 
-        ldc_cfg->outputFrameWidth = in_img_desc->imagepatch_addr[0U].dim_x;
-        ldc_cfg->outputFrameHeight = in_img_desc->imagepatch_addr[0U].dim_y;
+        ldc_cfg->outputFrameWidth = out0_img_desc->imagepatch_addr[0U].dim_x;
+        ldc_cfg->outputFrameHeight = out0_img_desc->imagepatch_addr[0U].dim_y;
 
         tivxVpacLdcSetMeshParams(ldc_cfg, mesh_prms_desc, mesh_img_desc);
 
