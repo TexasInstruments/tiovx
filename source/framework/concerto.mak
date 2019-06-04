@@ -37,4 +37,8 @@ ifeq ($(HOST_COMPILER),TIARMCGT)
 CFLAGS += --display_error_number
 endif
 
+ifeq ($(HOST_COMPILER),GCC_LINUX_ARM)
+CFLAGS += -Wno-format-truncation
+endif
+
 include $(FINALE)
