@@ -234,11 +234,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     uint32_t                          size;
     void                             *left_target_ptr;
     void                             *right_target_ptr;
-    void                             *configuration_target_ptr;
     void                             *confidence_histogram_target_ptr = NULL;
     void                             *output_target_ptr;
     tivxDmpacSdeObj                  *sde_obj = NULL;
-    tivx_obj_desc_user_data_object_t *configuration_desc;
     tivx_obj_desc_image_t            *left_desc;
     tivx_obj_desc_image_t            *right_desc;
     tivx_obj_desc_image_t            *output_desc;
@@ -275,7 +273,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         inFrmList                 = &sde_obj->inFrmList;
         outFrmList                = &sde_obj->outFrmList;
 
-        configuration_desc        = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX];
         left_desc                 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX];
         right_desc                = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX];
         output_desc               = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
@@ -285,8 +282,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
         right_target_ptr = tivxMemShared2TargetPtr(
             right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
-        configuration_target_ptr = tivxMemShared2TargetPtr(
-            configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
         output_target_ptr = tivxMemShared2TargetPtr(
             output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
         if( confidence_histogram_desc != NULL)
@@ -301,9 +296,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         tivxMemBufferMap(right_target_ptr,
             right_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
-        tivxMemBufferMap(configuration_target_ptr,
-            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
         tivxMemBufferMap(output_target_ptr,
             output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_WRITE_ONLY);
@@ -313,7 +305,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
                 confidence_histogram_desc->mem_size, VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
         }
-		
+
 		/* Initialize SDE Input Frame List */
         inFrmList->frames[SDE_INPUT_REFERENCE_IMG] =
 		    &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
@@ -363,9 +355,6 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             VX_READ_ONLY);
         tivxMemBufferUnmap(right_target_ptr,
             right_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
-        tivxMemBufferUnmap(configuration_target_ptr,
-            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
         tivxMemBufferUnmap(output_target_ptr,
             output_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -441,7 +430,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             if (NULL == sde_obj->handle)
             {
 				VX_PRINT(VX_ZONE_ERROR,
-                "tivxDmpacSdeCreate: Failed to Alloc Nf Bilateral Object\n");
+                "tivxDmpacSdeCreate: Failed to Alloc Sde Object\n");
                 status = VX_FAILURE;
             }
         }
@@ -489,7 +478,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         /* Initialize SDE Config with defaults */
         Sde_ConfigInit(sde_cfg);
 
-        /* Set SDE Config parameters - centralPixelWeight set in tivxDmpacSdeProcess */
+        /* Set SDE Config parameters */
         aligned_width = left_desc->imagepatch_addr[0].dim_x;
         aligned_height = left_desc->imagepatch_addr[0].dim_y;
         if (aligned_width < 128) {
@@ -578,14 +567,21 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_SUCCESS;
+    vx_status                status = VX_FAILURE;
     uint32_t                 size;
     tivxDmpacSdeObj    *sde_obj = NULL;
 
-    status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS);
-
-    if (VX_SUCCESS == status)
+    if ( num_params != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_LEFT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_RIGHT_IDX])
+        || (NULL == obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX])
+    )
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDmpacSdeDelete: Invalid Descriptor\n");
+    }
+    else
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&sde_obj, &size);
@@ -607,11 +603,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
             tivxDmpacSdeFreeObject(&gTivxDmpacSdeInstObj, sde_obj);
         }
     }
-    else
-    {
-        VX_PRINT(VX_ZONE_ERROR,
-            "tivxDmpacSdeDelete: Invalid Descriptor\n");
-    }
+
 
     return status;
 }
