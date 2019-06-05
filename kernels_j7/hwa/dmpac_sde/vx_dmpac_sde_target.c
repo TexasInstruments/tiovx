@@ -256,8 +256,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         VX_PRINT(VX_ZONE_ERROR, "tivxDmpacSdeProcess: Invalid Descriptor\n");
         status = VX_FAILURE;
     }
-
-    if (VX_SUCCESS == status)
+    else
     {
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&sde_obj, &size);
@@ -283,18 +282,18 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         output_desc               = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_OUTPUT_IDX];
         confidence_histogram_desc = (tivx_obj_desc_distribution_t *)obj_desc[TIVX_KERNEL_DMPAC_SDE_CONFIDENCE_HISTOGRAM_IDX];
 
-        left_target_ptr = (void*) tivxMemShared2PhysPtr(
+        left_target_ptr = tivxMemShared2TargetPtr(
             left_desc->mem_ptr[0].shared_ptr, left_desc->mem_ptr[0].mem_heap_region);
-        right_target_ptr = (void*) tivxMemShared2PhysPtr(
+        right_target_ptr = tivxMemShared2TargetPtr(
             right_desc->mem_ptr[0].shared_ptr, right_desc->mem_ptr[0].mem_heap_region);
         output_target_ptr = tivxMemShared2TargetPtr(
             output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
         if( confidence_histogram_desc != NULL)
         {
-            confidence_histogram_target_ptr = (void*) tivxMemShared2PhysPtr(
+            confidence_histogram_target_ptr = tivxMemShared2PhysPtr(
                 confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
         }
-/*
+
         tivxMemBufferMap(left_target_ptr,
             left_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
@@ -352,7 +351,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             status = VX_FAILURE;
         }
     }
-/*
+
     if (VX_SUCCESS == status)
     {
         tivxMemBufferUnmap(left_target_ptr,
@@ -371,7 +370,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
                 VX_WRITE_ONLY);
         }
     }
-*/
+
 
     return status;
 }
@@ -405,8 +404,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
             "tivxDmpacSdeCreate: Required input parameter set to NULL\n");
         status = VX_FAILURE;
     }
-
-    if (VX_SUCCESS == status)
+    else
     {
         sde_obj = tivxDmpacSdeAllocObject(&gTivxDmpacSdeInstObj);
         if (NULL != sde_obj)
@@ -483,12 +481,12 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
     {
         sdePrms = &sde_obj->sdePrms;
 
-        params_array_target_ptr = (void*) tivxMemShared2PhysPtr(
+        params_array_target_ptr = tivxMemShared2TargetPtr(
             params_array->mem_ptr.shared_ptr, params_array->mem_ptr.mem_heap_region);
-/*
+
         tivxMemBufferMap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-*/
+
         params = (tivx_dmpac_sde_params_t *)params_array_target_ptr;
 
         /* Initialize SDE Config with defaults */
@@ -563,10 +561,10 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         {
             status = VX_SUCCESS;
         }
-/*
+
         tivxMemBufferUnmap(params_array_target_ptr, params_array->mem_size,
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-*/
+
     }
         
     if (VX_SUCCESS == status)
@@ -601,7 +599,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg)
 {
-    vx_status                status = VX_FAILURE;
+    vx_status                status = VX_SUCCESS;
     uint32_t                 size;
     tivxDmpacSdeObj    *sde_obj = NULL;
 
@@ -614,6 +612,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeDelete(
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxDmpacSdeDelete: Invalid Descriptor\n");
+        status = VX_FAILURE;
     }
     else
     {
