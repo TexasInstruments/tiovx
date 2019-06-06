@@ -106,6 +106,12 @@ typedef struct
     /**< Queue memory */
     Fvid2_Frame fvid2Frames[TIVX_DISPLAY_MAX_NUM_BUFS];
     /**< FVID2 Frames that will be used for display */
+
+    uint64_t chromaBufAddr;
+    /**< Chroma Buffer Address, used when input frame format is U16 */
+    uint32_t chromaBufSize;
+    /**< Size of the chroma buffer */
+    tivx_shared_mem_ptr_t chroma_mem_ptr;
 } tivxDisplayParams;
 
 static tivx_target_kernel vx_display_target_kernel1 = NULL;
@@ -160,12 +166,70 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
             format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
             format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[1].stride_y;
             break;
+        case VX_DF_IMAGE_U16:
+            format->ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
+            format->dataFormat = FVID2_DF_YUV420SP_UV;
+            format->pitch[FVID2_YUV_SP_Y_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            format->pitch[FVID2_YUV_SP_CBCR_ADDR_IDX] = obj_desc_img->imagepatch_addr[0].stride_y;
+            break;
         default:
             status = VX_FAILURE;
             break;
     }
 
     return status;
+}
+
+static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
+                                            Fvid2_Format *fmt)
+{
+    int32_t status = VX_SUCCESS;
+    uint32_t cnt;
+    void *chroma_target_ptr;
+    uint16_t *chroma_ptr;
+
+    if (VX_DF_IMAGE_U16 == fmt->dataFormat)
+    {
+        dispPrms->chromaBufSize =
+            (fmt->pitch[1] * fmt->height) / 2u;
+        status = tivxMemBufferAlloc(&dispPrms->chroma_mem_ptr,
+            dispPrms->chromaBufSize, TIVX_MEM_EXTERNAL);
+        if (VX_SUCCESS == status)
+        {
+            dispPrms->chromaBufAddr =
+                tivxMemShared2PhysPtr(dispPrms->chroma_mem_ptr.shared_ptr,
+                dispPrms->chroma_mem_ptr.mem_heap_region);
+
+            chroma_target_ptr = tivxMemShared2TargetPtr(
+                dispPrms->chroma_mem_ptr.shared_ptr,
+                dispPrms->chroma_mem_ptr.mem_heap_region);
+
+            tivxMemBufferMap(chroma_target_ptr, dispPrms->chromaBufSize,
+                             VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+
+            chroma_ptr = (uint16_t *)chroma_target_ptr;
+            for (cnt = 0; cnt < dispPrms->chromaBufSize / 2; cnt ++)
+            {
+                *chroma_ptr = 0x800u;
+                chroma_ptr ++;
+            }
+        }
+    }
+    else
+    {
+        dispPrms->chromaBufAddr = NULL;
+        dispPrms->chromaBufSize = 0x0;
+    }
+
+    return (status);
+}
+
+static void tivxDisplayFreeChromaBuff(tivxDisplayParams *dispPrms)
+{
+    if (dispPrms->chromaBufSize > 0u)
+    {
+        tivxMemBufferFree(&dispPrms->chroma_mem_ptr, dispPrms->chromaBufSize);
+    }
 }
 
 static int32_t tivxDisplayCallback(Fvid2_Handle handle, void *appData)
@@ -323,7 +387,14 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
                 displayParams->dispParams.pipeCfg.scEnable = TRUE;
             }
         }
-        if(VX_SUCCESS == status)
+
+        if (VX_SUCCESS == status)
+        {
+            status = tivxDisplayAllocChromaBuff(displayParams,
+                &displayParams->dispParams.pipeCfg.inFmt);
+        }
+
+        if (VX_SUCCESS == status)
         {
             if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == params->opMode)
             {
@@ -475,6 +546,8 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
         {
             displayParams->drvHandle = NULL;
 
+            tivxDisplayFreeChromaBuff(displayParams);
+
             if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
             {
                 if(displayParams->copyImageSize[0] != 0)
@@ -568,6 +641,11 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
                 {
                     frm->addr[1U] = (uint64_t)image_target_ptr2;
                 }
+
+                if (VX_DF_IMAGE_U16 == obj_desc_image->format)
+                {
+                    frm->addr[1U] = displayParams->chromaBufAddr;
+                }
                 frm->fid = FVID2_FID_FRAME;
                 frm->appData = obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
 
@@ -626,57 +704,57 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
         else if(TIVX_KERNEL_DISPLAY_BUFFER_COPY_MODE == displayParams->opMode)
         {
             tivxMemBufferMap(
-                displayParams->copyImagePtr[displayParams->currIdx][0], 
-                displayParams->copyImageSize[0], 
-                VX_MEMORY_TYPE_HOST, 
+                displayParams->copyImagePtr[displayParams->currIdx][0],
+                displayParams->copyImageSize[0],
+                VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
             tivxMemBufferMap(
-                image_target_ptr1, 
-                displayParams->copyImageSize[0], 
-                VX_MEMORY_TYPE_HOST, 
+                image_target_ptr1,
+                displayParams->copyImageSize[0],
+                VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
-            
+
             /* Copy  and assign buffers */
             memcpy(displayParams->copyImagePtr[displayParams->currIdx][0], image_target_ptr1, displayParams->copyImageSize[0]);
-            
+
             tivxMemBufferUnmap(
-                displayParams->copyImagePtr[displayParams->currIdx][0], 
-                displayParams->copyImageSize[0], 
-                VX_MEMORY_TYPE_HOST, 
+                displayParams->copyImagePtr[displayParams->currIdx][0],
+                displayParams->copyImageSize[0],
+                VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
             tivxMemBufferUnmap(
-                image_target_ptr1, 
-                displayParams->copyImageSize[0], 
-                VX_MEMORY_TYPE_HOST, 
+                image_target_ptr1,
+                displayParams->copyImageSize[0],
+                VX_MEMORY_TYPE_HOST,
                 VX_WRITE_ONLY);
-            
+
             displayParams->copyFrame[displayParams->currIdx].addr[0] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][0];
             if(VX_DF_IMAGE_NV12 == obj_desc_image->format)
             {
                 tivxMemBufferMap(
-                    displayParams->copyImagePtr[displayParams->currIdx][1], 
-                    displayParams->copyImageSize[1], 
-                    VX_MEMORY_TYPE_HOST, 
+                    displayParams->copyImagePtr[displayParams->currIdx][1],
+                    displayParams->copyImageSize[1],
+                    VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
                 tivxMemBufferMap(
-                    image_target_ptr2, 
-                    displayParams->copyImageSize[1], 
-                    VX_MEMORY_TYPE_HOST, 
+                    image_target_ptr2,
+                    displayParams->copyImageSize[1],
+                    VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
-                
+
                 memcpy(displayParams->copyImagePtr[displayParams->currIdx][1], image_target_ptr2, displayParams->copyImageSize[1]);
-                
+
                 tivxMemBufferUnmap(
-                    displayParams->copyImagePtr[displayParams->currIdx][1], 
-                    displayParams->copyImageSize[1], 
-                    VX_MEMORY_TYPE_HOST, 
+                    displayParams->copyImagePtr[displayParams->currIdx][1],
+                    displayParams->copyImageSize[1],
+                    VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
                 tivxMemBufferUnmap(
-                    image_target_ptr2, 
-                    displayParams->copyImageSize[1], 
-                    VX_MEMORY_TYPE_HOST, 
+                    image_target_ptr2,
+                    displayParams->copyImageSize[1],
+                    VX_MEMORY_TYPE_HOST,
                     VX_WRITE_ONLY);
-                
+
                 displayParams->copyFrame[displayParams->currIdx].addr[1] = (uint64_t)displayParams->copyImagePtr[displayParams->currIdx][1];
             }
             displayParams->copyFrame[displayParams->currIdx].fid = FVID2_FID_FRAME;
