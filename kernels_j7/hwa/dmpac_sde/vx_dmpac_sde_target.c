@@ -242,7 +242,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
     tivx_obj_desc_image_t            *left_desc;
     tivx_obj_desc_image_t            *right_desc;
     tivx_obj_desc_image_t            *output_desc;
-    tivx_obj_desc_distribution_t     *confidence_histogram_desc;
+    tivx_obj_desc_distribution_t     *confidence_histogram_desc = NULL;
     Fvid2_FrameList                  *inFrmList;
     Fvid2_FrameList                  *outFrmList;
 
@@ -290,7 +290,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             output_desc->mem_ptr[0].shared_ptr, output_desc->mem_ptr[0].mem_heap_region);
         if( confidence_histogram_desc != NULL)
         {
-            confidence_histogram_target_ptr = tivxMemShared2PhysPtr(
+            confidence_histogram_target_ptr = tivxMemShared2TargetPtr(
                 confidence_histogram_desc->mem_ptr.shared_ptr, confidence_histogram_desc->mem_ptr.mem_heap_region);
         }
 
@@ -349,6 +349,27 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             VX_PRINT(VX_ZONE_ERROR,
                 "tivxDmpacSdeProcess: Failed to Get Processed Request\n");
             status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        /* Get Histogram */
+        if(NULL != confidence_histogram_desc)
+        {
+            status = Fvid2_control(sde_obj->handle,
+                VHWA_M2M_IOCTL_SDE_GET_HISTOGRAM,
+                (uint32_t *) confidence_histogram_target_ptr, NULL);
+            if (FVID2_SOK != status)
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxDmpacSdeProcess: Histogram Request failed\n");
+                status = VX_FAILURE;
+            }
+            else
+            {
+                status = VX_SUCCESS;
+            }
         }
     }
 
