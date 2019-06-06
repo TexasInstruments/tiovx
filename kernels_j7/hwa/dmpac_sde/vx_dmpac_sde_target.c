@@ -724,7 +724,6 @@ static tivxDmpacSdeObj *tivxDmpacSdeAllocObject(
     tivxDmpacSdeObj *sde_obj = NULL;
 
     /* Lock instance mutex */
-    tivxMutexCreate(&instObj->lock);
     tivxMutexLock(instObj->lock);
 
     for (cnt = 0U; cnt < VHWA_M2M_SDE_MAX_HANDLES; cnt ++)

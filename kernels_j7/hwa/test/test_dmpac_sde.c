@@ -487,4 +487,4 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
     }
 }
 
-TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, /*testGraphProcessing,*/ testNegativeGraphProcessing)
+TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, testGraphProcessing, testNegativeGraphProcessing)
