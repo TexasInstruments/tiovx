@@ -146,6 +146,15 @@ typedef struct {
     int width, height;
 } Arg;
 
+typedef struct {
+    const char* testName;
+    CT_Image (*generator)(const char* fileName, int width, int height);
+    const char* fileName;
+    int negative_test;
+    int condition;
+    vx_border_t border;
+} ArgNegative;
+
 
 #define ADD_DISPMIN(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/dispMin=0", __VA_ARGS__, 0)), \
@@ -168,9 +177,30 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/hist_output=OFF", __VA_ARGS__, 0)), \
     CT_EXPAND(nextmacro(testArgName "/hist_output=ON", __VA_ARGS__, 1))
 
+#define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=median_filter_enable", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=reduced_range_search_enable", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=disparity_min", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=disparity_max", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=threshold_left_right", __VA_ARGS__, 7)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=texture_filter_enable", __VA_ARGS__, 8)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=threshold_texture_disabled", __VA_ARGS__, 9)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=threshold_texture_enabled", __VA_ARGS__, 10)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=aggregation_penalty_p1", __VA_ARGS__, 11)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=aggregation_penalty_p2", __VA_ARGS__, 12)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=confidence_score_map", __VA_ARGS__, 13))
+
+#define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_DISPMIN, ADD_DISPMAX, ADD_MEDIAN, ADD_TEXTURE, ADD_OUTPUT_HISTOGRAM, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_256x256, ARG, convolve_generate_random, NULL), \
     CT_GENERATE_PARAMETERS("lena", ADD_DISPMIN, ADD_DISPMAX, ADD_MEDIAN, ADD_TEXTURE, ADD_OUTPUT_HISTOGRAM, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_NONE, ARG, convolve_read_image, "lena.bmp")
+
+#define PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, convolve_generate_random, NULL)
 
 TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
     PARAMETERS
@@ -257,4 +287,204 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testGraphProcessing, Arg,
     }
 }
 
-TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, testGraphProcessing)
+TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
+    PARAMETERS_NEGATIVE
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image left_image = 0, right_image = 0, dst_image = 0;
+    vx_distribution histogram = 0;
+    tivx_dmpac_sde_params_t params;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    int width;
+    int height;
+    int i;
+
+    CT_Image srcL = NULL;
+    CT_Image srcR = NULL;
+    vx_border_t border = arg_->border;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
+    {
+        tivxHwaLoadKernels(context);
+
+        memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_sde_params_t",
+                                                            sizeof(tivx_dmpac_sde_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        width = 64;
+        height = 64;
+        
+        params.median_filter_enable = 0;
+        params.disparity_min = 0;
+        params.disparity_max = 0;
+        params.texture_filter_enable = 0;
+        for(i = 0; i < 8; i++) {
+            params.confidence_score_map[i] = i*8;
+        }
+        params.threshold_left_right = 0;
+        params.threshold_texture = 0;
+        params.aggregation_penalty_p1 = 0;
+        params.aggregation_penalty_p2 = 0;
+        params.reduced_range_search_enable = 0;
+        
+        switch (arg_->negative_test)
+        {
+            case 0:
+            {
+                params.median_filter_enable = arg_->condition;
+                break;
+            }
+            case 1:
+            {
+                params.reduced_range_search_enable = arg_->condition;
+                break;
+            }
+            case 2:
+            {
+                params.disparity_min = arg_->condition;
+                break;
+            }
+            case 3:
+            {
+                width = 256;
+                height = 256;
+                params.disparity_max = arg_->condition;
+                if (params.disparity_max != 0)
+                {
+                    params.disparity_max++;
+                }
+                break;
+            }
+            case 4:
+            {
+
+                break;
+            }
+            case 5:
+            {
+
+                break;
+            }
+            case 6:
+            {
+
+                break;
+            }
+            case 7:
+            {
+                params.threshold_left_right = 255 * arg_->condition;
+                if (2 == arg_->condition)
+                {
+                    params.threshold_left_right = 256;
+                }
+                break;
+            }
+            case 8:
+            {
+                params.texture_filter_enable = arg_->condition;
+                break;
+            }
+            case 9:
+            {
+                params.texture_filter_enable = 0;
+                params.threshold_texture = arg_->condition * 255;
+                if (2 == arg_->condition)
+                {
+                    params.texture_filter_enable = 1;
+                    params.threshold_texture = 256;
+                }
+                break;
+            }
+            case 10:
+            {
+                params.texture_filter_enable = 1;
+                params.threshold_texture = arg_->condition * 255;
+                if (2 == arg_->condition)
+                {
+                    params.threshold_texture = 256;
+                }
+                break;
+            }
+            case 11:
+            {
+                params.aggregation_penalty_p1 = 127 * arg_->condition;
+                if (2 == arg_->condition)
+                {
+                    params.threshold_left_right = 128;
+                }
+                break;
+            }
+            case 12:
+            {
+                params.aggregation_penalty_p2 = 255 * arg_->condition;
+                if (2 == arg_->condition)
+                {
+                    params.threshold_left_right = 256;
+                }
+                break;
+            }
+            case 13:
+            {
+                params.confidence_score_map[0] = 4088 * arg_->condition;
+                if (2 == arg_->condition)
+                {
+                    params.confidence_score_map[0] = 4089;
+                }
+                for(i = 1; i < 8; i++)
+                {
+                    params.confidence_score_map[i] = params.confidence_score_map[i-1] + 1;
+                }
+                break;
+            }
+        }
+        
+        ASSERT_NO_FAILURE(srcL = arg_->generator(arg_->fileName, width, height));
+        ASSERT_NO_FAILURE(srcR = arg_->generator(arg_->fileName, width, height));
+        ASSERT_VX_OBJECT(left_image = ct_image_to_vx_image(srcL, context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(right_image = ct_image_to_vx_image(srcR, context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, srcL->width, srcL->height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_sde_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_obj, left_image, right_image, dst_image, histogram), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
+
+        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+        if(2 != arg_->condition)
+        {
+            ASSERT_NO_FAILURE(vxVerifyGraph(graph));
+            ASSERT_NO_FAILURE(vxProcessGraph(graph));
+        }
+        else
+        {
+            ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseImage(&dst_image));
+        VX_CALL(vxReleaseImage(&right_image));
+        VX_CALL(vxReleaseImage(&left_image));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        ASSERT(dst_image == 0);
+        ASSERT(right_image == 0);
+        ASSERT(left_image == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(histogram == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, /*testGraphProcessing,*/ testNegativeGraphProcessing)

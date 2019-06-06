@@ -88,6 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_dmpac_sde_params_t params;
 
     vx_image left = NULL;
     vx_df_image left_fmt;
@@ -105,6 +106,8 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     vx_int32 confidence_histogram_offset = 0;
     vx_uint32 confidence_histogram_range = 0;
     vx_size confidence_histogram_numBins = 0;
+    
+    uint32_t i;
 
     if ( (num != TIVX_KERNEL_DMPAC_SDE_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_DMPAC_SDE_CONFIGURATION_IDX])
@@ -133,6 +136,9 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
+        tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_dmpac_sde_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         tivxCheckStatus(&status, vxQueryImage(left, VX_IMAGE_FORMAT, &left_fmt, sizeof(left_fmt)));
         tivxCheckStatus(&status, vxQueryImage(left, VX_IMAGE_WIDTH, &left_w, sizeof(left_w)));
@@ -216,8 +222,88 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacSdeValidate(vx_node node,
 
     /* CUSTOM PARAMETER CHECKING */
 
-    /* < DEVELOPER_TODO: (Optional) Add any custom parameter type or range checking not */
-    /*                   covered by the code-generation script.) > */
+    if (VX_SUCCESS == status)
+    {
+        if ( (0U != params.median_filter_enable) &&
+             (1U != params.median_filter_enable))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter median_filter_enable should be either 0 (Disabled) or 1 (Enable post-processing 5x5 median filter)\n");
+        }
+        if ( (0U != params.reduced_range_search_enable) &&
+             (1U != params.reduced_range_search_enable))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter reduced_range_search_enable should be either 0 (Disabled) or 1 (Enable reduced range search on pixels near right)\n");
+        }
+        if ( (0U != params.disparity_min) &&
+             (1U != params.disparity_min))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_min should be either 0 (minimum disparity == 0) or 1 (minimum disparity == -3)\n");
+        }
+        if ( (0U != params.disparity_max) &&
+             (1U != params.disparity_max) &&
+             (2U != params.disparity_max))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should be either 0 (disparity_min + 63), 1 (disparity_min + 127), or 2 (disparity_min + 191)\n");
+        }
+        else if ( (2U == params.disparity_max) &&
+             (192U > left_w))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 2 (disparity_min + 191) if width < 192\n");
+        }
+        else if ( (1U == params.disparity_max) &&
+             (128U > left_w))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 1 (disparity_min + 127) if width < 128\n");
+        }
+        else if ( (0U == params.disparity_max) &&
+             (64U > left_w))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter disparity_max should not be 0 (disparity_min + 63) if width < 64\n");
+        }
+        if (255U < params.threshold_left_right)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter threshold_left_right should be between 0 and 255 inclusive\n");
+        }
+        if ( (0U != params.texture_filter_enable) &&
+             (1U != params.texture_filter_enable))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter texture_filter_enable should be either 0 (Disabled) or 1 (Enable texture based filtering)\n");
+        }
+        else if ( (1U == params.texture_filter_enable) &&
+             (255U < params.threshold_texture))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter threshold_texture should be between 0 and 255 inclusive if texture_filter_enable is 1\n");
+        }
+        if (127U < params.aggregation_penalty_p1)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter aggregation_penalty_p1 should be between 0 and 127 inclusive\n");
+        }
+        if (255U < params.aggregation_penalty_p2)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter aggregation_penalty_p2 should be between 0 and 255 inclusive\n");
+        }
+        for(i = 0U; i < 8; i++)
+        {
+            if (4095U < params.confidence_score_map[i])
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "Parameter confidence_score_map should contain values between 0 and 4095 inclusive\n");
+                break;
+            }
+        }
+    }
 
     return status;
 }
