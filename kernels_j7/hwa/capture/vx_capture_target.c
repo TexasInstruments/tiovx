@@ -651,6 +651,17 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
         }
         else
         {
+            if (NULL != prms->drvHandle)
+            {
+                Fvid2_delete(prms->drvHandle, NULL);
+                prms->drvHandle = NULL;
+            }
+
+            if (NULL != prms->frame_available)
+            {
+                tivxEventDelete(&prms->frame_available);
+            }
+
             if (NULL != prms)
             {
                 tivxMemFree(prms, sizeof(tivxCaptureParams), TIVX_MEM_EXTERNAL);
@@ -686,11 +697,14 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
             VX_PRINT(VX_ZONE_INFO,
                       ": Spurious UDMA interrupt count: %d\r\n",
                       prms->captStatus.spuriousUdmaIntrCount);
+
+            VX_PRINT(VX_ZONE_INFO,
+                " [Channel No] | Frame Queue Count |"
+                " Frame De-queue Count | Frame Drop Count |\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {
                 VX_PRINT(VX_ZONE_INFO,
-                      ":[Channel No: %d] | Frame Queue Count: %d |"
-                      " Frame De-queue Count: %d | Frame Drop Count: %d |\r\n",
+                      " /t/t%d | /t/t%d | /t/t%d | /t/t%d |\n",
                       cnt,
                       prms->captStatus.queueCount[cnt],
                       prms->captStatus.dequeueCount[cnt],
