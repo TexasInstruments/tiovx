@@ -154,7 +154,8 @@ static vx_status VX_CALLBACK tivxAddKernelCaptureValidate(vx_node node,
                     tivxCheckStatus(&status, vxQueryImage((vx_image)obj_arr_element, VX_IMAGE_FORMAT, &img_fmt, sizeof(img_fmt)));
 
                     /* Only support RGBX format for now */
-                    if (VX_DF_IMAGE_RGBX != img_fmt)
+                    if ((VX_DF_IMAGE_RGBX != img_fmt) &&
+                        (VX_DF_IMAGE_U16 != img_fmt))
                     {
                         status = VX_ERROR_INVALID_PARAMETERS;
                         VX_PRINT(VX_ZONE_ERROR, "image format is invalid \n");

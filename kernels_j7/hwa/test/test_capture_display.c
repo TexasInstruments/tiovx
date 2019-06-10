@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2018 Texas Instruments Incorporated
+ * Copyright (c) 2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -66,6 +66,11 @@
 #include "test_engine/test.h"
 #include <string.h>
 
+#include <utils/sensors/include/app_sensors.h>
+#include <utils/remote_service/include/app_remote_service.h>
+#include <utils/ipc/include/app_ipc.h>
+
+
 #define MAX_NUM_BUF  8
 
 TESTCASE(tivxHwaCaptureDisplay, CT_VXContext, ct_setup_vx_context, 0)
@@ -89,30 +94,32 @@ typedef struct {
 #define ADD_PIPE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/pipeId=2", __VA_ARGS__, 2))
 #define ADD_DATA_FORMAT(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_RGBX", __VA_ARGS__, VX_DF_IMAGE_RGBX))
+    CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_U16", __VA_ARGS__, VX_DF_IMAGE_U16))
 #define ADD_IN_WIDTH(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/inWidth=320", __VA_ARGS__, 320))
+    CT_EXPAND(nextmacro(testArgName "/inWidth=1920", __VA_ARGS__, 1920))
 #define ADD_IN_HEIGHT(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/inHeight=240", __VA_ARGS__, 240))
+    CT_EXPAND(nextmacro(testArgName "/inHeight=1080", __VA_ARGS__, 1080))
+#define ADD_BPP_2(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/bpp=2", __VA_ARGS__, 2))
 #define ADD_BPP_4(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/bpp=4", __VA_ARGS__, 4))
 #define ADD_PITCH_Y(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pitchY=1920", __VA_ARGS__, 1920))
+    CT_EXPAND(nextmacro(testArgName "/pitchY=3840", __VA_ARGS__, 3840))
 #define ADD_PITCH_UV(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pitchUV=0", __VA_ARGS__, 0))
+    CT_EXPAND(nextmacro(testArgName "/pitchUV=3840", __VA_ARGS__, 3840))
 #define ADD_OUT_WIDTH(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/outWidth=480", __VA_ARGS__, 480))
+    CT_EXPAND(nextmacro(testArgName "/outWidth=1920", __VA_ARGS__, 1920))
 #define ADD_OUT_HEIGHT(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/outHeight=360", __VA_ARGS__, 360))
+    CT_EXPAND(nextmacro(testArgName "/outHeight=1080", __VA_ARGS__, 1080))
 #define ADD_POS_X(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/posX=800", __VA_ARGS__, 800))
+    CT_EXPAND(nextmacro(testArgName "/posX=0", __VA_ARGS__, 0))
 #define ADD_POS_Y(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/posY=440", __VA_ARGS__, 440))
-#define ADD_LOOP_100(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loopCount=5", __VA_ARGS__, 5))
+    CT_EXPAND(nextmacro(testArgName "/posY=0", __VA_ARGS__, 0))
+#define ADD_LOOP_1000(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/loopCount=1000", __VA_ARGS__, 1000))
 
 #define PARAMETERS \
-    CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_4, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_100, ARG), \
+    CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \
 
 /*
  * Utility API used to add a graph parameter from a node, node parameter index
@@ -148,6 +155,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
     uint32_t num_refs, buf_id, num_buf, num_channels=1, loop_id;
     uint32_t loop_count = arg_->loopCount;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+    AppSensorCmdParams cmdPrms;
 
     if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1)) &&
         (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)))
@@ -173,7 +181,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         capture_params.numDataLanes = 4U;
         for (loop_id=0U; loop_id<capture_params.numDataLanes; loop_id++)
         {
-            capture_params.dataLanesMap[loop_id] = loop_id;
+            capture_params.dataLanesMap[loop_id] = (loop_id + 1u);
         }
 
         ASSERT_VX_OBJECT(capture_param_obj = vxCreateUserDataObject(context, "tivx_capture_params_t" , sizeof(tivx_capture_params_t), &capture_params), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
@@ -227,11 +235,15 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
         /* After pipe up, now enqueue a buffer to trigger graph scheduling */
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-2], 1);
-        printf("Q %p \n", frames[num_buf-2]);
+
+        /* After first trigger, configure and start the sensor */
+        cmdPrms.numSensors = 1;
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
+            APP_REMOTE_SERVICE_SENSOR_NAME,
+            APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_OV2775, &cmdPrms, sizeof(cmdPrms), 0));
 
         /* Need to trigger again since display holds on to a buffer */
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-1], 1);
-        printf("Q %p \n", frames[num_buf-1]);
 
         /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
         for(loop_id=0; loop_id<(loop_count+num_buf); loop_id++)
@@ -240,7 +252,6 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
             /* Get output reference, waits until a frame is available */
             vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&frame, 1, &num_refs);
-            printf("DQ %p \n", frame);
 
             /* Recycles dequeued input and output refs */
             /* input and output can be enqueued in any order */

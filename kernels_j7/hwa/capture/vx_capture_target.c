@@ -107,6 +107,8 @@ typedef struct
     /**< pending frame queue mem */
     uint8_t raw_capture;
     /**< flag indicating raw capture */
+    Csirx_InstStatus captStatus;
+    /**< CSIRX Capture status. */
 } tivxCaptureParams;
 
 static tivx_target_kernel vx_capture_target_kernel1 = NULL;
@@ -134,23 +136,6 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
        uint16_t num_params, void *priv_arg);
-
-static void App_sendFrame(void);
-static void App_sendRawFrame(void);
-
-/* Note: This is necessary for VLAB to know when to send a frame
- *       When this function is executed, VLAB sends an RGB frame
-         to the capture driver */
-static void App_sendFrame(void)
-{
-}
-
-/* Note: This is necessary for VLAB to know when to send a frame
- *       When this function is executed, VLAB sends a P12 raw frame
-         to the capture driver */
-static void App_sendRawFrame(void)
-{
-}
 
 /**
  *******************************************************************************
@@ -264,6 +249,7 @@ static uint32_t tivxCaptureExtractInCsiDataType(uint32_t format)
         case VX_DF_IMAGE_RGBX:
             inCsiDataType = FVID2_CSI2_DF_RGB888;
             break;
+        case VX_DF_IMAGE_U16:
         case TIVX_RAW_IMAGE_P12_BIT:
             inCsiDataType = FVID2_CSI2_DF_RAW12;
             break;
@@ -282,6 +268,9 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
     {
         case TIVX_RAW_IMAGE_P12_BIT:
             ccsFormat = FVID2_CCSF_BITS12_PACKED;
+            break;
+        case VX_DF_IMAGE_U16:
+            ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             break;
         default:
             break;
@@ -367,11 +356,8 @@ static void tivxCaptureSetCreateParams(
 
         prms->createPrms.chCfg[loopCnt].outFmt.dataFormat =
             tivxCaptureExtractDataFormat(format);
-        if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
-        {
-            prms->createPrms.chCfg[loopCnt].outFmt.ccsFormat =
-                tivxCaptureExtractCcsFormat(format);
-        }
+        prms->createPrms.chCfg[loopCnt].outFmt.ccsFormat =
+            tivxCaptureExtractCcsFormat(format);
     }
     /* set module configuration parameters */
     prms->createPrms.instCfg.enableCsiv2p0Support = params->enableCsiv2p0Support;
@@ -458,15 +444,6 @@ static vx_status VX_CALLBACK tivxCaptureProcess(
                     }
                     prms->steady_state_started = 1;
                 }
-            }
-
-            if (0 == prms->raw_capture)
-            {
-                App_sendFrame();
-            }
-            else
-            {
-                App_sendRawFrame();
             }
 
             /* Pends until a frame is available then dequeue frames from capture driver */
@@ -684,6 +661,45 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
     return status;
 }
 
+static void tivxCapturePrintStatus(tivxCaptureParams *prms)
+{
+    int32_t status;
+    uint32_t cnt;
+
+    if (NULL != prms)
+    {
+        status = Fvid2_control(prms->drvHandle,
+                                IOCTL_CSIRX_GET_INST_STATUS,
+                                &prms->captStatus,
+                                NULL);
+        if (FVID2_SOK == status)
+        {
+            VX_PRINT(VX_ZONE_INFO,
+                "\n\r==========================================================\r\n");
+            VX_PRINT(VX_ZONE_INFO,
+                      ": Capture Status:\r\n");
+            VX_PRINT(VX_ZONE_INFO,
+                      "==========================================================\r\n");
+            VX_PRINT(VX_ZONE_INFO,
+                      ": FIFO Overflow Count: %d\r\n",
+                      prms->captStatus.overflowCount);
+            VX_PRINT(VX_ZONE_INFO,
+                      ": Spurious UDMA interrupt count: %d\r\n",
+                      prms->captStatus.spuriousUdmaIntrCount);
+            for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
+            {
+                VX_PRINT(VX_ZONE_INFO,
+                      ":[Channel No: %d] | Frame Queue Count: %d |"
+                      " Frame De-queue Count: %d | Frame Drop Count: %d |\r\n",
+                      cnt,
+                      prms->captStatus.queueCount[cnt],
+                      prms->captStatus.dequeueCount[cnt],
+                      prms->captStatus.dropCount[cnt]);
+            }
+        }
+    }
+}
+
 static vx_status VX_CALLBACK tivxCaptureDelete(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -740,6 +756,11 @@ static vx_status VX_CALLBACK tivxCaptureDelete(
                 VX_PRINT(VX_ZONE_ERROR, " CAPTURE: ERROR: FVID2 Capture Dequeue Failed !!!\n");
                 status = retVal;
             }
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxCapturePrintStatus(prms);
         }
 
         /* Deleting FVID2 handle */
