@@ -19,29 +19,66 @@
 #include <stdint.h>
 #include <VX/vx.h>
 #include <stdio.h>
+#include "shared_functions.h"
 
 #define USE_OPENCV_GENERATED_REFERENCE
 #define CANNY_ACCEPTANCE_THRESHOLD 0.95
 //#define EXECUTE_ASYNC
 
+#define MAX_NODES 10
 
 #define CREF_EDGE 2
 #define CREF_LINK 1
 #define CREF_NONE 0
 
 
-static void referenceNot(CT_Image src, CT_Image dst)
+static uint8_t box3x3_calculate(CT_Image src, uint32_t x, uint32_t y)
 {
-    uint32_t i, j;
+    uint8_t res = (uint8_t)(ct_floor_u32_no_overflow( ((float)(
+            (int16_t)(*CT_IMAGE_DATA_PTR_8U(src, x + 0, y + 0)) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x - 1, y + 0) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x + 1, y + 0) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x + 0, y - 1) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x - 1, y - 1) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x + 1, y - 1) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x + 0, y + 1) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x - 1, y + 1) +
+                      *CT_IMAGE_DATA_PTR_8U(src, x + 1, y + 1)) )/9 ) );
+    return res;
+}
 
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT(src->format == dst->format && src->format == VX_DF_IMAGE_U8);
+static uint8_t box3x3_calculate_replicate(CT_Image src, uint32_t x_, uint32_t y_)
+{
+    int32_t x = (int)x_;
+    int32_t y = (int)y_;
+    uint8_t res = (uint8_t)(ct_floor_u32_no_overflow( ((float)(
+            (int16_t)(CT_IMAGE_DATA_REPLICATE_8U(src, x + 0, y + 0)) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x - 1, y + 0) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x + 1, y + 0) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x + 0, y - 1) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x - 1, y - 1) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x + 1, y - 1) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x + 0, y + 1) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x - 1, y + 1) +
+                      CT_IMAGE_DATA_REPLICATE_8U(src, x + 1, y + 1)) )/9 ) );
+    return res;
+}
 
-    for (i = 0; i < dst->height; ++i)
-        for (j = 0; j < dst->width; ++j)
-            dst->data.y[i * dst->stride + j] = ~src->data.y[i * src->stride + j];
+static uint8_t box3x3_calculate_constant(CT_Image src, uint32_t x_, uint32_t y_, vx_uint32 constant_value)
+{
+    int32_t x = (int)x_;
+    int32_t y = (int)y_;
+    uint8_t res = (uint8_t)(ct_floor_u32_no_overflow( ((float)(
+            (int16_t)(CT_IMAGE_DATA_CONSTANT_8U(src, x + 0, y + 0, constant_value)) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x - 1, y + 0, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x + 1, y + 0, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x + 0, y - 1, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x - 1, y - 1, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x + 1, y - 1, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x + 0, y + 1, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x - 1, y + 1, constant_value) +
+                      CT_IMAGE_DATA_CONSTANT_8U(src, x + 1, y + 1, constant_value)) )/9 ) );
+    return res;
 }
 
 static int32_t offsets[][2] =
@@ -51,7 +88,7 @@ static int32_t offsets[][2] =
     { -1,  1}, {  0,  1}, {  1,  1}
 };
 
-#ifndef USE_OPENCV_GENERATED_REFERENCE
+//#ifndef USE_OPENCV_GENERATED_REFERENCE
 static uint64_t magnitude(CT_Image img, uint32_t x, uint32_t y, int32_t k, vx_enum type, int32_t* dx_out, int32_t* dy_out)
 {
     static int32_t dim1[][7] = { { 1, 2, 1}, { 1,  4, 6, 4, 1}, { 1,  6, 15, 20, 15, 6, 1}};
@@ -174,7 +211,7 @@ static void reference_canny(CT_Image src, CT_Image dst, int32_t low_thresh, int3
             if(dst->data.y[j * dst->stride + i] < 255)
                 dst->data.y[j * dst->stride + i] = 0;
 }
-#endif
+//#endif
 
 // computes count(disttransform(src) >= 2, where dst != 0)
 static uint32_t disttransform2_metric(CT_Image src, CT_Image dst, CT_Image dist, uint32_t* total_edge_pixels, uint8_t value)
@@ -324,6 +361,15 @@ static CT_Image get_reference_result_virtual(const char* src_name, CT_Image src,
         referenceNot(virt_ctimage, dst);
     return dst;
 #endif
+}
+
+static CT_Image get_supernode_result(CT_Image src, int32_t low_thresh, int32_t high_thresh, uint32_t gsz, vx_enum norm)
+{
+    CT_Image dst;
+    ASSERT_(return 0, src);
+    dst = ct_allocate_image(src->width, src->height, VX_DF_IMAGE_U8);
+    reference_canny(src, dst, low_thresh, high_thresh, gsz, norm);
+    return dst;
 }
 
 TESTCASE(tivxCanny,  CT_VXContext, ct_setup_vx_context, 0)
@@ -682,4 +728,125 @@ TEST_WITH_ARG(tivxCanny, negativeTestBorderMode, canny_arg,
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&dst));
 }
 
-TESTCASE_TESTS(tivxCanny, virtImage, multipleNode, negativeTestBorderMode)
+TEST_WITH_ARG(tivxCanny, testCannySupernode, canny_arg,
+    CANNY_ARG(3, L1, 100, 120, lena_gray),
+    CANNY_ARG(3, L2, 90,  130, lena_gray),
+    CANNY_ARG(5, L1, 100, 120, lena_gray),
+    CANNY_ARG(5, L2, 100, 120, lena_gray),
+    CANNY_ARG(7, L1, 100, 120, lena_gray),
+    CANNY_ARG(7, L2, 100, 120, lena_gray)
+)
+{
+    int node_count = 3;
+    uint32_t total, count;
+    vx_image src, dst, virt1, virt2;
+    vx_threshold hyst;
+    vx_graph graph;
+    vx_node node1, node2, node3;
+    CT_Image lena, vxdst, refdst, dist, virt_ctimage;
+    vx_int32 low_thresh  = arg_->low_thresh;
+    vx_int32 high_thresh = arg_->high_thresh;
+    vx_border_t border = { VX_BORDER_UNDEFINED, {{ 0 }} };
+    vx_int32 border_width = arg_->grad_size/2 + 1;
+    vx_context context = context_->vx_context_;
+    vx_enum thresh_data_type = VX_TYPE_UINT8;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    if (low_thresh > 255)
+        thresh_data_type = VX_TYPE_INT16;
+
+    ASSERT_NO_FAILURE(lena = get_source_image(arg_->filename));
+    ASSERT_NO_FAILURE(src = ct_image_to_vx_image(lena, context));
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, lena->width, lena->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(hyst = vxCreateThreshold(context, VX_THRESHOLD_TYPE_RANGE, thresh_data_type), VX_TYPE_THRESHOLD);
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(hyst, VX_THRESHOLD_THRESHOLD_LOWER, &low_thresh,  sizeof(low_thresh)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(hyst, VX_THRESHOLD_THRESHOLD_UPPER, &high_thresh, sizeof(high_thresh)));
+    /* FALSE_VALUE and TRUE_VALUE of hyst parameter are set to their default values (0, 255) by vxCreateThreshold */
+    /* test reference data are computed with assumption that FALSE_VALUE and TRUE_VALUE set to 0 and 255 */
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt1 = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt2 = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, src, virt1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, virt1, virt2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxCannyEdgeDetectorNode(graph, virt2, hyst, arg_->grad_size, arg_->norm_type, dst), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetNodeAttribute(node3, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1);
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_NO_FAILURE(node_list[2] = node3);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    // run graph
+#ifdef EXECUTE_ASYNC
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+#else
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+#endif
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, tivxReleaseSuperNode(&super_node));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseNode(&node3));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseGraph(&graph));
+
+    ASSERT_NO_FAILURE(vxdst = ct_image_from_vx_image(dst));
+    ASSERT_NO_FAILURE(refdst = get_reference_result(arg_->filename, lena, low_thresh, high_thresh, arg_->grad_size, arg_->norm_type));
+
+    ASSERT_NO_FAILURE(ct_adjust_roi(vxdst,  border_width, border_width, border_width, border_width));
+    ASSERT_NO_FAILURE(ct_adjust_roi(refdst, border_width, border_width, border_width, border_width));
+
+    ASSERT_NO_FAILURE(dist = ct_allocate_image(refdst->width, refdst->height, VX_DF_IMAGE_U8));
+
+    // disttransform(x,y) < tolerance for all (x,y) such that output(x,y) = 255,
+    // where disttransform is the distance transform image with Euclidean distance
+    // of the reference(x,y) (canny edge ground truth). This condition should be
+    // satisfied by 98% of output edge pixels, tolerance = 2.
+    ASSERT_NO_FAILURE(count = disttransform2_metric(refdst, vxdst, dist, &total, 0));
+    if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
+    {
+        CT_RecordFailureAtFormat("disttransform(reference) < 2 only for %u of %u pixels of output edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+            count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
+
+        // ct_write_image("canny_vx.bmp", vxdst);
+        // ct_write_image("canny_ref.bmp", refdst);
+    }
+
+    // And the inverse: disttransform(x,y) < tolerance for all (x,y) such that
+    // reference(x,y) = 255, where disttransform is the distance transform image
+    // with Euclidean distance of the output(x,y) (canny edge ground truth). This
+    // condition should be satisfied by 98% of reference edge pixels, tolerance = 2.
+    ASSERT_NO_FAILURE(count = disttransform2_metric(vxdst, refdst, dist, &total, 0));
+    if (count < CANNY_ACCEPTANCE_THRESHOLD * total)
+    {
+        CT_RecordFailureAtFormat("disttransform(output) < 2 only for %u of %u pixels of reference edges which is %.2f%% < %.2f%%", __FUNCTION__, __FILE__, __LINE__,
+            count, total, count/(double)total*100, CANNY_ACCEPTANCE_THRESHOLD*100);
+
+        // ct_write_image("canny_vx.bmp", vxdst);
+        // ct_write_image("canny_ref.bmp", refdst);
+    }
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseThreshold(&hyst));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&src));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&virt1));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&virt2));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxReleaseImage(&dst));
+
+    printPerformance(perf_super_node, lena->width * lena->height, "SN");
+    printPerformance(perf_graph, lena->width*lena->height, "G");
+}
+
+TESTCASE_TESTS(tivxCanny,
+               virtImage,
+               multipleNode,
+               negativeTestBorderMode,
+               testCannySupernode
+               )

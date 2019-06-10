@@ -25,6 +25,8 @@
 
 #include "shared_functions.h"
 
+#define MAX_NODES  10
+
 static void reference_mag(CT_Image dx, CT_Image dy, CT_Image mag)
 {
     uint32_t x, y, width, height, dxstride, dystride, magstride;
@@ -213,4 +215,144 @@ TEST_WITH_ARG(tivxMagnitude, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(tivxMagnitude, testOnRandom)
+
+
+TEST_WITH_ARG(tivxMagnitude, testMagnitudeSupernode, format_arg,
+              MAG_TEST_CASE(Graph, Random, S16),
+              )
+{
+    int node_count = 3;
+    int dxformat = arg_->format;
+    int mode = arg_->mode;
+    int srcformat = dxformat == VX_DF_IMAGE_S16 ? VX_DF_IMAGE_U8 : -1;
+    int magformat = dxformat == VX_DF_IMAGE_S16 ? VX_DF_IMAGE_S16 : -1;
+    vx_image dx_node1=0, dy_node1=0, dx_node2=0, dy_node2=0, mag=0, virt1, virt2;
+    CT_Image src0, dx0, dy0, dx1, dy1, mag0, mag1, virt_ctimage1, virt_ctimage2;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0;
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    int dxmin = -32768, dxmax = 32768;
+    vx_border_t border;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    ASSERT( srcformat != -1 && magformat != -1 );
+    rng = CT()->seed_;
+    border.mode = VX_BORDER_REPLICATE;
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS,
+                        vxSetContextAttribute(context, VX_CONTEXT_IMMEDIATE_BORDER,
+                                              &border, sizeof(border)));
+
+    int width = ct_roundf(ct_log_rng(&rng, 0, 10));
+    int height = ct_roundf(ct_log_rng(&rng, 0, 10));
+
+    width = CT_MAX(width, 1);
+    height = CT_MAX(height, 1);
+
+    if( !ct_check_any_size() )
+    {
+        width = CT_MIN((width + 7) & -8, 640);
+        height = CT_MIN((height + 7) & -8, 480);
+    }
+
+    int k, maxk = CT_RNG_NEXT_INT(rng, 0, 20);
+    ASSERT_NO_FAILURE(dx0 = ct_allocate_ct_image_random(width, height, dxformat, &rng, dxmin, dxmax));
+    ASSERT_NO_FAILURE(dy0 = ct_allocate_ct_image_random(width, height, dxformat, &rng, dxmin, dxmax));
+    ASSERT_NO_FAILURE(dx1 = ct_allocate_ct_image_random(width, height, dxformat, &rng, dxmin, dxmax));
+    ASSERT_NO_FAILURE(dy1 = ct_allocate_ct_image_random(width, height, dxformat, &rng, dxmin, dxmax));
+
+    // add some extreme points to the generated images
+    for( k = 0; k < maxk; k++ )
+    {
+        int x = CT_RNG_NEXT_INT(rng, 0, width);
+        int y = CT_RNG_NEXT_INT(rng, 0, height);
+        int dxval = CT_RNG_NEXT_BOOL(rng) ? dxmin : dxmax;
+        int dyval = CT_RNG_NEXT_BOOL(rng) ? dxmin : dxmax;
+        dx0->data.s16[dx0->stride*y + x] = (short)dxval;
+        dy0->data.s16[dy0->stride*y + x] = (short)dyval;
+        dx1->data.s16[dx1->stride*y + x] = (short)dxval;
+        dy1->data.s16[dy1->stride*y + x] = (short)dyval;
+    }
+
+    dx_node1 = ct_image_to_vx_image(dx0, context);
+    ASSERT_VX_OBJECT(dx_node1, VX_TYPE_IMAGE);
+    dx_node2 = ct_image_to_vx_image(dx1, context);
+    ASSERT_VX_OBJECT(dx_node2, VX_TYPE_IMAGE);
+    dy_node1 = ct_image_to_vx_image(dy0, context);
+    ASSERT_VX_OBJECT(dy_node1, VX_TYPE_IMAGE);
+    dy_node2 = ct_image_to_vx_image(dy1, context);
+    ASSERT_VX_OBJECT(dy_node2, VX_TYPE_IMAGE);
+
+    ASSERT_NO_FAILURE(mag0 = ct_allocate_image(width, height, magformat));
+    ASSERT_NO_FAILURE(virt_ctimage1 = ct_allocate_image(width, height, magformat));
+    ASSERT_NO_FAILURE(virt_ctimage2 = ct_allocate_image(width, height, magformat));
+    ASSERT_NO_FAILURE(reference_sequential_mag(dx0, dy0, dx1, dy1, virt_ctimage1, virt_ctimage2, mag0));
+    mag = vxCreateImage(context, width, height, magformat);
+    ASSERT_VX_OBJECT(mag, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, 0, 0, dxformat), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, 0, 0, dxformat), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    node1 = vxMagnitudeNode(graph, dx_node1, dy_node1, virt1);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    node2 = vxMagnitudeNode(graph, dx_node2, dy_node2, virt2);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+    node3 = vxMagnitudeNode(graph, virt1, virt2, mag);
+    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_NO_FAILURE(node_list[2] = node3);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(dx_node1, &src_rect);
+    vxGetValidRegionImage(mag, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    mag1 = ct_image_from_vx_image(mag);
+
+    ASSERT_CTIMAGE_NEAR(mag0, mag1, 1);
+    VX_CALL(vxReleaseImage(&dx_node1));
+    VX_CALL(vxReleaseImage(&dx_node2));
+    VX_CALL(vxReleaseImage(&dy_node1));
+    VX_CALL(vxReleaseImage(&dy_node2));
+    VX_CALL(vxReleaseImage(&virt1));
+    VX_CALL(vxReleaseImage(&virt2));
+    VX_CALL(vxReleaseImage(&mag));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(super_node == 0 && node1 == 0 && node2 == 0 && node3 == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    printPerformance(perf_super_node, width * height, "SN");
+    printPerformance(perf_graph, width * height, "G");
+}
+
+
+TESTCASE_TESTS(tivxMagnitude, 
+               testMagnitudeSupernode)

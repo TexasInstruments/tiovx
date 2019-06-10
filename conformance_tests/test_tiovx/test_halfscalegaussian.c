@@ -22,6 +22,7 @@
 #include <math.h> // floor
 
 #define HALFSCALEGAUSSIAN_TOLERANCE 1
+#define MAX_NODES 10
 
 TESTCASE(tivxHalfScaleGaussian, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -430,7 +431,115 @@ TEST_WITH_ARG(tivxHalfScaleGaussian, negativeTestBorderMode, Arg,
     ASSERT(src_image == 0);
 }
 
+
+#define SUPERNODE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random", ADD_SIZE_644x258, ADD_KERNEL_SIZE, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ARG, halfScaleGaussian_generate_random, NULL)
+
+
+TEST_WITH_ARG(tivxHalfScaleGaussian, testHalfScaleGaussianSupernode, Arg,
+    SUPERNODE_PARAMETERS
+)
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    int virt_width = 0, virt_height = 0, dst_width = 0, dst_height = 0;
+    vx_image src_image = 0, dst_image = 0, virt_image = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    CT_Image ref_src = NULL, ref_dst = NULL, ref_virt = NULL;
+
+    ASSERT_NO_FAILURE(ref_src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(ref_src, context), VX_TYPE_IMAGE);
+
+    virt_width = (ref_src->width + 1) / 2;
+    virt_height = (ref_src->height + 1) / 2;
+    dst_width = (virt_width + 1) / 2;
+    dst_height = (virt_height + 1) / 2;
+
+    ASSERT_VX_OBJECT(virt_image = vxCreateImage(context, virt_width, virt_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_width, dst_height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node1 = vxHalfScaleGaussianNode(graph, src_image, virt_image, arg_->kernel_size), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxHalfScaleGaussianNode(graph, virt_image, dst_image, arg_->kernel_size), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &arg_->border, sizeof(arg_->border)));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    vxGetValidRegionImage(src_image, &src_rect);
+    vxGetValidRegionImage(dst_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    if (arg_->kernel_size == 1)
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), dst_width);
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), dst_height);
+    }
+    else if (arg_->kernel_size == 3)
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (dst_width-3));
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (dst_height-3));
+    }
+    else if (arg_->kernel_size == 5) // -3 because -2 + -1; -2 on first downscale then -1 on second
+    {
+        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (dst_width-3));
+        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (dst_height-3));
+    }
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    ASSERT_NO_FAILURE(ref_virt = ct_image_from_vx_image(virt_image));
+    ASSERT_NO_FAILURE(ref_dst = ct_image_from_vx_image(dst_image));
+
+    halfScaleGaussian_validate(ref_src, ref_virt, arg_->kernel_size, arg_->border);
+    halfScaleGaussian_validate(ref_virt, ref_dst, arg_->kernel_size, arg_->border);
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(virt_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+
 TESTCASE_TESTS(tivxHalfScaleGaussian,
         testGraphProcessing,
         negativeDimensionsTest,
-        negativeTestBorderMode)
+        negativeTestBorderMode,
+        testHalfScaleGaussianSupernode)

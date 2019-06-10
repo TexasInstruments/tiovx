@@ -23,6 +23,10 @@
 #include <string.h>
 #include <limits.h>
 
+#include "shared_functions.h"
+
+#define MAX_NODES 10
+
 typedef vx_coordinates2d_t Point;
 
 static void reference_minmaxloc(CT_Image src, int* _minval, int* _maxval,
@@ -594,4 +598,234 @@ TEST_WITH_ARG(tivxMinMaxLoc, testOptionalParams, format_arg,
         ct_free_mem(ptbuf);
 }
 
-TESTCASE_TESTS(tivxMinMaxLoc, testOnRandom, testOptionalParams)
+
+TEST_WITH_ARG(tivxMinMaxLoc, testMinMaxLocSupernode, format_arg,
+              MINMAXLOC_TEST_CASE(Graph, U8),
+              MINMAXLOC_TEST_CASE(Graph, S16),
+              )
+{
+    int node_count = 3;
+    const int MAX_CAP = 300;
+    int format = arg_->format;
+    int mode = arg_->mode;
+    vx_image src0_image, virt_image1, virt_image2, virt_image3;
+    CT_Image src0, virt1, virt2, virt3;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    int a, b;
+    int minval0 = 0, maxval0 = 0, minval0_test = 0, maxval0_test = 0;
+    uint32_t mincount0 = 0, maxcount0 = 0, mincount0_test = 0, maxcount0_test = 0;
+    vx_scalar minval0_, maxval0_, mincount0_, maxcount0_;
+    vx_array minloc0_ = 0, maxloc0_ = 0;
+    vx_enum sctype = format == VX_DF_IMAGE_U8 ? VX_TYPE_UINT8 :
+                     format == VX_DF_IMAGE_S16 ? VX_TYPE_INT16 :
+                     VX_TYPE_INT32;
+    uint32_t pixsize = ct_image_bits_per_pixel(format)/8;
+    Point* ptbuf = 0;
+    vx_size bufbytes = 0, npoints = 0, bufcap = 0;
+    vx_rectangle_t src_rect;
+    vx_bool valid_rect;
+    vx_scalar shift_convertdepth = 0;
+    vx_int32 sh = 0;
+    int iter, k, niters = 3;
+
+    if( format == VX_DF_IMAGE_U8 )
+        a = 0, b = 256;
+    else if( format == VX_DF_IMAGE_S16 )
+        a = -32768, b = 32768;
+    else
+        a = INT_MIN/3, b = INT_MAX/3;
+
+    minval0_ = ct_scalar_from_int(context, sctype, 0);
+    maxval0_ = ct_scalar_from_int(context, sctype, 0);
+    mincount0_ = ct_scalar_from_int(context, VX_TYPE_UINT32, 0);
+    maxcount0_ = ct_scalar_from_int(context, VX_TYPE_UINT32, 0);
+    minloc0_ = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
+    maxloc0_ = vxCreateArray(context, VX_TYPE_COORDINATES2D, MAX_CAP);
+    ASSERT(vxGetStatus((vx_reference)minloc0_) == VX_SUCCESS && vxGetStatus((vx_reference)maxloc0_) == VX_SUCCESS);
+
+    rng = CT()->seed_;
+
+    for( iter = 0; iter < niters; iter++ )
+    {
+
+        int return_loc = CT_RNG_NEXT_INT(rng, 0, 2);
+        int return_count = CT_RNG_NEXT_INT(rng, 0, 2);
+        uint32_t stride0, stride1;
+        int width, height;
+
+        width = ct_roundf(ct_log_rng(&rng, 0, 10));
+        height = ct_roundf(ct_log_rng(&rng, 0, 10));
+
+        width = CT_MAX(width, 1);
+        height = CT_MAX(height, 1);
+
+        src0 = ct_allocate_ct_image_random(width, height, format, &rng, a, b);
+        stride0 = ct_stride_bytes(src0);
+        virt1 = ct_allocate_image(width, height, format);
+        virt2 = ct_allocate_image(width, height, format);
+        
+        if( iter % 3 == 0 )
+        {
+            int mm[2], maxk;
+            reference_minmax(src0, &mm[0], &mm[1]);
+            maxk = CT_RNG_NEXT_INT(rng, 0, 100);
+            // make sure that there are several pixels with minimum/maximum value
+            ct_set_random_pixels(src0, &rng, maxk, 2, mm);
+        }
+
+
+        ASSERT_VX_OBJECT(src0_image = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
+        graph = vxCreateGraph(context);
+        ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(virt_image1 = vxCreateVirtualImage(graph, 0, 0, format), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(virt_image2 = vxCreateVirtualImage(graph, 0, 0, format), VX_TYPE_IMAGE);
+
+        if( format == VX_DF_IMAGE_U8 )
+        {
+            referenceNot(src0, virt1);
+            referenceNot(virt1, virt2);
+            reference_minmaxloc(virt2, &minval0, &maxval0, &mincount0, &maxcount0);
+
+            node1 = vxNotNode(graph, src0_image, virt_image1);
+            node2 = vxNotNode(graph, virt_image1, virt_image2);
+        }
+        else if ( format == VX_DF_IMAGE_S16 ) {
+            referenceSubtractSingle(src0, src0, virt1, VX_CONVERT_POLICY_SATURATE);
+            referenceAddSingle(src0, virt1, virt2, VX_CONVERT_POLICY_SATURATE);
+            reference_minmaxloc(virt2, &minval0, &maxval0, &mincount0, &maxcount0);
+
+            node1 = vxSubtractNode(graph, src0_image, src0_image, VX_CONVERT_POLICY_SATURATE, virt_image1);
+            node2 = vxAddNode(graph, src0_image, virt_image1, VX_CONVERT_POLICY_SATURATE, virt_image2);
+
+        }
+        node3 = vxMinMaxLocNode(graph, virt_image2, minval0_, maxval0_,
+                                   return_loc ? minloc0_ : 0,
+                                   return_loc ? maxloc0_ : 0,
+                                   return_count ? mincount0_ : 0,
+                                   return_count ? maxcount0_ : 0);
+
+        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[1] = node2);
+        ASSERT_NO_FAILURE(node_list[2] = node3);
+        ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+        
+        VX_CALL(vxVerifyGraph(graph));
+        VX_CALL(vxProcessGraph(graph));
+
+        vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+        ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+        vxGetValidRegionImage(src0_image, &src_rect);
+
+        ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+        ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+        VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+        VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+        minval0_test = ct_scalar_as_int(minval0_);
+        maxval0_test = ct_scalar_as_int(maxval0_);
+
+        if( return_count )
+        {
+            mincount0_test = ct_scalar_as_int(mincount0_);
+            maxcount0_test = ct_scalar_as_int(maxcount0_);
+        }
+        else
+        {
+            mincount0_test = mincount0;
+            maxcount0_test = maxcount0;
+        }
+
+        if( minval0_test != minval0 || maxval0_test != maxval0 || mincount0_test != mincount0 || maxcount0_test != maxcount0 )
+        {
+            CT_RecordFailureAtFormat("Test case %d, first image. width=%d, height=%d,\n"
+                                     "\tExpected: minval=%d, maxval=%d, mincount=%d, maxcount=%d\n"
+                                     "\tActual:   minval=%d, maxval=%d, mincount=%d, maxcount=%d\n",
+                                     __FUNCTION__, __FILE__, __LINE__,
+                                     iter, width, height,
+                                     minval0, maxval0, mincount0, maxcount0,
+                                     minval0_test, maxval0_test, mincount0_test, maxcount0_test);
+        }
+
+        if( return_loc )
+        {
+            uint8_t* roi_ptr = src0->data.y;
+            for(k = 0; k < 2; k++ )
+            {
+                int val0 = k == 0 ? minval0_test : maxval0_test;
+                uint32_t i, count = k == 0 ? mincount0_test : maxcount0_test;
+                vx_array loc = k == 0 ? minloc0_ : maxloc0_;
+                vx_enum tp;
+                union
+                {
+                    uint8_t u8;
+                    int16_t s16;
+                    int32_t s32;
+                }
+                uval;
+                if( format == VX_DF_IMAGE_U8 )
+                    uval.u8 = (uint8_t)val0;
+                else if( format == VX_DF_IMAGE_S16 )
+                    uval.s16 = (int16_t)val0;
+                else
+                    uval.s32 = (int32_t)val0;
+
+                tp = ct_read_array(loc, (void**)&ptbuf, &bufbytes, &npoints, &bufcap);
+                ASSERT(tp == VX_TYPE_COORDINATES2D);
+                ASSERT(npoints == CT_MIN(bufcap, (vx_size)count));
+
+                ct_sort_points(ptbuf, npoints);
+                for( i = 0; i < npoints; i++ )
+                {
+                    Point p = ptbuf[i];
+                    if( i > 0 )
+                    {
+                        // all the extrema locations should be different
+                        ASSERT(p.x != ptbuf[i-1].x || p.y != ptbuf[i-1].y);
+                    }
+                    // value at each extrema location should match the extremum value
+                    ASSERT(memcmp(roi_ptr + p.y*stride0 + p.x*pixsize, &uval, pixsize) == 0);
+                }
+            }
+        }
+
+        VX_CALL(vxReleaseImage(&src0_image));
+        VX_CALL(vxReleaseImage(&virt_image1));
+        VX_CALL(vxReleaseImage(&virt_image2));
+        VX_CALL(tivxReleaseSuperNode(&super_node));
+        VX_CALL(vxReleaseNode(&node1));
+        VX_CALL(vxReleaseNode(&node2));
+        VX_CALL(vxReleaseNode(&node3));
+        VX_CALL(vxReleaseGraph(&graph));
+        ASSERT(super_node == 0 && node1 == 0 && node2 == 0 && node3 == 0 && graph == 0);
+        CT_CollectGarbage(CT_GC_IMAGE);
+
+        printPerformance(perf_super_node, width * height, "SN");
+        printPerformance(perf_graph, width * height, "G");
+    }
+
+    VX_CALL(vxReleaseScalar(&minval0_));
+    VX_CALL(vxReleaseScalar(&maxval0_));
+    VX_CALL(vxReleaseScalar(&mincount0_));
+    VX_CALL(vxReleaseScalar(&maxcount0_));
+    VX_CALL(vxReleaseArray(&minloc0_));
+    VX_CALL(vxReleaseArray(&maxloc0_));
+
+    if(ptbuf)
+        ct_free_mem(ptbuf);
+}
+
+
+TESTCASE_TESTS(tivxMinMaxLoc, 
+               testOnRandom, 
+               testOptionalParams,
+               testMinMaxLocSupernode)

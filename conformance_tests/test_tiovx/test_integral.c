@@ -17,7 +17,10 @@
 
 
 #include "test_tiovx.h"
+#include "shared_functions.h"
 #include <VX/vx.h>
+
+#define MAX_NODES 10
 
 TESTCASE(tivxIntegral, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -157,4 +160,77 @@ TEST_WITH_ARG(tivxIntegral, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxIntegral, testGraphProcessing)
+#define SUPERNODE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SIZE_644x258, ARG, integral_generate_random, NULL)
+
+
+TEST_WITH_ARG(tivxIntegral, testIntegralImageSupernode, Arg,
+    SUPERNODE_PARAMETERS
+)
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt_image = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_bool valid_rect;
+
+    CT_Image src = NULL, virt = NULL, dst = NULL, vxdst = NULL;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt_image = vxCreateImage(context, src->width, src->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, src_image, virt_image), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxIntegralImageNode(graph, virt_image, dst_image), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(vxdst = ct_image_from_vx_image(dst_image));
+    ASSERT_NO_FAILURE(virt = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(referenceNot(src, virt));
+    ASSERT_NO_FAILURE(dst = integral_create_reference_image(virt));
+    ASSERT_EQ_CTIMAGE(dst, vxdst);
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(virt_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+TESTCASE_TESTS(tivxIntegral, 
+               testGraphProcessing,
+               testIntegralImageSupernode)

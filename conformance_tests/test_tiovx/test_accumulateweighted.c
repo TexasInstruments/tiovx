@@ -20,22 +20,11 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include "shared_functions.h"
+
+#define MAX_NODES 10
 
 TESTCASE(tivxAccumulateWeighted, CT_VXContext, ct_setup_vx_context, 0)
-
-static void referenceNot(CT_Image src, CT_Image dst)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT(src->format == dst->format && src->format == VX_DF_IMAGE_U8);
-
-    for (i = 0; i < dst->height; ++i)
-        for (j = 0; j < dst->width; ++j)
-            dst->data.y[i * dst->stride + j] = ~src->data.y[i * src->stride + j];
-}
 
 static CT_Image accumulate_weighted_generate_random_8u(int width, int height)
 {
@@ -246,6 +235,90 @@ TEST_WITH_ARG(tivxAccumulateWeighted, testGraphProcessing, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+/*
+#define SUPERNODE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random/alpha0.33f/alphafinal0.67f", ADD_SIZE_644x258, ARG, 0.33f, 0.67f), \
+
+TEST_WITH_ARG(tivxAccumulateWeighted, testAccumulateWeightedSupernode, Arg,
+    SUPERNODE_PARAMETERS
+)
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    vx_image input_image = 0, accum_image_intermediate = 0, accum_image_final = 0;
+    vx_scalar alpha_scalar, alpha_scalar_final = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    CT_Image input = NULL, accum_src = NULL, accum_final = NULL, accum_dst = NULL;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(alpha_scalar = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_intermediate), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(alpha_scalar_final = vxCreateScalar(context, VX_TYPE_FLOAT32, &arg_->alpha_final), VX_TYPE_SCALAR);
+
+    ASSERT_NO_FAILURE(input = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+
+    ASSERT_NO_FAILURE(accum_src = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+
+    ASSERT_NO_FAILURE(accum_final = accumulate_weighted_generate_random_8u(arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(input_image = ct_image_to_vx_image(input, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(accum_image_intermediate = ct_image_to_vx_image(accum_src, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(accum_image_final = ct_image_to_vx_image(accum_final, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(node1 = vxAccumulateWeightedImageNode(graph, input_image, alpha_scalar, accum_image_intermediate), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxAccumulateWeightedImageNode(graph, accum_image_intermediate, alpha_scalar_final, accum_image_final), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(accum_dst = ct_image_from_vx_image(accum_image_final));
+
+    ASSERT_NO_FAILURE(accumulate_multiple_weighted_check(input, arg_->alpha_intermediate, arg_->alpha_final, accum_src, accum_final, accum_dst));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node2 == 0);
+    ASSERT(node1 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&accum_image_final));
+    VX_CALL(vxReleaseImage(&accum_image_intermediate));
+    VX_CALL(vxReleaseImage(&input_image));
+    VX_CALL(vxReleaseScalar(&alpha_scalar_final));
+    VX_CALL(vxReleaseScalar(&alpha_scalar));
+
+    ASSERT(accum_image_final == 0);
+    ASSERT(accum_image_intermediate == 0);
+    ASSERT(input_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+*/
+
 TESTCASE_TESTS(tivxAccumulateWeighted,
-        testGraphProcessing
+        testGraphProcessing/*,
+        testAccumulateWeightedSupernode*/
 )

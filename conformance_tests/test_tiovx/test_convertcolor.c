@@ -17,11 +17,14 @@
 
 
 #include "test_tiovx.h"
+#include "shared_functions.h"
 
 #include <VX/vx.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
+
+#define MAX_NODES 10
 
 static int get_yuv_params(CT_Image img, uint8_t** ptrY, uint8_t** ptrU, uint8_t** ptrV,
                            uint32_t* strideY, uint32_t* deltaY,
@@ -385,11 +388,27 @@ typedef struct {
     int cthresh;
 } format_arg;
 
+typedef struct {
+    const char* name;
+    vx_df_image srcformat;
+    vx_df_image dstformat;
+    vx_enum channel;
+    int mode;
+    int ythresh;
+    int cthresh;
+} new_format_arg;
+
 #define CVT_CASE_(imm, from, to, ythresh, cthresh) \
     {#imm "/" #from "=>" #to, VX_DF_IMAGE_##from, VX_DF_IMAGE_##to, CT_##imm##_MODE, ythresh, cthresh}
 
 #define CVT_CASE(from, to, ythresh, cthresh) \
     CVT_CASE_(Graph, from, to, ythresh, cthresh)
+
+#define CVTT_CASE_(imm, from, to, channel) \
+    {#imm "/" #from "=>" #to "/" #channel, VX_DF_IMAGE_##from, VX_DF_IMAGE_##to, channel, CT_##imm##_MODE}
+
+#define CVTT_CASE(from, to, channel) \
+    CVTT_CASE_(Graph, from, to, channel)
 
 TEST_WITH_ARG(tivxColorConvert, testOnRandomAndNatural, format_arg,
               CVT_CASE(RGB, RGBX, 0, 0),
@@ -571,4 +590,417 @@ TEST_WITH_ARG(tivxColorConvert, testOnRandomAndNatural, format_arg,
     }
 }
 
-TESTCASE_TESTS(tivxColorConvert, testOnRandomAndNatural)
+
+TEST_WITH_ARG(tivxColorConvert, testColConvertSupernode, format_arg,
+              CVT_CASE(RGB, RGBX, 0, 0),
+              CVT_CASE(RGB, NV12, 3, 3),
+              CVT_CASE(RGB, IYUV, 3, 3),
+
+              CVT_CASE(NV12, RGB, 2, 2),
+              CVT_CASE(NV12, RGBX, 2, 2),
+              CVT_CASE(NV12, IYUV, 0, 0),
+
+              CVT_CASE(IYUV, RGB, 2, 2),
+              CVT_CASE(IYUV, RGBX, 2, 2),
+              CVT_CASE(IYUV, NV12, 0, 0),
+              )
+{
+    int node_count = 2;
+    int srcformat = arg_->srcformat;
+    int dstformat = arg_->dstformat;
+    int ythresh = arg_->ythresh;
+    int cthresh = arg_->cthresh;
+    int mode = arg_->mode;
+    vx_image src=0, dst=0, virt=0;
+    CT_Image ref_src, ref_dst, vxdst, ref_virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    rng = CT()->seed_;
+
+    int width = ct_roundf(ct_log_rng(&rng, 0, 10));
+    int height = ct_roundf(ct_log_rng(&rng, 0, 10));
+    vx_enum range = VX_CHANNEL_RANGE_FULL;
+    vx_enum space = VX_COLOR_SPACE_BT709;
+
+    width = CT_MAX((width+1)&-2, 2);
+    height = CT_MAX((height+1)&-2, 2);
+
+    if( !ct_check_any_size() )
+    {
+        width = CT_MIN((width + 7) & -8, 640);
+        height = CT_MIN((height + 7) & -8, 480);
+    }
+
+    width = 640;
+    height = 480;
+
+    if( srcformat == VX_DF_IMAGE_RGB || srcformat == VX_DF_IMAGE_RGBX )
+    {
+        int scn = srcformat == VX_DF_IMAGE_RGB ? 3 : 4;
+
+        ASSERT_NO_FAILURE(ref_src = ct_read_image("colors.bmp", scn));
+        width = ref_src->width;
+        height = ref_src->height;
+    }
+    else
+    {
+        ASSERT_NO_FAILURE(ref_src = ct_allocate_ct_image_random(width, height, srcformat, &rng, 0, 256));
+    }
+
+    ASSERT_NO_FAILURE(src = ct_image_to_vx_image(ref_src, context));
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, width, height, srcformat), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt   = vxCreateImage(context, width, height, dstformat), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_SPACE, &space, sizeof(space)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(virt, VX_IMAGE_SPACE, &space, sizeof(space)));
+    
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxColorConvertNode(graph, src, virt), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxColorConvertNode(graph, virt, dst), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src, &src_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    vxdst = ct_image_from_vx_image(dst);
+
+    ASSERT_NO_FAILURE(ref_virt = ct_allocate_image(width, height, dstformat));
+    ASSERT_NO_FAILURE(ref_dst = ct_allocate_image(width, height, srcformat));
+    reference_sequential_colorconvert(ref_src, ref_virt, ref_dst);
+
+    ASSERT(cmp_color_images(ref_dst, vxdst, ythresh, cthresh) >= 0);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0 && node2 == 0 && super_node == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    printPerformance(perf_super_node, width * height, "SN");
+    printPerformance(perf_graph, width*height, "G");
+}
+
+TEST_WITH_ARG(tivxColorConvert, testColConvertSupernodeSingleNode, format_arg,
+              CVT_CASE(RGB, YUV4, 1, 1),
+              CVT_CASE(RGB, RGBX, 0, 0),
+              CVT_CASE(RGB, NV12, 2, 2),
+              CVT_CASE(RGB, IYUV, 1, 1),
+
+              CVT_CASE(RGBX, RGB, 0, 0),
+              CVT_CASE(RGBX, NV12, 1, 1),
+              CVT_CASE(RGBX, IYUV, 1, 1),
+              CVT_CASE(RGBX, YUV4, 1, 1),
+
+              CVT_CASE(NV12, YUV4, 1, 1),
+              CVT_CASE(NV12, RGB, 1, 1),
+              CVT_CASE(NV12, RGBX, 1, 1),
+              CVT_CASE(NV12, IYUV, 0, 0),
+
+              CVT_CASE(NV21, RGB, 1, 1),
+              CVT_CASE(NV21, RGBX, 1, 1),
+              CVT_CASE(NV21, IYUV, 0, 0),
+              CVT_CASE(NV21, YUV4, 0, 0),
+
+              CVT_CASE(IYUV, YUV4, 1, 1),
+              CVT_CASE(IYUV, RGB, 1, 1),
+              CVT_CASE(IYUV, RGBX, 1, 1),
+              CVT_CASE(IYUV, NV12, 0, 0),
+
+              CVT_CASE(UYVY, RGB, 1, 1),
+              CVT_CASE(UYVY, RGBX, 1, 1),
+              CVT_CASE(UYVY, NV12, 0, 0),
+              CVT_CASE(UYVY, IYUV, 0, 0),
+
+              CVT_CASE(YUYV, RGB, 1, 1),
+              CVT_CASE(YUYV, RGBX, 1, 1),
+              CVT_CASE(YUYV, NV12, 0, 0),
+              CVT_CASE(YUYV, IYUV, 0, 0),
+              )
+{
+    int node_count = 1;
+    int srcformat = arg_->srcformat;
+    int dstformat = arg_->dstformat;
+    int ythresh = arg_->ythresh;
+    int cthresh = arg_->cthresh;
+    vx_image src=0, dst=0;
+    CT_Image ref_src, ref_dst, vxdst;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    rng = CT()->seed_;
+
+    int width = ct_roundf(ct_log_rng(&rng, 0, 10));
+    int height = ct_roundf(ct_log_rng(&rng, 0, 10));
+    vx_enum range = VX_CHANNEL_RANGE_FULL;
+    vx_enum space = VX_COLOR_SPACE_BT709;
+
+    width = CT_MAX((width+1)&-2, 2);
+    height = CT_MAX((height+1)&-2, 2);
+
+    if( !ct_check_any_size() )
+    {
+        width = CT_MIN((width + 7) & -8, 640);
+        height = CT_MIN((height + 7) & -8, 480);
+    }
+
+    width = 640;
+    height = 480;
+
+    if( srcformat == VX_DF_IMAGE_RGB || srcformat == VX_DF_IMAGE_RGBX )
+    {
+        int scn = srcformat == VX_DF_IMAGE_RGB ? 3 : 4;
+
+        ASSERT_NO_FAILURE(ref_src = ct_read_image("colors.bmp", scn));
+        width = ref_src->width;
+        height = ref_src->height;
+    }
+    else
+    {
+        ASSERT_NO_FAILURE(ref_src = ct_allocate_ct_image_random(width, height, srcformat, &rng, 0, 256));
+    }
+
+    ASSERT_NO_FAILURE(src = ct_image_to_vx_image(ref_src, context));
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, width, height, dstformat), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_SPACE, &space, sizeof(space)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
+    
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node = vxColorConvertNode(graph, src, dst), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node); 
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src, &src_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    vxdst = ct_image_from_vx_image(dst);
+
+    ASSERT_NO_FAILURE(ref_dst = ct_allocate_image(width, height, dstformat));
+    reference_colorconvert(ref_src, ref_dst);
+
+    ASSERT(cmp_color_images(ref_dst, vxdst, ythresh, cthresh) >= 0);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&dst));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0 && super_node == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    printPerformance(perf_super_node, width * height, "SN");
+    printPerformance(perf_graph, width*height, "G");
+}
+
+TEST_WITH_ARG(tivxColorConvert, testColConvertChannelExtractSupernode, new_format_arg,
+              CVTT_CASE(RGB, RGBX, VX_CHANNEL_A),
+              CVTT_CASE(RGB, RGBX, VX_CHANNEL_R),
+              CVTT_CASE(RGB, NV12, VX_CHANNEL_Y),
+              CVTT_CASE(RGB, NV12, VX_CHANNEL_U),
+              CVTT_CASE(RGB, NV12, VX_CHANNEL_V),
+              CVTT_CASE(RGB, IYUV, VX_CHANNEL_Y),
+              CVTT_CASE(RGB, IYUV, VX_CHANNEL_U),
+              CVTT_CASE(RGB, YUV4, VX_CHANNEL_Y),
+              CVTT_CASE(RGB, YUV4, VX_CHANNEL_V),
+
+              CVTT_CASE(RGBX, RGB, VX_CHANNEL_R),
+              CVTT_CASE(RGBX, RGB, VX_CHANNEL_B),
+              CVTT_CASE(RGBX, NV12, VX_CHANNEL_Y),
+              CVTT_CASE(RGBX, NV12, VX_CHANNEL_U),
+              CVTT_CASE(RGBX, NV12, VX_CHANNEL_V),
+              CVTT_CASE(RGBX, IYUV, VX_CHANNEL_Y),
+              CVTT_CASE(RGBX, IYUV, VX_CHANNEL_U),
+              CVTT_CASE(RGBX, YUV4, VX_CHANNEL_Y),
+              CVTT_CASE(RGBX, YUV4, VX_CHANNEL_V),
+
+              CVTT_CASE(NV12, RGB, VX_CHANNEL_G),
+              CVTT_CASE(NV12, RGB, VX_CHANNEL_B),
+              CVTT_CASE(NV12, RGBX, VX_CHANNEL_R),
+              CVTT_CASE(NV12, RGBX, VX_CHANNEL_A),
+              CVTT_CASE(NV12, IYUV, VX_CHANNEL_Y),
+              CVTT_CASE(NV12, IYUV, VX_CHANNEL_V),
+              CVTT_CASE(NV12, YUV4, VX_CHANNEL_Y),
+              CVTT_CASE(NV12, YUV4, VX_CHANNEL_U),
+
+              CVTT_CASE(IYUV, RGB, VX_CHANNEL_R),
+              CVTT_CASE(IYUV, RGB, VX_CHANNEL_G),
+              CVTT_CASE(IYUV, RGBX, VX_CHANNEL_B),
+              CVTT_CASE(IYUV, RGBX, VX_CHANNEL_A),
+              CVTT_CASE(IYUV, NV12, VX_CHANNEL_Y),
+              CVTT_CASE(IYUV, NV12, VX_CHANNEL_U),
+              CVTT_CASE(IYUV, NV12, VX_CHANNEL_V),
+              CVTT_CASE(IYUV, YUV4, VX_CHANNEL_Y),
+              CVTT_CASE(IYUV, YUV4, VX_CHANNEL_V),
+              )
+{
+    int node_count = 2;
+    int srcformat = arg_->srcformat;
+    int virtformat = arg_->dstformat;
+    int mode = arg_->mode;
+    vx_image src=0, dst=0, virt=0;
+    CT_Image ref_src, ref_dst, vxdst, vxvirt, ref_virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    rng = CT()->seed_;
+
+    int width = ct_roundf(ct_log_rng(&rng, 0, 10));
+    int height = ct_roundf(ct_log_rng(&rng, 0, 10));
+    vx_enum range = VX_CHANNEL_RANGE_FULL;
+    vx_enum space = VX_COLOR_SPACE_BT709;
+
+    width = CT_MAX((width+1)&-2, 2);
+    height = CT_MAX((height+1)&-2, 2);
+
+    if( !ct_check_any_size() )
+    {
+        width = CT_MIN((width + 7) & -8, 640);
+        height = CT_MIN((height + 7) & -8, 480);
+    }
+    
+    width = 640;
+    height = 480;
+
+    if( srcformat == VX_DF_IMAGE_RGB || srcformat == VX_DF_IMAGE_RGBX )
+    {
+        int scn = srcformat == VX_DF_IMAGE_RGB ? 3 : 4;
+
+        ASSERT_NO_FAILURE(ref_src = ct_read_image("colors.bmp", scn));
+        width = ref_src->width;
+        height = ref_src->height;
+    }
+    else
+    {
+        ASSERT_NO_FAILURE(ref_src = ct_allocate_ct_image_random(width, height, srcformat, &rng, 0, 256));
+    }
+    ASSERT_NO_FAILURE(ref_virt = ct_allocate_image(width, height, virtformat));
+    reference_colorconvert(ref_src, ref_virt);
+    ASSERT_NO_FAILURE(ref_dst = channel_extract_create_reference_image(ref_virt, arg_->channel));
+
+    ASSERT_NO_FAILURE(src = ct_image_to_vx_image(ref_src, context));
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, ref_dst->width, ref_dst->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt   = vxCreateImage(context, width, height, virtformat), VX_TYPE_IMAGE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(src, VX_IMAGE_SPACE, &space, sizeof(space)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(dst, VX_IMAGE_SPACE, &space, sizeof(space)));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetImageAttribute(virt, VX_IMAGE_SPACE, &space, sizeof(space)));
+    
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(node1 = vxColorConvertNode(graph, src, virt), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxChannelExtractNode(graph, virt, arg_->channel, dst), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(vxVerifyGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src, &src_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), ref_dst->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), ref_dst->height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    /*vxvirt = ct_image_from_vx_image(virt);*/
+    vxdst = ct_image_from_vx_image(dst);
+
+    /*ASSERT(EXPECT_CTIMAGE_NEAR(vxvirt, ref_virt, 1));*/
+    ASSERT(EXPECT_CTIMAGE_NEAR(ref_dst, vxdst, 1));
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0 && node2 == 0 && super_node == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    printPerformance(perf_super_node, width * height, "SN");
+    printPerformance(perf_graph, width*height, "G");
+}
+
+TESTCASE_TESTS(tivxColorConvert, 
+               testOnRandomAndNatural,
+               testColConvertSupernodeSingleNode,
+               testColConvertSupernode,
+               testColConvertChannelExtractSupernode)

@@ -22,6 +22,7 @@
 #include <VX/vx.h>
 #include <string.h>
 
+#define MAX_NODES  10
 
 TESTCASE(tivxLUT, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -346,5 +347,126 @@ TEST_WITH_ARG(tivxLUT, testGraphProcessing, Arg,
     ct_free_mem(lut1_data);
 }
 
+
+#define SUPERNODE_LUT_PARAMETERS   \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_LUT_GENERATOR, ADD_SIZE_644x258, ADD_TYPE, ARG, lut_image_generate_random, NULL)
+
+TEST_WITH_ARG(tivxLUT, testLutSupernode, Arg,
+    SUPERNODE_LUT_PARAMETERS
+)
+{
+    int node_count = 2;
+    vx_enum data_type = arg_->data_type;
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    CT_Image src = NULL, dst = NULL;
+    void* lut1_data;
+    void* lut2_data;
+    vx_lut lut1, lut2;
+    vx_size size;
+
+    size = lut_size(data_type);
+    lut1_data = ct_alloc_mem(size);
+    ASSERT(lut1_data != 0);
+    lut2_data = ct_alloc_mem(size);
+    ASSERT(lut2_data != 0);
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height, data_type));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    ASSERT_NO_FAILURE(arg_->lut_generator(lut1_data, data_type));
+    ASSERT_VX_OBJECT(lut1 = lut_create(context, lut1_data, data_type), VX_TYPE_LUT);
+
+    ASSERT_NO_FAILURE(arg_->lut_generator(lut2_data, data_type));
+    ASSERT_VX_OBJECT(lut2 = lut_create(context, lut2_data, data_type), VX_TYPE_LUT);
+
+    dst_image = ct_create_similar_image(src_image);
+    ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt  = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_VIRT), VX_TYPE_IMAGE);
+
+    node1 = vxTableLookupNode(graph, src_image, lut1, virt);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    node2 = vxTableLookupNode(graph, virt, lut2, dst_image);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    vx_enum lut_type;
+    vx_uint32 lut_offset;
+    VX_CALL(vxQueryLUT(lut1, VX_LUT_TYPE, &lut_type, sizeof(lut_type)));
+    VX_CALL(vxQueryLUT(lut1, VX_LUT_OFFSET, &lut_offset, sizeof(lut_offset)));
+    if (VX_TYPE_UINT8 == lut_type)
+    {
+        if (lut_offset != 0)
+        {
+            CT_FAIL("check for LUT attribute VX_LUT_OFFSET failed\n");
+        }
+    }
+    else if (VX_TYPE_INT16 == lut_type)
+    {
+        vx_size lut_count;
+        VX_CALL(vxQueryLUT(lut1, VX_LUT_COUNT, &lut_count, sizeof(lut_count)));
+        if (lut_offset != (lut_count/2))
+        {
+            CT_FAIL("check for LUT attribute VX_LUT_COUNT failed\n");
+        }
+    }
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(lut_check(src, dst, lut1_data, lut2_data, data_type));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseLUT(&lut1));
+    VX_CALL(vxReleaseLUT(&lut2));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(lut1 == 0);
+    ASSERT(lut2 == 0);
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width * arg_->height, "G");
+
+    ct_free_mem(lut2_data);
+    ct_free_mem(lut1_data);
+}
+
+
 TESTCASE_TESTS(tivxLUT,
-               testGraphProcessing)
+               testGraphProcessing,
+               testLutSupernode)

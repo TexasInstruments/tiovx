@@ -31,6 +31,7 @@ TESTCASE(tivxNonLinearFilter, CT_VXContext, ct_setup_vx_context, 0)
 #ifndef MAX
 #define MAX(_a,_b) (((_a) > (_b)) ? (_a) : (_b))
 #endif
+#define MAX_NODES 10
 
 static CT_Image generate_random(const char* fileName, int width, int height)
 {
@@ -144,20 +145,6 @@ static void pattern_check(vx_uint8* mask, vx_size cols, vx_size rows, vx_enum pa
     }
 }
 
-static void referenceNot(CT_Image src, CT_Image dst)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT(src->format == dst->format && src->format == VX_DF_IMAGE_U8);
-
-    for (i = 0; i < dst->height; ++i)
-        for (j = 0; j < dst->width; ++j)
-            dst->data.y[i * dst->stride + j] = ~src->data.y[i * src->stride + j];
-}
-
 
 static void filter_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Image dst, vx_border_t* border)
 {
@@ -187,6 +174,73 @@ static void filter_check(vx_enum function, CT_Image src, vx_matrix mask, CT_Imag
         vx_int32 top = origin.y;
         vx_int32 right = (vx_int32)(cols - origin.x - 1);
         vx_int32 bottom = (vx_int32)(rows - origin.y - 1);
+
+        ct_adjust_roi(dst, left, top, right, bottom);
+        ct_adjust_roi(dst_ref, left, top, right, bottom);
+    }
+    );
+
+    EXPECT_EQ_CTIMAGE(dst_ref, dst);
+}
+
+static void filter_check2(vx_enum function, CT_Image src, vx_matrix mask1, vx_border_t* border1, \
+                          vx_matrix mask2, vx_border_t* border2, CT_Image dst)
+{
+    CT_Image dst_ref = NULL, virt_ref = NULL;
+    ASSERT(src && dst && mask1 && border1 && mask2 && border2);
+
+    vx_size rows1, cols1;
+    VX_CALL(vxQueryMatrix(mask1, VX_MATRIX_ROWS, &rows1, sizeof(rows1)));
+    VX_CALL(vxQueryMatrix(mask1, VX_MATRIX_COLUMNS, &cols1, sizeof(cols1)));
+
+    vx_coordinates2d_t origin1;
+    VX_CALL(vxQueryMatrix(mask1, VX_MATRIX_ORIGIN, &origin1, sizeof(origin1)));
+
+    vx_enum pattern1 = 0;
+    vx_uint8 m1[MASK_SIZE_MAX * MASK_SIZE_MAX];
+    VX_CALL(vxQueryMatrix(mask1, VX_MATRIX_PATTERN, &pattern1, sizeof(pattern1)));
+    VX_CALL(vxCopyMatrix(mask1, m1, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+    ASSERT_NO_FAILURE(pattern_check(m1, cols1, rows1, pattern1));
+
+
+    vx_size rows2, cols2;
+    VX_CALL(vxQueryMatrix(mask2, VX_MATRIX_ROWS, &rows2, sizeof(rows2)));
+    VX_CALL(vxQueryMatrix(mask2, VX_MATRIX_COLUMNS, &cols2, sizeof(cols2)));
+
+    vx_coordinates2d_t origin2;
+    VX_CALL(vxQueryMatrix(mask2, VX_MATRIX_ORIGIN, &origin2, sizeof(origin2)));
+
+    vx_enum pattern2 = 0;
+    vx_uint8 m2[MASK_SIZE_MAX * MASK_SIZE_MAX];
+    VX_CALL(vxQueryMatrix(mask2, VX_MATRIX_PATTERN, &pattern2, sizeof(pattern2)));
+    VX_CALL(vxCopyMatrix(mask2, m2, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
+
+    ASSERT_NO_FAILURE(pattern_check(m2, cols2, rows2, pattern2));
+    
+    ASSERT_NO_FAILURE(tivx_filter_create_reference_image(function, src, &origin1, cols1, rows1, m1, &virt_ref, border1));
+    ASSERT_NO_FAILURE(tivx_filter_create_reference_image(function, virt_ref, &origin2, cols2, rows2, m2, &dst_ref, border2));
+
+    ASSERT_NO_FAILURE(
+    if (border1->mode == VX_BORDER_UNDEFINED)
+    {
+        vx_int32 left = origin1.x;
+        vx_int32 top = origin1.y;
+        vx_int32 right = (vx_int32)(cols1 - origin1.x - 1);
+        vx_int32 bottom = (vx_int32)(rows1 - origin1.y - 1);
+
+        ct_adjust_roi(dst, left, top, right, bottom);
+        ct_adjust_roi(dst_ref, left, top, right, bottom);
+    }
+    );
+    
+    ASSERT_NO_FAILURE(
+    if (border2->mode == VX_BORDER_UNDEFINED)
+    {
+        vx_int32 left = origin2.x;
+        vx_int32 top = origin2.y;
+        vx_int32 right = (vx_int32)(cols2 - origin2.x - 1);
+        vx_int32 bottom = (vx_int32)(rows2 - origin2.y - 1);
 
         ct_adjust_roi(dst, left, top, right, bottom);
         ct_adjust_roi(dst_ref, left, top, right, bottom);
@@ -526,4 +580,106 @@ TEST_WITH_ARG(tivxNonLinearFilter, negativeTestBorderMode, Filter_Arg,
     ASSERT(src_image == 0);
 }
 
-TESTCASE_TESTS(tivxNonLinearFilter, testVirtualImage, testGraphProcessing, negativeTestBorderMode)
+
+TEST_WITH_ARG(tivxNonLinearFilter, testNonLinearFilterSupernode, Filter_Arg,
+    FILTER_PARAMETERS
+    )
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    vx_image src0_image = 0, dst0_image = 0, virt_image = 0;
+    vx_matrix mask = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_enum pattern = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    CT_Image src0 = NULL, dst0 = NULL, vxvirt = NULL, vxdst = NULL;
+    vx_border_t border = arg_->border;
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_NO_FAILURE(src0 = arg_->generator(NULL, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src0_image = ct_image_to_vx_image(src0, context), VX_TYPE_IMAGE);
+    dst0_image = ct_create_similar_image(src0_image);
+    ASSERT_VX_OBJECT(dst0_image, VX_TYPE_IMAGE);
+
+    mask = vxCreateMatrixFromPattern(context, arg_->pattern, arg_->mask_width, arg_->mask_height);
+    ASSERT_VX_OBJECT(mask, VX_TYPE_MATRIX);
+    VX_CALL(vxQueryMatrix(mask, VX_MATRIX_PATTERN, &pattern, sizeof(pattern)));
+    ASSERT_EQ_INT(arg_->pattern, pattern);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt_image = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    node1 = vxNonLinearFilterNode(graph, arg_->function, src0_image, mask, virt_image);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    node2 = vxNonLinearFilterNode(graph, arg_->function, virt_image, mask, dst0_image);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src0_image, &src_rect);
+    vxGetValidRegionImage(dst0_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (arg_->width - (arg_->mask_width-1)*2));
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (arg_->height - (arg_->mask_height-1)*2));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(vxdst = ct_image_from_vx_image(dst0_image));
+
+    ASSERT_NO_FAILURE(filter_check2(arg_->function, src0, mask, &border, mask, &border, vxdst));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseMatrix(&mask));
+    VX_CALL(vxReleaseImage(&src0_image));
+    VX_CALL(vxReleaseImage(&virt_image));
+    VX_CALL(vxReleaseImage(&dst0_image));
+
+    ASSERT(mask == 0);
+    ASSERT(src0_image == 0);
+    ASSERT(virt_image == 0);
+    ASSERT(dst0_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+
+TESTCASE_TESTS(tivxNonLinearFilter,
+               testVirtualImage,
+               testGraphProcessing,
+               negativeTestBorderMode,
+               testNonLinearFilterSupernode)

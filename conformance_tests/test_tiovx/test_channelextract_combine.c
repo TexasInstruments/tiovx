@@ -19,10 +19,11 @@
 
 #include <VX/vx.h>
 
+#define MAX_NODES 10
 
 TESTCASE(tivxChannelExtractCombine, CT_VXContext, ct_setup_vx_context, 0)
 
-static CT_Image channel_extract_image_generate_random(int width, int height, vx_df_image format)
+CT_Image channel_extract_image_generate_random(int width, int height, vx_df_image format)
 {
     CT_Image image;
 
@@ -33,7 +34,7 @@ static CT_Image channel_extract_image_generate_random(int width, int height, vx_
 }
 
 
-static void channel_extract_plane(CT_Image src, vx_enum channel, CT_Image* dst)
+void channel_extract_plane(CT_Image src, vx_enum channel, CT_Image* dst)
 {
     uint8_t *src_base = NULL;
     int x, y;
@@ -70,7 +71,7 @@ static void channel_extract_plane(CT_Image src, vx_enum channel, CT_Image* dst)
 }
 
 
-static CT_Image channel_extract_create_reference_image(CT_Image src, vx_enum channelNum)
+CT_Image channel_extract_create_reference_image(CT_Image src, vx_enum channelNum)
 {
     CT_Image dst = NULL;
 
@@ -94,14 +95,40 @@ typedef struct {
 #define ADD_CASES(testArgName, nextmacro, ...) \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGB, VX_CHANNEL_G, __VA_ARGS__)
 
+#define ADD_SUPERNODE_CASES(testArgName, nextmacro, ...) \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGB, VX_CHANNEL_G, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGBX, VX_CHANNEL_A, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUYV, VX_CHANNEL_Y, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_UYVY, VX_CHANNEL_U, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUYV, VX_CHANNEL_V, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV12, VX_CHANNEL_Y, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV12, VX_CHANNEL_V, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV21, VX_CHANNEL_U, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV21, VX_CHANNEL_V, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUV4, VX_CHANNEL_Y, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUV4, VX_CHANNEL_U, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUV4, VX_CHANNEL_V, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_IYUV, VX_CHANNEL_Y, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_IYUV, VX_CHANNEL_U, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_IYUV, VX_CHANNEL_V, __VA_ARGS__), \
 
 #define ADD_SIZE(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/sz=18x18", __VA_ARGS__, 18, 18)), \
     CT_EXPAND(nextmacro(testArgName "/sz=644x258", __VA_ARGS__, 644, 258)), \
     CT_EXPAND(nextmacro(testArgName "/sz=1600x1200", __VA_ARGS__, 1600, 1200))
+	
+#define ADD_SUPERNODE_SIZE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/sz=640x480", __VA_ARGS__, 640, 480))
 
 #define ChannelExtractCombine_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_CASES, ADD_SIZE, ARG)
+	
+#define ChannelExtractSupernode_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_SUPERNODE_CASES, ADD_SUPERNODE_SIZE, ARG)
+
+#define ChannelExtractCombineSupernode_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_CASES, ADD_SUPERNODE_SIZE, ARG)
+
 
 TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombine, Arg,
     ChannelExtractCombine_PARAMETERS
@@ -290,7 +317,286 @@ TEST_WITH_ARG(tivxChannelExtractCombine, testCombineExtract, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+
+TEST_WITH_ARG(tivxChannelExtractCombine, testExtractCombineSupernode, Arg,
+    ChannelExtractCombineSupernode_PARAMETERS
+)
+{
+    int node_count = 4;
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt1, virt2, virt3;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    CT_Image src = NULL, dst = NULL;
+    CT_Image dst_ref = NULL;
+
+    ASSERT_NO_FAILURE(src = channel_extract_image_generate_random(arg_->width, arg_->height, arg_->format));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, arg_->width, arg_->height, arg_->format), VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+
+    ASSERT_VX_OBJECT(virt1   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt2   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(virt3   = vxCreateVirtualImage(graph, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    node1 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_R, virt1);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    node2 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_G, virt2);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    node3 = vxChannelExtractNode(graph, src_image, VX_CHANNEL_B, virt3);
+    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+
+    node4 = vxChannelCombineNode(graph, virt1, virt2, virt3, NULL, dst_image);
+    ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_NO_FAILURE(node_list[2] = node3);
+    ASSERT_NO_FAILURE(node_list[3] = node4);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+	
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src_image, &src_rect);
+    vxGetValidRegionImage(dst_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    EXPECT_EQ_CTIMAGE(src, dst);
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(node4 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&src_image));
+    VX_CALL(vxReleaseImage(&virt1));
+    VX_CALL(vxReleaseImage(&virt2));
+    VX_CALL(vxReleaseImage(&virt3));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+TEST_WITH_ARG(tivxChannelExtractCombine, testCombineExtractSupernode, Arg,
+    ChannelExtractCombineSupernode_PARAMETERS
+)
+{
+    int node_count = 4;
+    vx_context context = context_->vx_context_;
+    vx_image src_image[3] = {0, 0, 0};
+    vx_image dst_image[3] = {0, 0, 0};
+    vx_image virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0, node4 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    int i;
+
+    CT_Image src[3] = {NULL, NULL, NULL};
+    CT_Image dst[3] = {NULL, NULL, NULL};
+    CT_Image dst_dummy = NULL;
+    vx_enum channel_ref;
+
+    ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->format));
+    channel_ref = (arg_->format==VX_DF_IMAGE_RGB)||(arg_->format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
+    for (i = 0; i < 3; i++)
+    {
+        int w = arg_->width / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);
+        int h = arg_->height / ct_image_get_channel_subsampling_y(dst_dummy, channel_ref + i);
+        ASSERT_NO_FAILURE(src[i] = channel_extract_image_generate_random(w, h, VX_DF_IMAGE_U8));
+        ASSERT_VX_OBJECT(src_image[i] = ct_image_to_vx_image(src[i], context), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image[i] = vxCreateImage(context, w, h, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    }
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, arg_->width, arg_->height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+
+    node1 = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], NULL, virt);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    node2 = vxChannelExtractNode(graph, virt, VX_CHANNEL_R, dst_image[0]);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    node3 = vxChannelExtractNode(graph, virt, VX_CHANNEL_G, dst_image[1]);
+    ASSERT_VX_OBJECT(node3, VX_TYPE_NODE);
+
+    node4 = vxChannelExtractNode(graph, virt, VX_CHANNEL_B, dst_image[2]);
+    ASSERT_VX_OBJECT(node4, VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_NO_FAILURE(node_list[2] = node3);
+    ASSERT_NO_FAILURE(node_list[3] = node4);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+	
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(dst[0] = ct_image_from_vx_image(dst_image[0]));
+    ASSERT_NO_FAILURE(dst[1] = ct_image_from_vx_image(dst_image[1]));
+    ASSERT_NO_FAILURE(dst[2] = ct_image_from_vx_image(dst_image[2]));
+
+    EXPECT_EQ_CTIMAGE(src[0], dst[0]);
+    EXPECT_EQ_CTIMAGE(src[1], dst[1]);
+    EXPECT_EQ_CTIMAGE(src[2], dst[2]);
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node4));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(node4 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&virt));
+
+    for (i = 0; i < 3; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        VX_CALL(vxReleaseImage(&dst_image[i]));
+        ASSERT(src_image[i] == 0);
+        ASSERT(dst_image[i] == 0);
+    }
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+
+TEST_WITH_ARG(tivxChannelExtractCombine, testChannelExtractSupernode, Arg,
+    ChannelExtractSupernode_PARAMETERS
+)
+{
+    int node_count = 1;
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    CT_Image src = NULL, dst = NULL;
+    CT_Image dst_ref = NULL;
+
+    ASSERT_NO_FAILURE(src = channel_extract_image_generate_random(arg_->width, arg_->height, arg_->format));
+    ASSERT_NO_FAILURE(dst_ref = channel_extract_create_reference_image(src, arg_->channel));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, dst_ref->width, dst_ref->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node = vxChannelExtractNode(graph, src_image, arg_->channel, dst_image);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+	
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    vxQueryNode(node, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src_image, &src_rect);
+    vxGetValidRegionImage(dst_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), dst_ref->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), dst_ref->height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    EXPECT_EQ_CTIMAGE(dst_ref, dst);
+    //EXPECT_CTIMAGE_NEARWRAP(dst_ref, dst, 1, CTIMAGE_ALLOW_WRAP);
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
 TESTCASE_TESTS(tivxChannelExtractCombine,
         testExtractCombine,
-        testCombineExtract
+        testCombineExtract,
+        testExtractCombineSupernode,
+        testCombineExtractSupernode,
+        testChannelExtractSupernode
 )

@@ -22,10 +22,10 @@
 #define VALID_SHIFT_MIN 0
 // #define VALID_SHIFT_MIN -64
 #define VALID_SHIFT_MAX 7
-
 #define CT_EXECUTE_ASYNC
+#define MAX_NODES 10
 
-static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
+void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
 {
     uint32_t i, j;
 
@@ -225,4 +225,96 @@ TEST_WITH_ARG(tivxConvertDepth, BitExact, cvt_depth_arg, CVT_ARGS)
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxConvertDepth, BitExact)
+
+#define SUPERNODE_CVT_ARGS                                \
+    PREPEND_SIZE(CVT_ARG, U8, S16, SATURATE),   \
+    PREPEND_SIZE(CVT_ARG, U8, S16, WRAP),       \
+    PREPEND_SIZE(CVT_ARG, S16, U8, SATURATE),   \
+    PREPEND_SIZE(CVT_ARG, S16, U8, WRAP)
+
+TEST_WITH_ARG(tivxConvertDepth, testConvertDepthSupernode, cvt_depth_arg, SUPERNODE_CVT_ARGS)
+{
+    int node_count = 2;
+    vx_image src, dst, virt;
+    CT_Image ref_src, refdst, vxdst, virt_ctimage;
+    vx_graph graph;
+    vx_node node1, node2;
+    vx_scalar scalar_shift;
+    vx_int32 shift = 2;
+    vx_int32 tmp = 0;
+    vx_context context = context_->vx_context_;
+    vx_perf_t perf_super_node, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    ASSERT_NO_FAILURE({
+        ref_src = ct_allocate_image(arg_->width, arg_->height, arg_->format_from);
+        fillSquence(ref_src, (uint32_t)CT()->seed_);
+        src = ct_image_to_vx_image(ref_src, context);
+    });
+
+    ASSERT_VX_OBJECT(dst = vxCreateImage(context, arg_->width, arg_->height, arg_->format_from), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(scalar_shift = vxCreateScalar(context, VX_TYPE_INT32, &tmp), VX_TYPE_SCALAR);
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, arg_->format_to), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node1 = vxConvertDepthNode(graph, src, virt, arg_->policy, scalar_shift), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxConvertDepthNode(graph, virt, dst, arg_->policy, scalar_shift), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyScalar(scalar_shift, &shift, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+#ifdef CT_EXECUTE_ASYNC
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+#else
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+#endif
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src, &src_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE({
+        vxdst = ct_image_from_vx_image(dst);
+        virt_ctimage = ct_allocate_image(arg_->width, arg_->height, arg_->format_to);
+        refdst = ct_allocate_image(arg_->width, arg_->height, arg_->format_from);
+        referenceSequentialConvertDepth(ref_src, virt_ctimage, refdst, shift, arg_->policy);
+    });
+
+    EXPECT_EQ_CTIMAGE(refdst, vxdst);
+
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseScalar(&scalar_shift));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+
+TESTCASE_TESTS(tivxConvertDepth, 
+               BitExact,
+               testConvertDepthSupernode)

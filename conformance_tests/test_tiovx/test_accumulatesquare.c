@@ -18,83 +18,11 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 #include <VX/vxu.h>
+#include "shared_functions.h"
 
+#define MAX_NODES 10
 
 TESTCASE(tivxAccumulateSquare, CT_VXContext, ct_setup_vx_context, 0)
-
-static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT((src->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_S16) || (src->format == VX_DF_IMAGE_S16 && dst->format == VX_DF_IMAGE_U8));
-    ASSERT(policy == VX_CONVERT_POLICY_WRAP || policy == VX_CONVERT_POLICY_SATURATE);
-
-    if (shift > 16) shift = 16;
-    if (shift < -16) shift = -16;
-
-    if (src->format == VX_DF_IMAGE_U8)
-    {
-        // up-conversion + wrap
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                   dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-        }
-    }
-    else if (policy == VX_CONVERT_POLICY_WRAP)
-    {
-        // down-conversion + wrap
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.y[i * dst->stride + j] = src->data.s16[i * src->stride + j] << (-shift);
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.y[i * dst->stride + j] = src->data.s16[i * src->stride + j] >> shift;
-        }
-    }
-    else if (policy == VX_CONVERT_POLICY_SATURATE)
-    {
-        // down-conversion + saturate
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                {
-                    int32_t v = src->data.s16[i * src->stride + j] << (-shift);
-                    if (v > 255) v = 255;
-                    if (v < 0) v = 0;
-                    dst->data.y[i * dst->stride + j] = v;
-                }
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                {
-                    int32_t v = src->data.s16[i * src->stride + j] >> shift;
-                    if (v > 255) v = 255;
-                    if (v < 0) v = 0;
-                    dst->data.y[i * dst->stride + j] = v;
-                }
-        }
-    }
-}
-
 
 static CT_Image accumulate_square_generate_random_8u(int width, int height)
 {
@@ -358,8 +286,104 @@ TEST_WITH_ARG(tivxAccumulateSquare, testSequentialNodes, Arg,
     printPerformance(perf_node3, arg_->width*arg_->height, "N3");
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
+/*
+#define SUPERNODE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("random/shift0", ADD_SIZE_644x258, ARG, 0, 15), \
 
+TEST_WITH_ARG(tivxAccumulateSquare, testAccumulateSquareSupernode, Arg,
+    SUPERNODE_PARAMETERS
+)
+{
+    int node_count = 3;
+    vx_context context = context_->vx_context_;
+    vx_image input_image1 = 0, accum_image1 = 0, accum_image2 = 0, virtual_image = 0;
+    vx_scalar shift_scalar1 = 0, shift_scalar2 = 0, shift_convertdepth = 0;
+    vx_int32 sh = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0, node3 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    CT_Image input1 = NULL, accum_src1 = NULL, accum_src2 = NULL, accum_dst = NULL, virtual_ctimage = NULL;
+
+    virtual_ctimage = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    ASSERT_VX_OBJECT(shift_convertdepth = vxCreateScalar(context, VX_TYPE_INT32, &sh), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(shift_scalar1 = vxCreateScalar(context, VX_TYPE_UINT32, &arg_->shift1), VX_TYPE_SCALAR);
+
+    ASSERT_VX_OBJECT(shift_scalar2 = vxCreateScalar(context, VX_TYPE_UINT32, &arg_->shift2), VX_TYPE_SCALAR);
+
+    ASSERT_NO_FAILURE(input1 = accumulate_square_generate_random_8u(arg_->width, arg_->height));
+
+    ASSERT_NO_FAILURE(accum_src1 = accumulate_square_generate_random_16s_non_negative(arg_->width, arg_->height));
+
+    ASSERT_NO_FAILURE(accum_src2 = accumulate_square_generate_random_16s_non_negative(arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(input_image1 = ct_image_to_vx_image(input1, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(accum_image1 = ct_image_to_vx_image(accum_src1, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(accum_image2 = ct_image_to_vx_image(accum_src2, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virtual_image = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxAccumulateSquareImageNode(graph, input_image1, shift_scalar1, accum_image1), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node2 = vxConvertDepthNode(graph, accum_image1, virtual_image, VX_CONVERT_POLICY_SATURATE, shift_convertdepth), VX_TYPE_NODE);
+
+    ASSERT_VX_OBJECT(node3 = vxAccumulateSquareImageNode(graph, virtual_image, shift_scalar2, accum_image2), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_NO_FAILURE(node_list[2] = node3);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(accum_dst = ct_image_from_vx_image(accum_image2));
+
+    ASSERT_NO_FAILURE(accumulate_square_chain_check(input1, virtual_ctimage, accum_src1, arg_->shift1, arg_->shift2, accum_src2, accum_dst));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(node3 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&virtual_image));
+    VX_CALL(vxReleaseImage(&accum_image2));
+    VX_CALL(vxReleaseImage(&accum_image1));
+    VX_CALL(vxReleaseImage(&input_image1));
+    VX_CALL(vxReleaseScalar(&shift_convertdepth));
+    VX_CALL(vxReleaseScalar(&shift_scalar2));
+    VX_CALL(vxReleaseScalar(&shift_scalar1));
+
+    ASSERT(accum_image2 == 0);
+    ASSERT(accum_image1 == 0);
+    ASSERT(input_image1 == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G1");
+}
+*/
 TESTCASE_TESTS(tivxAccumulateSquare,
         testParallelNodes,
-        testSequentialNodes
+        testSequentialNodes/*,
+        testAccumulateSquareSupernode*/
 )

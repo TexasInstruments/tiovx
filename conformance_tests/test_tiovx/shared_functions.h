@@ -25,3 +25,15 @@ void tivx_sobel3x3_create_reference_image(CT_Image src, vx_border_t border, CT_I
 void tivx_gaussian_pyramid_fill_reference(CT_Image input, vx_pyramid pyr, vx_size levels, vx_float32 scale, vx_border_t border);
 
 void tivx_filter_create_reference_image(vx_enum function, CT_Image src, vx_coordinates2d_t* origin, vx_size cols, vx_size rows, vx_uint8* mask, CT_Image* pdst, vx_border_t* border);
+
+void referenceNot(CT_Image src, CT_Image dst);
+void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy);
+void referenceAddSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy);
+void referenceSubtractSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy);
+void referenceAbsDiffSingle(CT_Image src0, CT_Image src1, CT_Image dst);
+void referenceAndSingle(CT_Image src0, CT_Image src1, CT_Image dst);
+void referenceOrSingle(CT_Image src0, CT_Image src1, CT_Image dst);
+void referenceXorSingle(CT_Image src0, CT_Image src1, CT_Image dst);
+CT_Image channel_extract_image_generate_random(int width, int height, vx_df_image format);
+void channel_extract_plane(CT_Image src, vx_enum channel, CT_Image* dst);
+CT_Image channel_extract_create_reference_image(CT_Image src, vx_enum channelNum);

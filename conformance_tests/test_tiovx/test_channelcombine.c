@@ -19,6 +19,7 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 
+#define MAX_NODES 10
 
 TESTCASE(tivxChannelCombine, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -133,8 +134,13 @@ typedef struct {
 
 #define ADD_CASES(testArgName, nextmacro, ...) \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGB, __VA_ARGS__),  \
-    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUV4, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_RGBX, __VA_ARGS__), \
     ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV12, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_NV21, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_UYVY, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUYV, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_YUV4, __VA_ARGS__), \
+    ADD_CASE(testArgName, nextmacro, VX_DF_IMAGE_IYUV, __VA_ARGS__)
 
 
 #define ADD_SIZE(testArgName, nextmacro, ...) \
@@ -142,8 +148,15 @@ typedef struct {
     CT_EXPAND(nextmacro(testArgName "/sz=644x258", __VA_ARGS__, 644, 258)), \
     CT_EXPAND(nextmacro(testArgName "/sz=1600x1200", __VA_ARGS__, 1600, 1200))
 
+#define ADD_SUPERNODE_SIZE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/sz=18x18", __VA_ARGS__, 18, 18)), \
+    CT_EXPAND(nextmacro(testArgName "/sz=644x258", __VA_ARGS__, 644, 258))
+
 #define ChannelCombine_PARAMETERS \
     CT_GENERATE_PARAMETERS("randomInput", ADD_CASES, ADD_SIZE, ARG)
+
+#define ChannelCombineSupernode_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_CASES, ADD_SUPERNODE_SIZE, ARG)
 
 /* Also tests optional parameter */
 TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
@@ -187,10 +200,10 @@ TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
     graph2 = vxCreateGraph(context);
     ASSERT_VX_OBJECT(graph2, VX_TYPE_GRAPH);
 
-    node1 = vxChannelCombineNode(graph1, src1_image[0], src1_image[1], src1_image[2], NULL, dst1_image);
+    node1 = vxChannelCombineNode(graph1, src1_image[0], src1_image[1], src1_image[2], src1_image[3], dst1_image);
     ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
 
-    node2 = vxChannelCombineNode(graph2, src2_image[0], src2_image[1], src2_image[2], NULL, dst2_image);
+    node2 = vxChannelCombineNode(graph2, src2_image[0], src2_image[1], src2_image[2], src2_image[3], dst2_image);
     ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
 
     VX_CALL(vxVerifyGraph(graph1));
@@ -198,27 +211,6 @@ TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
 
     VX_CALL(vxVerifyGraph(graph2));
     VX_CALL(vxProcessGraph(graph2));
-
-    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
-    ASSERT_EQ_INT(valid_rect, vx_false_e);
-
-    vxGetValidRegionImage(src1_image[0], &src_rect);
-    vxGetValidRegionImage(dst1_image, &dst_rect);
-
-    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
-    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
-
-    if (arg_->dst_format==VX_DF_IMAGE_NV12)
-    {
-        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width/2);
-        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height/2);
-    }
-    else
-    {
-        ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
-        ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
-    }
-
 
     vxQueryNode(node1, VX_NODE_PERFORMANCE, &perf_node1, sizeof(perf_node1));
     vxQueryNode(node2, VX_NODE_PERFORMANCE, &perf_node2, sizeof(perf_node2));
@@ -260,6 +252,139 @@ TEST_WITH_ARG(tivxChannelCombine, testGraphProcessing, Arg,
     printPerformance(perf_graph2, arg_->width*arg_->height, "G2");
 }
 
+TEST_WITH_ARG(tivxChannelCombine, testChannelCombineSingleSupernode, Arg,
+    ChannelCombineSupernode_PARAMETERS
+)
+{
+    int node_count = 1;
+    vx_context context = context_->vx_context_;
+    vx_image src_image[4] = {0, 0, 0, 0};
+    vx_image dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    vx_perf_t perf_node, perf_graph;
+    vx_perf_t perf_super_node;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    int channels = 0, i;
+    CT_Image src[4] = {NULL, NULL, NULL, NULL};
+    CT_Image dst = NULL, dst_dummy = NULL;
+    vx_enum channel_ref;
+
+    ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->dst_format));
+
+    ASSERT_NO_FAILURE(channels = ct_get_num_channels(arg_->dst_format));
+    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
+    for (i = 0; i < channels; i++)
+    {
+        int w = arg_->width / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);
+        int h = arg_->height / ct_image_get_channel_subsampling_y(dst_dummy, channel_ref + i);
+        ASSERT_NO_FAILURE(src[i] = channel_combine_image_generate_random(w, h, VX_DF_IMAGE_U8));
+        ASSERT_VX_OBJECT(src_image[i] = ct_image_to_vx_image(src[i], context), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, arg_->width, arg_->height, arg_->dst_format), VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+    ASSERT_NO_FAILURE(node_list[0] = node); 
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(channel_combine_check(src[0], src[1], src[2], src[3], dst));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    ASSERT(dst_image == 0);
+
+    for (i = 0; i < channels; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        ASSERT(src_image[i] == 0);
+    }
+
+    printPerformance(perf_super_node, arg_->width*arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+TEST_WITH_ARG(tivxChannelCombine, testBasicTest, Arg,
+    ChannelCombine_PARAMETERS
+)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src_image[4] = {0, 0, 0, 0};
+    vx_image dst_image = 0;
+    vx_graph graph = 0;
+    vx_node node = 0;
+
+    int channels = 0, i;
+    CT_Image src[4] = {NULL, NULL, NULL, NULL};
+    CT_Image dst = NULL, dst_dummy = NULL;
+    vx_enum channel_ref;
+
+    ASSERT_NO_FAILURE(dst_dummy = ct_allocate_image(4, 4, arg_->dst_format));
+
+    ASSERT_NO_FAILURE(channels = ct_get_num_channels(arg_->dst_format));
+    channel_ref = (arg_->dst_format==VX_DF_IMAGE_RGB)||(arg_->dst_format==VX_DF_IMAGE_RGBX)?VX_CHANNEL_R:VX_CHANNEL_Y;
+    for (i = 0; i < channels; i++)
+    {
+        int w = arg_->width / ct_image_get_channel_subsampling_x(dst_dummy, channel_ref + i);
+        int h = arg_->height / ct_image_get_channel_subsampling_y(dst_dummy, channel_ref + i);
+        ASSERT_NO_FAILURE(src[i] = channel_combine_image_generate_random(w, h, VX_DF_IMAGE_U8));
+        ASSERT_VX_OBJECT(src_image[i] = ct_image_to_vx_image(src[i], context), VX_TYPE_IMAGE);
+    }
+
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, arg_->width, arg_->height, arg_->dst_format), VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    node = vxChannelCombineNode(graph, src_image[0], src_image[1], src_image[2], src_image[3], dst_image);
+    ASSERT_VX_OBJECT(node, VX_TYPE_NODE);
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(channel_combine_check(src[0], src[1], src[2], src[3], dst));
+
+    VX_CALL(vxReleaseNode(&node));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(node == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    ASSERT(dst_image == 0);
+
+    for (i = 0; i < channels; i++)
+    {
+        VX_CALL(vxReleaseImage(&src_image[i]));
+        ASSERT(src_image[i] == 0);
+    }
+}
+
 TESTCASE_TESTS(tivxChannelCombine,
-        testGraphProcessing
+        testGraphProcessing,
+        testBasicTest,
+        testChannelCombineSingleSupernode
 )

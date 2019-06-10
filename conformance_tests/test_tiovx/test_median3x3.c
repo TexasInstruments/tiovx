@@ -18,6 +18,8 @@
 #include "test_tiovx.h"
 #include <VX/vx.h>
 
+#define MAX_NODES 10
+
 TESTCASE(tivxMedian3x3, CT_VXContext, ct_setup_vx_context, 0)
 
 // Generate input to cover these requirements:
@@ -379,4 +381,98 @@ TEST_WITH_ARG(tivxMedian3x3, negativeTestBorderMode, Filter_Arg,
     ASSERT(src_image == 0);
 }
 
-TESTCASE_TESTS(tivxMedian3x3, testGraphProcessing, testValidRegion, negativeTestBorderMode)
+#define SUPERNODE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_18x18, ARG, median3x3_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, median3x3_generate_random, NULL), \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_1600x1200, ARG, median3x3_generate_random, NULL)
+
+
+TEST_WITH_ARG(tivxMedian3x3, testMedian3x3Supernode, Filter_Arg,
+    SUPERNODE_PARAMETERS
+)
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_rectangle_t rect;
+    vx_bool valid_rect;
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    dst_image = ct_create_similar_image(src_image);
+    ASSERT_VX_OBJECT(dst_image, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    node1 = vxMedian3x3Node(graph, src_image, virt);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    node2 = vxMedian3x3Node(graph, virt, dst_image);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node2, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(sequential_median3x3_check(src, dst, border));
+
+    vxGetValidRegionImage(dst_image, &rect);
+
+    ASSERT_EQ_INT((rect.end_x - rect.start_x), (arg_->width - 4));
+    ASSERT_EQ_INT((rect.end_y - rect.start_y), (arg_->height - 4));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+TESTCASE_TESTS(tivxMedian3x3, 
+               testGraphProcessing, 
+               testValidRegion, 
+               negativeTestBorderMode,
+               testMedian3x3Supernode)

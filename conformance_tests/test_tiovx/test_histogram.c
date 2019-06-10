@@ -24,6 +24,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <limits.h>
+#include "shared_functions.h"
+
+#define MAX_NODES  10
 
 static void reference_histogram(CT_Image src, int32_t* hist, int nbins, int offset, int range)
 {
@@ -129,6 +132,26 @@ typedef struct {
         } \
     } while(0)
 
+#define COMPARE_HISTOGRAMS_SRC(_equal, _hist0, _hist1) \
+    do { \
+        _equal = 1; \
+        int _i; \
+        for( _i = 0; _i < nbins; _i++ ) \
+        { \
+            if( _hist0[_i] != _hist1[_i] ) \
+            { \
+                _equal = 0; \
+                CT_RecordFailureAtFormat("width=%d, height=%d, nbins=%d, offset=%d, range=%d\n" \
+                                         "\tExpected: %s[%d]=%d\n" \
+                                         "\tActual:   %s[%d]=%d\n", \
+                                         __FUNCTION__, __FILE__, __LINE__, \
+                                         width_src, height_src, nbins, offset, range, \
+                                         #_hist1, _i, _hist0[_i], #_hist1, _i, _hist1[_i]); \
+                break; \
+            } \
+        } \
+    } while(0)
+    
 TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
               HIST_TEST_CASE(Graph, U8),
               )
@@ -241,8 +264,8 @@ TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_BINS failed\n");
 
             VX_CALL(vxQueryDistribution(dist_src0, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
-	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins,
-	     * in other cases, its value shouldn't be checked */
+        /*Tthe attribute is specified as valid only when the range is a multiple of nbins,
+         * in other cases, its value shouldn't be checked */
             if (((range % nbins) == 0) && (attr_window != reference_window(range, nbins)))
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");
 
@@ -276,8 +299,8 @@ TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_BINS failed\n");
 
             VX_CALL(vxQueryDistribution(dist_src1, VX_DISTRIBUTION_WINDOW, &attr_window, sizeof(attr_window)));
-	    /*Tthe attribute is specified as valid only when the range is a multiple of nbins,
-	     * in other cases, its value shouldn't be checked */
+        /*Tthe attribute is specified as valid only when the range is a multiple of nbins,
+         * in other cases, its value shouldn't be checked */
             if (((range % nbins) == 0) && (attr_window != reference_window(range, nbins)))
                 CT_FAIL("check for query distribution attribute VX_DISTRIBUTION_WINDOW failed\n");
 
@@ -414,4 +437,92 @@ TEST_WITH_ARG(tivxHistogram, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(tivxHistogram, testOnRandom)
+
+TEST_WITH_ARG(tivxHistogram, testHistogramSupernode, format_arg,
+              HIST_TEST_CASE(Graph, U8),
+              )
+{
+    int node_count = 2;
+    int format = arg_->format;
+    int mode = arg_->mode;
+    vx_image src_image, virt_image;
+    CT_Image ref_src, ref_virt;
+    vx_context context = context_->vx_context_;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_distribution dist;
+    uint64_t rng;
+    int a = 0, b = 256;
+    int32_t ref_hist[MAX_BINS], vxhist[MAX_BINS];
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    const vx_enum mem_type = VX_MEMORY_TYPE_HOST;
+    const vx_bitfield flags = 0;
+
+    rng = CT()->seed_;
+
+    int width_src, height_src;
+    int val0 = CT_RNG_NEXT_INT(rng, 0, (MAX_BINS-1)), val1 = CT_RNG_NEXT_INT(rng, 0, (MAX_BINS-1));
+    int offset = CT_MIN(val0, val1), range = CT_MAX(val0, val1) - offset + 1;
+    int nbins = CT_RNG_NEXT_INT(rng, 1, range+1);
+
+    width_src = 640;
+    height_src = 480;
+
+    ASSERT_NO_FAILURE(ref_src = ct_allocate_ct_image_random(width_src, height_src, format, &rng, a, b));
+    ASSERT_NO_FAILURE(ref_virt = ct_allocate_image(width_src, height_src, VX_DF_IMAGE_U8));
+    ASSERT_NO_FAILURE(referenceNot(ref_src, ref_virt));
+    ASSERT_NO_FAILURE(reference_histogram(ref_virt, ref_hist, nbins, offset, range));
+
+    src_image = ct_image_to_vx_image(ref_src, context);
+    ASSERT_VX_OBJECT(src_image, VX_TYPE_IMAGE);
+
+    dist = vxCreateDistribution(context, nbins, offset, range);
+    ASSERT_VX_OBJECT(dist, VX_TYPE_DISTRIBUTION);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt_image = vxCreateVirtualImage(graph, 0, 0, arg_->format), VX_TYPE_IMAGE);
+    node1 = vxNotNode(graph, src_image, virt_image);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    node2 = vxHistogramNode(graph, virt_image, dist);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    int equalHist = 0;
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxCopyDistribution(dist, vxhist, VX_READ_ONLY, mem_type));
+    COMPARE_HISTOGRAMS_SRC(equalHist, ref_hist, vxhist);
+    if( !equalHist )
+        CT_FAIL("Histogram Supernode test failed\n");
+
+    VX_CALL(vxReleaseImage(&src_image));
+    VX_CALL(vxReleaseImage(&virt_image));
+    VX_CALL(vxReleaseDistribution(&dist));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(node1 == 0 && node2 == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    printPerformance(perf_super_node, width_src * height_src, "SN");
+    printPerformance(perf_graph, width_src * height_src, "G");
+
+}
+
+
+TESTCASE_TESTS(tivxHistogram, 
+               testOnRandom,
+               testHistogramSupernode)

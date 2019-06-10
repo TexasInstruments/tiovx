@@ -24,6 +24,8 @@
 #include <string.h>
 #include <limits.h>
 
+#define MAX_NODES 10
+
 static void referenceAddSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy)
 {
     int32_t min_bound, max_bound;
@@ -245,4 +247,93 @@ TEST_WITH_ARG(tivxEqualizeHistogram, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(tivxEqualizeHistogram, testOnRandom)
+TEST_WITH_ARG(tivxEqualizeHistogram, testEqualizeHistogramSupernode, format_arg,
+              EQHIST_TEST_CASE(Graph, U8),
+              )
+{
+    int node_count = 2;
+    int format = arg_->format;
+    int mode = arg_->mode;
+    vx_image src, dst, srcAdd, virt;
+    vx_node node1 = 0, node2 = 0;
+    vx_graph graph = 0;
+    CT_Image src0, dst0, dst1, srcAdd_ctimage, virt_ctimage;
+    vx_context context = context_->vx_context_;
+    uint64_t rng;
+    int a = 0, b = 256;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    rng = CT()->seed_;
+
+    int width, height;
+
+    if( ct_check_any_size() )
+    {
+        width = ct_roundf(ct_log_rng(&rng, 0, 10));
+        height = ct_roundf(ct_log_rng(&rng, 0, 10));
+
+        width = CT_MAX(width, 1);
+        height = CT_MAX(height, 1);
+    }
+    else
+    {
+        width = 640;
+        height = 480;
+    }
+
+    ASSERT_NO_FAILURE(src0 = ct_allocate_ct_image_random(width, height, format, &rng, a, b));
+    ASSERT_NO_FAILURE(srcAdd_ctimage = ct_allocate_ct_image_random(width, height, format, &rng, a, b));
+    virt_ctimage = ct_allocate_image(width, height, format);
+
+    ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, format));
+
+    src = ct_image_to_vx_image(src0, context);
+    srcAdd = ct_image_to_vx_image(srcAdd_ctimage, context);
+    dst = vxCreateImage(context, width, height, format);
+    ASSERT_VX_OBJECT(dst, VX_TYPE_IMAGE);
+
+    graph = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, format), VX_TYPE_IMAGE);
+
+    node1 = vxEqualizeHistNode(graph, src, virt);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    node2 = vxAddNode(graph, srcAdd, virt, VX_CONVERT_POLICY_SATURATE, dst);
+    ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    ASSERT_NO_FAILURE(referenceFunction(src0, srcAdd_ctimage, virt_ctimage, dst0, VX_CONVERT_POLICY_SATURATE));
+
+    dst1 = ct_image_from_vx_image(dst);
+
+    ASSERT_CTIMAGE_NEAR(dst0, dst1, 1);
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&srcAdd));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+    ASSERT(super_node == 0 && node1 == 0 && node2 == 0 && graph == 0);
+    CT_CollectGarbage(CT_GC_IMAGE);
+
+    printPerformance(perf_super_node, width * height, "SN");
+    printPerformance(perf_graph, width * height, "G");
+}
+
+TESTCASE_TESTS(tivxEqualizeHistogram, 
+               testOnRandom,
+               testEqualizeHistogramSupernode)

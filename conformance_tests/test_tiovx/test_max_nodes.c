@@ -822,16 +822,6 @@ static vx_array own_create_keypoint_array(vx_context context, vx_size count, vx_
     return arr;
 }
 
-static CT_Image channel_extract_image_generate_random(int width, int height, vx_df_image format)
-{
-    CT_Image image;
-
-    ASSERT_NO_FAILURE_(return 0,
-            image = ct_allocate_ct_image_random(width, height, format, &CT()->seed_, 0, 256));
-
-    return image;
-}
-
 static int get_yuv_params(CT_Image img, uint8_t** ptrY, uint8_t** ptrU, uint8_t** ptrV,
                            uint32_t* strideY, uint32_t* deltaY,
                            uint32_t* strideC, uint32_t* deltaC,
@@ -2386,110 +2376,6 @@ static void referenceMultiply(CT_Image src0, CT_Image src1, CT_Image dst, CT_Ima
 #undef MULTIPLY_LOOP
 }
 
-static void referenceConvertDepth(CT_Image src, CT_Image dst, int shift, vx_enum policy)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT((src->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_S16) || (src->format == VX_DF_IMAGE_S16 && dst->format == VX_DF_IMAGE_U8));
-    ASSERT(policy == VX_CONVERT_POLICY_WRAP || policy == VX_CONVERT_POLICY_SATURATE);
-
-    if (shift > 16) shift = 16;
-    if (shift < -16) shift = -16;
-
-    if (src->format == VX_DF_IMAGE_U8)
-    {
-            // up-conversion + wrap
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) >> (-shift);
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.s16[i * dst->stride + j] = ((unsigned)src->data.y[i * src->stride + j]) << shift;
-        }
-    }
-    else if (policy == VX_CONVERT_POLICY_WRAP)
-    {
-        // down-conversion + wrap
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.y[i * dst->stride + j] = src->data.s16[i * src->stride + j] << (-shift);
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                    dst->data.y[i * dst->stride + j] = src->data.s16[i * src->stride + j] >> shift;
-        }
-    }
-    else if (policy == VX_CONVERT_POLICY_SATURATE)
-    {
-        // down-conversion + saturate
-        if (shift < 0)
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                {
-                    int32_t v = src->data.s16[i * src->stride + j] << (-shift);
-                    if (v > 255) v = 255;
-                    if (v < 0) v = 0;
-                    dst->data.y[i * dst->stride + j] = v;
-                }
-        }
-        else
-        {
-            for (i = 0; i < dst->height; ++i)
-                for (j = 0; j < dst->width; ++j)
-                {
-                    int32_t v = src->data.s16[i * src->stride + j] >> shift;
-                    if (v > 255) v = 255;
-                    if (v < 0) v = 0;
-                    dst->data.y[i * dst->stride + j] = v;
-                }
-        }
-    }
-}
-
-static void referenceAbsDiffSingle(CT_Image src0, CT_Image src1, CT_Image dst)
-{
-    uint32_t i, j;
-
-    ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
-    ASSERT(src0->format == dst->format && src1->format == dst->format && dst->format == VX_DF_IMAGE_U8);
-
-    for (i = 0; i < dst->height; ++i)
-        for (j = 0; j < dst->width; ++j)
-        {
-            int32_t val = src0->data.y[i * src0->stride + j] - src1->data.y[i * src1->stride + j];
-            dst->data.y[i * dst->stride + j] = val < 0 ? -val : val;
-        }
-}
-
-static void referenceNot(CT_Image src, CT_Image dst)
-{
-    uint32_t i, j;
-
-    ASSERT(src && dst);
-    ASSERT(src->width == dst->width);
-    ASSERT(src->height == dst->height);
-    ASSERT(src->format == dst->format && src->format == VX_DF_IMAGE_U8);
-
-    for (i = 0; i < dst->height; ++i)
-        for (j = 0; j < dst->width; ++j)
-            dst->data.y[i * dst->stride + j] = ~src->data.y[i * src->stride + j];
-}
-
 static vx_size lut_count(vx_enum data_type)
 {
     vx_size count = 0;
@@ -3360,65 +3246,6 @@ static CT_Image get_reference_result(const char* src_name, CT_Image src, int32_t
         reference_canny(src, dst, low_thresh, high_thresh, gsz, norm);
     return dst;
 #endif
-}
-
-static void referenceAddSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy)
-{
-    int32_t min_bound, max_bound;
-    uint32_t i, j;
-    ASSERT(src0 && src1 && dst);
-    ASSERT(src0->width = src1->width && src0->width == dst->width);
-    ASSERT(src0->height = src1->height && src0->height == dst->height);
-
-    switch (policy)
-    {
-        case VX_CONVERT_POLICY_SATURATE:
-            if (dst->format == VX_DF_IMAGE_U8)
-            {
-                min_bound = 0;
-                max_bound = 255;
-            }
-            else if (dst->format == VX_DF_IMAGE_S16)
-            {
-                min_bound = -32768;
-                max_bound =  32767;
-            }
-            else
-                FAIL("Unsupported result format: (%.4s)", &dst->format);
-            break;
-        case VX_CONVERT_POLICY_WRAP:
-            min_bound = INT32_MIN;
-            max_bound = INT32_MAX;
-            break;
-        default: FAIL("Unknown owerflow policy"); break;
-    };
-
-#define ADD_LOOP(s0, s1, r)                                                                                     \
-    do{                                                                                                         \
-        for (i = 0; i < dst->height; ++i)                                                                       \
-            for (j = 0; j < dst->width; ++j)                                                                    \
-            {                                                                                                   \
-                int32_t val = src0->data.s0[i * src0->stride + j];                                              \
-                val += src1->data.s1[i * src1->stride + j];                                                     \
-                dst->data.r[i * dst->stride + j] = (val < min_bound ? min_bound :                               \
-                                                                        (val > max_bound ? max_bound : val));   \
-            }                                                                                                   \
-    }while(0)
-
-    if (src0->format == VX_DF_IMAGE_U8 && src1->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_U8)
-        ADD_LOOP(y, y, y);
-    else if (src0->format == VX_DF_IMAGE_U8 && src1->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_S16)
-        ADD_LOOP(y, y, s16);
-    else if (src0->format == VX_DF_IMAGE_U8 && src1->format == VX_DF_IMAGE_S16 && dst->format == VX_DF_IMAGE_S16)
-        ADD_LOOP(y, s16, s16);
-    else if (src0->format == VX_DF_IMAGE_S16 && src1->format == VX_DF_IMAGE_U8 && dst->format == VX_DF_IMAGE_S16)
-        ADD_LOOP(s16, y, s16);
-    else if (src0->format == VX_DF_IMAGE_S16 && src1->format == VX_DF_IMAGE_S16 && dst->format == VX_DF_IMAGE_S16)
-        ADD_LOOP(s16, s16, s16);
-    else
-        FAIL("Unsupported combination of argument formats: %.4s + %.4s = %.4s", &src0->format, &src1->format, &dst->format);
-
-#undef ADD_LOOP
 }
 
 typedef struct {

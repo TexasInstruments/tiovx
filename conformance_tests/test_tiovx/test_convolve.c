@@ -20,6 +20,7 @@
 #include <string.h>
 
 #define MAX_CONV_SIZE 15
+#define MAX_NODES     10
 
 TESTCASE(tivxConvolve, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -375,4 +376,116 @@ TEST_WITH_ARG(tivxConvolve, negativeTestBorderMode, Arg,
     ASSERT(convolution2 == NULL);
 }
 
-TESTCASE_TESTS(tivxConvolve, testGraphProcessing, negativeTestBorderMode)
+#define SUPERNODE_ADD_CONV_SCALE(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/conv_scale=1", __VA_ARGS__, 1))
+
+#define SUPERNODE_PARAMETERS \
+    CT_GENERATE_PARAMETERS("randomInput", ADD_CONV_SIZE, SUPERNODE_ADD_CONV_SCALE, ADD_CONV_GENERATORS, ADD_CONV_DST_FORMAT, ADD_VX_BORDERS_REQUIRE_UNDEFINED_ONLY, ADD_SIZE_644x258, ARG, convolve_generate_random, NULL), \
+
+TEST_WITH_ARG(tivxConvolve, testConvolveSupernode, Arg,
+    SUPERNODE_PARAMETERS
+)
+{
+    int node_count = 2;
+    vx_context context = context_->vx_context_;
+    vx_image src_image = 0, dst_image = 0, virt;
+    vx_convolution convolution1 = 0, convolution2 = 0;
+    vx_int16 data1[MAX_CONV_SIZE * MAX_CONV_SIZE] = { 0 }, data2[MAX_CONV_SIZE * MAX_CONV_SIZE] = { 0 };
+    vx_size conv_max_dim = 0;
+    vx_graph graph = 0;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    CT_Image src = NULL, dst = NULL;
+    vx_border_t border = arg_->border;
+
+    ASSERT_NO_FAILURE(src = arg_->generator(arg_->fileName, arg_->width, arg_->height));
+    ASSERT_VX_OBJECT(src_image = ct_image_to_vx_image(src, context), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, src->width, src->height, arg_->dst_format), VX_TYPE_IMAGE);
+
+    VX_CALL(vxQueryContext(context, VX_CONTEXT_CONVOLUTION_MAX_DIMENSION, &conv_max_dim, sizeof(conv_max_dim)));
+
+    if ((vx_size)arg_->cols > conv_max_dim || (vx_size)arg_->rows > conv_max_dim)
+    {
+        printf("%dx%d convolution is not supported. Skip test\n", (int)arg_->cols, (int)arg_->rows);
+        return;
+    }
+
+    ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data1));
+    ASSERT_NO_FAILURE(convolution1 = convolution_create(context, arg_->cols, arg_->rows, data1, arg_->scale));
+
+    ASSERT_NO_FAILURE(arg_->convolution_data_generator(arg_->cols, arg_->rows, data2));
+    ASSERT_NO_FAILURE(convolution2 = convolution_create(context, arg_->cols, arg_->rows, data2, arg_->scale));
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, arg_->dst_format), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(node1 = vxConvolveNode(graph, src_image, convolution1, virt), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxConvolveNode(graph, virt, convolution2, dst_image), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+
+    VX_CALL(vxVerifyGraph(graph));
+    VX_CALL(vxProcessGraph(graph));
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src_image, &src_rect);
+    vxGetValidRegionImage(dst_image, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), (arg_->width - 2*(arg_->cols-1)));
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), (arg_->height - 2*(arg_->rows-1)));
+
+    ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
+
+    ASSERT_NO_FAILURE(convolve_sequential_check(src, dst, border, arg_->cols, arg_->rows, data1, data2, arg_->scale, arg_->dst_format));
+
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    ASSERT(super_node == 0);
+    ASSERT(node1 == 0);
+    ASSERT(node2 == 0);
+    ASSERT(graph == 0);
+
+    VX_CALL(vxReleaseImage(&dst_image));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(vxReleaseImage(&src_image));
+
+    ASSERT(dst_image == 0);
+    ASSERT(src_image == 0);
+
+    VX_CALL(vxReleaseConvolution(&convolution1));
+    VX_CALL(vxReleaseConvolution(&convolution2));
+    ASSERT(convolution1 == NULL);
+    ASSERT(convolution2 == NULL);
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+
+TESTCASE_TESTS(tivxConvolve, 
+               testGraphProcessing, 
+               negativeTestBorderMode,
+               testConvolveSupernode)

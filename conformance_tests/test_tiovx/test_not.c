@@ -23,8 +23,9 @@
 #include <VX/vxu.h>
 
 //#define CT_EXECUTE_ASYNC
+#define MAX_NODES 10
 
-static void referenceNot(CT_Image src, CT_Image dst)
+void referenceNot(CT_Image src, CT_Image dst)
 {
     uint32_t i, j;
 
@@ -148,5 +149,93 @@ TEST_WITH_ARG(tivxNot, testSizes, size_arg, NOT_SIZE_ARGS)
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
-TESTCASE_TESTS(tivxNot, testSizes)
+
+#define SUPERNODE_NOT_SIZE_ARGS       \
+    SIZE_ARG(1600, 1200)
+
+TEST_WITH_ARG(tivxNot, testNotSupernode, size_arg, SUPERNODE_NOT_SIZE_ARGS)
+{
+    int node_count = 2;
+    vx_image src, dst, virt;
+    CT_Image ref_src, refdst, vxdst, virt_ctimage;
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_node node1 = 0, node2 = 0;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+    vx_rectangle_t src_rect, dst_rect;
+    vx_bool valid_rect;
+
+    ASSERT_NO_FAILURE({
+        ref_src = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+        virt_ctimage = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+        fillSquence(ref_src, (uint32_t)CT()->seed_);
+        src = ct_image_to_vx_image(ref_src, context);
+    });
+
+    VX_CALL(vxDirective((vx_reference)context, VX_DIRECTIVE_ENABLE_PERFORMANCE));
+
+    // build one-node graph
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst   = vxCreateImage(context, arg_->width, arg_->height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, src, virt), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, virt, dst), VX_TYPE_NODE);
+
+    ASSERT_NO_FAILURE(node_list[0] = node1); 
+    ASSERT_NO_FAILURE(node_list[1] = node2);
+    ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+    EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+    
+    VX_CALL(vxVerifyGraph(graph));
+
+    // run graph
+#ifdef CT_EXECUTE_ASYNC
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxScheduleGraph(graph));
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxWaitGraph(graph));
+#else
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+#endif
+
+    VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+    VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+    vxQueryNode(node1, VX_NODE_VALID_RECT_RESET, &valid_rect, sizeof(valid_rect));
+    ASSERT_EQ_INT(valid_rect, vx_false_e);
+
+    vxGetValidRegionImage(src, &src_rect);
+    vxGetValidRegionImage(dst, &dst_rect);
+
+    ASSERT_EQ_INT((src_rect.end_x - src_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((src_rect.end_y - src_rect.start_y), arg_->height);
+
+    ASSERT_EQ_INT((dst_rect.end_x - dst_rect.start_x), arg_->width);
+    ASSERT_EQ_INT((dst_rect.end_y - dst_rect.start_y), arg_->height);
+
+    ASSERT_NO_FAILURE({
+        vxdst = ct_image_from_vx_image(dst);
+        refdst = ct_allocate_image(arg_->width, arg_->height, VX_DF_IMAGE_U8);
+        referenceNot(ref_src, virt_ctimage);
+        referenceNot(virt_ctimage, refdst);
+    });
+
+    ASSERT_EQ_CTIMAGE(refdst, vxdst);
+
+    VX_CALL(vxReleaseImage(&src));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(vxReleaseImage(&virt));
+    VX_CALL(tivxReleaseSuperNode(&super_node));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    printPerformance(perf_super_node, arg_->width * arg_->height, "SN");
+    printPerformance(perf_graph, arg_->width*arg_->height, "G");
+}
+
+
+TESTCASE_TESTS(tivxNot, 
+               testSizes,
+               testNotSupernode)
 

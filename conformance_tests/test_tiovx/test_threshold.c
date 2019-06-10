@@ -23,6 +23,8 @@
 #include <string.h>
 #include <limits.h>
 
+#define MAX_NODES 10
+
 static void referenceAddSingle(CT_Image src0, CT_Image src1, CT_Image dst, enum vx_convert_policy_e policy)
 {
     int32_t min_bound, max_bound;
@@ -256,4 +258,138 @@ TEST_WITH_ARG(tivxThreshold, testOnRandom, format_arg,
     }
 }
 
-TESTCASE_TESTS(tivxThreshold, testOnRandom)
+
+TEST_WITH_ARG(tivxThreshold, testThresholdSupernode, format_arg,
+              THRESHOLD_CASE(Graph, BINARY),
+              THRESHOLD_CASE(Graph, RANGE),
+              )
+{
+    int node_count = 2;
+    int format = VX_DF_IMAGE_U8;
+    int ttype = arg_->ttype;
+    int mode = arg_->mode;
+    vx_image src, dst, srcAdd, virt;
+    vx_threshold vxt;
+    CT_Image src0, dst0, dst1, srcAdd_ctimage, virt_ctimage;
+    vx_node node1 = 0, node2 = 0;
+    vx_graph graph = 0;
+    vx_context context = context_->vx_context_;
+    int iter, niters = 3;
+    uint64_t rng;
+    int a = 0, b = 256;
+    int true_val = CT_THRESHOLD_TRUE_VALUE;
+    int false_val = CT_THRESHOLD_FALSE_VALUE;
+    vx_perf_t perf_super_node, perf_graph;
+    tivx_super_node super_node = 0;
+    vx_node node_list[MAX_NODES];
+
+    rng = CT()->seed_;
+
+    for( iter = 0; iter < niters; iter++ )
+    {
+        int width, height;
+
+        uint8_t _ta = CT_RNG_NEXT_INT(rng, 0, 256), _tb = CT_RNG_NEXT_INT(rng, 0, 256);
+        vx_int32 ta = CT_MIN(_ta, _tb), tb = CT_MAX(_ta, _tb);
+
+        if( ct_check_any_size() )
+        {
+            width = ct_roundf(ct_log_rng(&rng, 0, 10));
+            height = ct_roundf(ct_log_rng(&rng, 0, 10));
+            width = CT_MAX(width, 1);
+            height = CT_MAX(height, 1);
+        }
+        else
+        {
+            width = 640;
+            height = 480;
+        }
+
+        ASSERT_NO_FAILURE(src0 = ct_allocate_ct_image_random(width, height, format, &rng, a, b));
+        ASSERT_NO_FAILURE(srcAdd_ctimage = ct_allocate_ct_image_random(width, height, format, &rng, a, b));
+        virt_ctimage = ct_allocate_image(width, height, format);
+
+        ASSERT_NO_FAILURE(dst0 = ct_allocate_image(width, height, format));
+
+        src = ct_image_to_vx_image(src0, context);
+        srcAdd = ct_image_to_vx_image(srcAdd_ctimage, context);
+        dst = vxCreateImage(context, width, height, format);
+        ASSERT_VX_OBJECT(dst, VX_TYPE_IMAGE);
+        vxt = vxCreateThreshold(context, ttype, VX_TYPE_UINT8);
+        if( ttype == VX_THRESHOLD_TYPE_BINARY )
+        {
+            vx_int32 v = 0;
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt, VX_THRESHOLD_THRESHOLD_VALUE, &ta, sizeof(ta)));
+            VX_CALL(vxQueryThreshold(vxt, VX_THRESHOLD_THRESHOLD_VALUE, &v, sizeof(v)));
+            if (v != ta)
+            {
+                CT_FAIL("check for query threshold attribute VX_THRESHOLD_THRESHOLD_VALUE failed\n");
+            }
+        }
+        else
+        {
+            vx_int32 v1 = 0;
+            vx_int32 v2 = 0;
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt, VX_THRESHOLD_THRESHOLD_LOWER, &ta, sizeof(ta)));
+            ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt, VX_THRESHOLD_THRESHOLD_UPPER, &tb, sizeof(tb)));
+
+            VX_CALL(vxQueryThreshold(vxt, VX_THRESHOLD_THRESHOLD_LOWER, &v1, sizeof(v1)));
+            if (v1 != ta)
+            {
+                CT_FAIL("check for query threshold attribute VX_THRESHOLD_THRESHOLD_LOWER failed\n");
+            }
+
+            VX_CALL(vxQueryThreshold(vxt, VX_THRESHOLD_THRESHOLD_UPPER, &v2, sizeof(v2)));
+            if (v2 != tb)
+            {
+                CT_FAIL("check for query threshold attribute VX_THRESHOLD_THRESHOLD_UPPER failed\n");
+            }
+        }
+
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt, VX_THRESHOLD_TRUE_VALUE, &true_val, sizeof(true_val)));
+        ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxSetThresholdAttribute(vxt, VX_THRESHOLD_FALSE_VALUE, &false_val, sizeof(false_val)));
+
+        graph = vxCreateGraph(context);
+        ASSERT_VX_OBJECT(graph, VX_TYPE_GRAPH);
+        ASSERT_VX_OBJECT(virt   = vxCreateVirtualImage(graph, 0, 0, format), VX_TYPE_IMAGE);
+        node1 = vxThresholdNode(graph, src, vxt, virt);
+        ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+        node2 = vxAddNode(graph, srcAdd, virt, VX_CONVERT_POLICY_SATURATE, dst);
+        ASSERT_VX_OBJECT(node2, VX_TYPE_NODE);
+
+        ASSERT_NO_FAILURE(node_list[0] = node1); 
+        ASSERT_NO_FAILURE(node_list[1] = node2);
+        ASSERT_VX_OBJECT(super_node = tivxCreateSuperNode(graph, node_list, node_count), (enum vx_type_e)TIVX_TYPE_SUPER_NODE);
+        EXPECT_EQ_VX_STATUS(VX_SUCCESS, vxGetStatus((vx_reference)super_node));
+        
+        VX_CALL(vxVerifyGraph(graph));
+        VX_CALL(vxProcessGraph(graph));
+
+        VX_CALL(tivxQuerySuperNode(super_node, TIVX_SUPER_NODE_PERFORMANCE, &perf_super_node, sizeof(perf_super_node)));
+        VX_CALL(vxQueryGraph(graph, VX_GRAPH_PERFORMANCE, &perf_graph, sizeof(perf_graph)));
+
+        ASSERT_NO_FAILURE(referenceFunction(src0, srcAdd_ctimage, virt_ctimage, dst0, VX_CONVERT_POLICY_SATURATE, ttype, ta, tb, true_val, false_val));
+
+        dst1 = ct_image_from_vx_image(dst);
+
+        ASSERT_CTIMAGE_NEAR(dst0, dst1, 0);
+        VX_CALL(vxReleaseImage(&src));
+        VX_CALL(vxReleaseImage(&srcAdd));
+        VX_CALL(vxReleaseImage(&virt));
+        VX_CALL(vxReleaseImage(&dst));
+        VX_CALL(vxReleaseThreshold(&vxt));
+        VX_CALL(tivxReleaseSuperNode(&super_node));
+        VX_CALL(vxReleaseNode(&node1));
+        VX_CALL(vxReleaseNode(&node2));
+        VX_CALL(vxReleaseGraph(&graph));
+        ASSERT(super_node == 0 && node1 == 0 && node2 == 0 && graph == 0);
+        CT_CollectGarbage(CT_GC_IMAGE);
+
+        printPerformance(perf_super_node, width * height, "SN");
+        printPerformance(perf_graph, width * height, "G");
+    }
+}
+
+TESTCASE_TESTS(tivxThreshold, 
+               testOnRandom,
+               testThresholdSupernode)
