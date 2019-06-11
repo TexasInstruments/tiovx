@@ -475,7 +475,7 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceSinkPipeline, Arg, STREAMING_PARAMETE
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_capture_pipeline_only_two_nodes");
+    export_graph_to_file(graph, "test_source_sink_pipelining");
     log_graph_rt_trace(graph);
 
     /* enqueue buf for pipeup but dont trigger graph execution */
@@ -577,7 +577,7 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceIntermediatePipeline, Arg, STREAMING_
 
     VX_CALL(vxVerifyGraph(graph));
 
-    export_graph_to_file(graph, "test_capture_pipeline_only_two_nodes");
+    export_graph_to_file(graph, "test_source_intermediate_pipelining");
     log_graph_rt_trace(graph);
 
     /* enqueue buf for pipeup but dont trigger graph execution */
@@ -631,6 +631,102 @@ TEST_WITH_ARG(tivxSourceNode, testNewSourceIntermediatePipeline, Arg, STREAMING_
     tivxTestKernelsUnLoadKernels(context);
 }
 
+/* Note: this test case does not enqueue/dequeue from graph parameter at capture node */
+TEST_WITH_ARG(tivxSourceNode, testNewSourceIntermediatePipeline2, Arg, STREAMING_PARAMETERS)
+{
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_uint8  scalar_val = 0;
+    vx_scalar scalar, scalar_out[MAX_NUM_BUF];
+    uint32_t num_streams = 0;
+    uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt;
+    vx_node n1, n2;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
+
+    /* Setting to num buf of capture node */
+    num_buf = 3;
+    loop_cnt = 10; //arg_->stream_time;
+
+    tivxTestKernelsLoadKernels(context);
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(scalar = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(scalar_out[buf_id] = vxCreateScalar(context, VX_TYPE_UINT8, &scalar_val), VX_TYPE_SCALAR);
+    }
+
+    ASSERT_VX_OBJECT(n1 = tivxScalarSource2Node(graph, scalar), VX_TYPE_NODE);
+
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, set_num_buf_by_node_index(n1, 0, num_buf));
+
+    ASSERT_VX_OBJECT(n2 = tivxScalarIntermediateNode(graph, scalar, scalar_out[0]), VX_TYPE_NODE);
+
+    /* input @ node index 0, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n2, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&scalar_out[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    vxSetGraphScheduleConfig(graph,
+            VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+            1,
+            graph_parameters_queue_params_list
+            );
+
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    VX_CALL(vxSetNodeTarget(n2, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_source_intermediate_pipelining2");
+    log_graph_rt_trace(graph);
+
+    /* after pipeup, now enqueue a buffer to trigger graph scheduling */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&scalar_out[buf_id], 1);
+    }
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        uint32_t num_refs;
+        vx_scalar capture_scalar, out_scalar;
+
+        /* Get output reference, waits until a reference is available */
+        vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_scalar, 1, &num_refs);
+
+        /* recycles dequeued input and output refs */
+        /* input and output can be enqueued in any order */
+        vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_scalar, 1);
+    }
+
+    /* ensure all graph processing is complete */
+    vxWaitGraph(graph);
+
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n2));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    VX_CALL(vxReleaseScalar(&scalar));
+    /* since buffers could be held by source node, first release graph
+     * to delete source node, then free the buffers
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseScalar(&scalar_out[buf_id]));
+    }
+    tivxTestKernelsUnLoadKernels(context);
+}
 
 /*
  * Graph1
@@ -1206,6 +1302,7 @@ TEST_WITH_ARG(tivxSourceNode, testPipeliningStreaming3, Pipeline_Arg, PARAMETERS
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+
 TESTCASE_TESTS(tivxSourceNode,
                testSourceObjArray,
                testSinkObjArray,
@@ -1213,6 +1310,7 @@ TESTCASE_TESTS(tivxSourceNode,
                testNewSourcePipeline,
                testNewSourceSinkPipeline,
                testNewSourceIntermediatePipeline,
+               testNewSourceIntermediatePipeline2,
                testMultiGraphPipelined1,
                testMultiGraphPipelined2,
                testMultiGraphPipelined3,

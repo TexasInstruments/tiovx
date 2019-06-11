@@ -608,11 +608,21 @@ vx_status VX_API_CALL tivxSetNodeParameterNumBufByIndex(vx_node node, vx_uint32 
  */
 vx_status VX_API_CALL tivxSetGraphPipelineDepth(vx_graph graph, vx_uint32 pipeline_depth);
 
-/*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take a
+/*! \brief Same as vxGraphParameterEnqueueReadyRef except that it take an
  *         additional TIOVX specific flag parameter
  *
  *  \details For valid values of flag see
  *  - \ref TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP
+ *           The tivxGraphParameterEnqueueReadyRef API is needed if explicitly
+ *           enqueueing and dequeueing from a capture node graph parameter
+ *           that has set the VX_KERNEL_PIPEUP_OUTPUT_DEPTH using the
+ *           vxSetKernelAttribute API.  The tivxGraphParameterEnqueueReadyRef
+ *           must be called for the num_bufs given as the
+ *           VX_KERNEL_PIPEUP_OUTPUT_DEPTH.  This API differs from
+ *           vxGraphParameterEnqueueReadyRef in that it does not additionally
+ *           schedule a graph execution.  In the case that this API is not used
+ *           at the capture node graph parameter, the teardown of the graph will
+ *           pend as it will be waiting on graph executions that have not completed.
  *
  *  For more detailed description of vxGraphParameterEnqueueReadyRef see
  *  \ref vxGraphParameterEnqueueReadyRef
