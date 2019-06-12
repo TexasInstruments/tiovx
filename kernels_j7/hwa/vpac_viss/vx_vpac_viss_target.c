@@ -63,7 +63,6 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
 #include <vx_vpac_viss_target_priv.h>
 
 /* ========================================================================== */
@@ -471,7 +470,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
 
     /* Unmap descriptor memories */
-    if (NULL != vissObj)
+    if ( (VX_SUCCESS == status) && (NULL != vissObj))
     {
         /* If the target pointer is non null, descriptor is also non null,
          * Even if there is any error, if this pointer is non-null,
@@ -819,7 +818,6 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             /* Wait for Frame Completion */
             tivxEventWait(vissObj->waitForProcessCmpl,
                 TIVX_EVENT_TIMEOUT_WAIT_FOREVER);
-
             status = Fvid2_getProcessedRequest(vissObj->handle,
                 &vissObj->inFrmList, &vissObj->outFrmList, 0);
             if (FVID2_SOK != status)
@@ -838,7 +836,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     /* If the target pointer is non null, descriptor is also non null,
      * Even if there is any error, if this pointer is non-null,
      * unmap must be called */
-    if (NULL != vissObj->aewb_res_target_ptr)
+    if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->aewb_res_target_ptr, aewb_res_desc);
     }
@@ -846,12 +844,12 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
     /* If the target pointer is non null, descriptor is also non null
      * Even if there is any error, if this pointer is non-null,
      * unmap must be called */
-    if (NULL != vissObj->viss_prms_target_ptr)
+    if ((VX_SUCCESS == status) && (NULL != config_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->viss_prms_target_ptr, config_desc);
     }
 
-    if (NULL != vissObj->h3a_out_target_ptr)
+    if ((VX_SUCCESS == status) && (NULL != h3a_out_desc))
     {
         tivxVpacVissUnmapUserDesc(&vissObj->h3a_out_target_ptr, h3a_out_desc);
     }
@@ -1384,13 +1382,29 @@ static vx_status tivxVpacVissCheckInputDesc(uint16_t num_params,
     uint32_t cnt;
     uint32_t out_start;
 
-    if ((num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS) ||
-        (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX]) ||
+    if (num_params != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxVpacVissCheckInputDesc: Num params incorrect, = %d\n", num_params);
+    }
+
+    if ((NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX]) ||
         (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX]))
     {
         VX_PRINT(VX_ZONE_ERROR,
             "tivxVpacVissCheckInputDesc: Invalid Descriptor\n");
         status = VX_FAILURE;
+
+        if (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCheckInputDesc: Configuration is NULL\n");
+        }
+        if (NULL == obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissCheckInputDesc: Raw input is NULL\n");
+        }
     }
     else /* At least one output must be enabled */
     {
