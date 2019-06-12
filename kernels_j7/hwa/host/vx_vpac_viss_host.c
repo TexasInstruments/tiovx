@@ -134,7 +134,6 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
 
     if ( (num != TIVX_KERNEL_VPAC_VISS_MAX_PARAMS)
         || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX])
-        || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX])
         || (NULL == parameters[TIVX_KERNEL_VPAC_VISS_RAW_IDX])
     )
     {
@@ -165,8 +164,11 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
 
-        tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_NAME, &ae_awb_result_name, sizeof(ae_awb_result_name)));
-        tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_SIZE, &ae_awb_result_size, sizeof(ae_awb_result_size)));
+        if (NULL != ae_awb_result)
+        {
+            tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_NAME, &ae_awb_result_name, sizeof(ae_awb_result_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(ae_awb_result, VX_USER_DATA_OBJECT_SIZE, &ae_awb_result_size, sizeof(ae_awb_result_size)));
+        }
 
         tivxCheckStatus(&status, tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &raw_w, sizeof(raw_w)));
         tivxCheckStatus(&status, tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &raw_h, sizeof(raw_h)));
@@ -241,13 +243,15 @@ static vx_status VX_CALLBACK tivxAddKernelVpacVissValidate(vx_node node,
             vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST);
         }
 
-        if ((ae_awb_result_size != sizeof(tivx_ae_awb_params_t)) ||
-            (strncmp(ae_awb_result_name, "tivx_ae_awb_params_t", sizeof(ae_awb_result_name)) != 0))
+        if (NULL != ae_awb_result)
         {
-            status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be a user_data_object of type:\n tivx_ae_awb_params_t \n");
+            if ((ae_awb_result_size != sizeof(tivx_ae_awb_params_t)) ||
+                (strncmp(ae_awb_result_name, "tivx_ae_awb_params_t", sizeof(ae_awb_result_name)) != 0))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'ae_awb_result' should be a user_data_object of type:\n tivx_ae_awb_params_t \n");
+            }
         }
-
 
         if (NULL != output0)
         {

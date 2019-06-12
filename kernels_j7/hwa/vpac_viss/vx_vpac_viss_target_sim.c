@@ -254,11 +254,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        ae_awb_result_target_ptr = tivxMemShared2TargetPtr(
-          ae_awb_result_desc->mem_ptr.shared_ptr, ae_awb_result_desc->mem_ptr.mem_heap_region);
-        tivxMemBufferMap(ae_awb_result_target_ptr,
-           ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+        if( NULL != ae_awb_result_desc)
+        {
+            ae_awb_result_target_ptr = tivxMemShared2TargetPtr(
+              ae_awb_result_desc->mem_ptr.shared_ptr, ae_awb_result_desc->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(ae_awb_result_target_ptr,
+               ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+        }
 
         /* Get image pointer(s) */
         for(i=0; i < num_exposures; i++)
@@ -412,7 +415,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             tivx_ae_awb_params_t * aewb_result = (tivx_ae_awb_params_t *)ae_awb_result_target_ptr;
 
             /* apply AWB gains in RAWFE when NSF4 is bypassed */
-            if ((1u == params->bypass_nsf4) && (1u == aewb_result->awb_valid))
+            if ((NULL != ae_awb_result_desc) &&
+                (1u == params->bypass_nsf4) &&
+                (1u == aewb_result->awb_valid))
             {
                 prms->rawfe_params.wb2.gain[0] = aewb_result->wb_gains[0];
                 prms->rawfe_params.wb2.gain[1] = aewb_result->wb_gains[1];
@@ -421,11 +426,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             }
             if(1u == prms->use_dcc)
             {
-                prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
                 prms->dcc_input_params->cameraId = params->sensor_dcc_id;
-                prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
-                prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
-                prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+
+                if ( NULL != ae_awb_result_desc )
+                {
+                    prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+                    prms->dcc_input_params->color_temparature = aewb_result->color_temperature;
+                    prms->dcc_input_params->exposure_time = aewb_result->exposure_time;
+                    prms->dcc_input_params->analog_gain = aewb_result->analog_gain;
+                }
                 prms->dcc_output_params->useAwbCalbCfg = 0U;
                 prms->dcc_output_params->useH3aCfg = 0U;
                 prms->dcc_output_params->useNsf4Cfg = 0U;
@@ -492,7 +501,9 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 prms->nsf4_params.ih = raw_desc->params.height;
                 prms->nsf4_params.ow = raw_desc->params.width;
                 prms->nsf4_params.oh = raw_desc->params.height;
-                if (0 == aewb_result->awb_valid)
+
+                if ((NULL == ae_awb_result_desc) ||
+                    (0 == aewb_result->awb_valid))
                 {
                     prms->nsf4_params.wb_gain[0] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[0];
                     prms->nsf4_params.wb_gain[1] = prms->dcc_output_params->vissNSF4Cfg.wb_gains[1];
@@ -501,12 +512,15 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 }
             }
 
-            if (1 == aewb_result->awb_valid)
+            if (NULL != ae_awb_result_desc)
             {
-                prms->nsf4_params.wb_gain[0] = aewb_result->wb_gains[0];
-                prms->nsf4_params.wb_gain[1] = aewb_result->wb_gains[1];
-                prms->nsf4_params.wb_gain[2] = aewb_result->wb_gains[2];
-                prms->nsf4_params.wb_gain[3] = aewb_result->wb_gains[3];
+                if (1 == aewb_result->awb_valid)
+                {
+                    prms->nsf4_params.wb_gain[0] = aewb_result->wb_gains[0];
+                    prms->nsf4_params.wb_gain[1] = aewb_result->wb_gains[1];
+                    prms->nsf4_params.wb_gain[2] = aewb_result->wb_gains[2];
+                    prms->nsf4_params.wb_gain[3] = aewb_result->wb_gains[3];
+                }
             }
 
             nsf4_main(&prms->nsf4_params, prms->scratch_rawfe_raw_out, prms->scratch_nsf4v_out);
@@ -622,9 +636,12 @@ This code maybe removed
            configuration_desc->mem_size, VX_MEMORY_TYPE_HOST,
             VX_READ_ONLY);
 
-        tivxMemBufferUnmap(ae_awb_result_target_ptr,
-           ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
-            VX_READ_ONLY);
+        if( NULL != ae_awb_result_desc)
+        {
+            tivxMemBufferUnmap(ae_awb_result_target_ptr,
+               ae_awb_result_desc->mem_size, VX_MEMORY_TYPE_HOST,
+                VX_READ_ONLY);
+        }
 
         tivxMemBufferUnmap(raw_mem_target_ptr[0],
             raw_desc->mem_size[0], VX_MEMORY_TYPE_HOST,
@@ -715,7 +732,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     vx_status status = VX_SUCCESS;
     vx_status dcc_status = VX_SUCCESS;
     tivx_obj_desc_user_data_object_t *configuration_desc;
-    tivx_obj_desc_user_data_object_t *ae_awb_result_desc;
     tivx_obj_desc_raw_image_t *raw_desc;
     tivx_obj_desc_image_t *y12_desc;
     tivx_obj_desc_image_t *uv12_c1_desc;
@@ -740,7 +756,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         tivx_vpac_viss_params_t *params;
 
         configuration_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_CONFIGURATION_IDX];
-        ae_awb_result_desc = (tivx_obj_desc_user_data_object_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_AE_AWB_RESULT_IDX];
         raw_desc = (tivx_obj_desc_raw_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_RAW_IDX];
         y12_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT0_IDX];
         uv12_c1_desc = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_VPAC_VISS_OUT1_IDX];
@@ -898,16 +913,11 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             if (VX_SUCCESS == status)
             {
                 void *configuration_target_ptr;
-                void *ae_awb_result_target_ptr;
 
                 configuration_target_ptr = tivxMemShared2TargetPtr(
                     configuration_desc->mem_ptr.shared_ptr, configuration_desc->mem_ptr.mem_heap_region);
-                ae_awb_result_target_ptr = tivxMemShared2TargetPtr(
-                    ae_awb_result_desc->mem_ptr.shared_ptr, ae_awb_result_desc->mem_ptr.mem_heap_region);
 
                 tivxMemBufferMap(configuration_target_ptr, configuration_desc->mem_size,
-                    VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-                tivxMemBufferMap(ae_awb_result_target_ptr, ae_awb_result_desc->mem_size,
                     VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
                 params = (tivx_vpac_viss_params_t *)configuration_target_ptr;
