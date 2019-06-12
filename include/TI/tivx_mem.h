@@ -184,6 +184,14 @@ typedef struct _tivx_shared_mem_ptr_t {
      */
     uint64_t host_ptr;
 
+    /*! \brief Offset of dmaBufFd,
+     *         This will be used by host/Linux CPU
+     */
+    uint32_t dma_buf_fd_offset;
+
+    /* Padding to align to 64 bytes */
+    uint32_t rsv[1];
+
 } tivx_shared_mem_ptr_t;
 
 /*!
