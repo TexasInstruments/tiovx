@@ -147,6 +147,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetKernelAttribute(vx_kernel kernel, vx_enu
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
                     kernel->num_pipeup_bufs = *(vx_uint32*)ptr;
+                    kernel->pipeup_buf_idx  = *(vx_uint32*)ptr;
                     if (kernel->num_pipeup_bufs > 1)
                     {
                         kernel->state = VX_NODE_STATE_PIPEUP;
@@ -303,6 +304,7 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
                 kernel->deinitialize = deinitialize;
                 kernel->num_targets = 0;
                 kernel->num_pipeup_bufs = 1;
+                kernel->pipeup_buf_idx  = 0;
                 kernel->num_sink_bufs = 1;
                 kernel->connected_sink_bufs = 1;
                 kernel->state = VX_NODE_STATE_STEADY;
