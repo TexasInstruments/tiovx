@@ -96,6 +96,8 @@ typedef struct _vx_kernel
     vx_bool                 lock_kernel_remove;
     /*! \brief number of pipeup buffers */
     vx_uint32               num_pipeup_bufs;
+    /*! \brief pipeup buf index, used for querying during enqueue */
+    vx_uint32               pipeup_buf_idx;
     /*! \brief number of buffers needed for sink node */
     vx_uint32               num_sink_bufs;
     /*! \brief number of buffers needed for allocation at source node when sink node directly connected */

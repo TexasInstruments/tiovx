@@ -199,11 +199,17 @@ VX_API_ENTRY vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph gr
         }
         if(num_enqueue>0)
         {
+            /* Note: keeping compatibility with deprecated API */
             if(flags & TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP)
             {
                 /* if enqueing buffers for pipeup then dont schedule graph, 
                  * just enqueue the buffers 
-                 */ 
+                 */
+                graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx--;
+            }
+            else if (graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx > 0)
+            {
+                graph->parameters[graph_parameter_index].node->kernel->pipeup_buf_idx--;
             }
             else
             {
