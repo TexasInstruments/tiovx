@@ -697,7 +697,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
         /* AEWB Result is optional parameter */
         if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
         {
-            status = tivxVpacVissMapUserDesc(&vissObj->viss_prms_target_ptr,
+            status = tivxVpacVissMapUserDesc(&vissObj->aewb_res_target_ptr,
                 aewb_res_desc, sizeof(tivx_ae_awb_params_t));
             if (VX_SUCCESS == status)
             {
