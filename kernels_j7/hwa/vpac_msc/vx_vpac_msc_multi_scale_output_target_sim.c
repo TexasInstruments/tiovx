@@ -91,6 +91,12 @@ typedef struct
     uint32_t buffer_size_in;
     uint32_t buffer_size_out[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
 
+    /* To support NV12 format */
+    uint16_t *src16_cbcr;
+    uint16_t *dst16_cbcr[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+    uint32_t buffer_size_in_cbcr;
+    uint32_t buffer_size_out_cbcr[TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT];
+
     msc_config config;
 
 } tivxMscScaleParams;
@@ -220,6 +226,20 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                     "tivxKernelMscScaleCreate: Input Buffer Alloc Error\n");
                 status = VX_ERROR_NO_MEMORY;
             }
+
+            if((VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
+            {
+                prms->buffer_size_in_cbcr = imgIn->imagepatch_addr[1].dim_x *
+                                            (imgIn->imagepatch_addr[1].dim_y / imgIn->imagepatch_addr[1].step_y) * 2;
+
+                prms->src16_cbcr = tivxMemAlloc(prms->buffer_size_in_cbcr, TIVX_MEM_EXTERNAL);
+                if (NULL == prms->src16_cbcr)
+                {
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxKernelMscScaleCreate: Input Buffer Alloc Error\n");
+                    status = VX_ERROR_NO_MEMORY;
+                }
+            }
         }
 
         if (VX_SUCCESS == status)
@@ -243,6 +263,23 @@ static vx_status VX_CALLBACK tivxKernelMscScaleCreate(
                             "tivxKernelMscScaleCreate: Output%d Buffer Alloc Error\n",
                             cnt);
                         status = VX_ERROR_NO_MEMORY;
+                    }
+
+                    if((VX_SUCCESS == status) && (imgIn->format == VX_DF_IMAGE_NV12))
+                    {
+                        prms->buffer_size_out_cbcr[cnt] =
+                            imgOut->imagepatch_addr[1].dim_x *
+                            (imgOut->imagepatch_addr[1].dim_y / imgOut->imagepatch_addr[1].step_y) * 2;
+
+                        prms->dst16_cbcr[cnt] = tivxMemAlloc(prms->buffer_size_out_cbcr[cnt],
+                            TIVX_MEM_EXTERNAL);
+                        if (NULL == prms->dst16_cbcr[cnt])
+                        {
+                            VX_PRINT(VX_ZONE_ERROR,
+                                "tivxKernelMscScaleCreate: Output%d Buffer Alloc Error\n",
+                                cnt);
+                            status = VX_ERROR_NO_MEMORY;
+                        }
                     }
                 }
             }
@@ -318,10 +355,26 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
         /* C-model supports only 12-bit in uint16_t container
          * So we may need to translate.  In HW, VPAC_LSE does this
          */
-        lse_reformat_in(src, src_target_ptr, prms->src16);
+        lse_reformat_in(src, src_target_ptr, prms->src16, 0);
 
         tivxMemBufferUnmap(src_target_ptr, src->mem_size[0],
             VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+        if(src->format == VX_DF_IMAGE_NV12)
+        {
+            src_target_ptr = tivxMemShared2TargetPtr(
+                src->mem_ptr[1].shared_ptr, src->mem_ptr[1].mem_heap_region);
+            tivxMemBufferMap(src_target_ptr, src->mem_size[1],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+            /* C-model supports only 12-bit in uint16_t container
+             * So we may need to translate.  In HW, VPAC_LSE does this
+             */
+            lse_reformat_in(src, src_target_ptr, prms->src16_cbcr, 1);
+
+            tivxMemBufferUnmap(src_target_ptr, src->mem_size[1],
+                VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+        }
     }
 
     if (VX_SUCCESS == status)
@@ -331,6 +384,9 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 
         prms->config.settings.G_inWidth[0] = src->imagepatch_addr[0].dim_x;
         prms->config.settings.G_inHeight[0] = src->imagepatch_addr[0].dim_y;
+
+        /* Is it enough to set for just 1 pipe in host-emulation mode? */
+        prms->config.settings.unitParams[0].uvMode = 0;
 
         for (cnt = 0; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
@@ -404,6 +460,89 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 #endif
     }
 
+    if ((VX_SUCCESS == status) && (src->format == VX_DF_IMAGE_NV12))
+    {
+        uint32_t iw = src->imagepatch_addr[1].dim_x;
+        uint32_t ih = src->imagepatch_addr[1].dim_y / src->imagepatch_addr[1].step_y;
+
+        prms->config.settings.G_inWidth[0] = src->imagepatch_addr[1].dim_x;
+        prms->config.settings.G_inHeight[0] = src->imagepatch_addr[1].dim_y / src->imagepatch_addr[1].step_y;
+
+        /* Is it enough to set for just 1 pipe in host-emulation mode? */
+        prms->config.settings.unitParams[0].uvMode = 1;
+
+        for (cnt = 0; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+        {
+            if (NULL != dst[cnt])
+            {
+                uint32_t ow = dst[cnt]->imagepatch_addr[1].dim_x;
+                uint32_t oh = dst[cnt]->imagepatch_addr[1].dim_y / dst[cnt]->imagepatch_addr[1].step_y;
+                uint32_t hzScale = ((float)(4096*iw)/(float)ow) + 0.5f;
+                uint32_t vtScale = ((float)(4096*ih)/(float)oh) + 0.5f;
+
+                prms->config.settings.unitParams[cnt].outWidth =
+                    dst[cnt]->imagepatch_addr[1].dim_x;
+                prms->config.settings.unitParams[cnt].outHeight =
+                    dst[cnt]->imagepatch_addr[1].dim_y / dst[cnt]->imagepatch_addr[1].step_y;
+                prms->config.settings.unitParams[cnt].hzScale = hzScale;
+                prms->config.settings.unitParams[cnt].vtScale = vtScale;
+
+                /* Control Command provides an interface for setting
+                 * init phase information, but currently overriding it
+                 * using this equation. */
+                prms->config.settings.unitParams[cnt].initPhaseX =
+                    (((((float)iw/(float)ow) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+                prms->config.settings.unitParams[cnt].initPhaseY =
+                    (((((float)ih/(float)oh) * 0.5f) - 0.5f) * 4096.0f) + 0.5f;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+#ifdef VLAB_HWA
+
+        prms->config.magic = 0xC0DEFACE;
+        prms->config.buffer[0]  = prms->src16_cbcr;
+        for (cnt = 0; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+        {
+            if (NULL != dst[cnt])
+            {
+                prms->config.buffer[4 + (cnt * 2)]  = prms->dst16_cbcr[cnt];
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        status = vlab_hwa_process(VPAC_MSC_BASE_ADDRESS, "VPAC_MSC_SCALE", sizeof(msc_config), &prms->config);
+
+#else
+        {
+            unsigned short *imgInput[2];
+            unsigned short *imgOutput[SCALER_NUM_PIPES] = {0};
+
+            imgInput[0] = prms->src16_cbcr;
+
+            for (cnt = 0; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
+            {
+                if (NULL != dst[cnt])
+                {
+                    imgOutput[cnt] = prms->dst16_cbcr[cnt];
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            scaler_top_processing(imgInput, imgOutput, &prms->config.settings);
+        }
+#endif
+    }
+
     if (VX_SUCCESS == status)
     {
         tivx_obj_desc_image_t stub;
@@ -428,6 +567,21 @@ static vx_status VX_CALLBACK tivxKernelMscScaleProcess(
 
                 tivxMemBufferUnmap(dst_target_ptr, dst[cnt]->mem_size[0],
                     VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+                if(dst[cnt]->format == VX_DF_IMAGE_NV12)
+                {
+                    dst_target_ptr = tivxMemShared2TargetPtr(
+                        dst[cnt]->mem_ptr[1].shared_ptr,
+                        dst[cnt]->mem_ptr[1].mem_heap_region);
+                    tivxMemBufferMap(dst_target_ptr, dst[cnt]->mem_size[1],
+                        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+                    lse_reformat_out(&stub, dst[cnt], dst_target_ptr,
+                        prms->dst16_cbcr[cnt], 12, 1);
+
+                    tivxMemBufferUnmap(dst_target_ptr, dst[cnt]->mem_size[1],
+                        VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+                }
             }
             else
             {
@@ -545,6 +699,11 @@ static void tivxVpacMscScaleFreeMem(tivxMscScaleParams *prms)
             tivxMemFree(prms->src16, prms->buffer_size_in, TIVX_MEM_EXTERNAL);
             prms->src16 = NULL;
         }
+        if (NULL != prms->src16_cbcr)
+        {
+            tivxMemFree(prms->src16_cbcr, prms->buffer_size_in_cbcr, TIVX_MEM_EXTERNAL);
+            prms->src16_cbcr = NULL;
+        }
 
         for (cnt = 0u; cnt < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; cnt ++)
         {
@@ -554,6 +713,13 @@ static void tivxVpacMscScaleFreeMem(tivxMscScaleParams *prms)
                 tivxMemFree(prms->dst16[cnt], prms->buffer_size_out[cnt],
                     TIVX_MEM_EXTERNAL);
                 prms->dst16[cnt] = NULL;
+            }
+            if ((NULL != prms->dst16_cbcr[cnt]) &&
+                (0U != prms->buffer_size_out_cbcr[cnt]))
+            {
+                tivxMemFree(prms->dst16_cbcr[cnt], prms->buffer_size_out_cbcr[cnt],
+                    TIVX_MEM_EXTERNAL);
+                prms->dst16_cbcr[cnt] = NULL;
             }
         }
 

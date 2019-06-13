@@ -221,9 +221,9 @@ static vx_status VX_CALLBACK tivxVpacLdcProcess(
                     VX_READ_ONLY);
 
                 if (i == 0)
-                    lse_reformat_in(in_img, target_ptr, prms->inY_16);
+                    lse_reformat_in(in_img, target_ptr, prms->inY_16, 0);
                 else
-                    lse_reformat_in(in_img, target_ptr, prms->inC_16);
+                    lse_reformat_in(in_img, target_ptr, prms->inC_16, 0); //Should this be 1?
 
                 tivxMemBufferUnmap(target_ptr,
                     in_img->mem_size[i], VX_MEMORY_TYPE_HOST,
@@ -1028,4 +1028,3 @@ static vx_status tivxVpacLdcSetLutParamsCmd(ldc_settings *settings,
 
     return (VX_SUCCESS);
 }
-

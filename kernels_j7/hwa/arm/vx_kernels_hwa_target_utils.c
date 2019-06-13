@@ -66,21 +66,21 @@
 #include "tivx_kernels_target_utils.h"
 #include "vx_kernels_hwa_target.h"
 
-void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[])
+void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t src16[], uint8_t ch)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = src->imagepatch_addr[0].dim_x;
-    uint32_t h = src->imagepatch_addr[0].dim_y;
-    uint32_t stride = src->imagepatch_addr[0].stride_y;
+    uint32_t w = src->imagepatch_addr[ch].dim_x;
+    uint32_t h = src->imagepatch_addr[ch].dim_y / src->imagepatch_addr[ch].step_y;
+    uint32_t stride = src->imagepatch_addr[ch].stride_y;
 
-    if (VX_DF_IMAGE_U8 == src->format)
+    if ((VX_DF_IMAGE_U8 == src->format) || (VX_DF_IMAGE_NV12 == src->format))
     {
         uint8_t *src_addr8 = (uint8_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+            &src->imagepatch_addr[ch]));
 
         for(j = 0; j < h; j++)
         {
@@ -95,7 +95,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
     {
         uint16_t *src_addr16 = (uint16_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+            &src->imagepatch_addr[ch]));
         stride /= 2;
 
         for(j = 0; j < h; j++)
@@ -111,7 +111,7 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
     {
         uint32_t *src_addr32 = (uint32_t *)((uintptr_t)src_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &src->imagepatch_addr[0U]));
+            &src->imagepatch_addr[ch]));
         stride /= 4;
 
         for(j = 0; j < h; j++)
@@ -135,23 +135,23 @@ void lse_reformat_in(tivx_obj_desc_image_t *src, void* src_target_ptr, uint16_t 
     }
 }
 
-void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t channel)
+void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, void *dst_target_ptr, uint16_t dst16[], uint16_t input_bits, uint8_t ch)
 {
     /* Get the correct offset of the images from the valid roi parameter,
        Assuming valid Roi is same images */
     vx_rectangle_t rect = src->valid_roi;
     int32_t i, j;
-    uint32_t w = dst->imagepatch_addr[channel].dim_x;
-    uint32_t h = dst->imagepatch_addr[channel].dim_y / dst->imagepatch_addr[channel].step_y;
-    uint32_t stride = dst->imagepatch_addr[channel].stride_y;
+    uint32_t w = dst->imagepatch_addr[ch].dim_x;
+    uint32_t h = dst->imagepatch_addr[ch].dim_y / dst->imagepatch_addr[ch].step_y;
+    uint32_t stride = dst->imagepatch_addr[ch].stride_y;
     uint16_t downshift = input_bits-8;
     uint16_t upshift = 12-input_bits;
 
-    if (VX_DF_IMAGE_U8 == dst->format)
+    if ((VX_DF_IMAGE_U8 == dst->format) || (VX_DF_IMAGE_NV12 == dst->format))
     {
         uint8_t *dst_addr8 = (uint8_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[channel]));
+            &dst->imagepatch_addr[ch]));
 
         for(j = 0; j < h; j++)
         {
@@ -166,7 +166,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
     {
         uint16_t *dst_addr16 = (uint16_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[channel]));
+            &dst->imagepatch_addr[ch]));
         stride /= 2;
 
         for(j = 0; j < h; j++)
@@ -182,7 +182,7 @@ void lse_reformat_out(tivx_obj_desc_image_t *src, tivx_obj_desc_image_t *dst, vo
     {
         uint32_t *dst_addr32 = (uint32_t *)((uintptr_t)dst_target_ptr +
             tivxComputePatchOffset(rect.start_x, rect.start_y,
-            &dst->imagepatch_addr[channel]));
+            &dst->imagepatch_addr[ch]));
         stride /= 4;
 
         for(j = 0; j < h; j++)

@@ -185,8 +185,8 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
             /* C-model supports only 12-bit in uint16_t container
              * So we may need to translate.  In HW, NF_LSE does this
              */
-            lse_reformat_in(left_desc, left_target_ptr, prms->left16);
-            lse_reformat_in(right_desc, right_target_ptr, prms->right16);
+            lse_reformat_in(left_desc, left_target_ptr, prms->left16, 0);
+            lse_reformat_in(right_desc, right_target_ptr, prms->right16, 0);
 
 #ifdef VLAB_HWA
 
