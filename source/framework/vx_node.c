@@ -1511,63 +1511,72 @@ VX_API_ENTRY vx_status VX_API_CALL vxReplicateNode(vx_graph graph, vx_node first
             vxQueryParameter(param, VX_PARAMETER_REF, &ref, sizeof(vx_reference));
             vxQueryParameter(param, VX_PARAMETER_STATE, &state, sizeof(vx_enum));
             vxQueryParameter(param, VX_PARAMETER_DIRECTION, &dir, sizeof(vx_enum));
-
-            if ((replicate[p] == vx_false_e) && ((dir == VX_OUTPUT) || (dir == VX_BIDIRECTIONAL)))
+            
+            if((state==VX_PARAMETER_STATE_OPTIONAL) && (ownIsValidSpecificReference(ref, type) == vx_false_e))
             {
-                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Parameter %d direction is incorrect\n", p);
-                status = VX_FAILURE;
+                /* parameter reference is invalid but since parameter is optional, 
+                 * this is not a error condition
+                 */
             }
-
-            if(status == VX_SUCCESS)
+            else
             {
-                if (replicate[p] == vx_true_e)
+                if ((replicate[p] == vx_false_e) && ((dir == VX_OUTPUT) || (dir == VX_BIDIRECTIONAL)))
                 {
-                    if (ownIsValidSpecificReference(ref, type) == vx_true_e)
+                    VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Parameter %d direction is incorrect\n", p);
+                    status = VX_FAILURE;
+                }
+    
+                if(status == VX_SUCCESS)
+                {
+                    if (replicate[p] == vx_true_e)
                     {
-                        vx_size items = 0;
-                        if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                        if (ownIsValidSpecificReference(ref, type) == vx_true_e)
                         {
-                            vx_pyramid pyramid = (vx_pyramid)ref->scope;
-                            vxQueryPyramid(pyramid, VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
-                        }
-                        else if (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
-                        {
-                            vx_object_array object_array = (vx_object_array)ref->scope;
-                            vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
+                            vx_size items = 0;
+                            if (ownIsValidSpecificReference(ref->scope, VX_TYPE_PYRAMID) == vx_true_e)
+                            {
+                                vx_pyramid pyramid = (vx_pyramid)ref->scope;
+                                vxQueryPyramid(pyramid, VX_PYRAMID_LEVELS, &items, sizeof(vx_size));
+                            }
+                            else if (ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e)
+                            {
+                                vx_object_array object_array = (vx_object_array)ref->scope;
+                                vxQueryObjectArray(object_array, VX_OBJECT_ARRAY_NUMITEMS, &items, sizeof(vx_size));
+                            }
+                            else
+                            {
+                                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Invalid reference type\n");
+                                status = VX_FAILURE;
+                            }
+                            if(status == VX_SUCCESS)
+                            {
+                                if (num_of_replicas == 0)
+                                {
+                                    num_of_replicas = items;
+                                }
+    
+                                if ((num_of_replicas != 0) && (items != num_of_replicas))
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is not equal to zero and not equal to items\n");
+                                    status = VX_FAILURE;
+                                }
+                                if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
+                                {
+                                    VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is greater than maximum allowed\n");
+                                    VX_PRINT(VX_ZONE_ERROR, "vxReplicateNode: May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/TI/tivx_config.h\n");
+                                    status = VX_FAILURE;
+                                }
+                                else
+                                {
+                                    tivxLogSetResourceUsedValue("TIVX_NODE_MAX_REPLICATE", num_of_replicas);
+                                }
+                            }
                         }
                         else
                         {
                             VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Invalid reference type\n");
                             status = VX_FAILURE;
                         }
-                        if(status == VX_SUCCESS)
-                        {
-                            if (num_of_replicas == 0)
-                            {
-                                num_of_replicas = items;
-                            }
-
-                            if ((num_of_replicas != 0) && (items != num_of_replicas))
-                            {
-                                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is not equal to zero and not equal to items\n");
-                                status = VX_FAILURE;
-                            }
-                            if (num_of_replicas > TIVX_NODE_MAX_REPLICATE)
-                            {
-                                VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Number of replicas is greater than maximum allowed\n");
-                                VX_PRINT(VX_ZONE_ERROR, "vxReplicateNode: May need to increase the value of TIVX_NODE_MAX_REPLICATE in tiovx/include/TI/tivx_config.h\n");
-                                status = VX_FAILURE;
-                            }
-                            else
-                            {
-                                tivxLogSetResourceUsedValue("TIVX_NODE_MAX_REPLICATE", num_of_replicas);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"vxReplicateNode: Invalid reference type\n");
-                        status = VX_FAILURE;
                     }
                 }
             }
