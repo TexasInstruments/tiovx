@@ -240,7 +240,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         cmdPrms.numSensors = 1;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
             APP_REMOTE_SERVICE_SENSOR_NAME,
-            APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_OV2775, &cmdPrms, sizeof(cmdPrms), 0));
+            APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
         /* Need to trigger again since display holds on to a buffer */
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-1], 1);

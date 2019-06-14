@@ -269,6 +269,7 @@ static uint32_t tivxCaptureExtractCcsFormat(uint32_t format)
         case TIVX_RAW_IMAGE_P12_BIT:
             ccsFormat = FVID2_CCSF_BITS12_PACKED;
             break;
+        case TIVX_RAW_IMAGE_16_BIT:
         case VX_DF_IMAGE_U16:
             ccsFormat = FVID2_CCSF_BITS12_UNPACKED16;
             break;
@@ -342,8 +343,17 @@ static void tivxCaptureSetCreateParams(
         prms->createPrms.chCfg[loopCnt].chId = loopCnt;
         prms->createPrms.chCfg[loopCnt].chType = CSIRX_CH_TYPE_CAPT;
         prms->createPrms.chCfg[loopCnt].vcNum = loopCnt;
-        prms->createPrms.chCfg[loopCnt].inCsiDataType =
-            tivxCaptureExtractInCsiDataType(format);
+
+        if (TIVX_OBJ_DESC_RAW_IMAGE == prms->img_obj_desc[0]->type)
+        {
+            prms->createPrms.chCfg[loopCnt].inCsiDataType =
+                FVID2_CSI2_DF_RAW12;
+        }
+        else
+        {
+            prms->createPrms.chCfg[loopCnt].inCsiDataType =
+                tivxCaptureExtractInCsiDataType(format);
+        }
         prms->createPrms.chCfg[loopCnt].outFmt.width =
             width;
         prms->createPrms.chCfg[loopCnt].outFmt.height =
@@ -699,12 +709,12 @@ static void tivxCapturePrintStatus(tivxCaptureParams *prms)
                       prms->captStatus.spuriousUdmaIntrCount);
 
             VX_PRINT(VX_ZONE_INFO,
-                " [Channel No] | Frame Queue Count |"
+                "  [Channel No] | Frame Queue Count |"
                 " Frame De-queue Count | Frame Drop Count |\n");
             for(cnt = 0U ; cnt < prms->numCh ; cnt ++)
             {
                 VX_PRINT(VX_ZONE_INFO,
-                      " /t/t%d | /t/t%d | /t/t%d | /t/t%d |\n",
+                      "\t\t%d|\t\t%d|\t\t%d|\t\t%d|\n",
                       cnt,
                       prms->captStatus.queueCount[cnt],
                       prms->captStatus.dequeueCount[cnt],

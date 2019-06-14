@@ -81,6 +81,8 @@
 #define MAX_NUM_BUF         (8u)
 #define MAX_ABS_FILENAME    (1024u)
 
+#define NUM_CHANNELS        (4U)
+
 #define IMAGE_WIDTH         (1920)
 #define IMAGE_HEIGHT        (1080)
 #define IMAGE_FORMAT        (VX_DF_IMAGE_U16)
@@ -193,7 +195,7 @@ typedef struct {
 } Arg_Capture;
 
 #define CAPTURE_PARAMETERS \
-    CT_GENERATE_PARAMETERS("capture", ARG, 1000, 0)
+    CT_GENERATE_PARAMETERS("capture", ARG, 50000, 0)
 
 TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETERS)
 {
@@ -205,7 +207,7 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     tivx_capture_params_t local_capture_config;
     vx_image img_exemplar;
     uint32_t width = IMAGE_WIDTH, height = IMAGE_HEIGHT;
-    uint32_t objarr_idx, num_capture_frames = 1; /* TODO: eventually move to 4, but use 1 for now */
+    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS; /* TODO: eventually move to 4, but use 1 for now */
     uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
     CT_Image tst_img;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
@@ -282,10 +284,10 @@ TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETE
     vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_frames[buf_id], 1);
 
     /* After first trigger, configure and start the sensor */
-    cmdPrms.numSensors = 1;
+    cmdPrms.numSensors = num_capture_frames;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
         APP_REMOTE_SERVICE_SENSOR_NAME,
-        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_OV2775, &cmdPrms, sizeof(cmdPrms), 0));
+        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
@@ -337,7 +339,7 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     tivx_capture_params_t local_capture_config;
     tivx_raw_image raw_image = 0;
     uint32_t width = IMAGE_WIDTH, height = IMAGE_HEIGHT, i;
-    uint32_t objarr_idx, num_capture_frames = 1; /* TODO: eventually move to 4, but use 1 for now */
+    uint32_t objarr_idx, num_capture_frames = NUM_CHANNELS; /* TODO: eventually move to 4, but use 1 for now */
     uint32_t buf_id, loop_id, loop_cnt, num_buf, loopCnt, frameIdx;
     CT_Image tst_img;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
@@ -430,10 +432,10 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
     /* after pipeup, now enqueue a buffer to trigger graph scheduling */
     vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&capture_frames[buf_id], 1);
 
-    cmdPrms.numSensors = 1u;
+    cmdPrms.numSensors = num_capture_frames;
     ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
         APP_REMOTE_SERVICE_SENSOR_NAME,
-        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_OV2775, &cmdPrms, sizeof(cmdPrms), 0));
+        APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
 
     /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
     for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
@@ -443,39 +445,6 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
         /* Get output reference, waits until a reference is available */
         vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&out_capture_frames, 1, &num_refs);
-
-        if(arg_->measure_perf==0)
-        {
-            for (frameIdx = 0; frameIdx < num_capture_frames; frameIdx++)
-            {
-
-                addr.dim_x = width;
-                addr.dim_y = height;
-                addr.stride_x = 0;
-                addr.stride_y = width;
-                addr.step_x = 1;
-                addr.step_y = 1;
-
-                rect.start_x = 0;
-                rect.start_y = 0;
-                rect.end_x = 1;
-                rect.end_y = 1;
-
-                ASSERT_VX_OBJECT(out_img = (tivx_raw_image)vxGetObjectArrayItem(out_capture_frames, frameIdx), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
-
-
-                {
-                    VX_CALL(tivxCopyRawImagePatch(out_img, &rect, 0, &addr, (void *)img,
-                                      VX_READ_ONLY, VX_MEMORY_TYPE_HOST, TIVX_RAW_IMAGE_PIXEL_BUFFER));
-                }
-
-                /* test to make sure it contains data */
-                ASSERT(img[0] != 0x0);
-
-                VX_CALL(tivxReleaseRawImage(&out_img));
-
-            }
-        }
 
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&out_capture_frames, 1);
 
@@ -510,6 +479,6 @@ TEST_WITH_ARG(tivxHwaCapture, testRawImageCapture, Arg_Capture, CAPTURE_PARAMETE
 
 
 TESTCASE_TESTS(tivxHwaCapture,
-               /* testRawImageCapture, */
-               testGraphProcessing)
+               testRawImageCapture
+               /* testGraphProcessing */)
 
