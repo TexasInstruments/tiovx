@@ -230,6 +230,15 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                     case TIVX_TYPE_DATA_REF_Q:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "data_ref_q_%d", ref_idx);
                         break;
+                    case VX_TYPE_TENSOR:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "tensor_%d", ref_idx);
+                        break;
+                    case VX_TYPE_USER_DATA_OBJECT:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "user_data_object_%d", ref_idx);
+                        break;
+                    case TIVX_TYPE_RAW_IMAGE:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
+                        break;
                     default:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
                         break;

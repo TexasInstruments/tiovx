@@ -216,6 +216,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_IMAGE_MAX_SUBIMAGES, 0, 0, "TIVX_IMAGE_MAX_SUBIMAGES"
     },
     {
+        TIVX_RAW_IMAGE_MAX_SUBIMAGES, 0, 0, "TIVX_RAW_IMAGE_MAX_SUBIMAGES"
+    },
+    {
         TIVX_IMAGE_MAX_MAPS, 0, 0, "TIVX_IMAGE_MAX_MAPS"
     },
     {
@@ -226,6 +229,12 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_DELAY_MAX_PRM_OBJECT, 0, 0, "TIVX_DELAY_MAX_PRM_OBJECT"
+    },
+    {
+        TIVX_EVENT_QUEUE_MAX_SIZE, 0, 0, "TIVX_EVENT_QUEUE_MAX_SIZE"
+    },
+    {
+        TIVX_MAX_DSP_BAM_USER_PLUGINS, 0, 0, "TIVX_MAX_DSP_BAM_USER_PLUGINS"
     }
 };
 
