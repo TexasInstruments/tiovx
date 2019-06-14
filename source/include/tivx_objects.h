@@ -119,6 +119,11 @@ typedef struct _tivx_object_t
     vx_bool                 isRawImageUse[TIVX_RAW_IMAGE_MAX_OBJECTS];
     /**< Flag indicating if raw image object is in use or not */
 
+    tivx_super_node_t super_node[TIVX_SUPER_NODE_MAX_OBJECTS];
+    /**< Super Node Objects */
+    vx_bool                 isSuperNodeUse[TIVX_SUPER_NODE_MAX_OBJECTS];
+    /**< Flag indicating if super node object is in use or not */
+
     tivx_convolution_t      convolution[TIVX_CONVOLUTION_MAX_OBJECTS];
     /**< Convolution Objects */
     vx_bool                 isConvolutionUse[TIVX_CONVOLUTION_MAX_OBJECTS];

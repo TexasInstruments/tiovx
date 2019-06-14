@@ -107,7 +107,7 @@ static inline vx_bool tivxGraphSortStackPop(tivx_graph_sort_context *context, vx
 void ownGraphTopologicalSort(tivx_graph_sort_context *context,
     vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle)
 {
-    uint16_t cur_node_idx, out_node_idx, num_out_nodes;
+    uint16_t cur_node_idx, out_node_idx, num_out_nodes, i;
     vx_node cur_node, next_node;
 
     if (num_nodes < TIVX_GRAPH_MAX_NODES)
@@ -119,7 +119,7 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
             cur_node = nodes[cur_node_idx];
 
             cur_node->incounter = ownNodeGetNumInNodes(cur_node);
-            if(cur_node->incounter==0)
+            if((cur_node->incounter==0) && (cur_node->is_super_node == vx_false_e))
             {
                 tivxGraphSortStackPush(context, cur_node);
             }
@@ -143,6 +143,17 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
                 }
             }
         }
+        /* Add super nodes to the end of the list */
+        for(i=0; i<num_nodes; i++)
+        {
+            cur_node = nodes[i];
+
+            if(cur_node->is_super_node == vx_true_e)
+            {
+                context->sorted_nodes[cur_node_idx] = cur_node;
+                cur_node_idx++;
+            }
+        }
         if( cur_node_idx == num_nodes)
         {
             uint32_t tmp_cur_node_idx;
@@ -161,3 +172,36 @@ void ownGraphTopologicalSort(tivx_graph_sort_context *context,
         }
     }
 }
+
+void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context,
+    tivx_super_node super_node, uint32_t num_nodes, vx_bool *is_continuous)
+{
+
+#if 0
+    uint16_t cur_node_idx, out_node_idx, in_node_idx, num_out_nodes, num_in_nodes, i,j;
+    vx_node cur_node, next_node;
+    vx_bool found;
+    vx_node *nodes = super_node->nodes;
+
+    if (num_nodes < TIVX_GRAPH_MAX_NODES)
+    {
+        tivxGraphSortStackReset(context, num_nodes);
+
+        cur_node_idx = 0;
+
+        // TODO: Add seach logic here
+
+        if( cur_node_idx == num_nodes)
+        {
+            *is_continuous = vx_true_e;
+        }
+        else
+        {
+            *is_continuous = vx_false_e;
+        }
+    }
+#endif
+
+    *is_continuous = vx_true_e;
+}
+

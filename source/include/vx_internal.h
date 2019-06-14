@@ -77,6 +77,7 @@
 #include <vx_array.h>
 #include <vx_user_data_object.h>
 #include <tivx_raw_image.h>
+#include <tivx_super_node.h>
 #include <vx_tensor.h>
 #include <vx_delay.h>
 #include <vx_module.h>

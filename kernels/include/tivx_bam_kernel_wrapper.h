@@ -79,6 +79,7 @@
 #define BAM_KERNEL_WRAPPER_H
 
 #include <TI/tivx.h>
+#include <TI/tivx_target_kernel.h>
 #include <VX/vx.h>
 #include "tivx_bam_kernel_database.h"
 #include "bam_common.h"
@@ -347,6 +348,85 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle);
  * \ingroup group_tivx_ext_bam
  */
 void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle);
+
+
+/*!
+* \brief The "create in bam graph" target kernel callback
+*
+* \param [in] kernel The kernel for which the callback is called
+* \param [in] obj_desc Object descriptor array passed as input to this callback
+* \param [in] num_params[] Number of parameters in the obj_desc[] array
+* \param [in] priv_arg Private argument
+* \param [in,out] node_list Pointer to array of nodes to be updated by callback
+* \param [in,out] kernel_details Pointer to array of kernel_details to be updated by callback
+* \param [in,out] bam_node_cnt Number of bam nodes to be updated by callback
+* \param [in] scratch Pointer to scratch memory requirement from node
+*
+* \ingroup group_tivx_ext_common_kernel
+*/
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_create_in_bam_graph_f)(tivx_target_kernel_instance kernel,
+                                                               tivx_obj_desc_t *obj_desc[],
+                                                               uint16_t num_params,
+                                                               void *priv_arg,
+                                                               BAM_NodeParams node_list[],
+                                                               tivx_bam_kernel_details_t kernel_details[],
+                                                               int32_t * bam_node_cnt,
+                                                               void * scratch);
+
+/*!
+* \brief The "get node port" target kernel callback
+*
+* \param [in] kernel The kernel for which the callback is called
+* \param [in] ovx_port OpenVX node port number
+* \param [out] bam_node BAM node number corresponding to the OpenVX node
+* \param [out] bam_port BAM kernel port number corresponding to the OpenVX node number
+*
+* \ingroup group_tivx_ext_common_kernel
+*/
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_get_node_port_f)(tivx_target_kernel_instance kernel,
+                                                               uint8_t ovx_port,
+                                                               uint8_t *bam_node,
+                                                               uint8_t *bam_port);
+/*!
+* \brief The "append internal edges" target kernel callback
+*        This callback is optional and only needs to be implemented if the node has more
+*        than one BAM kernel inside it.  In this case, the node needs to append the internal
+*        edges to the overal BAM graph edge list.
+*
+* \param [in] kernel The kernel for which the callback is called
+* \param [in,out] edge_list BAM graph edge list.
+* \param [in,out] bam_edge_cnt Number of edges in the edge list
+*
+* \ingroup group_tivx_ext_common_kernel
+*/
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_append_internal_edges_f)(tivx_target_kernel_instance kernel,
+                                                               BAM_EdgeParams edge_list[],
+                                                               int32_t * bam_edge_cnt);
+
+
+/*! \brief Allows users to support kernel as part of super node
+ *
+ *         This is intended to be run after adding the target kernel.
+ *
+ * \param [in] kernel The kernel for which the callbacks are associated with
+ * \param [in] create_in_bam_func         Callback for giving information needed by supernode to create BAM graph.
+ * \param [in] get_node_port_func         Callback for translating OpenVX node ports to BAM ports.
+ * \param [in] append_internal_edges_func (optional) Callback for appending internal edges to BAM edge list (if there are any)
+ * \param [in] preprocess_func            (optional) Callback for performing any processing before the BAM graph is called for each frame (if there is any)
+ * \param [in] postprocess_func           (optional) Callback for performing any processing after the BAM graph is called for each frame (if there is any)
+ * \param [in] priv_arg                   (optional) Private arguments to pass to the create callback
+ *
+ * \ingroup group_tivx_ext_common_kernel
+ *
+ */
+VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
+                             tivx_target_kernel target_kernel,
+                             tivx_target_kernel_create_in_bam_graph_f   create_in_bam_func,
+                             tivx_target_kernel_get_node_port_f         get_node_port_func,
+                             tivx_target_kernel_append_internal_edges_f append_internal_edges_func,
+                             tivx_target_kernel_f preprocess_func,
+                             tivx_target_kernel_f postprocess_func,
+                             void *priv_arg);
 
 
 #endif

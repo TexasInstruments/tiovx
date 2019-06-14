@@ -390,3 +390,52 @@ vx_status tivxTargetKernelControl(
     return (status);
 }
 
+#if defined(BUILD_BAM)
+
+VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
+                             tivx_target_kernel target_kernel,
+                             tivx_target_kernel_create_in_bam_graph_f   create_in_bam_func,
+                             tivx_target_kernel_get_node_port_f         get_node_port_func,
+                             tivx_target_kernel_append_internal_edges_f append_internal_edges_func,
+                             tivx_target_kernel_f preprocess_func,
+                             tivx_target_kernel_f postprocess_func,
+                             void *priv_arg)
+{
+    uint32_t i;
+    vx_status status;
+
+    if ((NULL != target_kernel) &&
+        (create_in_bam_func != NULL) && (get_node_port_func != NULL))
+    {
+        status = tivxMutexLock(g_target_kernel_lock);
+
+        if (VX_SUCCESS == status)
+        {
+            for(i=0; i<dimof(g_target_kernel_table); i++)
+            {
+                if (target_kernel ==
+                    &g_target_kernel_table[i])
+                {
+                    g_target_kernel_table[i].create_in_bam_func = create_in_bam_func;
+                    g_target_kernel_table[i].get_node_port_func = get_node_port_func;
+                    g_target_kernel_table[i].append_internal_edges_func = append_internal_edges_func;
+                    g_target_kernel_table[i].preprocess_func = preprocess_func;
+                    g_target_kernel_table[i].postprocess_func = postprocess_func;
+
+                    break;
+                }
+            }
+
+            tivxMutexUnlock(g_target_kernel_lock);
+        }
+    }
+    else
+    {
+        status = VX_ERROR_INVALID_PARAMETERS;
+        VX_PRINT(VX_ZONE_ERROR, "tivxEnableKernelForSuperNode: Invalid parameters given to function\n");
+    }
+
+    return status;
+}
+
+#endif

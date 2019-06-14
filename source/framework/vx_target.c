@@ -443,8 +443,21 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             #endif
         }
 
-        node_obj_desc->exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
-            node_obj_desc->num_params);
+        {
+            /* Assume the only node with 0 parameters is the super node */
+            if(0 == node_obj_desc->num_params)
+            {
+                params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
+
+                node_obj_desc->exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
+                    1);
+            }
+            else
+            {
+                node_obj_desc->exe_status |= tivxTargetKernelExecute(target_kernel_instance, params,
+                    node_obj_desc->num_params);
+            }
+        }
     }
 
     /* params[] contain pointer to obj_desc for each parameter,
@@ -798,8 +811,21 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
             /* copy border mode also in the target_kernel_instance */
             tivx_obj_desc_memcpy(&target_kernel_instance->border_mode, &node_obj_desc->border_mode, sizeof(vx_border_t));
 
-            status = tivxTargetKernelCreate(target_kernel_instance,
-                params, node_obj_desc->num_params);
+            {
+                /* Assume the only node with 0 parameters is the super node */
+                if(0 == node_obj_desc->num_params)
+                {
+                    params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
+
+                    status = tivxTargetKernelCreate(target_kernel_instance,
+                        params, 1);
+                }
+                else
+                {
+                    status = tivxTargetKernelCreate(target_kernel_instance,
+                        params, node_obj_desc->num_params);
+                }
+            }
 
             if(status!=VX_SUCCESS)
             {
@@ -859,8 +885,18 @@ static vx_status tivxTargetNodeDescNodeDelete(const tivx_obj_desc_node_t *node_o
                     params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
                 }
 
-                status |= tivxTargetKernelDelete(target_kernel_instance,
-                    params, node_obj_desc->num_params);
+                /* Assume the only node with 0 parameters is the super node */
+                if(0 == node_obj_desc->num_params)
+                {
+                    params[0] = (tivx_obj_desc_t *) tivxObjDescGet( node_obj_desc->base.scope_obj_desc_id );
+
+                    status |= tivxTargetKernelDelete(target_kernel_instance, params, 1);
+                }
+                else
+                {
+                    status |= tivxTargetKernelDelete(target_kernel_instance,
+                        params, node_obj_desc->num_params);
+                }
             }
 
             tivxTargetKernelInstanceFree(&target_kernel_instance);

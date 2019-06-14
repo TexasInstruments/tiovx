@@ -73,6 +73,10 @@ extern "C" {
 
 #include <vx_internal.h>
 
+#if defined(BUILD_BAM)
+#include "tivx_bam_kernel_wrapper.h"
+#endif
+
 /*!
  * \file
  * \brief Target Kernel implementation APIs
@@ -107,6 +111,14 @@ typedef struct _tivx_target_kernel {
     tivx_target_kernel_f create_func;
     tivx_target_kernel_f delete_func;
     tivx_target_kernel_control_f control_func;
+
+#if defined(BUILD_BAM)
+    tivx_target_kernel_create_in_bam_graph_f   create_in_bam_func;
+    tivx_target_kernel_get_node_port_f         get_node_port_func;
+    tivx_target_kernel_append_internal_edges_f append_internal_edges_func;
+    tivx_target_kernel_f preprocess_func;
+    tivx_target_kernel_f postprocess_func;
+#endif
 
     void *caller_priv_arg;
 

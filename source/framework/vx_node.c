@@ -261,6 +261,49 @@ vx_status tivxNodeSendCommand(vx_node node, uint32_t replicated_node_idx,
     return (status);
 }
 
+vx_status ownNodeKernelInitKernelName(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+
+    tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
+
+    /* alloc obj desc for kernel name */
+    kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_KERNEL_NAME, NULL);
+
+    if(kernel_name_obj_desc!=NULL)
+    {
+        /* set kernel name */
+        tivx_obj_desc_strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
+
+        /* set the number of pipeup buffers */
+        kernel_name_obj_desc->num_pipeup_bufs = node->kernel->num_pipeup_bufs;  // TODO: WHY WAS THIS NEEDED?
+
+        /* associated kernel name object descriptor with node object */
+        node->obj_desc[0]->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
+
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed, unable to alloc obj desc for kernel_name\n");
+        status=VX_FAILURE;
+    }
+    return status;
+}
+
+vx_status ownNodeKernelDeinitKernelName(vx_node node)
+{
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_t *obj_desc = tivxObjDescGet(node->obj_desc[0]->kernel_name_obj_desc_id);
+
+    /* dis associate kernel name obj desc, since it not required anymore,
+     * free object desc
+     */
+    node->obj_desc[0]->kernel_name_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+    status = tivxObjDescFree((tivx_obj_desc_t**)&obj_desc);
+
+    return status;
+}
+
 vx_status ownNodeKernelInit(vx_node node)
 {
     vx_status status = VX_SUCCESS;
@@ -402,55 +445,32 @@ vx_status ownNodeKernelInit(vx_node node)
 
             if (status == VX_SUCCESS)
             {
-                tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
+                obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
 
-                /* alloc obj desc for kernel name */
-                kernel_name_obj_desc = (tivx_obj_desc_kernel_name_t*)tivxObjDescAlloc(TIVX_OBJ_DESC_KERNEL_NAME, NULL);
-
-                if(kernel_name_obj_desc!=NULL)
+                if((vx_true_e == node->is_super_node) ||
+                   (NULL == node->super_node))
                 {
-                    /* set kernel name */
-                    tivx_obj_desc_strncpy(kernel_name_obj_desc->kernel_name, node->kernel->name, VX_MAX_KERNEL_NAME);
-
-                    /* set the number of pipeup buffers */
-                    kernel_name_obj_desc->num_pipeup_bufs = node->kernel->num_pipeup_bufs;
-
-                    /* associated kernel name object descriptor with node object */
-                    node->obj_desc[0]->kernel_name_obj_desc_id = kernel_name_obj_desc->base.obj_desc_id;
-
-                    obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
-
                     status = ownContextSendCmd(node->base.context,
                         node->obj_desc[0]->target_id, TIVX_CMD_NODE_CREATE,
                         1, obj_desc_id);
-
-                    if(status!=VX_SUCCESS)
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
-                    }
-                    /* dis associate kernel name obj desc, since it not required anymore,
-                     * free object desc
-                     */
-                    node->obj_desc[0]->kernel_name_obj_desc_id = TIVX_OBJ_DESC_INVALID;
-                    tivxObjDescFree((tivx_obj_desc_t**)&kernel_name_obj_desc);
-
-                    /* copy the target_kernel_index[] from 0th object descriptor to other object descriptors */
-                    {
-                        uint32_t i;
-
-                        for(i=1; i<node->pipeline_depth; i++)
-                        {
-                            tivx_obj_desc_memcpy(node->obj_desc[i]->target_kernel_index,
-                                node->obj_desc[0]->target_kernel_index,
-                                sizeof(node->obj_desc[i]->target_kernel_index)
-                                );
-                        }
-                    }
                 }
-                else
+
+                if(status!=VX_SUCCESS)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed, unable to alloc obj desc for kernel_name\n");
-                    status=VX_FAILURE;
+                    VX_PRINT(VX_ZONE_ERROR,"Target kernel, TIVX_CMD_NODE_CREATE failed\n");
+                }
+
+                /* copy the target_kernel_index[] from 0th object descriptor to other object descriptors */
+                {
+                    uint32_t i;
+
+                    for(i=1; i<node->pipeline_depth; i++)
+                    {
+                        tivx_obj_desc_memcpy(node->obj_desc[i]->target_kernel_index,
+                            node->obj_desc[0]->target_kernel_index,
+                            sizeof(node->obj_desc[i]->target_kernel_index)
+                            );
+                    }
                 }
             }
         }
@@ -500,7 +520,11 @@ vx_status ownNodeKernelDeinit(vx_node node)
 
             obj_desc_id[0] = node->obj_desc[0]->base.obj_desc_id;
 
-            status = ownContextSendCmd(node->base.context, node->obj_desc[0]->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
+            if((vx_true_e == node->is_super_node) ||
+               (NULL == node->super_node))
+            {
+                status = ownContextSendCmd(node->base.context, node->obj_desc[0]->target_id, TIVX_CMD_NODE_DELETE, 1, obj_desc_id);
+            }
         }
         if(status==VX_SUCCESS)
         {
@@ -783,6 +807,51 @@ vx_status ownNodeAddOutNode(vx_node node, vx_node out_node)
     return status;
 }
 
+vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_out_node)
+{
+    vx_bool is_present = vx_false_e;
+    uint32_t num_out_nodes = node->obj_desc[0]->num_out_nodes;
+    uint16_t old_out_node_id = old_out_node->obj_desc[0]->base.obj_desc_id;
+    uint16_t new_out_node_id = new_out_node->obj_desc[0]->base.obj_desc_id;
+    vx_status status = VX_SUCCESS;
+    uint32_t i, j;
+
+    /* check if new_out_node is already part of output node list associated with this node */
+    for(i=0; i<num_out_nodes; i++)
+    {
+        if(new_out_node_id == node->obj_desc[0]->out_node_id[i])
+        {
+            is_present = vx_true_e;
+            break;
+        }
+    }
+
+    for(i=0; i<num_out_nodes; i++)
+    {
+        if(old_out_node_id == node->obj_desc[0]->out_node_id[i])
+        {
+            if(is_present == vx_false_e)
+            {
+                /* Simply replace existing one */
+                node->obj_desc[0]->out_node_id[i] = new_out_node_id;
+                break;
+            }
+            else
+            {
+                /* Remove old node from the list */
+                for(j=i; j<num_out_nodes-1; j++)
+                {
+                    node->obj_desc[0]->out_node_id[j] = node->obj_desc[0]->out_node_id[j+1];
+                }
+                node->obj_desc[0]->num_out_nodes--;
+                break;
+            }
+        }
+    }
+
+    return status;
+}
+
 vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
 {
     vx_bool is_present = vx_false_e;
@@ -814,6 +883,51 @@ vx_status ownNodeAddInNode(vx_node node, vx_node in_node)
             VX_PRINT(VX_ZONE_ERROR,"ownNodeAddInNode: number of in nodes greater than maximum allowed\n");
             VX_PRINT(VX_ZONE_ERROR, "ownNodeAddOutNode: May need to increase the value of TIVX_NODE_MAX_IN_NODES in tiovx/include/TI/tivx_config.h\n");
             status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+
+    return status;
+}
+
+vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in_node)
+{
+    vx_bool is_present = vx_false_e;
+    uint32_t num_in_nodes = node->obj_desc[0]->num_in_nodes;
+    uint16_t old_in_node_id = old_in_node->obj_desc[0]->base.obj_desc_id;
+    uint16_t new_in_node_id = new_in_node->obj_desc[0]->base.obj_desc_id;
+    vx_status status = VX_SUCCESS;
+    uint32_t i, j;
+
+    /* check if new_in_node is already part of input node list associated with this node */
+    for(i=0; i<num_in_nodes; i++)
+    {
+        if(new_in_node_id == node->obj_desc[0]->in_node_id[i])
+        {
+            is_present = vx_true_e;
+            break;
+        }
+    }
+
+    for(i=0; i<num_in_nodes; i++)
+    {
+        if(old_in_node_id == node->obj_desc[0]->in_node_id[i])
+        {
+            if(is_present == vx_false_e)
+            {
+                /* Simply replace existing one */
+                node->obj_desc[0]->in_node_id[i] = new_in_node_id;
+                break;
+            }
+            else
+            {
+                /* Remove old node from the list */
+                for(j=i; j<num_in_nodes-1; j++)
+                {
+                    node->obj_desc[0]->in_node_id[j] = node->obj_desc[0]->in_node_id[j+1];
+                }
+                node->obj_desc[0]->num_in_nodes--;
+                break;
+            }
         }
     }
 
@@ -1043,6 +1157,8 @@ VX_API_ENTRY vx_node VX_API_CALL vxCreateGenericNode(vx_graph graph, vx_kernel k
                     node->node_completed_app_value = 0;
                     node->node_error_app_value = 0;
                     node->is_enable_send_complete_event = vx_false_e;
+                    node->is_super_node = vx_false_e;
+                    node->super_node = NULL;
 
                     /* assign refernce type specific callback's */
                     node->base.destructor_callback = &ownDestructNode;

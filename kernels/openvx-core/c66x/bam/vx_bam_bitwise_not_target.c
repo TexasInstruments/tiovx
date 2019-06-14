@@ -74,10 +74,12 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxNotParams;
 
 static tivx_target_kernel vx_not_target_kernel = NULL;
 
+/* Standard Callbacks */
 static vx_status VX_CALLBACK tivxKernelNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
@@ -89,6 +91,20 @@ static vx_status VX_CALLBACK tivxKernelNotCreate(
 static vx_status VX_CALLBACK tivxKernelNotDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelNotCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelNotGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
+
 
 static vx_status VX_CALLBACK tivxKernelNotProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -236,7 +252,10 @@ static vx_status VX_CALLBACK tivxKernelNotDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxNotParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -272,6 +291,14 @@ void tivxAddTargetKernelBamNot(void)
             tivxKernelNotDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_not_target_kernel,
+            tivxKernelNotCreateInBamGraph,
+            tivxKernelNotGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -279,4 +306,87 @@ void tivxAddTargetKernelBamNot(void)
 void tivxRemoveTargetKernelBamNot(void)
 {
     tivxRemoveTargetKernel(vx_not_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelNotCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxNotParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_NOT_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxNotParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_NOT_I8U_O8U;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            BAM_VXLIB_not_i8u_o8u_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxNotParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxNotParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelNotGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxNotParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxNotParams) == size))
+    {
+        if(ovx_port == TIVX_KERNEL_NOT_INPUT_IDX)
+        {
+            *bam_node = prms->bam_node_num;
+            *bam_port = BAM_VXLIB_NOT_I8U_O8U_INPUT_IMAGE_PORT;
+        }
+        else if(ovx_port == TIVX_KERNEL_NOT_OUTPUT_IDX)
+        {
+            *bam_node = prms->bam_node_num;
+            *bam_port = BAM_VXLIB_NOT_I8U_O8U_OUTPUT_PORT;
+        }
+    }
+
+    return status;
 }

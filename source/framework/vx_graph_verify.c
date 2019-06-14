@@ -78,12 +78,14 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph);
 static vx_status ownGraphNodeKernelDeinit(vx_graph graph);
 static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
 static vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
+static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node);
 static vx_status ownGraphCalcInAndOutNodes(vx_graph graph);
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
 static vx_status ownGraphAllocateDataObjects(vx_graph graph);
 static vx_status ownGraphCreateNodeCallbackCommands(vx_graph graph);
 static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t index);
 static vx_status ownGraphDetectSourceSink(vx_graph graph);
+static vx_status ownGraphSuperNodeConfigure(vx_graph graph);
 
 /* Add's data reference to a list, increments number of times it is refered as input node */
 static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
@@ -526,6 +528,19 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
     {
         node = graph->nodes[i];
 
+        status = ownNodeKernelInitKernelName(node);
+
+        if(status != VX_SUCCESS )
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Node kernel name init for node at index %d failed\n", i);
+            break;
+        }
+    }
+
+    for(i=0; i<graph->num_nodes; i++)
+    {
+        node = graph->nodes[i];
+
         if(node && node->kernel)
         {
             VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
@@ -541,6 +556,19 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
         if(node && node->kernel)
         {
             VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ... done !!!\n", i, node->kernel->name);
+        }
+    }
+
+    for(i=0; i<graph->num_nodes; i++)
+    {
+        node = graph->nodes[i];
+
+        status = ownNodeKernelDeinitKernelName(node);
+
+        if(status != VX_SUCCESS )
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Node kernel name deinit for node at index %d failed\n", i);
+            break;
         }
     }
 
@@ -771,36 +799,41 @@ static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph)
     {
         node = graph->nodes[i];
 
-        num_in = ownNodeGetNumInNodes(node);
-        num_out = ownNodeGetNumOutNodes(node);
+        if((node->super_node == NULL) ||
+           (node->is_super_node == vx_true_e))
+        {
 
-        if(num_in==0)
-        {
-            if (graph->num_head_nodes >= TIVX_GRAPH_MAX_HEAD_NODES)
+            num_in = ownNodeGetNumInNodes(node);
+            num_out = ownNodeGetNumOutNodes(node);
+
+            if(num_in==0)
             {
-                graph->num_head_nodes = TIVX_GRAPH_MAX_HEAD_NODES;
-                status = VX_ERROR_NO_RESOURCES;
-                VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
-                VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_HEAD_NODES in tiovx/include/TI/tivx_config.h\n");
-                break;
+                if (graph->num_head_nodes >= TIVX_GRAPH_MAX_HEAD_NODES)
+                {
+                    graph->num_head_nodes = TIVX_GRAPH_MAX_HEAD_NODES;
+                    status = VX_ERROR_NO_RESOURCES;
+                    VX_PRINT(VX_ZONE_ERROR,"Maximum number of head nodes (%d) exceeded\n", TIVX_GRAPH_MAX_HEAD_NODES);
+                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_HEAD_NODES in tiovx/include/TI/tivx_config.h\n");
+                    break;
+                }
+                graph->head_nodes[graph->num_head_nodes] = node;
+                graph->num_head_nodes++;
+                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", graph->num_head_nodes);
             }
-            graph->head_nodes[graph->num_head_nodes] = node;
-            graph->num_head_nodes++;
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_HEAD_NODES", graph->num_head_nodes);
-        }
-        if(num_out==0)
-        {
-            if (graph->num_leaf_nodes >= TIVX_GRAPH_MAX_LEAF_NODES)
+            if(num_out==0)
             {
-                graph->num_leaf_nodes = TIVX_GRAPH_MAX_LEAF_NODES;
-                status = VX_ERROR_NO_RESOURCES;
-                VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
-                VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_LEAF_NODES in tiovx/include/TI/tivx_config.h\n");
-                break;
+                if (graph->num_leaf_nodes >= TIVX_GRAPH_MAX_LEAF_NODES)
+                {
+                    graph->num_leaf_nodes = TIVX_GRAPH_MAX_LEAF_NODES;
+                    status = VX_ERROR_NO_RESOURCES;
+                    VX_PRINT(VX_ZONE_ERROR,"Maximum number of leaf nodes (%d) exceeded\n", TIVX_GRAPH_MAX_LEAF_NODES);
+                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcHeadAndLeafNodes: May need to increase the value of TIVX_GRAPH_MAX_LEAF_NODES in tiovx/include/TI/tivx_config.h\n");
+                    break;
+                }
+                graph->leaf_nodes[graph->num_leaf_nodes] = node;
+                graph->num_leaf_nodes++;
+                tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", graph->num_leaf_nodes);
             }
-            graph->leaf_nodes[graph->num_leaf_nodes] = node;
-            graph->num_leaf_nodes++;
-            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_LEAF_NODES", graph->num_leaf_nodes);
         }
     }
 
@@ -1721,6 +1754,423 @@ static vx_status ownGraphNodePipeline(vx_graph graph)
     return status;
 }
 
+/* While we are here, update the graph connection for the run-time processing dependencies */
+/* called during graph verify if there are any super nodes
+ * This function
+ * 1. creates the super node edge_list, and
+ * 2. restructures dependences (inserts super node in place of its nodes in graph dependency list)
+ */
+/* Assumption for this to work: the supernode node instances have 0 parameters */
+static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node)
+{
+    vx_node node_cur, node_next;
+    uint32_t node_cur_idx, node_next_idx, i;
+    uint32_t prm_cur_idx, prm_next_idx;
+    uint32_t prm_cur_dir, prm_next_dir;
+    uint32_t cnt = 0;
+    vx_reference ref1, ref2;
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_super_node_t *obj_desc = (tivx_obj_desc_super_node_t *)super_node->base.obj_desc;;
+    vx_bool found;
+    vx_reference found_external_refs[TIVX_SUPER_NODE_MAX_EDGES];
+    uint32_t num_found_external_refs = 0;
+
+    /* For each node in the graph */
+    for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+    {
+        node_cur = graph->nodes[node_cur_idx];
+
+        /* The ones in the super node */
+        if ((node_cur->super_node == super_node) && (vx_false_e == node_cur->is_super_node))
+        {
+            /* For each parameter */
+            for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
+            {
+                if( node_cur->parameters[prm_cur_idx]->type == VX_TYPE_IMAGE )
+                {
+                    prm_cur_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
+
+                    ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
+
+                    /* Look for dangling or external inputs to the supernode */
+                    if(prm_cur_dir == VX_INPUT)
+                    {
+                        found = vx_false_e;
+
+                        /* for each input, see if it matches any node output data */
+                        for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
+                            node_next_idx!=node_cur_idx;
+                            node_next_idx=(node_next_idx+1)%graph->num_nodes)
+                        {
+                            node_next = graph->nodes[node_next_idx];
+
+                            for(prm_next_idx=0; prm_next_idx < ownNodeGetNumParameters(node_next); prm_next_idx++)
+                            {
+                                prm_next_dir = ownNodeGetParameterDir(node_next, prm_next_idx);
+
+                                ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
+
+                                if(ref2)
+                                {
+                                    if( prm_next_dir == VX_OUTPUT )
+                                    {
+                                        vx_reference parent_ref_node_cur, parent_ref_node_next;
+
+                                        parent_ref_node_cur = NULL;
+                                        parent_ref_node_next = NULL;
+
+                                        if (NULL != ref1)
+                                        {
+                                            if (vx_true_e == ref1->is_array_element)
+                                            {
+                                                parent_ref_node_cur = ref1->scope;
+                                            }
+                                        }
+
+                                        if (NULL != ref2)
+                                        {
+                                            if (vx_true_e == ref2->is_array_element)
+                                            {
+                                                parent_ref_node_next = ref2->scope;
+                                            }
+                                        }
+
+                                        /* check if output data reference of next node is equal to
+                                           input data reference of current */
+                                        if( ownGraphIsRefMatch(graph, ref1, ref2) ||
+                                            ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
+                                            ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
+                                        {
+                                            /* Node to Node edge */
+                                            if(node_next->super_node == super_node)
+                                            {
+                                                /* Edge is internal to super node */
+                                                /* Since we are looking for external edge inputs now, skip this edge for now */
+                                                /* It will be added when we scan supernode node outputs later */
+                                                found = vx_true_e;
+                                            }
+                                            else
+                                            {
+                                                /* Edge is external to super node, we can add edge to edge list */
+
+                                                /* add node_next as output node for super node if not already added */
+                                                status = ownNodeAddInNode(super_node->node, node_next);
+
+                                                if(status == VX_SUCCESS)
+                                                {
+                                                    /* replace super node as input node for next node and remove duplicates */
+                                                    status = ownNodeReplaceOutNode(node_next, node_cur, super_node->node);
+                                                    if (status != VX_SUCCESS)
+                                                    {
+                                                        VX_PRINT(VX_ZONE_ERROR,"Replace super node as another node's output failed\n");
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    VX_PRINT(VX_ZONE_ERROR,"Add in node for super node failed\n");
+                                                }
+                                            }
+
+                                            /* Since we found the producer of this reference, no need to look more */
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (found == vx_false_e)
+                        {
+                            if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
+                            {
+                                /* We found a external input edge */
+                                for(i=0; i<num_found_external_refs; i++)
+                                {
+                                    if( ref1 == found_external_refs[i])
+                                    {
+                                        obj_desc->edge_list[cnt].src_node_prm_idx = i;
+                                        break;
+                                    }
+                                }
+                                if(i > num_found_external_refs)
+                                {
+                                    found_external_refs[num_found_external_refs] = ref1;
+                                    obj_desc->edge_list[cnt].src_node_prm_idx = num_found_external_refs;
+                                    num_found_external_refs++;
+                                }
+
+                                obj_desc->edge_list[cnt].src_node_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+                                obj_desc->edge_list[cnt].dst_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;
+                                obj_desc->edge_list[cnt].dst_node_prm_idx = prm_cur_idx;
+                                cnt++;
+                            }
+                            else
+                            {
+                                status = VX_ERROR_NO_RESOURCES;
+                                VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
+                                VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if ( VX_SUCCESS == status )
+    {
+        num_found_external_refs = 0;
+
+        /* For each node in the graph */
+        for(node_cur_idx=0; node_cur_idx<graph->num_nodes; node_cur_idx++)
+        {
+            node_cur = graph->nodes[node_cur_idx];
+
+            /* The ones in the super node */
+            if ((node_cur->super_node == super_node) && (vx_false_e == node_cur->is_super_node))
+            {
+                /* For each parameter */
+                for(prm_cur_idx=0; prm_cur_idx<ownNodeGetNumParameters(node_cur); prm_cur_idx++)
+                {
+                    if( node_cur->parameters[prm_cur_idx]->type == VX_TYPE_IMAGE )
+                    {
+                        prm_cur_dir = ownNodeGetParameterDir(node_cur, prm_cur_idx);
+
+                        ref1 = ownNodeGetParameterRef(node_cur, prm_cur_idx);
+
+                        if( (prm_cur_dir == VX_OUTPUT) || (prm_cur_dir == VX_BIDIRECTIONAL))
+                        {
+                            found = vx_false_e;
+
+                            /* for each output, see if it matches any node input data */
+                            for(node_next_idx=(node_cur_idx+1)%graph->num_nodes;
+                                node_next_idx!=node_cur_idx;
+                                node_next_idx=(node_next_idx+1)%graph->num_nodes)
+                            {
+                                node_next = graph->nodes[node_next_idx];
+
+                                for(prm_next_idx=0; prm_next_idx < ownNodeGetNumParameters(node_next); prm_next_idx++)
+                                {
+                                    prm_next_dir = ownNodeGetParameterDir(node_next, prm_next_idx);
+
+                                    ref2 = ownNodeGetParameterRef(node_next, prm_next_idx);
+
+                                    if(ref2)
+                                    {
+                                        if( (prm_next_dir == VX_INPUT) || (prm_next_dir == VX_BIDIRECTIONAL) )
+                                        {
+                                            vx_reference parent_ref_node_cur, parent_ref_node_next;
+
+                                            parent_ref_node_cur = NULL;
+                                            parent_ref_node_next = NULL;
+
+                                            if (NULL != ref1)
+                                            {
+                                                if (vx_true_e == ref1->is_array_element)
+                                                {
+                                                    parent_ref_node_cur = ref1->scope;
+                                                }
+                                            }
+
+                                            if (NULL != ref2)
+                                            {
+                                                if (vx_true_e == ref2->is_array_element)
+                                                {
+                                                    parent_ref_node_next = ref2->scope;
+                                                }
+                                            }
+
+                                            /* check if input data reference of next node is equal to
+                                               output data reference of current */
+                                            if( ownGraphIsRefMatch(graph, ref1, ref2) ||
+                                                ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
+                                                ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
+                                            {
+                                                found = vx_true_e;
+
+                                                if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
+                                                {
+                                                    /* Node to Node edge */
+                                                    if(node_next->super_node == super_node)
+                                                    {
+                                                        /* Edge is internal to super node */
+                                                        obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
+                                                        obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
+                                                        obj_desc->edge_list[cnt].dst_node_obj_desc_id = node_next->obj_desc[0]->base.obj_desc_id;
+                                                        obj_desc->edge_list[cnt].dst_node_prm_idx = prm_next_idx;
+                                                        cnt++;
+                                                    }
+                                                    else
+                                                    {
+                                                        /* Edge is external to super node */
+                                                        /* We found a external output edge */
+                                                        for(i=0; i<num_found_external_refs; i++)
+                                                        {
+                                                            if( ref1 == found_external_refs[i])
+                                                            {
+                                                                obj_desc->edge_list[cnt].dst_node_prm_idx = i;
+                                                                break;
+                                                            }
+                                                        }
+                                                        if(i > num_found_external_refs)
+                                                        {
+                                                            found_external_refs[num_found_external_refs] = ref1;
+                                                            obj_desc->edge_list[cnt].dst_node_prm_idx = num_found_external_refs;
+                                                            num_found_external_refs++;
+                                                        }
+
+                                                        obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
+                                                        obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
+                                                        obj_desc->edge_list[cnt].dst_node_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+                                                        cnt++;
+
+                                                        /* add node_next as output node for super node if not already added */
+                                                        status = ownNodeAddOutNode(super_node->node, node_next);
+
+                                                        if(status == VX_SUCCESS)
+                                                        {
+                                                            /* replace super node as input node for next node and remove duplicates */
+                                                            status = ownNodeReplaceInNode(node_next, node_cur, super_node->node);
+                                                            if (status != VX_SUCCESS)
+                                                            {
+                                                                VX_PRINT(VX_ZONE_ERROR,"Replace super node as another node's input failed\n");
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            VX_PRINT(VX_ZONE_ERROR,"Add out node for super node failed\n");
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    status = VX_ERROR_NO_RESOURCES;
+                                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
+                                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            if (found == vx_false_e)
+                            {
+                                if( TIVX_SUPER_NODE_MAX_EDGES > cnt)
+                                {
+                                    /* We found a external output edge */
+                                    for(i=0; i<num_found_external_refs; i++)
+                                    {
+                                        if( ref1 == found_external_refs[i])
+                                        {
+                                            obj_desc->edge_list[cnt].dst_node_prm_idx = i;
+                                            break;
+                                        }
+                                    }
+                                    if(i > num_found_external_refs)
+                                    {
+                                        found_external_refs[num_found_external_refs] = ref1;
+                                        obj_desc->edge_list[cnt].dst_node_prm_idx = num_found_external_refs;
+                                        num_found_external_refs++;
+                                    }
+
+                                    /* We found a dangling output edge */
+                                    obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;
+                                    obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
+                                    obj_desc->edge_list[cnt].dst_node_obj_desc_id = TIVX_OBJ_DESC_INVALID;
+                                    cnt++;
+                                }
+                                else
+                                {
+                                    status = VX_ERROR_NO_RESOURCES;
+                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: number of edges in super node exceeds TIVX_SUPER_NODE_MAX_EDGES\n");
+                                    VX_PRINT(VX_ZONE_ERROR, "ownGraphCalcEdgeList: May need to increase the value of TIVX_SUPER_NODE_MAX_EDGES in tiovx/include/TI/tivx_config.h\n");
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        obj_desc->num_edges = cnt;
+        tivxLogSetResourceUsedValue("TIVX_SUPER_NODE_MAX_EDGES", cnt);
+    }
+
+    return status;
+}
+
+static vx_status ownGraphSuperNodeConfigure(vx_graph graph)
+{
+    uint32_t i, j, cnt, num_nodes_in_supernode;
+    vx_status status = VX_SUCCESS;
+    tivx_super_node super_node;
+    tivx_obj_desc_super_node_t *obj_desc = NULL;
+    tivx_obj_desc_node_t *node_obj_desc = NULL;
+
+    for(i=0; i < graph->num_supernodes; i++)
+    {
+        super_node = graph->supernodes[i];
+        obj_desc = (tivx_obj_desc_super_node_t *)super_node->base.obj_desc;
+        num_nodes_in_supernode = obj_desc->num_nodes;
+
+        cnt = 0;
+
+        /* Copy topological sorted list related to supernode into supernode list */
+        for(j=0; j<graph->num_nodes; j++)
+        {
+            if((vx_false_e == graph->nodes[j]->is_super_node) &&
+               (super_node == graph->nodes[j]->super_node))
+            {
+                node_obj_desc = (tivx_obj_desc_node_t *)graph->nodes[j]->obj_desc[0];
+
+                /* Update both object descriptor and host structure with sorted nodes */
+                obj_desc->node_obj_desc_id[cnt] = node_obj_desc->base.obj_desc_id;
+                super_node->nodes[cnt] = graph->nodes[j];
+                cnt++;
+            }
+        }
+
+        /* Check for number mismatch error */
+        if(num_nodes_in_supernode != cnt)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"Supernode node count not equal to number of nodes in graph associated with supernode\n");
+            status = VX_FAILURE;
+            break;
+        }
+
+        /* Check for continuity for each node in super node */
+        {
+            vx_bool is_continuous;
+
+            ownContextLock(graph->base.context);
+
+            ownGraphCheckContinuityOfSupernode(
+                        &graph->base.context->graph_sort_context,
+                        super_node,
+                        num_nodes_in_supernode,
+                        &is_continuous);
+
+            ownContextUnlock(graph->base.context);
+
+            if(is_continuous == vx_false_e)
+            {
+                VX_PRINT(VX_ZONE_ERROR,"Supernode [%d] is does not have continuity of all nodes within it\n", i);
+                status = VX_FAILURE;
+                break;
+            }
+        }
+
+        cnt = 0;
+
+        /* Create super node edge list and
+         * Update graph node execution dependencies to point to/from supernodes */
+        ownGraphCalcEdgeList(graph, super_node);
+    }
+
+    return status;
+}
+
 VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
 {
     uint32_t i;
@@ -1775,7 +2225,6 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 }
             }
 
-
             if(status == VX_SUCCESS)
             {
                 vx_bool has_cycle;
@@ -1817,6 +2266,13 @@ VX_API_ENTRY vx_status VX_API_CALL vxVerifyGraph(vx_graph graph)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Node kernel Validate failed\n");
                 }
+            }
+
+            if(status == VX_SUCCESS)
+            {
+                /* Configure graph processing to account for any super nodes
+                 */
+                status = ownGraphSuperNodeConfigure(graph);
             }
 
             if(status == VX_SUCCESS)

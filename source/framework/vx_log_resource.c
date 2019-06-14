@@ -84,6 +84,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
         TIVX_GRAPH_MAX_NODES, 0, 0, "TIVX_GRAPH_MAX_NODES"
     },
     {
+        TIVX_GRAPH_MAX_SUPER_NODES, 0, 0, "TIVX_GRAPH_MAX_SUPER_NODES"
+    },
+    {
         TIVX_GRAPH_MAX_PIPELINE_DEPTH, 0, 0, "TIVX_GRAPH_MAX_PIPELINE_DEPTH"
     },
     {
@@ -97,6 +100,9 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_GRAPH_MAX_OBJECTS, 0, 0, "TIVX_GRAPH_MAX_OBJECTS"
+    },
+    {
+        TIVX_SUPER_NODE_MAX_OBJECTS, 0, 0, "TIVX_SUPER_NODE_MAX_OBJECTS"
     },
     {
         TIVX_NODE_MAX_OBJECTS, 0, 0, "TIVX_NODE_MAX_OBJECTS"
@@ -235,6 +241,12 @@ static tivx_resource_stats_t g_tivx_resource_stats_table[] = {
     },
     {
         TIVX_MAX_DSP_BAM_USER_PLUGINS, 0, 0, "TIVX_MAX_DSP_BAM_USER_PLUGINS"
+    },
+    {
+        TIVX_SUPER_NODE_MAX_NODES, 0, 0, "TIVX_SUPER_NODE_MAX_NODES"
+    },
+    {
+        TIVX_SUPER_NODE_MAX_EDGES, 0, 0, "TIVX_SUPER_NODE_MAX_EDGES"
     }
 };
 

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2012-2016 The Khronos Group Inc.
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
@@ -40,6 +40,33 @@ endif
 ifeq ($(HOST_COMPILER),GCC_LINUX_ARM)
 CFLAGS += -Wno-format-truncation
 CFLAGS += -Wno-sizeof-pointer-memaccess
+endif
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64 C66))
+ifeq ($(BUILD_BAM),yes)
+
+DEFS += BUILD_BAM
+
+IDIRS       += $(VXLIB_PATH)/packages \
+               $(ALGFRAMEWORK_PATH)/inc \
+               $(DMAUTILS_PATH)/inc \
+               $(DMAUTILS_PATH) \
+               $(DMAUTILS_PATH)/inc \
+               $(DMAUTILS_PATH)/inc/edma_utils \
+               $(DMAUTILS_PATH)/inc/edma_csl \
+               $(DMAUTILS_PATH)/inc/baseaddress/vayu/dsp \
+               $(EDMA3_LLD_PATH) \
+               $(EDMA3_LLD_PATH)/packages/ti/sdo/edma3/rm \
+               $(EDMA3_LLD_PATH)/packages
+
+DEFS += CORE_DSP CORE_C6XX
+
+ifeq ($(TARGET_CPU), $(filter $(TARGET_CPU), X86 x86_64))
+CFLAGS		+= -D_HOST_BUILD -D_TMS320C6600 -DTMS320C66X -DHOST_EMULATION
+endif
+
+endif
+
 endif
 
 include $(FINALE)

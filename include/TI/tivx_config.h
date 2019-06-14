@@ -99,6 +99,11 @@ extern "C" {
  */
 #define TIVX_GRAPH_MAX_NODES               (32u)
 
+/*! \brief Max possible super nodes in graph
+ * \ingroup group_tivx_obj_desc_cfg
+ */
+#define TIVX_GRAPH_MAX_SUPER_NODES         (8u)
+
 /*! \brief Max possible pipeline depth of a graph
  * \ingroup group_tivx_obj_desc_cfg
  */
@@ -129,6 +134,13 @@ extern "C" {
  * \ingroup group_tivx_obj_cfg
  */
 #define TIVX_GRAPH_MAX_OBJECTS                      (8u)
+
+/*!
+ * \brief Max number super node objects supported
+ *
+ * \ingroup group_tivx_obj_cfg
+ */
+#define TIVX_SUPER_NODE_MAX_OBJECTS                 (16u)
 
 /*!
  * \brief Max number node objects supported
@@ -430,6 +442,17 @@ extern "C" {
  * \ingroup group_tivx_target_cfg
  */
 #define TIVX_MAX_DSP_BAM_USER_PLUGINS   (8u)
+
+/*! \brief Max number of nodes per super node
+ * \ingroup group_tivx_supernode_cfg
+ */
+#define TIVX_SUPER_NODE_MAX_NODES   (16u)
+
+/*! \brief Max number of edges per super node
+ * \ingroup group_tivx_supernode_cfg
+ */
+#define TIVX_SUPER_NODE_MAX_EDGES   (16u)
+
 
 #ifdef __cplusplus
 }

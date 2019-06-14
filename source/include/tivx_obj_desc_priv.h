@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -357,7 +357,44 @@ typedef struct _tivx_obj_desc_graph
 
 } tivx_obj_desc_graph_t;
 
+/*!
+ * \brief Super Node edge object descriptor
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_super_node_edge
+{
+    uint16_t src_node_obj_desc_id;
+    uint16_t src_node_prm_idx;
+    uint16_t dst_node_obj_desc_id;
+    uint16_t dst_node_prm_idx;
 
+} tivx_obj_desc_super_node_edge_t;
+
+
+/*!
+ * \brief Super Node object descriptor
+ *
+ * \ingroup group_tivx_obj_desc_priv
+ */
+typedef struct _tivx_obj_desc_super_node
+{
+    /*! \brief base object descriptor */
+    tivx_obj_desc_t base;
+
+    /*! \brief number of nodes in super node */
+    uint16_t num_nodes;
+
+    /*! \brief topologically sorted list of nodes obj desc's in super node */
+    uint16_t node_obj_desc_id[TIVX_SUPER_NODE_MAX_NODES];
+
+    /*! \brief number of edges in super node sub graph */
+    uint16_t num_edges;
+
+    /*! \brief super node edge list */
+    tivx_obj_desc_super_node_edge_t edge_list[TIVX_SUPER_NODE_MAX_EDGES];
+
+} tivx_obj_desc_super_node_t;
 
 /*!
  * \brief Object Descriptor Shared memory entry which can hold any of the
@@ -387,6 +424,7 @@ typedef union {
     tivx_obj_desc_queue_t obj_desc_queue;
     tivx_obj_desc_data_ref_q_t obj_desc_data_ref_q;
     tivx_obj_desc_graph_t obj_desc_graph;
+    tivx_obj_desc_super_node_t super_node;
 
     uint8_t rsv[TIVX_OBJ_DESC_MAX_SHM_ENTRY_SIZE];
 

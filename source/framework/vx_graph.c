@@ -87,6 +87,14 @@ static vx_status ownDestructGraph(vx_reference ref)
                 tivxDataRefQueueRelease(&graph->delay_data_ref_q_list[i].data_ref_queue);
             }
         }
+
+        for(i=0; i<graph->num_supernodes; i++)
+        {
+            ownReleaseReferenceInt((vx_reference *)&graph->supernodes[i], TIVX_TYPE_SUPER_NODE, VX_INTERNAL, NULL);
+
+            graph->supernodes[i] = NULL;
+        }
+        graph->num_supernodes = 0;
     }
 
     while (graph->num_nodes)
@@ -220,6 +228,36 @@ vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index)
     return status;
 }
 
+vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node)
+{
+    vx_status status = VX_SUCCESS;
+
+    if ((NULL != graph) &&
+        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
+    {
+        if( (graph->num_supernodes < TIVX_GRAPH_MAX_SUPER_NODES) )
+        {
+            ownIncrementReference(&super_node->base, VX_INTERNAL);
+            graph->supernodes[graph->num_supernodes] = super_node;
+            graph->num_supernodes++;
+            ownGraphSetReverify(graph);
+            tivxLogSetResourceUsedValue("TIVX_GRAPH_MAX_SUPER_NODES", graph->num_supernodes);
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR, "ownGraphAddSuperNode: May need to increase the value of TIVX_GRAPH_MAX_SUPER_NODES in tiovx/include/TI/tivx_config.h\n");
+            status = VX_ERROR_NO_RESOURCES;
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "ownGraphAddSuperNode: invalid graph object\n");
+        status = VX_ERROR_INVALID_REFERENCE;
+    }
+
+    return status;
+}
+
 vx_status ownGraphRemoveNode(vx_graph graph, vx_node node)
 {
     vx_status status = VX_FAILURE;
@@ -321,6 +359,7 @@ VX_API_ENTRY vx_graph VX_API_CALL vxCreateGraph(vx_context context)
             graph->num_data_ref = 0;
             graph->num_data_ref_q = 0;
             graph->num_delay_data_ref_q = 0;
+            graph->num_supernodes = 0;
 
 
             ownResetGraphPerf(graph);
@@ -413,7 +452,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxQueryGraph(vx_graph graph, vx_enum attribut
             case VX_GRAPH_NUMNODES:
                 if (VX_CHECK_PARAM(ptr, size, vx_uint32, 0x3U))
                 {
-                    *(vx_uint32 *)ptr = graph->num_nodes;
+                    *(vx_uint32 *)ptr = graph->num_nodes - graph->num_supernodes;
                 }
                 else
                 {

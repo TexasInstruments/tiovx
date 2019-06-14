@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 - 2018 Texas Instruments Incorporated
+* Copyright (c) 2017 - 2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -75,6 +75,7 @@
 #include <TI/tivx_mem.h>
 #include <TI/tivx_tensor.h>
 #include <TI/tivx_ext_raw_image.h>
+#include <TI/tivx_ext_super_node.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -675,7 +676,7 @@ vx_status VX_API_CALL tivxGraphParameterEnqueueReadyRef(vx_graph graph,
  *             should be 0, For a replicated node this is the index
  *             of the replicated node to which the command is targeted.
  *             To send same command to all replicated nodes use
-               TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES
+ *             TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES
  * \param [in] node_cmd_id Node specific control command id, refer to node
  *             specific interface file
  * \param [in,out] ref[] Node parameter,

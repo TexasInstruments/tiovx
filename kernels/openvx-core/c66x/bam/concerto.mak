@@ -8,6 +8,7 @@ CSOURCES    := $(call all-c-files)
 IDIRS       += $(HOST_ROOT)/kernels/include \
                $(HOST_ROOT)/kernels/openvx-core/include \
                $(HOST_ROOT)/kernels/openvx-core/c66x \
+               $(HOST_ROOT)/source/include \
                $(VXLIB_PATH)/packages \
                $(ALGFRAMEWORK_PATH)/inc \
                $(ALGFRAMEWORK_PATH)/src/bam_dma_nodes \
@@ -25,6 +26,7 @@ DEFS += CORE_DSP CORE_C6XX
 
 ifeq ($(BUILD_BAM),yes)
 SKIPBUILD=0
+DEFS += BUILD_BAM
 else
 SKIPBUILD=1
 endif

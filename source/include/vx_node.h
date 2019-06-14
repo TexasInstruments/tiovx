@@ -108,6 +108,12 @@ typedef struct _vx_node {
     /*! \brief Value returned with node error event */
     uint32_t node_error_app_value;
 
+    /*! \brief flag to indicate whether node is a placeholder for a super node */
+    vx_bool is_super_node;
+
+    /*! \brief The pointer to the super node that this node references */
+    tivx_super_node super_node;
+
 } tivx_node_t;
 
 /**
@@ -147,6 +153,15 @@ vx_status ownNodeKernelValidate(vx_node node, vx_meta_format meta[]);
  */
 vx_status ownNodeKernelInit(vx_node node);
 
+/*! \brief Init user kernel or target kernel name associated with this node
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeKernelInitKernelName(vx_node node);
+
+/*! \brief Deinit user kernel or target kernel name associated with this node
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeKernelDeinitKernelName(vx_node node);
 
 /*! \brief Schedule user kernel or target kernel associated with this node
  *         for execution
@@ -190,10 +205,20 @@ vx_reference ownNodeGetParameterRef(vx_node node, uint32_t prm_index);
  */
 vx_status ownNodeAddOutNode(vx_node node, vx_node out_node);
 
+/*! \brief Replace an output node for a given node with a new output node
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeReplaceOutNode(vx_node node, vx_node old_out_node, vx_node new_out_node);
+
 /*! \brief Associate a input node with a given node
  * \ingroup group_vx_node
  */
 vx_status ownNodeAddInNode(vx_node node, vx_node out_node);
+
+/*! \brief Replace an input node for a given node with a new input node
+ * \ingroup group_vx_node
+ */
+vx_status ownNodeReplaceInNode(vx_node node, vx_node old_in_node, vx_node new_in_node);
 
 /*! \brief Get number of input nodes associated with this node
  * \ingroup group_vx_node

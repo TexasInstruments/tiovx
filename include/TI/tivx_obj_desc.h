@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -218,6 +218,10 @@ typedef enum _tivx_obj_desc_type_e {
     /*! \brief Object desciptor that has information related to
         raw image object */
     TIVX_OBJ_DESC_RAW_IMAGE     = 0x13,
+
+    /*! \brief Object desciptor that has information related to
+        super node */
+    TIVX_OBJ_DESC_SUPER_NODE   = 0x14,
 
     /*! \brief Value of a invalid object descriptor */
     TIVX_OBJ_DESC_INVALID       = 0xFFFFu

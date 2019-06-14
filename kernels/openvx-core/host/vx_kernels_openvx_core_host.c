@@ -110,6 +110,7 @@ vx_status tivxAddKernelThreshold(vx_context context);
 vx_status tivxAddKernelWarpAffine(vx_context context);
 vx_status tivxAddKernelWarpPerspective(vx_context context);
 vx_status tivxAddKernelXor(vx_context context);
+vx_status tivxAddKernelSuperNode(vx_context context);
 
 vx_status tivxRemoveKernelAbsdiff(vx_context context);
 vx_status tivxRemoveKernelAccumulate(vx_context context);
@@ -155,6 +156,7 @@ vx_status tivxRemoveKernelThreshold(vx_context context);
 vx_status tivxRemoveKernelWarpAffine(vx_context context);
 vx_status tivxRemoveKernelWarpPerspective(vx_context context);
 vx_status tivxRemoveKernelXor(vx_context context);
+vx_status tivxRemoveKernelSuperNode(vx_context context);
 
 static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelAbsdiff, tivxRemoveKernelAbsdiff},
@@ -200,7 +202,8 @@ static Tivx_Host_Kernel_List  gTivx_host_kernel_list[] = {
     {tivxAddKernelThreshold, tivxRemoveKernelThreshold},
     {tivxAddKernelWarpAffine, tivxRemoveKernelWarpAffine},
     {tivxAddKernelWarpPerspective, tivxRemoveKernelWarpPerspective},
-    {tivxAddKernelXor, tivxRemoveKernelXor}
+    {tivxAddKernelXor, tivxRemoveKernelXor},
+    {tivxAddKernelSuperNode, tivxRemoveKernelSuperNode}
 };
 
 static vx_status VX_CALLBACK publishKernels(vx_context context)

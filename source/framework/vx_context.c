@@ -239,6 +239,9 @@ vx_bool ownAddReferenceToContext(vx_context context, vx_reference ref)
                     case TIVX_TYPE_RAW_IMAGE:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "raw_image_%d", ref_idx);
                         break;
+                    case TIVX_TYPE_SUPER_NODE:
+                        snprintf(name, VX_MAX_REFERENCE_NAME, "super_node_%d", ref_idx);
+                        break;
                     default:
                         snprintf(name, VX_MAX_REFERENCE_NAME, "ref_%d", ref_idx);
                         break;

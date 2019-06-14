@@ -122,6 +122,7 @@ void tivxAddTargetKernelBamThreshold(void);
 void tivxAddTargetKernelWarpAffine(void);
 void tivxAddTargetKernelWarpPerspective(void);
 void tivxAddTargetKernelBamXor(void);
+void tivxAddTargetKernelBamSupernode(void);
 
 void tivxRemoveTargetKernelBamAbsDiff(void);
 void tivxRemoveTargetKernelBamAccumulate(void);
@@ -168,6 +169,7 @@ void tivxRemoveTargetKernelBamThreshold(void);
 void tivxRemoveTargetKernelWarpAffine(void);
 void tivxRemoveTargetKernelWarpPerspective(void);
 void tivxRemoveTargetKernelBamXor(void);
+void tivxRemoveTargetKernelBamSupernode(void);
 
 #else
 

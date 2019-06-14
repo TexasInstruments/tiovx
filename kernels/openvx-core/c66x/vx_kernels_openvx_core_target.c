@@ -113,7 +113,8 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelBamThreshold, tivxRemoveTargetKernelBamThreshold},
     {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
     {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective},
-    {tivxAddTargetKernelBamXor, tivxRemoveTargetKernelBamXor}
+    {tivxAddTargetKernelBamXor, tivxRemoveTargetKernelBamXor},
+    {tivxAddTargetKernelBamSupernode, tivxRemoveTargetKernelBamSupernode}
 };
 
 #else
@@ -162,7 +163,8 @@ static Tivx_Target_Kernel_List gTivx_target_kernel_list[] = {
     {tivxAddTargetKernelThreshold, tivxRemoveTargetKernelThreshold},
     {tivxAddTargetKernelWarpAffine, tivxRemoveTargetKernelWarpAffine},
     {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective},
-    {tivxAddTargetKernelXor, tivxRemoveTargetKernelXor}
+    {tivxAddTargetKernelXor, tivxRemoveTargetKernelXor},
+    {tivxAddTargetKernelWarpPerspective, tivxRemoveTargetKernelWarpPerspective}
 };
 
 #endif

@@ -222,6 +222,12 @@ typedef struct _vx_graph {
     /*! Value returned with graph completion event */
     uint32_t graph_completed_app_value;
 
+    /*! References to supernodes in the graph */
+    tivx_super_node supernodes[TIVX_GRAPH_MAX_SUPER_NODES];
+
+    /*! Number of supernodes in the graph */
+    uint32_t num_supernodes;
+
 } tivx_graph_t;
 
 
@@ -252,6 +258,17 @@ int32_t ownGraphGetFreeNodeIndex(vx_graph graph);
  */
 vx_status ownGraphAddNode(vx_graph graph, vx_node node, int32_t index);
 
+/*! \brief Add's a super node to a graph
+ *
+ * \param graph [in] graph object
+ * \param super_node  [in] the super node to add
+ *
+ * \return VX_SUCCESS, on sucess
+ *
+ * \ingroup group_vx_graph
+ */
+vx_status ownGraphAddSuperNode(vx_graph graph, tivx_super_node super_node);
+
 /*! \brief Remove a node from a graph
  *
  * \param graph [in] graph object
@@ -267,7 +284,7 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
 /*! \brief Perform topological sort of graph nodes
  *
  * \param context   [in] context to use while sorting
- * \param nodes     [in/out] IN: Unosrted node, OUT: Sorted nodes
+ * \param nodes     [in,out] IN: Unsorted node, OUT: Sorted nodes
  * \param num_nodes [in] Number of nodes
  * \param has_cycle [out] vx_true_e: Graph has cycles and cannot be sorted
  *                         vx_false_e: Graph is acyclic and nodes[] contains the sorted nodes
@@ -276,6 +293,17 @@ vx_status ownGraphRemoveNode(vx_graph graph, vx_node node);
  */
 void ownGraphTopologicalSort(tivx_graph_sort_context *context, vx_node *nodes, uint32_t num_nodes, vx_bool *has_cycle);
 
+/*! \brief Perform topological sort of graph nodes
+ *
+ * \param context    [in] context to use while seaching
+ * \param super_node [in] super node
+ * \param num_nodes  [in] Number of nodes
+ * \param has_cycle  [out] vx_true_e: Super node nodes are connected
+ *                         vx_false_e: Super node nodes are not connected
+ *
+ * \ingroup group_vx_graph
+ */
+void ownGraphCheckContinuityOfSupernode(tivx_graph_sort_context *context, tivx_super_node super_node, uint32_t num_nodes, vx_bool *is_continuous);
 
 /*! \brief Mark graph to be reverified
  * \ingroup group_vx_graph

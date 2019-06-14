@@ -104,6 +104,8 @@ vx_status tivxObjectInit(void)
             TIVX_USER_DATA_OBJECT_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isRawImageUse,
             TIVX_RAW_IMAGE_MAX_OBJECTS);
+        ownInitUseFlag(g_tivx_objects.isSuperNodeUse,
+            TIVX_SUPER_NODE_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
         ownInitUseFlag(g_tivx_objects.isDelayUse,
@@ -194,6 +196,12 @@ vx_status tivxObjectDeInit(void)
         if (VX_SUCCESS != status)
         {
             VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is raw image use failed\n");
+        }
+        status = ownCheckUseFlag(g_tivx_objects.isSuperNodeUse,
+            TIVX_SUPER_NODE_MAX_OBJECTS);
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxObjectDeInit: Is super node use failed\n");
         }
         status = ownCheckUseFlag(g_tivx_objects.isConvolutionUse,
             TIVX_CONVOLUTION_MAX_OBJECTS);
@@ -338,6 +346,12 @@ vx_reference tivxObjectAlloc(vx_enum type)
                     (uint8_t *)g_tivx_objects.raw_image, g_tivx_objects.isRawImageUse,
                     TIVX_RAW_IMAGE_MAX_OBJECTS, sizeof(tivx_raw_image_t),
                     "TIVX_RAW_IMAGE_MAX_OBJECTS");
+                break;
+            case TIVX_TYPE_SUPER_NODE:
+                ref = (vx_reference)ownAllocObject(
+                    (uint8_t *)g_tivx_objects.super_node, g_tivx_objects.isSuperNodeUse,
+                    TIVX_SUPER_NODE_MAX_OBJECTS, sizeof(tivx_super_node_t),
+                    "TIVX_SUPER_NODE_MAX_OBJECTS");
                 break;
             case VX_TYPE_CONVOLUTION:
                 ref = (vx_reference)ownAllocObject(
@@ -572,6 +586,16 @@ vx_status tivxObjectFree(vx_reference ref)
                     if (VX_SUCCESS != status)
                     {
                         VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free raw image failed\n");
+                    }
+                    break;
+                case TIVX_TYPE_SUPER_NODE:
+                    status = ownFreeObject((uint8_t *)ref,
+                        (uint8_t *)g_tivx_objects.super_node, g_tivx_objects.isSuperNodeUse,
+                        TIVX_SUPER_NODE_MAX_OBJECTS, sizeof(tivx_super_node_t),
+                        "TIVX_SUPER_NODE_MAX_OBJECTS");
+                    if (VX_SUCCESS != status)
+                    {
+                        VX_PRINT(VX_ZONE_ERROR,"tivxObjectFree: Free super node failed\n");
                     }
                     break;
                 case VX_TYPE_CONVOLUTION:
