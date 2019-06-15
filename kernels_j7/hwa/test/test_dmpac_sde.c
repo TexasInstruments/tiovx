@@ -65,6 +65,91 @@
 #include <TI/j7.h>
 #include "test_engine/test.h"
 #include <string.h>
+#include "tivx_utils_file_rd_wr.h"
+
+#define MAX_ABS_FILENAME (1024)
+
+static vx_status convert_s16_to_u8(vx_context context, vx_image in_image,
+    uint32_t width, uint32_t height, vx_image out_image)
+{
+    vx_status                   status = VX_FAILURE;
+    vx_rectangle_t              rect;
+    vx_imagepatch_addressing_t  in_image_addr;
+    vx_imagepatch_addressing_t  out_image_addr;
+    vx_map_id                   in_map_id;
+    vx_map_id                   out_map_id;
+    uint16_t                   *in_data_ptr;
+    uint8_t                    *out_data_ptr;
+    
+    int                         i;
+
+    rect.start_x = 0;
+    rect.start_y = 0;
+    rect.end_x = width;
+    rect.end_y = height;
+
+    if(NULL != out_image)
+    {
+        status = vxMapImagePatch(in_image,
+            &rect,
+            0,
+            &in_map_id,
+            &in_image_addr,
+            (void**) &in_data_ptr,
+            VX_READ_ONLY,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+
+        status |= vxMapImagePatch(out_image,
+            &rect,
+            0,
+            &out_map_id,
+            &out_image_addr,
+            (void**) &out_data_ptr,
+            VX_READ_AND_WRITE,
+            VX_MEMORY_TYPE_HOST,
+            VX_NOGAP_X
+            );
+
+        if (VX_SUCCESS == status)
+        {
+            for(i = 0; i < width*height; i++)
+            {
+                out_data_ptr[i] = (uint8_t)((in_data_ptr[i] & 0x7FFF) >> 7);
+            }
+        }
+
+        status |= vxUnmapImagePatch(in_image, in_map_id);
+        status |= vxUnmapImagePatch(out_image, out_map_id);
+    }
+
+    return status;
+}
+
+static vx_status load_image_to_sde(vx_image image, char* filename)
+{
+    vx_status status;
+    char full_filename[MAX_ABS_FILENAME];
+
+    snprintf(full_filename, MAX_ABS_FILENAME, "%s/%s",
+        ct_get_test_file_path(), filename);
+
+    status = tivx_utils_load_vximage_from_bmpfile(image, full_filename, vx_false_e);
+    return status;
+}
+
+static vx_status save_image_from_sde(vx_image image)
+{
+    vx_status status;
+    char filename[MAX_ABS_FILENAME];
+
+    snprintf(filename, MAX_ABS_FILENAME, "%s/output.bmp",
+        ct_get_test_file_path());
+
+    status = tivx_utils_save_vximage_to_bmpfile(filename, image);
+    return status;
+}
 
 TESTCASE(tivxHwaDmpacSde, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -487,4 +572,89 @@ TEST_WITH_ARG(tivxHwaDmpacSde, testNegativeGraphProcessing, ArgNegative,
     }
 }
 
-TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, testGraphProcessing, testNegativeGraphProcessing)
+TEST(tivxHwaDmpacSde, testRealGraphProcessing)
+{
+    vx_context context = context_->vx_context_;
+    vx_image left_image = 0, right_image = 0, dst_image = 0, out_image = 0;
+    vx_distribution histogram = 0;
+    tivx_dmpac_sde_params_t params;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node = 0;
+    uint32_t width = 1280;
+    uint32_t height  = 720;
+    int i;
+
+    vx_border_t border;
+    border.mode = VX_BORDER_UNDEFINED;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_SDE))
+    {
+        tivxHwaLoadKernels(context);
+
+        ASSERT_VX_OBJECT(left_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(right_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(dst_image = vxCreateImage(context, width, height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(out_image = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 128, 0, 4096), VX_TYPE_DISTRIBUTION);
+
+        ASSERT_NO_FAILURE(load_image_to_sde(left_image, "left_rect.bmp"));
+        ASSERT_NO_FAILURE(load_image_to_sde(right_image, "right_rect.bmp"));
+
+        memset(&params, 0, sizeof(tivx_dmpac_sde_params_t));
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_sde_params_t",
+                                                            sizeof(tivx_dmpac_sde_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+        params.median_filter_enable = 0;
+        params.disparity_min = 0;
+        params.disparity_max = 1;
+        params.texture_filter_enable = 1;
+        for(i = 0; i < 8; i++) {
+            params.confidence_score_map[i] = i*8;
+        }
+        params.threshold_left_right = 3;
+        params.threshold_texture = 100;
+        params.aggregation_penalty_p1 = 32;
+        params.aggregation_penalty_p2 = 64;
+        params.reduced_range_search_enable = 0;
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_sde_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node = tivxDmpacSdeNode(graph, param_obj, left_image, right_image, dst_image, histogram), VX_TYPE_NODE);
+
+        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_DMPAC_SDE));
+
+        VX_CALL(vxSetNodeAttribute(node, VX_NODE_BORDER, &border, sizeof(border)));
+
+        VX_CALL(vxVerifyGraph(graph));
+        VX_CALL(vxProcessGraph(graph));
+
+        ASSERT_NO_FAILURE(convert_s16_to_u8(context, dst_image, 1280, 720, out_image));
+        ASSERT_NO_FAILURE(save_image_from_sde(out_image));
+
+        VX_CALL(vxReleaseNode(&node));
+        VX_CALL(vxReleaseGraph(&graph));
+
+        ASSERT(node == 0);
+        ASSERT(graph == 0);
+
+        VX_CALL(vxReleaseImage(&dst_image));
+        VX_CALL(vxReleaseImage(&right_image));
+        VX_CALL(vxReleaseImage(&left_image));
+        VX_CALL(vxReleaseImage(&out_image));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+        VX_CALL(vxReleaseDistribution(&histogram));
+
+        ASSERT(dst_image == 0);
+        ASSERT(right_image == 0);
+        ASSERT(left_image == 0);
+        ASSERT(out_image == 0);
+        ASSERT(param_obj == 0);
+        ASSERT(histogram == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+TESTCASE_TESTS(tivxHwaDmpacSde, testNodeCreation, testGraphProcessing, testNegativeGraphProcessing, testRealGraphProcessing)
