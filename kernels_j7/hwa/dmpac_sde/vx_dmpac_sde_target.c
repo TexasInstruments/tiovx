@@ -311,14 +311,14 @@ static vx_status VX_CALLBACK tivxDmpacSdeProcess(
         }
 
 		/* Initialize SDE Input Frame List */
-        inFrmList->frames[SDE_INPUT_REFERENCE_IMG] =
-		    &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
         inFrmList->frames[SDE_INPUT_BASE_IMG] =
             &sde_obj->inFrm[SDE_INPUT_BASE_IMG];
+        inFrmList->frames[SDE_INPUT_REFERENCE_IMG] =
+		    &sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG];
         inFrmList->numFrames = 2U;
-		
-		sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = (uint64_t) left_target_ptr;
-		sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = (uint64_t) right_target_ptr;
+
+		sde_obj->inFrm[SDE_INPUT_BASE_IMG].addr[0] = (uint64_t) left_target_ptr;
+		sde_obj->inFrm[SDE_INPUT_REFERENCE_IMG].addr[0] = (uint64_t) right_target_ptr;
 
         /* Initialize SDE Output Frame List */
         outFrmList->frames[0U] = &sde_obj->outFrm;
@@ -547,9 +547,9 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
 			sdePrms->sdeCfg.confScoreMap[i] = (uint32_t) (params->confidence_score_map[i]);
 		}
 
-        tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_INPUT_REFERENCE_IMG],
-            left_desc);
         tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_INPUT_BASE_IMG],
+            left_desc);
+        tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_INPUT_REFERENCE_IMG],
             right_desc);
         tivxDmpacSdeSetFmt(&sdePrms->inOutImgFmt[SDE_OUTPUT],
             output_desc);
@@ -558,7 +558,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeCreate(
         sdePrms->focoPrms.dir = 0u;
         sdePrms->focoPrms.round = 0u;
 
-        if(sdePrms->inOutImgFmt[SDE_INPUT_REFERENCE_IMG].ccsFormat
+        if(sdePrms->inOutImgFmt[SDE_INPUT_BASE_IMG].ccsFormat
             == FVID2_CCSF_BITS8_PACKED)
         {
             sdePrms->focoPrms.shiftM1 = 4u;
