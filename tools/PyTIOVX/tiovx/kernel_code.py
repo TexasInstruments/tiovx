@@ -587,10 +587,10 @@ class KernelExportCode :
         # assigned descriptors to local variables
         for prm in self.kernel.params :
             if Type.is_scalar_type(prm.type) :
-                self.host_c_code.write_line("%s = (const %s)parameters[%s%s_%s_IDX];" %
+                self.host_c_code.write_line("%s = (%s)parameters[%s%s_%s_IDX];" %
                     (prm.name_lower, Type.get_vx_name(Type.SCALAR), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
             else :
-                self.host_c_code.write_line("%s = (const %s)parameters[%s%s_%s_IDX];" %
+                self.host_c_code.write_line("%s = (%s)parameters[%s%s_%s_IDX];" %
                     (prm.name_lower, Type.get_vx_name(prm.type), self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
         self.host_c_code.write_close_brace()
         self.host_c_code.write_newline()
@@ -815,11 +815,11 @@ class KernelExportCode :
         for prm in self.kernel.params :
             if Type.IMAGE == prm.type:
                 if Direction.INPUT == prm.direction:
-                    self.temp_buffer += ("        prms.in_img[%sU] = (const vx_image)parameters[%s%s_%s_IDX];\n" %
+                    self.temp_buffer += ("        prms.in_img[%sU] = (vx_image)parameters[%s%s_%s_IDX];\n" %
                         (num_input_image, self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                     num_input_image+=1
                 if Direction.OUTPUT == prm.direction:
-                    self.temp_buffer += ("        prms.out_img[%sU] = (const vx_image)parameters[%s%s_%s_IDX];\n" %
+                    self.temp_buffer += ("        prms.out_img[%sU] = (vx_image)parameters[%s%s_%s_IDX];\n" %
                         (num_output_image, self.kernel.enum_str_prefix, self.kernel.name_upper, prm.name_upper) )
                     num_output_image+=1
 
