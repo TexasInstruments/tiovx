@@ -181,14 +181,15 @@ static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_i
 }
 
 static vx_status tivxDisplayAllocChromaBuff(tivxDisplayParams *dispPrms,
-                                            Fvid2_Format *fmt)
+                                            Fvid2_Format *fmt,
+                                            tivx_obj_desc_image_t *obj_desc_img)
 {
     int32_t status = VX_SUCCESS;
     uint32_t cnt;
     void *chroma_target_ptr;
     uint16_t *chroma_ptr;
 
-    if (VX_DF_IMAGE_U16 == fmt->dataFormat)
+    if (VX_DF_IMAGE_U16 == obj_desc_img->format)
     {
         dispPrms->chromaBufSize =
             (fmt->pitch[1] * fmt->height) / 2u;
@@ -391,7 +392,8 @@ static vx_status VX_CALLBACK tivxDisplayCreate(
         if (VX_SUCCESS == status)
         {
             status = tivxDisplayAllocChromaBuff(displayParams,
-                &displayParams->dispParams.pipeCfg.inFmt);
+                &displayParams->dispParams.pipeCfg.inFmt,
+                obj_desc_image);
         }
 
         if (VX_SUCCESS == status)

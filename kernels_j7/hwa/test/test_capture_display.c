@@ -96,17 +96,17 @@ typedef struct {
 #define ADD_DATA_FORMAT(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/dataFormat=VX_DF_IMAGE_U16", __VA_ARGS__, VX_DF_IMAGE_U16))
 #define ADD_IN_WIDTH(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/inWidth=1920", __VA_ARGS__, 1920))
+    CT_EXPAND(nextmacro(testArgName "/inWidth=1920", __VA_ARGS__, 1936))
 #define ADD_IN_HEIGHT(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/inHeight=1080", __VA_ARGS__, 1080))
+    CT_EXPAND(nextmacro(testArgName "/inHeight=1080", __VA_ARGS__, 1100))
 #define ADD_BPP_2(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/bpp=2", __VA_ARGS__, 2))
 #define ADD_BPP_4(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/bpp=4", __VA_ARGS__, 4))
 #define ADD_PITCH_Y(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pitchY=3840", __VA_ARGS__, 3840))
+    CT_EXPAND(nextmacro(testArgName "/pitchY=3840", __VA_ARGS__, 3872))
 #define ADD_PITCH_UV(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/pitchUV=3840", __VA_ARGS__, 3840))
+    CT_EXPAND(nextmacro(testArgName "/pitchUV=3840", __VA_ARGS__, 3872))
 #define ADD_OUT_WIDTH(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/outWidth=1920", __VA_ARGS__, 1920))
 #define ADD_OUT_HEIGHT(testArgName, nextmacro, ...) \
@@ -116,7 +116,7 @@ typedef struct {
 #define ADD_POS_Y(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/posY=0", __VA_ARGS__, 0))
 #define ADD_LOOP_1000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loopCount=1000", __VA_ARGS__, 1000))
+    CT_EXPAND(nextmacro(testArgName "/loopCount=10000", __VA_ARGS__, 10000))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \

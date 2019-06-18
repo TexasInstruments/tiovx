@@ -83,8 +83,8 @@
 
 #define NUM_CHANNELS        (4U)
 
-#define IMAGE_WIDTH         (1920)
-#define IMAGE_HEIGHT        (1080)
+#define IMAGE_WIDTH         (1936)
+#define IMAGE_HEIGHT        (1100)
 #define IMAGE_FORMAT        (VX_DF_IMAGE_U16)
 
 static const vx_char user_data_object_name[] = "tivx_capture_params_t";
@@ -195,7 +195,7 @@ typedef struct {
 } Arg_Capture;
 
 #define CAPTURE_PARAMETERS \
-    CT_GENERATE_PARAMETERS("capture", ARG, 50000, 0)
+    CT_GENERATE_PARAMETERS("capture", ARG, 1000, 0)
 
 TEST_WITH_ARG(tivxHwaCapture, testGraphProcessing, Arg_Capture, CAPTURE_PARAMETERS)
 {
