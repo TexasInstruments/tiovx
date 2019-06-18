@@ -148,6 +148,10 @@ extern "C" {
  */
 #define TIVX_CPU_ID_INVALID         (0xFFFFFFFFu)
 
+
+/*! \brief Max size of target name string */
+#define TIVX_TARGET_MAX_TASK_NAME   (12u)
+
 /*! \brief Command ID for commands that can be send to a target
  * \ingroup group_tivx_target
  */
@@ -231,6 +235,9 @@ typedef struct _tivx_target_create_params
      *         TIVX_TASK_PRI_LOWEST is lowest priority
      */
     uint32_t task_priority;
+    
+    /*! \brief Task name associated with this target */
+    char     task_name[TIVX_TARGET_MAX_TASK_NAME];
 
 } tivx_target_create_params_t;
 

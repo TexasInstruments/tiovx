@@ -100,7 +100,7 @@ extern "C" {
  *
  * \ingroup group_tivx_task
  */
-#define TIVX_MAX_TASK_NAME         (20)
+#define TIVX_MAX_TASK_NAME         (12u)
 
 /*! \brief Entry point of task
  *
@@ -149,6 +149,9 @@ typedef struct _tivx_task_t
 
     /*! \brief private app object */
     void *app_var;
+    
+    /*! \brief Task name */
+    char  task_name[TIVX_MAX_TASK_NAME];
 } tivx_task;
 
 

@@ -385,6 +385,8 @@ vx_status ownGraphAllocForStreaming(vx_graph graph)
             streamingTaskParams.stack_size = TIVX_STREAMING_STACK_SIZE;
             streamingTaskParams.core_affinity = TIVX_TASK_AFFINITY_ANY;
             streamingTaskParams.priority = TIVX_STREAMING_TASK_PRIORITY;
+            strncpy(streamingTaskParams.task_name, "TIVX_STRM", TIVX_MAX_TASK_NAME);
+            streamingTaskParams.task_name[TIVX_MAX_TASK_NAME-1] = 0;
 
             status = tivxEventQueueCreate(&graph->event_queue);
 
