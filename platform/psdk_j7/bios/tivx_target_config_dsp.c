@@ -38,11 +38,15 @@ void tivxPlatformCreateTargets(void)
     vx_enum self_cpu, target_id;
 
     self_cpu = tivxGetSelfCpuId();
+    
+    tivxTargetSetDefaultCreateParams(&target_create_prms);
 
     target_create_prms.task_stack_ptr = gTarget_tskStack;
     target_create_prms.task_stack_size = TIVX_TARGET_DEFAULT_STACK_SIZE;
     target_create_prms.task_core_affinity = TIVX_TASK_AFFINITY_ANY;
     target_create_prms.task_priority = TIVX_TARGET_DEFAULT_TASK_PRIORITY;
+    strncpy(target_create_prms.task_name, "TIVX_CPU",TIVX_TARGET_MAX_TASK_NAME);
+    target_create_prms.task_name[TIVX_TARGET_MAX_TASK_NAME-1] = 0;
 
     switch (self_cpu)
     {
