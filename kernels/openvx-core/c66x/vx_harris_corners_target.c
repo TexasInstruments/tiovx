@@ -349,6 +349,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
             prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->sobel_x)
             {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: sobel_x mem allocation failed\n");
                 status = VX_ERROR_NO_MEMORY;
             }
 
@@ -358,6 +359,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->sobel_y)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: sobel_y mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -377,6 +379,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcs_score)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcs_score mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -390,6 +393,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcs_scratch)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcs_scratch mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -403,6 +407,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcd_sprs)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_sprs mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -416,6 +421,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcd_corners)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_corners mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -429,6 +435,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->hcd_strength)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: hcd_strength mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -451,6 +458,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                         TIVX_MEM_EXTERNAL);
                     if (NULL == prms->nms_scratch)
                     {
+                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_scratch mem allocation failed\n");
                         status = VX_ERROR_NO_MEMORY;
                     }
 
@@ -463,6 +471,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                             TIVX_MEM_EXTERNAL);
                         if (NULL == prms->nms_corners)
                         {
+                            VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_corners mem allocation failed\n");
                             status = VX_ERROR_NO_MEMORY;
                         }
                     }
@@ -476,6 +485,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
                             TIVX_MEM_EXTERNAL);
                         if (NULL == prms->nms_strength)
                         {
+                            VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_strength mem allocation failed\n");
                             status = VX_ERROR_NO_MEMORY;
                         }
                     }
@@ -492,6 +502,7 @@ static vx_status VX_CALLBACK tivxKernelHarrisCCreate(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelHarrisCCreate: nms_strength mem allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
 

@@ -293,6 +293,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL);
             if (NULL == prms->sobel_x)
             {
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: sobel_x mem allocation failed\n");
                 status = VX_ERROR_NO_MEMORY;
             }
 
@@ -302,6 +303,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->sobel_y)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: sobel_y mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -321,6 +323,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->norm = tivxMemAlloc(prms->norm_size, TIVX_MEM_EXTERNAL);
                 if (NULL == prms->norm)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: norm mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -340,6 +343,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->nms_edge)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: nms_edge mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
@@ -352,12 +356,14 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     TIVX_MEM_EXTERNAL);
                 if (NULL == prms->edge_list)
                 {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: edge_list mem allocation failed\n");
                     status = VX_ERROR_NO_MEMORY;
                 }
             }
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: struct mem allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
 
