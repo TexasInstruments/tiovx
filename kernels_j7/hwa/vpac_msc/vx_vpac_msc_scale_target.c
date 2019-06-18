@@ -509,9 +509,9 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         if (NULL != msc_obj)
         {
             in_img_desc = (tivx_obj_desc_image_t *)obj_desc
-                [TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
+                [TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
             out_img_desc = (tivx_obj_desc_image_t *)obj_desc
-                [TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
+                [TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
 
             /* Initialize Msc object */
             msc_obj->inst_obj = inst_obj;
@@ -700,11 +700,11 @@ static vx_status VX_CALLBACK tivxVpacMscScaleProcess(
     if (VX_SUCCESS == status)
     {
         in_img_desc = (tivx_obj_desc_image_t *)obj_desc
-            [TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
+            [TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
         out_img_desc = (tivx_obj_desc_image_t *)obj_desc
-            [TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
+            [TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
         gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc
-            [TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
+            [TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
     }
     else
     {

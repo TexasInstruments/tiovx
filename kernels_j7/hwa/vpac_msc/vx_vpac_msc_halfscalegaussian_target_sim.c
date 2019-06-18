@@ -112,9 +112,9 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianProcess(
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
-        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_GSIZE_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
+        gsize_desc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -251,8 +251,8 @@ static vx_status VX_CALLBACK tivxKernelHalfScaleGaussianCreate(
 
     if (VX_SUCCESS == status)
     {
-        imgIn = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_SRC_IDX];
-        imgOut = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_DST_IDX];
+        imgIn = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
+        imgOut = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxHalfScaleGaussianParams), TIVX_MEM_EXTERNAL);
 

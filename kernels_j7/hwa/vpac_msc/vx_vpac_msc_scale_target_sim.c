@@ -109,13 +109,13 @@ static vx_status VX_CALLBACK tivxKernelScaleProcess(
     uint32_t size;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_SCALE_MAX_PARAMS);
+                TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IN_IMG_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_OUT_IMG_IDX];
-        sc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_SCALE_IN_TYPE_IDX];
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
+        sc = (tivx_obj_desc_scalar_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_TYPE_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -280,12 +280,12 @@ static vx_status VX_CALLBACK tivxKernelScaleCreate(
     tivxScaleParams *prms = NULL;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_SCALE_MAX_PARAMS);
+                TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
-        imgIn = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IN_IMG_IDX];
-        imgOut = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_OUT_IMG_IDX];
+        imgIn = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
+        imgOut = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
 
         prms = tivxMemAlloc(sizeof(tivxScaleParams), TIVX_MEM_EXTERNAL);
 
@@ -333,7 +333,7 @@ static vx_status VX_CALLBACK tivxKernelScaleDelete(
     vx_status status = VX_SUCCESS;
 
     status = tivxCheckNullParams(obj_desc, num_params,
-                TIVX_KERNEL_SCALE_MAX_PARAMS);
+                TIVX_KERNEL_SCALE_IMAGE_MAX_PARAMS);
 
     if (VX_SUCCESS == status)
     {
