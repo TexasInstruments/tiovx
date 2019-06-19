@@ -16,6 +16,10 @@ void tivxRegisterIVisionTargetKernels(void);
 void tivxUnRegisterIVisionTargetKernels(void);
 void tivxRegisterTutorialTargetKernels(void);
 void tivxUnRegisterTutorialTargetKernels(void);
+void tivxRegisterCaptureTargetArmKernels(void);
+void tivxUnRegisterCaptureTargetArmKernels(void);
+void tivxRegisterTestKernelsTargetC66Kernels(void);
+void tivxUnRegisterTestKernelsTargetC66Kernels(void);
 
 void tivxInit(void)
 {
@@ -41,6 +45,16 @@ void tivxInit(void)
     #endif
 #endif
 
+#ifdef BUILD_CONFORMANCE_TEST
+#if defined (C66)
+    tivxRegisterCaptureTargetArmKernels();
+#endif
+
+#if defined (C66)
+    tivxRegisterTestKernelsTargetC66Kernels();
+#endif
+#endif
+
     /* Note: eventually register HWA kernels here (deferring for now) */
 
     tivxObjDescInit();
@@ -60,6 +74,16 @@ void tivxDeInit(void)
     #ifdef BUILD_TUTORIAL
     tivxUnRegisterTutorialTargetKernels();
     #endif
+#endif
+
+#ifdef BUILD_CONFORMANCE_TEST
+#if defined (C66)
+    tivxUnRegisterCaptureTargetArmKernels();
+#endif
+
+#if defined (C66)
+    tivxUnRegisterTestKernelsTargetC66Kernels();
+#endif
 #endif
 
     /* Note: may need to run tivxHwaUnLoadKernels or something similar */
