@@ -74,6 +74,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxAbsDiffParams;
 
 static tivx_target_kernel vx_absdiff_target_kernel = NULL;
@@ -89,6 +90,17 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
 static vx_status VX_CALLBACK tivxKernelAbsDiffDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelAbsDiffCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelAbsDiffGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
 
 static vx_status VX_CALLBACK tivxKernelAbsDiffProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -328,6 +340,14 @@ void tivxAddTargetKernelBamAbsDiff(void)
             tivxKernelAbsDiffDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_absdiff_target_kernel,
+            tivxKernelAbsDiffCreateInBamGraph,
+            tivxKernelAbsDiffGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -335,4 +355,110 @@ void tivxAddTargetKernelBamAbsDiff(void)
 void tivxRemoveTargetKernelBamAbsDiff(void)
 {
     tivxRemoveTargetKernel(vx_absdiff_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelAbsDiffCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_image_t *dst;
+    tivxAbsDiffParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_ABSDIFF_MAX_PARAMS);
+
+    dst = (tivx_obj_desc_image_t *)obj_desc[
+        TIVX_KERNEL_ABSDIFF_OUT_IDX];
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxAbsDiffParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxAbsDiffParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if (dst->format == VX_DF_IMAGE_U8)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ABSDIFF_I8U_I8U_O8U;
+                BAM_VXLIB_absDiff_i8u_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ABSDIFF_I16S_I16S_O16S;
+                BAM_VXLIB_absDiff_i16s_i16s_o16s_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxAbsDiffParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxAbsDiffParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelAbsDiffGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxAbsDiffParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxAbsDiffParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_ABSDIFF_IN1_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                //*bam_port = BAM_VXLIB_ABSDIFF_I16S_I16S_O16S_INPUT0_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_ABSDIFF_IN2_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                //*bam_port = BAM_VXLIB_ABSDIFF_I16S_I16S_O16S_INPUT1_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_ABSDIFF_OUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_ABSDIFF_I8U_I8U_O8U_OUTPUT_PORT;
+                //*bam_port = BAM_VXLIB_ABSDIFF_I16S_I16S_O16S_OUTPUT_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

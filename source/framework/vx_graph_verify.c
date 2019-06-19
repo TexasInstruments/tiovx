@@ -2008,21 +2008,19 @@ static vx_status ownGraphCalcEdgeList(vx_graph graph, tivx_super_node super_node
                                                         {
                                                             if( ref1 == found_external_refs[i])
                                                             {
-                                                                obj_desc->edge_list[cnt].dst_node_prm_idx = i;
                                                                 break;
                                                             }
                                                         }
                                                         if(i > num_found_external_refs)
                                                         {
                                                             found_external_refs[num_found_external_refs] = ref1;
+                                                            obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
+                                                            obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
+                                                            obj_desc->edge_list[cnt].dst_node_obj_desc_id = TIVX_OBJ_DESC_INVALID;
                                                             obj_desc->edge_list[cnt].dst_node_prm_idx = num_found_external_refs;
+                                                            cnt++;
                                                             num_found_external_refs++;
                                                         }
-
-                                                        obj_desc->edge_list[cnt].src_node_obj_desc_id = node_cur->obj_desc[0]->base.obj_desc_id;;
-                                                        obj_desc->edge_list[cnt].src_node_prm_idx = prm_cur_idx;
-                                                        obj_desc->edge_list[cnt].dst_node_obj_desc_id = TIVX_OBJ_DESC_INVALID;
-                                                        cnt++;
 
                                                         /* add node_next as output node for super node if not already added */
                                                         status = ownNodeAddOutNode(super_node->node, node_next);

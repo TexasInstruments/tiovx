@@ -75,6 +75,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxBoxParams;
 
 static tivx_target_kernel vx_box_target_kernel = NULL;
@@ -90,6 +91,18 @@ static vx_status VX_CALLBACK tivxKernelBox3X3Create(
 static vx_status VX_CALLBACK tivxKernelBox3X3Delete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelBoxCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelBoxGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxKernelBox3X3Process(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -107,8 +120,7 @@ static vx_status VX_CALLBACK tivxKernelBox3X3Process(
     if (VX_SUCCESS == status)
     {
         src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_BOX3X3_INPUT_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[
-            TIVX_KERNEL_BOX3X3_OUTPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_BOX3X3_OUTPUT_IDX];
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -277,6 +289,14 @@ void tivxAddTargetKernelBamBox3X3(void)
             tivxKernelBox3X3Delete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_box_target_kernel,
+            tivxKernelBoxCreateInBamGraph,
+            tivxKernelBoxGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -285,3 +305,91 @@ void tivxRemoveTargetKernelBamBox3X3(void)
 {
     tivxRemoveTargetKernel(vx_box_target_kernel);
 }
+
+static vx_status VX_CALLBACK tivxKernelBoxCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxBoxParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_BOX3X3_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxBoxParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxBoxParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_BOX_3X3_I8U_O8U;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            BAM_VXLIB_box_3x3_i8u_o8u_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxBoxParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxBoxParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelBoxGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxBoxParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxBoxParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_BOX3X3_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_BOX_3X3_I8U_O8U_INPUT_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_BOX3X3_OUTPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_BOX_3X3_I8U_O8U_OUTPUT_IMAGE_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
+}
+

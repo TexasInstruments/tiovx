@@ -433,7 +433,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                                 break;
                             }
                         }
-
+                        // TODO: take this out after testing
                         if (0 == found)
                         {
                             /* Add unique sink edge to parameter list */

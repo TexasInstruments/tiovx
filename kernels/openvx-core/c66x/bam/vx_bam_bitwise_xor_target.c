@@ -74,6 +74,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxXorParams;
 
 static tivx_target_kernel vx_xor_target_kernel = NULL;
@@ -89,6 +90,18 @@ static vx_status VX_CALLBACK tivxKernelXorCreate(
 static vx_status VX_CALLBACK tivxKernelXorDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelXorCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelXorGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxKernelXorProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -281,6 +294,14 @@ void tivxAddTargetKernelBamXor(void)
             tivxKernelXorDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_xor_target_kernel,
+            tivxKernelXorCreateInBamGraph,
+            tivxKernelXorGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -289,3 +310,95 @@ void tivxRemoveTargetKernelBamXor(void)
 {
     tivxRemoveTargetKernel(vx_xor_target_kernel);
 }
+
+static vx_status VX_CALLBACK tivxKernelXorCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxXorParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_XOR_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxXorParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxXorParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_XOR_I8U_I8U_O8U;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            BAM_VXLIB_xor_i8u_i8u_o8u_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxXorParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxXorParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelXorGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxXorParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxXorParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_XOR_IN1_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_XOR_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_XOR_IN2_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_XOR_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_XOR_OUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_XOR_I8U_I8U_O8U_OUTPUT_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
+}
+
