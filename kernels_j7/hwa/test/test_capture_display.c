@@ -71,7 +71,10 @@
 #include <utils/ipc/include/app_ipc.h>
 
 
-#define MAX_NUM_BUF  8
+#define MAX_NUM_BUF                         (8u)
+
+#define NUM_CAPT_CHANNELS                   (4u)
+#define CHANNEL_SWITCH_FRAME_COUNT          (300u)
 
 TESTCASE(tivxHwaCaptureDisplay, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -116,7 +119,7 @@ typedef struct {
 #define ADD_POS_Y(testArgName, nextmacro, ...) \
     CT_EXPAND(nextmacro(testArgName "/posY=0", __VA_ARGS__, 0))
 #define ADD_LOOP_1000(testArgName, nextmacro, ...) \
-    CT_EXPAND(nextmacro(testArgName "/loopCount=10000", __VA_ARGS__, 10000))
+    CT_EXPAND(nextmacro(testArgName "/loopCount=1000", __VA_ARGS__, 1000))
 
 #define PARAMETERS \
     CT_GENERATE_PARAMETERS("Display Node", ADD_PIPE, ADD_DATA_FORMAT, ADD_IN_WIDTH, ADD_IN_HEIGHT, ADD_BPP_2, ADD_PITCH_Y, ADD_PITCH_UV, ADD_OUT_WIDTH, ADD_OUT_HEIGHT, ADD_POS_X, ADD_POS_Y, ADD_LOOP_1000, ARG), \
@@ -152,10 +155,13 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
     vx_node displayNode = 0, captureNode = 0;
     vx_user_data_object capture_param_obj;
     tivx_capture_params_t capture_params;
-    uint32_t num_refs, buf_id, num_buf, num_channels=1, loop_id;
+    uint32_t num_refs, buf_id, num_buf, num_channels=NUM_CAPT_CHANNELS, loop_id;
     uint32_t loop_count = arg_->loopCount;
     vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[1];
     AppSensorCmdParams cmdPrms;
+    vx_reference refs[1];
+    vx_user_data_object switch_ch_obj;
+    tivx_display_select_channel_params_t channel_prms;
 
     if ((vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DISPLAY1)) &&
         (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_CAPTURE1)))
@@ -207,6 +213,15 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
 
         VX_CALL(vxSetNodeTarget(displayNode, VX_TARGET_STRING, TIVX_TARGET_DISPLAY1));
 
+        /* Create User Data object for channel switching */
+        channel_prms.active_channel_id = 0;
+        ASSERT_VX_OBJECT(switch_ch_obj = vxCreateUserDataObject(context,
+            "tivx_display_select_channel_params_t",
+            sizeof(tivx_display_select_channel_params_t), &channel_prms),
+            (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        refs[0] = (vx_reference)switch_ch_obj;
+
         /* Frame is parameter number 1 for Capture Node and becomes graph parameter 0 */
         add_graph_parameter_by_node_index(graph, captureNode, 1);
 
@@ -230,14 +245,13 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         for(buf_id=0; buf_id<num_buf-2; buf_id++)
         {
             tivxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[buf_id], 1, TIVX_GRAPH_PARAMETER_ENQUEUE_FLAG_PIPEUP);
-            printf("Q %p \n", frames[buf_id]);
         }
 
         /* After pipe up, now enqueue a buffer to trigger graph scheduling */
         vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frames[num_buf-2], 1);
 
         /* After first trigger, configure and start the sensor */
-        cmdPrms.numSensors = 1;
+        cmdPrms.numSensors = num_channels;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, appRemoteServiceRun(APP_IPC_CPU_MCU2_1,
             APP_REMOTE_SERVICE_SENSOR_NAME,
             APP_REMOTE_SERVICE_SENSOR_CMD_CONFIG_IMX390, &cmdPrms, sizeof(cmdPrms), 0));
@@ -256,6 +270,17 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
             /* Recycles dequeued input and output refs */
             /* input and output can be enqueued in any order */
             vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&frame, 1);
+
+            if (0 == (loop_id % CHANNEL_SWITCH_FRAME_COUNT))
+            {
+                channel_prms.active_channel_id =
+                    (channel_prms.active_channel_id + 1) % num_channels;
+                VX_CALL(vxCopyUserDataObject(switch_ch_obj, 0,
+                    sizeof(tivx_display_select_channel_params_t),
+                    &channel_prms, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+                VX_CALL(tivxNodeSendCommand(displayNode, 0,
+                    TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL, refs, 1u));
+            }
         }
 
         /* ensure all graph processing is complete */
@@ -266,6 +291,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseUserDataObject(&display_param_obj));
         VX_CALL(vxReleaseUserDataObject(&capture_param_obj));
+        VX_CALL(vxReleaseUserDataObject(&switch_ch_obj));
         for(buf_id=0; buf_id<num_buf; buf_id++)
         {
             VX_CALL(vxReleaseObjectArray(&frames[buf_id]));
@@ -276,6 +302,7 @@ TEST_WITH_ARG(tivxHwaCaptureDisplay, testCaptureDisplayLoopback1, Arg, PARAMETER
         ASSERT(graph == 0);
         ASSERT(display_param_obj == 0);
         ASSERT(capture_param_obj == 0);
+        ASSERT(switch_ch_obj == 0);
 
         tivxHwaUnLoadKernels(context);
     }

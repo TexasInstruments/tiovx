@@ -112,6 +112,9 @@ typedef struct
     uint32_t chromaBufSize;
     /**< Size of the chroma buffer */
     tivx_shared_mem_ptr_t chroma_mem_ptr;
+
+    /**< Id of active channel */
+    uint32_t active_channel;
 } tivxDisplayParams;
 
 static tivx_target_kernel vx_display_target_kernel1 = NULL;
@@ -136,6 +139,49 @@ static uint32_t tivxDisplayGetPipeType(uint32_t drvId);
 static int32_t tivxDisplayGetImageSize(tivx_obj_desc_image_t *obj_desc_image,
                                        uint32_t *copySize0,
                                        uint32_t *copySize1);
+
+
+static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
+    tivx_obj_desc_user_data_object_t *usr_data_obj)
+{
+    vx_status                             status = VX_SUCCESS;
+    tivx_display_select_channel_params_t *ch_prms = NULL;
+    void                                 *target_ptr;
+
+    if (NULL != usr_data_obj)
+    {
+        target_ptr = tivxMemShared2TargetPtr(
+            usr_data_obj->mem_ptr.shared_ptr,
+            usr_data_obj->mem_ptr.mem_heap_region);
+
+        tivxMemBufferMap(target_ptr, usr_data_obj->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+        if (sizeof(tivx_display_select_channel_params_t) ==
+                usr_data_obj->mem_size)
+        {
+            ch_prms = (tivx_vpac_msc_input_params_t *)target_ptr;
+            dispPrms->active_channel = ch_prms->active_channel_id;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDisplaySwitchChannel: Invalid Size \n");
+            status = VX_ERROR_INVALID_PARAMETERS;
+        }
+
+        tivxMemBufferUnmap(target_ptr, usr_data_obj->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxDisplaySwitchChannel: User Data Object is NULL \n");
+        status = VX_ERROR_INVALID_PARAMETERS;
+    }
+
+    return (status);
+}
 
 static vx_status tivxDisplayExtractFvid2Format(tivx_obj_desc_image_t *obj_desc_img,
                                                Fvid2_Format *format)
@@ -574,6 +620,58 @@ static vx_status VX_CALLBACK tivxDisplayDelete(
     return status;
 }
 
+static vx_status VX_CALLBACK tivxDisplayControl(
+       tivx_target_kernel_instance kernel,
+       uint32_t node_cmd_id, tivx_obj_desc_t *obj_desc[],
+       uint16_t num_params, void *priv_arg)
+{
+    vx_status            status = VX_SUCCESS;
+    uint32_t             size;
+    tivxDisplayParams   *dispPrms = NULL;
+
+    if (VX_SUCCESS == status)
+    {
+        status = tivxGetTargetKernelInstanceContext(kernel,
+            (void **)&dispPrms, &size);
+
+        if (VX_SUCCESS != status)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDisplayControl: Failed to Get Target Kernel Instance Context\n");
+        }
+        else if ((NULL == dispPrms) ||
+            (sizeof(tivxDisplayParams) != size))
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxDisplayControl: Invalid Object Size\n");
+            status = VX_FAILURE;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        switch (node_cmd_id)
+        {
+            case TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL:
+            {
+                status = tivxDisplaySwitchChannel(dispPrms,
+                    (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
+                break;
+            }
+            default:
+            {
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxDisplayControl: Invalid Command Id\n");
+                status = VX_FAILURE;
+                break;
+            }
+        }
+    }
+
+    return (status);
+}
+
+
 static vx_status VX_CALLBACK tivxDisplayProcess(
        tivx_target_kernel_instance kernel,
        tivx_obj_desc_t *obj_desc[],
@@ -586,6 +684,8 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
     uint32_t size;
     Fvid2_FrameList frmList;
     Fvid2_Frame *frm;
+    tivx_obj_desc_object_array_t *parent_obj_desc;
+    uint32_t active_channel;
 
     if((num_params != TIVX_KERNEL_DISPLAY_MAX_PARAMS) ||
        (NULL == obj_desc[TIVX_KERNEL_DISPLAY_CONFIGURATION_IDX]) ||
@@ -610,18 +710,33 @@ static vx_status VX_CALLBACK tivxDisplayProcess(
 
     if(VX_SUCCESS == status)
     {
+        active_channel = displayParams->active_channel;
         if(obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->type==TIVX_OBJ_DESC_OBJARRAY)
         {
             tivx_obj_desc_object_array_t *obj_desc_obj_array;
 
             obj_desc_obj_array = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
 
-            tivxGetObjDescList(&obj_desc_obj_array->obj_desc_id[0], (tivx_obj_desc_t**)&obj_desc_image, 1);
+            tivxGetObjDescList(&obj_desc_obj_array->obj_desc_id[active_channel], (tivx_obj_desc_t**)&obj_desc_image, 1);
         }
         else
         {
-            obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+            if (TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id)
+            {
+                tivxGetObjDescList(
+                    &obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX]->scope_obj_desc_id,
+                    (tivx_obj_desc_t**)&parent_obj_desc, 1);
+
+                tivxGetObjDescList(
+                    &parent_obj_desc->obj_desc_id[active_channel],
+                    (tivx_obj_desc_t**)&obj_desc_image, 1);
+            }
+            else
+            {
+                obj_desc_image = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_DISPLAY_INPUT_IMAGE_IDX];
+            }
         }
+
         image_target_ptr1 = tivxMemShared2TargetPtr(obj_desc_image->mem_ptr[0].shared_ptr,
                                                     obj_desc_image->mem_ptr[0].mem_heap_region);
         if(VX_DF_IMAGE_NV12 == obj_desc_image->format)
@@ -837,7 +952,7 @@ void tivxAddTargetKernelDisplay()
                             tivxDisplayProcess,
                             tivxDisplayCreate,
                             tivxDisplayDelete,
-                            NULL,
+                            tivxDisplayControl,
                             NULL);
 
         strncpy(target_name, TIVX_TARGET_DISPLAY2,
@@ -849,7 +964,7 @@ void tivxAddTargetKernelDisplay()
                             tivxDisplayProcess,
                             tivxDisplayCreate,
                             tivxDisplayDelete,
-                            NULL,
+                            tivxDisplayControl,
                             NULL);
     }
 }

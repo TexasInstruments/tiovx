@@ -69,6 +69,35 @@
 extern "C" {
 #endif
 
+
+/*! \brief Channels parameters for selecting channel to be displayed.
+ *         Passed as an argument to #TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL
+ *         control command.
+ *
+ */
+typedef struct
+{
+    uint32_t                   active_channel_id;
+    /**< Id of the active channel to be displayed */
+} tivx_display_select_channel_params_t;
+
+/*! \brief Control Command to select the channel to be displayed.
+ *
+ *          The display node can only display one of the input channels.
+ *          In case, input is obeject array, there could be frames from
+ *          multiple channels. In this case, this control command is used
+ *          to select the channels to be displayed.
+ *          This cmd can be called at runtime, provided all channels are
+ *          exactly same in format, size, storage format etc..
+ *
+ *         This control command uses pointer to structure
+ *         tivx_display_select_channel_params_t as an input argument.
+ *
+ *  \ingroup group_vision_function_vpac_msc
+ */
+#define TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL       (0x30000000u)
+
+
 /*! \brief [Graph] Creates a DOF visualization node Node.
  * \param [in] graph The reference to the graph.
  * \param [in] flow_vector Flow vector output from dmpac_dof node
