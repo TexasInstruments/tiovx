@@ -81,6 +81,7 @@ TESTCASE(tivxHwaVpacMscPyramid)
 TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureDisplay)
+TESTCASE(tivxHwaCaptureVissDisplay)
 #endif
 
 #endif
