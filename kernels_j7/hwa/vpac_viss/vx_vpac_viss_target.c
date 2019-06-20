@@ -153,6 +153,17 @@ void tivxAddTargetKernelVpacViss(void)
     {
         memset(&gTivxVpacVissInstObj, 0x0, sizeof(tivxVpacVissInstObj));
 
+        status = tivxMutexCreate(&gTivxVpacVissInstObj.lock);
+
+        if (VX_SUCCESS != status)
+        {
+        VX_PRINT(VX_ZONE_ERROR,
+            "tivxAddTargetKernelVpacViss: Failed to Allocate lock \n");
+        }
+    }
+
+    if (status == VX_SUCCESS)
+    {
         vx_vpac_viss_target_kernel = tivxAddTargetKernelByName(
                             TIVX_KERNEL_VPAC_VISS_NAME,
                             target_name,
@@ -167,6 +178,11 @@ void tivxAddTargetKernelVpacViss(void)
 void tivxRemoveTargetKernelVpacViss(void)
 {
     vx_status status = VX_SUCCESS;
+
+    if (NULL != gTivxVpacVissInstObj.lock)
+    {
+        tivxMutexDelete(&gTivxVpacVissInstObj.lock);
+    }
 
     status = tivxRemoveTargetKernel(vx_vpac_viss_target_kernel);
     if (status == VX_SUCCESS)
@@ -212,19 +228,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
     }
     else
     {
-        /* Note: should this be moved to the register? */
-        status = tivxMutexCreate(&gTivxVpacVissInstObj.lock);
-
-        /* Allocate memory for VISS object */
-        if (VX_SUCCESS == status)
-        {
-            vissObj = tivxVpacVissAllocObject(&gTivxVpacVissInstObj);
-        }
-        else
-        {
-            VX_PRINT(VX_ZONE_ERROR,
-                "tivxVpacVissCreate: Failed to allocate mutex\n");
-        }
+        vissObj = tivxVpacVissAllocObject(&gTivxVpacVissInstObj);
 
         if (NULL != vissObj)
         {
@@ -537,11 +541,6 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             }
 
             tivxVpacVissFreeObject(&gTivxVpacVissInstObj, vissObj);
-
-            if (NULL != gTivxVpacVissInstObj.lock)
-            {
-                tivxMutexDelete(&gTivxVpacVissInstObj.lock);
-            }
         }
     }
 
@@ -600,11 +599,6 @@ static vx_status VX_CALLBACK tivxVpacVissDelete(
             }
 
             tivxVpacVissFreeObject(&gTivxVpacVissInstObj, vissObj);
-
-            if (NULL != gTivxVpacVissInstObj.lock)
-            {
-                tivxMutexDelete(&gTivxVpacVissInstObj.lock);
-            }
         }
     }
 
