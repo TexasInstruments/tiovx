@@ -367,7 +367,14 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                         }
                         else
                         {
-                            params[i] = NULL;
+                            /* this is not part of a array element,
+                             * pass thru params[] = prm_obj_desc_id[]
+                             * set parent_obj_desc as NULL
+                             * reset bit in is_prm_array_element
+                             * */
+                            params[i] = tivxObjDescGet(prm_obj_desc_id[i]);
+                            parent_obj_desc[i] = NULL;
+                            tivxFlagBitClear(&is_prm_array_element, 1<<i);
                         }
                     }
                 }
