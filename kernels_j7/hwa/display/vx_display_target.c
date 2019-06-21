@@ -160,7 +160,7 @@ static vx_status tivxDisplaySwitchChannel(tivxDisplayParams *dispPrms,
         if (sizeof(tivx_display_select_channel_params_t) ==
                 usr_data_obj->mem_size)
         {
-            ch_prms = (tivx_vpac_msc_input_params_t *)target_ptr;
+            ch_prms = (tivx_display_select_channel_params_t *)target_ptr;
             dispPrms->active_channel = ch_prms->active_channel_id;
         }
         else
