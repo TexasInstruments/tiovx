@@ -74,6 +74,8 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
+    uint8_t switch_buffers;
 } tivxAddParams;
 
 static tivx_target_kernel vx_subtract_target_kernel = NULL;
@@ -89,6 +91,18 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreate(
 static vx_status VX_CALLBACK tivxKernelSubtractDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelSubtractGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxKernelSubtractProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -351,7 +365,10 @@ static vx_status VX_CALLBACK tivxKernelSubtractDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxAddParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -387,6 +404,14 @@ void tivxAddTargetKernelBamSubtract(void)
             tivxKernelSubtractDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_subtract_target_kernel,
+            tivxKernelSubtractCreateInBamGraph,
+            tivxKernelSubtractGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -394,4 +419,189 @@ void tivxAddTargetKernelBamSubtract(void)
 void tivxRemoveTargetKernelBamSubtract(void)
 {
     tivxRemoveTargetKernel(vx_subtract_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxAddParams *prms = NULL;
+    tivx_obj_desc_image_t *src0, *src1, *dst;
+    tivx_obj_desc_scalar_t *sc_desc;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_ADDSUB_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        src0 = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_ADDSUB_IN1_IDX];
+        src1 = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_ADDSUB_IN2_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_ADDSUB_OUT_IDX];
+        sc_desc = (tivx_obj_desc_scalar_t *)
+            obj_desc[TIVX_KERNEL_ADDSUB_POLICY_IDX];
+
+        prms = tivxMemAlloc(sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxAddParams));
+            prms->switch_buffers = 0;
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if (dst->format == VX_DF_IMAGE_U8)
+            {
+                BAM_VXLIB_subtract_i8u_i8u_o8u_params kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I8U_O8U;
+
+                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                {
+                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                }
+                else
+                {
+                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                }
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+
+                BAM_VXLIB_subtract_i8u_i8u_o8u_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if (src0->format == VX_DF_IMAGE_U8 && 
+                     src1->format == VX_DF_IMAGE_U8)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I8U_O16S;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_subtract_i8u_i8u_o16s_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if (src0->format == VX_DF_IMAGE_S16 && 
+                     src1->format == VX_DF_IMAGE_S16)
+            {
+                BAM_VXLIB_subtract_i16s_i16s_o16s_params kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I16S_I16S_O16S;
+
+                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                {
+                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                }
+                else
+                {
+                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                }
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+
+                BAM_VXLIB_subtract_i16s_i16s_o16s_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                BAM_VXLIB_subtract_i8u_i16s_o16s_params kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I16S_O16S;
+
+                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                {
+                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                }
+                else
+                {
+                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                }
+                kernel_params.subtract_policy = 0;
+                
+                
+                if (src0->format == VX_DF_IMAGE_S16 && 
+                    src1->format == VX_DF_IMAGE_U8)
+                {
+                    kernel_params.subtract_policy = 1;
+                    prms->switch_buffers = 1;
+                }
+                
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+                BAM_VXLIB_subtract_i8u_i16s_o16s_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxAddParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelSubtractGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxAddParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxAddParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_ADDSUB_IN1_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_SUBTRACT_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                if (prms->switch_buffers)
+                {
+                    *bam_port = BAM_VXLIB_SUBTRACT_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                }
+                break;
+            case TIVX_KERNEL_ADDSUB_IN2_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_SUBTRACT_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                if (prms->switch_buffers)
+                {
+                    *bam_port = BAM_VXLIB_SUBTRACT_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                }
+                break;
+            case TIVX_KERNEL_ADDSUB_OUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_SUBTRACT_I8U_I8U_O8U_OUTPUT_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

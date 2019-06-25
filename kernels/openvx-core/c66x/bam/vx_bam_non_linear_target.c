@@ -73,6 +73,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxNonLinearFiltParams;
 
 static tivx_target_kernel vx_lut_target_kernel = NULL;
@@ -88,6 +89,18 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterCreate(
 static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelNonLinearFilterGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -293,7 +306,10 @@ static vx_status VX_CALLBACK tivxBamKernelNonLinearFilterDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxNonLinearFiltParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -329,6 +345,14 @@ void tivxAddTargetKernelBamNonLinearFilter(void)
             tivxBamKernelNonLinearFilterDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_lut_target_kernel,
+            tivxKernelNonLinearFilterCreateInBamGraph,
+            tivxKernelNonLinearFilterGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -336,4 +360,153 @@ void tivxAddTargetKernelBamNonLinearFilter(void)
 void tivxRemoveTargetKernelBamNonLinearFilter(void)
 {
     tivxRemoveTargetKernel(vx_lut_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxNonLinearFiltParams *prms = NULL;
+    tivx_obj_desc_matrix_t *mask;
+    tivx_obj_desc_scalar_t *function_desc;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_NON_LINEAR_FILTER_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        void *mask_target_ptr;
+
+        mask = (tivx_obj_desc_matrix_t *)obj_desc[
+            TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
+        function_desc = (tivx_obj_desc_scalar_t *)obj_desc[
+            TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
+
+        mask_target_ptr = tivxMemShared2TargetPtr(
+            mask->mem_ptr.shared_ptr, mask->mem_ptr.mem_heap_region);
+
+        tivxMemBufferMap(mask_target_ptr, mask->mem_size,
+            VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+
+        prms = tivxMemAlloc(sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxNonLinearFiltParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+
+            if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
+            {
+                BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ERODE_MXN_I8U_I8U_O8U;
+
+                kernel_params.mask_addr = mask_target_ptr;
+                kernel_params.mask.dim_x    = mask->columns;
+                kernel_params.mask.dim_y    = mask->rows;
+                kernel_params.mask.stride_y = mask->columns;
+                kernel_params.mask.data_type = VXLIB_UINT8;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+                BAM_VXLIB_erode_MxN_i8u_i8u_o8u_getKernelInfo(&kernel_params,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
+            {
+                BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_DILATE_MXN_I8U_I8U_O8U;
+
+                kernel_params.mask_addr = mask_target_ptr;
+                kernel_params.mask.dim_x    = mask->columns;
+                kernel_params.mask.dim_y    = mask->rows;
+                kernel_params.mask.stride_y = mask->columns;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+                BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_getKernelInfo(&kernel_params, 
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                BAM_VXLIB_median_MxN_i8u_i8u_o8u_params kernel_params;
+
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U;
+
+                kernel_params.mask_addr = mask_target_ptr;
+                kernel_params.mask.dim_x    = mask->columns;
+                kernel_params.mask.dim_y    = mask->rows;
+                kernel_params.mask.stride_y = mask->columns;
+                kernel_params.scratch_size  = mask->columns * mask->rows *
+                    2 * sizeof(int64_t);
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+                BAM_VXLIB_median_MxN_i8u_i8u_o8u_getKernelInfo(&kernel_params, 
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxNonLinearFiltParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxNonLinearFiltParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelNonLinearFilterGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxNonLinearFiltParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxNonLinearFiltParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_ERODE_MXN_I8U_I8U_O8U_INPUT_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_ERODE_MXN_I8U_I8U_O8U_OUTPUT_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

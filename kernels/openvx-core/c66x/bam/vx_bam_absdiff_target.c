@@ -195,7 +195,7 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffCreate(
     else
     {
         if ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN1_IDX]) ||
-            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN2_IDX]) &&
+            ((NULL == obj_desc[TIVX_KERNEL_ABSDIFF_IN2_IDX]) ||
              (NULL == obj_desc[TIVX_KERNEL_ABSDIFF_OUT_IDX])))
         {
             status = VX_ERROR_NO_MEMORY;
@@ -304,7 +304,10 @@ static vx_status VX_CALLBACK tivxKernelAbsDiffDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxAbsDiffParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxAbsDiffParams), TIVX_MEM_EXTERNAL);
         }
     }

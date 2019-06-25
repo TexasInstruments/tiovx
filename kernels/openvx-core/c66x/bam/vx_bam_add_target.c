@@ -75,13 +75,10 @@ typedef struct
 {
     tivx_bam_graph_handle graph_handle;
     uint8_t bam_node_num;
+    uint8_t switch_buffers;
 } tivxAddParams;
 
 static tivx_target_kernel vx_add_target_kernel = NULL;
-
-static vx_status VX_CALLBACK tivxKernelAddPreprocess(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg);
 
 static vx_status VX_CALLBACK tivxKernelAddProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -106,77 +103,6 @@ static vx_status VX_CALLBACK tivxKernelAddGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
     uint8_t *bam_node, uint8_t *bam_port);
 
-static vx_status VX_CALLBACK tivxKernelAddPreprocess(
-    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
-    uint16_t num_params, void *priv_arg)
-{
-    vx_status status = VX_SUCCESS;
-    tivxAddParams *prms = NULL;
-    tivx_obj_desc_image_t *src0, *src1, *dst;
-    uint8_t *src0_addr, *src1_addr, *dst_addr;
-    uint32_t size;
-
-    status = tivxCheckNullParams(obj_desc, num_params,
-            TIVX_KERNEL_ADDSUB_MAX_PARAMS);
-
-    if (VX_SUCCESS == status)
-    {
-        src0 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN1_IDX];
-        src1 = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_IN2_IDX];
-        dst = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_ADDSUB_OUT_IDX];
-
-        status = tivxGetTargetKernelInstanceContext(kernel,
-            (void **)&prms, &size);
-
-        if ((VX_SUCCESS != status) || (NULL == prms) ||
-            (sizeof(tivxAddParams) != size))
-        {
-            status = VX_FAILURE;
-        }
-    }
-
-    if (VX_SUCCESS == status)
-    {
-        void *img_ptrs[3];
-        void *src0_target_ptr;
-        void *src1_target_ptr;
-        void *dst_target_ptr;
-
-        src0_target_ptr = tivxMemShared2TargetPtr(
-            src0->mem_ptr[0].shared_ptr, src0->mem_ptr[0].mem_heap_region);
-
-        src1_target_ptr = tivxMemShared2TargetPtr(
-            src1->mem_ptr[0].shared_ptr, src1->mem_ptr[0].mem_heap_region);
-
-        tivxSetTwoPointerLocation(src0, src1, &src0_target_ptr, &src1_target_ptr, &src0_addr, &src1_addr);
-
-        dst_target_ptr = tivxMemShared2TargetPtr(
-            dst->mem_ptr[0].shared_ptr, dst->mem_ptr[0].mem_heap_region);
-        tivxSetPointerLocation(dst, &dst_target_ptr, &dst_addr);
-
-        if ((VX_DF_IMAGE_S16 == src0->format) &&
-            (VX_DF_IMAGE_U8 == src1->format) &&
-            (VX_DF_IMAGE_S16 == dst->format))
-        {
-            img_ptrs[0] = src1_addr;
-            img_ptrs[1] = src0_addr;
-        }
-        else
-        {
-            img_ptrs[0] = src0_addr;
-            img_ptrs[1] = src1_addr;
-        }
-
-        img_ptrs[2] = dst_addr;
-        tivxBamUpdatePointers(prms->graph_handle, 2U, 1U, img_ptrs);
-    }
-    else
-    {
-        status = VX_ERROR_NO_MEMORY;
-    }
-
-    return (status);
-}
 
 static vx_status VX_CALLBACK tivxKernelAddProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -435,7 +361,10 @@ static vx_status VX_CALLBACK tivxKernelAddDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxAddParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxAddParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -476,7 +405,7 @@ void tivxAddTargetKernelBamAdd(void)
             tivxKernelAddCreateInBamGraph,
             tivxKernelAddGetNodePort,
             NULL,
-            tivxKernelAddPreprocess,
+            NULL,
             NULL,
             NULL);
     }
@@ -520,6 +449,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
         if (NULL != prms)
         {
             memset(prms, 0, sizeof(tivxAddParams));
+            prms->switch_buffers = 0;
 
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelArgs = NULL;
@@ -590,8 +520,12 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
                     kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
                 }
                 kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-
+                
+                if (src0->format == VX_DF_IMAGE_S16 && 
+                    src1->format == VX_DF_IMAGE_U8)
+                {
+                    prms->switch_buffers = 1;
+                }
                 BAM_VXLIB_add_i8u_i16s_o16s_getKernelInfo(NULL,
                 &kernel_details[*bam_node_cnt].kernel_info);
             }
@@ -637,10 +571,18 @@ static vx_status VX_CALLBACK tivxKernelAddGetNodePort(
             case TIVX_KERNEL_ADDSUB_IN1_IDX:
                 *bam_node = prms->bam_node_num;
                 *bam_port = BAM_VXLIB_ADD_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                if (prms->switch_buffers)
+                {
+                    *bam_port = BAM_VXLIB_ADD_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                }
                 break;
             case TIVX_KERNEL_ADDSUB_IN2_IDX:
                 *bam_node = prms->bam_node_num;
                 *bam_port = BAM_VXLIB_ADD_I8U_I8U_O8U_INPUT1_IMAGE_PORT;
+                if (prms->switch_buffers)
+                {
+                    *bam_port = BAM_VXLIB_ADD_I8U_I8U_O8U_INPUT0_IMAGE_PORT;
+                }
                 break;
             case TIVX_KERNEL_ADDSUB_OUT_IDX:
                 *bam_node = prms->bam_node_num;

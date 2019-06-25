@@ -75,6 +75,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxHistogramParams;
 
 static tivx_target_kernel vx_histogram_target_kernel = NULL;
@@ -90,6 +91,18 @@ static vx_status VX_CALLBACK tivxKernelHistogramCreate(
 static vx_status VX_CALLBACK tivxKernelHistogramDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelHistogramGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxKernelHistogramProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -242,7 +255,10 @@ static vx_status VX_CALLBACK tivxKernelHistogramDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxHistogramParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -278,6 +294,14 @@ void tivxAddTargetKernelBamHistogram(void)
             tivxKernelHistogramDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_histogram_target_kernel,
+            tivxKernelHistogramCreateInBamGraph,
+            tivxKernelHistogramGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -285,4 +309,97 @@ void tivxAddTargetKernelBamHistogram(void)
 void tivxRemoveTargetKernelBamHistogram(void)
 {
     tivxRemoveTargetKernel(vx_histogram_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelHistogramCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivx_obj_desc_distribution_t *dist;
+    tivxHistogramParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_HISTOGRAM_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        dist = (tivx_obj_desc_distribution_t *)obj_desc[
+            TIVX_KERNEL_HISTOGRAM_DISTRIBUTION_IDX];
+
+        prms = tivxMemAlloc(sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            BAM_VXLIB_histogram_i8u_o32u_params kernel_params;
+
+            memset(prms, 0, sizeof(tivxHistogramParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_HISTOGRAM_I8U_O32U;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            kernel_params.offset          = dist->offset;
+            kernel_params.range           = dist->range;
+            kernel_params.numBins         = dist->num_bins;
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+
+            BAM_VXLIB_histogram_i8u_o32u_getKernelInfo(&kernel_params,
+                &kernel_details[*bam_node_cnt].kernel_info);
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxHistogramParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxHistogramParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelHistogramGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxHistogramParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxHistogramParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_HISTOGRAM_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_HISTOGRAM_I8U_O32U_INPUT_IMAGE_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

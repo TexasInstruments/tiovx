@@ -74,6 +74,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxMagnitudeParams;
 
 static tivx_target_kernel vx_bam_magnitude_target_kernel = NULL;
@@ -89,6 +90,18 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeCreate(
 static vx_status VX_CALLBACK tivxBamKernelMagnitudeDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelMagnitudeCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelMagnitudeGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxBamKernelMagnitudeProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -247,7 +260,10 @@ static vx_status VX_CALLBACK tivxBamKernelMagnitudeDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMagnitudeParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxMagnitudeParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -283,6 +299,14 @@ void tivxAddTargetKernelBamMagnitude(void)
             tivxBamKernelMagnitudeDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_bam_magnitude_target_kernel,
+            tivxKernelMagnitudeCreateInBamGraph,
+            tivxKernelMagnitudeGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -292,3 +316,93 @@ void tivxRemoveTargetKernelBamMagnitude(void)
     tivxRemoveTargetKernel(vx_bam_magnitude_target_kernel);
 }
 
+static vx_status VX_CALLBACK tivxKernelMagnitudeCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxMagnitudeParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_MAGNITUDE_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxMagnitudeParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxMagnitudeParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MAGNITUDE_I16S_I16S_O16S;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            BAM_VXLIB_magnitude_i16s_i16s_o16s_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxMagnitudeParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxMagnitudeParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelMagnitudeGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxMagnitudeParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxMagnitudeParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_INPUT0_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_INPUT1_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_MAGNITUDE_MAG_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_MAGNITUDE_I16S_I16S_O16S_OUTPUT_IMAGE_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
+}

@@ -75,6 +75,8 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
+    uint8_t switch_buffers;
 } tivxSobelParams;
 
 static tivx_target_kernel vx_sobel_target_kernel = NULL;
@@ -90,6 +92,18 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
 static vx_status VX_CALLBACK tivxKernelSobelDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch);
+
+static vx_status VX_CALLBACK tivxKernelSobelGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
 
 static vx_status VX_CALLBACK tivxKernelSobelProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -353,7 +367,10 @@ static vx_status VX_CALLBACK tivxKernelSobelDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxSobelParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -389,6 +406,14 @@ void tivxAddTargetKernelBamSobel3x3(void)
             tivxKernelSobelDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_sobel_target_kernel,
+            tivxKernelSobelCreateInBamGraph,
+            tivxKernelSobelGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            NULL);
     }
 }
 
@@ -396,4 +421,134 @@ void tivxAddTargetKernelBamSobel3x3(void)
 void tivxRemoveTargetKernelBamSobel3x3(void)
 {
     tivxRemoveTargetKernel(vx_sobel_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxSobelParams *prms = NULL;
+    tivx_obj_desc_image_t *dstx, *dsty;
+
+    /* Check number of buffers and NULL pointers */
+    if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
+    {
+        status = VX_FAILURE;
+    }
+    else
+    {
+        if ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_INPUT_IDX]) ||
+            ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX]) &&
+             (NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX])))
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        dstx = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
+        dsty = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
+
+        prms = tivxMemAlloc(sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxSobelParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            if ((dstx != NULL) && (dsty != NULL))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBEL_3X3_I8U_O16S_O16S;
+
+                BAM_VXLIB_sobel_3x3_i8u_o16s_o16s_getKernelInfo( NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if (dstx != NULL)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBELX_3X3_I8U_O16S;
+
+                BAM_VXLIB_sobelX_3x3_i8u_o16s_getKernelInfo( NULL,
+                                                             &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SOBELY_3X3_I8U_O16S;
+
+                BAM_VXLIB_sobelY_3x3_i8u_o16s_getKernelInfo( NULL,
+                                                             &kernel_details[*bam_node_cnt].kernel_info);
+                prms->switch_buffers = 1;
+            }
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxSobelParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxSobelParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelSobelGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxSobelParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxSobelParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_SOBEL3X3_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_INPUT_IMAGE_PORT;
+                break;
+            case TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT;
+                break;
+            case TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_Y_PORT;
+                if (prms->switch_buffers) {
+                    *bam_port = BAM_VXLIB_SOBEL_3X3_I8U_O16S_O16S_OUTPUT_X_PORT;
+                }
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

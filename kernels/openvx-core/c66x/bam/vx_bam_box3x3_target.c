@@ -253,7 +253,10 @@ static vx_status VX_CALLBACK tivxKernelBox3X3Delete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxBoxParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxBoxParams), TIVX_MEM_EXTERNAL);
         }
     }
