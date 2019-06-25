@@ -485,7 +485,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         else
         {
             inst_obj = NULL;
-            for (cnt = 0u; cnt < VHWA_M2M_MSC_MAX_INST; cnt ++)
+            for (cnt = 0u; cnt < TIVX_VPAC_MSC_SCALE_NUM_INST; cnt ++)
             {
                 if (target_kernel == gTivxVpacMscScaleInstObj[cnt].target_kernel)
                 {
