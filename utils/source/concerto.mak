@@ -18,7 +18,7 @@ endif
 endif
 endif
 
-CSOURCES += tivx_utils_bmp_rd_wr.c
+CSOURCES += tivx_utils_bmp_rd_wr.c tivx_utils_graph_perf.c
 
 IDIRS += $(TIOVX_PATH)/utils/include
 IDIRS += $(TIOVX_PATH)/conformance_tests

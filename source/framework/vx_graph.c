@@ -886,3 +886,46 @@ void ownSetGraphState(vx_graph graph, uint32_t pipeline_id, vx_enum state)
     }
 }
 
+vx_node tivxGraphGetNode(vx_graph graph, uint32_t index)
+{
+    vx_node node = NULL;
+
+    if ((NULL != graph) &&
+        (ownIsValidSpecificReference(&graph->base, VX_TYPE_GRAPH) == vx_true_e) )
+    {
+        if(vxIsGraphVerified(graph))
+        {
+            if( (index < TIVX_GRAPH_MAX_NODES) && (index < graph->num_nodes) )
+            {
+                node = graph->nodes[index];
+
+                if(ownIsValidSpecificReference(&node->base, VX_TYPE_NODE) == vx_true_e)
+                {
+                    /* valid node return it */
+                }
+                else
+                {
+                    node = NULL;
+                    VX_PRINT(VX_ZONE_ERROR, "invalid node object @ index %d\n", index);
+                }
+            }
+            else
+            {
+                node = NULL;
+                VX_PRINT(VX_ZONE_ERROR, "node index %d not valid\n", index);
+            }
+        }
+        else
+        {
+            node = NULL;
+            VX_PRINT(VX_ZONE_ERROR, "graph not verified\n");
+        }
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "invalid graph object\n");
+        node = NULL;
+    }
+
+    return node;
+}

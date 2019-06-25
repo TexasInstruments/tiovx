@@ -685,6 +685,22 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
     uint32_t replicate_nodex_idx, uint32_t node_cmd_id,
     vx_reference ref[], uint32_t num_refs);
 
+
+/*!
+ * \brief This API is used to get a reference to a node within a graph at a given index within the graph
+ *
+ *        Use vxQueryGraph with attribute VX_GRAPH_NUMNODES to get number of nodes within a graph.
+ *        This API can be called only on a verified graph.
+ *        Node returned by this API is not reference counted and should not be released by the user.
+ *
+ * \param graph [in] graph handle
+ * \param index [in] node index, value from 0 .. value returned by vxQueryGraph(VX_GRAPH_NUMNODES) - 1
+ *
+ * \return vx_node in case of success, else NULL
+ */
+vx_node tivxGraphGetNode(vx_graph graph, uint32_t index);
+
+
 #ifdef __cplusplus
 }
 #endif
