@@ -109,6 +109,8 @@ typedef struct
     /**< flag indicating raw capture */
     Csirx_InstStatus captStatus;
     /**< CSIRX Capture status. */
+
+    Csirx_DPhyCfg dphyCfg;
 } tivxCaptureParams;
 
 static tivx_target_kernel vx_capture_target_kernel1 = NULL;
@@ -616,6 +618,19 @@ static vx_status VX_CALLBACK tivxCaptureCreate(
             {
                 VX_PRINT(VX_ZONE_ERROR, ": Capture Create Failed!!!\r\n");
                 status = prms->createStatus.retVal;
+            }
+            else
+            {
+                /* Set CSIRX D-PHY configuration parameters */
+                Csirx_initDPhyCfg(&prms->dphyCfg);
+                prms->dphyCfg.inst = prms->instId;
+                status = Fvid2_control(
+                    prms->drvHandle, IOCTL_CSIRX_SET_DPHY_CONFIG,
+                    &prms->dphyCfg, NULL);
+                if (VX_SUCCESS != status)
+                {
+                    VX_PRINT(VX_ZONE_ERROR, ": Failed to set PHY Parameters!!!\r\n");
+                }
             }
         }
 
