@@ -117,10 +117,10 @@ static vx_status VX_CALLBACK tivxAddKernelConvertDepthValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
-        policy = (const vx_scalar)parameters[TIVX_KERNEL_CONVERT_DEPTH_POLICY_IDX];
-        shift = (const vx_scalar)parameters[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
+        policy = (vx_scalar)parameters[TIVX_KERNEL_CONVERT_DEPTH_POLICY_IDX];
+        shift = (vx_scalar)parameters[TIVX_KERNEL_CONVERT_DEPTH_SHIFT_IDX];
     }
 
 
@@ -275,8 +275,8 @@ static vx_status VX_CALLBACK tivxAddKernelConvertDepthInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_CONVERT_DEPTH_OUTPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;

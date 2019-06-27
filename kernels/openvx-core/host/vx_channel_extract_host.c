@@ -116,9 +116,9 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
-        channel = (const vx_scalar)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
+        channel = (vx_scalar)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_CHANNEL_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
     }
 
 
@@ -288,8 +288,8 @@ static vx_status VX_CALLBACK tivxAddKernelChannelExtractInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_EXTRACT_OUTPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;

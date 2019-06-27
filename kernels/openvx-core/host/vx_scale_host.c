@@ -114,9 +114,9 @@ static vx_status VX_CALLBACK tivxAddKernelScaleValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        src = (const vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
-        dst = (const vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
-        type = (const vx_scalar)parameters[TIVX_KERNEL_SCALE_IMAGE_TYPE_IDX];
+        src = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
+        dst = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
+        type = (vx_scalar)parameters[TIVX_KERNEL_SCALE_IMAGE_TYPE_IDX];
     }
 
 
@@ -262,8 +262,8 @@ static vx_status VX_CALLBACK tivxAddKernelScaleInitialize(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        src = (const vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
-        dst = (const vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
+        src = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_SRC_IDX];
+        dst = (vx_image)parameters[TIVX_KERNEL_SCALE_IMAGE_DST_IDX];
     }
 
     if (VX_SUCCESS == status)

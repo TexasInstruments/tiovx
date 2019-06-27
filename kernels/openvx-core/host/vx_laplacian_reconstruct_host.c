@@ -122,9 +122,9 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructValidate(vx_node n
 
     if (VX_SUCCESS == status)
     {
-        laplacian = (const vx_pyramid)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_LAPLACIAN_IDX];
-        input = (const vx_image)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_INPUT_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX];
+        laplacian = (vx_pyramid)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_LAPLACIAN_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_INPUT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_OUTPUT_IDX];
     }
 
 
@@ -287,7 +287,7 @@ static vx_status VX_CALLBACK tivxAddKernelLaplacianReconstructInitialize(vx_node
 
     if (VX_SUCCESS == status)
     {
-        laplacian = (const vx_pyramid)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_LAPLACIAN_IDX];
+        laplacian = (vx_pyramid)parameters[TIVX_KERNEL_LAPLACIAN_RECONSTRUCT_LAPLACIAN_IDX];
     }
 
     if (VX_SUCCESS == status)

@@ -124,11 +124,11 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        plane0 = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
-        plane1 = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
-        plane2 = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
-        plane3 = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE3_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
+        plane0 = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
+        plane1 = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
+        plane2 = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
+        plane3 = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE3_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
     }
 
 
@@ -370,22 +370,22 @@ static vx_status VX_CALLBACK tivxAddKernelChannelCombineInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
-        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE0_IDX];
+        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE1_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_OUTPUT_IDX];
 
         prms.num_input_images = 2U;
         prms.num_output_images = 1U;
 
         if (NULL != parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX])
         {
-            prms.in_img[prms.num_input_images] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
+            prms.in_img[prms.num_input_images] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
             prms.num_input_images++;
         }
 
         if (NULL != parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE3_IDX])
         {
-            prms.in_img[prms.num_input_images] = (const vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
+            prms.in_img[prms.num_input_images] = (vx_image)parameters[TIVX_KERNEL_CHANNEL_COMBINE_PLANE2_IDX];
             prms.num_input_images++;
         }
 

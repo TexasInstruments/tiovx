@@ -118,10 +118,10 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_INPUT_IDX];
-        matrix = (const vx_matrix)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_MATRIX_IDX];
-        type = (const vx_scalar)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_TYPE_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_INPUT_IDX];
+        matrix = (vx_matrix)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_MATRIX_IDX];
+        type = (vx_scalar)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_TYPE_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX];
     }
 
 
@@ -262,7 +262,7 @@ static vx_status VX_CALLBACK tivxAddKernelWarpPerspectiveInitialize(vx_node node
 
     if (VX_SUCCESS == status)
     {
-        output = (const vx_image)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_WARP_PERSPECTIVE_OUTPUT_IDX];
     }
 
     if (VX_SUCCESS == status)

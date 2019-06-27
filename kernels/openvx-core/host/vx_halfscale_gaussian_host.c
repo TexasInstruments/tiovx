@@ -112,9 +112,9 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianValidate(vx_node node
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
-        kernel_size = (const vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_INPUT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_OUTPUT_IDX];
+        kernel_size = (vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
     }
 
 
@@ -241,7 +241,7 @@ static vx_status VX_CALLBACK tivxAddKernelHalfscaleGaussianInitialize(vx_node no
 
     if (VX_SUCCESS == status)
     {
-        kernel_size = (const vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
+        kernel_size = (vx_scalar)parameters[TIVX_KERNEL_HALFSCALE_GAUSSIAN_KERNEL_SIZE_IDX];
     }
 
     if (VX_SUCCESS == status)

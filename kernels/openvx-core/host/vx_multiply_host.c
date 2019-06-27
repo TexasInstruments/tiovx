@@ -128,12 +128,12 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        in1 = (const vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN1_IDX];
-        in2 = (const vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN2_IDX];
-        scale = (const vx_scalar)parameters[TIVX_KERNEL_MULTIPLY_SCALE_IDX];
-        overflow_policy = (const vx_scalar)parameters[TIVX_KERNEL_MULTIPLY_OVERFLOW_POLICY_IDX];
-        rounding_policy = (const vx_scalar)parameters[TIVX_KERNEL_MULTIPLY_ROUNDING_POLICY_IDX];
-        out = (const vx_image)parameters[TIVX_KERNEL_MULTIPLY_OUT_IDX];
+        in1 = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN1_IDX];
+        in2 = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN2_IDX];
+        scale = (vx_scalar)parameters[TIVX_KERNEL_MULTIPLY_SCALE_IDX];
+        overflow_policy = (vx_scalar)parameters[TIVX_KERNEL_MULTIPLY_OVERFLOW_POLICY_IDX];
+        rounding_policy = (vx_scalar)parameters[TIVX_KERNEL_MULTIPLY_ROUNDING_POLICY_IDX];
+        out = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_OUT_IDX];
     }
 
 
@@ -333,9 +333,9 @@ static vx_status VX_CALLBACK tivxAddKernelMultiplyInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN1_IDX];
-        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN2_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_MULTIPLY_OUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN1_IDX];
+        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_IN2_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_MULTIPLY_OUT_IDX];
 
         prms.num_input_images = 2U;
         prms.num_output_images = 1U;

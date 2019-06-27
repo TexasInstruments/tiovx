@@ -112,9 +112,9 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedValidate(vx_node nod
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
-        alpha = (const vx_scalar)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ALPHA_IDX];
-        accum = (const vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
+        alpha = (vx_scalar)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ALPHA_IDX];
+        accum = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_ACCUM_IDX];
     }
 
 
@@ -236,7 +236,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateWeightedInitialize(vx_node n
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_WEIGHTED_INPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 0U;

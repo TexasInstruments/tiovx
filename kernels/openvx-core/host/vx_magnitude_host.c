@@ -113,9 +113,9 @@ static vx_status VX_CALLBACK tivxAddKernelMagnitudeValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        grad_x = (const vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX];
-        grad_y = (const vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX];
-        mag = (const vx_image)parameters[TIVX_KERNEL_MAGNITUDE_MAG_IDX];
+        grad_x = (vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX];
+        grad_y = (vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX];
+        mag = (vx_image)parameters[TIVX_KERNEL_MAGNITUDE_MAG_IDX];
     }
 
 
@@ -237,9 +237,9 @@ static vx_status VX_CALLBACK tivxAddKernelMagnitudeInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX];
-        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_MAGNITUDE_MAG_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_X_IDX];
+        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_MAGNITUDE_GRAD_Y_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_MAGNITUDE_MAG_IDX];
 
         prms.num_input_images = 2U;
         prms.num_output_images = 1U;

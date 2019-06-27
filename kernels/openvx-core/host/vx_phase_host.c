@@ -113,9 +113,9 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        grad_x = (const vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_X_IDX];
-        grad_y = (const vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_Y_IDX];
-        orientation = (const vx_image)parameters[TIVX_KERNEL_PHASE_ORIENTATION_IDX];
+        grad_x = (vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_X_IDX];
+        grad_y = (vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_Y_IDX];
+        orientation = (vx_image)parameters[TIVX_KERNEL_PHASE_ORIENTATION_IDX];
     }
 
 
@@ -239,9 +239,9 @@ static vx_status VX_CALLBACK tivxAddKernelPhaseInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_X_IDX];
-        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_Y_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_PHASE_ORIENTATION_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_X_IDX];
+        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_PHASE_GRAD_Y_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_PHASE_ORIENTATION_IDX];
 
         prms.num_input_images = 2U;
         prms.num_output_images = 1U;

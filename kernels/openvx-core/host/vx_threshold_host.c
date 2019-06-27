@@ -108,8 +108,8 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
     }
 
 
@@ -210,8 +210,8 @@ static vx_status VX_CALLBACK tivxAddKernelThresholdInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_THRESHOLD_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_THRESHOLD_OUTPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;

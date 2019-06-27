@@ -123,11 +123,11 @@ static vx_status VX_CALLBACK tivxAddKernelCannyValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_CANNY_INPUT_IDX];
-        hyst = (const vx_threshold)parameters[TIVX_KERNEL_CANNY_HYST_IDX];
-        gradient_size = (const vx_scalar)parameters[TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
-        norm_type = (const vx_scalar)parameters[TIVX_KERNEL_CANNY_NORM_TYPE_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_CANNY_OUTPUT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_CANNY_INPUT_IDX];
+        hyst = (vx_threshold)parameters[TIVX_KERNEL_CANNY_HYST_IDX];
+        gradient_size = (vx_scalar)parameters[TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
+        norm_type = (vx_scalar)parameters[TIVX_KERNEL_CANNY_NORM_TYPE_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_CANNY_OUTPUT_IDX];
     }
 
 
@@ -289,7 +289,7 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        gradient_size = (const vx_scalar)parameters[TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
+        gradient_size = (vx_scalar)parameters[TIVX_KERNEL_CANNY_GRADIENT_SIZE_IDX];
     }
 
     if (VX_SUCCESS == status)
@@ -301,8 +301,8 @@ static vx_status VX_CALLBACK tivxAddKernelCannyInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CANNY_INPUT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_CANNY_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_CANNY_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_CANNY_OUTPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;

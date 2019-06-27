@@ -112,9 +112,9 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX];
-        shift = (const vx_scalar)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_SHIFT_IDX];
-        accum = (const vx_image)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_ACCUM_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX];
+        shift = (vx_scalar)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_SHIFT_IDX];
+        accum = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_ACCUM_IDX];
     }
 
 
@@ -236,7 +236,7 @@ static vx_status VX_CALLBACK tivxAddKernelAccumulateSquareInitialize(vx_node nod
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_ACCUMULATE_SQUARE_INPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 0U;

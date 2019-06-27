@@ -121,13 +121,13 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
-        minval = (const vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
-        maxval = (const vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX];
-        minloc = (const vx_array)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
-        maxloc = (const vx_array)parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
-        mincount = (const vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX];
-        maxcount = (const vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
+        minval = (vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
+        maxval = (vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX];
+        minloc = (vx_array)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
+        maxloc = (vx_array)parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
+        mincount = (vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX];
+        maxcount = (vx_scalar)parameters[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX];
     }
 
 
@@ -349,7 +349,7 @@ static vx_status VX_CALLBACK tivxAddKernelMinMaxLocInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 0U;

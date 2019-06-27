@@ -113,9 +113,9 @@ static vx_status VX_CALLBACK tivxAddKernelAndValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        in1 = (const vx_image)parameters[TIVX_KERNEL_AND_IN1_IDX];
-        in2 = (const vx_image)parameters[TIVX_KERNEL_AND_IN2_IDX];
-        out = (const vx_image)parameters[TIVX_KERNEL_AND_OUT_IDX];
+        in1 = (vx_image)parameters[TIVX_KERNEL_AND_IN1_IDX];
+        in2 = (vx_image)parameters[TIVX_KERNEL_AND_IN2_IDX];
+        out = (vx_image)parameters[TIVX_KERNEL_AND_OUT_IDX];
     }
 
 
@@ -226,9 +226,9 @@ static vx_status VX_CALLBACK tivxAddKernelAndInitialize(vx_node node,
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_AND_IN1_IDX];
-        prms.in_img[1U] = (const vx_image)parameters[TIVX_KERNEL_AND_IN2_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_AND_OUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_AND_IN1_IDX];
+        prms.in_img[1U] = (vx_image)parameters[TIVX_KERNEL_AND_IN2_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_AND_OUT_IDX];
 
         prms.num_input_images = 2U;
         prms.num_output_images = 1U;

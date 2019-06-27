@@ -111,8 +111,8 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
-        gaussian = (const vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
+        gaussian = (vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
     }
 
 
@@ -245,7 +245,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
 
     if (VX_SUCCESS == status)
     {
-        gaussian = (const vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
+        gaussian = (vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX];
     }
 
     if (VX_SUCCESS == status)
@@ -258,7 +258,7 @@ static vx_status VX_CALLBACK tivxAddKernelGaussianPyramidInitialize(vx_node node
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_INPUT_IDX];
 
         img = vxGetPyramidLevel((vx_pyramid)parameters[TIVX_KERNEL_GAUSSIAN_PYRAMID_GAUSSIAN_IDX], 0);
 

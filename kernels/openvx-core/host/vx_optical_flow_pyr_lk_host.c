@@ -148,16 +148,16 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        old_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
-        new_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
-        old_points = (const vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
-        new_points_estimates = (const vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX];
-        new_points = (const vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX];
-        termination = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX];
-        epsilon = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX];
-        num_iterations = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX];
-        use_initial_estimate = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_USE_INITIAL_ESTIMATE_IDX];
-        window_dimension = (const vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX];
+        old_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
+        new_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
+        old_points = (vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_POINTS_IDX];
+        new_points_estimates = (vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_ESTIMATES_IDX];
+        new_points = (vx_array)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_POINTS_IDX];
+        termination = (vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_TERMINATION_IDX];
+        epsilon = (vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_EPSILON_IDX];
+        num_iterations = (vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NUM_ITERATIONS_IDX];
+        use_initial_estimate = (vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_USE_INITIAL_ESTIMATE_IDX];
+        window_dimension = (vx_scalar)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_WINDOW_DIMENSION_IDX];
     }
 
 
@@ -389,8 +389,8 @@ static vx_status VX_CALLBACK tivxAddKernelOpticalFlowPyrLkInitialize(vx_node nod
 
     if (VX_SUCCESS == status)
     {
-        old_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
-        new_images = (const vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
+        old_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_OLD_IMAGES_IDX];
+        new_images = (vx_pyramid)parameters[TIVX_KERNEL_OPTICAL_FLOW_PYR_LK_NEW_IMAGES_IDX];
     }
 
     if (VX_SUCCESS == status)

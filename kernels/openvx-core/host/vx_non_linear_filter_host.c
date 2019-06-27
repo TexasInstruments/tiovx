@@ -117,10 +117,10 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        function = (const vx_scalar)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
-        input = (const vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
-        mask = (const vx_matrix)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
+        function = (vx_scalar)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_FUNCTION_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
+        mask = (vx_matrix)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
     }
 
 
@@ -252,7 +252,7 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
 
     if (VX_SUCCESS == status)
     {
-        mask = (const vx_matrix)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
+        mask = (vx_matrix)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_MASK_IDX];
     }
 
     if (VX_SUCCESS == status)
@@ -265,8 +265,8 @@ static vx_status VX_CALLBACK tivxAddKernelNonLinearFilterInitialize(vx_node node
     {
         tivxKernelValidRectParams_init(&prms);
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
-        prms.out_img[0U] = (const vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_INPUT_IDX];
+        prms.out_img[0U] = (vx_image)parameters[TIVX_KERNEL_NON_LINEAR_FILTER_OUTPUT_IDX];
 
         prms.num_input_images = 1U;
         prms.num_output_images = 1U;

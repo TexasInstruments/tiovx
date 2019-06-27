@@ -121,10 +121,10 @@ static vx_status VX_CALLBACK tivxAddKernelRemapValidate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_REMAP_INPUT_IDX];
-        table = (const vx_remap)parameters[TIVX_KERNEL_REMAP_TABLE_IDX];
-        policy = (const vx_scalar)parameters[TIVX_KERNEL_REMAP_POLICY_IDX];
-        output = (const vx_image)parameters[TIVX_KERNEL_REMAP_OUTPUT_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_REMAP_INPUT_IDX];
+        table = (vx_remap)parameters[TIVX_KERNEL_REMAP_TABLE_IDX];
+        policy = (vx_scalar)parameters[TIVX_KERNEL_REMAP_POLICY_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_REMAP_OUTPUT_IDX];
     }
 
 
@@ -279,7 +279,7 @@ static vx_status VX_CALLBACK tivxAddKernelRemapInitialize(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        output = (const vx_image)parameters[TIVX_KERNEL_REMAP_OUTPUT_IDX];
+        output = (vx_image)parameters[TIVX_KERNEL_REMAP_OUTPUT_IDX];
     }
 
     if (VX_SUCCESS == status)

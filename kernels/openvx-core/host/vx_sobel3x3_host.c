@@ -114,9 +114,9 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Validate(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        input = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
-        output_x = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
-        output_y = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
+        input = (vx_image)parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
+        output_x = (vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
+        output_y = (vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
     }
 
 
@@ -286,8 +286,8 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Initialize(vx_node node,
 
     if (VX_SUCCESS == status)
     {
-        output_x = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
-        output_y = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
+        output_x = (vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX];
+        output_y = (vx_image)parameters[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX];
     }
 
     if (VX_SUCCESS == status)
@@ -298,7 +298,7 @@ static vx_status VX_CALLBACK tivxAddKernelSobel3X3Initialize(vx_node node,
         prms.num_input_images = 1U;
         prms.num_output_images = 0U;
 
-        prms.in_img[0U] = (const vx_image)parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
+        prms.in_img[0U] = (vx_image)parameters[TIVX_KERNEL_SOBEL3X3_INPUT_IDX];
 
         if (NULL != output_x)
         {
