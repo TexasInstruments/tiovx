@@ -75,7 +75,7 @@
  *
  *        This also prints information of all nodes present within the graph
  *
- * \param graph [in] graph handle
+ * \param [in] graph  graph handle
  *
  * \return VX_SUCCESS on success, else failure
  */
@@ -84,7 +84,7 @@ vx_status tivx_utils_graph_perf_print(vx_graph graph);
 /**
  * \brief Print node performance information to stdout via 'printf'
  *
- * \param node [in] node handle
+ * \param [in] node node handle
  *
  * \return VX_SUCCESS on success, else failure
  */

@@ -693,8 +693,8 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  *        This API can be called only on a verified graph.
  *        Node returned by this API is not reference counted and should not be released by the user.
  *
- * \param graph [in] graph handle
- * \param index [in] node index, value from 0 .. value returned by vxQueryGraph(VX_GRAPH_NUMNODES) - 1
+ * \param [in] graph graph handle
+ * \param [in] index  node index, value from 0 .. value returned by vxQueryGraph(VX_GRAPH_NUMNODES) - 1
  *
  * \return vx_node in case of success, else NULL
  */
