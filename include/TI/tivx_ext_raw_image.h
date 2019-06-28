@@ -104,7 +104,7 @@ extern "C" {
  */
 typedef struct _tivx_raw_image * tivx_raw_image;
 
-/*! \brief The raw image format structure that is given to the tivxCreateRawImage function. 
+/*! \brief The raw image format structure that is given to the tivxCreateRawImage function.
  * \ingroup group_raw_image
  */
 typedef struct _tivx_raw_image_format_t {
@@ -112,7 +112,7 @@ typedef struct _tivx_raw_image_format_t {
     vx_uint32 msb;                  /*!< \brief Most significant bit in pixel container */
 } tivx_raw_image_format_t;
 
-/*! \brief The raw image create params structure that is given to the tivxCreateRawImage function. 
+/*! \brief The raw image create params structure that is given to the tivxCreateRawImage function.
  * \ingroup group_raw_image
  */
 typedef struct _tivx_raw_image_create_params_t {
@@ -128,7 +128,7 @@ typedef struct _tivx_raw_image_create_params_t {
         vx_true_e, then the format should be the same for each exposure in a single buffer, so the
         number of valid structures in this array should equal 1. */
     vx_uint32 meta_height;           /*!< \brief Number of lines of meta data (uses the same width as original sensor readout width) */
-    vx_uint32 meta_location;         /*!< \brief Location in memory of the meta rows relative to the exposure image. 
+    vx_uint32 meta_location;         /*!< \brief Location in memory of the meta rows relative to the exposure image.
                                                  see \ref tivx_raw_image_meta_location_e */
 } tivx_raw_image_create_params_t;
 
@@ -195,9 +195,9 @@ enum tivx_raw_image_meta_location_e {
  *
  * \returns A raw image reference <tt>\ref tivx_raw_image</tt>. Any possible errors preventing a successful
  * creation should be checked using <tt>\ref vxGetStatus</tt>.
- * 
+ *
  * \see tivxMapRawImagePatch to obtain direct memory access to the image data.
- * 
+ *
  * \ingroup group_raw_image
  */
 VX_API_ENTRY tivx_raw_image VX_API_CALL tivxCreateRawImage(vx_context context,
@@ -237,7 +237,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage (tivx_raw_image raw_image,
                                                       vx_size size);
 
 /*! \brief Allows the application to copy a rectangular patch from/into a raw image object exposure.
- * 
+ *
  * \param [in] raw_image            The reference to the raw image object that is the source or the
  *                                  destination of the copy.
  * \param [in] rect                 The coordinates of the image patch. The patch must be within
@@ -265,8 +265,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage (tivx_raw_image raw_image,
  * \param [in] mem_type             A <tt>\ref vx_memory_type_e</tt> enumeration that specifies
  *                                  the memory type of the memory referenced by the user_addr.
  * \param [in] buffer_select        A <tt>\ref tivx_raw_image_buffer_access_e</tt> enumeration that specifies
- *                                  the buffer to copy to/from. 
- * 
+ *                                  the buffer to copy to/from.
+ *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual raw image that cannot be
  * accessed by the application.
@@ -275,7 +275,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage (tivx_raw_image raw_image,
  *
  * \note The application may ask for data outside the bounds of the valid region, but
  * such data has an undefined value.
- * 
+ *
  * \ingroup group_raw_image
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_image,
@@ -288,7 +288,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_imag
                                                          vx_enum buffer_select);
 
 /*! \brief Allows the application to get direct access to a rectangular patch of a raw image object exposure.
- * 
+ *
  * \param [in] raw_image           The reference to the raw image object that contains the patch to map.
  * \param [in] rect                The coordinates of raw image patch. The patch must be within the
  *                                 bounds of the image. (start_x, start_y) gives the coordinate of the topleft
@@ -300,7 +300,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_imag
  *                                 returns a map identifier.
  *                                 \arg (*map_id) must eventually be provided as the map_id parameter of a call to
  *                                 <tt>\ref tivxUnmapRawImagePatch</tt>.
- * \param [out] user_addr          The address of a structure describing the memory layout of the
+ * \param [out] addr               The address of a structure describing the memory layout of the
  *                                 image patch to access. The function fills the structure pointed by addr with the
  *                                 layout information that the application must consult to access the pixel data
  *                                 at address (*user_ptr). The layout of the mapped memory follows a row-major order:
@@ -326,7 +326,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_imag
  *                                 location pointed by (*ptr) contains the image patch data; writing into this memory
  *                                 is allowed only for the location of pixels only and will result in a modification
  *                                 of the written pixels in the image object once the patch is unmapped. Writing into
- *                                 a gap between lines (when addr->stride_y > addr->stride_x*addr->dim_x) 
+ *                                 a gap between lines (when addr->stride_y > addr->stride_x*addr->dim_x)
  *                                 is forbidden and its behavior is undefined.
  *                                 \arg VX_WRITE_ONLY: after the function call, the memory location pointed by (*ptr)
  *                                 contains undefined data; writing each pixel of the patch is required prior to
@@ -337,8 +337,8 @@ VX_API_ENTRY vx_status VX_API_CALL tivxCopyRawImagePatch(tivx_raw_image raw_imag
  * \param [in] mem_type            A <tt>\ref vx_memory_type_e</tt> enumeration that
  *                                 specifies the type of the memory where the image patch is requested to be mapped.
  * \param [in] buffer_select       A <tt>\ref tivx_raw_image_buffer_access_e</tt> enumeration that specifies
- *                                 the buffer to map. 
- * 
+ *                                 the buffer to map.
+ *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_ERROR_OPTIMIZED_AWAY This is a reference to a virtual raw image that cannot be
  * accessed by the application.
@@ -362,17 +362,17 @@ VX_API_ENTRY vx_status VX_API_CALL tivxMapRawImagePatch(tivx_raw_image raw_image
 
 
 /*! \brief Unmap and commit potential changes to a raw image object patch that were previously mapped.
- * 
+ *
  * Unmapping a raw image patch invalidates the memory location from which the patch could
  * be accessed by the application. Accessing this memory location after the unmap function
- * completes has an undefined behavior. 
+ * completes has an undefined behavior.
  * \param [in] raw_image The reference to the raw image object to unmap.
  * \param [out] map_id The unique map identifier that was returned by <tt>\ref tivxMapRawImagePatch</tt>
- * 
+ *
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_ERROR_INVALID_REFERENCE The raw image reference is not actually a raw image reference.
  * \retval VX_ERROR_INVALID_PARAMETERS An other parameter is incorrect.
- * 
+ *
  * \ingroup group_raw_image
  * \pre <tt>\ref tivxMapRawImagePatch</tt> with same map_id value
  */

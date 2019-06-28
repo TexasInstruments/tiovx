@@ -118,23 +118,23 @@ static inline vx_status tivxCheckNullParams(
 
 /*!
  * \brief A utility API to initialize VXLIB buf parameters based
- *        on the provided valid rectangle and given object descriptor.
+ *        on the provided object descriptor.
  *
- *        This API takes valid rectangle and object descriptor as an argument
- *        uses them to initialize VXLIB buf descriptor. It uses valid
- *        rectangle to initialize dimensions of the frame and object
- *        descriptor to initialize stride and data type. The buf_params array
- *        must contain the same number of elements as planes of the obj_desc.
+ *        This API takes initializes the VXLIB buf descriptor based on
+ *        information found in the object descriptor. It uses valid
+ *        rectangle to initialize dimensions of the frame, and buffer
+ *        properties of the object descriptor to initialize stride
+ *        and data type. The buf_params array must contain the same
+ *        number of elements as planes of the obj_desc.
+ *
  *        While initializing frame dimensions, it also takes into account
  *        the padding requirement of the calling kernel. If the kernel
  *        requires few pixels/lines on all sides of the kernels, this api
  *        increases the valid rectangle and then initializes vxlib buf
  *        descriptor.
  *
- *        If the valid rectangle is not provided, this API uses valid
- *        rectangle from the object descriptor.
- *
- * \param prms [in] Valid Rectangle Parameters
+ * \param [in]  obj_desc    Object Descripter
+ * \param [out] buf_params  Buffer Parameters
  *
  * \ingroup group_tivx_target_utils
  */

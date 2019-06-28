@@ -294,7 +294,7 @@ typedef enum _tivx_attribute_extensions_e {
 
 
 /*! \brief Based on the VX_DF_IMAGE definition.
- * \note Use <tt>\ref tivx_df_image</tt> to contain these values.
+ * \note Use <tt>\ref vx_df_image</tt> to contain these values.
  * \ingroup group_tivx_ext_host
  */
 typedef enum _tivx_df_image_e {
@@ -312,7 +312,6 @@ typedef enum _tivx_df_image_e {
 } tivx_df_image_e;
 
 /*! \brief Based on the vx_graph_attribute_e definition.
- * \note Use <tt>\ref tivx_graph_attribute</tt> to contain these values.
  * \ingroup group_tivx_ext_host
  */
 typedef enum _tivx_graph_attribute_e {
@@ -697,6 +696,9 @@ vx_status VX_API_CALL tivxNodeSendCommand(vx_node node,
  * \param [in] index  node index, value from 0 .. value returned by vxQueryGraph(VX_GRAPH_NUMNODES) - 1
  *
  * \return vx_node in case of success, else NULL
+ *
+ * \ingroup group_tivx_ext_host
+ *
  */
 vx_node tivxGraphGetNode(vx_graph graph, uint32_t index);
 

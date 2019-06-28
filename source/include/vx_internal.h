@@ -233,7 +233,7 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  * \brief APIs for object descriptor manipulation
  * \ingroup group_tivx_ext_target
  */
- 
+
 /*!
  * \defgroup group_tivx_target_utils Target Utility APIs
  * \brief APIs for common target kernel operations
@@ -346,6 +346,18 @@ static inline void tivx_uint64_to_uint32(uint64_t val, uint32_t *h, uint32_t *l)
  * \defgroup group_tivx_target_kernel Target Kernel APIs
  * \brief APIs for kernel operations on the target
  * \ingroup group_tivx_ext_target
+ */
+
+/*!
+ * \defgroup group_tivx_ext_bam BAM Wrapper APIs
+ * \brief APIs for adding BAM support to DSP target kernel plugins
+ * \ingroup group_tivx_ext_target
+ */
+
+/*!
+ * \defgroup group_tivx_ext_host_utils Utility APIs
+ * \brief Utility APIs available for the application running on the host
+ * \ingroup group_tivx_ext_host
  */
 
 /*!

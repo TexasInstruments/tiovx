@@ -94,7 +94,7 @@
  *         or \ref tivxBamCreateHandleMultiNode, and can destroy it by
  *         calling \ref tivxBamDestroyHandle.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 typedef void *tivx_bam_graph_handle;
 
@@ -116,7 +116,7 @@ typedef void *tivx_bam_graph_handle;
  *         this structure should be filled as an input to the
  *         \ref tivxBamCreateHandleMultiNode function.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 typedef struct _tivx_bam_kernel_details
 {
@@ -130,7 +130,7 @@ typedef struct _tivx_bam_kernel_details
  *
  *         Used for registering a BAM plugin with OpenVX on the DSPs.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 typedef struct _tivx_bam_plugin_def
 {
@@ -167,7 +167,7 @@ typedef struct _tivx_bam_plugin_def
  * \retval VX_ERROR_NO_MEMORY If there is not enough memory to register new plugins.
  *         The total number of user plugins can be incremented by changing the
  *         TIVX_MAX_DSP_BAM_USER_PLUGINS define in the TI/tivx_config.h file.
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kernelId);
 
@@ -185,7 +185,7 @@ vx_status tivxBamRegisterPlugin(tivx_bam_plugin_def *plugin, BAM_KernelId *kerne
  * \return A <tt>\ref vx_status_e</tt> enumeration.
  * \retval VX_SUCCESS No errors.
  * \retval VX_ERROR_INVALID_PARAMETERS If one of the parameters are NULL.
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamGetKernelIdFromName(const char *name, BAM_KernelId *kernelId);
 
@@ -211,7 +211,7 @@ vx_status tivxBamGetKernelIdFromName(const char *name, BAM_KernelId *kernelId);
  *        This function should be called before any calls to
  *        tivxBamCreateHandleSingleNode or tivxBamCreateHandleMultiNode.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
                           void *wbuf_mem, uint32_t wbuf_size);
@@ -236,7 +236,7 @@ vx_status tivxBamMemInit(void *ibuf_mem, uint32_t ibuf_size,
  *        The user should pass the graph_handle to other functions in this
  *        wrapper related to BAM graph wrappers.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
                                         VXLIB_bufParams2D_t *buf_params[],
@@ -266,7 +266,7 @@ vx_status tivxBamCreateHandleSingleNode(BAM_TI_KernelID kernel_id,
  *        The user should pass the graph_handle to other functions in this
  *        wrapper related to BAM graph wrappers.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                                        uint32_t max_nodes,
@@ -289,7 +289,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
  *        Upon success, vx_status will be VX_SUCCESS.
  *        Upon failure, vx_status will be VX_FAILURE.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
                                 uint32_t num_inputs,
@@ -311,7 +311,7 @@ vx_status tivxBamUpdatePointers(tivx_bam_graph_handle graph_handle,
  *        Upon success, vx_status will be VX_SUCCESS.
  *        Upon failure, vx_status will be VX_FAILURE.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
                              uint32_t node_id,
@@ -331,7 +331,7 @@ vx_status tivxBamControlNode(tivx_bam_graph_handle graph_handle,
  *        Upon success, vx_status will be VX_SUCCESS.
  *        Upon failure, vx_status will be VX_FAILURE.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle);
 
@@ -344,7 +344,7 @@ vx_status tivxBamProcessGraph(tivx_bam_graph_handle graph_handle);
  *        This is typically called if the user releases a graph or makes
  *        changes to the graph that require a reverification of the graph.
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_bam
  */
 void tivxBamDestroyHandle(tivx_bam_graph_handle graph_handle);
 

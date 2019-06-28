@@ -99,7 +99,7 @@ vx_status tivxUnPublishKernels(vx_context context, Tivx_Host_Kernel_List *kernel
  * \brief Maximum number of images (input/output) supported in
  *        calculating valid rectangles
  *
- * \ingroup group_tivx_ext_common_kernel
+ * \ingroup group_tivx_ext_host_kernel
  */
 #define TIVX_KERNEL_COMMON_VALID_RECT_MAX_IMAGE        (5u)
 

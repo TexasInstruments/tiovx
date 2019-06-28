@@ -211,10 +211,13 @@ vx_status ownContextSendCmd(vx_context context, uint32_t target_id, uint32_t cmd
  *
  *        This API waits until ACK for the command is received
  *
- * \param context      [in] context to use when sending the command
- * \param target_id    [in] ID of Target to whom the command is being sent
- * \param num_obj_desc [in] number of object descriptors to send
- * \param obj_desc_id  [in] List of object descriptor to send
+ * \param context             [in] context to use when sending the command
+ * \param node_obj_desc       [in] ID of node object descriptor to which command is being sent
+ * \param target_id           [in] ID of Target to whom the command is being sent
+ * \param replicated_node_idx [in] If the node is replicated, index of the replicant to send the command to
+ * \param node_cmd_id         [in] ID of the command to send to the node
+ * \param obj_desc_id[]       [in] Array of IDs of object descriptor
+ * \param num_obj_desc        [in] Number of object descriptors in obj_desc_id[] array
  *
  * \ingroup group_vx_context
  */

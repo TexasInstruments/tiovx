@@ -304,7 +304,8 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region);
 /*!
  * \brief Allocates memory of given size
  *
- * \param [in] size     size of the memory to be allocated
+ * \param [in] size             size of the memory to be allocated
+ * \param [in] mem_heap_region  memory heap region
  *
  * \return Pointer to the allocated memory
  *
@@ -324,10 +325,10 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region);
 void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region);
 
 /*!
- * \brief Get memory segement information
+ * \brief Get memory segment information
  *
- * \param [out] stats Memory segment information
- * \param [in] mem_heap_region Memory segment ID
+ * \param [out] stats    Memory segment information
+ * \param [in] mem_type  Memory type
  *
  * \ingroup group_tivx_mem
  */

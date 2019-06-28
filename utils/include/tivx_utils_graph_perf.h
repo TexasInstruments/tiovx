@@ -78,6 +78,8 @@
  * \param [in] graph  graph handle
  *
  * \return VX_SUCCESS on success, else failure
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_graph_perf_print(vx_graph graph);
 
@@ -87,6 +89,8 @@ vx_status tivx_utils_graph_perf_print(vx_graph graph);
  * \param [in] node node handle
  *
  * \return VX_SUCCESS on success, else failure
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_node_perf_print(vx_node node);
 

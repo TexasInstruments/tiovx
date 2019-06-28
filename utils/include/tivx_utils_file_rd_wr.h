@@ -91,6 +91,8 @@
  * \param png_file_context [out] PNG file context for this file
  *
  * \return VX_SUCCESS if file could be opened, parsed and read successfully
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_png_file_read(
             char *filename,
@@ -113,6 +115,8 @@ vx_status tivx_utils_png_file_read(
  *
  * \param png_file_context [in] PNG file context returned during png_file_read()
  *
+ * \ingroup group_tivx_ext_host_utils
+ *
  */
 void tivx_utils_png_file_read_release(void *png_file_context);
 
@@ -127,6 +131,8 @@ void tivx_utils_png_file_read_release(void *png_file_context);
  * \param data_ptr [in] Data buffer from where the data is to written to PNG file
  *
  * \return VX_SUCCESS if file could be opened, and written successfully
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 int32_t tivx_utils_png_file_write(
             char *filename,
@@ -148,6 +154,8 @@ int32_t tivx_utils_png_file_write(
  * \return Image data object. \n
  *         Image data format is VX_DF_IMAGE_RGB when 'convert_to_gray_scale' is vx_false_e \n
  *         Image data format is VX_DF_IMAGE_U8 when 'convert_to_gray_scale' is vx_true_e
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filename, vx_bool convert_to_gray_scale);
 
@@ -158,6 +166,8 @@ vx_image  tivx_utils_create_vximage_from_pngfile(vx_context context, char *filen
  * \param image [in] Image data object. Image data format MUST be VX_DF_IMAGE_RGB or VX_DF_IMAGE_U8
  *
  * \return VX_SUCCESS if PNG could be created and saved with data from image object
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image);
 
@@ -178,6 +188,8 @@ vx_status tivx_utils_save_vximage_to_pngfile(char *filename, vx_image image);
  *                                   NOTE: convert_to_gray_scale NOT supported as of NOW
  *
  * \return VX_SUCCESS if BMP file data could be loaded into the vx_image object.
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
 
@@ -185,6 +197,8 @@ vx_status tivx_utils_load_vximage_from_pngfile(vx_image image, char *filename, v
  * \brief Read data from BMP file
  *
  * Same as tivx_utils_png_file_read() but with .bmp file
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_bmp_file_read(
             char *filename,
@@ -200,6 +214,8 @@ vx_status tivx_utils_bmp_file_read(
  * \brief Read data from BMP file
  *
  * Same as tivx_utils_png_file_read() but with .bmp file
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_bmp_file_read_from_memory(
             void *buf,
@@ -217,6 +233,8 @@ vx_status tivx_utils_bmp_file_read_from_memory(
  *
  * Same as tivx_utils_png_file_read_release() but with .bmp file
  *
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 void tivx_utils_bmp_file_read_release(void *png_file_context);
 
@@ -224,6 +242,8 @@ void tivx_utils_bmp_file_read_release(void *png_file_context);
  * \brief Write data into BMP file
  *
  * Same as tivx_utils_png_file_write() but with .bmp file
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 int32_t tivx_utils_bmp_file_write(
             char *filename,
@@ -237,6 +257,8 @@ int32_t tivx_utils_bmp_file_write(
  * \brief Create a image data object given BMP filename as input
  *
  * Same as tivx_utils_create_vximage_from_pngfile() but with .bmp file
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filename, vx_bool convert_to_gray_scale);
 
@@ -244,6 +266,8 @@ vx_image  tivx_utils_create_vximage_from_bmpfile(vx_context context, char *filen
  * \brief Save data from image object to PNG file
  *
  * Same as tivx_utils_save_vximage_to_pngfile() but with .bmp file
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image);
 
@@ -251,6 +275,8 @@ vx_status tivx_utils_save_vximage_to_bmpfile(char *filename, vx_image image);
  * \brief Load data from BMP file into a previously created vx_image object
  *
  * Same as tivx_utils_load_vximage_from_pngfile() but with .bmp file
+ *
+ * \ingroup group_tivx_ext_host_utils
  */
 vx_status tivx_utils_load_vximage_from_bmpfile(vx_image image, char *filename, vx_bool convert_to_gray_scale);
 
