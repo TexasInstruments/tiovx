@@ -82,6 +82,7 @@ TESTCASE(tivxHwaDisplay)
 TESTCASE(tivxHwaCapture)
 TESTCASE(tivxHwaCaptureDisplay)
 TESTCASE(tivxHwaCaptureVissDisplay)
+TESTCASE(tivxHwaCaptureVpacDisplay)
 #endif
 
 #endif
