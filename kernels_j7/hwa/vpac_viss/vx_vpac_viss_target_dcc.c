@@ -331,8 +331,9 @@ void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
 
         inCfg->inSel = vissPrms->h3a_in;
 
-        /* TODO: Assumption that lut is used for 16 to 10 bit conversion */
-        inCfg->shift = 0U;
+        /* TODO: Fixing downshift factor to 2 for 12b linear mode (12->10 conversion) */
+        /* TODO: lut to be used for 16 to 10 bit conversion */
+        inCfg->shift = 2U;
 
         vissObj->vissCfgRef.rfeH3aInCfg = inCfg;
 
@@ -825,10 +826,13 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
         /* Map DCC Output Config to FVID2 Driver Config */
         for (cnt1 = 0u; cnt1 < FCP_MAX_CCM_COEFF; cnt1 ++)
         {
-            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW; cnt2 ++)
+        /* TODO: RGB2RGB matrix seems to be 3x3 whereas CCM is 3x4 */
+        /* Map DCC Output Config to FVID2 Driver Config */
+            for (cnt2 = 0u; cnt2 < FCP_MAX_CCM_COEFF_IN_RAW-1; cnt2 ++)
             {
                 ccmCfg->weights[cnt1][cnt2] = rgb2rgb->matrix[cnt1][cnt2];
             }
+            ccmCfg->weights[cnt1][FCP_MAX_CCM_COEFF_IN_RAW-1] = 0;
             ccmCfg->offsets[cnt1] = rgb2rgb->offset[cnt1];
         }
         vissObj->vissCfgRef.ccm = ccmCfg;
@@ -984,7 +988,7 @@ static void tivxVpacVissDccMapFlexCFAParams(tivxVpacVissObj *vissObj)
 
     if (NULL != dcc_cfa_cfg)
         {
-        memcpy(cfaCfg->coeff, dcc_cfa_cfg->FirCoefs, FCP_MAX_CFA_COEFF * sizeof(int32_t));
+        memcpy(cfaCfg->coeff, dcc_cfa_cfg->FirCoefs, FCP_MAX_CFA_COEFF * sizeof(cfaCfg->coeff[0]));
 
         for (cnt = 0u; cnt < FCP_MAX_COLOR_COMP; cnt ++)
         {
