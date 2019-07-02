@@ -59,7 +59,7 @@ static uint32_t gTiovxKernIdx;
 TESTCASE(tiovxPerformance, CT_VXContext, ct_setup_vx_context, 0)
 TESTCASE(tiovxPerformance2, CT_VXContext, ct_setup_vx_context, 0)
 
-TEST(tiovxPerformance, tiovxPerfOpenFile)
+static void openFile()
 {
     char filepath[MAXPATHLENGTH];
     size_t sz;
@@ -70,13 +70,14 @@ TEST(tiovxPerformance, tiovxPerfOpenFile)
             OUTPUT_FILE);
         ASSERT(sz < MAXPATHLENGTH);
 
-        printf ("File %s\n", filepath);
+        printf ("Open file: %s\n", filepath);
         perf_file = fopen(filepath, "wb");
         if (!perf_file)
         {
-            printf("Cannot open file %s\n", OUTPUT_FILE);
-            exit(0);
+            printf("Cannot open file: %s\n", filepath);
         }
+        ASSERT(perf_file);
+
         fprintf(perf_file, "%s\n", "<html>");
         fprintf(perf_file, "%s\n", "<head>");
         fprintf(perf_file, "%s\n", "  <meta content=\"text/html; charset=ISO-8859-1\" http-equiv=\"content-type\">");
@@ -98,6 +99,11 @@ TEST(tiovxPerformance, tiovxPerfOpenFile)
     }
 }
 
+TEST(tiovxPerformance, tiovxPerfOpenFile)
+{
+    openFile();
+}
+
 TEST(tiovxPerformance2, tiovxPerfCloseFile)
 {
     if (perf_file)
@@ -114,18 +120,26 @@ TEST(tiovxPerformance2, tiovxPerfCloseFile)
 
 void PrintPerf(vx_perf_t graph, vx_perf_t node, uint32_t width,  uint32_t height, const char* testName, const char* variant, int asterisk)
 {
-    gTiovxKernIdx ++;
-    fprintf(perf_file, "%s\n", " <tr align=\"center\">");
-    fprintf(perf_file, "%s%d%s\n", "<td>", gTiovxKernIdx, "</td>");
-    fprintf(perf_file, "%s%s%s\n", "<td>", testName, "</td>");
-    fprintf(perf_file, "%s%s%s\n", "<td>", variant, "</td>");
-    if (asterisk == 1)
-        fprintf(perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
-    else
-        fprintf(perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
-    fprintf(perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
-    fprintf(perf_file, "%s%4.6f%s\n", "<td>", node.max/1000000.0, "</td>");
-    fprintf(perf_file, "%s\n", " </tr>");
+    if(perf_file == NULL)
+    {
+        openFile();
+    }
+
+    if(perf_file)
+    {
+        gTiovxKernIdx ++;
+        fprintf(perf_file, "%s\n", " <tr align=\"center\">");
+        fprintf(perf_file, "%s%d%s\n", "<td>", gTiovxKernIdx, "</td>");
+        fprintf(perf_file, "%s%s%s\n", "<td>", testName, "</td>");
+        fprintf(perf_file, "%s%s%s\n", "<td>", variant, "</td>");
+        if (asterisk == 1)
+            fprintf(perf_file, "%s*%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
+        else
+            fprintf(perf_file, "%s%dx%d  (%d)%s\n", "<td>", width, height, width*height, "</td>");
+        fprintf(perf_file, "%s%4.6f%s\n", "<td>", graph.max/1000000.0, "</td>");
+        fprintf(perf_file, "%s%4.6f%s\n", "<td>", node.max/1000000.0, "</td>");
+        fprintf(perf_file, "%s\n", " </tr>");
+    }
 }
 
 TEST(tiovxPerformance, tiovxPerfAccumulate)
