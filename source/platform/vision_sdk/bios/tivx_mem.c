@@ -57,6 +57,7 @@ vx_status tivxMemBufferAlloc(
         switch (mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
+            case TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
@@ -105,6 +106,7 @@ void *tivxMemAlloc(vx_uint32 size, vx_enum mem_heap_region)
     switch (mem_heap_region)
     {
     case TIVX_MEM_EXTERNAL:
+    case TIVX_MEM_EXTERNAL_SCRATCH:
         heap_id = UTILS_HEAPID_DDR_CACHED_SR;
         break;
     case TIVX_MEM_INTERNAL_L3:
@@ -176,6 +178,7 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region)
         switch (mem_heap_region)
         {
         case TIVX_MEM_EXTERNAL:
+        case TIVX_MEM_EXTERNAL_SCRATCH:
             heap_id = UTILS_HEAPID_DDR_CACHED_SR;
             break;
         case TIVX_MEM_INTERNAL_L3:
@@ -238,6 +241,7 @@ vx_status tivxMemBufferFree(tivx_shared_mem_ptr_t *mem_ptr, uint32_t size)
         switch (mem_ptr->mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
+            case TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
@@ -293,6 +297,7 @@ void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_heap_region)
         switch (mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
+            case TIVX_MEM_EXTERNAL_SCRATCH:
                 heap_id = UTILS_HEAPID_DDR_CACHED_SR;
                 break;
             case TIVX_MEM_INTERNAL_L3:
@@ -372,5 +377,23 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
 {
     /* Currently it is same as shared pointer for bios */
     return (shared_ptr);
+}
+
+
+int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
+{
+    vx_status status = VX_FAILURE;
+
+    if (TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
+    {
+        /* Return success since there is not scratch mem region on PC */
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemResetScratchHeap: TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
+    }
+
+    return status;
 }
 

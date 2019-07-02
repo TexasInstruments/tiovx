@@ -230,6 +230,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CANNY_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
@@ -334,7 +339,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 
             prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u,
-                TIVX_MEM_EXTERNAL);
+                TIVX_MEM_EXTERNAL_SCRATCH);
             if (NULL == prms->edge_list)
             {
                 status = VX_ERROR_NO_MEMORY;
@@ -429,7 +434,7 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
         if (NULL != prms->edge_list)
         {
             tivxMemFree(prms->edge_list, prms->edge_list_size * 4u,
-                TIVX_MEM_EXTERNAL);
+                TIVX_MEM_EXTERNAL_SCRATCH);
             prms->edge_list = NULL;
         }
 

@@ -41,6 +41,7 @@ vx_status tivxMemBufferAlloc(
         switch (mem_heap_region)
         {
             case TIVX_MEM_EXTERNAL:
+            case TIVX_MEM_EXTERNAL_SCRATCH:
                 /* Assuming block id 0 is used for external memory */
                 block_id = 0;
                 break;

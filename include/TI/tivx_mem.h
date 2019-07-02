@@ -334,6 +334,17 @@ void tivxMemFree(void *ptr, vx_uint32 size, vx_enum mem_heap_region);
  */
 void tivxMemStats(tivx_mem_stats *stats, vx_enum mem_type);
 
+/**
+ * \brief Reset scratch memory
+ *
+ * \param [in] mem_heap_region Memory segment ID
+ *
+ * \return 0 on success else failure
+ *
+ * \ingroup group_tivx_mem
+ */
+int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region);
+
 #ifdef __cplusplus
 }
 #endif

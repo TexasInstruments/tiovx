@@ -218,3 +218,20 @@ uint64_t tivxMemShared2PhysPtr(uint64_t shared_ptr, vx_enum mem_heap_region)
     return (shared_ptr);
 }
 
+int32_t tivxMemResetScratchHeap(vx_enum mem_heap_region)
+{
+    vx_status status = VX_FAILURE;
+
+    if (TIVX_MEM_EXTERNAL_SCRATCH == mem_heap_region)
+    {
+        /* Return success since there is not scratch mem region on PC */
+        status = VX_SUCCESS;
+    }
+    else
+    {
+        VX_PRINT(VX_ZONE_ERROR, "tivxMemResetScratchHeap: TIVX_MEM_EXTERNAL_SCRATCH is the only memory region supported\n");
+    }
+
+    return status;
+}
+

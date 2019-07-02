@@ -259,6 +259,11 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
 
     if (VX_SUCCESS == status)
     {
+        status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+    }
+
+    if (VX_SUCCESS == status)
+    {
         src = (tivx_obj_desc_image_t *)obj_desc[
             TIVX_KERNEL_CANNY_INPUT_IDX];
         dst = (tivx_obj_desc_image_t *)obj_desc[
@@ -290,7 +295,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             prms->sobel_size = prms->vxlib_sobx.stride_y *
                 prms->vxlib_src.dim_y;
 
-            prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL);
+            prms->sobel_x = tivxMemAlloc(prms->sobel_size, TIVX_MEM_EXTERNAL_SCRATCH);
             if (NULL == prms->sobel_x)
             {
                 VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: sobel_x mem allocation failed\n");
@@ -300,7 +305,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
             if (VX_SUCCESS == status)
             {
                 prms->sobel_y = tivxMemAlloc(prms->sobel_size,
-                    TIVX_MEM_EXTERNAL);
+                    TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->sobel_y)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: sobel_y mem allocation failed\n");
@@ -320,7 +325,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->norm_size = prms->vxlib_norm.stride_y *
                     prms->vxlib_src.dim_y;
 
-                prms->norm = tivxMemAlloc(prms->norm_size, TIVX_MEM_EXTERNAL);
+                prms->norm = tivxMemAlloc(prms->norm_size, TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->norm)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: norm mem allocation failed\n");
@@ -340,7 +345,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                     prms->vxlib_src.dim_y;
 
                 prms->nms_edge = tivxMemAlloc(prms->nms_edge_size,
-                    TIVX_MEM_EXTERNAL);
+                    TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->nms_edge)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: nms_edge mem allocation failed\n");
@@ -353,7 +358,7 @@ static vx_status VX_CALLBACK tivxKernelCannyCreate(
                 prms->edge_list_size = prms->vxlib_dst.dim_x * prms->vxlib_dst.dim_y;
 
                 prms->edge_list = tivxMemAlloc(prms->edge_list_size * 4u,
-                    TIVX_MEM_EXTERNAL);
+                    TIVX_MEM_EXTERNAL_SCRATCH);
                 if (NULL == prms->edge_list)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"tivxKernelCannyCreate: edge_list mem allocation failed\n");
@@ -453,28 +458,28 @@ static void tivxCannyFreeMem(tivxCannyParams *prms)
     {
         if (NULL != prms->sobel_x)
         {
-            tivxMemFree(prms->sobel_x, prms->sobel_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->sobel_x, prms->sobel_size, TIVX_MEM_EXTERNAL_SCRATCH);
             prms->sobel_x = NULL;
         }
         if (NULL != prms->sobel_y)
         {
-            tivxMemFree(prms->sobel_y, prms->sobel_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->sobel_y, prms->sobel_size, TIVX_MEM_EXTERNAL_SCRATCH);
             prms->sobel_y = NULL;
         }
         if (NULL != prms->norm)
         {
-            tivxMemFree(prms->norm, prms->norm_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->norm, prms->norm_size, TIVX_MEM_EXTERNAL_SCRATCH);
             prms->norm = NULL;
         }
         if (NULL != prms->nms_edge)
         {
-            tivxMemFree(prms->nms_edge, prms->nms_edge_size, TIVX_MEM_EXTERNAL);
+            tivxMemFree(prms->nms_edge, prms->nms_edge_size, TIVX_MEM_EXTERNAL_SCRATCH);
             prms->nms_edge = NULL;
         }
         if (NULL != prms->edge_list)
         {
             tivxMemFree(prms->edge_list, prms->edge_list_size * 4u,
-                TIVX_MEM_EXTERNAL);
+                TIVX_MEM_EXTERNAL_SCRATCH);
             prms->edge_list = NULL;
         }
 
