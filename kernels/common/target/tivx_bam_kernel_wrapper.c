@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2017 Texas Instruments Incorporated
+* Copyright (c) 2017-2019 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -192,7 +192,8 @@ static int32_t getNodeIndexFromKernelId(BAM_NodeParams node_list[],
 static int32_t getNumDownstreamNodes(BAM_EdgeParams edge_list[],
                                  int32_t num_edges,
                                  uint8_t source_node_id,
-                                 uint8_t *num_outputs);
+                                 uint8_t *num_outputs,
+                                 uint8_t *num_unique_ports);
 
 static int32_t getNumUpstreamNodes(BAM_EdgeParams edge_list[],
                                 int32_t num_edges,
@@ -415,21 +416,52 @@ static int32_t getNodeIndexFromKernelId(BAM_NodeParams node_list[],
 static int32_t getNumDownstreamNodes(BAM_EdgeParams edge_list[],
                                  int32_t num_edges,
                                  uint8_t source_node_id,
-                                 uint8_t *num_outputs)
+                                 uint8_t *num_outputs,
+                                 uint8_t *num_unique_ports)
 {
-    int32_t i;
+    int32_t i, j;
     int32_t found = 0;
+    int32_t port_found = 0;
     int32_t n_outputs = 0;
+    int32_t n_unique_ports = 0;
+
+    int32_t found_ports[TIVX_BAM_MAX_EDGES];
+
     for(i = 0; i < num_edges; i++)
     {
         if(edge_list[i].upStreamNode.id == source_node_id)
         {
             found = 1;
             n_outputs++;
+            port_found = 0;
+
+            for(j=0; j < n_unique_ports;j++)
+            {
+
+                if(edge_list[i].upStreamNode.port == found_ports[j])
+                {
+                    port_found = 1;
+                    break;
+                }
+            }
+
+            if(0 == port_found)
+            {
+                found_ports[n_unique_ports] = edge_list[i].upStreamNode.port;
+                n_unique_ports++;
+            }
         }
     }
 
-    *num_outputs = n_outputs;
+    if(NULL != num_outputs)
+    {
+        *num_outputs = n_outputs;
+    }
+
+    if(NULL != num_unique_ports)
+    {
+        *num_unique_ports = n_unique_ports;
+    }
 
     return found;
 }
@@ -528,7 +560,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     /* TIOVX-186:
      * - This loop assumes that each node in the graph is sequential with respect propogating the block size reductions
      * - If a graph is defined which this assumption is not true, then this may cause unexpected behaviors.
-     * - Additional logic would need to be put in place to traverse the graph topology more accuratly to account for 
+     * - Additional logic would need to be put in place to traverse the graph topology more accuratly to account for
      *   topologies which are not strictly sequential.
      * - Furthermore, this loop assumes that the output block width and height does not go below 1.  If it does, then
      *   this may cause unexpected behaviors.
@@ -555,7 +587,7 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     if(getNodeIndexFromKernelId(graph_args->node_list, graph_args->num_nodes, BAM_KERNELID_DMAREAD_AUTOINCREMENT, &node_index) != 0)
     {
         uint8_t num_transfers;
-        if(getNumDownstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, &num_transfers) != 0)
+        if(getNumDownstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, NULL, &num_transfers) != 0)
         {
             dma_read_autoinc_args->initParams.numInTransfers   = num_transfers;
             dma_read_autoinc_args->initParams.transferType     = EDMA_UTILS_TRANSFER_IN;
@@ -1331,7 +1363,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         graph_args.edge_list          = edge_list;
 
         /*
-         * At this point, the specific kernelArgs for source node does not need to be known since 
+         * At this point, the specific kernelArgs for source node does not need to be known since
          * tivxBam_initKernelsArgsMulti() will figure this out.  In order to create the graph, we need
          * to assign something, so we assign autoinc_args (even if the source is not using autoinc)
          */
@@ -1351,7 +1383,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
             }
         }
         /*
-         * At this point, the specific kernelArgs for destination node does not need to be known since 
+         * At this point, the specific kernelArgs for destination node does not need to be known since
          * tivxBam_initKernelsArgsMulti() will figure this out.  In order to create the graph, we need
          * to assign something, so we assign autoinc_args (even if the destination is not using autoinc)
          */
