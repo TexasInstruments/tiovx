@@ -397,8 +397,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
                              tivx_target_kernel_create_in_bam_graph_f   create_in_bam_func,
                              tivx_target_kernel_get_node_port_f         get_node_port_func,
                              tivx_target_kernel_append_internal_edges_f append_internal_edges_func,
-                             tivx_target_kernel_f preprocess_func,
-                             tivx_target_kernel_f postprocess_func,
+                             tivx_target_kernel_pre_post_process_f      preprocess_func,
+                             tivx_target_kernel_pre_post_process_f      postprocess_func,
+                             int32_t                                    kernel_params_size,
                              void *priv_arg)
 {
     uint32_t i;
@@ -421,7 +422,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
                     g_target_kernel_table[i].append_internal_edges_func = append_internal_edges_func;
                     g_target_kernel_table[i].preprocess_func = preprocess_func;
                     g_target_kernel_table[i].postprocess_func = postprocess_func;
-
+                    g_target_kernel_table[i].kernel_params_size = kernel_params_size;
                     break;
                 }
             }

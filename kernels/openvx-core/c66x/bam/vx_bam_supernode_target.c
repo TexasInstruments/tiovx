@@ -66,7 +66,6 @@
 #include <VX/vx.h>
 #include <tivx_openvx_core_kernels.h>
 #include <tivx_target_kernels_priv.h>
-//#include <tivx_kernel_supernode.h>
 #include <TI/tivx_target_kernel.h>
 #include <ti/vxlib/vxlib.h>
 #include <tivx_kernels_target_utils.h>
@@ -77,7 +76,7 @@
 #include <tivx_target_kernel_instance.h>
 
 #define TIVX_BAM_MAX_NODES 10
-#define TIVX_BAM_MAX_EDGES 10
+#define TIVX_BAM_MAX_EDGES 16
 #define TIVX_MAX_BUF_PARAMS 16
 
 typedef struct
@@ -171,7 +170,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
             if ((NULL != prms->knl[i]) && (NULL != prms->knl[i]->preprocess_func))
             {
                 status = prms->knl[i]->preprocess_func(
-                    prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg);
+                    prms->target_kernel_instance[i], params, node_obj_desc->num_params, &prms->graph_handle, prms->knl[i]->caller_priv_arg);
             }
         }
     }
@@ -199,7 +198,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
             if ((NULL != prms->knl[i]) && (NULL != prms->knl[i]->postprocess_func))
             {
                 status = prms->knl[i]->postprocess_func(
-                    prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg);
+                    prms->target_kernel_instance[i], params, node_obj_desc->num_params, &prms->graph_handle, prms->knl[i]->caller_priv_arg);
             }
         }
     }
@@ -229,6 +228,8 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     int32_t size[TIVX_SUPER_NODE_MAX_NODES];
     uint8_t found_indices[TIVX_SUPER_NODE_MAX_EDGES];
     uint8_t node_index;
+    uint8_t one_shot_flag = 0;
+    uint8_t found_edges_to_sink = 0;
     tivx_obj_desc_super_node_t *super_node = (tivx_obj_desc_super_node_t *)obj_desc[0];
 
     prms = tivxMemAlloc(sizeof(tivxSupernodeParams), TIVX_MEM_EXTERNAL);
@@ -236,9 +237,8 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     if (NULL != prms)
     {
         memset(prms, 0, sizeof(tivxSupernodeParams));
-        memset(scratch, 0, sizeof(scratch));
         memset(size, 0, sizeof(size));
-
+        memset(scratch, 0, sizeof(scratch));
         /* ************** */
         /* FILL NODE LIST */
         /* ************** */
@@ -271,13 +271,6 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
             prms->target_kernel_instance[i] = tivxTargetKernelInstanceAlloc(
                 node_obj_desc->kernel_id, kernel_name, node_obj_desc->target_id);
 
-            // TODO: The same table which lists the callbacks, should also list the scratch memory requirement
-            size[i] = 0;
-            if ( size[i] > 0 )
-            {
-                scratch[i] = tivxMemAlloc(size[i], TIVX_MEM_EXTERNAL);
-            }
-
             /* Adds Bam nodes to top level node list (can be more than 1) */
             if (NULL != prms->target_kernel_instance[i])
             {
@@ -289,15 +282,28 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
 
                 if ((NULL != prms->knl[i]) && (NULL != prms->knl[i]->create_in_bam_func))
                 {
+                    size[i] = prms->knl[i]->kernel_params_size;
+                    if ( size[i] > 0 )
+                    {
+                        scratch[i] = tivxMemAlloc(size[i], TIVX_MEM_EXTERNAL);
+                        memset(scratch[i], 0, size[i]);
+                    }
+
                     status = prms->knl[i]->create_in_bam_func(
                         prms->target_kernel_instance[i], params, node_obj_desc->num_params, prms->knl[i]->caller_priv_arg,
-                        node_list, kernel_details, &bam_node_cnt, scratch[i]);
+                        node_list, kernel_details, &bam_node_cnt, scratch[i], &size[i]);
                 }
                 else
                 {
                     tivxTargetKernelInstanceFree(&prms->target_kernel_instance[i]);
                     VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: Kernel does not support being part of a supernode\n");
                     status = VX_FAILURE;
+                }
+                if (VX_SUCCESS == status) {
+                    if(kernel_details[bam_node_cnt].kernel_info.numOutputDataBlocks == 0)
+                    {
+                        one_shot_flag = 1;
+                    }
                 }
             }
 
@@ -311,7 +317,13 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
         }
 
         node_list[bam_node_cnt].nodeIndex = bam_node_cnt;
-        node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_AUTOINCREMENT;
+        if (!one_shot_flag) {
+            node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_AUTOINCREMENT;
+        }
+        else 
+        {
+            node_list[bam_node_cnt].kernelId = BAM_KERNELID_DMAWRITE_NULL;
+        }
         node_list[bam_node_cnt].kernelArgs = NULL;
         bam_node_cnt++;
 
@@ -450,8 +462,14 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         edge_list[bam_edge_cnt].downStreamNode.id = bam_node_cnt-2;
                         edge_list[bam_edge_cnt].downStreamNode.port = super_node->edge_list[i].dst_node_prm_idx;
                         bam_edge_cnt++;
+                        found_edges_to_sink = 1;
                     }
                 }
+            }
+            if (found_edges_to_sink & one_shot_flag)
+            {
+                VX_PRINT(VX_ZONE_ERROR, "tivxKernelSupernodeCreate: In a supernode, reduction kernels cannot be used with any other kernels which have image outputs\n");
+                status = VX_FAILURE;
             }
             edge_list[bam_edge_cnt].upStreamNode.id     = BAM_END_NODE_MARKER;
             edge_list[bam_edge_cnt].upStreamNode.port   = 0;

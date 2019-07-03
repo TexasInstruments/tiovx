@@ -74,7 +74,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
-
+    uint8_t bam_node_num;
 } tivxMeanStdDevParams;
 
 static tivx_target_kernel vx_meanstddev_target_kernel = NULL;
@@ -90,6 +90,21 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreate(
 static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+
+static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
+static vx_status VX_CALLBACK tivxKernelMeanStdDevPostprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle , void *priv_arg);
 
 static vx_status VX_CALLBACK tivxKernelMeanStdDevProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -268,7 +283,10 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMeanStdDevParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxMeanStdDevParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -304,6 +322,15 @@ void tivxAddTargetKernelBamMeanStdDev(void)
             tivxKernelMeanStdDevDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_meanstddev_target_kernel,
+            tivxKernelMeanStdDevCreateInBamGraph,
+            tivxKernelMeanStdDevGetNodePort,
+            NULL,
+            NULL,
+            tivxKernelMeanStdDevPostprocessInBamGraph,
+            0,
+            NULL);
     }
 }
 
@@ -311,4 +338,127 @@ void tivxAddTargetKernelBamMeanStdDev(void)
 void tivxRemoveTargetKernelBamMeanStdDev(void)
 {
     tivxRemoveTargetKernel(vx_meanstddev_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxMeanStdDevParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_MEAN_STD_DEV_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        prms = tivxMemAlloc(sizeof(tivxMeanStdDevParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxMeanStdDevParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MEAN_STDDEV_I8U_O32F;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+            BAM_VXLIB_meanStdDev_i8u_o32f_getKernelInfo(NULL,
+                &kernel_details[*bam_node_cnt].kernel_info);
+
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxMeanStdDevParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxMeanStdDevParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxMeanStdDevParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxMeanStdDevParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_MEAN_STD_DEV_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_MEANSTDDEV_I8U_O32F_INPUT_IMAGE_PORT;
+                break;
+            default:
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelMeanStdDevPostprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
+{
+    vx_status status = VX_SUCCESS;
+    tivxMeanStdDevParams *prms = NULL;
+    uint32_t size;
+
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&prms, &size);
+
+    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+        (sizeof(tivxMeanStdDevParams) != size))
+    {
+        status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivx_obj_desc_scalar_t *sc[2U];
+        VXLIB_F32 mean_val, stddev_val;
+
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_MEAN_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MEAN_STD_DEV_STDDEV_IDX];
+
+        tivxBamControlNode(*g_handle, prms->bam_node_num,
+                           VXLIB_MEANSTDDEV_I8U_O32F_CMD_GET_MEAN_VAL,
+                           &mean_val);
+
+        tivxBamControlNode(*g_handle, prms->bam_node_num,
+                           VXLIB_MEANSTDDEV_I8U_O32F_CMD_GET_STDDEV_VAL,
+                           &stddev_val);
+
+        sc[0U]->data.f32 = mean_val;
+        sc[1U]->data.f32 = stddev_val;
+    }
+
+    return (status);
 }

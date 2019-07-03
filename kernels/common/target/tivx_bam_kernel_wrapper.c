@@ -75,7 +75,7 @@ extern CSL_EdmaccRegs dummyEDMAreg;
 extern uint32_t edmaBase[1];
 #endif
 
-#define TIVX_BAM_MAX_EDGES 10
+#define TIVX_BAM_MAX_EDGES 16
 #define TIVX_BAM_MAX_NODES 10
 
 #define SOURCE_NODE  0U
@@ -737,27 +737,26 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
         uint16_t numBlksVert = (uint16_t)(((buf_params[0]->dim_y-1) / blockDimParams->blockHeight) + 1);
 
         uint8_t num_transfers;
-        if(getNumUpstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, &num_transfers) != 0)
+        getNumUpstreamNodes(graph_args->edge_list, graph_args->num_edges, node_index, &num_transfers);
+        /* Configure dma_write_oneshot_args for SINK_NODE */
+        /* If there's an one shot image output, num_transfers > 0*/
+        dma_write_oneshot_args->numOutTransfers        = num_transfers;
+        dma_write_oneshot_args->transferType           = EDMA_UTILS_TRANSFER_OUT;
+        dma_write_oneshot_args->numTotalBlocksInFrame  = numBlksHorz * numBlksVert;
+        dma_write_oneshot_args->triggerBlockId         = dma_write_oneshot_args->numTotalBlocksInFrame - 1;
+
+        for(i=0; i<num_transfers; i++)
         {
-            /* Configure dma_write_autoinc_args for SINK_NODE */
-            dma_write_oneshot_args->numOutTransfers        = num_transfers;
-            dma_write_oneshot_args->transferType           = EDMA_UTILS_TRANSFER_OUT;
-            dma_write_oneshot_args->numTotalBlocksInFrame  = numBlksHorz * numBlksVert;
-            dma_write_oneshot_args->triggerBlockId         = dma_write_oneshot_args->numTotalBlocksInFrame - 1;
+            num_bytes = (uint32_t)VXLIB_sizeof(buf_params[k]->data_type);
 
-            for(i=0; i<num_transfers; i++)
-            {
-                num_bytes = (uint32_t)VXLIB_sizeof(buf_params[k]->data_type);
+            dma_write_oneshot_args->transferProp[i].blkWidth = buf_params[k]->dim_x*num_bytes;
+            dma_write_oneshot_args->transferProp[i].blkHeight = buf_params[k]->dim_y;
+            dma_write_oneshot_args->transferProp[i].extMemPtr = 0;
+            dma_write_oneshot_args->transferProp[i].interMemPtr = 0;
+            dma_write_oneshot_args->transferProp[i].extMemPtrStride = buf_params[k]->dim_x*num_bytes;
+            dma_write_oneshot_args->transferProp[i].interMemPtrStride = buf_params[k]->dim_x*num_bytes;
 
-                dma_write_oneshot_args->transferProp[i].blkWidth = buf_params[k]->dim_x*num_bytes;
-                dma_write_oneshot_args->transferProp[i].blkHeight = buf_params[k]->dim_y;
-                dma_write_oneshot_args->transferProp[i].extMemPtr = 0;
-                dma_write_oneshot_args->transferProp[i].interMemPtr = 0;
-                dma_write_oneshot_args->transferProp[i].extMemPtrStride = buf_params[k]->dim_x*num_bytes;
-                dma_write_oneshot_args->transferProp[i].interMemPtrStride = buf_params[k]->dim_x*num_bytes;
-
-                k++;
-            }
+            k++;
         }
     }
     else
@@ -1287,6 +1286,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
     tivx_data_block_params_t *data_blocks = NULL;
     tivx_edge_params_t *edge_params = NULL;
     uint32_t num_data_blocks;
+    int32_t one_shot_flag;
 
 #ifdef HOST_EMULATION
     edmaBase[0] = (uint32_t)(&dummyEDMAreg);
@@ -1387,7 +1387,16 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
          * tivxBam_initKernelsArgsMulti() will figure this out.  In order to create the graph, we need
          * to assign something, so we assign autoinc_args (even if the destination is not using autoinc)
          */
-        node_list[i].kernelArgs = (void *)&graph_args.dma_write_autoinc_args;
+        if(node_list[i].kernelId == BAM_KERNELID_DMAWRITE_NULL)
+        {
+            one_shot_flag = 1;
+            node_list[i].kernelArgs = (void *)&graph_args.dma_write_oneshot_args;
+        }
+        else
+        {
+            one_shot_flag = 0;
+            node_list[i].kernelArgs = (void *)&graph_args.dma_write_autoinc_args;
+        }
     }
 
     if(VX_SUCCESS == status_v)
@@ -1418,7 +1427,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
         /* TIOVX-186:
          * - May need to update this based on node_list
          */
-        p_graph_handle->one_shot_flag = 0;
+        p_graph_handle->one_shot_flag = one_shot_flag;
         p_graph_handle->multi_flag = 1;
         p_graph_handle->sink_node = num_nodes-1;
 

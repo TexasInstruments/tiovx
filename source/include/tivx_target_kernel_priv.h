@@ -116,8 +116,9 @@ typedef struct _tivx_target_kernel {
     tivx_target_kernel_create_in_bam_graph_f   create_in_bam_func;
     tivx_target_kernel_get_node_port_f         get_node_port_func;
     tivx_target_kernel_append_internal_edges_f append_internal_edges_func;
-    tivx_target_kernel_f preprocess_func;
-    tivx_target_kernel_f postprocess_func;
+    tivx_target_kernel_pre_post_process_f      preprocess_func;
+    tivx_target_kernel_pre_post_process_f      postprocess_func;
+    int32_t                                    kernel_params_size;
 #endif
 
     void *caller_priv_arg;

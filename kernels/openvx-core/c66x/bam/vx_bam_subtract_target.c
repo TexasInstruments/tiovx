@@ -97,7 +97,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelSubtractGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -411,6 +411,9 @@ void tivxAddTargetKernelBamSubtract(void)
             NULL,
             NULL,
             NULL,
+            MAX3(sizeof(BAM_VXLIB_subtract_i8u_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_subtract_i16s_i16s_o16s_params), 
+                 sizeof(BAM_VXLIB_subtract_i8u_i16s_o16s_params)),
             NULL);
     }
 }
@@ -425,7 +428,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -460,23 +463,31 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
 
             if (dst->format == VX_DF_IMAGE_U8)
             {
-                BAM_VXLIB_subtract_i8u_i8u_o8u_params kernel_params;
+                BAM_VXLIB_subtract_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_subtract_i8u_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I8U_O8U;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_subtract_i8u_i8u_o8u_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I8U_O8U;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_subtract_i8u_i8u_o8u_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelSubtractCreateInBamGraph: subtract_i8u_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-
-                BAM_VXLIB_subtract_i8u_i8u_o8u_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             else if (src0->format == VX_DF_IMAGE_U8 && 
                      src1->format == VX_DF_IMAGE_U8)
@@ -491,57 +502,75 @@ static vx_status VX_CALLBACK tivxKernelSubtractCreateInBamGraph(
             else if (src0->format == VX_DF_IMAGE_S16 && 
                      src1->format == VX_DF_IMAGE_S16)
             {
-                BAM_VXLIB_subtract_i16s_i16s_o16s_params kernel_params;
+                BAM_VXLIB_subtract_i16s_i16s_o16s_params *kernel_params = (BAM_VXLIB_subtract_i16s_i16s_o16s_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I16S_I16S_O16S;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_subtract_i16s_i16s_o16s_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I16S_I16S_O16S;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_subtract_i16s_i16s_o16s_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelSubtractCreateInBamGraph: subtract_i16s_i16s_o16s, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-
-                BAM_VXLIB_subtract_i16s_i16s_o16s_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             else
             {
-                BAM_VXLIB_subtract_i8u_i16s_o16s_params kernel_params;
+                BAM_VXLIB_subtract_i8u_i16s_o16s_params *kernel_params = (BAM_VXLIB_subtract_i8u_i16s_o16s_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I16S_O16S;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_subtract_i8u_i16s_o16s_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_SUBTRACT_I8U_I16S_O16S;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc_desc->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_params->subtract_policy = 0;
+                    
+                    
+                    if (src0->format == VX_DF_IMAGE_S16 && 
+                        src1->format == VX_DF_IMAGE_U8)
+                    {
+                        kernel_params->subtract_policy = 1;
+                        prms->switch_buffers = 1;
+                    }
+                    
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_subtract_i8u_i16s_o16s_getKernelInfo(NULL,
+                    &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelSubtractCreateInBamGraph: subtract_i8u_i16s_o16s, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_params.subtract_policy = 0;
-                
-                
-                if (src0->format == VX_DF_IMAGE_S16 && 
-                    src1->format == VX_DF_IMAGE_U8)
-                {
-                    kernel_params.subtract_policy = 1;
-                    prms->switch_buffers = 1;
-                }
-                
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-                BAM_VXLIB_subtract_i8u_i16s_o16s_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             prms->bam_node_num = *bam_node_cnt;
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelSubtractCreateInBamGraph: prms mem allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
 
@@ -598,6 +627,7 @@ static vx_status VX_CALLBACK tivxKernelSubtractGetNodePort(
                 *bam_port = BAM_VXLIB_SUBTRACT_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelSubtractGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }

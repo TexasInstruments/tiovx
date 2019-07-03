@@ -96,7 +96,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelLutGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -321,6 +321,8 @@ void tivxAddTargetKernelBamLut(void)
             NULL,
             NULL,
             NULL,
+            MAX2(sizeof(BAM_VXLIB_tableLookup_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_tableLookup_i16s_o16s_params)),
             NULL);
     }
 }
@@ -335,7 +337,7 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -373,31 +375,47 @@ static vx_status VX_CALLBACK tivxKernelLutCreateInBamGraph(
 
             if (src->format == VX_DF_IMAGE_U8)
             {
-                BAM_VXLIB_tableLookup_i8u_o8u_params kernel_params;
+                BAM_VXLIB_tableLookup_i8u_o8u_params *kernel_params = (BAM_VXLIB_tableLookup_i8u_o8u_params*)scratch;
 
-                kernel_params.lut    = lut_target_ptr;
-                kernel_params.count  = lut->num_items;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_tableLookup_i8u_o8u_params)))
+                {
+                    kernel_params->lut    = lut_target_ptr;
+                    kernel_params->count  = lut->num_items;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_TABLELOOKUP_I8U_O8U;
 
-                BAM_VXLIB_tableLookup_i8u_o8u_getKernelInfo(&kernel_params,
-                    &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_tableLookup_i8u_o8u_getKernelInfo(kernel_params,
+                        &kernel_details[*bam_node_cnt].kernel_info);
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             else{
-                BAM_VXLIB_tableLookup_i16s_o16s_params kernel_params;
+                BAM_VXLIB_tableLookup_i16s_o16s_params *kernel_params = (BAM_VXLIB_tableLookup_i16s_o16s_params*)scratch;
 
-                kernel_params.lut    = lut_target_ptr;
-                kernel_params.count  = lut->num_items;
-                kernel_params.offset = 32768U;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_tableLookup_i16s_o16s_params)))
+                {
+                    kernel_params->lut    = lut_target_ptr;
+                    kernel_params->count  = lut->num_items;
+                    kernel_params->offset = 32768U;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_TABLELOOKUP_I16S_O16S;
 
-                BAM_VXLIB_tableLookup_i16s_o16s_getKernelInfo(&kernel_params,
-                    &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_tableLookup_i16s_o16s_getKernelInfo(kernel_params,
+                        &kernel_details[*bam_node_cnt].kernel_info);
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             prms->bam_node_num = *bam_node_cnt;
         }

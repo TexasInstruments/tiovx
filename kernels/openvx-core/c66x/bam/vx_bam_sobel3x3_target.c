@@ -98,7 +98,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelSobelGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -258,8 +258,6 @@ static vx_status VX_CALLBACK tivxKernelSobelCreate(
             VXLIB_bufParams2D_t vxlib_src, vxlib_dstx, vxlib_dsty;
             VXLIB_bufParams2D_t *buf_params[3];
 
-            memset(prms, 0, sizeof(tivxSobelParams));
-
             tivxInitBufParams(src, &vxlib_src);
 
             /* Fill in the frame level sizes of buffers here. If the port
@@ -413,6 +411,7 @@ void tivxAddTargetKernelBamSobel3x3(void)
             NULL,
             NULL,
             NULL,
+            0,
             NULL);
     }
 }
@@ -427,7 +426,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -437,6 +436,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
     /* Check number of buffers and NULL pointers */
     if (num_params != TIVX_KERNEL_SOBEL3X3_MAX_PARAMS)
     {
+        VX_PRINT(VX_ZONE_ERROR,"tivxKernelSobelCreateInBamGraph: Obj_desc param count doesn't match TIVX_KERNEL_SOBEL_MAX_PARAMS\n");
         status = VX_FAILURE;
     }
     else
@@ -445,6 +445,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
             ((NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_X_IDX]) &&
              (NULL == obj_desc[TIVX_KERNEL_SOBEL3X3_OUTPUT_Y_IDX])))
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelSobelCreateInBamGraph: required Obj_descs are NULL\n");
             status = VX_ERROR_NO_MEMORY;
         }
     }
@@ -494,6 +495,7 @@ static vx_status VX_CALLBACK tivxKernelSobelCreateInBamGraph(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelSobelCreateInBamGraph: prms mem allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
 
@@ -545,6 +547,7 @@ static vx_status VX_CALLBACK tivxKernelSobelGetNodePort(
                 }
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelSobelGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }

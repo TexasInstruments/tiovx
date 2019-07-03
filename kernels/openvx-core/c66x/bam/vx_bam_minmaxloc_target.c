@@ -81,7 +81,7 @@ typedef struct
     uint32_t *pMax_cnt;
     uint32_t min_cap;
     uint32_t max_cap;
-
+    uint8_t bam_node_num;
 } tivxMinMaxLocParams;
 
 static tivx_target_kernel vx_minmaxloc_target_kernel = NULL;
@@ -97,6 +97,25 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocCreate(
 static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    uint8_t *bam_node, uint8_t *bam_port);
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle , void *priv_arg);
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocPostprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle , void *priv_arg);
 
 static vx_status VX_CALLBACK tivxKernelMinMaxLocProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -415,7 +434,10 @@ static vx_status VX_CALLBACK tivxKernelMinMaxLocDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxMinMaxLocParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -451,6 +473,15 @@ void tivxAddTargetKernelBamMinMaxLoc(void)
             tivxKernelMinMaxLocDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_minmaxloc_target_kernel,
+            tivxKernelMinMaxLocCreateInBamGraph,
+            tivxKernelMinMaxLocGetNodePort,
+            NULL,
+            tivxKernelMinMaxLocPreprocessInBamGraph,
+            tivxKernelMinMaxLocPostprocessInBamGraph,
+            sizeof(BAM_VXLIB_minMaxLoc_i8u_params),
+            NULL);
     }
 }
 
@@ -458,4 +489,327 @@ void tivxAddTargetKernelBamMinMaxLoc(void)
 void tivxRemoveTargetKernelBamMinMaxLoc(void)
 {
     tivxRemoveTargetKernel(vx_minmaxloc_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxMinMaxLocParams *prms = NULL;
+
+    /* Check number of buffers and NULL pointers */
+    if (num_params != TIVX_KERNEL_MIN_MAX_LOC_MAX_PARAMS)
+    {
+        VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: Obj_desc param count doesn't match TIVX_KERNEL_MML_MAX_PARAMS\n");
+        status = VX_FAILURE;
+    }
+    else
+    {
+        if ((NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX]) ||
+            (NULL == obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX]))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: one or more Obj_desc params are NULL\n");
+            status = VX_ERROR_NO_MEMORY;
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivx_obj_desc_image_t *src;
+        tivx_obj_desc_array_t *arr[2U];
+        uint32_t min_cap = 0, max_cap = 0;
+
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
+        arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
+        arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
+
+        prms = tivxMemAlloc(sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+
+        BAM_VXLIB_minMaxLoc_i8u_params *kernel_params = (BAM_VXLIB_minMaxLoc_i8u_params*)scratch;         
+
+        if ((NULL == kernel_params) || (NULL == prms) ||
+            (sizeof(BAM_VXLIB_minMaxLoc_i8u_params) != *size))
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocCreateInBamGraph: minMaxLoc_i8u, kernel_params is null or the size is not as expected or prms are NULL\n");
+            status = VX_FAILURE;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            memset(prms, 0, sizeof(tivxMinMaxLocParams));
+
+            if (NULL != arr[0u])
+            {
+                min_cap = arr[0U]->mem_size / arr[0u]->item_size;
+            }
+
+            if (NULL != arr[1u])
+            {
+                max_cap = arr[1U]->mem_size / arr[1u]->item_size;
+            }
+
+            kernel_params->minLocCapacity  = min_cap;
+            kernel_params->maxLocCapacity  = max_cap;
+            prms->min_cap = min_cap;
+            prms->max_cap = max_cap;
+
+            kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if (VX_DF_IMAGE_U8 == src->format)
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MINMAXLOC_I8U;
+
+                BAM_VXLIB_minMaxLoc_i8u_getKernelInfo(kernel_params,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else 
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MINMAXLOC_I16S;
+
+                BAM_VXLIB_minMaxLoc_i16s_getKernelInfo((BAM_VXLIB_minMaxLoc_i16s_params*)kernel_params,
+                    &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            prms->bam_node_num = *bam_node_cnt;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxMinMaxLocParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxMinMaxLocParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxMinMaxLocParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxMinMaxLocParams) == size))
+    {
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX:
+                *bam_node = prms->bam_node_num;
+                *bam_port = BAM_VXLIB_MINMAXLOC_I8U_INPUT_IMAGE_PORT;
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelMinMaxLocGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocPreprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
+{
+    vx_status status = VX_SUCCESS;
+    tivxMinMaxLocParams *prms = NULL;
+    uint32_t size;
+
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&prms, &size);
+
+    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+        (sizeof(tivxMinMaxLocParams) != size))
+    {
+        status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivx_obj_desc_scalar_t *sc[4U];
+        tivx_obj_desc_array_t *arr[2U];
+        void *arr0_target_ptr = NULL;
+        void *arr1_target_ptr = NULL;
+        uint32_t min_cap = 0;
+
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX];
+        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX];
+        sc[3U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX];
+        arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
+        arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
+
+        prms->pMin_cnt = NULL;
+        prms->pMax_cnt = NULL;
+
+        if (NULL != arr[0u])
+        {
+            min_cap = arr[0U]->mem_size / arr[0u]->item_size;
+        }
+
+        if ((NULL != sc[2u]) || (min_cap > 0))
+        {
+            prms->pMin_cnt = &prms->min_cnt;
+        }
+
+        if ((NULL != sc[2u]) || (min_cap > 0))
+        {
+            prms->pMax_cnt = &prms->max_cnt;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            status = tivxBamControlNode(*g_handle, prms->bam_node_num,
+                               VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_CNT_PTR,
+                               prms->pMin_cnt);
+
+            status = tivxBamControlNode(*g_handle, prms->bam_node_num,
+                               VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_CNT_PTR,
+                               prms->pMax_cnt);
+        }
+
+        if (NULL != arr[0u])
+        {
+            arr0_target_ptr = tivxMemShared2TargetPtr(
+                arr[0U]->mem_ptr.shared_ptr, arr[0U]->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(arr0_target_ptr, arr[0U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+            tivxBamControlNode(*g_handle, prms->bam_node_num,
+                               VXLIB_MINMAXLOC_I8U_CMD_SET_MIN_LOC_PTR,
+                               arr0_target_ptr);
+        }
+
+        if (NULL != arr[1u])
+        {
+            arr1_target_ptr = tivxMemShared2TargetPtr(
+                arr[1U]->mem_ptr.shared_ptr, arr[1U]->mem_ptr.mem_heap_region);
+            tivxMemBufferMap(arr1_target_ptr, arr[1U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+
+            tivxBamControlNode(*g_handle, prms->bam_node_num,
+                               VXLIB_MINMAXLOC_I8U_CMD_SET_MAX_LOC_PTR,
+                               arr1_target_ptr);
+        }
+    }
+
+    return (status);
+}
+
+static vx_status VX_CALLBACK tivxKernelMinMaxLocPostprocessInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, tivx_bam_graph_handle *g_handle, void *priv_arg)
+{
+    vx_status status = VX_SUCCESS;
+    tivxMinMaxLocParams *prms = NULL;
+    uint32_t size;
+
+    status = tivxGetTargetKernelInstanceContext(kernel,
+        (void **)&prms, &size);
+
+    if ((VX_SUCCESS != status) || (NULL == prms) || (NULL == g_handle) ||
+        (sizeof(tivxMinMaxLocParams) != size))
+    {
+        status = VX_FAILURE;
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        tivx_obj_desc_image_t *src;
+        tivx_obj_desc_scalar_t *sc[4U];
+        tivx_obj_desc_array_t *arr[2U];
+        uint32_t min_val, max_val;
+        void *arr0_target_ptr = NULL;
+        void *arr1_target_ptr = NULL;
+
+        src = (tivx_obj_desc_image_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_INPUT_IDX];
+        sc[0U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINVAL_IDX];
+        sc[1U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXVAL_IDX];
+        sc[2U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINCOUNT_IDX];
+        sc[3U] = (tivx_obj_desc_scalar_t*)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXCOUNT_IDX];
+        arr[0U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MINLOC_IDX];
+        arr[1U] = (tivx_obj_desc_array_t *)obj_desc[TIVX_KERNEL_MIN_MAX_LOC_MAXLOC_IDX];
+
+        tivxBamControlNode(*g_handle, prms->bam_node_num,
+                           VXLIB_MINMAXLOC_I8U_CMD_GET_MIN_VAL,
+                           &min_val);
+
+        tivxBamControlNode(*g_handle, prms->bam_node_num,
+                           VXLIB_MINMAXLOC_I8U_CMD_GET_MAX_VAL,
+                           &max_val);
+
+        if (VX_DF_IMAGE_U8 == src->format)
+        {
+            sc[0U]->data.u08 = min_val;
+            sc[1U]->data.u08 = max_val;
+        }
+        else
+        {
+            sc[0U]->data.s16 = min_val;
+            sc[1U]->data.s16 = max_val;
+        }
+
+        if (NULL != sc[2U])
+        {
+            sc[2U]->data.u32 = prms->min_cnt;
+        }
+        if (NULL != sc[3U])
+        {
+            sc[3U]->data.u32 = prms->max_cnt;
+        }
+        if (NULL != arr[0u])
+        {
+            if (prms->min_cnt > prms->min_cap)
+            {
+                arr[0u]->num_items = prms->min_cap;
+            }
+            else
+            {
+                arr[0u]->num_items = prms->min_cnt;
+            }
+        }
+        if (NULL != arr[1u])
+        {
+            if (prms->max_cnt > prms->max_cap)
+            {
+                arr[1u]->num_items = prms->max_cap;
+            }
+            else
+            {
+                arr[1u]->num_items = prms->max_cnt;
+            }
+        }
+
+        if (NULL != arr[0u])
+        {
+            tivxMemBufferUnmap(arr0_target_ptr, arr[0U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        }
+        if (NULL != arr[1u])
+        {
+            tivxMemBufferUnmap(arr1_target_ptr, arr[1U]->mem_size,
+                VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
+        }
+    }
+
+    return (status);
 }

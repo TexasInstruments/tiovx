@@ -97,7 +97,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelGaussianGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -303,6 +303,7 @@ void tivxAddTargetKernelBamGaussian3X3(void)
             NULL,
             NULL,
             NULL,
+            0,
             NULL);
     }
 }
@@ -317,7 +318,7 @@ static vx_status VX_CALLBACK tivxKernelGaussianCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;

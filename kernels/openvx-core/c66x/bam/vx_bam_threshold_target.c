@@ -96,7 +96,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelThresholdGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -313,6 +313,8 @@ void tivxAddTargetKernelBamThreshold(void)
             NULL,
             NULL,
             NULL,
+            MAX2(sizeof(BAM_VXLIB_thresholdBinary_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)),
             NULL);
     }
 }
@@ -327,7 +329,7 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -354,36 +356,50 @@ static vx_status VX_CALLBACK tivxKernelThresholdCreateInBamGraph(
 
             if (VX_THRESHOLD_TYPE_BINARY == thr->type)
             {
-                BAM_VXLIB_thresholdBinary_i8u_o8u_params kernel_params;
+                BAM_VXLIB_thresholdBinary_i8u_o8u_params *kernel_params = (BAM_VXLIB_thresholdBinary_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_thresholdBinary_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDBINARY_I8U_O8U;
 
-                kernel_params.threshold  = thr->value;
-                kernel_params.trueValue  = thr->true_value;
-                kernel_params.falseValue = thr->false_value;
+                    kernel_params->threshold  = thr->value;
+                    kernel_params->trueValue  = thr->true_value;
+                    kernel_params->falseValue = thr->false_value;
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-                BAM_VXLIB_thresholdBinary_i8u_o8u_getKernelInfo(&kernel_params,
-                    &kernel_details[*bam_node_cnt].kernel_info);
-
-                
+                    BAM_VXLIB_thresholdBinary_i8u_o8u_getKernelInfo(kernel_params,
+                        &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             else
             {
-                BAM_VXLIB_thresholdRange_i8u_o8u_params kernel_params;
+                BAM_VXLIB_thresholdRange_i8u_o8u_params *kernel_params = (BAM_VXLIB_thresholdRange_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U;
-                
-                kernel_params.upper  = thr->upper;
-                kernel_params.lower  = thr->lower;
-                kernel_params.trueValue  = thr->true_value;
-                kernel_params.falseValue = thr->false_value;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_thresholdRange_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_THRESHOLDRANGE_I8U_O8U;
+                    
+                    kernel_params->upper  = thr->upper;
+                    kernel_params->lower  = thr->lower;
+                    kernel_params->trueValue  = thr->true_value;
+                    kernel_params->falseValue = thr->false_value;
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-                BAM_VXLIB_thresholdRange_i8u_o8u_getKernelInfo( &kernel_params,
-                                                             &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_thresholdRange_i8u_o8u_getKernelInfo(kernel_params,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             prms->bam_node_num = *bam_node_cnt;
         }

@@ -97,7 +97,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelMultiplyGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -421,6 +421,10 @@ void tivxAddTargetKernelBamMultiply(void)
             NULL,
             NULL,
             NULL,
+            MAX4(sizeof(BAM_VXLIB_multiply_i8u_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_multiply_i8u_i8u_o16s_params), 
+                 sizeof(BAM_VXLIB_multiply_i16s_i16s_o16s_params),
+                 sizeof(BAM_VXLIB_multiply_i8u_i16s_o16s_params)),
             NULL);
     }
 }
@@ -435,7 +439,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -470,99 +474,136 @@ static vx_status VX_CALLBACK tivxKernelMultiplyCreateInBamGraph(
 
             if (dst->format == VX_DF_IMAGE_U8)
             {
-                BAM_VXLIB_multiply_i8u_i8u_o8u_params kernel_params;
+                BAM_VXLIB_multiply_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_multiply_i8u_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_multiply_i8u_i8u_o8u_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O8U;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_params->scale_factor = sc[0]->data.f32;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_multiply_i8u_i8u_o8u_getKernelInfo(NULL,
+                                                                 &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyCreateInBamGraph: multiply_i8u_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_params.scale_factor = sc[0]->data.f32;
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-                BAM_VXLIB_multiply_i8u_i8u_o8u_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             else if (src0->format == VX_DF_IMAGE_U8 && 
                      src1->format == VX_DF_IMAGE_U8)
             {
-                BAM_VXLIB_multiply_i8u_i8u_o16s_params kernel_params;
-
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                BAM_VXLIB_multiply_i8u_i8u_o16s_params *kernel_params = (BAM_VXLIB_multiply_i8u_i8u_o16s_params*)scratch;
+                
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_multiply_i8u_i8u_o16s_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I8U_O16S;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_params->scale_factor = sc[0]->data.f32;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_multiply_i8u_i8u_o16s_getKernelInfo(NULL,
+                                                                  &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyCreateInBamGraph: multiply_i8u_i8u_o16s, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_params.scale_factor = sc[0]->data.f32;
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-                BAM_VXLIB_multiply_i8u_i8u_o16s_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             else if (src0->format == VX_DF_IMAGE_S16 && 
                      src1->format == VX_DF_IMAGE_S16)
             {
-                BAM_VXLIB_multiply_i16s_i16s_o16s_params kernel_params;
+                BAM_VXLIB_multiply_i16s_i16s_o16s_params *kernel_params = (BAM_VXLIB_multiply_i16s_i16s_o16s_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_multiply_i16s_i16s_o16s_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I16S_I16S_O16S;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_params->scale_factor = sc[0]->data.f32;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+
+                    BAM_VXLIB_multiply_i16s_i16s_o16s_getKernelInfo(NULL,
+                                                                    &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyCreateInBamGraph: multiply_i16s_i16s_o16s, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_params.scale_factor = sc[0]->data.f32;
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-
-                BAM_VXLIB_multiply_i16s_i16s_o16s_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             else
             {
-                BAM_VXLIB_multiply_i8u_i16s_o16s_params kernel_params;
+                BAM_VXLIB_multiply_i8u_i16s_o16s_params *kernel_params = (BAM_VXLIB_multiply_i8u_i16s_o16s_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S;
-
-                if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_multiply_i8u_i16s_o16s_params)))
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MULTIPLY_I8U_I16S_O16S;
+
+                    if (VX_CONVERT_POLICY_SATURATE == sc[1U]->data.enm)
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_SATURATE;
+                    }
+                    else
+                    {
+                        kernel_params->overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    }
+                    kernel_params->scale_factor = sc[0]->data.f32;
+                    
+                    
+                    if (src0->format == VX_DF_IMAGE_S16 && 
+                        src1->format == VX_DF_IMAGE_U8)
+                    {
+                        prms->switch_buffers = 1;
+                    }
+                    
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_multiply_i8u_i16s_o16s_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
                 }
                 else
                 {
-                    kernel_params.overflow_policy = VXLIB_CONVERT_POLICY_WRAP;
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyCreateInBamGraph: multiply_i8u_i16s_o16s, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
                 }
-                kernel_params.scale_factor = sc[0]->data.f32;
-                
-                
-                if (src0->format == VX_DF_IMAGE_S16 && 
-                    src1->format == VX_DF_IMAGE_U8)
-                {
-                    prms->switch_buffers = 1;
-                }
-                
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
-
-                BAM_VXLIB_multiply_i8u_i16s_o16s_getKernelInfo(NULL,
-                &kernel_details[*bam_node_cnt].kernel_info);
             }
             prms->bam_node_num = *bam_node_cnt;
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyCreateInBamGraph: prms mem allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
 
@@ -619,6 +660,7 @@ static vx_status VX_CALLBACK tivxKernelMultiplyGetNodePort(
                 *bam_port = BAM_VXLIB_MULTIPLY_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelMultiplyGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }

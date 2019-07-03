@@ -275,7 +275,7 @@ vx_status tivxBamCreateHandleMultiNode(BAM_NodeParams node_list[],
                                        uint32_t max_edges,
                                        VXLIB_bufParams2D_t *buf_params[],
                                        tivx_bam_kernel_details_t kernel_details[],
-                                       tivx_bam_graph_handle *graph_handle);
+                                       tivx_bam_graph_handle *g_handle);
 
 /*!
  * \brief BAM Update Pointers
@@ -371,7 +371,8 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_create_in_bam_graph_f)(tivx_ta
                                                                BAM_NodeParams node_list[],
                                                                tivx_bam_kernel_details_t kernel_details[],
                                                                int32_t * bam_node_cnt,
-                                                               void * scratch);
+                                                               void * scratch,
+                                                               int32_t * size);
 
 /*!
 * \brief The "get node port" target kernel callback
@@ -402,9 +403,24 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_get_node_port_f)(tivx_target_k
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_append_internal_edges_f)(tivx_target_kernel_instance kernel,
                                                                BAM_EdgeParams edge_list[],
                                                                int32_t * bam_edge_cnt);
-
-
-/*! \brief Allows users to support kernel as part of super node
+/*!
+* \brief The "create in bam graph" target kernel callback
+*
+* \param [in] kernel The kernel for which the callback is called
+* \param [in] obj_desc Object descriptor array passed as input to this callback
+* \param [in] num_params[] Number of parameters in the obj_desc[] array
+* \param [in,out] graph handle from the supernode
+* \param [in] priv_arg private argument
+*
+* \ingroup group_tivx_ext_common_kernel
+*/
+typedef vx_status(VX_CALLBACK *tivx_target_kernel_pre_post_process_f)(tivx_target_kernel_instance kernel,
+                                                               tivx_obj_desc_t *obj_desc[],
+                                                               uint16_t num_params,
+                                                               tivx_bam_graph_handle *graph_handle,
+                                                               void *priv_arg);
+/*! 
+ * \brief Allows users to support kernel as part of super node
  *
  *         This is intended to be run after adding the target kernel.
  *
@@ -424,8 +440,9 @@ VX_API_ENTRY vx_status VX_API_CALL tivxEnableKernelForSuperNode(
                              tivx_target_kernel_create_in_bam_graph_f   create_in_bam_func,
                              tivx_target_kernel_get_node_port_f         get_node_port_func,
                              tivx_target_kernel_append_internal_edges_f append_internal_edges_func,
-                             tivx_target_kernel_f preprocess_func,
-                             tivx_target_kernel_f postprocess_func,
+                             tivx_target_kernel_pre_post_process_f      preprocess_func,
+                             tivx_target_kernel_pre_post_process_f      postprocess_func,
+                             int32_t                                    kernel_params_size,
                              void *priv_arg);
 
 

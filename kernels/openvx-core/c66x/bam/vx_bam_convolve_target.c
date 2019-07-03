@@ -96,7 +96,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelConvolveGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -328,6 +328,8 @@ void tivxAddTargetKernelBamConvolve(void)
             NULL,
             NULL,
             NULL,
+            MAX2(sizeof(BAM_VXLIB_convolve_i8u_c16s_o8u_params),
+                 sizeof(BAM_VXLIB_convolve_i8u_c16s_o16s_params)),
             NULL);
     }
 }
@@ -342,7 +344,7 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -380,35 +382,51 @@ static vx_status VX_CALLBACK tivxKernelConvolveCreateInBamGraph(
 
             if (dst->format == VX_DF_IMAGE_U8)
             {
-                BAM_VXLIB_convolve_i8u_c16s_o8u_params kernel_params;
+                BAM_VXLIB_convolve_i8u_c16s_o8u_params *kernel_params = (BAM_VXLIB_convolve_i8u_c16s_o8u_params*)scratch;
 
-                kernel_params.conv_mat      = conv_target_ptr;
-                kernel_params.conv_width    = conv->columns;
-                kernel_params.conv_height   = conv->rows;
-                kernel_params.conv_scale    = conv->scale;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_convolve_i8u_c16s_o8u_params)))
+                {
+                    kernel_params->conv_mat      = conv_target_ptr;
+                    kernel_params->conv_width    = conv->columns;
+                    kernel_params->conv_height   = conv->rows;
+                    kernel_params->conv_scale    = conv->scale;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O8U;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O8U;
 
-                BAM_VXLIB_convolve_i8u_c16s_o8u_getKernelInfo(&kernel_params,
-                    &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_convolve_i8u_c16s_o8u_getKernelInfo(kernel_params,
+                        &kernel_details[*bam_node_cnt].kernel_info);
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             else
             {
-                BAM_VXLIB_convolve_i8u_c16s_o16s_params kernel_params;
+                BAM_VXLIB_convolve_i8u_c16s_o16s_params *kernel_params = (BAM_VXLIB_convolve_i8u_c16s_o16s_params*)scratch;
 
-                kernel_params.conv_mat      = conv_target_ptr;
-                kernel_params.conv_width    = conv->columns;
-                kernel_params.conv_height   = conv->rows;
-                kernel_params.conv_scale    = conv->scale;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_convolve_i8u_c16s_o16s_params)))
+                {
+                    kernel_params->conv_mat      = conv_target_ptr;
+                    kernel_params->conv_width    = conv->columns;
+                    kernel_params->conv_height   = conv->rows;
+                    kernel_params->conv_scale    = conv->scale;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S;
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_CONVOLVE_I8U_C16S_O16S;
 
-                BAM_VXLIB_convolve_i8u_c16s_o16s_getKernelInfo(
-                    &kernel_params, &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_convolve_i8u_c16s_o16s_getKernelInfo(
+                        kernel_params, &kernel_details[*bam_node_cnt].kernel_info);
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             prms->bam_node_num = *bam_node_cnt;
         }

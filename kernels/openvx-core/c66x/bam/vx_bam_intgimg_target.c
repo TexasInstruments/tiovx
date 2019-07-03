@@ -97,7 +97,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelIntgImgGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -293,6 +293,7 @@ void tivxAddTargetKernelBamIntegralImage(void)
             NULL,
             NULL,
             NULL,
+            sizeof(BAM_VXLIB_integralImage_i8u_o32u_params),
             NULL);
     }
 }
@@ -307,7 +308,7 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -325,23 +326,29 @@ static vx_status VX_CALLBACK tivxKernelIntgImgCreateInBamGraph(
 
         prms = tivxMemAlloc(sizeof(tivxIntgImgParams), TIVX_MEM_EXTERNAL);
 
-        if (NULL != prms)
-        {
-            BAM_VXLIB_integralImage_i8u_o32u_params kernel_params;
+        BAM_VXLIB_integralImage_i8u_o32u_params *kernel_params = (BAM_VXLIB_integralImage_i8u_o32u_params*)scratch;
 
+        if ((NULL == kernel_params) || (NULL == prms) ||
+            (sizeof(BAM_VXLIB_integralImage_i8u_o32u_params) != *size))
+        {
+            status = VX_FAILURE;
+        }
+
+        if (VX_SUCCESS == status)
+        {
             memset(prms, 0, sizeof(tivxIntgImgParams));
 
             node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
             node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_INTEGRALIMAGE_I8U_O32U;
             node_list[*bam_node_cnt].kernelArgs = NULL;
 
-            kernel_params.frameWidth   = dst->valid_roi.end_x - dst->valid_roi.start_x;
-            kernel_params.frameHeight  = dst->valid_roi.end_y - dst->valid_roi.start_y;
+            kernel_params->frameWidth   = dst->valid_roi.end_x - dst->valid_roi.start_x;
+            kernel_params->frameHeight  = dst->valid_roi.end_y - dst->valid_roi.start_y;
 
-            BAM_VXLIB_integralImage_i8u_o32u_getKernelInfo(&kernel_params,
+            BAM_VXLIB_integralImage_i8u_o32u_getKernelInfo(kernel_params,
                 &kernel_details[*bam_node_cnt].kernel_info);
 
-            kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+            kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
             prms->bam_node_num = *bam_node_cnt;
         }

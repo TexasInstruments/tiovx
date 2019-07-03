@@ -95,7 +95,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelNonLinearFilterGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -352,6 +352,9 @@ void tivxAddTargetKernelBamNonLinearFilter(void)
             NULL,
             NULL,
             NULL,
+            MAX3(sizeof(BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params), 
+                 sizeof(BAM_VXLIB_median_MxN_i8u_i8u_o8u_params)),
             NULL);
     }
 }
@@ -366,7 +369,7 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -406,54 +409,78 @@ static vx_status VX_CALLBACK tivxKernelNonLinearFilterCreateInBamGraph(
 
             if (VX_NONLINEAR_FILTER_MIN == function_desc->data.enm)
             {
-                BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params kernel_params;
+                BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ERODE_MXN_I8U_I8U_O8U;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_erode_MxN_i8u_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_ERODE_MXN_I8U_I8U_O8U;
 
-                kernel_params.mask_addr = mask_target_ptr;
-                kernel_params.mask.dim_x    = mask->columns;
-                kernel_params.mask.dim_y    = mask->rows;
-                kernel_params.mask.stride_y = mask->columns;
-                kernel_params.mask.data_type = VXLIB_UINT8;
+                    kernel_params->mask_addr = mask_target_ptr;
+                    kernel_params->mask.dim_x    = mask->columns;
+                    kernel_params->mask.dim_y    = mask->rows;
+                    kernel_params->mask.stride_y = mask->columns;
+                    kernel_params->mask.data_type = VXLIB_UINT8;
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-                BAM_VXLIB_erode_MxN_i8u_i8u_o8u_getKernelInfo(&kernel_params,
-                    &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_erode_MxN_i8u_i8u_o8u_getKernelInfo(kernel_params,
+                        &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             else if (VX_NONLINEAR_FILTER_MAX == function_desc->data.enm)
             {
-                BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params kernel_params;
+                BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_DILATE_MXN_I8U_I8U_O8U;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_DILATE_MXN_I8U_I8U_O8U;
 
-                kernel_params.mask_addr = mask_target_ptr;
-                kernel_params.mask.dim_x    = mask->columns;
-                kernel_params.mask.dim_y    = mask->rows;
-                kernel_params.mask.stride_y = mask->columns;
+                    kernel_params->mask_addr = mask_target_ptr;
+                    kernel_params->mask.dim_x    = mask->columns;
+                    kernel_params->mask.dim_y    = mask->rows;
+                    kernel_params->mask.stride_y = mask->columns;
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-                BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_getKernelInfo(&kernel_params, 
-                    &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_dilate_MxN_i8u_i8u_o8u_getKernelInfo(kernel_params, 
+                        &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             else
             {
-                BAM_VXLIB_median_MxN_i8u_i8u_o8u_params kernel_params;
+                BAM_VXLIB_median_MxN_i8u_i8u_o8u_params *kernel_params = (BAM_VXLIB_median_MxN_i8u_i8u_o8u_params*)scratch;
 
-                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U;
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_median_MxN_i8u_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_MEDIAN_MXN_I8U_I8U_O8U;
 
-                kernel_params.mask_addr = mask_target_ptr;
-                kernel_params.mask.dim_x    = mask->columns;
-                kernel_params.mask.dim_y    = mask->rows;
-                kernel_params.mask.stride_y = mask->columns;
-                kernel_params.scratch_size  = mask->columns * mask->rows *
-                    2 * sizeof(int64_t);
+                    kernel_params->mask_addr = mask_target_ptr;
+                    kernel_params->mask.dim_x    = mask->columns;
+                    kernel_params->mask.dim_y    = mask->rows;
+                    kernel_params->mask.stride_y = mask->columns;
+                    kernel_params->scratch_size  = mask->columns * mask->rows *
+                        2 * sizeof(int64_t);
 
-                kernel_details[*bam_node_cnt].compute_kernel_params = (void*)&kernel_params;
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
 
-                BAM_VXLIB_median_MxN_i8u_i8u_o8u_getKernelInfo(&kernel_params, 
-                    &kernel_details[*bam_node_cnt].kernel_info);
+                    BAM_VXLIB_median_MxN_i8u_i8u_o8u_getKernelInfo(kernel_params, 
+                        &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    status = VX_FAILURE;
+                }
             }
             prms->bam_node_num = *bam_node_cnt;
         }

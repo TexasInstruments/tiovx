@@ -96,7 +96,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch);
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelPhaseGetNodePort(
     tivx_target_kernel_instance kernel, uint8_t ovx_port,
@@ -306,6 +306,7 @@ void tivxAddTargetKernelBamPhase(void)
             NULL,
             NULL,
             NULL,
+            0,
             NULL);
     }
 }
@@ -320,7 +321,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseCreateInBamGraph(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
     tivx_bam_kernel_details_t kernel_details[],
-    int32_t * bam_node_cnt, void * scratch)
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
 {
 
     vx_status status = VX_SUCCESS;
@@ -351,6 +352,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseCreateInBamGraph(
         }
         else
         {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelPhaseCreateInBamGraph: prms mem allocation failed\n");
             status = VX_ERROR_NO_MEMORY;
         }
 
@@ -366,6 +368,9 @@ static vx_status VX_CALLBACK tivxKernelPhaseCreateInBamGraph(
                 tivxMemFree(prms, sizeof(tivxPhaseParams), TIVX_MEM_EXTERNAL);
             }
         }
+    }
+    else {
+        VX_PRINT(VX_ZONE_ERROR,"tivxKernelPhaseCreateInBamGraph: obj_descs cannot be NULL\n");
     }
 
     return status;
@@ -399,6 +404,7 @@ static vx_status VX_CALLBACK tivxKernelPhaseGetNodePort(
                 *bam_port = BAM_VXLIB_PHASE_I16S_I16S_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelPhaseGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }
