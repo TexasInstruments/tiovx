@@ -20,6 +20,7 @@
 #include <VX/vx.h>
 #include <VX/vxu.h>
 #include <math.h>
+#include "shared_functions.h"
 
 TESTCASE(tivxReplicate, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -1171,8 +1172,309 @@ TEST_WITH_ARG(tivxReplicate, tivxReplicateUserNode, Test_UserNode_Arg, TEST_USER
     ASSERT(src == 0);
 }
 
+static void channel_combine_fill_chanel(CT_Image src, vx_enum channel, CT_Image dst)
+{
+    uint8_t *dst_base = NULL;
+    int x, y;
+
+    int plane, component;
+
+    int x_subsampling = ct_image_get_channel_subsampling_x(dst, channel);
+    int y_subsampling = ct_image_get_channel_subsampling_y(dst, channel);
+
+    int xstep = ct_image_get_channel_step_x(dst, channel);
+    int ystep = ct_image_get_channel_step_y(dst, channel);
+
+    int src_width = dst->width / x_subsampling;
+    int src_height = dst->height / y_subsampling;
+
+    // Check that src was subsampled (by spec)
+    ASSERT_EQ_INT(src_width, src->width);
+    ASSERT_EQ_INT(src_height, src->height);
+
+    ASSERT_NO_FAILURE(plane = ct_image_get_channel_plane(dst, channel));
+    ASSERT_NO_FAILURE(component = ct_image_get_channel_component(dst, channel));
+
+    ASSERT(dst_base = ct_image_get_plane_base(dst, plane));
+
+    for (y = 0; y < src_height; y++)
+    {
+        for (x = 0; x < src_width; x++)
+        {
+            uint8_t *src_data = CT_IMAGE_DATA_PTR_8U(src, x, y);
+            uint8_t *dst_data = dst_base + (x * xstep) + (y * ystep);
+            dst_data[component] = *src_data;
+        }
+    }
+
+    return;
+}
+
+static CT_Image channel_combine_create_reference_image(CT_Image src1, CT_Image src2, CT_Image src3, CT_Image src4, vx_df_image format)
+{
+    CT_Image dst = NULL;
+
+    ASSERT_(return NULL, src1);
+    ASSERT_NO_FAILURE_(return NULL, dst = ct_allocate_image(src1->width, src1->height, format));
+
+    switch (format)
+    {
+        case VX_DF_IMAGE_RGB:
+        case VX_DF_IMAGE_RGBX:
+            ASSERT_(return NULL, src1);
+            ASSERT_(return NULL, src2);
+            ASSERT_(return NULL, src3);
+            if (format == VX_DF_IMAGE_RGB)
+                ASSERT_(return NULL, src4 == NULL);
+            ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src1, VX_CHANNEL_R, dst));
+            ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src2, VX_CHANNEL_G, dst));
+            ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src3, VX_CHANNEL_B, dst));
+            if (format == VX_DF_IMAGE_RGBX)
+                ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src4, VX_CHANNEL_A, dst));
+            return dst;
+        case VX_DF_IMAGE_NV12:
+        case VX_DF_IMAGE_NV21:
+        case VX_DF_IMAGE_UYVY:
+        case VX_DF_IMAGE_YUYV:
+        case VX_DF_IMAGE_IYUV:
+        case VX_DF_IMAGE_YUV4:
+            ASSERT_(return NULL, src1);
+            ASSERT_(return NULL, src2);
+            ASSERT_(return NULL, src3);
+            ASSERT_(return NULL, src4 == NULL);
+            ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src1, VX_CHANNEL_Y, dst));
+            ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src2, VX_CHANNEL_U, dst));
+            ASSERT_NO_FAILURE_(return NULL, channel_combine_fill_chanel(src3, VX_CHANNEL_V, dst));
+            return dst;
+    }
+
+    CT_FAIL_(return NULL, "Not supported");
+}
+
+static void channel_combine_check(CT_Image src1, CT_Image src2, CT_Image src3, CT_Image src4, CT_Image dst)
+{
+    CT_Image dst_ref = NULL;
+
+    ASSERT_NO_FAILURE(dst_ref = channel_combine_create_reference_image(src1, src2, src3, src4, dst->format));
+
+    EXPECT_EQ_CTIMAGE(dst_ref, dst);
+}
+
+TEST(tivxReplicate, tivxReplicateNodeOptionalInputChannelCombine)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src1_image_exemplar, src1_image[2] = {0, 0}, src2_image[2] = {0, 0}, src3_image[2] = {0, 0};
+    vx_image dst_image_exemplar, dst_image[2] = {0, 0};
+    vx_object_array src_image_array[3] = {0, 0, 0};
+    vx_object_array dst_image_array = 0;
+    vx_graph graph1 = 0;
+    vx_node node1 = 0;
+    vx_int32 width = 320;
+    vx_int32 height = 240;
+
+    int channels = 0, i;
+    CT_Image src1[2] = {NULL, NULL};
+    CT_Image src2[2] = {NULL, NULL};
+    CT_Image src3[2] = {NULL, NULL};
+    CT_Image dst[2] = {NULL, NULL}, dummy = NULL;
+    vx_enum channel_ref;
+
+    ASSERT_VX_OBJECT(src1_image_exemplar = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image_exemplar = vxCreateImage(context, width, height, VX_DF_IMAGE_RGB), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_image_array[0] = vxCreateObjectArray(context, (vx_reference)src1_image_exemplar, 2), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(src_image_array[1] = vxCreateObjectArray(context, (vx_reference)src1_image_exemplar, 2), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(src_image_array[2] = vxCreateObjectArray(context, (vx_reference)src1_image_exemplar, 2), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(dst_image_array = vxCreateObjectArray(context,(vx_reference) dst_image_exemplar, 2), VX_TYPE_OBJECT_ARRAY);
+
+    VX_CALL(vxReleaseImage(&src1_image_exemplar));
+    VX_CALL(vxReleaseImage(&dst_image_exemplar));
+
+    graph1 = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph1, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(src1_image[0] = (vx_image)vxGetObjectArrayItem(src_image_array[0], 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2_image[0] = (vx_image)vxGetObjectArrayItem(src_image_array[1], 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src3_image[0] = (vx_image)vxGetObjectArrayItem(src_image_array[2], 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image[0] = (vx_image)vxGetObjectArrayItem(dst_image_array, 0), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src1_image[1] = (vx_image)vxGetObjectArrayItem(src_image_array[0], 1), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2_image[1] = (vx_image)vxGetObjectArrayItem(src_image_array[1], 1), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src3_image[1] = (vx_image)vxGetObjectArrayItem(src_image_array[2], 1), VX_TYPE_IMAGE);
+
+    node1 = vxChannelCombineNode(graph1, src1_image[0], src2_image[0], src3_image[0], NULL, dst_image[0]);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+
+    vx_bool replicate[] = { vx_true_e, vx_true_e, vx_true_e, vx_false_e, vx_true_e };
+    VX_CALL(vxReplicateNode(graph1, node1, replicate, 5));
+
+
+    ASSERT_NO_FAILURE(dummy = ct_allocate_image(4, 4, VX_DF_IMAGE_RGB));
+    ASSERT_NO_FAILURE(channels = ct_get_num_channels(VX_DF_IMAGE_RGB));
+    channel_ref = VX_CHANNEL_Y;
+
+    int w, h;
+
+    w = width / ct_image_get_channel_subsampling_x(dummy, channel_ref + 0);
+    h = height / ct_image_get_channel_subsampling_y(dummy, channel_ref + 0);
+    ASSERT_NO_FAILURE(src1[0] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src1_image[0], src1[0]));
+    ASSERT_NO_FAILURE(src1[1] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src1_image[1], src1[1]));
+
+    w = width / ct_image_get_channel_subsampling_x(dummy, channel_ref + 1);
+    h = height / ct_image_get_channel_subsampling_y(dummy, channel_ref + 1);
+    ASSERT_NO_FAILURE(src2[0] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src2_image[0], src2[0]));
+    ASSERT_NO_FAILURE(src2[1] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src2_image[1], src2[1]));
+
+    w = width / ct_image_get_channel_subsampling_x(dummy, channel_ref + 2);
+    h = height / ct_image_get_channel_subsampling_y(dummy, channel_ref + 2);
+    ASSERT_NO_FAILURE(src3[0] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src3_image[0], src3[0]));
+    ASSERT_NO_FAILURE(src3[1] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src3_image[1], src3[1]));
+
+    for (i = 0; i < 2; i++)
+    {
+        VX_CALL(vxReleaseImage(&src1_image[i]));
+        VX_CALL(vxReleaseImage(&src2_image[i]));
+        VX_CALL(vxReleaseImage(&src3_image[i]));
+    }
+    VX_CALL(vxReleaseImage(&dst_image[0]));
+
+    VX_CALL(vxVerifyGraph(graph1));
+    VX_CALL(vxProcessGraph(graph1));
+
+    ASSERT_VX_OBJECT(dst_image[0] = (vx_image)vxGetObjectArrayItem(dst_image_array, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image[1] = (vx_image)vxGetObjectArrayItem(dst_image_array, 1), VX_TYPE_IMAGE);
+    ASSERT_NO_FAILURE(dst[0] = ct_image_from_vx_image(dst_image[0]));
+    ASSERT_NO_FAILURE(dst[1] = ct_image_from_vx_image(dst_image[1]));
+    VX_CALL(vxReleaseImage(&dst_image[0]));
+    VX_CALL(vxReleaseImage(&dst_image[1]));
+
+    ASSERT_NO_FAILURE(channel_combine_check(src1[0], src2[0], src3[0], NULL, dst[0]));
+    ASSERT_NO_FAILURE(channel_combine_check(src1[1], src2[1], src3[1], NULL, dst[1]));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseGraph(&graph1));
+
+    ASSERT(node1 == 0);
+    ASSERT(graph1 == 0);
+
+    for (i = 0; i < 3; i++)
+    {
+        VX_CALL(vxReleaseObjectArray(&src_image_array[i]));
+        ASSERT(src_image_array[i] == 0);
+    }
+    VX_CALL(vxReleaseObjectArray(&dst_image_array));
+    ASSERT(dst_image_array == 0);
+}
+
+static void sobel3x3_check_y(CT_Image src, CT_Image dst_y, vx_border_t border)
+{
+    CT_Image dst_x_ref = NULL, dst_y_ref = NULL;
+
+    ASSERT(src && dst_y);
+
+    ASSERT_NO_FAILURE(tivx_sobel3x3_create_reference_image(src, border, &dst_x_ref, &dst_y_ref));
+
+    ASSERT_NO_FAILURE(
+        if (border.mode == VX_BORDER_UNDEFINED)
+        {
+            ct_adjust_roi(dst_y,  1, 1, 1, 1);
+            ct_adjust_roi(dst_y_ref, 1, 1, 1, 1);
+        }
+    );
+
+    EXPECT_EQ_CTIMAGE(dst_y_ref, dst_y);
+}
+
+TEST(tivxReplicate, tivxReplicateNodeOptionalOutputSobel)
+{
+    vx_context context = context_->vx_context_;
+    vx_image src1_image_exemplar, src1_image[2] = {0, 0};
+    vx_image dst_image_exemplar, dst_image[2] = {0, 0};
+    vx_object_array src_image_array = 0;
+    vx_object_array dst_image_array = 0;
+    vx_graph graph1 = 0;
+    vx_node node1 = 0;
+    vx_int32 width = 320;
+    vx_int32 height = 240;
+    vx_border_t border = { VX_BORDER_UNDEFINED, {{ 0 }} };
+
+    int channels = 0, i;
+    CT_Image src1[2] = {NULL, NULL};
+    CT_Image dst[2] = {NULL, NULL}, dummy = NULL;
+    vx_enum channel_ref;
+
+    ASSERT_VX_OBJECT(src1_image_exemplar = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image_exemplar = vxCreateImage(context, width, height, VX_DF_IMAGE_S16), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src_image_array = vxCreateObjectArray(context, (vx_reference)src1_image_exemplar, 2), VX_TYPE_OBJECT_ARRAY);
+    ASSERT_VX_OBJECT(dst_image_array = vxCreateObjectArray(context,(vx_reference) dst_image_exemplar, 2), VX_TYPE_OBJECT_ARRAY);
+
+    VX_CALL(vxReleaseImage(&src1_image_exemplar));
+    VX_CALL(vxReleaseImage(&dst_image_exemplar));
+
+    graph1 = vxCreateGraph(context);
+    ASSERT_VX_OBJECT(graph1, VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(src1_image[0] = (vx_image)vxGetObjectArrayItem(src_image_array, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image[0] = (vx_image)vxGetObjectArrayItem(dst_image_array, 0), VX_TYPE_IMAGE);
+
+    ASSERT_VX_OBJECT(src1_image[1] = (vx_image)vxGetObjectArrayItem(src_image_array, 1), VX_TYPE_IMAGE);
+
+    node1 = vxSobel3x3Node(graph1, src1_image[0], NULL, dst_image[0]);
+    ASSERT_VX_OBJECT(node1, VX_TYPE_NODE);
+    VX_CALL(vxSetNodeAttribute(node1, VX_NODE_BORDER, &border, sizeof(border)));
+
+    vx_bool replicate[] = { vx_true_e, vx_false_e, vx_true_e };
+    VX_CALL(vxReplicateNode(graph1, node1, replicate, 3));
+
+    int w = width, h = height;
+
+    ASSERT_NO_FAILURE(src1[0] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src1_image[0], src1[0]));
+    ASSERT_NO_FAILURE(src1[1] = own_generate_random(NULL, w, h));
+    ASSERT_NO_FAILURE(ct_image_copyto_vx_image(src1_image[1], src1[1]));
+
+    for (i = 0; i < 2; i++)
+    {
+        VX_CALL(vxReleaseImage(&src1_image[i]));
+    }
+    VX_CALL(vxReleaseImage(&dst_image[0]));
+
+    VX_CALL(vxVerifyGraph(graph1));
+    VX_CALL(vxProcessGraph(graph1));
+
+    ASSERT_VX_OBJECT(dst_image[0] = (vx_image)vxGetObjectArrayItem(dst_image_array, 0), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst_image[1] = (vx_image)vxGetObjectArrayItem(dst_image_array, 1), VX_TYPE_IMAGE);
+    ASSERT_NO_FAILURE(dst[0] = ct_image_from_vx_image(dst_image[0]));
+    ASSERT_NO_FAILURE(dst[1] = ct_image_from_vx_image(dst_image[1]));
+    VX_CALL(vxReleaseImage(&dst_image[0]));
+    VX_CALL(vxReleaseImage(&dst_image[1]));
+
+    ASSERT_NO_FAILURE(sobel3x3_check_y(src1[0], dst[0], border));
+    ASSERT_NO_FAILURE(sobel3x3_check_y(src1[1], dst[1], border));
+
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseGraph(&graph1));
+
+    ASSERT(node1 == 0);
+    ASSERT(graph1 == 0);
+
+    VX_CALL(vxReleaseObjectArray(&src_image_array));
+    ASSERT(src_image_array == 0);
+    VX_CALL(vxReleaseObjectArray(&dst_image_array));
+    ASSERT(dst_image_array == 0);
+}
+
 TESTCASE_TESTS(tivxReplicate,
         tivxReplicateNode,
         tivxReplicateNode2,
-        tivxReplicateUserNode
+        tivxReplicateUserNode,
+        tivxReplicateNodeOptionalInputChannelCombine,
+        tivxReplicateNodeOptionalOutputSobel
 )
