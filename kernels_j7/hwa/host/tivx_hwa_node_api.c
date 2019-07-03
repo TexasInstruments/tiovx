@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2018 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -128,6 +128,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_user_data_object  region_prms,
                                       vx_user_data_object  mesh_prms,
                                       vx_image             mesh_img,
+                                      vx_user_data_object  dcc_db,
                                       vx_image             in_img,
                                       vx_image             out0_img,
                                       vx_image             out1_img)
@@ -138,6 +139,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
             (vx_reference)region_prms,
             (vx_reference)mesh_prms,
             (vx_reference)mesh_img,
+            (vx_reference)dcc_db,
             (vx_reference)in_img,
             (vx_reference)out0_img,
             (vx_reference)out1_img

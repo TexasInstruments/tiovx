@@ -1,6 +1,6 @@
 /*
  *
- * Copyright (c) 2017-2018 Texas Instruments Incorporated
+ * Copyright (c) 2017-2019 Texas Instruments Incorporated
  *
  * All rights reserved not granted herein.
  *
@@ -133,6 +133,7 @@ TEST(tivxHwaVpacLdc, testNodeCreation)
                                 param_obj,
                                 matrix,
                                 region_obj,
+                                NULL,
                                 NULL,
                                 NULL,
                                 input,
@@ -619,6 +620,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
                         region_obj,
                         mesh_params_obj,
                         mesh_image,
+                        NULL,
                         input_image,
                         output_image,
                         dual_out_image),

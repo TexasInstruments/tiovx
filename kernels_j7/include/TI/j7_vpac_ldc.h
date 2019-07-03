@@ -327,6 +327,8 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *             The coordinates are of type S16Q3, and are stored as X,Y pairs
  *             of type <tt>\ref VX_DF_IMAGE_U32</tt>.
  *             If set to null, back mapping is disabled.
+ * \param [in] dcc_db (optional) DCC tuning database for the given sensor
+ *             <tt>\ref vx_user_data_object </tt> Note: Not supported yet.
  * \param [in] in_img The input image in
  *             <tt>\ref VX_DF_IMAGE_NV12</tt>,
  *             <tt>\ref TIVX_DF_IMAGE_NV12_P12</tt>,
@@ -367,6 +369,7 @@ VX_API_ENTRY vx_node VX_API_CALL tivxVpacLdcNode(vx_graph graph,
                                       vx_user_data_object  region_prms,
                                       vx_user_data_object  mesh_prms,
                                       vx_image             mesh_img,
+                                      vx_user_data_object  dcc_db,
                                       vx_image             in_img,
                                       vx_image             out0_img,
                                       vx_image             out1_img);

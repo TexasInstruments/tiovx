@@ -104,6 +104,10 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
     vx_image mesh_img = NULL;
     vx_df_image mesh_img_fmt;
 
+    vx_user_data_object dcc_db = NULL;
+    vx_char dcc_db_name[VX_MAX_REFERENCE_NAME];
+    vx_size dcc_db_size;
+
     vx_image in_img = NULL;
     vx_df_image in_img_fmt;
 
@@ -134,6 +138,7 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         region_prms = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_REGION_PRMS_IDX];
         mesh_prms = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_MESH_PRMS_IDX];
         mesh_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_MESH_IMG_IDX];
+        dcc_db = (vx_user_data_object)parameters[TIVX_KERNEL_VPAC_LDC_DCC_DB_IDX];
         in_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_IN_IMG_IDX];
         out0_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT0_IMG_IDX];
         out1_img = (vx_image)parameters[TIVX_KERNEL_VPAC_LDC_OUT1_IMG_IDX];
@@ -169,6 +174,12 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
         if (NULL != mesh_img)
         {
             tivxCheckStatus(&status, vxQueryImage(mesh_img, VX_IMAGE_FORMAT, &mesh_img_fmt, sizeof(mesh_img_fmt)));
+        }
+
+        if (NULL != dcc_db)
+        {
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_db, VX_USER_DATA_OBJECT_NAME, &dcc_db_name, sizeof(dcc_db_name)));
+            tivxCheckStatus(&status, vxQueryUserDataObject(dcc_db, VX_USER_DATA_OBJECT_SIZE, &dcc_db_size, sizeof(dcc_db_size)));
         }
 
         tivxCheckStatus(&status, vxQueryImage(in_img, VX_IMAGE_FORMAT, &in_img_fmt, sizeof(in_img_fmt)));
@@ -246,6 +257,16 @@ static vx_status VX_CALLBACK tivxAddKernelVpacLdcValidate(vx_node node,
             {
                 status = VX_ERROR_INVALID_PARAMETERS;
                 VX_PRINT(VX_ZONE_ERROR, "'mesh_img' should be an image of type:\n VX_DF_IMAGE_U32 \n");
+            }
+        }
+
+        if (NULL != dcc_db)
+        {
+            if ((dcc_db_size < 1U) ||
+                (strncmp(dcc_db_name, "dcc_ldc", sizeof(dcc_db_name)) != 0))
+            {
+                status = VX_ERROR_INVALID_PARAMETERS;
+                VX_PRINT(VX_ZONE_ERROR, "'dcc_db' should be a user_data_object of type:\n dcc_ldc \n");
             }
         }
 
@@ -464,6 +485,16 @@ vx_status tivxAddKernelVpacLdc(vx_context context)
                         index,
                         VX_INPUT,
                         VX_TYPE_IMAGE,
+                        VX_PARAMETER_STATE_OPTIONAL
+            );
+            index++;
+        }
+        if (status == VX_SUCCESS)
+        {
+            status = vxAddParameterToKernel(kernel,
+                        index,
+                        VX_INPUT,
+                        VX_TYPE_USER_DATA_OBJECT,
                         VX_PARAMETER_STATE_OPTIONAL
             );
             index++;
