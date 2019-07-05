@@ -392,7 +392,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
         if (VX_SUCCESS == status)
         {
             /* All Formats, frame size, module enables are set in
-             * viss paramsetes, call this ioctl to set validate and set
+             * viss parameters, call this ioctl to set validate and set
              * them in the driver */
             status = Fvid2_control(vissObj->handle,
                 IOCTL_VHWA_M2M_VISS_SET_PARAMS, (void *)vissDrvPrms, NULL);
@@ -791,6 +791,14 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             h3a_out->aew_af_mode = vissPrms->h3a_aewb_af_mode;
             h3a_out->h3a_source_data = vissPrms->h3a_in;
             h3a_out->size = vissObj->h3a_output_size;
+
+            if(1 == vissPrms->h3a_aewb_af_mode)
+            {
+                /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
+                 * in case third party 2A nodes which don't use DCC can easily see this information */
+                memcpy(&h3a_out->aew_config, &vissObj->aew_config, sizeof(tivx_h3a_aew_config));
+            }
+
             vissObj->outFrm[VHWA_M2M_VISS_OUT_H3A_IDX].addr[0u] =
                 (uint64_t)h3a_out->data;
         }

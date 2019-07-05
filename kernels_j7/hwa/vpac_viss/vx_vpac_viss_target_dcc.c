@@ -154,9 +154,9 @@ uint32_t grawfe_pwl_vshort_lut[] =
     #include "rawfe_pwl_lut_vshort_0.txt"
 };
 
-uint32_t gGlbceAsymTbl[] = 
+uint32_t gGlbceAsymTbl[] =
 {
-	#include "glbce_asym_table.txt"
+    #include "glbce_asym_table.txt"
 };
 
 int32_t yee_lut[] =
@@ -457,6 +457,13 @@ static void tivxVpacVissDccMapH3aParams(tivxVpacVissObj *vissObj,
     aewbCfg->satLimit               = dccH3aCfg->saturation_limit;
 
     vissObj->vissCfgRef.h3aCfg = h3aCfg;
+
+    vissObj->aew_config.aewwin1_WINH = aewbCfg->winCfg.height;
+    vissObj->aew_config.aewwin1_WINW = aewbCfg->winCfg.width;
+    vissObj->aew_config.aewwin1_WINVC = aewbCfg->winCfg.vertCount;
+    vissObj->aew_config.aewwin1_WINHC = aewbCfg->winCfg.horzCount;
+    vissObj->aew_config.aewsubwin_AEWINCV = aewbCfg->winCfg.vertIncr;
+    vissObj->aew_config.aewsubwin_AEWINCH = aewbCfg->winCfg.horzIncr;
 
     /* Setting config flag to 1,
      * assumes caller protects this flag */
@@ -861,7 +868,7 @@ static void tivxVpacVissDccMapCCMParams(tivxVpacVissObj *vissObj,
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
-        vissObj->isConfigUpdated = 1U;    
+        vissObj->isConfigUpdated = 1U;
     }
 }
 
@@ -937,7 +944,7 @@ void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj)
         eeCfg->yesEThr2 = 0;
         eeCfg->yesGOfset = 0;
         eeCfg->lut = yee_lut;
-        
+
         vissObj->vissCfgRef.eeCfg = eeCfg;
 
         /* Setting config flag to 1,
@@ -949,7 +956,7 @@ void tivxVpacVissDccMapEeParams(tivxVpacVissObj *vissObj)
 static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
 {
     Glbce_Config *glbceCfg = NULL;
-	
+
     glbceCfg = &vissObj->vissCfg.glbceCfg;
     if (NULL != vissObj)
     {
@@ -964,13 +971,13 @@ static void tivxVpacVissDccMapGlbceParams(tivxVpacVissObj *vissObj)
         glbceCfg->maxSlopeLimit = 72;
         glbceCfg->minSlopeLimit = 62;
         memcpy(glbceCfg->asymLut, gGlbceAsymTbl, GLBCE_ASYMMETRY_LUT_SIZE*4);
-		
+
         vissObj->vissCfgRef.glbceCfg = glbceCfg;
 
         /* Setting config flag to 1,
          * assumes caller protects this flag */
         vissObj->isConfigUpdated = 1U;
-		
+
     }
 }
 

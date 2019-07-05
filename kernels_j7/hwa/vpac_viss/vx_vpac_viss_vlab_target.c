@@ -78,7 +78,7 @@
 #define UP_SHIFT 1
 #define DOWN_SHIFT 2
 
-#define H3A_AEW_HEADER_SIZE     (12) /* sizeof(tivx_h3a_aew_header) */
+#define H3A_AEW_CONFIG_SIZE     (12) /* sizeof(tivx_h3a_aew_config) */
 
 
 typedef struct
@@ -358,7 +358,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             pH3a_buf->size = prms->config.af_buffer_size;
             if(1 == params->h3a_aewb_af_mode)
             {
-                pH3a_buf->size = prms->config.aew_buffer_size + H3A_AEW_HEADER_SIZE;
+                pH3a_buf->size = prms->config.aew_buffer_size + H3A_AEW_CONFIG_SIZE;
             }
             prms->config.h3a = (uint32_t*)pH3a_buf->data;
         }
@@ -863,7 +863,7 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
 
                     if (VX_SUCCESS == status)
                     {
-                        uint32_t full_aew_size = prms->config.aew_buffer_size + H3A_AEW_HEADER_SIZE;
+                        uint32_t full_aew_size = prms->config.aew_buffer_size + H3A_AEW_CONFIG_SIZE;
                         prms->config.h3a_buffer_size = prms->config.af_buffer_size;
                         if((full_aew_size) > prms->config.h3a_buffer_size)
                         {

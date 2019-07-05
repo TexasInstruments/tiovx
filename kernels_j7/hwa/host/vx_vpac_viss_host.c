@@ -761,12 +761,3 @@ void tivx_ae_awb_params_init(tivx_ae_awb_params_t *prms)
         memset(prms, 0x0, sizeof(tivx_ae_awb_params_t));
     }
 }
-
-void tivx_h3a_aew_header_init(tivx_h3a_aew_header *prms)
-{
-    if (NULL != prms)
-    {
-        memset(prms, 0x0, sizeof(tivx_h3a_aew_header));
-    }
-}
-

@@ -298,28 +298,7 @@ typedef struct {
 } tivx_ae_awb_params_t;
 
 /*!
- * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
- *        Must be allocated at 64byte boundary.
- *
- * \ingroup group_vision_function_vpac_viss
- */
-typedef struct {
-    /*! Indicates the contents of this buffer:
-     *   1: AEW data, 2:AF data */
-    uint32_t                    aew_af_mode;
-    /*! Indicates the source data corresponding to this data:
-     *   0: RAW0, 1: RAW1, 2: RAW2, 3: LSC */
-    uint32_t                    h3a_source_data;
-    /*! Total used size of the data buffer in bytes */
-    uint32_t                    size;
-    /*! Reserved dummy field to make data to be 64byte aligned */
-    uint32_t                    resv0;
-    /*! Payload of the AWE or AF data */
-    uint8_t                     data[TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES];
-} tivx_h3a_data_t;
-
-/*!
- * \brief H3A AEW header data structure used by the TIVX_KERNEL_VISS kernel.
+ * \brief H3A AEW configuration data structure used by the TIVX_KERNEL_VISS kernel.
  *
  * \ingroup group_vision_function_vpac_viss
  */
@@ -337,8 +316,30 @@ typedef struct
     uint16_t                    aewsubwin_AEWINCV;
     /*! AEW Subwindow Horizontal Increment Value */
     uint16_t                    aewsubwin_AEWINCH;
-} tivx_h3a_aew_header;
+} tivx_h3a_aew_config;
 
+/*!
+ * \brief The configuration data structure used by the TIVX_KERNEL_VISS kernel.
+ *        Must be allocated at 64 byte boundary.
+ *
+ * \ingroup group_vision_function_vpac_viss
+ */
+typedef struct {
+    /*! Indicates the contents of this buffer:
+     *   1: AEW data, 2:AF data */
+    uint32_t                    aew_af_mode;
+    /*! Indicates the source data corresponding to this data:
+     *   0: RAW0, 1: RAW1, 2: RAW2, 3: LSC */
+    uint32_t                    h3a_source_data;
+    /*! If aew_af_mode == 1, this is the aew HW configuration used */
+    tivx_h3a_aew_config         aew_config;
+    /*! Total used size of the data buffer in bytes */
+    uint32_t                    size;
+    /*! Reserved dummy field to make data to be 64 byte aligned */
+    uint32_t                    resv[(64U-(sizeof(tivx_h3a_aew_config)+12U))/4U ];
+    /*! Payload of the AEW or AF data */
+    uint8_t                     data[TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES];
+} tivx_h3a_data_t;
 
 /*********************************
  *      Function Prototypes
@@ -513,15 +514,6 @@ void tivx_h3a_data_init(tivx_h3a_data_t *prms);
  * \ingroup group_vision_function_vpac_viss
  */
 void tivx_ae_awb_params_init(tivx_ae_awb_params_t *prms);
-
-/*!
- * \brief Function to initialize H3A AEWB Header parameters
- *
- * \param prms  [in] Pointer to H3A AEWB Header parameters
- *
- * \ingroup group_vision_function_vpac_viss
- */
-void tivx_h3a_aew_header_init(tivx_h3a_aew_header *prms);
 
 #ifdef __cplusplus
 }

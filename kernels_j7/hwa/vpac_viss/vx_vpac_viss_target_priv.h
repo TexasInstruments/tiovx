@@ -131,7 +131,7 @@ typedef struct
     Fcp_YuvSatLutConfig                 yuvSatLutCfg;
 
     Fcp_HistConfig                      histCfg;
-    
+
     Glbce_Config                        glbceCfg;
 
     Fcp_EeConfig                        eeCfg;
@@ -273,6 +273,8 @@ typedef struct
     void                               *h3a_out_target_ptr;
     /*! H3A Output size */
     uint32_t                            h3a_output_size;
+    /*! H3A AEW config to copy to h3a output for each frame */
+    tivx_h3a_aew_config                 aew_config;
 } tivxVpacVissObj;
 
 typedef struct

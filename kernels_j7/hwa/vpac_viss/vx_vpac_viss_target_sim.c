@@ -142,7 +142,7 @@ typedef struct
     nsf4_settings nsf4_params;
     h3a_settings h3a_params;
     h3a_image h3a_in;
-    tivx_h3a_aew_header aew_header;
+    tivx_h3a_aew_config aew_config;
     FLXD_Config flexcfa_params;
     Flexcc_Config flexcc_params;
     ee_Config ee_params;
@@ -609,17 +609,13 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             pH3a_buf->aew_af_mode = params->h3a_aewb_af_mode;
             pH3a_buf->h3a_source_data = params->h3a_in;
 
-/*
-TODO : Copying H3A header is not needed if 2A is getting H3A config from DCC
-This code maybe removed
-*/
             if(1 == params->h3a_aewb_af_mode)
             {
-                void *pData = (void *)pH3a_buf->data;
-                pH3a_buf->size = prms->aew_buffer_size + sizeof(tivx_h3a_aew_header);
-                memcpy(pData, &prms->aew_header, sizeof(tivx_h3a_aew_header));
-                pData += sizeof(tivx_h3a_aew_header);
-                memcpy(pData, prms->scratch_aew_result, prms->aew_buffer_size);
+                /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
+                 * in case third party 2A nodes which don't use DCC can easily see this information */
+                memcpy(&pH3a_buf->aew_config, &prms->aew_config, sizeof(tivx_h3a_aew_config));
+                pH3a_buf->size = prms->aew_buffer_size;
+                memcpy((void *)pH3a_buf->data, prms->scratch_aew_result, prms->aew_buffer_size);
             }
             else if(2 == params->h3a_aewb_af_mode)
             {
@@ -998,12 +994,12 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     prms->h3a_in.image_height = height;
                     prms->h3a_in.image_data = (int16_t*)prms->scratch_rawfe_h3a_out;
 
-                    prms->aew_header.aewwin1_WINH = prms->h3a_params.aewwin1_WINH;
-                    prms->aew_header.aewwin1_WINW = prms->h3a_params.aewwin1_WINW;
-                    prms->aew_header.aewwin1_WINVC = prms->h3a_params.aewwin1_WINVC;
-                    prms->aew_header.aewwin1_WINHC = prms->h3a_params.aewwin1_WINHC;
-                    prms->aew_header.aewsubwin_AEWINCV = prms->h3a_params.aewsubwin_AEWINCV;
-                    prms->aew_header.aewsubwin_AEWINCH = prms->h3a_params.aewsubwin_AEWINCH;
+                    prms->aew_config.aewwin1_WINH = prms->h3a_params.aewwin1_WINH;
+                    prms->aew_config.aewwin1_WINW = prms->h3a_params.aewwin1_WINW;
+                    prms->aew_config.aewwin1_WINVC = prms->h3a_params.aewwin1_WINVC;
+                    prms->aew_config.aewwin1_WINHC = prms->h3a_params.aewwin1_WINHC;
+                    prms->aew_config.aewsubwin_AEWINCV = prms->h3a_params.aewsubwin_AEWINCV;
+                    prms->aew_config.aewsubwin_AEWINCH = prms->h3a_params.aewsubwin_AEWINCH;
 
                     /* Compute AEW buffer size */
                     num_aew_windows = (prms->h3a_params.aewwin1_WINVC+1)*(prms->h3a_params.aewwin1_WINHC);
@@ -1053,9 +1049,9 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     }
 
                     /* H3A can operate in AF or AEWB mode. */
-                    /* Therefore total memory needed is the max(aew_buffer_size + sizeof(tivx_h3a_aew_header), af_buffer_size) */
-                    max_h3a_out_buffer_size = ((prms->aew_buffer_size + sizeof(tivx_h3a_aew_header)) > prms->af_buffer_size ?
-                                               prms->aew_buffer_size + sizeof(tivx_h3a_aew_header) : prms->af_buffer_size);
+                    /* Therefore total memory needed is the max(aew_buffer_size, af_buffer_size) */
+                    max_h3a_out_buffer_size = (prms->aew_buffer_size > prms->af_buffer_size ?
+                                               prms->aew_buffer_size : prms->af_buffer_size);
                     if(max_h3a_out_buffer_size > TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES)
                     {
                         VX_PRINT(VX_ZONE_ERROR, "Required H3A output buffer size (%d bytes) is greater than TIVX_VPAC_VISS_MAX_H3A_STAT_NUMBYTES (%d bytes)\n",
