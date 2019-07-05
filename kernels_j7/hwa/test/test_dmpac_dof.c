@@ -217,5 +217,82 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
 }
 
 
-TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing)
+TEST(tivxHwaDmpacDof, testNegativeGraph)
+{
+    vx_context context = context_->vx_context_;
+    vx_pyramid input_current = NULL, input_reference = NULL;
+    vx_image flow_vector_in = NULL, flow_vector_out = NULL;
+    vx_distribution confidence_histogram = NULL;
+    tivx_dmpac_dof_params_t params;
+    vx_user_data_object param_obj;
+    vx_graph graph = 0;
+    vx_node node_dof = 0;
+    vx_status status;
+
+    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
+    {
+        uint32_t width = 1280, height = 720;
+        uint32_t levels = 5;
+        vx_enum format = VX_DF_IMAGE_U8;
+
+        tivxHwaLoadKernels(context);
+
+        tivx_dmpac_dof_params_init(&params);
+        ASSERT_VX_OBJECT(param_obj = vxCreateUserDataObject(context, "tivx_dmpac_dof_params_t", sizeof(tivx_dmpac_dof_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
+
+        params.vertical_search_range[0] = 48;
+        params.vertical_search_range[1] = 48;
+        params.horizontal_search_range = 191;
+        params.median_filter_enable = 1;
+        params.motion_smoothness_factor = 24;
+        params.motion_direction = 1; /* 1: forward direction */
+
+        VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
+
+        ASSERT_VX_OBJECT(input_current = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(input_reference = vxCreatePyramid(context, levels, VX_SCALE_PYRAMID_HALF, width, height, format), VX_TYPE_PYRAMID);
+        ASSERT_VX_OBJECT(flow_vector_in = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(flow_vector_out = vxCreateImage(context, width, height, VX_DF_IMAGE_U32), VX_TYPE_IMAGE);
+        ASSERT_VX_OBJECT(confidence_histogram = vxCreateDistribution(context, 16, 0, 16), VX_TYPE_DISTRIBUTION);
+
+        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+        ASSERT_VX_OBJECT(node_dof = tivxDmpacDofNode(graph,
+                        param_obj,
+                        NULL,
+                        NULL,
+                        input_current,
+                        input_reference,
+                        flow_vector_in,
+                        NULL,
+                        flow_vector_out,
+                        confidence_histogram), VX_TYPE_NODE);
+        VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
+
+        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+
+        VX_CALL(vxReleaseNode(&node_dof));
+        VX_CALL(vxReleaseGraph(&graph));
+        VX_CALL(vxReleasePyramid(&input_current));
+        VX_CALL(vxReleasePyramid(&input_reference));
+        VX_CALL(vxReleaseImage(&flow_vector_in));
+        VX_CALL(vxReleaseImage(&flow_vector_out));
+        VX_CALL(vxReleaseDistribution(&confidence_histogram));
+        VX_CALL(vxReleaseUserDataObject(&param_obj));
+
+        ASSERT(node_dof == 0);
+        ASSERT(graph == 0);
+        ASSERT(input_current == 0);
+        ASSERT(input_reference == 0);
+        ASSERT(flow_vector_in == 0);
+        ASSERT(flow_vector_out == 0);
+        ASSERT(confidence_histogram == 0);
+        ASSERT(param_obj == 0);
+
+        tivxHwaUnLoadKernels(context);
+    }
+}
+
+
+TESTCASE_TESTS(tivxHwaDmpacDof, testGraphProcessing, testNegativeGraph)
 

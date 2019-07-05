@@ -429,7 +429,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
             }
         }
 
-        if( ((input_current_w % (1U<<(uint32_t)input_current_levels)) != 0) &&
+        if( ((input_current_w % (1U<<(uint32_t)input_current_levels)) != 0) ||
             ((input_current_h % (1U<<(uint32_t)input_current_levels)) != 0)
           )
         {
