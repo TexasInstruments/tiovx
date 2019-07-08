@@ -259,6 +259,42 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
             status = VX_ERROR_NO_RESOURCES;
         }
 
+        if (VX_SUCCESS == status)
+        {
+            if(config_desc->mem_size != sizeof(tivx_vpac_viss_params_t))
+            {
+                status = VX_FAILURE;
+
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissCreate: tivx_vpac_viss_params_t, host size (%d) != target size (%d)\n",
+                    config_desc->mem_size, sizeof(tivx_vpac_viss_params_t));
+            }
+        }
+
+        if ((VX_SUCCESS == status) && (NULL != aewb_res_desc))
+        {
+            if(aewb_res_desc->mem_size != sizeof(tivx_ae_awb_params_t))
+            {
+                status = VX_FAILURE;
+
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissCreate: tivx_ae_awb_params_t, host size (%d) != target size (%d)\n",
+                    aewb_res_desc->mem_size, sizeof(tivx_ae_awb_params_t));
+            }
+        }
+
+        if ((VX_SUCCESS == status) && (NULL != h3a_out_desc))
+        {
+            if(h3a_out_desc->mem_size != sizeof(tivx_h3a_data_t))
+            {
+                status = VX_FAILURE;
+
+                VX_PRINT(VX_ZONE_ERROR,
+                    "tivxVpacVissCreate: tivx_h3a_data_t, host size (%d) != target size (%d)\n",
+                    h3a_out_desc->mem_size, sizeof(tivx_h3a_data_t));
+            }
+        }
+
         status = tivxMutexCreate(&vissObj->config_lock);
 
         /* Now Map config Desc and get VISS Parameters */
