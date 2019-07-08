@@ -632,28 +632,28 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
     if (VX_SUCCESS == status)
     {
         Msc_Coeff  *coeffCfg;
-        tivx_vpac_msc_coefficients_t *coeffs = NULL;
+        int32_t  single_phase[TIVX_VPAC_MSC_MAX_SP_COEFF_SET][TIVX_VPAC_MSC_MAX_TAP];
 
         coeffCfg = &msc_obj->coeffCfg;
 
         Msc_coeffInit(coeffCfg);
 
         cnt = 0;
-        coeffs->single_phase[0][cnt ++] = 0;
-        coeffs->single_phase[0][cnt ++] = 0;
-        coeffs->single_phase[0][cnt ++] = 256;
-        coeffs->single_phase[0][cnt ++] = 0;
-        coeffs->single_phase[0][cnt ++] = 0;
+        single_phase[0][cnt ++] = 0;
+        single_phase[0][cnt ++] = 0;
+        single_phase[0][cnt ++] = 256;
+        single_phase[0][cnt ++] = 0;
+        single_phase[0][cnt ++] = 0;
         cnt = 0;
-        coeffs->single_phase[1][cnt ++] = 16;
-        coeffs->single_phase[1][cnt ++] = 64;
-        coeffs->single_phase[1][cnt ++] = 96;
-        coeffs->single_phase[1][cnt ++] = 64;
-        coeffs->single_phase[1][cnt ++] = 16;
+        single_phase[1][cnt ++] = 16;
+        single_phase[1][cnt ++] = 64;
+        single_phase[1][cnt ++] = 96;
+        single_phase[1][cnt ++] = 64;
+        single_phase[1][cnt ++] = 16;
 
         for (cnt = 0u; cnt < MSC_MAX_SP_COEFF_SET; cnt ++)
         {
-            coeffCfg->spCoeffSet[cnt] = &coeffs->single_phase[cnt][0u];
+            coeffCfg->spCoeffSet[cnt] = &single_phase[cnt][0u];
         }
 
         status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_COEFF,
@@ -1125,7 +1125,7 @@ static void tivxVpacMscPmdSetScParams(Msc_ScConfig *sc_cfg,
         sc_cfg->filtMode = MSC_FILTER_MODE_SINGLE_PHASE;
 
         /* Note: in the case that it is using a Gaussian pyramid, select the first set of coefficients for first level */
-        if ( (0U == level) && 
+        if ( (0U == level) &&
                ((gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX].target_kernel == target_kernel) ||
                 (gTivxVpacMscPmdInstObj[TIVX_VPAC_MSC_G_PMG_START_IDX+1].target_kernel == target_kernel)) )
         {
@@ -1332,7 +1332,7 @@ static void tivxVpacMscPmdSetMscParams(tivxVpacMscPmdObj *msc_obj,
         ss_info->sc_map_idx[out_cnt] = idx;
 
         tivxVpacMscPmdSetScParams(&msc_prms->mscCfg.scCfg[idx],
-            in_img_desc, msc_obj->out_img_desc[out_start_idx], out_cnt, kernel);
+            in_img_desc, msc_obj->out_img_desc[out_start_idx], out_start_idx, kernel);
 
         tivxVpacMscPmdSetFmt(&msc_prms->outFmt[idx],
             msc_obj->out_img_desc[out_start_idx]);
