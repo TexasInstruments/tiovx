@@ -92,7 +92,14 @@ static int32_t tivxAlgiVisionGetHeapId(uint32_t space, uint32_t attrs, uint32_t 
   case IALG_IPROG:
   case IALG_ESDATA:
   case IALG_EXTERNAL:
-    *heap_id = TIVX_MEM_EXTERNAL;
+    if(attrs==IALG_SCRATCH)
+    {
+       *heap_id = TIVX_MEM_EXTERNAL_SCRATCH;
+    }
+    else
+    {
+       *heap_id = TIVX_MEM_EXTERNAL;
+    }
     break;
   case IALG_DARAM0:
   case IALG_DARAM1:
