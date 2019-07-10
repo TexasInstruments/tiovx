@@ -163,7 +163,8 @@ static tivxVpacMscHsgObj *tivxVpacMscScaleAllocObject(
 static void tivxVpacMscScaleFreeObject(tivxVpacMscScaleInstObj *instObj,
     tivxVpacMscHsgObj *msc_obj);
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *img_desc, uint32_t target_type);
+    tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc,
+    uint32_t target_type);
 static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
     tivx_obj_desc_image_t *img_desc);
 
@@ -581,7 +582,7 @@ static vx_status VX_CALLBACK tivxVpacMscScaleCreate(
         sc_cfg = &msc_prms->mscCfg.scCfg[idx];
 
         tivxVpacMscScaleSetScParams(
-            sc_cfg, out_img_desc, inst_obj->target_type);
+            sc_cfg, in_img_desc, out_img_desc, inst_obj->target_type);
         tivxVpacMscScaleSetFmt(fmt, out_img_desc);
 
         status = Fvid2_control(msc_obj->handle, VHWA_M2M_IOCTL_MSC_SET_PARAMS,
@@ -928,17 +929,18 @@ static void tivxVpacMscScaleSetFmt(Fvid2_Format *fmt,
 }
 
 static void tivxVpacMscScaleSetScParams(Msc_ScConfig *sc_cfg,
-    tivx_obj_desc_image_t *img_desc, uint32_t target_type)
+    tivx_obj_desc_image_t *in_img_desc, tivx_obj_desc_image_t *out_img_desc,
+    uint32_t target_type)
 {
-    if (NULL != img_desc)
+    if ((NULL != in_img_desc) && (NULL != out_img_desc))
     {
         sc_cfg->enable = TRUE;
-        sc_cfg->outWidth = img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->outHeight = img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->outWidth = out_img_desc->imagepatch_addr[0].dim_x;
+        sc_cfg->outHeight = out_img_desc->imagepatch_addr[0].dim_y;
         sc_cfg->inRoi.cropStartX = 0u;
         sc_cfg->inRoi.cropStartX = 0u;
-        sc_cfg->inRoi.cropWidth = img_desc->imagepatch_addr[0].dim_x;
-        sc_cfg->inRoi.cropHeight = img_desc->imagepatch_addr[0].dim_y;
+        sc_cfg->inRoi.cropWidth = in_img_desc->imagepatch_addr[0].dim_x;
+        sc_cfg->inRoi.cropHeight = in_img_desc->imagepatch_addr[0].dim_y;
 
         if (TIVX_VPAC_MSC_HALF_SCALE_GAUSSIAN_TARGET == target_type)
         {
