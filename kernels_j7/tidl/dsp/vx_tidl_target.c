@@ -332,7 +332,10 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
             break;
         }
     }
-
+    if (VX_SUCCESS == status)
+    {
+        status = tivxMemResetScratchHeap(TIVX_MEM_EXTERNAL_SCRATCH);
+    }
     if (VX_SUCCESS == status)
     {
         /* IMPORTANT! Config data is assumed to be available at index 0 */
