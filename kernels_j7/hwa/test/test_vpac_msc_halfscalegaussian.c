@@ -1,4 +1,4 @@
-/* 
+/*
 
  * Copyright (c) 2012-2017 The Khronos Group Inc.
  *
@@ -25,6 +25,7 @@
 #include <math.h> // floor
 
 #define HALFSCALEGAUSSIAN_TOLERANCE 1
+#define CHECK_OUTPUT
 
 TESTCASE(tivxHwaVpacMscHalfScaleGaussian, CT_VXContext, ct_setup_vx_context, 0)
 
@@ -56,7 +57,7 @@ TEST(tivxHwaVpacMscHalfScaleGaussian, testNodeCreation)
         ASSERT(graph == 0);
         ASSERT(dst_image == 0);
         ASSERT(src_image == 0);
-    
+
         tivxHwaUnLoadKernels(context);
     }
 }
@@ -284,7 +285,9 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testGraphProcessing, Arg,
 
         ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
 
+        #ifdef CHECK_OUTPUT
         ASSERT_NO_FAILURE(halfScaleGaussian_check(src, dst, arg_->kernel_size, arg_->border));
+        #endif
 
         VX_CALL(vxReleaseNode(&node));
         VX_CALL(vxReleaseGraph(&graph));
@@ -332,7 +335,9 @@ TEST_WITH_ARG(tivxHwaVpacMscHalfScaleGaussian, testImmediateProcessing, Arg,
 
         ASSERT_NO_FAILURE(dst = ct_image_from_vx_image(dst_image));
 
+        #ifdef CHECK_OUTPUT
         ASSERT_NO_FAILURE(halfScaleGaussian_check(src, dst, arg_->kernel_size, arg_->border));
+        #endif
 
         VX_CALL(vxReleaseImage(&dst_image));
         VX_CALL(vxReleaseImage(&src_image));

@@ -819,7 +819,7 @@ TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingNegative, Arg,
         params.mux_output2 = 0;
         params.mux_output3 = 0;
         params.mux_output4 = 3;
-        params.h3a_aewb_af_mode = 1;
+        params.h3a_aewb_af_mode = 0;
         params.chroma_mode = 0;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
