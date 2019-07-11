@@ -695,7 +695,6 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         params.mux_output3 = 0;
         params.mux_output4 = 3;
         //params.h3a_in = 3;
-        //h3a_aewb_af_mode = 1;
         params.h3a_aewb_af_mode = 0;
         params.chroma_mode = 0;
         params.bypass_glbce = 1; // TODO: set to 0
@@ -736,118 +735,6 @@ TEST(tivxHwaVpacViss, testGraphProcessingFileDcc)
         VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
         VX_CALL(vxReleaseUserDataObject(&dcc_param_viss));
-
-        ASSERT(node == 0);
-        ASSERT(graph == 0);
-        ASSERT(h3a_aew_af == 0);
-        ASSERT(histogram == 0);
-        ASSERT(s8_b8_c4 == 0);
-        ASSERT(uv8_g8_c3 == 0);
-        ASSERT(y8_r8_c2 == 0);
-        ASSERT(uv12_c1 == 0);
-        ASSERT(y12 == 0);
-        ASSERT(raw == 0);
-        ASSERT(ae_awb_result == 0);
-        ASSERT(configuration == 0);
-
-        tivxHwaUnLoadKernels(context);
-    }
-}
-
-TEST_WITH_ARG(tivxHwaVpacViss, testGraphProcessingNegative, Arg,
-    PARAMETERS
-)
-{
-    vx_context context = context_->vx_context_;
-    vx_user_data_object configuration = NULL;
-    vx_user_data_object ae_awb_result = NULL;
-    tivx_raw_image raw = NULL;
-    vx_image y12 = NULL, uv12_c1 = NULL, y8_r8_c2 = NULL, uv8_g8_c3 = NULL, s8_b8_c4 = NULL;
-    vx_distribution histogram = NULL;
-    vx_user_data_object h3a_aew_af = NULL;
-
-    tivx_vpac_viss_params_t params;
-    tivx_ae_awb_params_t ae_awb_params;
-
-    vx_graph graph = 0;
-    vx_node node = 0;
-
-    tivx_raw_image_create_params_t raw_params;
-    raw_params.width = arg_->width;
-    raw_params.height = arg_->height;
-    raw_params.num_exposures = arg_->exposures;
-    raw_params.line_interleaved = arg_->line_interleaved;
-    raw_params.format[0].pixel_container = TIVX_RAW_IMAGE_16_BIT;
-    raw_params.format[0].msb = 11;
-    raw_params.format[1].pixel_container = TIVX_RAW_IMAGE_8_BIT;
-    raw_params.format[1].msb = 7;
-    raw_params.format[2].pixel_container = TIVX_RAW_IMAGE_P12_BIT;
-    raw_params.format[2].msb = 11;
-    raw_params.meta_height = 5;
-    raw_params.meta_location = TIVX_RAW_IMAGE_META_BEFORE;
-
-    if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_VPAC_VISS1))
-    {
-        vx_uint32 width, height;
-
-        tivxHwaLoadKernels(context);
-
-        ASSERT_VX_OBJECT(raw = tivxCreateRawImage(context, &raw_params), (enum vx_type_e)TIVX_TYPE_RAW_IMAGE);
-
-        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_WIDTH, &width, sizeof(width)));
-        VX_CALL(tivxQueryRawImage(raw, TIVX_RAW_IMAGE_HEIGHT, &height, sizeof(height)));
-
-        ASSERT_VX_OBJECT(y12 = vxCreateImage(context, width, height, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(uv12_c1 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U16), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(y8_r8_c2 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(uv8_g8_c3 = vxCreateImage(context, width, height/2, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(s8_b8_c4 = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
-        ASSERT_VX_OBJECT(histogram = vxCreateDistribution(context, 256, 0, 256), VX_TYPE_DISTRIBUTION);
-
-        /* Create/Configure configuration input structure */
-        memset(&params, 0, sizeof(tivx_vpac_viss_params_t));
-        ASSERT_VX_OBJECT(configuration = vxCreateUserDataObject(context, "tivx_vpac_viss_params_t",
-                                                            sizeof(tivx_vpac_viss_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        memset(&ae_awb_params, 0, sizeof(tivx_ae_awb_params_t));
-        ASSERT_VX_OBJECT(ae_awb_result = vxCreateUserDataObject(context, "tivx_ae_awb_params_t",
-                                                            sizeof(tivx_ae_awb_params_t), NULL), (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
-
-        params.ee_mode = 2;
-        params.mux_output0 = 0;
-        params.mux_output1 = 0;
-        params.mux_output2 = 0;
-        params.mux_output3 = 0;
-        params.mux_output4 = 3;
-        params.h3a_aewb_af_mode = 0;
-        params.chroma_mode = 0;
-        params.bypass_glbce = 0;
-        params.bypass_nsf4 = 0;
-
-        VX_CALL(vxCopyUserDataObject(configuration, 0, sizeof(tivx_vpac_viss_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-        VX_CALL(vxCopyUserDataObject(ae_awb_result, 0, sizeof(tivx_ae_awb_params_t), &ae_awb_params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
-
-        ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
-
-        ASSERT_VX_OBJECT(node = tivxVpacVissNode(graph, configuration, ae_awb_result, NULL,
-                                                raw, y12, uv12_c1, y8_r8_c2, uv8_g8_c3, s8_b8_c4,
-                                                h3a_aew_af, histogram), VX_TYPE_NODE);
-
-        VX_CALL(vxSetNodeTarget(node, VX_TARGET_STRING, TIVX_TARGET_VPAC_VISS1));
-
-        EXPECT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-
-        VX_CALL(vxReleaseNode(&node));
-        VX_CALL(vxReleaseGraph(&graph));
-        VX_CALL(vxReleaseDistribution(&histogram));
-        VX_CALL(vxReleaseImage(&s8_b8_c4));
-        VX_CALL(vxReleaseImage(&uv8_g8_c3));
-        VX_CALL(vxReleaseImage(&y8_r8_c2));
-        VX_CALL(vxReleaseImage(&uv12_c1));
-        VX_CALL(vxReleaseImage(&y12));
-        VX_CALL(tivxReleaseRawImage(&raw));
-        VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
-        VX_CALL(vxReleaseUserDataObject(&configuration));
 
         ASSERT(node == 0);
         ASSERT(graph == 0);
@@ -1914,7 +1801,7 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
         params.mux_output2 = 0;
         params.mux_output3 = 0;
         params.mux_output4 = 3;
-        params.h3a_aewb_af_mode = 1;
+        params.h3a_aewb_af_mode = 0;
         params.chroma_mode = 0;
         params.bypass_glbce = 0;
         params.bypass_nsf4 = 0;
@@ -2048,7 +1935,6 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
 
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
-               testGraphProcessingNegative,
                testGraphProcessingFile,
                testGraphProcessingFileDcc,
                testMuxNegative/*,

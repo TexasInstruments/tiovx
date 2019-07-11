@@ -356,7 +356,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             pH3a_buf->aew_af_mode = params->h3a_aewb_af_mode;
             pH3a_buf->h3a_source_data = params->h3a_in;
             pH3a_buf->size = prms->config.af_buffer_size;
-            if(1 == params->h3a_aewb_af_mode)
+            if(0 == params->h3a_aewb_af_mode)
             {
                 pH3a_buf->size = prms->config.aew_buffer_size + H3A_AEW_CONFIG_SIZE;
             }

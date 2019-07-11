@@ -293,9 +293,13 @@ static vx_status VX_CALLBACK tivxVpacVissCreate(
                     "tivxVpacVissCreate: tivx_h3a_data_t, host size (%d) != target size (%d)\n",
                     h3a_out_desc->mem_size, sizeof(tivx_h3a_data_t));
             }
+            vissObj->h3a_out_enabled = vx_true_e;
         }
 
-        status = tivxMutexCreate(&vissObj->config_lock);
+        if (VX_SUCCESS == status)
+        {
+            status = tivxMutexCreate(&vissObj->config_lock);
+        }
 
         /* Now Map config Desc and get VISS Parameters */
         if (VX_SUCCESS == status)
@@ -742,30 +746,21 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
 
         if (VX_SUCCESS == status)
         {
-            if (0U != vissPrms->h3a_aewb_af_mode)
+            if (NULL != h3a_out_desc)
             {
-                if (NULL == h3a_out_desc)
+                status = tivxVpacVissMapUserDesc(&vissObj->h3a_out_target_ptr,
+                    h3a_out_desc, sizeof(tivx_h3a_data_t));
+                if (VX_SUCCESS == status)
                 {
-                    VX_PRINT(VX_ZONE_ERROR,
-                        "tivxVpacVissProcess: H3A Output desc cannot be null\n");
-                    status = VX_ERROR_INVALID_PARAMETERS;
+                    h3a_out =
+                        (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
                 }
                 else
                 {
-                    status = tivxVpacVissMapUserDesc(&vissObj->h3a_out_target_ptr,
-                        h3a_out_desc, sizeof(tivx_h3a_data_t));
-                    if (VX_SUCCESS == status)
-                    {
-                        h3a_out =
-                            (tivx_h3a_data_t *)vissObj->h3a_out_target_ptr;
-                    }
-                    else
-                    {
-                        VX_PRINT(VX_ZONE_ERROR,
-                            "tivxVpacVissProcess: Failed to Map H3A Result Descriptor\n");
-                    }
+                    VX_PRINT(VX_ZONE_ERROR,
+                        "tivxVpacVissProcess: Failed to Map H3A Result Descriptor\n");
                 }
-        }
+            }
         }
     }
 
@@ -828,7 +823,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             h3a_out->h3a_source_data = vissPrms->h3a_in;
             h3a_out->size = vissObj->h3a_output_size;
 
-            if(1 == vissPrms->h3a_aewb_af_mode)
+            if(0 == vissPrms->h3a_aewb_af_mode)
             {
                 /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
                  * in case third party 2A nodes which don't use DCC can easily see this information */
@@ -1079,7 +1074,7 @@ static vx_status tivxVpacVissSetOutputParams(tivxVpacVissObj *vissObj,
      * Enable it if required */
     if (VX_SUCCESS == status)
     {
-        if (0U != vissPrms->h3a_aewb_af_mode)
+        if (vx_true_e == vissObj->h3a_out_enabled)
         {
             outPrms = &vissDrvPrms->outPrms[VHWA_M2M_VISS_OUT_H3A_IDX];
             outPrms->enable = (uint32_t)TRUE;

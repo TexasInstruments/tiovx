@@ -275,6 +275,8 @@ typedef struct
     uint32_t                            h3a_output_size;
     /*! H3A AEW config to copy to h3a output for each frame */
     tivx_h3a_aew_config                 aew_config;
+    /*! H3A output enabled flag */
+    vx_bool                             h3a_out_enabled;
 } tivxVpacVissObj;
 
 typedef struct

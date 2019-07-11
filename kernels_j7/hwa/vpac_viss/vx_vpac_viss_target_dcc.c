@@ -324,7 +324,7 @@ void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
 {
     Rfe_H3aInConfig     *inCfg;
 
-    if ((0U != vissPrms->h3a_aewb_af_mode) &&
+    if ((vx_true_e == vissObj->h3a_out_enabled) &&
         (vissPrms->h3a_in != vissObj->lastH3aInSrc))
     {
         inCfg = &vissObj->vissCfg.h3aInCfg;

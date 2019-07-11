@@ -609,7 +609,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
             pH3a_buf->aew_af_mode = params->h3a_aewb_af_mode;
             pH3a_buf->h3a_source_data = params->h3a_in;
 
-            if(1 == params->h3a_aewb_af_mode)
+            if(0 == params->h3a_aewb_af_mode)
             {
                 /* TI 2A Node may not need the aew config since it gets it from DCC, but this is copied
                  * in case third party 2A nodes which don't use DCC can easily see this information */
@@ -617,7 +617,7 @@ static vx_status VX_CALLBACK tivxVpacVissProcess(
                 pH3a_buf->size = prms->aew_buffer_size;
                 memcpy((void *)pH3a_buf->data, prms->scratch_aew_result, prms->aew_buffer_size);
             }
-            else if(2 == params->h3a_aewb_af_mode)
+            else if(1 == params->h3a_aewb_af_mode)
             {
                 pH3a_buf->size = prms->af_buffer_size;
                 memcpy((void *)pH3a_buf->data, prms->scratch_af_result, prms->af_buffer_size);

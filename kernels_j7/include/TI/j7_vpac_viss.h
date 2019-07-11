@@ -233,7 +233,7 @@ typedef struct {
     /*!< If h3a_aew_af output port is not NULL, this variable
      *   selects the h3a module to be enabled
      *
-     *   Valid values are 0: Disabled 1: AEWB 2:AF
+     *   Valid values are 0: AEWB; 1:AF
      */
     uint32_t                    h3a_aewb_af_mode;
 
@@ -326,7 +326,7 @@ typedef struct
  */
 typedef struct {
     /*! Indicates the contents of this buffer:
-     *   1: AEW data, 2:AF data */
+     *   0: AEW data, 1:AF data */
     uint32_t                    aew_af_mode;
     /*! Indicates the source data corresponding to this data:
      *   0: RAW0, 1: RAW1, 2: RAW2, 3: LSC */
