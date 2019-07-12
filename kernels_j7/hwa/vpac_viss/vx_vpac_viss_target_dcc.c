@@ -667,15 +667,24 @@ static void tivxVpacVissDccMapNsf4Params(tivxVpacVissObj *vissObj,
 static void tivxVpacVissDccMapLut16to12Params(tivxVpacVissObj *vissObj)
 {
     Vhwa_LutConfig *lut16to12Cfg;
+    dcc_parser_output_params_t  *dcc_out_prms;
 
     if (NULL != vissObj)
     {
+        dcc_out_prms = &vissObj->dcc_out_prms;
         lut16to12Cfg = &vissObj->vissCfg.cfaLut16to12Cfg;
-
-        lut16to12Cfg->enable = (uint32_t)FALSE;
-        lut16to12Cfg->inputBits = 12u;
-        lut16to12Cfg->tableAddr = gcfa_lut_16to12;
-
+        if(0 == dcc_out_prms->useCfaCfg)
+        {
+            lut16to12Cfg->enable = (uint32_t)FALSE;
+            lut16to12Cfg->inputBits = 12u;
+            lut16to12Cfg->tableAddr = gcfa_lut_16to12;
+        }
+        else
+        {
+            lut16to12Cfg->enable = dcc_out_prms->vissCFACfg.lut_enable;
+            lut16to12Cfg->inputBits = dcc_out_prms->vissCFACfg.bitWidth;
+            lut16to12Cfg->tableAddr = dcc_out_prms->vissCFACfg.ToneLut;
+        }
         vissObj->vissCfgRef.cfaLut16to12Cfg = lut16to12Cfg;
 
         /* Setting config flag to 1,
@@ -1236,12 +1245,10 @@ static void tivxVpacVissDccMapRfeLutParams(tivxVpacVissObj *vissObj, uint32_t lu
         if (0u == lut_id)
         {
             lutCfg = &vissObj->vissCfg.rfeLut20to16Cfg;
-
             lutCfg->enable    = 0u;
             lutCfg->inputBits = 16u;
             lutCfg->clip      = 4095u;
             lutCfg->tableAddr = grawfe_lut_20to16;
-
             vissObj->vissCfgRef.comp20To16LutCfg = lutCfg;
         }
         else if (1u == lut_id) /* H3A Lut */
@@ -1385,6 +1392,10 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
 {
     Rfe_PwlConfig   *pwlCfg;
     Vhwa_LutConfig  *lutCfg;
+    dcc_parser_output_params_t  *dcc_out_prms;
+    int cnt;
+
+    dcc_out_prms = &vissObj->dcc_out_prms;
 
     if (NULL != vissObj)
     {
@@ -1418,11 +1429,25 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             pwlCfg->slopeShift   = 0u;
             pwlCfg->outClip      = 65535;
 
-            lutCfg->enable       = 0u;
-            lutCfg->inputBits    = 20u;
-            lutCfg->clip         = 65535;
-            lutCfg->tableAddr    = grawfe_pwl_long_lut;
-
+            if(0 == dcc_out_prms->useRfeDcmpCfg)
+            {
+                lutCfg->enable       = 0u;
+                lutCfg->inputBits    = 20u;
+                lutCfg->clip         = 65535;
+                lutCfg->tableAddr    = grawfe_pwl_long_lut;
+            }
+            else
+            {
+                lutCfg->enable       = dcc_out_prms->issRfeDecompand.enable;
+                lutCfg->inputBits    = dcc_out_prms->issRfeDecompand.bit_depth;
+                lutCfg->clip         = dcc_out_prms->issRfeDecompand.clip;
+                for(cnt=0;cnt<639;cnt++)
+                {
+                    lutCfg->tableAddr[cnt] = dcc_out_prms->issRfeDecompand.lut[cnt];
+                }
+                pwlCfg->mask        = dcc_out_prms->issRfeDecompand.mask;
+                pwlCfg->shift       = dcc_out_prms->issRfeDecompand.shift;
+            }
             vissObj->vissCfgRef.lPwlCfg = pwlCfg;
             vissObj->vissCfgRef.lLutCfg = lutCfg;
         }
@@ -1456,10 +1481,25 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             pwlCfg->slopeShift  = 0u;  /* Shift for Q point of slope */
             pwlCfg->outClip     = 65535;     /* 24 bits */
 
-            lutCfg->enable       = 0u;
-            lutCfg->inputBits    = 20u;
-            lutCfg->clip         = 65535;
-            lutCfg->tableAddr    = grawfe_pwl_short_lut;
+            if(0 == dcc_out_prms->useRfeDcmpCfg)
+            {
+                lutCfg->enable       = 0u;
+                lutCfg->inputBits    = 20u;
+                lutCfg->clip         = 65535;
+                lutCfg->tableAddr    = grawfe_pwl_short_lut;
+            }
+            else
+            {
+                lutCfg->enable       = dcc_out_prms->issRfeDecompand.enable;
+                lutCfg->inputBits    = dcc_out_prms->issRfeDecompand.bit_depth;
+                lutCfg->clip         = dcc_out_prms->issRfeDecompand.clip;
+                for(cnt=0;cnt<639;cnt++)
+                {
+                    lutCfg->tableAddr[cnt] = dcc_out_prms->issRfeDecompand.lut[cnt];
+                }
+                pwlCfg->mask        = dcc_out_prms->issRfeDecompand.mask;
+                pwlCfg->shift       = dcc_out_prms->issRfeDecompand.shift;
+            }
 
             vissObj->vissCfgRef.sPwlCfg = pwlCfg;
             vissObj->vissCfgRef.sLutCfg = lutCfg;
@@ -1494,10 +1534,25 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
             pwlCfg->slopeShift  = 0u;  /* Shift for Q point of slope */
             pwlCfg->outClip     = 1048575;     /* 24 bits */
 
-            lutCfg->enable      = 0u;
-            lutCfg->inputBits   = 20u;
-            lutCfg->clip        = 65535;
-            lutCfg->tableAddr   = grawfe_pwl_vshort_lut;
+            if(0 == dcc_out_prms->useRfeDcmpCfg)
+            {
+                lutCfg->enable       = 0u;
+                lutCfg->inputBits    = 20u;
+                lutCfg->clip         = 65535;
+                lutCfg->tableAddr    = grawfe_pwl_vshort_lut;
+            }
+            else
+            {
+                lutCfg->enable       = dcc_out_prms->issRfeDecompand.enable;
+                lutCfg->inputBits    = dcc_out_prms->issRfeDecompand.bit_depth;
+                lutCfg->clip         = dcc_out_prms->issRfeDecompand.clip;
+                for(cnt=0;cnt<639;cnt++)
+                {
+                    lutCfg->tableAddr[cnt] = dcc_out_prms->issRfeDecompand.lut[cnt];
+                }
+                pwlCfg->mask        = dcc_out_prms->issRfeDecompand.mask;
+                pwlCfg->shift       = dcc_out_prms->issRfeDecompand.shift;
+            }
 
             vissObj->vissCfgRef.vsPwlCfg = pwlCfg;
             vissObj->vissCfgRef.vsLutCfg = lutCfg;
