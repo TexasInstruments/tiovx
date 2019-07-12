@@ -1661,6 +1661,71 @@ TEST_WITH_ARG(tivxGraph, testAlternatingNodes, Arg,
     printPerformance(perf_graph, arg_->width*arg_->height, "G1");
 }
 
+static void fillSquence(CT_Image dst, uint32_t seq_init)
+{
+    uint32_t i, j;
+    uint32_t val = seq_init;
+
+    ASSERT(dst);
+    ASSERT(dst->format == VX_DF_IMAGE_U8);
+
+    for (i = 0; i < dst->height; ++i)
+        for (j = 0; j < dst->width; ++j)
+            dst->data.y[i * dst->stride + j] = ++val;
+}
+
+TEST(tivxGraph, testCreateImageFromROI)
+{
+    vx_image srcFull, src1, src2, mid1, mid2, midFull, dst;
+    CT_Image ref_src, ref_dst;
+    vx_graph graph;
+    vx_context context = context_->vx_context_;
+    vx_node node1 = 0, node2 = 0, node3 = 0;
+    vx_uint32 outWidth = 640, outHeight = 480;
+    vx_rectangle_t rect1 = {0, 0, outWidth, outHeight/2};
+    vx_rectangle_t rect2 = {0, outHeight/2, outWidth, outHeight};
+
+    ASSERT_NO_FAILURE({
+        ref_src = ct_allocate_image(outWidth, outHeight, VX_DF_IMAGE_U8);
+        fillSquence(ref_src, (uint32_t)CT()->seed_);
+        srcFull = ct_image_to_vx_image(ref_src, context);
+    });
+
+    // build two-node graph
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+    ASSERT_VX_OBJECT(src1 = vxCreateImageFromROI(srcFull, &rect1), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(src2 = vxCreateImageFromROI(srcFull, &rect2), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(midFull = vxCreateImage(context, outWidth, outHeight, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(mid1 = vxCreateImageFromROI(midFull, &rect1), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(mid2 = vxCreateImageFromROI(midFull, &rect2), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(dst   = vxCreateImage(context, outWidth, outHeight, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+    ASSERT_VX_OBJECT(node1 = vxNotNode(graph, src1, mid1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node2 = vxNotNode(graph, src2, mid2), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(node3 = vxNotNode(graph, midFull, dst), VX_TYPE_NODE);
+
+    // run graph
+    ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxProcessGraph(graph));
+
+    ASSERT_NO_FAILURE({
+        ref_dst = ct_image_from_vx_image(dst);
+    });
+
+    ASSERT_EQ_CTIMAGE(ref_src, ref_dst);
+
+    VX_CALL(vxReleaseImage(&src1));
+    VX_CALL(vxReleaseImage(&src2));
+    VX_CALL(vxReleaseImage(&srcFull));
+    VX_CALL(vxReleaseImage(&mid1));
+    VX_CALL(vxReleaseImage(&mid2));
+    VX_CALL(vxReleaseImage(&midFull));
+    VX_CALL(vxReleaseImage(&dst));
+    VX_CALL(vxReleaseNode(&node1));
+    VX_CALL(vxReleaseNode(&node2));
+    VX_CALL(vxReleaseNode(&node3));
+    VX_CALL(vxReleaseGraph(&graph));
+}
+
+
 TESTCASE_TESTS(tivxGraph,
         testParallelNodesDifferentTarget,
         testParallelNodesSameTarget,
@@ -1670,5 +1735,6 @@ TESTCASE_TESTS(tivxGraph,
         testParallelGraphsMultipleNodes,
         testThreeParallelGraphs,
         testMaxParallelGraphs,
-        testAlternatingNodes
+        testAlternatingNodes,
+        testCreateImageFromROI
 )
