@@ -1507,7 +1507,7 @@ static void tivxVpacVissDccMapPwlParams(tivxVpacVissObj *vissObj,
         else if (2u == inst_id)
         {
             pwlCfg = &vissObj->vissCfg.pwlCfg3;
-            lutCfg = &vissObj->vissCfg.decomp2Cfg;
+            lutCfg = &vissObj->vissCfg.decomp3Cfg;
 
             pwlCfg->mask        = 4095u;
             pwlCfg->shift       = 0u;     /* 3 bits  */
