@@ -571,6 +571,30 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
         {
             is_match = vx_true_e;
         }
+        else if ( (VX_TYPE_IMAGE==ref1->type) &&
+                  (VX_TYPE_IMAGE==ref2->type) )
+        {
+            vx_image image_ref1 = (vx_image)ref1;
+            vx_image image_ref2 = (vx_image)ref2;
+            vx_image parent_ref1 = image_ref1->parent;
+            vx_image parent_ref2 = image_ref2->parent;
+
+            if (NULL != parent_ref1)
+            {
+                if (parent_ref1 == (vx_image)image_ref2)
+                {
+                    is_match = vx_true_e;
+                }
+            }
+
+            if (NULL != parent_ref2)
+            {
+                if (parent_ref2 == (vx_image)image_ref1)
+                {
+                    is_match = vx_true_e;
+                }
+            }
+        }
         else
         {
             is_match = vx_false_e;
