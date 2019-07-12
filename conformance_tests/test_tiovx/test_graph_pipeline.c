@@ -2198,6 +2198,264 @@ TEST_WITH_ARG(tivxGraphPipeline, testReplicateImage, Arg, PARAMETERS)
     tivx_clr_debug_zone(VX_ZONE_INFO);
 }
 
+/*
+ *  d0     n0     d1     n1     d2
+ * OBJ -- NOT -- OBJ -- NOT -- OBJ
+ * ARR -- NOT -- ARR -- NOT -- ARR
+ *        n0_1          n1_1
+ *
+ * This test case test the below
+ * - Object array with no replicate nodes
+ *
+ */
+TEST_WITH_ARG(tivxGraphPipeline, testDontReplicateImage, Arg, PARAMETERS)
+{
+    vx_context context = context_->vx_context_;
+    vx_graph graph;
+    vx_object_array d0[MAX_NUM_BUF], d1, d2[MAX_NUM_BUF];
+    vx_image img0[MAX_NUM_BUF], img1, img2[MAX_NUM_BUF];
+    vx_image img0_1[MAX_NUM_BUF], img1_1, img2_1[MAX_NUM_BUF];
+    vx_image img_exemplar;
+    vx_node n0, n1;
+    vx_node n0_1, n1_1;
+    vx_graph_parameter_queue_params_t graph_parameters_queue_params_list[2];
+
+    CT_Image ref_src[MAX_NUM_BUF*MAX_NUM_OBJ_ARR_ELEMENTS], vxdst[MAX_NUM_OBJ_ARR_ELEMENTS];
+    uint32_t width, height, seq_init, pipeline_depth, num_buf;
+    uint32_t buf_id, loop_id, loop_cnt;
+    uint32_t idx, objarr_idx, objarr_elements;
+    uint64_t exe_time;
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+
+    seq_init = 1;
+    width = arg_->width;
+    height = arg_->height;
+    pipeline_depth = arg_->pipe_depth;
+    num_buf = arg_->num_buf;
+    loop_cnt = arg_->loop_count;
+    objarr_elements = 2;
+
+    ASSERT(num_buf <= MAX_NUM_BUF);
+    ASSERT(objarr_elements <= MAX_NUM_OBJ_ARR_ELEMENTS);
+
+    /* fill reference data */
+    for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+    {
+        for(buf_id=0; buf_id<num_buf; buf_id++)
+        {
+            idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
+
+            ASSERT_NO_FAILURE({
+                ref_src[idx] = ct_allocate_image(width, height, VX_DF_IMAGE_U8);
+                fillSequence(ref_src[idx], (uint32_t)(seq_init+(idx)));
+            });
+        }
+    }
+
+    ASSERT_VX_OBJECT(graph = vxCreateGraph(context), VX_TYPE_GRAPH);
+
+    ASSERT_VX_OBJECT(img_exemplar    = vxCreateImage(context, width, height, VX_DF_IMAGE_U8), VX_TYPE_IMAGE);
+
+    /* allocate Input and Output refs, multiple refs created to allow pipelining of graph */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        ASSERT_VX_OBJECT(d0[buf_id]    = vxCreateObjectArray(context, (vx_reference)img_exemplar, objarr_elements), VX_TYPE_OBJECT_ARRAY);
+        ASSERT_VX_OBJECT(d2[buf_id]    = vxCreateObjectArray(context, (vx_reference)img_exemplar, objarr_elements), VX_TYPE_OBJECT_ARRAY);
+    }
+    ASSERT_VX_OBJECT(d1    = vxCreateObjectArray(context, (vx_reference)img_exemplar, objarr_elements), VX_TYPE_OBJECT_ARRAY);
+
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        img0[buf_id] = (vx_image)vxGetObjectArrayItem(d0[buf_id], 0);
+        img2[buf_id] = (vx_image)vxGetObjectArrayItem(d2[buf_id], 0);
+        img0_1[buf_id] = (vx_image)vxGetObjectArrayItem(d0[buf_id], 1);
+        img2_1[buf_id] = (vx_image)vxGetObjectArrayItem(d2[buf_id], 1);
+    }
+    img1 = (vx_image)vxGetObjectArrayItem(d1, 0);
+    img1_1 = (vx_image)vxGetObjectArrayItem(d1, 1);
+
+    ASSERT_VX_OBJECT(n0    = vxNotNode(graph, img0[0], img1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1    = vxNotNode(graph, img1, img2[0]), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n0_1  = vxNotNode(graph, img0_1[0], img1_1), VX_TYPE_NODE);
+    ASSERT_VX_OBJECT(n1_1  = vxNotNode(graph, img1_1, img2_1[0]), VX_TYPE_NODE);
+
+    VX_CALL(vxSetNodeTarget(n0, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+    VX_CALL(vxSetNodeTarget(n0_1, VX_TARGET_STRING, TIVX_TARGET_DSP1));
+    VX_CALL(vxSetNodeTarget(n1_1, VX_TARGET_STRING, TIVX_TARGET_DSP2));
+
+    /* input @ node0 index 0, becomes graph parameter 0 */
+    add_graph_parameter_by_node_index(graph, n0, 0);
+    /* output @ node1 index 1, becomes graph parameter 1 */
+    add_graph_parameter_by_node_index(graph, n1, 1);
+
+    /* set graph schedule config such that graph parameter @ index 0 and 1 are enqueuable */
+    graph_parameters_queue_params_list[0].graph_parameter_index = 0;
+    graph_parameters_queue_params_list[0].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[0].refs_list = (vx_reference*)&img0[0];
+
+    graph_parameters_queue_params_list[1].graph_parameter_index = 1;
+    graph_parameters_queue_params_list[1].refs_list_size = num_buf;
+    graph_parameters_queue_params_list[1].refs_list = (vx_reference*)&img2[0];
+
+    /* Schedule mode auto is used, here we dont need to call vxScheduleGraph
+     * Graph gets scheduled automatically as refs are enqueued to it
+     */
+    VX_CALL(vxSetGraphScheduleConfig(graph,
+                VX_GRAPH_SCHEDULE_MODE_QUEUE_AUTO,
+                2,
+                graph_parameters_queue_params_list
+                ));
+
+    /* set number of buffer at intermediate output */
+    VX_CALL(set_num_buf_by_node_index(n0, 1, num_buf));
+    VX_CALL(set_num_buf_by_node_index(n0_1, 1, num_buf));
+
+    /* set pipeline depth explicitly */
+    VX_CALL(set_graph_pipeline_depth(graph, pipeline_depth));
+
+    VX_CALL(vxVerifyGraph(graph));
+
+    export_graph_to_file(graph, "test_graph_pipeline_dont_replicate_node");
+    log_graph_rt_trace(graph);
+    #if 1
+    /* fill reference data into input data reference */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+        {
+            vx_image image;
+
+            idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
+
+            image = (vx_image)vxGetObjectArrayItem(d0[buf_id], objarr_idx);
+
+            ASSERT_NO_FAILURE(ct_image_copyto_vx_image(image, ref_src[idx]));
+
+            VX_CALL(vxReleaseImage(&image));
+        }
+    }
+
+    exe_time = tivxPlatformGetTimeInUsecs();
+
+    /* enqueue input and output references,
+     * input and output can be enqueued in any order
+     * can be enqueued all together, here they are enqueue one by one just as a example
+     */
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        vx_image image;
+
+        image = (vx_image)vxGetObjectArrayItem(d0[buf_id], 0);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&image, 1));
+        vxReleaseImage(&image);
+
+        image = (vx_image)vxGetObjectArrayItem(d2[buf_id], 0);
+        VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&image, 1));
+        vxReleaseImage(&image);
+    }
+
+    buf_id = 0;
+
+    /* wait for graph instances to complete, compare output and recycle data buffers, schedule again */
+    for(loop_id=0; loop_id<(loop_cnt+num_buf); loop_id++)
+    {
+        vx_image out_img, in_img;
+        vx_object_array out_objarr;
+        uint32_t num_refs;
+
+        /* Get output reference, waits until a reference is available */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 1, (vx_reference*)&out_img, 1, &num_refs));
+
+        /* Get consumed input reference, waits until a reference is available
+         */
+        VX_CALL(vxGraphParameterDequeueDoneRef(graph, 0, (vx_reference*)&in_img, 1, &num_refs));
+
+        /* A graph execution completed, since we dequeued both input and output refs */
+        if(arg_->measure_perf==0)
+        {
+            /* when measuring performance dont check output since it affects graph performance numbers
+             */
+
+            if(loop_cnt > 100)
+            {
+                ct_update_progress(loop_id, loop_cnt+num_buf);
+            }
+
+            out_objarr = get_object_array_parent_of_image(out_img, d2, img2, num_buf);
+
+            for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+            {
+                vx_image image;
+
+                image = (vx_image)vxGetObjectArrayItem(out_objarr, objarr_idx);
+
+                ASSERT_NO_FAILURE({
+                    vxdst[objarr_idx] = ct_image_from_vx_image(image);
+                });
+
+                VX_CALL(vxReleaseImage(&image));
+            }
+
+            for(objarr_idx=0;objarr_idx<objarr_elements;objarr_idx++)
+            {
+                idx = get_ref_src_index(num_buf, objarr_idx, buf_id);
+
+                /* compare output */
+                /* NOT of NOT should give back original image */
+                ASSERT_EQ_CTIMAGE(ref_src[idx], vxdst[objarr_idx]);
+            }
+        }
+
+        buf_id = (buf_id+1)%num_buf;
+
+        /* recycles dequeued input and output refs 'loop_cnt' times */
+        if(loop_id<loop_cnt)
+        {
+            /* input and output can be enqueued in any order */
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 0, (vx_reference*)&in_img, 1));
+            VX_CALL(vxGraphParameterEnqueueReadyRef(graph, 1, (vx_reference*)&out_img, 1));
+        }
+    }
+
+    /* ensure all graph processing is complete */
+    VX_CALL(vxWaitGraph(graph));
+
+    exe_time = tivxPlatformGetTimeInUsecs() - exe_time;
+
+    if(arg_->measure_perf==1)
+    {
+        vx_node nodes[] = { n0, n1 };
+
+        printGraphPipelinePerformance(graph, nodes, 2, exe_time, loop_cnt+num_buf, arg_->width*arg_->height);
+    }
+    #endif
+    VX_CALL(vxReleaseNode(&n0));
+    VX_CALL(vxReleaseNode(&n1));
+    VX_CALL(vxReleaseNode(&n0_1));
+    VX_CALL(vxReleaseNode(&n1_1));
+    VX_CALL(vxReleaseImage(&img_exemplar));
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseImage(&img0[buf_id]));
+        VX_CALL(vxReleaseImage(&img2[buf_id]));
+        VX_CALL(vxReleaseImage(&img0_1[buf_id]));
+        VX_CALL(vxReleaseImage(&img2_1[buf_id]));
+    }
+    for(buf_id=0; buf_id<num_buf; buf_id++)
+    {
+        VX_CALL(vxReleaseObjectArray(&d0[buf_id]));
+        VX_CALL(vxReleaseObjectArray(&d2[buf_id]));
+    }
+    VX_CALL(vxReleaseImage(&img1));
+    VX_CALL(vxReleaseImage(&img1_1));
+    VX_CALL(vxReleaseObjectArray(&d1));
+    VX_CALL(vxReleaseGraph(&graph));
+
+    tivx_clr_debug_zone(VX_ZONE_INFO);
+}
+
 typedef enum
 {
     ADD = 0,
@@ -4757,6 +5015,7 @@ TESTCASE_TESTS(tivxGraphPipeline,
     testEventHandling,
     testEventHandlingDisableEvents,
     testReplicateImage,
+    testDontReplicateImage,
     testReplicateImage2,
     testUserKernel,
     testManualSchedule,
