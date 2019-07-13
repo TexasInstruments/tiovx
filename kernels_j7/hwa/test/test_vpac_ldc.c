@@ -636,7 +636,7 @@ TEST_WITH_ARG(tivxHwaVpacLdc, testGraphProcessing, Arg,
         {
             ref[0] = (vx_reference) luma_lut;
             ref[1] = (vx_reference) chroma_lut;
-            VX_CALL(tivxNodeSendCommand(node, 0, TIVX_NODE_VPAC_LDC_SET_LUT_PARAMS, ref, 2));
+            VX_CALL(tivxNodeSendCommand(node, 0, TIVX_VPAC_LDC_SET_LUT_PARAMS, ref, 2));
         }
 
         VX_CALL(vxProcessGraph(graph));

@@ -738,19 +738,19 @@ static vx_status VX_CALLBACK tivxVpacNfGenericControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_NODE_VPAC_NF_SET_HTS_LIMIT:
+            case TIVX_VPAC_NF_SET_HTS_LIMIT:
             {
                 status = tivxVpacNfGenericSetHtsLimitCmd(nf_generic_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_NF_SET_COEFF:
+            case TIVX_VPAC_NF_SET_COEFF:
             {
                 status = tivxVpacNfGenericSetCoeff(nf_generic_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_NF_GET_ERR_STATUS:
+            case TIVX_VPAC_NF_GET_ERR_STATUS:
             {
                 status = tivxVpacNfGenericGetErrStatusCmd(nf_generic_obj,
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);

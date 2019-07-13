@@ -645,10 +645,10 @@ void tivx_dmpac_dof_params_init(tivx_dmpac_dof_params_t *prms)
         prms->motion_direction = 1; /* Forward Motion */
 
         /* Predictors */
-        prms->base_predictor[0] = TIVX_NODE_DMPAC_DOF_PREDICTOR_TEMPORAL;
-        prms->base_predictor[1] = TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_LEFT;
-        prms->inter_predictor[0] = TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_COLOCATED;
-        prms->inter_predictor[1] = TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_LEFT;
+        prms->base_predictor[0] = TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL;
+        prms->base_predictor[1] = TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT;
+        prms->inter_predictor[0] = TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED;
+        prms->inter_predictor[1] = TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT;
 
         prms->iir_filter_alpha = 0x66;
         prms->enable_lk = 1;

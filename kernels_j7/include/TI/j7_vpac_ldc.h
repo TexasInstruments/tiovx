@@ -91,7 +91,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_NODE_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS         (0x10000000u)
+#define TIVX_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS         (0x10000000u)
 
 /*! \brief Control Command to set LDC Lut parameters
  *         This LUT is used in 12bit to 8bit conversion.
@@ -102,7 +102,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_NODE_VPAC_LDC_SET_LUT_PARAMS                   (0x10000001u)
+#define TIVX_VPAC_LDC_SET_LUT_PARAMS                   (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -113,7 +113,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_NODE_VPAC_LDC_GET_ERR_STATUS                   (0x10000002u)
+#define TIVX_VPAC_LDC_GET_ERR_STATUS                   (0x10000002u)
 
 /*********************************
  *      VPAC_LDC Defines
@@ -124,33 +124,33 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_NODE_VPAC_LDC_CALC_MESH_LINE_OFFSET(width, subsample_factor)      \
+#define TIVX_VPAC_LDC_CALC_MESH_LINE_OFFSET(width, subsample_factor)      \
     ((((((width)/(subsample_factor))+1) + 15U) & ~15U) * (4U))
 
 
 /*! Error status for pixel co-ordinate goes out of the
  *  pre-computed input pixel bounding box */
-#define TIVX_NODE_VPAC_LDC_PIX_BLK_OUTOFBOUND_ERR_STATUS    (0x1u)
+#define TIVX_VPAC_LDC_PIX_BLK_OUTOFBOUND_ERR_STATUS    (0x1u)
 /*! Error status for Block mesh co-ordinate goes out of the pre-computed
  *  mesh bounding box */
-#define TIVX_NODE_VPAC_LDC_MESH_BLK_OUTOFBOUND_ERR_STATUS   (0x2u)
+#define TIVX_VPAC_LDC_MESH_BLK_OUTOFBOUND_ERR_STATUS   (0x2u)
 /*! Input Pixel block memory overflow */
-#define TIVX_NODE_VPAC_LDC_PIX_MEM_OVF_ERR_STATUS           (0x4u)
+#define TIVX_VPAC_LDC_PIX_MEM_OVF_ERR_STATUS           (0x4u)
 /*! Mesh block memory overflow */
-#define TIVX_NODE_VPAC_LDC_MESH_MEM_OVF_ERR_STATUS          (0x8u)
+#define TIVX_VPAC_LDC_MESH_MEM_OVF_ERR_STATUS          (0x8u)
 /*! Back mapped input co-ordinate goes out of input frame range */
-#define TIVX_NODE_VPAC_LDC_PIX_FRM_OUTOFBOUND_ERR_STATUS    (0x10u)
+#define TIVX_VPAC_LDC_PIX_FRM_OUTOFBOUND_ERR_STATUS    (0x10u)
 /*! Affine and perspective transform precision overflow error */
-#define TIVX_NODE_VPAC_LDC_SZ_OVF_ERR_STATUS                (0x20u)
+#define TIVX_VPAC_LDC_SZ_OVF_ERR_STATUS                (0x20u)
 /*! Error on SL2 VBSUM Write interface */
-#define TIVX_NODE_VPAC_LDC_SL2_WR_ERR_STATUS                (0x80u)
+#define TIVX_VPAC_LDC_SL2_WR_ERR_STATUS                (0x80u)
 /*! Error on Input VBUSM Read interface */
-#define TIVX_NODE_VPAC_LDC_RD_ERR_STATUS                    (0x100u)
+#define TIVX_VPAC_LDC_RD_ERR_STATUS                    (0x100u)
 
 
-#define TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH                  (64u)
-#define TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT                 (64u)
-#define TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD                    (0u)
+#define TIVX_VPAC_LDC_DEF_BLOCK_WIDTH                  (64u)
+#define TIVX_VPAC_LDC_DEF_BLOCK_HEIGHT                 (64u)
+#define TIVX_VPAC_LDC_DEF_PIXEL_PAD                    (0u)
 
 /*********************************
  *      VPAC_LDC STRUCTURES
@@ -244,7 +244,7 @@ typedef struct {
 /*!
  * \brief The bandwidth params structure used by the
  *        TIVX_KERNEL_VPAC_LDC kernel.
- *        Passed as argument to TIVX_NODE_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS
+ *        Passed as argument to TIVX_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS
  *        command.
  *
  * \ingroup group_vision_function_vpac_ldc
@@ -312,9 +312,9 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *             structure of type <tt>\ref tivx_vpac_ldc_region_params_t</tt>
  *             or <tt>\ref tivx_vpac_ldc_multi_region_params_t</tt>.
  *             If set to null, default block size
- *             (TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH x
- *             TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT) and pixel padding
- *             (TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD) is used.
+ *             (TIVX_VPAC_LDC_DEF_BLOCK_WIDTH x
+ *             TIVX_VPAC_LDC_DEF_BLOCK_HEIGHT) and pixel padding
+ *             (TIVX_VPAC_LDC_DEF_PIXEL_PAD) is used.
  * \param [in] mesh_prms (optional) Mesh Configuration, the input object of type
  *             <tt>\ref tivx_vpac_ldc_mesh_params_t</tt>. It is used to
  *             provide frame size and downsampling factor of mesh_img.
@@ -323,7 +323,7 @@ void tivxUnRegisterHwaTargetVpacLdcKernels(void);
  *             This can be a full remap table, but is typically sub-sampled by a power
  *             of 2 as per tivx_vpac_ldc_mesh_params_t.subsample_factor to save memory
  *             footprint and bandwidth. The pitch/line offset for the mesh can be calculated using
- *             TIVX_NODE_VPAC_LDC_CALC_MESH_LINE_OFFSET.
+ *             TIVX_VPAC_LDC_CALC_MESH_LINE_OFFSET.
  *             The coordinates are of type S16Q3, and are stored as X,Y pairs
  *             of type <tt>\ref VX_DF_IMAGE_U32</tt>.
  *             If set to null, back mapping is disabled.

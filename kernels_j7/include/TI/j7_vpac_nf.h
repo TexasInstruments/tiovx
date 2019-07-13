@@ -94,13 +94,13 @@ extern "C" {
  *
  *
  */
-#define TIVX_NODE_VPAC_NF_SET_HTS_LIMIT                     (0x10000000u)
+#define TIVX_VPAC_NF_SET_HTS_LIMIT                     (0x10000000u)
 
 /*! \brief Control Command to set TODO
  *
  *
  */
-#define TIVX_NODE_VPAC_NF_SET_COEFF                         (0x10000001u)
+#define TIVX_VPAC_NF_SET_COEFF                         (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -110,7 +110,7 @@ extern "C" {
  *
  *
  */
-#define TIVX_NODE_VPAC_NF_GET_ERR_STATUS                    (0x10000002u)
+#define TIVX_VPAC_NF_GET_ERR_STATUS                    (0x10000002u)
 
 /*********************************
  *      VPAC_NF Defines

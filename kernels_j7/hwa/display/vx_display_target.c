@@ -652,7 +652,7 @@ static vx_status VX_CALLBACK tivxDisplayControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL:
+            case TIVX_DISPLAY_SELECT_CHANNEL:
             {
                 status = tivxDisplaySwitchChannel(dispPrms,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);

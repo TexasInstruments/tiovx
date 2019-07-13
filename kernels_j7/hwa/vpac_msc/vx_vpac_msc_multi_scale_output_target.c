@@ -729,19 +729,19 @@ static vx_status VX_CALLBACK tivxVpacMscScaleControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_NODE_VPAC_MSC_SET_COEFF:
+            case TIVX_VPAC_MSC_SET_COEFF:
             {
                 status = tivxVpacMscScaleSetCoeffsCmd(msc_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_MSC_SET_INPUT_PARAMS:
+            case TIVX_VPAC_MSC_SET_INPUT_PARAMS:
             {
                 status = tivxVpacMscScaleSetInputParamsCmd(msc_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_MSC_SET_OUTPUT_PARAMS:
+            case TIVX_VPAC_MSC_SET_OUTPUT_PARAMS:
             {
                 status = tivxVpacMscScaleSetOutputParamsCmd(msc_obj,
                     (tivx_obj_desc_user_data_object_t **)&obj_desc[0U]);

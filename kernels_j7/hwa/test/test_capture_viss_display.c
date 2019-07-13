@@ -405,7 +405,7 @@ TEST_WITH_ARG(tivxHwaCaptureVissDisplay, testCaptureVissDisplayLoopback, Arg,
                     sizeof(tivx_display_select_channel_params_t),
                     &channel_prms, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
                 VX_CALL(tivxNodeSendCommand(displayNode, 0,
-                    TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL, refs, 1u));
+                    TIVX_DISPLAY_SELECT_CHANNEL, refs, 1u));
             }
         }
 

@@ -91,7 +91,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_dmpac_dof
  */
-#define TIVX_NODE_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS        (0x10000000u)
+#define TIVX_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS        (0x10000000u)
 
 /*! \brief Control Command to set DOF confidence score parameters
  *         User data object tivx_dmpac_dof_cs_tree_params_t is passed
@@ -99,7 +99,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_dmpac_dof
  */
-#define TIVX_NODE_DMPAC_DOF_CS_PARAMS                      (0x10000001u)
+#define TIVX_DMPAC_DOF_CS_PARAMS                      (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -109,31 +109,31 @@ extern "C" {
  *
  *  \ingroup group_vision_function_dmpac_dof
  */
-#define TIVX_NODE_DMPAC_DOF_GET_ERR_STATUS                 (0x10000002u)
+#define TIVX_DMPAC_DOF_GET_ERR_STATUS                 (0x10000002u)
 
 
 /*********************************
  *      DMPAC_DOF PREDICTORS
  *********************************/
 /** \brief No predictor used */
-#define TIVX_NODE_DMPAC_DOF_PREDICTOR_NONE                  (0U)
+#define TIVX_DMPAC_DOF_PREDICTOR_NONE                  (0U)
 
  /** \brief Delayed left predictor */
-#define TIVX_NODE_DMPAC_DOF_PREDICTOR_DELEY_LEFT            (1U)
+#define TIVX_DMPAC_DOF_PREDICTOR_DELEY_LEFT            (1U)
 
 /** \brief Temporal predictor, Need flow vector output from previous image pair
            as Temporal input, can only be set for base layer
  */
-#define TIVX_NODE_DMPAC_DOF_PREDICTOR_TEMPORAL              (2U)
+#define TIVX_DMPAC_DOF_PREDICTOR_TEMPORAL              (2U)
 
 /** \brief Pyramidal left predictor, can be set for base and intermediate layers
  */
-#define TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_LEFT              (3U)
+#define TIVX_DMPAC_DOF_PREDICTOR_PYR_LEFT              (3U)
 
 /** \brief Pyramidal colocated predictor, can be set for base and intermediate
            layers
  */
-#define TIVX_NODE_DMPAC_DOF_PREDICTOR_PYR_COLOCATED         (4U)
+#define TIVX_DMPAC_DOF_PREDICTOR_PYR_COLOCATED         (4U)
 
 
 /*********************************
@@ -141,15 +141,15 @@ extern "C" {
  *********************************/
 
 /*! Error status for DOF VBUSM Read interface error */
-#define TIVX_NODE_DMPAC_DOF_RD_ERR                         (0x04U)
+#define TIVX_DMPAC_DOF_RD_ERR                         (0x04U)
 /*! Error status for DOF VBUSM Write interface error */
-#define TIVX_NODE_DMPAC_DOF_WR_ERR                         (0x08U)
+#define TIVX_DMPAC_DOF_WR_ERR                         (0x08U)
 /*! Error status for MP0 read error */
-#define TIVX_NODE_DMPAC_DOF_MP0_RD_STATUS_ERR              (0x10U)
+#define TIVX_DMPAC_DOF_MP0_RD_STATUS_ERR              (0x10U)
 /*! Error status for FOCO SL2 VBSUM write interface error */
-#define TIVX_NODE_DMPAC_DOF_FOCO0_SL2_WR_ERR               (0x400000U)
+#define TIVX_DMPAC_DOF_FOCO0_SL2_WR_ERR               (0x400000U)
 /*! Error status for FOCO SL2 VBSUM read interface error */
-#define TIVX_NODE_DMPAC_DOF_FOCO0_VBUSM_RD_ERR             (0x200000U)
+#define TIVX_DMPAC_DOF_FOCO0_VBUSM_RD_ERR             (0x200000U)
 
 /*********************************
  *      DMPAC_DOF STRUCTURES

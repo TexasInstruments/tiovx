@@ -864,19 +864,19 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_NODE_DMPAC_DOF_CS_PARAMS:
+            case TIVX_DMPAC_DOF_CS_PARAMS:
             {
                 status = tivxDmpacDofSetCsPrms(dofObj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS:
+            case TIVX_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS:
             {
                 status = tivxDmpacDofSetHtsBwLimit(dofObj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_DMPAC_DOF_GET_ERR_STATUS:
+            case TIVX_DMPAC_DOF_GET_ERR_STATUS:
             {
                 status = tivxDmpacDofGetErrStatusCmd(dofObj,
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);

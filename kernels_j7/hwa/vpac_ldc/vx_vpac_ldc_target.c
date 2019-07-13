@@ -662,20 +662,20 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_NODE_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS:
+            case TIVX_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS:
             {
                 status = tivxVpacLdcSetRdBwLimitCmd(ldc_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_LDC_SET_LUT_PARAMS:
+            case TIVX_VPAC_LDC_SET_LUT_PARAMS:
             {
                 status = tivxVpacLdcSetLutParamsCmd(ldc_obj,
                     (tivx_obj_desc_lut_t *)obj_desc[0U],
                     (tivx_obj_desc_lut_t *)obj_desc[1U]);
                 break;
             }
-            case TIVX_NODE_VPAC_LDC_GET_ERR_STATUS:
+            case TIVX_VPAC_LDC_GET_ERR_STATUS:
             {
                 status = tivxVpacLdcGetErrStatusCmd(ldc_obj,
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);
@@ -1044,9 +1044,9 @@ static void tivxVpacLdcSetRegionParams(Ldc_Config *cfg,
     }
     else
     {
-        cfg->outputBlockWidth = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
-        cfg->outputBlockHeight = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
-        cfg->pixelPad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
+        cfg->outputBlockWidth = TIVX_VPAC_LDC_DEF_BLOCK_WIDTH;
+        cfg->outputBlockHeight = TIVX_VPAC_LDC_DEF_BLOCK_HEIGHT;
+        cfg->pixelPad = TIVX_VPAC_LDC_DEF_PIXEL_PAD;
     }
 }
 

@@ -654,19 +654,19 @@ static vx_status VX_CALLBACK tivxVpacNfBilateralControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_NODE_VPAC_NF_SET_HTS_LIMIT:
+            case TIVX_VPAC_NF_SET_HTS_LIMIT:
             {
                 status = tivxVpacNfBilateralSetHtsLimitCmd(nf_bilateral_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_NF_SET_COEFF:
+            case TIVX_VPAC_NF_SET_COEFF:
             {
                 status = tivxVpacNfBilateralSetCoeff(nf_bilateral_obj,
                     (tivx_obj_desc_user_data_object_t *)obj_desc[0U]);
                 break;
             }
-            case TIVX_NODE_VPAC_NF_GET_ERR_STATUS:
+            case TIVX_VPAC_NF_GET_ERR_STATUS:
             {
                 status = tivxVpacNfBilateralGetErrStatusCmd(nf_bilateral_obj,
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);

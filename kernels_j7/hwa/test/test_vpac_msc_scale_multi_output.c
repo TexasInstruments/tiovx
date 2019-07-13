@@ -812,7 +812,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_OneOutput, Arg
 
         refs[0] = (vx_reference)coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_NODE_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_SET_COEFF,
             refs, 1u));
 
         VX_CALL(vxProcessGraph(graph));
@@ -940,7 +940,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_TwoOutput, Arg
 
         refs[0] = (vx_reference)coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_NODE_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_SET_COEFF,
             refs, 1u));
 
         VX_CALL(vxProcessGraph(graph));
@@ -1044,7 +1044,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_ThreeOutput, A
 
         refs[0] = (vx_reference)coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_NODE_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_SET_COEFF,
             refs, 1u));
 
         for (cnt = 0; cnt < 5; cnt++)
@@ -1068,7 +1068,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_ThreeOutput, A
         }
 
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_NODE_VPAC_MSC_SET_OUTPUT_PARAMS,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_SET_OUTPUT_PARAMS,
             output_refs, 5u));
 
         VX_CALL(vxProcessGraph(graph));
@@ -1173,7 +1173,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FourOutput, Ar
 
         refs[0] = (vx_reference)coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_NODE_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_SET_COEFF,
             refs, 1u));
 
         VX_CALL(vxProcessGraph(graph));
@@ -1280,7 +1280,7 @@ TEST_WITH_ARG(tivxHwaVpacMscScaleMultiOutput, testGraphProcessing_FiveOutput, Ar
 
         refs[0] = (vx_reference)coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(node, 0u, TIVX_NODE_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(node, 0u, TIVX_VPAC_MSC_SET_COEFF,
             refs, 1u));
 
         VX_CALL(vxProcessGraph(graph));

@@ -71,7 +71,7 @@ extern "C" {
 
 
 /*! \brief Channels parameters for selecting channel to be displayed.
- *         Passed as an argument to #TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL
+ *         Passed as an argument to #TIVX_DISPLAY_SELECT_CHANNEL
  *         control command.
  *
  */
@@ -95,7 +95,7 @@ typedef struct
  *
  *  \ingroup group_vision_function_vpac_msc
  */
-#define TIVX_NODE_VPAC_DISPLAY_SELECT_CHANNEL       (0x30000000u)
+#define TIVX_DISPLAY_SELECT_CHANNEL       (0x30000000u)
 
 
 /*! \brief [Graph] Creates a DOF visualization node Node.

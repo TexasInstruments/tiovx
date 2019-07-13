@@ -676,7 +676,7 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
 
     switch (node_cmd_id)
     {
-        case TIVX_NODE_VPAC_LDC_SET_LUT_PARAMS:
+        case TIVX_VPAC_LDC_SET_LUT_PARAMS:
             status = tivxVpacLdcSetLutParamsCmd(&prms->config.settings,
                 (tivx_obj_desc_lut_t *)obj_desc[0U],
                 (tivx_obj_desc_lut_t *)obj_desc[1U]);
@@ -879,9 +879,9 @@ static void tivxVpacLdcSetRegionParams(ldc_settings *settings,
     else
     {
         settings->ldmapen = 0u;
-        settings->ld_obw = TIVX_NODE_VPAC_LDC_DEF_BLOCK_WIDTH;
-        settings->ld_obh = TIVX_NODE_VPAC_LDC_DEF_BLOCK_HEIGHT;
-        settings->ld_pad = TIVX_NODE_VPAC_LDC_DEF_PIXEL_PAD;
+        settings->ld_obw = TIVX_VPAC_LDC_DEF_BLOCK_WIDTH;
+        settings->ld_obh = TIVX_VPAC_LDC_DEF_BLOCK_HEIGHT;
+        settings->ld_pad = TIVX_VPAC_LDC_DEF_PIXEL_PAD;
     }
 }
 
