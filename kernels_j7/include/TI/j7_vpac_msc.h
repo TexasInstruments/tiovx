@@ -75,7 +75,7 @@ extern "C" {
  * \brief The MSC kernels in this kernel extension.
  */
 
-/*! \brief vpac_msc scalar kernel name
+/*! \brief vpac_msc scaler kernel name
  *  \ingroup group_vision_function_vpac_msc
  */
 #define TIVX_KERNEL_VPAC_MSC_MULTI_SCALE_NAME "com.ti.hwa.vpac_msc_multi_scale"
@@ -99,7 +99,7 @@ extern "C" {
 
 /*! \brief Control Command to set MSC input parameters.
  *
- *         These parameters are common for all scalar outputs.
+ *         These parameters are common for all scaler outputs.
  *         Used to configure/select the number of taps to be
  *         used for scaling operation, line increment by 2 to improve
  *         HW throughput for 1/2 scaling.
@@ -118,14 +118,14 @@ extern "C" {
  *
  *         This command takes an array of vx_references as an argument,
  *         where each index contains output parameters for the
- *         corresponding scalar. For example, the output parameters at
- *         the index0 contains output parameters for the scalar output0
- *         and so on. If the reference is set to null for a scalar, default
- *         scalar parameters or previously set/configured parameters
- *         are used for that scalar.
+ *         corresponding scaler. For example, the output parameters at
+ *         the index0 contains output parameters for the scaler output0
+ *         and so on. If the reference is set to null for a scaler, default
+ *         scaler parameters or previously set/configured parameters
+ *         are used for that scaler.
  *
  *         Used to configure/select number of phases for the
- *         scaling operation, the coefficients and other scalar parameters.
+ *         scaling operation, the coefficients and other scaler parameters.
  *
  *         This command takes an array of user objects containing
  *         tivx_vpac_msc_output_params_t parameters..
@@ -144,14 +144,14 @@ extern "C" {
 /*! Maximum number of Single Phase Coefficient Set */
 #define TIVX_VPAC_MSC_MAX_SP_COEFF_SET                (2U)
 
-/*! Maximum number of Scalar output supported by Scalar,
+/*! Maximum number of Scaler output supported by Scaler,
  *  Used by the sim target kernel */
 #define TIVX_VPAC_MSC_MAX_OUTPUT                      (10U)
 
-/*! Maximum number of filter taps supported in Scalar */
+/*! Maximum number of filter taps supported in Scaler */
 #define TIVX_VPAC_MSC_MAX_TAP                         (5U)
 
-/*! 32 Phase coefficients for Scalar */
+/*! 32 Phase coefficients for Scaler */
 #define TIVX_VPAC_MSC_32_PHASE_COEFF                  (32U)
 
 

@@ -107,7 +107,7 @@ typedef struct
     uint32_t                out_start_idx;
     /*!< Number of pyramid levels within this pyramid set */
     uint32_t                num_levels;
-    /*!< This maps output index to scalar index */
+    /*!< This maps output index to scaler index */
     uint32_t                sc_map_idx[MSC_MAX_OUTPUT];
 } tivxVpacMscPmdSubSetInfo;
 
@@ -173,11 +173,11 @@ struct tivxVpacMscPmdInstObj_t
      *  the target kernel instance */
     tivx_target_kernel      target_kernel;
 
-    /*! Flag to indicate whether to allocate scalar from top ie from
+    /*! Flag to indicate whether to allocate scaler from top ie from
      *  instance 0 or from bottom instance ie instance 9.
-     *  Instance0 of the target kernels allocates scalar in forward direction,
-     *  starting from scalar0, whereas Instance1 of the target kernels
-     *  allocate in backward direction from scalar9. */
+     *  Instance0 of the target kernels allocates scaler in forward direction,
+     *  starting from scaler0, whereas Instance1 of the target kernels
+     *  allocate in backward direction from scaler9. */
     uint32_t                alloc_sc_fwd_dir;
 
     /*! Instance ID of the MSC driver */
@@ -1270,7 +1270,7 @@ static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdObj *msc_obj, tivx_t
 
     if (VX_SUCCESS == status)
     {
-        /* Now, set the scalar information for each pyramid subset */
+        /* Now, set the scaler information for each pyramid subset */
         for (cnt = 0u; cnt < msc_obj->num_pmd_subsets; cnt ++)
         {
             tivxVpacMscPmdSetMscParams(msc_obj, &msc_obj->ss_info[cnt], cnt, kernel);
@@ -1581,11 +1581,11 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdObj *msc_obj,
                  * pyramid have same number of levels */
                 ss_idx = cnt / ss_info->num_levels;
 
-                /* Scalar index within subset pyramid can be calculated
+                /* Scaler index within subset pyramid can be calculated
                  * by just modulo operation. */
                 sc_idx = cnt % ss_info->num_levels;
 
-                /* Now map scalar index to scalar config index */
+                /* Now map scaler index to scaler config index */
                 sc_idx = ss_info->sc_map_idx[sc_idx];
 
                 sc_cfg = &msc_obj->msc_prms[ss_idx].mscCfg.scCfg[sc_idx];

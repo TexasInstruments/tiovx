@@ -180,13 +180,13 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         {vx_false_e, vx_false_e, vx_false_e, vx_true_e, vx_false_e, vx_false_e,
          vx_true_e, vx_false_e, vx_false_e, vx_false_e, vx_false_e};
 
-    /* Scalar Params */
-    vx_image scalar_nv12_out_img = NULL;
-    vx_object_array scalar_out_frames;
+    /* Scaler Params */
+    vx_image scaler_nv12_out_img = NULL;
+    vx_object_array scaler_out_frames;
     vx_user_data_object sc_coeff_obj;
     tivx_vpac_msc_coefficients_t sc_coeffs;
-    vx_node scalarNode = 0;
-    vx_bool scalar_prms_replicate[] =
+    vx_node scalerNode = 0;
+    vx_bool scaler_prms_replicate[] =
         {vx_true_e, vx_true_e, vx_false_e, vx_false_e, vx_false_e, vx_false_e};
 
     /* Display Params */
@@ -336,27 +336,27 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
             VX_DF_IMAGE_NV12), VX_TYPE_IMAGE);
 
         /* Allocate object array for the output frames */
-        ASSERT_VX_OBJECT(scalar_out_frames = vxCreateObjectArray(context,
+        ASSERT_VX_OBJECT(scaler_out_frames = vxCreateObjectArray(context,
             (vx_reference)sample_nv12_img, NUM_CAPT_CHANNELS),
             VX_TYPE_OBJECT_ARRAY);
 
         /* Sample image is no longer required */
         VX_CALL(vxReleaseImage(&sample_nv12_img));
 
-        /* Get one NV12 image for Scalar and Display initialization */
-        scalar_nv12_out_img =
-            (vx_image)vxGetObjectArrayItem(scalar_out_frames, 0);
+        /* Get one NV12 image for Scaler and Display initialization */
+        scaler_nv12_out_img =
+            (vx_image)vxGetObjectArrayItem(scaler_out_frames, 0);
 
-        ASSERT_VX_OBJECT(scalarNode = tivxVpacMscScaleNode(graph,
-            viss_nv12_out_img, scalar_nv12_out_img, NULL, NULL, NULL, NULL),
+        ASSERT_VX_OBJECT(scalerNode = tivxVpacMscScaleNode(graph,
+            viss_nv12_out_img, scaler_nv12_out_img, NULL, NULL, NULL, NULL),
             VX_TYPE_NODE);
-        VX_CALL(vxSetNodeTarget(scalarNode,
+        VX_CALL(vxSetNodeTarget(scalerNode,
             VX_TARGET_STRING, TIVX_TARGET_VPAC_MSC1));
 
-        VX_CALL(tivxSetNodeParameterNumBufByIndex(scalarNode, 1u, NUM_BUFS));
+        VX_CALL(tivxSetNodeParameterNumBufByIndex(scalerNode, 1u, NUM_BUFS));
 
-        /* Now Replicate Scalar Node */
-        VX_CALL(vxReplicateNode(graph, scalarNode, scalar_prms_replicate, 6u));
+        /* Now Replicate Scaler Node */
+        VX_CALL(vxReplicateNode(graph, scalerNode, scaler_prms_replicate, 6u));
 
         /***************** Display initialization *****************/
 
@@ -374,7 +374,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
             (enum vx_type_e)VX_TYPE_USER_DATA_OBJECT);
 
         ASSERT_VX_OBJECT(displayNode =
-            tivxDisplayNode(graph, display_param_obj, scalar_nv12_out_img),
+            tivxDisplayNode(graph, display_param_obj, scaler_nv12_out_img),
             VX_TYPE_NODE);
 
         VX_CALL(vxSetNodeTarget(displayNode, VX_TARGET_STRING,
@@ -413,7 +413,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
 
         ASSERT_EQ_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
 
-        /* Set Scalar Coefficients, can be called only after verify Graph */
+        /* Set Scaler Coefficients, can be called only after verify Graph */
         tivx_vpac_msc_coefficients_params_init(&sc_coeffs);
 
         ASSERT_VX_OBJECT(sc_coeff_obj = vxCreateUserDataObject(context,
@@ -427,7 +427,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
 
         refs[0] = (vx_reference)sc_coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(scalarNode, 0u, TIVX_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(scalerNode, 0u, TIVX_VPAC_MSC_SET_COEFF,
             refs, 1u));
 
         /* Enqueue buf for pipe up but don't trigger graph execution */
@@ -485,7 +485,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
         VX_CALL(vxReleaseNode(&displayNode));
         VX_CALL(vxReleaseNode(&captureNode));
         VX_CALL(vxReleaseNode(&vissNode));
-        VX_CALL(vxReleaseNode(&scalarNode));
+        VX_CALL(vxReleaseNode(&scalerNode));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleaseUserDataObject(&display_param_obj));
         VX_CALL(vxReleaseUserDataObject(&capture_param_obj));
@@ -495,16 +495,16 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
             VX_CALL(vxReleaseObjectArray(&capt_frames[buf_id]));
         }
         VX_CALL(vxReleaseObjectArray(&viss_out_frames));
-        VX_CALL(vxReleaseObjectArray(&scalar_out_frames));
+        VX_CALL(vxReleaseObjectArray(&scaler_out_frames));
         VX_CALL(vxReleaseUserDataObject(&ae_awb_result));
         VX_CALL(vxReleaseUserDataObject(&configuration));
         VX_CALL(vxReleaseUserDataObject(&sc_coeff_obj));
         VX_CALL(vxReleaseImage(&viss_nv12_out_img));
-        VX_CALL(vxReleaseImage(&scalar_nv12_out_img));
+        VX_CALL(vxReleaseImage(&scaler_nv12_out_img));
 
         ASSERT(displayNode == 0);
         ASSERT(captureNode == 0);
-        ASSERT(scalarNode == 0);
+        ASSERT(scalerNode == 0);
         ASSERT(vissNode == 0);
         ASSERT(graph == 0);
         ASSERT(display_param_obj == 0);

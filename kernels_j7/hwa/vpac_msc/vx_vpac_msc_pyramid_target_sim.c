@@ -155,7 +155,7 @@ static vx_status tivxVpacMscPmdSetOutputParamsCmd(tivxVpacMscPmdParams *prms,
 static vx_status tivxVpacMscPmdCalcSubSetInfo(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
 static void tivxVpacMscPmdInitCoeff(Scaler_Config *settings);
 static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms);
-static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
+static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -338,7 +338,7 @@ static vx_status VX_CALLBACK tivxVpacMscPmdCreate(
         {
             tivxVpacMscPmdInitCoeff(&prms->config.settings);
 
-            tivxVpacMscInitScalarUnitParams(prms, kernel);
+            tivxVpacMscInitScalerUnitParams(prms, kernel);
         }
     }
 
@@ -1065,7 +1065,7 @@ static void tivxVpacMscPmdFreeMem(tivxVpacMscPmdParams *prms)
     }
 }
 
-static void tivxVpacMscInitScalarUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel)
+static void tivxVpacMscInitScalerUnitParams(tivxVpacMscPmdParams *prms, tivx_target_kernel_instance kernel)
 {
     int i;
 

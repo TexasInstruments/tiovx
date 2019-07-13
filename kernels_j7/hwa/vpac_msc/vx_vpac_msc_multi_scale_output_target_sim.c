@@ -778,7 +778,7 @@ static void tivxVpacMscScaleInitParams(Scaler_Config *settings)
     settings->cfg_Kernel[0].Tpad_sz = 2;
     settings->cfg_Kernel[0].Bpad_sz = 2;
 
-    /* Initializing all scalar outputs to defaults */
+    /* Initializing all scaler outputs to defaults */
     for (i = 0u; i < TIVX_KERNEL_VPAC_MSC_SCALE_MAX_OUTPUT; i ++)
     {
         settings->unitParams[i].threadMap = 0;
