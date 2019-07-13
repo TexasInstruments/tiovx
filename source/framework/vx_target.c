@@ -354,16 +354,36 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                     {
                         if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_OBJARRAY)
                         {
+                            tivx_obj_desc_t *tmp_node_param;
+                            uint32_t obj_arr_idx;
+
+                            tmp_node_param = tivxObjDescGet(node_obj_desc->data_id[i]);
+
+                            /* Subtracting the object descriptor id of the image from the obj desc id of the array
+                             * Subtracing 1 to normalize to 0 index
+                             * Note: Assumes that image indices will be directly offset from array.
+                             *       Not sure if this is a valid assumption. */
+                            obj_arr_idx = (tmp_node_param->obj_desc_id - tmp_node_param->scope_obj_desc_id) - 1;
                             params[i] = tivxObjDescGet(
                                 ((tivx_obj_desc_object_array_t*)parent_obj_desc[i])->
-                                    obj_desc_id[0]);
+                                    obj_desc_id[obj_arr_idx]);
                         }
                         else
                         if(parent_obj_desc[i]->type==TIVX_OBJ_DESC_PYRAMID)
                         {
+                            tivx_obj_desc_t *tmp_node_param;
+                            uint32_t pyr_idx;
+
+                            tmp_node_param = tivxObjDescGet(node_obj_desc->data_id[i]);
+
+                            /* Subtracting the object descriptor id of the image from the obj desc id of the array
+                             * Subtracing 1 to normalize to 0 index
+                             * Note: Assumes that image indices will be directly offset from array.
+                             *       Not sure if this is a valid assumption. */
+                            pyr_idx = (tmp_node_param->obj_desc_id - tmp_node_param->scope_obj_desc_id) - 1;
                             params[i] = tivxObjDescGet(
                                 ((tivx_obj_desc_pyramid_t*)parent_obj_desc[i])->
-                                    obj_desc_id[0]);
+                                    obj_desc_id[pyr_idx]);
                         }
                         else
                         {
