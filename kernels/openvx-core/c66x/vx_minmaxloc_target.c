@@ -149,7 +149,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
             sc[0U]->data.u08 = 0xFF;
             sc[1U]->data.u08 = 0;
             status = VXLIB_minMaxLoc_i8u(src_addr, &vxlib_src,
-                &sc[0U]->data.u08, &sc[1U]->data.u08,
+                (uint8_t*)&sc[0U]->data.u08, (uint8_t*)&sc[1U]->data.u08,
                 &min_cnt, &max_cnt,
                 min_cap, max_cap,
                 min_loc, max_loc, 0, 0);
@@ -159,7 +159,7 @@ static vx_status VX_CALLBACK tivxKernelMmlProcess(
             sc[0U]->data.s16 = 0x7fff;
             sc[1U]->data.s16 = 0x8000;
             status = VXLIB_minMaxLoc_i16s((int16_t*)src_addr, &vxlib_src,
-                &sc[0U]->data.s16, &sc[1U]->data.s16,
+                (int16_t*)&sc[0U]->data.s16, (int16_t*)&sc[1U]->data.s16,
                 &min_cnt, &max_cnt,
                 min_cap, max_cap,
                 min_loc, max_loc, 0, 0);
