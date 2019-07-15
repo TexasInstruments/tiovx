@@ -324,6 +324,9 @@ static vx_status ownAddRefToObjArray(vx_context context, vx_object_array objarr,
         obj_desc->obj_desc_id[i] =
             ref->obj_desc->obj_desc_id;
 
+        /* Setting the element index so that we can index into object array */
+        ref->obj_desc->element_idx = i;
+
         /* increment the internal counter on the image, not the
            external one */
         ownIncrementReference(ref, VX_INTERNAL);

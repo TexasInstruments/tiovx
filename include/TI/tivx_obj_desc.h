@@ -291,8 +291,8 @@ typedef struct _tivx_obj_desc_t {
     /*! \brief reference flags */
     volatile uint32_t flags;
 
-    /*! \brief reserved field to make this structure a multiple of 64b */
-    volatile uint32_t rsv2[1];
+    /*! \brief holds the index ID in the case that this is a pyramid or object array */
+    volatile uint32_t element_idx;
 
 } tivx_obj_desc_t;
 

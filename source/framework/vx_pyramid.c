@@ -492,6 +492,9 @@ static vx_status ownInitPyramid(vx_pyramid prmd)
             obj_desc->obj_desc_id[i] =
                 img->base.obj_desc->obj_desc_id;
 
+            /* Setting the element index so that we can index into object array */
+            img->base.obj_desc->element_idx = i;
+
             /* increment the internal counter on the image, not the
                external one */
             ownIncrementReference((vx_reference)img, VX_INTERNAL);

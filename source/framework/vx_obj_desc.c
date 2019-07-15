@@ -142,6 +142,7 @@ tivx_obj_desc_t *tivxObjDescAlloc(vx_enum type, vx_reference ref)
             tmp_obj_desc->obj_desc_id = idx;
             tmp_obj_desc->scope_obj_desc_id = TIVX_OBJ_DESC_INVALID;
             tmp_obj_desc->in_node_done_cnt = 0;
+            tmp_obj_desc->element_idx = 0;
             tmp_obj_desc->type = type;
             tmp_obj_desc->host_ref = (uint64_t)(uintptr_t)ref;
 
