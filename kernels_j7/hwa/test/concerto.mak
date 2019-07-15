@@ -23,6 +23,11 @@ CFLAGS += --diag_suppress=112
 CFLAGS += --diag_suppress=552
 endif
 
+
+ifeq ($(BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS),yes)
+CFLAGS      += -DBUILD_CT_TIOVX_HWA_NEGATIVE_TESTS
+endif
+
 include $(FINALE)
 
 endif

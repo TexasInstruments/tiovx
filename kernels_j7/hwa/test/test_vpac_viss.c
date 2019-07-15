@@ -1933,11 +1933,17 @@ TEST(tivxHwaVpacViss, testGraphProcessingRaw)
     }
 }
 
+#if defined(BUILD_CT_TIOVX_HWA_NEGATIVE_TESTS)
+#define testMuxNegative testMuxNegative
+#else
+#define testMuxNegative DISABLED_testMuxNegative
+#endif
+
 TESTCASE_TESTS(tivxHwaVpacViss,
                testNodeCreation,
                testGraphProcessingFile,
                testGraphProcessingFileDcc,
-               testMuxNegative/*,
+               testMuxNegative /*,
                testMux,
                testGraphProcessing,
                testGraphProcessingRaw*/)
