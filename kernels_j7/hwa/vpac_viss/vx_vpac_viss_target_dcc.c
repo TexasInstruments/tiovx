@@ -331,9 +331,8 @@ void tivxVpacVissSetH3aSrcParams(tivxVpacVissObj *vissObj,
 
         inCfg->inSel = vissPrms->h3a_in;
 
-        /* TODO: Fixing downshift factor to 2 for 12b linear mode (12->10 conversion) */
-        /* TODO: lut to be used for 16 to 10 bit conversion */
-        inCfg->shift = 2U;
+        /* Fixing downshift factor to 0. Mapping to 10-bit expected to come from DCC H3A LUT for linear as well as WDR dataflow */
+        inCfg->shift = 0U;
 
         vissObj->vissCfgRef.rfeH3aInCfg = inCfg;
 
