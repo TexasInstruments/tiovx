@@ -165,32 +165,32 @@ typedef enum _tivx_memory_type_e {
 typedef struct _tivx_shared_mem_ptr_t {
 
     /*! \brief Memory region to which this pointer belongs, see \ref tivx_mem_heap_region_e */
-    uint32_t mem_heap_region;
+    volatile uint32_t mem_heap_region;
 
     /*! \brief Value of dmaBufFd correspods to the host_ptr,
      *         This will be used by host/Linux CPU
      */
-    int32_t dma_buf_fd;
+    volatile int32_t dma_buf_fd;
 
     /*! \brief Value of pointer as seen in shared memory
      *         All CPUs will have method to convert from shared memory pointer
      *         to CPU local memory pointer
      */
-    uint64_t shared_ptr;
+    volatile uint64_t shared_ptr;
 
     /*! \brief Value of pointer as seen as by host CPU
      *         Host CPU will have method to convert to/from shared memory
      *         pointer
      */
-    uint64_t host_ptr;
+    volatile uint64_t host_ptr;
 
     /*! \brief Offset of dmaBufFd,
      *         This will be used by host/Linux CPU
      */
-    uint32_t dma_buf_fd_offset;
+    volatile uint32_t dma_buf_fd_offset;
 
     /* Padding to align to 64 bytes */
-    uint32_t rsv[1];
+    volatile uint32_t rsv[1];
 
 } tivx_shared_mem_ptr_t;
 

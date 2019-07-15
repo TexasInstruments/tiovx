@@ -223,7 +223,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxRemoveTargetKernel(
     return (status);
 }
 
-tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, char *kernel_name, vx_enum target_id)
+tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {
     uint32_t i;
     tivx_target_kernel knl = NULL;
@@ -251,7 +251,7 @@ tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, char *kernel_name, vx_
             if(kernel_name!=NULL)
             {
                 /* kernel registered using name, compare using kernel_name string */
-                if( (strncmp(kernel_name, tmp_knl->kernel_name, VX_MAX_KERNEL_NAME)==0)
+                if( (tivx_obj_desc_strncmp(kernel_name, tmp_knl->kernel_name, VX_MAX_KERNEL_NAME)==0)
                     && (target_id == tmp_knl->target_id)
                     )
                 {

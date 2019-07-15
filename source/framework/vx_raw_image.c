@@ -604,7 +604,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReleaseRawImage(tivx_raw_image* image)
     return ownReleaseReferenceInt((vx_reference *)image, TIVX_TYPE_RAW_IMAGE, VX_EXTERNAL, NULL);
 }
 
-VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, vx_enum attribute, void *ptr, vx_size size)
+VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage(tivx_raw_image raw_image, vx_enum attribute, volatile void *ptr, vx_size size)
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_raw_image_t *obj_desc = NULL;

@@ -294,7 +294,8 @@ VX_API_ENTRY vx_kernel VX_API_CALL vxAddUserKernel(vx_context context,
             kernel = (vx_kernel)ownCreateReference(context, VX_TYPE_KERNEL, VX_EXTERNAL, &context->base);
             if ((vxGetStatus((vx_reference)kernel) == VX_SUCCESS) && (kernel->base.type == VX_TYPE_KERNEL))
             {
-                strncpy(kernel->name, name, VX_MAX_KERNEL_NAME);
+                strncpy(kernel->name, name, VX_MAX_KERNEL_NAME-1);
+                kernel->name[VX_MAX_KERNEL_NAME-1]=0;
                 kernel->enumeration = enumeration;
                 kernel->function = func_ptr;
                 kernel->validate = validate;

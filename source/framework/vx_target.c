@@ -337,18 +337,18 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             else if(is_prm_array_element & (1U<<i))
             {
                 if(is_prm_data_ref_q_flag & (1U<<i))
-                { 
+                {
                     /* this is a case of parameter expected by node being a
                      * element within a object array or pyramid
-                     * 
+                     *
                      * Here we index into the object array and pass the element
                      * later return parent back to the framework
-                     */  
-
-                    /* if this parameter is pipelined then it is assumed 
-                     * that this points to 0th element of object array or pyramid, always 
                      */
-                
+
+                    /* if this parameter is pipelined then it is assumed
+                     * that this points to 0th element of object array or pyramid, always
+                     */
+
                     parent_obj_desc[i] = tivxObjDescGet(prm_obj_desc_id[i]);
                     if(parent_obj_desc[i])
                     {
@@ -380,7 +380,7 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
                 }
                 else
                 {
-                    params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);                    
+                    params[i] = tivxObjDescGet(node_obj_desc->data_id[i]);
                 }
             }
             else
@@ -433,14 +433,14 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             else if(tivxFlagIsBitSet(is_prm_array_element, (1<<i)) == vx_true_e)
             {
                 prm_obj_desc_id[i] = TIVX_OBJ_DESC_INVALID;
-                
+
                 prm_obj_desc = tivxObjDescGet(params[i]->obj_desc_id);
 
                 if (prm_obj_desc)
                 {
                     parent_obj_desc[i] = tivxObjDescGet(
                         prm_obj_desc->scope_obj_desc_id);
-                        
+
                     if(parent_obj_desc[i]!=NULL)
                     {
                         prm_obj_desc_id[i] = parent_obj_desc[i]->obj_desc_id;
@@ -674,7 +674,7 @@ static vx_status tivxTargetNodeDescNodeCreate(tivx_obj_desc_node_t *node_obj_des
     tivx_obj_desc_t *parent_obj_desc[TIVX_KERNEL_MAX_PARAMS];
     tivx_obj_desc_t *prm_obj_desc;
     tivx_obj_desc_kernel_name_t *kernel_name_obj_desc;
-    char *kernel_name = NULL;
+    volatile char *kernel_name = NULL;
 
     if (tivxFlagIsBitSet(node_obj_desc->flags,TIVX_NODE_FLAG_IS_REPLICATED) ==
         vx_true_e)
@@ -1269,7 +1269,7 @@ void tivxTargetSetDefaultCreateParams(tivx_target_create_params_t *params)
     params->task_stack_size = 0;
     params->task_core_affinity = 0;
     params->task_priority = TIVX_TASK_PRI_LOWEST;
-    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME);        
+    strncpy(params->task_name, "TIVX_TARGET", TIVX_MAX_TASK_NAME);
     params->task_name[TIVX_MAX_TASK_NAME-1] = 0;
 }
 

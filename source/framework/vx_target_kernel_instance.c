@@ -89,7 +89,7 @@ void tivxTargetKernelInstanceDeInit(void)
     tivxMutexDelete(&g_target_kernel_instance_lock);
 }
 
-tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, char *kernel_name, vx_enum target_id)
+tivx_target_kernel_instance tivxTargetKernelInstanceAlloc(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id)
 {
     uint16_t i;
     tivx_target_kernel_instance kernel_instance = NULL, tmp_kernel_instance = NULL;

@@ -154,51 +154,51 @@ typedef struct _tivx_obj_desc_cmd
     /*! \brief Handle of ACK event that is posted when ACK is received
      *     MUST be valid if flags TIVX_CMD_FLAG_SEND_ACK is set
      */
-    uint64_t ack_event_handle;
+    volatile uint64_t ack_event_handle;
 
     /*! \brief command to execute */
-    uint32_t cmd_id;
+    volatile uint32_t cmd_id;
 
     /*! \brief parameter object descriptors */
-    uint16_t cmd_params_desc_id[TIVX_KERNEL_MAX_PARAMS];
+    volatile uint16_t cmd_params_desc_id[TIVX_KERNEL_MAX_PARAMS];
     /*! \brief valid values in cmd_params_data_id*/
-    uint32_t num_cmd_params;
+    volatile uint32_t num_cmd_params;
     /*! \brief Node command to execute */
-    uint32_t node_cmd_id;
+    volatile uint32_t node_cmd_id;
     /*! \brief Id of the node, to which node_cmd_id to be sent,
      *      If set to TIVX_CONTROL_CMD_SEND_TO_ALL_REPLICATED_NODES,
      *      cmd is send to all replicated node
      *      Otherwise to specific node */
-    int32_t replicated_node_idx;
+    volatile int32_t replicated_node_idx;
 
     /*! \brief flags associated with this command, see
      *         TIVX_CMD_FLAG_xxx
      */
-    uint32_t flags;
+    volatile uint32_t flags;
 
     /*! target for which this command is directed */
-    uint32_t dst_target_id;
+    volatile uint32_t dst_target_id;
 
     /*! source target ID to which ACK should be sent
      *  if ACK flag is not set then this field is not used and can be set to
      *  TIVX_TARGET_ID_INVALID
      */
-    uint32_t src_target_id;
+    volatile uint32_t src_target_id;
 
     /*! \brief Number of object descriptor parameters with this command */
-    uint32_t num_obj_desc;
+    volatile uint32_t num_obj_desc;
 
     /*! \brief object descriptor ID's of parameters */
-    uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
+    volatile uint16_t obj_desc_id[TIVX_CMD_MAX_OBJ_DESCS];
 
     /*! \brief command execution status */
-    uint32_t cmd_status;
+    volatile uint32_t cmd_status;
 
     /*! \brief time at which this command is sent */
-    uint32_t timestamp_h;
+    volatile uint32_t timestamp_h;
 
     /*! \brief time at which this command is sent */
-    uint32_t timestamp_l;
+    volatile uint32_t timestamp_l;
 
 } tivx_obj_desc_cmd_t;
 
@@ -213,10 +213,10 @@ typedef struct _tivx_obj_desc_kernel_name
     tivx_obj_desc_t base;
 
     /*! \brief kernel name */
-    char kernel_name[VX_MAX_KERNEL_NAME];
+    volatile char kernel_name[VX_MAX_KERNEL_NAME];
 
     /*! \brief number of pipeup bufs needed */
-    uint32_t num_pipeup_bufs;
+    volatile uint32_t num_pipeup_bufs;
 
 } tivx_obj_desc_kernel_name_t;
 
@@ -228,13 +228,13 @@ typedef struct _tivx_obj_desc_kernel_name
 typedef struct _tivx_obj_desc_queue_blocked_nodes {
 
     /*! numbers of blocked nodes */
-    uint16_t num_nodes;
+    volatile uint16_t num_nodes;
 
     /*! \brief reserved field, to align to 64b */
-    uint16_t rsv[7];
+    volatile uint16_t rsv[7];
 
     /*! blocked node object descriptor IDs */
-    uint16_t node_id[TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES];
+    volatile uint16_t node_id[TIVX_OBJ_DESC_QUEUE_MAX_BLOCKED_NODES];
 
 } tivx_obj_desc_queue_blocked_nodes_t;
 
@@ -249,19 +249,19 @@ typedef struct _tivx_obj_desc_queue
     tivx_obj_desc_t base;
 
     /*! \brief Current read index */
-    uint16_t cur_rd;
+    volatile uint16_t cur_rd;
 
     /*! \brief Current write index  */
-    uint16_t cur_wr;
+    volatile uint16_t cur_wr;
 
     /*! \brief Count of elements in queue  */
-    uint16_t count;
+    volatile uint16_t count;
 
     /*! \brief reserved field, to align to 64b */
-    uint16_t rsv[5];
+    volatile uint16_t rsv[5];
 
     /*! \brief queue memory */
-    uint16_t queue_mem[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
+    volatile uint16_t queue_mem[TIVX_OBJ_DESC_QUEUE_MAX_DEPTH];
 
     /*! \brief node blocked on this object descriptor queue */
     tivx_obj_desc_queue_blocked_nodes_t blocked_nodes;
@@ -279,49 +279,49 @@ typedef struct _tivx_obj_desc_data_ref_q
     tivx_obj_desc_t base;
 
     /*! \brief object specific flags */
-    uint32_t flags;
+    volatile uint32_t flags;
 
     /*! \brief command to send when ref is consumed */
-    uint16_t ref_consumed_cmd_obj_desc_id;
+    volatile uint16_t ref_consumed_cmd_obj_desc_id;
 
     /*! \brief queue to use for data ref acquire */
-    uint16_t acquire_q_obj_desc_id;
+    volatile uint16_t acquire_q_obj_desc_id;
 
     /*! \brief queue to use for data ref release */
-    uint16_t release_q_obj_desc_id;
+    volatile uint16_t release_q_obj_desc_id;
 
     /*! \brief acquired ref obj desc ID */
-    uint16_t ref_obj_desc_id;
+    volatile uint16_t ref_obj_desc_id;
 
     /*! \brief number of input nodes that have consumed 'ref_obj_desc_id' */
-    uint16_t in_node_done_cnt;
+    volatile uint16_t in_node_done_cnt;
 
     /*! \brief number of nodes take this data ref as input */
-    uint16_t num_in_nodes;
+    volatile uint16_t num_in_nodes;
 
     /*! \brief Next obj desc in a delay.
      *
      * Valid only when
      * TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
      */
-    uint16_t next_obj_desc_id_in_delay;
+    volatile uint16_t next_obj_desc_id_in_delay;
 
     /*! \brief slot in delay for this obj desc.
      *
      * Valid only when
      * TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
      */
-    uint16_t delay_slot_index;
+    volatile uint16_t delay_slot_index;
 
     /*! \brief Number of slots in delay.
      *
      * Valid only when
      * TIVX_OBJ_DESC_DATA_REF_Q_FLAG_IS_IN_DELAY is set
      */
-    uint16_t delay_slots;
+    volatile uint16_t delay_slots;
 
     /*! \brief reserved fields for alignment */
-    uint16_t rsv[1];
+    volatile uint16_t rsv[1];
 
 } tivx_obj_desc_data_ref_q_t;
 
@@ -336,24 +336,24 @@ typedef struct _tivx_obj_desc_graph
     tivx_obj_desc_t base;
 
     /*! \brief pipeline ID of this graph instance */
-    uint32_t pipeline_id;
+    volatile uint32_t pipeline_id;
 
     /*! \brief Graph instance state, running or completed or abandoned */
-    uint32_t state;
+    volatile uint32_t state;
 
     /*! \brief number of leaf nodes that have completed so far,
      *  before a graph begins this value is 0
      */
-    uint32_t complete_leaf_nodes;
+    volatile uint32_t complete_leaf_nodes;
 
     /*! \brief graph execution time */
-    uint32_t exe_time_beg_h;
+    volatile uint32_t exe_time_beg_h;
     /*! \brief graph execution time */
-    uint32_t exe_time_beg_l;
+    volatile uint32_t exe_time_beg_l;
     /*! \brief graph execution time */
-    uint32_t exe_time_end_h;
+    volatile uint32_t exe_time_end_h;
     /*! \brief graph execution time */
-    uint32_t exe_time_end_l;
+    volatile uint32_t exe_time_end_l;
 
 } tivx_obj_desc_graph_t;
 

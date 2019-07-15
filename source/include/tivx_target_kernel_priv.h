@@ -159,7 +159,7 @@ vx_status tivxTargetKernelControl(
  *
  * \ingroup group_tivx_target_kernel_priv
  */
-tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, char *kernel_name, vx_enum target_id);
+tivx_target_kernel tivxTargetKernelGet(vx_enum kernel_id, volatile char *kernel_name, vx_enum target_id);
 
 /*!
  * \brief Init target kernel module

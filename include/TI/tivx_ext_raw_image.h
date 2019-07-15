@@ -108,27 +108,27 @@ typedef struct _tivx_raw_image * tivx_raw_image;
  * \ingroup group_raw_image
  */
 typedef struct _tivx_raw_image_format_t {
-    vx_uint32 pixel_container;      /*!< \brief Pixel Container, see \ref tivx_raw_image_pixel_container_e */
-    vx_uint32 msb;                  /*!< \brief Most significant bit in pixel container */
+    volatile vx_uint32 pixel_container;      /*!< \brief Pixel Container, see \ref tivx_raw_image_pixel_container_e */
+    volatile vx_uint32 msb;                  /*!< \brief Most significant bit in pixel container */
 } tivx_raw_image_format_t;
 
 /*! \brief The raw image create params structure that is given to the tivxCreateRawImage function.
  * \ingroup group_raw_image
  */
 typedef struct _tivx_raw_image_create_params_t {
-    vx_uint32 width;                 /*!< \brief The image width in pixels */
-    vx_uint32 height;                /*!< \brief The image height in lines (not including meta rows). */
-    vx_uint32 num_exposures;         /*!< \brief The number of exposures contained in the sensor readout for a given timestamp.
+    volatile vx_uint32 width;                 /*!< \brief The image width in pixels */
+    volatile vx_uint32 height;                /*!< \brief The image height in lines (not including meta rows). */
+    volatile vx_uint32 num_exposures;         /*!< \brief The number of exposures contained in the sensor readout for a given timestamp.
                                                  Max supported is TIVX_RAW_IMAGE_MAX_EXPOSURES. */
-    vx_bool line_interleaved;        /*!< \brief A value of vx_true_e indicates that the exposures are line interleaved
+    volatile vx_bool line_interleaved;        /*!< \brief A value of vx_true_e indicates that the exposures are line interleaved
                                                  in a single contiguous buffer. */
     tivx_raw_image_format_t format[TIVX_RAW_IMAGE_MAX_EXPOSURES]; /*!< \brief Array of tivx_raw_image_format_t structures indicating the pixel packing and
         bit alignment format of each exposure.  If line_interleaved == vx_false_e, then the number of
         valid structures in this array should be equal to the value of num_exposures.  If line_interleaved ==
         vx_true_e, then the format should be the same for each exposure in a single buffer, so the
         number of valid structures in this array should equal 1. */
-    vx_uint32 meta_height;           /*!< \brief Number of lines of meta data (uses the same width as original sensor readout width) */
-    vx_uint32 meta_location;         /*!< \brief Location in memory of the meta rows relative to the exposure image.
+    volatile vx_uint32 meta_height;           /*!< \brief Number of lines of meta data (uses the same width as original sensor readout width) */
+    volatile vx_uint32 meta_location;         /*!< \brief Location in memory of the meta rows relative to the exposure image.
                                                  see \ref tivx_raw_image_meta_location_e */
 } tivx_raw_image_create_params_t;
 
@@ -233,7 +233,7 @@ VX_API_ENTRY vx_status VX_API_CALL tivxReleaseRawImage(tivx_raw_image *raw_image
  */
 VX_API_ENTRY vx_status VX_API_CALL tivxQueryRawImage (tivx_raw_image raw_image,
                                                       vx_enum attribute,
-                                                      void *ptr,
+                                                      volatile void *ptr,
                                                       vx_size size);
 
 /*! \brief Allows the application to copy a rectangular patch from/into a raw image object exposure.

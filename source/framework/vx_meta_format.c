@@ -105,7 +105,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             status = VX_ERROR_INVALID_TYPE;
         }
     }
-    
+
     if( NULL == ptr)
     {
         VX_PRINT(VX_ZONE_ERROR, "vxSetMetaFormatAttribute: ptr is NULL\n");
@@ -512,7 +512,7 @@ VX_API_ENTRY vx_status VX_API_CALL vxSetMetaFormatAttribute(
             case VX_USER_DATA_OBJECT_NAME:
                 if (size <= VX_MAX_REFERENCE_NAME)
                 {
-                    strncpy(meta->user_data_object.type_name, ptr, VX_MAX_REFERENCE_NAME);
+                    tivx_obj_desc_strncpy(meta->user_data_object.type_name, (void*)ptr, VX_MAX_REFERENCE_NAME);
                 }
                 else
                 {

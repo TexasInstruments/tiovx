@@ -1387,14 +1387,14 @@ enum vx_round_policy_e {
  * \ingroup group_image
  */
 typedef struct _vx_imagepatch_addressing_t {
-    vx_uint32 dim_x;        /*!< \brief Width of patch in X dimension in pixels. */
-    vx_uint32 dim_y;        /*!< \brief Height of patch in Y dimension in pixels. */
-    vx_int32  stride_x;     /*!< \brief Stride in X dimension in bytes. */
-    vx_int32  stride_y;     /*!< \brief Stride in Y dimension in bytes. */
-    vx_uint32 scale_x;      /*!< \brief Scale of X dimension. For sub-sampled planes this is the scaling factor of the dimension of the plane in relation to the zero plane. Use <tt>\ref VX_SCALE_UNITY</tt> in the numerator. */
-    vx_uint32 scale_y;      /*!< \brief Scale of Y dimension. For sub-sampled planes this is the scaling factor of the dimension of the plane in relation to the zero plane. Use <tt>\ref VX_SCALE_UNITY</tt> in the numerator.  */
-    vx_uint32 step_x;       /*!< \brief Step of X dimension in pixels. */
-    vx_uint32 step_y;       /*!< \brief Step of Y dimension in pixels. */
+    volatile vx_uint32 dim_x;        /*!< \brief Width of patch in X dimension in pixels. */
+    volatile vx_uint32 dim_y;        /*!< \brief Height of patch in Y dimension in pixels. */
+    volatile vx_int32  stride_x;     /*!< \brief Stride in X dimension in bytes. */
+    volatile vx_int32  stride_y;     /*!< \brief Stride in Y dimension in bytes. */
+    volatile vx_uint32 scale_x;      /*!< \brief Scale of X dimension. For sub-sampled planes this is the scaling factor of the dimension of the plane in relation to the zero plane. Use <tt>\ref VX_SCALE_UNITY</tt> in the numerator. */
+    volatile vx_uint32 scale_y;      /*!< \brief Scale of Y dimension. For sub-sampled planes this is the scaling factor of the dimension of the plane in relation to the zero plane. Use <tt>\ref VX_SCALE_UNITY</tt> in the numerator.  */
+    volatile vx_uint32 step_x;       /*!< \brief Step of X dimension in pixels. */
+    volatile vx_uint32 step_y;       /*!< \brief Step of Y dimension in pixels. */
 } vx_imagepatch_addressing_t;
 
 /*! \brief Use to initialize a <tt>\ref vx_imagepatch_addressing_t</tt> structure on the stack.
@@ -1466,10 +1466,10 @@ typedef struct _vx_keypoint_t {
  * \ingroup group_basic_features
  */
 typedef struct _vx_rectangle_t {
-    vx_uint32 start_x;          /*!< \brief The Start X coordinate. */
-    vx_uint32 start_y;          /*!< \brief The Start Y coordinate. */
-    vx_uint32 end_x;            /*!< \brief The End X coordinate. */
-    vx_uint32 end_y;            /*!< \brief The End Y coordinate. */
+    volatile vx_uint32 start_x;          /*!< \brief The Start X coordinate. */
+    volatile vx_uint32 start_y;          /*!< \brief The Start Y coordinate. */
+    volatile vx_uint32 end_x;            /*!< \brief The End X coordinate. */
+    volatile vx_uint32 end_y;            /*!< \brief The End Y coordinate. */
 } vx_rectangle_t;
 
 /*! \brief The 2D Coordinates structure.
@@ -1516,11 +1516,11 @@ typedef union _vx_pixel_value_t {
 */
 typedef struct _vx_border_t {
     /*! \brief See <tt>\ref vx_border_e</tt>. */
-    vx_enum mode;
+    volatile vx_enum mode;
     /*! \brief For the mode <tt>\ref VX_BORDER_CONSTANT</tt>, this union contains the
     * value of out-of-bound pixels.
     */
-    vx_pixel_value_t constant_value;
+    volatile vx_pixel_value_t constant_value;
 } vx_border_t;
 
 /*!
