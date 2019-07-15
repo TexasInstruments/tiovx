@@ -723,17 +723,17 @@ static vx_status VX_CALLBACK tivxDmpacDofControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_DMPAC_DOF_CS_PARAMS:
+            case TIVX_DMPAC_DOF_CMD_CS_PARAMS:
             {
                 /* Does not apply for cmodel version ... yet */
                 break;
             }
-            case TIVX_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS:
+            case TIVX_DMPAC_DOF_CMD_SET_HTS_BW_LIMIT_PARAMS:
             {
                 /* Does not apply for cmodel version */
                 break;
             }
-            case TIVX_DMPAC_DOF_GET_ERR_STATUS:
+            case TIVX_DMPAC_DOF_CMD_GET_ERR_STATUS:
             {
                 status = tivxDmpacDofGetErrStatusCmd(
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);

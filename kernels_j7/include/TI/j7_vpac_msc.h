@@ -95,7 +95,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_msc
  */
-#define TIVX_VPAC_MSC_SET_COEFF                    (0x20000000u)
+#define TIVX_VPAC_MSC_CMD_SET_COEFF                    (0x20000000u)
 
 /*! \brief Control Command to set MSC input parameters.
  *
@@ -112,7 +112,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_msc
  */
-#define TIVX_VPAC_MSC_SET_INPUT_PARAMS             (0x20000001u)
+#define TIVX_VPAC_MSC_CMD_SET_INPUT_PARAMS             (0x20000001u)
 
 /*! \brief Control Command to set MSC output scaling parameters.
  *
@@ -132,7 +132,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_msc
  */
-#define TIVX_VPAC_MSC_SET_OUTPUT_PARAMS            (0x20000002u)
+#define TIVX_VPAC_MSC_CMD_SET_OUTPUT_PARAMS            (0x20000002u)
 
 /*********************************
  *      VPAC_MSC Defines

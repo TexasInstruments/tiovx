@@ -91,7 +91,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_dmpac_dof
  */
-#define TIVX_DMPAC_DOF_SET_HTS_BW_LIMIT_PARAMS        (0x10000000u)
+#define TIVX_DMPAC_DOF_CMD_SET_HTS_BW_LIMIT_PARAMS        (0x10000000u)
 
 /*! \brief Control Command to set DOF confidence score parameters
  *         User data object tivx_dmpac_dof_cs_tree_params_t is passed
@@ -99,7 +99,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_dmpac_dof
  */
-#define TIVX_DMPAC_DOF_CS_PARAMS                      (0x10000001u)
+#define TIVX_DMPAC_DOF_CMD_CS_PARAMS                      (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -109,7 +109,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_dmpac_dof
  */
-#define TIVX_DMPAC_DOF_GET_ERR_STATUS                 (0x10000002u)
+#define TIVX_DMPAC_DOF_CMD_GET_ERR_STATUS                 (0x10000002u)
 
 
 /*********************************

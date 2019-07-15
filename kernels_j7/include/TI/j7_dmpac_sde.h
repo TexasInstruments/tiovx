@@ -89,7 +89,7 @@ extern "C" {
  *
  *
  */
-#define TIVX_DMPAC_SDE_SET_HTS_LIMIT                     (0x10000000u)
+#define TIVX_DMPAC_SDE_CMD_SET_HTS_LIMIT                     (0x10000000u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -99,7 +99,7 @@ extern "C" {
  *
  *
  */
-#define TIVX_DMPAC_SDE_GET_ERR_STATUS                    (0x10000002u)
+#define TIVX_DMPAC_SDE_CMD_GET_ERR_STATUS                    (0x10000002u)
 
 /*********************************
  *      DMPAC_SDE Defines

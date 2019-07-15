@@ -427,7 +427,7 @@ TEST_WITH_ARG(tivxHwaCaptureVpacDisplay, testCaptureVpacDisplayLoopback, Arg,
 
         refs[0] = (vx_reference)sc_coeff_obj;
         ASSERT_EQ_VX_STATUS(VX_SUCCESS,
-            tivxNodeSendCommand(scalerNode, 0u, TIVX_VPAC_MSC_SET_COEFF,
+            tivxNodeSendCommand(scalerNode, 0u, TIVX_VPAC_MSC_CMD_SET_COEFF,
             refs, 1u));
 
         /* Enqueue buf for pipe up but don't trigger graph execution */

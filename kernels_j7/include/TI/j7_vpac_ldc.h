@@ -91,7 +91,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS         (0x10000000u)
+#define TIVX_VPAC_LDC_CMD_SET_READ_BW_LIMIT_PARAMS         (0x10000000u)
 
 /*! \brief Control Command to set LDC Lut parameters
  *         This LUT is used in 12bit to 8bit conversion.
@@ -102,7 +102,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_VPAC_LDC_SET_LUT_PARAMS                   (0x10000001u)
+#define TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS                   (0x10000001u)
 
 /*! \brief Control Command to get the error status
  *         Returns the error status of the last processed frame.
@@ -113,7 +113,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_ldc
  */
-#define TIVX_VPAC_LDC_GET_ERR_STATUS                   (0x10000002u)
+#define TIVX_VPAC_LDC_CMD_GET_ERR_STATUS                   (0x10000002u)
 
 /*********************************
  *      VPAC_LDC Defines
@@ -244,7 +244,7 @@ typedef struct {
 /*!
  * \brief The bandwidth params structure used by the
  *        TIVX_KERNEL_VPAC_LDC kernel.
- *        Passed as argument to TIVX_VPAC_LDC_SET_READ_BW_LIMIT_PARAMS
+ *        Passed as argument to TIVX_VPAC_LDC_CMD_SET_READ_BW_LIMIT_PARAMS
  *        command.
  *
  * \ingroup group_vision_function_vpac_ldc

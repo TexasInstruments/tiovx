@@ -922,7 +922,7 @@ static vx_status VX_CALLBACK tivxVpacVissControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_VPAC_VISS_SET_DCC_PARAMS:
+            case TIVX_VPAC_VISS_CMD_SET_DCC_PARAMS:
             {
                 /* Update Configuration in Driver */
                 tivxMutexLock(vissObj->config_lock);

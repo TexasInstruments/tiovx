@@ -676,7 +676,7 @@ static vx_status VX_CALLBACK tivxVpacLdcControl(
 
     switch (node_cmd_id)
     {
-        case TIVX_VPAC_LDC_SET_LUT_PARAMS:
+        case TIVX_VPAC_LDC_CMD_SET_LUT_PARAMS:
             status = tivxVpacLdcSetLutParamsCmd(&prms->config.settings,
                 (tivx_obj_desc_lut_t *)obj_desc[0U],
                 (tivx_obj_desc_lut_t *)obj_desc[1U]);

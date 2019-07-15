@@ -102,7 +102,7 @@ extern "C" {
  *
  *  \ingroup group_vision_function_vpac_viss
  */
-#define TIVX_VPAC_VISS_SET_DCC_PARAMS                   (0x30000000u)
+#define TIVX_VPAC_VISS_CMD_SET_DCC_PARAMS                   (0x30000000u)
 
 /*********************************
  *      VPAC_VISS Defines

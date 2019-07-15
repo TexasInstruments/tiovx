@@ -694,7 +694,7 @@ static vx_status VX_CALLBACK tivxDmpacSdeControl(
     {
         switch (node_cmd_id)
         {
-            case TIVX_DMPAC_SDE_GET_ERR_STATUS:
+            case TIVX_DMPAC_SDE_CMD_GET_ERR_STATUS:
             {
                 status = tivxDmpacSdeGetErrStatusCmd(sde_obj,
                     (tivx_obj_desc_scalar_t *)obj_desc[0U]);
