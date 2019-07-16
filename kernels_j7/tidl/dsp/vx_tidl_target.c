@@ -64,10 +64,11 @@
 #include <stdio.h>
 #include <TI/tivx.h>
 #include <TI/j7.h>
+#include <TI/j7_tidl.h>
 #include <TI/tivx_target_kernel.h>
 #include <tivx_alg_ivision_if.h>
-#include "itidl_ti.h"
 #include "tivx_platform.h"
+#include "itidl_ti.h"
 
 typedef struct
 {
@@ -83,14 +84,19 @@ typedef struct
     TIDL_InArgs         *inArgs;
     TIDL_outArgs        *outArgs;
 
-    TIDL_CreateParams   *createParams;
+    TIDL_CreateParams   createParams;
+
+    tivxTIDLJ7Params    tidlParams;
 
     void                *algHandle;
-} tivxTIDLParams;
+
+} tivxTIDLObj;
 
 static tivx_target_kernel vx_tidl_target_kernel = NULL;
 
-static void tivxTIDLFreeMem(tivxTIDLParams *prms);
+static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj);
+static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size);
+static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize);
 
 static int32_t tidl_AllocNetInputMem(IVISION_BufDesc *BufDescList, sTIDL_IOBufDesc_t *pConfig)
 {
@@ -160,7 +166,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 {
     vx_status status = VX_SUCCESS;
 
-    tivxTIDLParams *prms;
+    tivxTIDLObj *tidlObj;
     uint32_t i, size;
 
     for (i = 0U; i < num_params; i ++)
@@ -174,9 +180,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
 
     if (VX_SUCCESS == status)
     {
-        status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
+        status = tivxGetTargetKernelInstanceContext(kernel, (void **)&tidlObj, &size);
 
-        if ((VX_SUCCESS != status) || (NULL == prms) ||  (sizeof(tivxTIDLParams) != size))
+        if ((VX_SUCCESS != status) || (NULL == tidlObj) ||  (sizeof(tivxTIDLObj) != size))
         {
             status = VX_FAILURE;
         }
@@ -200,7 +206,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         in_args_target_ptr = tivxMemShared2TargetPtr(inArgs->mem_ptr.shared_ptr, inArgs->mem_ptr.mem_heap_region);
         tivxMemBufferMap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        prms->inArgs = in_args_target_ptr;
+        tidlObj->inArgs = in_args_target_ptr;
 
         /* IMPORTANT! outArgs is assumed to be available at index 4 */
         outArgs  = (tivx_obj_desc_user_data_object_t *)obj_desc[4];
@@ -208,7 +214,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         out_args_target_ptr = tivxMemShared2TargetPtr(outArgs->mem_ptr.shared_ptr, outArgs->mem_ptr.mem_heap_region);
         tivxMemBufferMap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        prms->outArgs = out_args_target_ptr;
+        tidlObj->outArgs = out_args_target_ptr;
 
         /* Idx 0 - config data,
            Idx 1 - network data,
@@ -219,42 +225,42 @@ static vx_status VX_CALLBACK tivxKernelTIDLProcess
         uint32_t in_tensor_idx = 5;
 
         /* Idx N - output tensors, where N = Idx 2 + number of input tensors */
-        uint32_t out_tensor_idx = in_tensor_idx + prms->inBufs.numBufs;
+        uint32_t out_tensor_idx = in_tensor_idx + tidlObj->inBufs.numBufs;
         uint32_t id;
 
-        for(id = 0; id < prms->inBufs.numBufs; id++) {
+        for(id = 0; id < tidlObj->inBufs.numBufs; id++) {
             inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
             in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
             tivxMemBufferMap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-            prms->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
+            tidlObj->inBufDesc[id].bufPlanes[0].buf = in_tensor_target_ptr;
         }
 
-        for(id = 0; id < prms->outBufs.numBufs; id++) {
+        for(id = 0; id < tidlObj->outBufs.numBufs; id++) {
             outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
             out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
             tivxMemBufferMap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
-            prms->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
+            tidlObj->outBufDesc[id].bufPlanes[0].buf = out_tensor_target_ptr;
         }
 
         status = tivxAlgiVisionProcess
                  (
-                    prms->algHandle,
-                    &prms->inBufs,
-                    &prms->outBufs,
-                    (IVISION_InArgs  *)prms->inArgs,
-                    (IVISION_OutArgs *)prms->outArgs
+                    tidlObj->algHandle,
+                    &tidlObj->inBufs,
+                    &tidlObj->outBufs,
+                    (IVISION_InArgs  *)tidlObj->inArgs,
+                    (IVISION_OutArgs *)tidlObj->outArgs
                  );
 
         tivxMemBufferUnmap(in_args_target_ptr, inArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         tivxMemBufferUnmap(out_args_target_ptr, outArgs->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
 
-        for(id = 0; id < prms->inBufs.numBufs; id++) {
+        for(id = 0; id < tidlObj->inBufs.numBufs; id++) {
             inTensor  = (tivx_obj_desc_tensor_t *)obj_desc[in_tensor_idx + id];
             in_tensor_target_ptr  = tivxMemShared2TargetPtr(inTensor->mem_ptr.shared_ptr, inTensor->mem_ptr.mem_heap_region);
             tivxMemBufferUnmap(in_tensor_target_ptr, inTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         }
 
-        for(id = 0; id < prms->outBufs.numBufs; id++) {
+        for(id = 0; id < tidlObj->outBufs.numBufs; id++) {
             outTensor = (tivx_obj_desc_tensor_t *)obj_desc[out_tensor_idx + id];
             out_tensor_target_ptr = tivxMemShared2TargetPtr(outTensor->mem_ptr.shared_ptr, outTensor->mem_ptr.mem_heap_region);
             tivxMemBufferUnmap(out_tensor_target_ptr, outTensor->mem_size, VX_MEMORY_TYPE_HOST, VX_WRITE_ONLY);
@@ -309,7 +315,8 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
     tivx_obj_desc_user_data_object_t *network;
     tivx_obj_desc_user_data_object_t *createParams;
 
-    tivxTIDLParams *prms = NULL;
+    tivxTIDLObj *tidlObj = NULL;
+
     void *config_target_ptr;
     void *network_target_ptr;
     void *create_params_target_ptr;
@@ -347,106 +354,125 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
         /* IMPORTANT! Create params is assumed to be available at index 2 */
         createParams   = (tivx_obj_desc_user_data_object_t *)obj_desc[2];
 
-        prms = tivxMemAlloc(sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
+        tidlObj = tivxMemAlloc(sizeof(tivxTIDLObj), TIVX_MEM_EXTERNAL);
 
-        if (NULL != prms)
+        if (NULL != tidlObj)
         {
-            memset(prms, 0, sizeof(tivxTIDLParams));
+            memset(tidlObj, 0, sizeof(tivxTIDLObj));
         }
         else
         {
             status = VX_ERROR_NO_MEMORY;
         }
 
-        create_params_target_ptr = tivxMemShared2TargetPtr(createParams->mem_ptr.shared_ptr, createParams->mem_ptr.mem_heap_region);
-        tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+        if (VX_SUCCESS == status)
+        {
+          config_target_ptr = tivxMemShared2TargetPtr(config->mem_ptr.shared_ptr, config->mem_ptr.mem_heap_region);
+          tivxMemBufferMap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
-        prms->createParams = create_params_target_ptr;
-
-        /* reset scratch heap offset to zero by doing a dummy free */
-        tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L1);
-        tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L2);
-        tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L3);
-
-        tivxMemStats(&l1_stats, TIVX_MEM_INTERNAL_L1);
-        tivxMemStats(&l2_stats, TIVX_MEM_INTERNAL_L2);
-        tivxMemStats(&l3_stats, TIVX_MEM_INTERNAL_L3);
-
-        prms->createParams->l1MemSize = l1_stats.free_size;
-        prms->createParams->l2MemSize = l2_stats.free_size;
-        prms->createParams->l3MemSize = l3_stats.free_size;
-
-        VX_PRINT(VX_ZONE_INFO, "L1 = %d KB, L2 = %d KB, L3 = %d KB\n",
-            l1_stats.free_size/1024,
-            l2_stats.free_size/1024,
-            l3_stats.free_size/1024
-            );
-
-        prms->createParams->udmaDrvObj = tivxPlatformGetDmaObj();
-
-        network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
-        tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        prms->createParams->net = (sTIDL_Network_t *)network_target_ptr;
-        prms->createParams->traceLogLevel = 0;
-        prms->createParams->traceWriteLevel = 0;
-        #ifdef TIVX_TIDL_TARGET_DEBUG
-        prms->createParams->traceLogLevel = 1;
-        prms->createParams->traceWriteLevel = 1;
-        #endif
-        prms->createParams->TIDLVprintf = tivxKernelTIDLLog;
-        prms->createParams->TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
+          memcpy(&tidlObj->tidlParams, config_target_ptr, sizeof(tivxTIDLJ7Params));
+#ifdef COMPUTE_CHECKSUM
+          status = testChecksum(&tidlObj->tidlParams.ioBufDesc, &tidlObj->tidlParams.config_checksum[0], sizeof(sTIDL_IOBufDesc_t));
+#endif
+        }
 
         if (VX_SUCCESS == status)
         {
-            prms->algHandle = tivxAlgiVisionCreate
+          network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
+          tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
+#ifdef COMPUTE_CHECKSUM
+          status = testChecksum(network_target_ptr, &tidlObj->tidlParams.network_checksum[0], network->mem_size);
+#endif
+        }
+
+        if (VX_SUCCESS == status)
+        {
+          create_params_target_ptr = tivxMemShared2TargetPtr(createParams->mem_ptr.shared_ptr, createParams->mem_ptr.mem_heap_region);
+          tivxMemBufferMap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
+
+          memcpy(&tidlObj->createParams, create_params_target_ptr, sizeof(TIDL_CreateParams));
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            /* reset scratch heap offset to zero by doing a dummy free */
+            tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L1);
+            tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L2);
+            tivxMemFree(NULL, 0, TIVX_MEM_INTERNAL_L3);
+
+            tivxMemStats(&l1_stats, TIVX_MEM_INTERNAL_L1);
+            tivxMemStats(&l2_stats, TIVX_MEM_INTERNAL_L2);
+            tivxMemStats(&l3_stats, TIVX_MEM_INTERNAL_L3);
+
+            tidlObj->createParams.l1MemSize = l1_stats.free_size;
+            tidlObj->createParams.l2MemSize = l2_stats.free_size;
+            tidlObj->createParams.l3MemSize = l3_stats.free_size;
+
+            VX_PRINT(VX_ZONE_INFO, "L1 = %d KB, L2 = %d KB, L3 = %d KB\n",
+                l1_stats.free_size/1024,
+                l2_stats.free_size/1024,
+                l3_stats.free_size/1024
+                );
+
+            tidlObj->createParams.udmaDrvObj = tivxPlatformGetDmaObj();
+
+            tidlObj->createParams.net = (sTIDL_Network_t *)network_target_ptr;
+
+            tidlObj->createParams.traceLogLevel = 0;
+            tidlObj->createParams.traceWriteLevel = 0;
+            #ifdef TIVX_TIDL_TARGET_DEBUG
+            tidlObj->createParams.traceLogLevel = 1;
+            tidlObj->createParams.traceWriteLevel = 1;
+            #endif
+            tidlObj->createParams.TIDLVprintf = tivxKernelTIDLLog;
+            tidlObj->createParams.TIDLWriteBinToFile = tivxKernelTIDLDumpToFile;
+
+            tidlObj->algHandle = tivxAlgiVisionCreate
                               (
                                 &TIDL_VISION_FXNS,
-                                (IALG_Params *)(prms->createParams)
+                                (IALG_Params *)(&tidlObj->createParams)
                               );
 
-            if (NULL == prms->algHandle)
+            if (NULL == tidlObj->algHandle)
             {
                 status = VX_FAILURE;
             }
+
+
+            tidlObj->inBufs.size     = sizeof(tidlObj->inBufs);
+            tidlObj->outBufs.size    = sizeof(tidlObj->outBufs);
+
+            tidlObj->inBufs.bufDesc  = tidlObj->inBufDescList;
+            tidlObj->outBufs.bufDesc = tidlObj->outBufDescList;
+
+            tidlObj->inBufs.numBufs  = tidl_AllocNetInputMem(tidlObj->inBufDesc, &tidlObj->tidlParams.ioBufDesc);
+            tidlObj->outBufs.numBufs = tidl_AllocNetOutputMem(tidlObj->outBufDesc, &tidlObj->tidlParams.ioBufDesc);
+
+            for(i = 0; i < tidlObj->inBufs.numBufs; i++)
+            {
+              tidlObj->inBufDescList[i]     = &tidlObj->inBufDesc[i];
+            }
+            for(i = 0; i < tidlObj->outBufs.numBufs; i++)
+            {
+              tidlObj->outBufDescList[i]     = &tidlObj->outBufDesc[i];
+            }
         }
+
+        tivxMemBufferUnmap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         tivxMemBufferUnmap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         tivxMemBufferUnmap(create_params_target_ptr, createParams->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_AND_WRITE);
 
-        prms->inBufs.size     = sizeof(prms->inBufs);
-        prms->outBufs.size    = sizeof(prms->outBufs);
-
-        prms->inBufs.bufDesc  = prms->inBufDescList;
-        prms->outBufs.bufDesc = prms->outBufDescList;
-
-        config_target_ptr = tivxMemShared2TargetPtr(config->mem_ptr.shared_ptr, config->mem_ptr.mem_heap_region);
-        tivxMemBufferMap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        prms->inBufs.numBufs  = tidl_AllocNetInputMem(prms->inBufDesc, (sTIDL_IOBufDesc_t *)config_target_ptr);
-        prms->outBufs.numBufs = tidl_AllocNetOutputMem(prms->outBufDesc, (sTIDL_IOBufDesc_t *)config_target_ptr);
-
-        tivxMemBufferUnmap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-
-        for(i = 0; i < prms->inBufs.numBufs; i++)
-        {
-          prms->inBufDescList[i]     = &prms->inBufDesc[i];
-        }
-        for(i = 0; i < prms->outBufs.numBufs; i++)
-        {
-          prms->outBufDescList[i]     = &prms->outBufDesc[i];
-        }
-
         if (VX_SUCCESS == status)
         {
-            tivxSetTargetKernelInstanceContext(kernel, prms,  sizeof(tivxTIDLParams));
+            tivxSetTargetKernelInstanceContext(kernel, tidlObj,  sizeof(tivxTIDLObj));
         }
         else
         {
-            if (NULL != prms)
+            if (NULL != tidlObj)
             {
-                tivxTIDLFreeMem(prms);
+                tivxTIDLFreeMem(tidlObj);
             }
         }
     }
@@ -461,7 +487,7 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
     vx_status status = VX_SUCCESS;
     uint32_t i;
     uint32_t size;
-    tivxTIDLParams *prms = NULL;
+    tivxTIDLObj *tidlObj = NULL;
 
     for (i = 0U; i < num_params; i ++)
     {
@@ -474,15 +500,15 @@ static vx_status VX_CALLBACK tivxKernelTIDLDelete(
 
     if (VX_SUCCESS == status)
     {
-        status = tivxGetTargetKernelInstanceContext(kernel, (void **)&prms, &size);
+        status = tivxGetTargetKernelInstanceContext(kernel, (void **)&tidlObj, &size);
 
-        if ((VX_SUCCESS == status) && (NULL != prms) && (sizeof(tivxTIDLParams) == size))
+        if ((VX_SUCCESS == status) && (NULL != tidlObj) && (sizeof(tivxTIDLObj) == size))
         {
-            if (prms->algHandle)
+            if (tidlObj->algHandle)
             {
-                tivxAlgiVisionDelete(prms->algHandle);
+                tivxAlgiVisionDelete(tidlObj->algHandle);
             }
-            tivxTIDLFreeMem(prms);
+            tivxTIDLFreeMem(tidlObj);
         }
     }
 
@@ -531,10 +557,93 @@ void tivxRemoveTargetKernelTIDL()
     tivxRemoveTargetKernel(vx_tidl_target_kernel);
 }
 
-static void tivxTIDLFreeMem(tivxTIDLParams *prms)
+static void tivxTIDLFreeMem(tivxTIDLObj *tidlObj)
 {
-    if (NULL != prms)
+    if (NULL != tidlObj)
     {
-        tivxMemFree(prms, sizeof(tivxTIDLParams), TIVX_MEM_EXTERNAL);
+        tivxMemFree(tidlObj, sizeof(tivxTIDLObj), TIVX_MEM_EXTERNAL);
     }
+}
+
+static void getQC(uint8_t *pIn, uint8_t *pOut, int32_t inSize)
+{
+  int32_t i, j;
+  uint8_t vec[TIVX_TIDL_J7_CHECKSUM_SIZE];
+  int32_t remSize;
+
+  /* Initialize vector */
+  for(j = 0; j < TIVX_TIDL_J7_CHECKSUM_SIZE; j++)
+  {
+     vec[j] = 0;
+  }
+
+  /* Create QC */
+  remSize = inSize;
+  for(i = 0; i < inSize; i+=TIVX_TIDL_J7_CHECKSUM_SIZE)
+  {
+    int32_t elems;
+
+    if ((remSize - TIVX_TIDL_J7_CHECKSUM_SIZE) < 0)
+    {
+      elems = TIVX_TIDL_J7_CHECKSUM_SIZE - remSize;
+      remSize += TIVX_TIDL_J7_CHECKSUM_SIZE;
+    }
+    else
+    {
+      elems = TIVX_TIDL_J7_CHECKSUM_SIZE;
+      remSize -= TIVX_TIDL_J7_CHECKSUM_SIZE;
+    }
+
+    for(j = 0; j < elems; j++)
+    {
+      vec[j] ^= pIn[i + j];
+    }
+
+    printf("%05d: ", i);
+    for(j = 0; j < elems; j++)
+    {
+        printf("%03d,", vec[j]);
+    }
+    printf("\n");
+
+  }
+
+  /* Return QC */
+  for(j = 0; j < TIVX_TIDL_J7_CHECKSUM_SIZE; j++)
+  {
+    pOut[j] = vec[j];
+  }
+}
+
+static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size)
+{
+    vx_status status = VX_SUCCESS;
+
+    vx_uint8 qcData[TIVX_TIDL_J7_CHECKSUM_SIZE];
+    int32_t match = 1;
+    int32_t x;
+
+    /* Get QC of config params passed from host to target */
+    getQC(dataPtr, qcData, data_size);
+
+    /* Print QC */
+    for(x = 0; x < TIVX_TIDL_J7_CHECKSUM_SIZE; x++)
+    {
+      if(qcData[x] != refQC[x])
+      {
+        match = 0;
+        break;
+      }
+    }
+    if(match == 0)
+    {
+      VX_PRINT(VX_ZONE_ERROR, "QC code mismatch! \n");
+      status = VX_FAILURE;
+    }
+    else
+    {
+      VX_PRINT(VX_ZONE_WARNING, "QC code match! \n");
+    }
+
+    return status;
 }

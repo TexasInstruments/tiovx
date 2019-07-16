@@ -64,8 +64,8 @@
 
 #include <TI/tivx.h>
 #include <TI/j7.h>
+#include <TI/j7_tidl.h>
 #include "tivx_kernels_host_utils.h"
-#include "itidl_ti.h"
 
 static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
             const vx_reference parameters[ ],
@@ -104,11 +104,11 @@ static vx_status VX_CALLBACK tivxAddKernelTIDLValidate(vx_node node,
         tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_NAME, &config_name, sizeof(config_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(config, VX_USER_DATA_OBJECT_SIZE, &config_size, sizeof(config_size)));
 
-        if ((config_size != sizeof(sTIDL_IOBufDesc_t)) ||
-            (strncmp(config_name, "sTIDL_IOBufDesc_t", sizeof(config_name)) != 0))
+        if ((config_size != sizeof(tivxTIDLJ7Params)) ||
+            (strncmp(config_name, "tivxTIDLJ7Params", sizeof(config_name)) != 0))
         {
             status = VX_ERROR_INVALID_PARAMETERS;
-            VX_PRINT(VX_ZONE_ERROR, "'config' should be a user_data_object of type:\n sTIDL_IOBufDesc_t \n");
+            VX_PRINT(VX_ZONE_ERROR, "'config' should be a user_data_object of type:\n tivxTIDLParms \n");
         }
     }
 

@@ -62,7 +62,7 @@
 
 #include <TI/tivx.h>
 #include <TI/j7.h>
-#include "tivx_tidl_kernels.h"
+#include <TI/j7_tidl.h>
 
 static uint32_t gIsTIDLKernelsLoad = 0u;
 
@@ -78,7 +78,7 @@ void tivxTIDLLoadKernels(vx_context context)
         tivxSetSelfCpuId(TIVX_CPU_ID_EVE1);
 
         tivxRegisterTIDLTargetKernels();
-        
+
         tivxSetSelfCpuId(TIVX_CPU_ID_DSP1);
         #endif
 
