@@ -63,6 +63,7 @@
 
 #include <TI/tivx.h>
 #include <TI/j7.h>
+#include <TI/j7_tidl.h>
 #include <TI/tivx_mem.h>
 #include "test_engine/test.h"
 #include <float.h>
@@ -78,7 +79,7 @@ TESTCASE(tivxTIDL, CT_VXContext, ct_setup_vx_context, 0)
 static vx_user_data_object readConfig(vx_context context, char *config_file, uint32_t *num_input_tensors, uint32_t *num_output_tensors)
 {
     vx_status status = VX_SUCCESS;
-
+    tivxTIDLJ7Params  *tidlParams;
     sTIDL_IOBufDesc_t *ioBufDesc = NULL;
 
     vx_user_data_object   config = NULL;
@@ -112,22 +113,26 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
     }
 
     /* Create a user struct type for handling config data*/
-    config = vxCreateUserDataObject(context, "sTIDL_IOBufDesc_t", sizeof(sTIDL_IOBufDesc_t), NULL );
+    config = vxCreateUserDataObject(context, "tivxTIDLJ7Params", sizeof(tivxTIDLJ7Params), NULL );
 
     status = vxGetStatus((vx_reference)config);
 
     if (VX_SUCCESS == status)
     {
-        status = vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id,
-                            (void **)&ioBufDesc, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
+        status = vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id,
+                            (void **)&tidlParams, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
         if (VX_SUCCESS == status)
         {
-            if(ioBufDesc == NULL)
+            if(tidlParams == NULL)
             {
               printf("ERROR: Map of config object failed\n");
               return NULL;
             }
+
+            tivx_tidl_j7_params_init(tidlParams);
+            
+            ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
 
             read_count = fread(ioBufDesc, capacity, 1, fp_config);
             if(read_count != 1)

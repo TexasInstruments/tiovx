@@ -85,10 +85,27 @@ typedef struct{
   /** Checksum placeholder for TIDL network params */
   vx_uint8 network_checksum[TIVX_TIDL_J7_CHECKSUM_SIZE];
 
+  /** Flag to indicate if config params checksum is to be computed or not */
+  vx_uint32 compute_config_checksum;
+
+  /** Flag to indicate if network params checksum is to be computed or not */
+  vx_uint32 compute_network_checksum;
+
   /**TIDL input/output buffer descriptor*/
   sTIDL_IOBufDesc_t ioBufDesc;
 
 }tivxTIDLJ7Params;
+
+static inline void tivx_tidl_j7_params_init(tivxTIDLJ7Params *tidlParams)
+{
+  memset(&tidlParams->config_checksum[0], 0, TIVX_TIDL_J7_CHECKSUM_SIZE);
+  memset(&tidlParams->network_checksum[0], 0, TIVX_TIDL_J7_CHECKSUM_SIZE);
+
+  tidlParams->compute_config_checksum = 0;
+  tidlParams->compute_network_checksum = 0;
+
+  memset(&tidlParams->ioBufDesc, 0, sizeof(sTIDL_IOBufDesc_t));
+}
 
 #ifdef __cplusplus
 }

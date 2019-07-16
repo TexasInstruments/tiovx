@@ -371,18 +371,22 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
           tivxMemBufferMap(config_target_ptr, config->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
           memcpy(&tidlObj->tidlParams, config_target_ptr, sizeof(tivxTIDLJ7Params));
-#ifdef COMPUTE_CHECKSUM
-          status = testChecksum(&tidlObj->tidlParams.ioBufDesc, &tidlObj->tidlParams.config_checksum[0], sizeof(sTIDL_IOBufDesc_t));
-#endif
+
+          if(tidlObj->tidlParams.compute_config_checksum == 1)
+          {
+            status = testChecksum(&tidlObj->tidlParams.ioBufDesc, &tidlObj->tidlParams.config_checksum[0], sizeof(sTIDL_IOBufDesc_t));
+          }
         }
 
         if (VX_SUCCESS == status)
         {
           network_target_ptr = tivxMemShared2TargetPtr(network->mem_ptr.shared_ptr, network->mem_ptr.mem_heap_region);
           tivxMemBufferMap(network_target_ptr, network->mem_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
-#ifdef COMPUTE_CHECKSUM
-          status = testChecksum(network_target_ptr, &tidlObj->tidlParams.network_checksum[0], network->mem_size);
-#endif
+
+          if(tidlObj->tidlParams.compute_network_checksum == 1)
+          {
+            status = testChecksum(network_target_ptr, &tidlObj->tidlParams.network_checksum[0], network->mem_size);
+          }
         }
 
         if (VX_SUCCESS == status)
