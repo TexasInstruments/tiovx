@@ -646,7 +646,7 @@ static vx_status testChecksum(void *dataPtr, uint8_t *refQC, vx_int32 data_size)
     }
     else
     {
-      VX_PRINT(VX_ZONE_WARNING, "QC code match! \n");
+      VX_PRINT(VX_ZONE_INFO, "QC code match! \n");
     }
 
     return status;
