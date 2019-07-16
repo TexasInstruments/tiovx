@@ -80,7 +80,7 @@ extern "C" {
  * \brief Max depth of queue associated with target
  * \ingroup group_tivx_target_cfg
  */
-#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (32u)
+#define TIVX_TARGET_MAX_JOB_QUEUE_DEPTH         (48u)
 
 /*! \brief Target ID bit mask
  * \ingroup group_tivx_target
