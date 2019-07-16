@@ -524,11 +524,21 @@ static vx_status ownGraphNodeKernelInit(vx_graph graph)
     {
         node = graph->nodes[i];
 
+        if(node && node->kernel)
+        {
+            VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ...\n", i, node->kernel->name);
+        }
+
         status = ownNodeKernelInit(node);
         if(status != VX_SUCCESS )
         {
-            VX_PRINT(VX_ZONE_ERROR,"Node kernel init for node at index %d failed\n", i);
+            VX_PRINT(VX_ZONE_ERROR,"kernel init for node %d, kernel %s ... failed !!!\n", i, node->kernel->name);
             break;
+        }
+
+        if(node && node->kernel)
+        {
+            VX_PRINT(VX_ZONE_INFO, "kernel init for node %d, kernel %s ... done !!!\n", i, node->kernel->name);
         }
     }
 
