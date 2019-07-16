@@ -317,9 +317,9 @@ static vx_status VX_CALLBACK tivxKernelTIDLCreate
 
     tivxTIDLObj *tidlObj = NULL;
 
-    void *config_target_ptr;
-    void *network_target_ptr;
-    void *create_params_target_ptr;
+    void *config_target_ptr = NULL;
+    void *network_target_ptr = NULL;
+    void *create_params_target_ptr = NULL;
 
     tivx_mem_stats l1_stats;
     tivx_mem_stats l2_stats;
