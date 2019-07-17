@@ -131,7 +131,7 @@ static vx_user_data_object readConfig(vx_context context, char *config_file, uin
             }
 
             tivx_tidl_j7_params_init(tidlParams);
-            
+
             ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
 
             read_count = fread(ioBufDesc, capacity, 1, fp_config);
@@ -348,10 +348,12 @@ static vx_tensor createInputTensor(vx_context context, vx_user_data_object confi
     vx_size   input_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
     vx_map_id map_id_config;
     sTIDL_IOBufDesc_t *ioBufDesc;
+    tivxTIDLJ7Params *tidlParams;
 
-    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id_config,
+                      (void **)&tidlParams, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
+    ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
     input_sizes[0] = ioBufDesc->inWidth[0]  + ioBufDesc->inPadL[0] + ioBufDesc->inPadR[0];
     input_sizes[1] = ioBufDesc->inHeight[0] + ioBufDesc->inPadT[0] + ioBufDesc->inPadB[0];
     input_sizes[2] = ioBufDesc->inNumChannels[0];
@@ -372,10 +374,12 @@ static vx_tensor createOutputTensor(vx_context context, vx_user_data_object conf
     vx_size    output_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
     vx_map_id map_id_config;
     sTIDL_IOBufDesc_t *ioBufDesc;
+    tivxTIDLJ7Params *tidlParams;
 
-    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id_config,
+                      (void **)&tidlParams, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
+    ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
     output_sizes[0] = ioBufDesc->outWidth[0]  + ioBufDesc->outPadL[0] + ioBufDesc->outPadR[0];
     output_sizes[1] = ioBufDesc->outHeight[0] + ioBufDesc->outPadT[0] + ioBufDesc->outPadB[0];
     output_sizes[2] = ioBufDesc->outNumChannels[0];
@@ -407,10 +411,12 @@ static vx_status readInput(vx_context context, vx_user_data_object config, vx_te
     vx_size    input_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
 
     sTIDL_IOBufDesc_t *ioBufDesc;
+    tivxTIDLJ7Params  *tidlParams;
 
-    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id_config,
+                      (void **)&tidlParams, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
+    ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
     for(id = 0; id < ioBufDesc->numInputBuf; id++)
     {
         input_sizes[0] = ioBufDesc->inWidth[id]  + ioBufDesc->inPadL[id] + ioBufDesc->inPadR[id];
@@ -501,6 +507,7 @@ static vx_status readInputRawPadded(vx_context context, vx_user_data_object conf
     vx_size    input_strides[TEST_TIDL_MAX_TENSOR_DIMS];
     vx_size    input_sizes[TEST_TIDL_MAX_TENSOR_DIMS];
 
+    tivxTIDLJ7Params *tidlParams;
     sTIDL_IOBufDesc_t *ioBufDesc;
     FILE *fp;
     size_t sz;
@@ -520,9 +527,10 @@ static vx_status readInputRawPadded(vx_context context, vx_user_data_object conf
         return VX_FAILURE;
     }
 
-    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id_config,
+                      (void **)&tidlParams, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
+    ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
     for(id = 0; id < ioBufDesc->numInputBuf; id++)
     {
         input_sizes[0] = ioBufDesc->inWidth[id]  + ioBufDesc->inPadL[id] + ioBufDesc->inPadR[id];
@@ -575,11 +583,13 @@ static vx_status displayOutput(vx_user_data_object config, vx_tensor *output_ten
 
     int32_t id, i, j;
 
+    tivxTIDLJ7Params *tidlParams;
     sTIDL_IOBufDesc_t *ioBufDesc;
 
-    vxMapUserDataObject(config, 0, sizeof(sTIDL_IOBufDesc_t), &map_id_config,
-                      (void **)&ioBufDesc, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
+    vxMapUserDataObject(config, 0, sizeof(tivxTIDLJ7Params), &map_id_config,
+                      (void **)&tidlParams, VX_READ_ONLY, VX_MEMORY_TYPE_HOST, 0);
 
+    ioBufDesc = (sTIDL_IOBufDesc_t *)&tidlParams->ioBufDesc;
     for(id = 0; id < ioBufDesc->numOutputBuf; id++)
     {
         output_sizes[0] = ioBufDesc->outWidth[id]  + ioBufDesc->outPadL[id] + ioBufDesc->outPadR[id];
