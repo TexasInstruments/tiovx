@@ -69,6 +69,8 @@
 #include "tivx_kernels_target_utils.h"
 #include <TI/tivx_task.h>
 
+#define NUM_CHANNELS (4U)
+
 typedef struct
 {
     uint8_t local_val;
@@ -96,10 +98,10 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
 {
     vx_status status = VX_SUCCESS;
     tivx_obj_desc_object_array_t *out_object_array_desc;
-    tivx_obj_desc_scalar_t *out_scalar_desc;
+    tivx_obj_desc_scalar_t *out_scalar_desc[4];
     tivx_obj_desc_scalar_t *scalar_out_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivxScalarSourceObjArrayParams *prms = NULL;
-    uint32_t size;
+    uint32_t size, i;
     vx_enum state;
     vx_uint8 out_value;
 
@@ -120,7 +122,10 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
     {
         tivxGetObjDescList(out_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_out_object_array_desc, out_object_array_desc->num_items);
 
-        out_scalar_desc = scalar_out_object_array_desc[0];
+        for (i = 0; i < NUM_CHANNELS; i++)
+        {
+            out_scalar_desc[i] = scalar_out_object_array_desc[i];
+        }
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -146,7 +151,10 @@ static vx_status VX_CALLBACK tivxScalarSourceObjArrayProcess(
 
                     out_value = prms->local_val;
 
-                    out_scalar_desc->data.u08 = out_value;
+                    for (i = 0; i < NUM_CHANNELS; i++)
+                    {
+                        out_scalar_desc[i]->data.u08 = out_value+i;
+                    }
                 }
             }
         }
