@@ -18,7 +18,7 @@ CGT6X_ROOT ?= $(PSDK_PATH)/ti-cgt-c6000_8.3.2
 GCC_SYSBIOS_ARM_ROOT ?= $(PSDK_PATH)/gcc-linaro-7.2.1-2017.11-x86_64_aarch64-elf
 GCC_LINUX_ARM_ROOT ?= $(PSDK_PATH)/gcc-arm-8.3-2019.03-x86_64-aarch64-linux-gnu
 BIOS_PATH ?= $(PSDK_PATH)/bios_6_76_02_00_eng
-XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_60_00_12_core_eng
+XDCTOOLS_PATH ?= $(PSDK_PATH)/xdctools_3_55_02_22_core
 PDK_PATH ?= $(PSDK_PATH)/pdk
 VISION_APPS_PATH ?= $(PSDK_PATH)/vision_apps
 
