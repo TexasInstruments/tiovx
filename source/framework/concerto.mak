@@ -39,6 +39,7 @@ endif
 
 ifeq ($(HOST_COMPILER),GCC_LINUX_ARM)
 CFLAGS += -Wno-format-truncation
+CFLAGS += -Wno-sizeof-pointer-memaccess
 endif
 
 include $(FINALE)
