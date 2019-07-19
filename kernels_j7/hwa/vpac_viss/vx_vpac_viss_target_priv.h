@@ -277,6 +277,9 @@ typedef struct
     tivx_h3a_aew_config                 aew_config;
     /*! H3A output enabled flag */
     vx_bool                             h3a_out_enabled;
+
+    uint8_t                            *dcc_buf;
+    uint32_t                            dcc_size;
 } tivxVpacVissObj;
 
 typedef struct

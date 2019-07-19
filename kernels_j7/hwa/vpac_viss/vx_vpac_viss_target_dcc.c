@@ -221,10 +221,14 @@ vx_status tivxVpacVissSetParamsFromDcc(tivxVpacVissObj *vissObj,
         dcc_in_prms = &vissObj->dcc_in_prms;
         dcc_out_prms = &vissObj->dcc_out_prms;
 
+
         dcc_in_prms->dcc_buf_size = dcc_buf_desc->mem_size;
         dcc_in_prms->dcc_buf = tivxMemShared2TargetPtr(
             dcc_buf_desc->mem_ptr.shared_ptr,
             dcc_buf_desc->mem_ptr.mem_heap_region);
+
+        vissObj->dcc_buf = dcc_in_prms->dcc_buf;
+        vissObj->dcc_size = dcc_in_prms->dcc_buf_size;
 
         if(NULL != dcc_in_prms->dcc_buf)
         {
@@ -349,7 +353,7 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
     tivx_ae_awb_params_t *aewb_result)
 {
     vx_status                        status = VX_SUCCESS;
-    int                              dcc_status;
+    int                              dcc_status = 0;
     tivxVpacVissConfig              *vsCfg;
     Rfe_GainOfstConfig              *wbCfg;
     dcc_parser_input_params_t       *dcc_in_prms;
@@ -386,7 +390,26 @@ vx_status tivxVpacVissApplyAEWBParams(tivxVpacVissObj *vissObj,
         dcc_in_prms->exposure_time = aewb_result->exposure_time;
         dcc_in_prms->analog_gain = aewb_result->analog_gain;
 
+        if (dcc_in_prms->dcc_buf != vissObj->dcc_buf)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissApplyAEWBParams: DCC Buffer incorrect !!!\n");
+
+            dcc_in_prms->dcc_buf = vissObj->dcc_buf;
+        }
+        if (dcc_in_prms->dcc_buf_size != vissObj->dcc_size)
+        {
+            VX_PRINT(VX_ZONE_ERROR,
+                "tivxVpacVissApplyAEWBParams: DCC Buffer size incorrect !!!\n");
+
+            dcc_in_prms->dcc_buf_size = vissObj->dcc_size;
+        }
+
+        tivxMemBufferMap(vissObj->dcc_buf,
+            vissObj->dcc_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
         dcc_status = dcc_update(dcc_in_prms, dcc_out_prms);
+        tivxMemBufferUnmap(vissObj->dcc_buf,
+            vissObj->dcc_size, VX_MEMORY_TYPE_HOST, VX_READ_ONLY);
 
         if (0U != dcc_status)
         {
