@@ -86,6 +86,8 @@ typedef struct
     tivx_target_kernel knl[TIVX_SUPER_NODE_MAX_NODES];
     VXLIB_bufParams2D_t buf_params[TIVX_MAX_BUF_PARAMS];
     tivx_obj_desc_image_t *obj_desc_image[TIVX_MAX_BUF_PARAMS];
+    int32_t obj_desc_image_count;
+    int32_t src_obj_desc_image_count;
     int32_t buf_params_cnt;
     int32_t src_buf_params_cnt;
 
@@ -112,7 +114,7 @@ static uint8_t tivxGetNodeIndexFromNodeList(
     uint16_t *node_obj_desc_id_list, uint8_t num_nodes);
 
 static vx_status tivxGetNodePort(tivx_obj_desc_super_node_t *super_node, tivxSupernodeParams *prms,
-    BAM_EdgeParams edge_list[], uint8_t node_index, int32_t bam_edge_cnt, int32_t i, int32_t src_dst);
+    BAM_EdgeParams edge_list[], uint8_t node_index, int32_t bam_edge_cnt, int32_t i, int32_t plane, int32_t src_dst);
 
 static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -122,6 +124,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
     uint32_t i, j;
     tivxSupernodeParams *prms = NULL;
     uint32_t size;
+    uint32_t ptr_count = 0;
     tivx_obj_desc_super_node_t *super_node = (tivx_obj_desc_super_node_t *)obj_desc[0];
 
     status = tivxGetTargetKernelInstanceContext(kernel,
@@ -137,16 +140,24 @@ static vx_status VX_CALLBACK tivxKernelSupernodeProcess(
     {
         void *img_ptrs[TIVX_MAX_BUF_PARAMS];
 
-        for(i=0; i < prms->buf_params_cnt; i++)
+        for(i=0; i < prms->obj_desc_image_count; i++)
         {
-            uint8_t *ptr;
-            void *target_ptr;
+            uint8_t *ptr[TIVX_IMAGE_MAX_PLANES] = {NULL};
+            void    *target_ptr[TIVX_IMAGE_MAX_PLANES] = {NULL};
 
-            target_ptr = tivxMemShared2TargetPtr(
-                prms->obj_desc_image[i]->mem_ptr[0].shared_ptr, prms->obj_desc_image[i]->mem_ptr[0].mem_heap_region);
+            for (j = 0; j < prms->obj_desc_image[i]->planes; j++)
+            {
+                target_ptr[j] = tivxMemShared2TargetPtr(
+                    prms->obj_desc_image[i]->mem_ptr[j].shared_ptr, prms->obj_desc_image[i]->mem_ptr[j].mem_heap_region);
+            }
 
-            tivxSetPointerLocation(prms->obj_desc_image[i], &target_ptr, &ptr);
-            img_ptrs[i] = ptr;
+            tivxSetPointerLocation(prms->obj_desc_image[i], target_ptr, (uint8_t**)&ptr);
+
+            for (j = 0; j < prms->obj_desc_image[i]->planes; j++)
+            {
+                img_ptrs[ptr_count] = ptr[j];
+                ptr_count++;
+            }
         }
 
         status = tivxBamUpdatePointers(prms->graph_handle, prms->src_buf_params_cnt, prms->buf_params_cnt-prms->src_buf_params_cnt, img_ptrs);
@@ -224,6 +235,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
     VXLIB_bufParams2D_t *pBuf_params[TIVX_MAX_BUF_PARAMS];
     int32_t bam_node_cnt = 0;
     int32_t bam_edge_cnt = 0;
+    int32_t external_ref_count = 0;
     void *scratch[TIVX_SUPER_NODE_MAX_NODES];
     int32_t size[TIVX_SUPER_NODE_MAX_NODES];
     uint8_t found_indices[TIVX_SUPER_NODE_MAX_EDGES];
@@ -352,7 +364,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         tivx_obj_desc_image_t *src = (tivx_obj_desc_image_t *)dst_param;
                         int32_t found = 0;
 
-                        for(j=0; j < prms->buf_params_cnt; j++)
+                        for(j=0; j < prms->obj_desc_image_count; j++)
                         {
                             if(super_node->edge_list[i].src_node_prm_idx == found_indices[j])
                             {
@@ -364,25 +376,34 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         if (0 == found)
                         {
                             /* Add unique source edge to parameter list */
-                            prms->obj_desc_image[prms->buf_params_cnt] = src;
+                            prms->obj_desc_image[prms->obj_desc_image_count] = src;
                             tivxInitBufParams(src, &prms->buf_params[prms->buf_params_cnt]);
-                            pBuf_params[prms->buf_params_cnt] = &prms->buf_params[prms->buf_params_cnt];
-                            found_indices[prms->buf_params_cnt] = super_node->edge_list[i].src_node_prm_idx;
-                            prms->buf_params_cnt++;
+                            for (int j = 0; j < src->planes; j++)
+                            {
+                                pBuf_params[prms->buf_params_cnt] = &prms->buf_params[prms->buf_params_cnt];
+                                prms->buf_params_cnt++;
+                            }
+                            found_indices[prms->obj_desc_image_count] = super_node->edge_list[i].src_node_prm_idx;
+                            prms->obj_desc_image_count++;
                         }
+                        
 
-                        edge_list[bam_edge_cnt].upStreamNode.id = 0;
-                        edge_list[bam_edge_cnt].upStreamNode.port = super_node->edge_list[i].src_node_prm_idx;
                         node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[i].dst_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
 
-                        status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, 1);
-
-                        bam_edge_cnt++;
+                        for (int j = 0; j < src->planes; j++) {
+                            edge_list[bam_edge_cnt].upStreamNode.id = 0;
+                            edge_list[bam_edge_cnt].upStreamNode.port = external_ref_count;
+                            status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, j, 1);
+                            bam_edge_cnt++;
+                            external_ref_count++;
+                        }
                     }
                 }
             }
 
             prms->src_buf_params_cnt = prms->buf_params_cnt;
+            prms->src_obj_desc_image_count = prms->obj_desc_image_count;
+            external_ref_count = 0;
         }
 
         if (VX_SUCCESS == status)
@@ -413,10 +434,10 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                     {
 
                         node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[i].src_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
-                        status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, 0);
+                        status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, 0, 0);
 
                         node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[i].dst_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
-                        status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, 1);
+                        status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, 0, 1);
 
                         bam_edge_cnt++;
                     }
@@ -437,7 +458,7 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         tivx_obj_desc_image_t *dst = (tivx_obj_desc_image_t *)src_param;
                         int32_t found = 0;
 
-                        for(j=0; j < (prms->buf_params_cnt - prms->src_buf_params_cnt); j++)
+                        for(j=0; j < (prms->obj_desc_image_count - prms->src_obj_desc_image_count); j++)
                         {
                             if(super_node->edge_list[i].dst_node_prm_idx == found_indices[j])
                             {
@@ -449,19 +470,27 @@ static vx_status VX_CALLBACK tivxKernelSupernodeCreate(
                         if (0 == found)
                         {
                             /* Add unique sink edge to parameter list */
-                            prms->obj_desc_image[prms->buf_params_cnt] = dst;
+                            prms->obj_desc_image[prms->obj_desc_image_count] = dst;
                             tivxInitBufParams(dst, &prms->buf_params[prms->buf_params_cnt]);
-                            pBuf_params[prms->buf_params_cnt] = &prms->buf_params[prms->buf_params_cnt];
-                            found_indices[(prms->buf_params_cnt - prms->src_buf_params_cnt)] = super_node->edge_list[i].dst_node_prm_idx;
-                            prms->buf_params_cnt++;
+                            for (j = 0; j < dst->planes; j++)
+                            {
+                                pBuf_params[prms->buf_params_cnt] = &prms->buf_params[prms->buf_params_cnt];
+                                prms->buf_params_cnt++;
+                            }
+                            found_indices[(prms->obj_desc_image_count - prms->src_obj_desc_image_count)] = super_node->edge_list[i].dst_node_prm_idx;
+                            prms->obj_desc_image_count++;
                         }
 
                         node_index = tivxGetNodeIndexFromNodeList(super_node->edge_list[i].src_node_obj_desc_id, super_node->node_obj_desc_id, super_node->num_nodes);
-                        status = tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, 0);
 
-                        edge_list[bam_edge_cnt].downStreamNode.id = bam_node_cnt-2;
-                        edge_list[bam_edge_cnt].downStreamNode.port = super_node->edge_list[i].dst_node_prm_idx;
-                        bam_edge_cnt++;
+                        for (j = 0; j < dst->planes; j++) {
+                            status |= tivxGetNodePort(super_node, prms, edge_list, node_index, bam_edge_cnt, i, j, 0);
+                            edge_list[bam_edge_cnt].downStreamNode.id = bam_node_cnt-2;
+                            edge_list[bam_edge_cnt].downStreamNode.port = external_ref_count;
+                            bam_edge_cnt++;
+                            external_ref_count++;
+                        }
+
                         found_edges_to_sink = 1;
                     }
                 }
@@ -632,8 +661,8 @@ static uint8_t tivxGetNodeIndexFromNodeList(uint16_t node_obj_desc_id, uint16_t 
 }
 
 static vx_status tivxGetNodePort(tivx_obj_desc_super_node_t *super_node, tivxSupernodeParams *prms,
-                                 BAM_EdgeParams edge_list[], uint8_t node_index, int32_t bam_edge_cnt, int32_t i,
-                                 int32_t src_dst)
+                                 BAM_EdgeParams edge_list[], uint8_t node_index, int32_t bam_edge_cnt, 
+                                 int32_t i, int32_t plane, int32_t src_dst)
 {
     vx_status status = VX_FAILURE;
 
@@ -644,14 +673,14 @@ static vx_status tivxGetNodePort(tivx_obj_desc_super_node_t *super_node, tivxSup
             if (0 == src_dst)
             {
                 status = prms->knl[node_index]->get_node_port_func(
-                    prms->target_kernel_instance[node_index], super_node->edge_list[i].src_node_prm_idx,
+                    prms->target_kernel_instance[node_index], super_node->edge_list[i].src_node_prm_idx, plane,
                     &edge_list[bam_edge_cnt].upStreamNode.id,
                     &edge_list[bam_edge_cnt].upStreamNode.port);
             }
             else
             {
                 status = prms->knl[node_index]->get_node_port_func(
-                    prms->target_kernel_instance[node_index], super_node->edge_list[i].dst_node_prm_idx,
+                    prms->target_kernel_instance[node_index], super_node->edge_list[i].dst_node_prm_idx, plane,
                     &edge_list[bam_edge_cnt].downStreamNode.id,
                     &edge_list[bam_edge_cnt].downStreamNode.port);
             }

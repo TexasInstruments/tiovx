@@ -100,7 +100,7 @@ static vx_status VX_CALLBACK tivxKernelMedianCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelMedianGetNodePort(
-    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
     uint8_t *bam_node, uint8_t *bam_port);
 
 
@@ -369,7 +369,7 @@ static vx_status VX_CALLBACK tivxKernelMedianCreateInBamGraph(
 
 static vx_status VX_CALLBACK tivxKernelMedianGetNodePort(
     tivx_target_kernel_instance kernel,
-    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
 {
     tivxMedianParams *prms = NULL;
     uint32_t size;
@@ -391,6 +391,7 @@ static vx_status VX_CALLBACK tivxKernelMedianGetNodePort(
                 *bam_port = BAM_VXLIB_MEDIAN_3X3_I8U_O8U_OUTPUT_IMAGE_PORT;
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelMedianGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }

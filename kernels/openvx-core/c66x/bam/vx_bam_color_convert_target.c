@@ -72,6 +72,7 @@
 typedef struct
 {
     tivx_bam_graph_handle graph_handle;
+    uint8_t bam_node_num;
 } tivxColorConvertParams;
 
 static tivx_target_kernel vx_color_convert_target_kernel = NULL;
@@ -87,6 +88,17 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertCreate(
 static vx_status VX_CALLBACK tivxKernelBamColorConvertDelete(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
     uint16_t num_params, void *priv_arg);
+
+/* Supernode Callbacks */
+static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph(
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size);
+
+static vx_status VX_CALLBACK tivxKernelColorConvertGetNodePort(
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
+    uint8_t *bam_node, uint8_t *bam_port);
 
 static vx_status VX_CALLBACK tivxKernelBamColorConvertProcess(
     tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
@@ -838,8 +850,10 @@ static vx_status VX_CALLBACK tivxKernelBamColorConvertDelete(
         if ((VX_SUCCESS == status) && (NULL != prms) &&
             (sizeof(tivxColorConvertParams) == size))
         {
-            tivxBamDestroyHandle(prms->graph_handle);
-
+            if(NULL != prms->graph_handle)
+            {
+                tivxBamDestroyHandle(prms->graph_handle);
+            }
             tivxMemFree(prms, sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
         }
     }
@@ -875,6 +889,24 @@ void tivxAddTargetKernelBamColorConvert(void)
             tivxKernelBamColorConvertDelete,
             NULL,
             NULL);
+
+        tivxEnableKernelForSuperNode(vx_color_convert_target_kernel,
+            tivxKernelColorConvertCreateInBamGraph,
+            tivxKernelColorConvertGetNodePort,
+            NULL,
+            NULL,
+            NULL,
+            MAX10(sizeof(BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_params), 
+                 sizeof(BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_params),
+                 sizeof(BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_params)),
+            NULL);
     }
 }
 
@@ -882,4 +914,509 @@ void tivxAddTargetKernelBamColorConvert(void)
 void tivxRemoveTargetKernelBamColorConvert(void)
 {
     tivxRemoveTargetKernel(vx_color_convert_target_kernel);
+}
+
+static vx_status VX_CALLBACK tivxKernelColorConvertCreateInBamGraph (
+    tivx_target_kernel_instance kernel, tivx_obj_desc_t *obj_desc[],
+    uint16_t num_params, void *priv_arg, BAM_NodeParams node_list[],
+    tivx_bam_kernel_details_t kernel_details[],
+    int32_t * bam_node_cnt, void * scratch, int32_t *size)
+{
+
+    vx_status status = VX_SUCCESS;
+    tivxColorConvertParams *prms = NULL;
+    tivx_obj_desc_image_t *src, *dst;
+
+    /* Check number of buffers and NULL pointers */
+    status = tivxCheckNullParams(obj_desc, num_params,
+                TIVX_KERNEL_COLOR_CONVERT_MAX_PARAMS);
+
+    if (VX_SUCCESS == status)
+    {
+        src = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX];
+        dst = (tivx_obj_desc_image_t *)obj_desc[
+            TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX];
+
+        prms = tivxMemAlloc(sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+
+        if (NULL != prms)
+        {
+            memset(prms, 0, sizeof(tivxColorConvertParams));
+
+            node_list[*bam_node_cnt].nodeIndex = *bam_node_cnt;
+            node_list[*bam_node_cnt].kernelArgs = NULL;
+
+            if ((VX_DF_IMAGE_RGB == src->format) &&
+                (VX_DF_IMAGE_YUV4 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoYUV4_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBtoYUV4_i8u_o8u_getKernelInfo(NULL,
+                                                             &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGB == src->format) &&
+                     (VX_DF_IMAGE_NV12 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoNV12_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBtoNV12_i8u_o8u_getKernelInfo(NULL,
+                                                              &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGB == src->format) &&
+                     (VX_DF_IMAGE_IYUV == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoIYUV_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBtoIYUV_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGB == src->format) &&
+                     (VX_DF_IMAGE_RGBX == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBtoRGBX_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBtoRGBX_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_RGB == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoRGB_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBXtoRGB_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_YUV4 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoYUV4_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_YUV4 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoYUV4_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBXtoYUV4_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_NV12 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoNV12_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBXtoNV12_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_RGBX == src->format) &&
+                     (VX_DF_IMAGE_IYUV == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_RGBXtoIYUV_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_RGBXtoIYUV_i8u_o8u_getKernelInfo(NULL,
+                                                                &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if (((VX_DF_IMAGE_NV12 == src->format) ||
+                      (VX_DF_IMAGE_NV21 == src->format)) &&
+                     (VX_DF_IMAGE_RGB == dst->format))
+            {
+                BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGB_I8U_O8U;
+
+                    kernel_params->u_pix = src->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+                    kernel_params->src_space = src->color_space -
+                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_NVXXtoRGB_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_NV12 == src->format) ||
+                      (VX_DF_IMAGE_NV21 == src->format)) &&
+                     (VX_DF_IMAGE_RGBX == dst->format))
+            {
+                BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoRGBX_I8U_O8U;
+
+                    kernel_params->u_pix = src->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+                    kernel_params->src_space = src->color_space -
+                    VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_NVXXtoRGBX_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_NV12 == src->format) ||
+                      (VX_DF_IMAGE_NV21 == src->format)) &&
+                     (VX_DF_IMAGE_YUV4 == dst->format))
+            {
+                BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoYUV4_I8U_O8U;
+
+                    kernel_params->u_pix = src->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_NVXXtoYUV4_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoYUV4_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_NV12 == src->format) ||
+                      (VX_DF_IMAGE_NV21 == src->format)) &&
+                     (VX_DF_IMAGE_IYUV == dst->format))
+            {
+                BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_NVXXtoIYUV_I8U_O8U;
+
+                    kernel_params->u_pix = src->format == VX_DF_IMAGE_NV12 ? 0 : 1;
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_NVXXtoIYUV_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_NVXXtoIYUV_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_YUYV == src->format) ||
+                      (VX_DF_IMAGE_UYVY == src->format)) &&
+                     (VX_DF_IMAGE_RGB == dst->format))
+            {
+                BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGB_I8U_O8U;
+
+                    if (VX_DF_IMAGE_YUYV == src->format)
+                    {
+                        kernel_params->x_value = 0;
+                    }
+                    else
+                    {
+                        kernel_params->x_value = 1;
+                    }
+                    kernel_params->src_space = src->color_space -
+                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_YUVXtoRGB_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_YUYV == src->format) ||
+                      (VX_DF_IMAGE_UYVY == src->format)) &&
+                     (VX_DF_IMAGE_RGBX == dst->format))
+            {
+                BAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoRGBX_I8U_O8U;
+
+                    if (VX_DF_IMAGE_YUYV == src->format)
+                    {
+                        kernel_params->x_value = 0;
+                    }
+                    else
+                    {
+                        kernel_params->x_value = 1;
+                    }
+                    kernel_params->src_space = src->color_space -
+                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_YUVXtoRGBX_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_YUYV == src->format) ||
+                      (VX_DF_IMAGE_UYVY == src->format))&&
+                     (VX_DF_IMAGE_NV12 == dst->format))
+            {
+                BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoNV12_I8U_O8U;
+
+                    if (VX_DF_IMAGE_YUYV == src->format)
+                    {
+                        kernel_params->x_value = 0;
+                    }
+                    else
+                    {
+                        kernel_params->x_value = 1;
+                    }
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_YUVXtoNV12_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoNV12_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if (((VX_DF_IMAGE_YUYV == src->format) ||
+                      (VX_DF_IMAGE_UYVY == src->format)) &&
+                     (VX_DF_IMAGE_IYUV == dst->format))
+            {
+                BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_YUVXtoIYUV_I8U_O8U;
+
+                    if (VX_DF_IMAGE_YUYV == src->format)
+                    {
+                        kernel_params->x_value = 0;
+                    }
+                    else
+                    {
+                        kernel_params->x_value = 1;
+                    }
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_YUVXtoIYUV_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_YUVXtoIYUV_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if ((VX_DF_IMAGE_IYUV == src->format) &&
+                     (VX_DF_IMAGE_RGB == dst->format))
+            {
+                BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGB_I8U_O8U;
+
+                    kernel_params->src_space = src->color_space -
+                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_IYUVtoRGB_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_IYUVtoRGB_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if ((VX_DF_IMAGE_IYUV == src->format) &&
+                     (VX_DF_IMAGE_RGBX == dst->format))
+            {
+                BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_params *kernel_params = (BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_params*)scratch;
+
+                if ((NULL != kernel_params) &&
+                    (*size >= sizeof(BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_params)))
+                {
+                    node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoRGBX_I8U_O8U;
+
+                    kernel_params->src_space = src->color_space -
+                        VX_ENUM_BASE(VX_ID_KHRONOS, VX_ENUM_COLOR_SPACE);
+
+                    kernel_details[*bam_node_cnt].compute_kernel_params = (void*)kernel_params;
+
+                    BAM_VXLIB_colorConvert_IYUVtoRGBX_i8u_o8u_getKernelInfo(NULL,
+                                                                   &kernel_details[*bam_node_cnt].kernel_info);
+                }
+                else
+                {
+                    VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: colorConvert_IYUVtoRGBX_i8u_o8u, kernel_params is null or the size is not as expected\n");
+                    status = VX_FAILURE;
+                }
+            }
+            else if ((VX_DF_IMAGE_IYUV == src->format) &&
+                     (VX_DF_IMAGE_NV12 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoNV12_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_IYUVtoNV12_i8u_o8u_getKernelInfo(NULL,
+                                                               &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            else if ((VX_DF_IMAGE_IYUV == src->format) &&
+                     (VX_DF_IMAGE_YUV4 == dst->format))
+            {
+                node_list[*bam_node_cnt].kernelId = BAM_KERNELID_VXLIB_COLORCONVERT_IYUVtoYUV4_I8U_O8U;
+
+                kernel_details[*bam_node_cnt].compute_kernel_params = NULL;
+
+                BAM_VXLIB_colorConvert_IYUVtoYUV4_i8u_o8u_getKernelInfo(NULL,
+                                                               &kernel_details[*bam_node_cnt].kernel_info);
+            }
+            prms->bam_node_num = *bam_node_cnt;
+        }
+        else
+        {
+            VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertCreateInBamGraph: prms mem allocation failed\n");
+            status = VX_ERROR_NO_MEMORY;
+        }
+
+        if (VX_SUCCESS == status)
+        {
+            tivxSetTargetKernelInstanceContext(kernel, prms,
+                sizeof(tivxColorConvertParams));
+        }
+        else
+        {
+            if (NULL != prms)
+            {
+                tivxMemFree(prms, sizeof(tivxColorConvertParams), TIVX_MEM_EXTERNAL);
+            }
+        }
+    }
+
+    return status;
+}
+
+static vx_status VX_CALLBACK tivxKernelColorConvertGetNodePort(
+    tivx_target_kernel_instance kernel,
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
+{
+    tivxColorConvertParams *prms = NULL;
+    uint32_t size;
+
+    vx_status status = tivxGetTargetKernelInstanceContext(kernel,
+                        (void **)&prms, &size);
+
+    if ((VX_SUCCESS == status) && (NULL != prms) &&
+        (sizeof(tivxColorConvertParams) == size))
+    {
+        *bam_node = prms->bam_node_num;
+
+        switch (ovx_port) 
+        {
+            case TIVX_KERNEL_COLOR_CONVERT_INPUT_IDX:
+                switch (plane) 
+                {
+                    case 0 :
+                        *bam_port = 0;
+                        break;
+                    case 1 :
+                        *bam_port = 1;
+                        break;
+                    case 2 :
+                        *bam_port = 2;
+                        break;
+                    default:
+                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        status = VX_FAILURE;
+                        break;
+                }
+                break;
+            case TIVX_KERNEL_COLOR_CONVERT_OUTPUT_IDX:
+                switch (plane) 
+                {
+                    case 0 :
+                        *bam_port = 0;
+                        break;
+                    case 1 :
+                        *bam_port = 1;
+                        break;
+                    case 2 :
+                        *bam_port = 2;
+                        break;
+                    default:
+                        VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertGetNodePort: non existing index plane queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                        status = VX_FAILURE;
+                        break;
+                }
+                break;
+            default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelColorConvertGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
+                status = VX_FAILURE;
+                break;
+        }
+    }
+
+    return status;
 }

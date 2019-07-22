@@ -72,6 +72,12 @@ extern "C" {
 #define MAX2(a, b) ((a) > (b) ? (a) : (b))
 #define MAX3(a, b, c) (MAX2(MAX2((a), (b)), (c)))
 #define MAX4(a, b, c, d) (MAX2(MAX3((a), (b), (c)), (d)))
+#define MAX5(a, b, c, d, e) (MAX2(MAX4((a), (b), (c), (d)), (e)))
+#define MAX6(a, b, c, d, e, f) (MAX2(MAX5((a), (b), (c), (d), (e)), (f)))
+#define MAX7(a, b, c, d, e, f, g) (MAX2(MAX6((a), (b), (c), (d), (e), (f)), (g)))
+#define MAX8(a, b, c, d, e, f, g, h) (MAX2(MAX7((a), (b), (c), (d), (e), (f), (g)), (h)))
+#define MAX9(a, b, c, d, e, f, g, h, i) (MAX2(MAX8((a), (b), (c), (d), (e), (f), (g), (h)), (i)))
+#define MAX10(a, b, c, d, e, f, g, h, i, j) (MAX2(MAX9((a), (b), (c), (d), (e), (f), (g), (h), (i)), (j)))
 
 typedef void (*tivxTargetKernel_Fxn) ();
 

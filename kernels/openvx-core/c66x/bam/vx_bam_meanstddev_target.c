@@ -99,7 +99,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
-    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
     uint8_t *bam_node, uint8_t *bam_port);
 
 static vx_status VX_CALLBACK tivxKernelMeanStdDevPostprocessInBamGraph(
@@ -397,7 +397,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevCreateInBamGraph(
 
 static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
     tivx_target_kernel_instance kernel,
-    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
 {
     tivxMeanStdDevParams *prms = NULL;
     uint32_t size;
@@ -415,6 +415,7 @@ static vx_status VX_CALLBACK tivxKernelMeanStdDevGetNodePort(
                 *bam_port = BAM_VXLIB_MEANSTDDEV_I8U_O32F_INPUT_IMAGE_PORT;
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelMeanStdDevGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }

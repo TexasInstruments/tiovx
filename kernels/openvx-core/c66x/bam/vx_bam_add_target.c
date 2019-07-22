@@ -100,7 +100,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelAddGetNodePort(
-    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
     uint8_t *bam_node, uint8_t *bam_port);
 
 
@@ -583,7 +583,7 @@ static vx_status VX_CALLBACK tivxKernelAddCreateInBamGraph(
 
 static vx_status VX_CALLBACK tivxKernelAddGetNodePort(
     tivx_target_kernel_instance kernel,
-    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
 {
     tivxAddParams *prms = NULL;
     uint32_t size;

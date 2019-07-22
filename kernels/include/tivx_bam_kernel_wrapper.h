@@ -386,6 +386,7 @@ typedef vx_status(VX_CALLBACK *tivx_target_kernel_create_in_bam_graph_f)(tivx_ta
 */
 typedef vx_status(VX_CALLBACK *tivx_target_kernel_get_node_port_f)(tivx_target_kernel_instance kernel,
                                                                uint8_t ovx_port,
+                                                               uint8_t plane,
                                                                uint8_t *bam_node,
                                                                uint8_t *bam_port);
 /*!

@@ -99,7 +99,7 @@ static vx_status VX_CALLBACK tivxKernelXorCreateInBamGraph(
     int32_t * bam_node_cnt, void * scratch, int32_t *size);
 
 static vx_status VX_CALLBACK tivxKernelXorGetNodePort(
-    tivx_target_kernel_instance kernel, uint8_t ovx_port,
+    tivx_target_kernel_instance kernel, uint8_t ovx_port, uint8_t plane,
     uint8_t *bam_node, uint8_t *bam_port);
 
 
@@ -372,7 +372,7 @@ static vx_status VX_CALLBACK tivxKernelXorCreateInBamGraph(
 
 static vx_status VX_CALLBACK tivxKernelXorGetNodePort(
     tivx_target_kernel_instance kernel,
-    uint8_t ovx_port, uint8_t *bam_node, uint8_t *bam_port)
+    uint8_t ovx_port, uint8_t plane, uint8_t *bam_node, uint8_t *bam_port)
 {
     tivxXorParams *prms = NULL;
     uint32_t size;
@@ -398,6 +398,7 @@ static vx_status VX_CALLBACK tivxKernelXorGetNodePort(
                 *bam_port = BAM_VXLIB_XOR_I8U_I8U_O8U_OUTPUT_PORT;
                 break;
             default:
+                VX_PRINT(VX_ZONE_ERROR,"tivxKernelXorGetNodePort: non existing index queried by tivxKernelSupernodeCreate.tivxGetNodePort()\n");
                 status = VX_FAILURE;
                 break;
         }

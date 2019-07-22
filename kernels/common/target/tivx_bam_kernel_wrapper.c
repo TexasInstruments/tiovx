@@ -212,6 +212,20 @@ static int32_t getDataBlockOutput(BAM_EdgeParams edge_list[],
                                    uint8_t node_idx,
                                    uint8_t port_num);
 
+static int32_t findUpstreamEdgeParams(BAM_EdgeParams edge_list[],
+                                     int32_t num_edges,
+                                     uint8_t source_node_id,
+                                     uint8_t source_port_num,
+                                     uint8_t *node_id,
+                                     uint8_t *port_num);
+
+static int32_t findDownstreamEdgeParams(BAM_EdgeParams edge_list[],
+                                     int32_t num_edges,
+                                     uint8_t sink_node_id,
+                                     uint8_t sink_port_num,
+                                     uint8_t *node_id,
+                                     uint8_t *port_num);
+
 static void tivxBamFreeContextPtrs(tivx_bam_graph_handle *graph_handle);
 
 static inline void assignDMAautoIncrementParams(
@@ -526,6 +540,56 @@ static int32_t getDataBlockOutput(BAM_EdgeParams edge_list[],
     return 0;
 }
 
+static int32_t findUpstreamEdgeParams(BAM_EdgeParams edge_list[],
+                                     int32_t num_edges,
+                                     uint8_t source_node_id,
+                                     uint8_t source_port_num,
+                                     uint8_t *node_id,
+                                     uint8_t *port_num)
+{
+    int32_t i;
+    int32_t found = 0;
+
+    for(i = 0; i < num_edges; i++)
+    {
+        if(edge_list[i].upStreamNode.id == source_node_id)
+        {
+            if (edge_list[i].upStreamNode.port == source_port_num) {
+                found = 1;
+                *node_id = edge_list[i].downStreamNode.id;
+                *port_num = edge_list[i].downStreamNode.port;
+            }
+        }
+    }
+
+    return found;
+}
+
+static int32_t findDownstreamEdgeParams(BAM_EdgeParams edge_list[],
+                                     int32_t num_edges,
+                                     uint8_t sink_node_id,
+                                     uint8_t sink_port_num,
+                                     uint8_t *node_id,
+                                     uint8_t *port_num)
+{
+    int32_t i;
+    int32_t found = 0;
+
+    for(i = 0; i < num_edges; i++)
+    {
+        if(edge_list[i].downStreamNode.id == sink_node_id)
+        {
+            if (edge_list[i].downStreamNode.port == sink_port_num) {
+                found = 1;
+                *node_id = edge_list[i].upStreamNode.id;
+                *port_num = edge_list[i].upStreamNode.port;
+            }
+        }
+    }
+
+    return found;
+}
+
 
 /*-------------------------------------------------------------------------*/
 /* Function to initialize kernel arguments                                 */
@@ -539,6 +603,8 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     int32_t status = BAM_S_SUCCESS;
     int32_t i, j = 0, k = 0;
     uint8_t node_index;
+    uint8_t boundry_node_id = 0, boundry_node_port = 0;
+    float xScale, yScale;
 
     tivx_bam_graph_args_multi_t                 *graph_args          = (tivx_bam_graph_args_multi_t*)args;
     EDMA_UTILS_autoIncrement_initParam_v2  *dma_read_autoinc_args  = &(graph_args->dma_read_autoinc_args);
@@ -556,30 +622,50 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
     uint16_t out_block_width  = in_block_width;
     uint16_t out_block_height = in_block_height;
     uint32_t dmaQue = 0U;
+    uint8_t num_graph_outputs;
 
     /* TIOVX-186:
      * - This loop assumes that each node in the graph is sequential with respect propogating the block size reductions
      * - If a graph is defined which this assumption is not true, then this may cause unexpected behaviors.
      * - Additional logic would need to be put in place to traverse the graph topology more accuratly to account for
      *   topologies which are not strictly sequential.
+     * 
+     *   Issue fixed, need more testing but on the DMA callbacks, they still require same block with and height.
+     *
      * - Furthermore, this loop assumes that the output block width and height does not go below 1.  If it does, then
      *   this may cause unexpected behaviors.
      * - Additional logic would need to be put in place to handle this case (either return some error for the user
      *   to break the graph up, or break the graph up internally are a couple of options)
      */
-    for(i = 1; i < graph_args->num_nodes - 1; i++)
-    {
-        if(kernel_details[i].kernel_info.nodeType == BAM_NODE_COMPUTE_NEIGHBORHOOD_OP) {
-            out_block_width -= (uint16_t)((kernel_details[i].kernel_info.kernelExtraInfo.metaInfo >> 16) - 1);
-            out_block_height -= (uint16_t)((kernel_details[i].kernel_info.kernelExtraInfo.metaInfo & 0xFFFFU) - 1U);
 
-            /* Some kernels are optimized if input width == output width.  With this enabled, we want to
-             * increase the stride of the output buffer to match the input buffer, and make this output
-             * width equal to the stride for the kernel processing */
-            if(kernel_details[i].kernel_info.kernelExtraInfo.optimizationInfo == 1) {
-                optimize_x += (uint16_t)((kernel_details[i].kernel_info.kernelExtraInfo.metaInfo >> 16) - 1);
+    if(getNumUpstreamNodes(graph_args->edge_list, graph_args->num_edges, graph_args->num_nodes-1, &num_graph_outputs) != 0)
+    {
+        int32_t block_index;
+        uint32_t block_width_reduction = 0;
+        uint32_t block_height_reduction = 0;
+        uint32_t opt_x = 0;
+
+        for(i=0; i<num_graph_outputs; i++) 
+        {
+            block_index = getDataBlockInput(graph_args->edge_list, graph_args->edge_params,
+                                   graph_args->num_edges, graph_args->num_nodes-1, i);
+
+            if (data_blocks[block_index].total_block_width_reduction > block_width_reduction)
+            {
+                block_width_reduction = data_blocks[block_index].total_block_width_reduction;
+            }
+            if (data_blocks[block_index].total_block_height_reduction > block_height_reduction)
+            {
+                block_height_reduction = data_blocks[block_index].total_block_height_reduction;
+            }
+            if (data_blocks[block_index].total_opt_x > opt_x)
+            {
+                opt_x = data_blocks[block_index].total_opt_x;
             }
         }
+        out_block_width -= block_width_reduction;
+        out_block_height -= block_height_reduction;
+        optimize_x += opt_x;
     }
 
     /* Configure for SOURCE_NODE */
@@ -597,30 +683,49 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             {
                 num_bytes = (uint32_t)VXLIB_sizeof(buf_params[i]->data_type);
 
-                data_blocks[i].block_params.data_type = buf_params[i]->data_type;
-                data_blocks[i].block_params.dim_x     = blockDimParams->blockWidth;
-                data_blocks[i].block_params.dim_y     = blockDimParams->blockHeight;
-                data_blocks[i].block_params.stride_y  = blockDimParams->blockWidth*num_bytes;
-                data_blocks[i].set_flag = 1;
+                if (findUpstreamEdgeParams(graph_args->edge_list, graph_args->num_edges, node_index, i, &boundry_node_id, &boundry_node_port))
+                {
+                    if ((boundry_node_id > 0) && (boundry_node_id < graph_args->num_nodes - 1))
+                    {
+                        xScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.horzSamplingFactor[boundry_node_port];
+                        yScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.vertSamplingFactor[boundry_node_port];
 
-                assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
-                    buf_params[i]->dim_x*num_bytes,/* roiWidth */
-                    buf_params[i]->dim_y,/* roiHeight */
-                    blockDimParams->blockWidth*num_bytes,/*blkWidth */
-                    blockDimParams->blockHeight,/*blkHeight*/
-                    out_block_width*num_bytes,/* extBlkIncrementX */
-                    out_block_height,/* extBlkIncrementY */
-                    0U,/* intBlkIncrementX */
-                    0U,/* intBlkIncrementY */
-                    0U,/* roiOffset */
-                    0U,/* blkOffset */
-                    NULL,/* extMemPtr : This will come during process call */
-                    buf_params[i]->stride_y,/* extMemPtrStride */
-                    NULL,/* DMA node will be populating this field */
-                    blockDimParams->blockWidth*num_bytes,/* interMemPtrStride */
-                    dmaQue /* dmaQueNo */
-                    );
-                dmaQue = dmaQue ^ 1;
+                        data_blocks[i].block_params.data_type = buf_params[i]->data_type;
+                        data_blocks[i].block_params.dim_x     = blockDimParams->blockWidth*xScale;
+                        data_blocks[i].block_params.dim_y     = blockDimParams->blockHeight*yScale;
+                        data_blocks[i].block_params.stride_y  = blockDimParams->blockWidth*xScale*num_bytes;
+                        data_blocks[i].set_flag = 1;
+                    }
+                    else
+                    {
+                        status |= VX_FAILURE;
+                        break;
+                    }
+
+                    assignDMAautoIncrementParams(&dma_read_autoinc_args->initParams.transferProp[i],
+                        buf_params[i]->dim_x*num_bytes,/* roiWidth */
+                        buf_params[i]->dim_y,/* roiHeight */
+                        in_block_width*xScale*num_bytes,/*blkWidth */
+                        in_block_height*yScale,/*blkHeight*/
+                        out_block_width*xScale*num_bytes,/* extBlkIncrementX */
+                        out_block_height*yScale,/* extBlkIncrementY */
+                        0U,/* intBlkIncrementX */
+                        0U,/* intBlkIncrementY */
+                        0U,/* roiOffset */
+                        0U,/* blkOffset */
+                        NULL,/* extMemPtr : This will come during process call */
+                        buf_params[i]->stride_y,/* extMemPtrStride */
+                        NULL,/* DMA node will be populating this field */
+                        blockDimParams->blockWidth*xScale*num_bytes,/* interMemPtrStride */
+                        dmaQue /* dmaQueNo */
+                        );
+                    dmaQue = dmaQue ^ 1;
+                }
+                else 
+                {
+                    status |= VX_FAILURE;
+                    break;
+                }
             }
             k = i;
         }
@@ -672,10 +777,13 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             }
             else
             {
+                xScale = kernel_details[i].kernel_info.kernelExtraInfo.horzSamplingFactor[j];
+                yScale = kernel_details[i].kernel_info.kernelExtraInfo.vertSamplingFactor[j];
+
                 compute_kernel_args[j].data_type = data_blocks[block_index].block_params.data_type;
-                compute_kernel_args[j].dim_x     = in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag);
-                compute_kernel_args[j].dim_y     = in_block_height - data_blocks[block_index].total_block_height_reduction;
-                compute_kernel_args[j].stride_y  = data_blocks[block_index].block_params.stride_y;
+                compute_kernel_args[j].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag))*xScale;
+                compute_kernel_args[j].dim_y     = (in_block_height - data_blocks[block_index].total_block_height_reduction)*yScale;
+                compute_kernel_args[j].stride_y  = data_blocks[block_index].block_params.stride_y*xScale;
             }
         }
 
@@ -686,11 +794,14 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
 
             num_bytes = (uint32_t)VXLIB_sizeof(data_blocks[block_index].block_params.data_type);
 
+            xScale = kernel_details[i].kernel_info.kernelExtraInfo.horzSamplingFactor[num_inputs+j];
+            yScale = kernel_details[i].kernel_info.kernelExtraInfo.vertSamplingFactor[num_inputs+j];
+
             compute_kernel_args[j+num_inputs].data_type = data_blocks[block_index].block_params.data_type;
-            compute_kernel_args[j+num_inputs].dim_x     = in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag);
-            compute_kernel_args[j+num_inputs].dim_y     = in_block_height - data_blocks[block_index].total_block_height_reduction;
-            compute_kernel_args[j+num_inputs].stride_y  = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag)) * num_bytes;
-            data_blocks[block_index].block_params.stride_y = compute_kernel_args[j+num_inputs].stride_y;
+            compute_kernel_args[j+num_inputs].dim_x     = (in_block_width - (data_blocks[block_index].total_block_width_reduction * exactFlag))*xScale/* + data_blocks[block_index].total_opt_x*/;
+            compute_kernel_args[j+num_inputs].dim_y     = (in_block_height - data_blocks[block_index].total_block_height_reduction)*yScale;
+            compute_kernel_args[j+num_inputs].stride_y  = compute_kernel_args[j+num_inputs].dim_x * num_bytes;
+            data_blocks[block_index].block_params.stride_y = (int32_t)(compute_kernel_args[j+num_inputs].stride_y);
         }
     }
 
@@ -709,25 +820,45 @@ static int32_t tivxBam_initKernelsArgsMulti(void *args, BAM_BlockDimParams *bloc
             {
                 num_bytes = (uint32_t)VXLIB_sizeof(buf_params[k]->data_type);
 
-                assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
-                    buf_params[k]->dim_x*num_bytes,/* roiWidth */
-                    buf_params[k]->dim_y,/* roiHeight */
-                    out_block_width*num_bytes,/*blkWidth */
-                    out_block_height,/*blkHeight*/
-                    out_block_width*num_bytes,/* extBlkIncrementX */
-                    out_block_height,/* extBlkIncrementY */
-                    0,/* intBlkIncrementX */
-                    0,/* intBlkIncrementY */
-                    0,/* roiOffset */
-                    0,/* blkOffset */
-                    NULL,/* extMemPtr : This will come during process call */
-                    buf_params[k]->stride_y,/* extMemPtrStride */
-                    NULL,/* DMA node will be populating this field */
-                    (int32_t)(((uint32_t)(out_block_width + optimize_x))*num_bytes),/* interMemPtrStride */
-                    dmaQue /* dmaQueNo */
-                    );
-                dmaQue = dmaQue ^ 1;
-                k++;
+                if (findDownstreamEdgeParams(graph_args->edge_list, graph_args->num_edges, node_index, i, &boundry_node_id, &boundry_node_port))
+                {
+                    if ((boundry_node_id > 0) && (boundry_node_id < graph_args->num_nodes - 1))
+                    {
+                        int32_t num_inputs = kernel_details[boundry_node_id].kernel_info.numInputDataBlocks;
+                        xScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.horzSamplingFactor[num_inputs+boundry_node_port];
+                        yScale = kernel_details[boundry_node_id].kernel_info.kernelExtraInfo.vertSamplingFactor[num_inputs+boundry_node_port];
+                    }
+                    else
+                    {
+                        status |= VX_FAILURE;
+                        break;
+                    }
+
+                    assignDMAautoIncrementParams(&dma_write_autoinc_args->initParams.transferProp[i],
+                        buf_params[k]->dim_x*num_bytes,/* roiWidth */
+                        buf_params[k]->dim_y,/* roiHeight */
+                        out_block_width*xScale*num_bytes,/*blkWidth */
+                        out_block_height*yScale,/*blkHeight*/
+                        out_block_width*xScale*num_bytes,/* extBlkIncrementX */
+                        out_block_height*yScale,/* extBlkIncrementY */
+                        0,/* intBlkIncrementX */
+                        0,/* intBlkIncrementY */
+                        0,/* roiOffset */
+                        0,/* blkOffset */
+                        NULL,/* extMemPtr : This will come during process call */
+                        buf_params[k]->stride_y,/* extMemPtrStride */
+                        NULL,/* DMA node will be populating this field */
+                        (int32_t)(((uint32_t)(out_block_width*xScale + optimize_x))*num_bytes),/* interMemPtrStride */
+                        dmaQue /* dmaQueNo */
+                        );
+                    dmaQue = dmaQue ^ 1;
+                    k++;
+                }
+                else 
+                {
+                    status |= VX_FAILURE;
+                    break;
+                }
             }
         }
     }
