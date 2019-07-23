@@ -451,7 +451,10 @@ class KernelExportCode :
             self.host_c_code.write_line("status = vxAddParameterToKernel(kernel,")
             self.host_c_code.write_line("            index,")
             self.host_c_code.write_line("            %s," % (Direction.get_vx_enum_name(prm.direction)) )
-            self.host_c_code.write_line("            %s," % (Type.get_vx_enum_name(prm.type)) )
+            if Type.is_scalar_type(prm.type) :
+                self.host_c_code.write_line("            VX_TYPE_SCALAR,")
+            else :
+                self.host_c_code.write_line("            %s," % (Type.get_vx_enum_name(prm.type)) )
             self.host_c_code.write_line("            %s" % (ParamState.get_vx_enum_name(prm.state)) )
             self.host_c_code.write_line(");")
             self.host_c_code.write_line("index++;")
