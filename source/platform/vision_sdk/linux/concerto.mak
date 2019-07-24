@@ -1,12 +1,16 @@
 
 ifeq ($(TARGET_PLATFORM),TDAX)
-ifeq ($(TARGET_OS),LINUX)
+ifeq ($(TARGET_OS),LINUX QNX)
 
 include $(PRELUDE)
 TARGET      := vx_platform_vision_sdk_linux
 TARGETTYPE  := library
 
-COMMON_FILES_REL_PATH = ../../os/linux
+ifeq ($(TARGET_OS),LINUX)
+    COMMON_FILES_REL_PATH = ../../os/linux
+else
+    COMMON_FILES_REL_PATH = ../../os/qnx
+endif
 
 CSOURCES    := \
     $(COMMON_FILES_REL_PATH)/tivx_event.c \
