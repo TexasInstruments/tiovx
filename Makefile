@@ -61,9 +61,12 @@ ifeq ($(BUILD_TARGET_MODE),yes)
         TARGET_COMBOS += J7:SYSBIOS:A72:1:debug:GCC_SYSBIOS_ARM
         TARGET_COMBOS += J7:SYSBIOS:C66:1:debug:CGT6X
         TARGET_COMBOS += J7:SYSBIOS:C71:1:debug:CGT7X
-		ifeq ($(BUILD_LINUX_A72),yes)
-		TARGET_COMBOS += J7:LINUX:A72:1:debug:GCC_LINUX_ARM
-		endif
+        ifeq ($(BUILD_LINUX_A72),yes)
+            TARGET_COMBOS += J7:LINUX:A72:1:debug:GCC_LINUX_ARM
+        endif
+        ifeq ($(BUILD_QNX_A72),yes)
+            TARGET_COMBOS += J7:QNX:A72:1:debug:GCC_QNX_ARM
+        endif
     endif
 
     ifeq ($(PROFILE), $(filter $(PROFILE), release all))
@@ -71,9 +74,12 @@ ifeq ($(BUILD_TARGET_MODE),yes)
         TARGET_COMBOS += J7:SYSBIOS:A72:1:release:GCC_SYSBIOS_ARM
         TARGET_COMBOS += J7:SYSBIOS:C66:1:release:CGT6X
         TARGET_COMBOS += J7:SYSBIOS:C71:1:release:CGT7X
-		ifeq ($(BUILD_LINUX_A72),yes)
-		TARGET_COMBOS += J7:LINUX:A72:1:release:GCC_LINUX_ARM
-		endif
+        ifeq ($(BUILD_LINUX_A72),yes)
+            TARGET_COMBOS += J7:LINUX:A72:1:release:GCC_LINUX_ARM
+        endif
+        ifeq ($(BUILD_QNX_A72),yes)
+            TARGET_COMBOS += J7:QNX:A72:1:release:GCC_QNX_ARM
+        endif
     endif
 endif
 
