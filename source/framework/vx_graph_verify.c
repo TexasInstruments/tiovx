@@ -77,6 +77,7 @@ static vx_status ownGraphNodeKernelValidate(
 static vx_status ownGraphNodeKernelInit(vx_graph graph);
 static vx_status ownGraphNodeKernelDeinit(vx_graph graph);
 static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
+static vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2);
 static vx_status ownGraphCalcInAndOutNodes(vx_graph graph);
 static vx_status ownGraphCalcHeadAndLeafNodes(vx_graph graph);
 static vx_status ownGraphAllocateDataObjects(vx_graph graph);
@@ -85,14 +86,14 @@ static vx_status ownGraphAddDataRefQ(vx_graph graph, vx_node node, uint32_t inde
 static vx_status ownGraphDetectSourceSink(vx_graph graph);
 
 /* Add's data reference to a list, increments number of times it is refered as input node */
-static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir)
+static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint32_t prm_dir, uint32_t check)
 {
     uint32_t i;
     vx_status status = VX_FAILURE;
 
     for(i=0; i<graph->num_data_ref; i++)
     {
-        if(graph->data_ref[i]==ref)
+        if(check && ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref))
         {
             /* increment num_in_node count for ref */
             if(prm_dir==VX_INPUT)
@@ -132,7 +133,8 @@ static vx_status ownGraphAddDataReference(vx_graph graph, vx_reference ref, uint
         ownIsValidSpecificReference(ref->scope, VX_TYPE_OBJECT_ARRAY) == vx_true_e
        )
     {
-        ownGraphAddDataReference(graph, ref->scope, prm_dir);
+        /* Check set to 0 because a data_ref_num_in_nodes is not supposed to be set for parent object */
+        ownGraphAddDataReference(graph, ref->scope, prm_dir, 0);
     }
 
     return status;
@@ -180,7 +182,7 @@ static uint32_t ownGraphGetNumInNodes(vx_graph graph, vx_node node, uint32_t nod
     {
         for(i=0; i<graph->num_data_ref; i++)
         {
-            if(ref==graph->data_ref[i])
+            if(ownGraphCheckIsRefMatch(graph, graph->data_ref[i], ref))
             {
                 num_in_nodes = graph->data_ref_num_in_nodes[i];
                 break;
@@ -235,7 +237,7 @@ static vx_status ownGraphFindAndAddDataReferences(vx_graph graph)
 
             if(ref!=NULL) /* ref could be NULL due to optional parameters */
             {
-                status = ownGraphAddDataReference(graph, ref, prm_dir);
+                status = ownGraphAddDataReference(graph, ref, prm_dir, 1);
                 if(status != VX_SUCCESS)
                 {
                     VX_PRINT(VX_ZONE_ERROR,"Unable to add data reference to data reference list in graph\n");
@@ -613,6 +615,44 @@ static vx_bool ownGraphIsRefMatch(vx_graph graph, vx_reference ref1, vx_referenc
     return is_match;
 }
 
+/* Abstracted check for checking if references match
+ * "vx_true_e" will be returned if references match or if references parent object matches */
+static vx_bool ownGraphCheckIsRefMatch(vx_graph graph, vx_reference ref1, vx_reference ref2)
+{
+    vx_bool ret = vx_false_e;
+    vx_reference parent_ref_node_cur, parent_ref_node_next;
+
+    parent_ref_node_cur = NULL;
+    parent_ref_node_next = NULL;
+
+    if (NULL != ref1)
+    {
+        if (vx_true_e == ref1->is_array_element)
+        {
+            parent_ref_node_cur = ref1->scope;
+        }
+    }
+
+    if (NULL != ref2)
+    {
+        if (vx_true_e == ref2->is_array_element)
+        {
+            parent_ref_node_next = ref2->scope;
+        }
+     }
+
+     /* check if input data reference of next node is equal to
+        output data reference of current */
+     if( ownGraphIsRefMatch(graph, ref1, ref2) ||
+         ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
+         ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
+     {
+         ret = vx_true_e;
+     }
+
+     return ret;
+}
+
 static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
 {
     vx_node node_cur, node_next;
@@ -651,32 +691,9 @@ static vx_status ownGraphCalcInAndOutNodes(vx_graph graph)
                         {
                             if( (prm_next_dir == VX_INPUT) || (prm_next_dir == VX_BIDIRECTIONAL) )
                             {
-                                vx_reference parent_ref_node_cur, parent_ref_node_next;
-
-                                parent_ref_node_cur = NULL;
-                                parent_ref_node_next = NULL;
-
-                                if (NULL != ref1)
-                                {
-                                    if (vx_true_e == ref1->is_array_element)
-                                    {
-                                        parent_ref_node_cur = ref1->scope;
-                                    }
-                                }
-
-                                if (NULL != ref2)
-                                {
-                                    if (vx_true_e == ref2->is_array_element)
-                                    {
-                                        parent_ref_node_next = ref2->scope;
-                                    }
-                                }
-
                                 /* check if input data reference of next node is equal to
                                    output data reference of current */
-                                if( ownGraphIsRefMatch(graph, ref1, ref2) ||
-                                    ownGraphIsRefMatch(graph, ref1, parent_ref_node_next) ||
-                                    ownGraphIsRefMatch(graph, parent_ref_node_cur, ref2) )
+                                if( ownGraphCheckIsRefMatch(graph, ref1, ref2) )
                                 {
                                     /* add node_next as output node for current node if not already added */
                                     status = ownNodeAddOutNode(node_cur, node_next);

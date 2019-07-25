@@ -394,6 +394,31 @@ static void tivxTargetNodeDescNodeExecuteTargetKernel(
             else
             {
                 params[i] = tivxObjDescGet(prm_obj_desc_id[i]);
+
+                /* Note: this check is needed to solve the condition where a replicated object array/pyramid
+                 *       is connected to a node that consumes the full object array/pyramid.  The acquire
+                 *       parameter function returns the first obj desc id of that array rather than
+                 *       the obj desc id of the array/pyramid.  This logic checks if the obj desc id has a
+                 *       parent object.  In the case that it does, it checks the type of the parent against
+                 *       the type of the node object.  If these match, then the parent object should be returned.
+                 *       If they don't, then the element of the parent should be returned.
+                 */
+                if(is_prm_data_ref_q_flag & (1U<<i))
+                {
+                    parent_obj_desc[i] = tivxObjDescGet(params[i]->scope_obj_desc_id);
+
+                    if(NULL != parent_obj_desc[i])
+                    {
+                        tivx_obj_desc_t *tmp_node_param;
+
+                        tmp_node_param = tivxObjDescGet(node_obj_desc->data_id[i]);
+
+                        if (parent_obj_desc[i]->type == tmp_node_param->type)
+                        {
+                            params[i] = parent_obj_desc[i];
+                        }
+                    }
+                }
             }
 
             #if 0
