@@ -110,7 +110,6 @@ static vx_status save_image_from_dof(vx_image flow_vector_img, vx_image confiden
     return status;
 }
 
-
 TEST(tivxHwaDmpacDof, testGraphProcessing)
 {
     vx_context context = context_->vx_context_;
@@ -216,8 +215,37 @@ TEST(tivxHwaDmpacDof, testGraphProcessing)
     }
 }
 
+typedef struct {
+    const char* testName;
+    int negative_test;
+    int condition;
+} ArgNegative;
 
-TEST(tivxHwaDmpacDof, testNegativeGraph)
+#define ADD_NEGATIVE_TEST(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=vertical-search_range_0", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=vertical-search_range_1", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=horizontal_search_range", __VA_ARGS__, 2)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=max_horizontal_with_vertical-search_range", __VA_ARGS__, 3)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=max_vertical_with_horizontal-search_range", __VA_ARGS__, 4)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=median_filter_enable", __VA_ARGS__, 5)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=motion_smoothness_factor", __VA_ARGS__, 6)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=motion_direction", __VA_ARGS__, 7)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=iir_filter_alpha", __VA_ARGS__, 8)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=enable_lk", __VA_ARGS__, 9)), \
+    CT_EXPAND(nextmacro(testArgName "/negative_test=pyramid_divisibility", __VA_ARGS__, 10))
+
+
+#define ADD_NEGATIVE_CONDITION(testArgName, nextmacro, ...) \
+    CT_EXPAND(nextmacro(testArgName "/condition=lower_positive", __VA_ARGS__, 0)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=upper_positive", __VA_ARGS__, 1)), \
+    CT_EXPAND(nextmacro(testArgName "/condition=negative", __VA_ARGS__, 2))
+
+#define PARAMETERS_NEGATIVE \
+    CT_GENERATE_PARAMETERS("testNegative", ADD_NEGATIVE_TEST, ADD_NEGATIVE_CONDITION, ARG)
+
+
+TEST_WITH_ARG(tivxHwaDmpacDof, testNegativeGraph, ArgNegative,
+    PARAMETERS_NEGATIVE)
 {
     vx_context context = context_->vx_context_;
     vx_pyramid input_current = NULL, input_reference = NULL;
@@ -231,7 +259,7 @@ TEST(tivxHwaDmpacDof, testNegativeGraph)
 
     if (vx_true_e == tivxIsTargetEnabled(TIVX_TARGET_DMPAC_DOF))
     {
-        uint32_t width = 1280, height = 720;
+        uint32_t width = 256, height = 128;
         uint32_t levels = 5;
         vx_enum format = VX_DF_IMAGE_U8;
 
@@ -246,6 +274,192 @@ TEST(tivxHwaDmpacDof, testNegativeGraph)
         params.median_filter_enable = 1;
         params.motion_smoothness_factor = 24;
         params.motion_direction = 1; /* 1: forward direction */
+
+        switch (arg_->negative_test)
+        {
+            case 0:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 62;
+                }
+                else
+                {
+                    params.vertical_search_range[0U] = 63;
+                }
+                break;
+            }
+            case 1:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.vertical_search_range[1U] = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.vertical_search_range[1U] = 62;
+                }
+                else
+                {
+                    params.vertical_search_range[1U] = 63;
+                }
+                break;
+            }
+            case 2:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.horizontal_search_range = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.horizontal_search_range = 191;
+                }
+                else
+                {
+                    params.horizontal_search_range = 192;
+                }
+                break;
+            }
+            case 3:
+            {
+                params.horizontal_search_range = 191;
+                if (0U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 0;
+                    params.vertical_search_range[1U] = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.vertical_search_range[0U] = 56;
+                    params.vertical_search_range[1U] = 56;
+                }
+                else
+                {
+                    params.vertical_search_range[0U] = 57;
+                    params.vertical_search_range[1U] = 57;
+                }
+                break;
+            }
+            case 4:
+            {
+                params.vertical_search_range[0U] = 62;
+                params.vertical_search_range[1U] = 62;
+                if (0U == arg_->condition)
+                {
+                    params.horizontal_search_range = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.horizontal_search_range = 170;
+                }
+                else
+                {
+                    params.horizontal_search_range = 171;
+                }
+                break;                break;
+            }
+            case 5:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.median_filter_enable = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.median_filter_enable = 1;
+                }
+                else
+                {
+                    params.median_filter_enable = 2;
+                }
+                break;
+            }
+            case 6:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.motion_smoothness_factor = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.motion_smoothness_factor = 31;
+                }
+                else
+                {
+                    params.motion_smoothness_factor = 32;
+                }
+                break;
+            }
+            case 7:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.motion_direction = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.motion_direction = 3;
+                }
+                else
+                {
+                    params.motion_direction = 4;
+                }
+                break;
+            }
+            case 8:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.iir_filter_alpha = 1;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.iir_filter_alpha = 255;
+                }
+                else
+                {
+                    params.iir_filter_alpha = 256;
+                }
+                break;
+            }
+            case 9:
+            {
+                if (0U == arg_->condition)
+                {
+                    params.enable_lk = 0;
+                }
+                else if (1U == arg_->condition)
+                {
+                    params.enable_lk = 1;
+                }
+                else
+                {
+                    params.enable_lk = 2;
+                }
+                break;
+            }
+            case 10:
+            {
+                if (0U == arg_->condition)
+                {
+                    height = 64;
+                }
+                else if (1U == arg_->condition)
+                {
+                    height = 128;
+                }
+                else
+                {
+                    height = 144;
+                }
+                break;
+            }
+        }
 
         VX_CALL(vxCopyUserDataObject(param_obj, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_WRITE_ONLY, VX_MEMORY_TYPE_HOST));
 
@@ -269,8 +483,14 @@ TEST(tivxHwaDmpacDof, testNegativeGraph)
                         confidence_histogram), VX_TYPE_NODE);
         VX_CALL(vxSetNodeTarget(node_dof, VX_TARGET_STRING, TIVX_TARGET_DMPAC_DOF));
 
-        ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
-
+        if(2 != arg_->condition)
+        {
+            ASSERT_NO_FAILURE(vxVerifyGraph(graph));
+        }
+        else
+        {
+            ASSERT_NE_VX_STATUS(VX_SUCCESS, vxVerifyGraph(graph));
+        }
         VX_CALL(vxReleaseNode(&node_dof));
         VX_CALL(vxReleaseGraph(&graph));
         VX_CALL(vxReleasePyramid(&input_current));

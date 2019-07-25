@@ -88,6 +88,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     vx_user_data_object configuration = NULL;
     vx_char configuration_name[VX_MAX_REFERENCE_NAME];
     vx_size configuration_size;
+    tivx_dmpac_dof_params_t params;
 
     vx_image input_current_base = NULL;
     vx_uint32 input_current_base_w;
@@ -159,6 +160,7 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
     {
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_NAME, &configuration_name, sizeof(configuration_name)));
         tivxCheckStatus(&status, vxQueryUserDataObject(configuration, VX_USER_DATA_OBJECT_SIZE, &configuration_size, sizeof(configuration_size)));
+        tivxCheckStatus(&status, vxCopyUserDataObject(configuration, 0, sizeof(tivx_dmpac_dof_params_t), &params, VX_READ_ONLY, VX_MEMORY_TYPE_HOST));
 
         if (NULL != input_current_base)
         {
@@ -454,6 +456,59 @@ static vx_status VX_CALLBACK tivxAddKernelDmpacDofValidate(vx_node node,
                     TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS, TIVX_KERNEL_DMPAC_DOF_MAX_CONFIDENCE_HIST_BINS
                     );
             }
+        }
+    }
+
+    if (VX_SUCCESS == status)
+    {
+        if ((62U < params.vertical_search_range[0U]) ||
+            (62U < params.vertical_search_range[1U]))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter vertical_search_range values should be between 0 and 62 inclusive\n");
+        }
+        else if (191U < params.horizontal_search_range)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be between 0 and 255 inclusive\n");
+        }
+        else if ((191U == params.horizontal_search_range) &&
+            (112U < (params.vertical_search_range[0U] + params.vertical_search_range[1U])))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter vertical_search_range should sum to no greater than 112 if horizontal_search_range is 191\n");
+        }
+        else if (((62U == params.vertical_search_range[0U]) && (62U == params.vertical_search_range[1U])) &&
+            (170U < (params.horizontal_search_range)))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter horizontal_search_range should be no greater than 170 if vertical_search_range values are 62\n");
+        }
+        if (1U < params.median_filter_enable)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter median_filter_enable should be either 0 or 1\n");
+        }
+        if (31U < params.motion_smoothness_factor)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter motion_smoothness_factor should be a value between 0 and 31 inclusive\n");
+        }
+        if (3U < params.motion_direction)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter motion_direction should be a value between 0 and 3 inclusive\n");
+        }
+        if ((1U > params.iir_filter_alpha) ||
+            (255U < params.iir_filter_alpha))
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter iir_filter_alpha should be a value between 1 and 255 inclusive\n");
+        }
+        if (1U < params.enable_lk)
+        {
+            status = VX_ERROR_INVALID_PARAMETERS;
+            VX_PRINT(VX_ZONE_ERROR, "Parameter enable_lk should be either 0 or 1\n");
         }
     }
 
