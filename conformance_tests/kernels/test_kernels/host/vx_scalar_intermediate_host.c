@@ -199,7 +199,7 @@ vx_status tivxAddKernelScalarIntermediate(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_INPUT,
-                        VX_TYPE_UINT8,
+                        VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;
@@ -209,7 +209,7 @@ vx_status tivxAddKernelScalarIntermediate(vx_context context)
             status = vxAddParameterToKernel(kernel,
                         index,
                         VX_OUTPUT,
-                        VX_TYPE_UINT8,
+                        VX_TYPE_SCALAR,
                         VX_PARAMETER_STATE_REQUIRED
             );
             index++;

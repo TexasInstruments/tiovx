@@ -68,6 +68,8 @@
 #include "TI/tivx_target_kernel.h"
 #include "tivx_kernels_target_utils.h"
 
+#define NUM_ITEMS 4
+
 typedef struct
 {
     uint8_t local_val;
@@ -101,7 +103,7 @@ static vx_status VX_CALLBACK tivxScalarSinkObjArrayProcess(
     vx_status status = VX_SUCCESS;
 
     tivx_obj_desc_object_array_t *in_object_array_desc;
-    tivx_obj_desc_scalar_t *in_scalar_desc;
+    tivx_obj_desc_scalar_t *in_scalar_desc[NUM_ITEMS];
     tivx_obj_desc_scalar_t *scalar_in_object_array_desc[TIVX_OBJECT_ARRAY_MAX_ITEMS];
     tivxScalarSinkObjArrParams *prms = NULL;
     uint32_t size;
@@ -115,19 +117,28 @@ static vx_status VX_CALLBACK tivxScalarSinkObjArrayProcess(
 
     if(VX_SUCCESS == status)
     {
-        in_object_array_desc = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX];
+        if(obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->type==TIVX_OBJ_DESC_OBJARRAY)
+        {
+            in_object_array_desc = (tivx_obj_desc_object_array_t *)obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX];
+            tivxGetObjDescList(in_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_in_object_array_desc, in_object_array_desc->num_items);
+        }
+        else
+        {
+            if (TIVX_OBJ_DESC_INVALID != obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->scope_obj_desc_id)
+            {
+                tivxGetObjDescList(
+                    &obj_desc[TIVX_KERNEL_SCALAR_SINK_OBJ_ARRAY_IN_OBJECT_ARRAY_IDX]->scope_obj_desc_id,
+                    (tivx_obj_desc_t**)&in_object_array_desc, 1);
+
+                tivxGetObjDescList(in_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_in_object_array_desc, in_object_array_desc->num_items);
+            }
+        }
 
     }
 
     if(VX_SUCCESS == status)
     {
         vx_uint8 in_value;
-
-        tivxGetObjDescList(in_object_array_desc->obj_desc_id, (tivx_obj_desc_t**)scalar_in_object_array_desc, in_object_array_desc->num_items);
-
-        in_scalar_desc = scalar_in_object_array_desc[0];
-
-        in_value = in_scalar_desc->data.u08;
 
         status = tivxGetTargetKernelInstanceContext(kernel,
             (void **)&prms, &size);
@@ -141,12 +152,20 @@ static vx_status VX_CALLBACK tivxScalarSinkObjArrayProcess(
             prms->local_val++;
         }
 
-        if (prms->local_val != in_value && prms->do_error_print)
+        int i;
+        for (i = 0; i < in_object_array_desc->num_items; i++)
         {
-            if(prms->do_error_print>0)
-                prms->do_error_print--;
-            VX_PRINT(VX_ZONE_ERROR, "error #%d, %d != %d !!!\n", prms->do_error_print, prms->local_val, in_value);
-            status = VX_FAILURE;
+            in_scalar_desc[i] = scalar_in_object_array_desc[i];
+
+            in_value = in_scalar_desc[i]->data.u08;
+
+            if ((prms->local_val+i) != in_value && prms->do_error_print)
+            {
+                if(prms->do_error_print>0)
+                    prms->do_error_print--;
+                VX_PRINT(VX_ZONE_ERROR, "error #%d, %d != %d !!!\n", prms->do_error_print, (prms->local_val+i), in_value);
+                status = VX_FAILURE;
+            }
         }
     }
 
